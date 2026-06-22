@@ -1,0 +1,7 @@
+Trade number,Type,Date and time,Signal,Price,Size (qty),Size (value),Net PnL,Net PnL %,Favorable excursion,Favorable excursion %,Adverse excursion,Adverse excursion %,Cumulative PnL,Cumulative PnL %
+1,Exit long,2024-01-15 14:30,Sell,10500,1,10000,500,5.00,500,5.00,0,0.00,500,0.50
+1,Entry long,2024-01-10 09:00,Buy,10000,1,10000,500,5.00,500,5.00,0,0.00,500,0.50
+2,Exit short,2024-02-20 13:00,Cover,9800,1,10000,200,2.00,200,2.00,0,0.00,700,0.70
+2,Entry short,2024-02-15 10:30,Short,10000,1,10000,200,2.00,200,2.00,0,0.00,700,0.70
+3,Exit long,2024-03-12 15:45,Sell,10200,1,9800,400,4.08,400,4.08,0,0.00,1100,1.10
+3,Entry long,2024-03-05 11:15,Buy,9800,1,9800,400,4.08,400,4.08,0,0.00,1100,1.10

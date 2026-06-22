@@ -1,0 +1,279 @@
+2026-06-22 14:45:14,019 [INFO] ============================================================
+2026-06-22 14:45:14,019 [INFO] BTC Renko+Supertrend Live Trading Bot STARTING
+2026-06-22 14:45:14,019 [INFO] Mode      : TESTNET
+2026-06-22 14:45:14,019 [INFO] Lots      : 100 (10x multiplier)
+2026-06-22 14:45:14,019 [INFO] Renko     : box=200
+2026-06-22 14:45:14,019 [INFO] ST        : ATR=5 Factor=4.0
+2026-06-22 14:45:14,019 [INFO] Signals   : BUY_A, BUY_B, SELL_A, SELL_B
+2026-06-22 14:45:14,019 [INFO] ============================================================
+2026-06-22 14:45:14,294 [INFO] [Loop] Starting poll loop every 60s ...
+2026-06-22 14:45:14,605 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 14:45:14,607 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 14:45:14,607 [INFO] [Loop] NEW BOX CLOSED | box #93 close=63794
+2026-06-22 14:45:14,608 [INFO] [Signals] BUY_A=False BUY_B=False SELL_A=False SELL_B=False | ST_flip_bull=False ST_flip_bear=False
+2026-06-22 14:46:14,798 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 14:46:14,807 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 14:47:15,007 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 14:47:15,010 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 14:48:15,215 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 14:48:15,217 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 14:49:15,427 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 14:49:15,428 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 14:50:15,630 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 14:50:15,642 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 14:51:15,967 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 14:51:15,968 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 14:52:16,155 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 14:52:16,156 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 14:53:16,359 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 14:53:16,360 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 14:53:27,500 [INFO] ============================================================
+2026-06-22 14:53:27,500 [INFO] BTC Renko+Supertrend Live Trading Bot STARTING
+2026-06-22 14:53:27,500 [INFO] Mode      : TESTNET
+2026-06-22 14:53:27,500 [INFO] Lots      : 100 (10x multiplier)
+2026-06-22 14:53:27,501 [INFO] Renko     : box=200
+2026-06-22 14:53:27,501 [INFO] ST        : ATR=5 Factor=4.0
+2026-06-22 14:53:27,501 [INFO] Signals   : BUY_A, BUY_B, SELL_A, SELL_B
+2026-06-22 14:53:27,501 [INFO] ============================================================
+2026-06-22 14:53:27,764 [INFO] [Loop] Starting poll loop every 60s ...
+2026-06-22 14:53:29,260 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 14:53:29,261 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 14:53:29,262 [INFO] [Loop] NEW BOX CLOSED | box #93 close=63794
+2026-06-22 14:53:29,263 [INFO] [Signals] BUY_A=False BUY_B=False SELL_A=False SELL_B=False | ST_flip_bull=False ST_flip_bear=False
+2026-06-22 14:54:10,454 [INFO] ============================================================
+2026-06-22 14:54:10,454 [INFO] BTC Renko+Supertrend Live Trading Bot STARTING
+2026-06-22 14:54:10,454 [INFO] Mode      : TESTNET
+2026-06-22 14:54:10,454 [INFO] Lots      : 100 (10x multiplier)
+2026-06-22 14:54:10,454 [INFO] Renko     : box=200
+2026-06-22 14:54:10,454 [INFO] ST        : ATR=5 Factor=4.0
+2026-06-22 14:54:10,455 [INFO] Signals   : BUY_A, BUY_B, SELL_A, SELL_B
+2026-06-22 14:54:10,455 [INFO] ============================================================
+2026-06-22 14:54:10,695 [INFO] [Loop] Starting poll loop every 60s ...
+2026-06-22 14:54:12,180 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 14:54:12,181 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 14:54:12,181 [INFO] [Loop] NEW BOX CLOSED | box #93 close=63794
+2026-06-22 14:54:12,182 [INFO] [Signals] BUY_A=False BUY_B=False SELL_A=False SELL_B=False | ST_flip_bull=False ST_flip_bear=False
+2026-06-22 14:55:13,658 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 14:55:13,659 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 14:55:22,331 [INFO] ============================================================
+2026-06-22 14:55:22,331 [INFO] BTC Renko+Supertrend Live Trading Bot STARTING
+2026-06-22 14:55:22,331 [INFO] Mode      : TESTNET
+2026-06-22 14:55:22,331 [INFO] Lots      : 100 (10x multiplier)
+2026-06-22 14:55:22,331 [INFO] Renko     : box=200
+2026-06-22 14:55:22,331 [INFO] ST        : ATR=5 Factor=4.0
+2026-06-22 14:55:22,331 [INFO] Signals   : BUY_A, BUY_B, SELL_A, SELL_B
+2026-06-22 14:55:22,332 [INFO] ============================================================
+2026-06-22 14:55:22,603 [INFO] [Loop] Starting poll loop every 60s ...
+2026-06-22 14:55:22,604 [INFO] [Fetch] Page 0 | start=1781220322 end=1781580322
+2026-06-22 14:55:22,873 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 14:55:23,174 [INFO] [Fetch] Page 1 | start=1781580322 end=1781940322
+2026-06-22 14:55:23,357 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 14:55:23,658 [INFO] [Fetch] Page 2 | start=1781940322 end=1782120322
+2026-06-22 14:55:23,839 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 14:55:24,148 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 14:55:24,149 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 14:55:24,150 [INFO] [Loop] NEW BOX CLOSED | box #93 close=63794
+2026-06-22 14:55:24,151 [INFO] [Signals] BUY_A=False BUY_B=False SELL_A=False SELL_B=False | ST_flip_bull=False ST_flip_bear=False
+2026-06-22 14:56:24,152 [INFO] [Fetch] Page 0 | start=1781220384 end=1781580384
+2026-06-22 14:56:24,329 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 14:56:24,630 [INFO] [Fetch] Page 1 | start=1781580384 end=1781940384
+2026-06-22 14:56:24,812 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 14:56:25,113 [INFO] [Fetch] Page 2 | start=1781940384 end=1782120384
+2026-06-22 14:56:25,299 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 14:56:25,607 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 14:56:25,608 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 14:56:40,062 [INFO] ============================================================
+2026-06-22 14:56:40,063 [INFO] BTC Renko+Supertrend Live Trading Bot STARTING
+2026-06-22 14:56:40,063 [INFO] Mode      : TESTNET
+2026-06-22 14:56:40,063 [INFO] Lots      : 100 (10x multiplier)
+2026-06-22 14:56:40,063 [INFO] Renko     : box=200
+2026-06-22 14:56:40,063 [INFO] ST        : ATR=5 Factor=4.0
+2026-06-22 14:56:40,063 [INFO] Signals   : BUY_A, BUY_B, SELL_A, SELL_B
+2026-06-22 14:56:40,063 [INFO] ============================================================
+2026-06-22 14:56:40,303 [INFO] [Loop] Starting poll loop every 60s ...
+2026-06-22 14:56:40,303 [INFO] [Fetch] Page 0 | start=1781220400 end=1781580400
+2026-06-22 14:56:40,526 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 14:56:40,828 [INFO] [Fetch] Page 1 | start=1781580400 end=1781940400
+2026-06-22 14:56:41,004 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 14:56:41,305 [INFO] [Fetch] Page 2 | start=1781940400 end=1782120400
+2026-06-22 14:56:41,487 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 14:56:41,797 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 14:56:41,798 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 14:56:41,798 [INFO] [Loop] NEW BOX CLOSED | box #93 close=63794
+2026-06-22 14:56:41,799 [INFO] [Signals] BUY_A=False BUY_B=False SELL_A=False SELL_B=False | ST_flip_bull=False ST_flip_bear=False
+2026-06-22 14:57:41,801 [INFO] [Fetch] Page 0 | start=1781220461 end=1781580461
+2026-06-22 14:57:41,972 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 14:57:42,273 [INFO] [Fetch] Page 1 | start=1781580461 end=1781940461
+2026-06-22 14:57:42,498 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 14:57:42,799 [INFO] [Fetch] Page 2 | start=1781940461 end=1782120461
+2026-06-22 14:57:42,988 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 14:57:43,295 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 14:57:43,296 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 14:58:43,296 [INFO] [Fetch] Page 0 | start=1781220523 end=1781580523
+2026-06-22 14:58:43,472 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 14:58:43,773 [INFO] [Fetch] Page 1 | start=1781580523 end=1781940523
+2026-06-22 14:58:43,959 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 14:58:44,260 [INFO] [Fetch] Page 2 | start=1781940523 end=1782120523
+2026-06-22 14:58:44,471 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 14:58:44,779 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 14:58:44,781 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 14:59:44,846 [INFO] [Fetch] Page 0 | start=1781220584 end=1781580584
+2026-06-22 14:59:45,034 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 14:59:45,335 [INFO] [Fetch] Page 1 | start=1781580584 end=1781940584
+2026-06-22 14:59:45,509 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 14:59:45,810 [INFO] [Fetch] Page 2 | start=1781940584 end=1782120584
+2026-06-22 14:59:45,993 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 14:59:46,300 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 14:59:46,301 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 15:00:46,302 [INFO] [Fetch] Page 0 | start=1781220646 end=1781580646
+2026-06-22 15:00:46,524 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 15:00:46,826 [INFO] [Fetch] Page 1 | start=1781580646 end=1781940646
+2026-06-22 15:00:47,009 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 15:00:47,313 [INFO] [Fetch] Page 2 | start=1781940646 end=1782120646
+2026-06-22 15:00:47,494 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 15:00:47,805 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 15:00:47,806 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 15:01:47,807 [INFO] [Fetch] Page 0 | start=1781220707 end=1781580707
+2026-06-22 15:01:47,975 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 15:01:48,291 [INFO] [Fetch] Page 1 | start=1781580707 end=1781940707
+2026-06-22 15:01:48,479 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 15:01:48,781 [INFO] [Fetch] Page 2 | start=1781940707 end=1782120707
+2026-06-22 15:01:48,959 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 15:01:49,267 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 15:01:49,267 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 15:02:49,269 [INFO] [Fetch] Page 0 | start=1781220769 end=1781580769
+2026-06-22 15:02:49,496 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 15:02:49,797 [INFO] [Fetch] Page 1 | start=1781580769 end=1781940769
+2026-06-22 15:02:49,978 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 15:02:50,279 [INFO] [Fetch] Page 2 | start=1781940769 end=1782120769
+2026-06-22 15:02:50,467 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 15:02:50,781 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 15:02:50,782 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 15:03:50,784 [INFO] [Fetch] Page 0 | start=1781220830 end=1781580830
+2026-06-22 15:03:50,962 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 15:03:51,262 [INFO] [Fetch] Page 1 | start=1781580830 end=1781940830
+2026-06-22 15:03:51,450 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 15:03:51,750 [INFO] [Fetch] Page 2 | start=1781940830 end=1782120830
+2026-06-22 15:03:51,928 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 15:03:52,243 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 15:03:52,245 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 15:04:52,246 [INFO] [Fetch] Page 0 | start=1781220892 end=1781580892
+2026-06-22 15:04:52,419 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 15:04:52,722 [INFO] [Fetch] Page 1 | start=1781580892 end=1781940892
+2026-06-22 15:04:52,947 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 15:04:53,250 [INFO] [Fetch] Page 2 | start=1781940892 end=1782120892
+2026-06-22 15:04:53,429 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 15:04:53,740 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 15:04:53,743 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 15:05:53,743 [INFO] [Fetch] Page 0 | start=1781220953 end=1781580953
+2026-06-22 15:05:53,929 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 15:05:54,230 [INFO] [Fetch] Page 1 | start=1781580953 end=1781940953
+2026-06-22 15:05:54,404 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 15:05:54,706 [INFO] [Fetch] Page 2 | start=1781940953 end=1782120953
+2026-06-22 15:05:54,885 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 15:05:55,193 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 15:05:55,194 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 15:06:55,195 [INFO] [Fetch] Page 0 | start=1781221015 end=1781581015
+2026-06-22 15:06:55,382 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 15:06:55,684 [INFO] [Fetch] Page 1 | start=1781581015 end=1781941015
+2026-06-22 15:06:55,859 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 15:06:56,160 [INFO] [Fetch] Page 2 | start=1781941015 end=1782121015
+2026-06-22 15:06:56,382 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 15:06:56,693 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 15:06:56,694 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 15:07:56,696 [INFO] [Fetch] Page 0 | start=1781221076 end=1781581076
+2026-06-22 15:07:56,873 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 15:07:57,174 [INFO] [Fetch] Page 1 | start=1781581076 end=1781941076
+2026-06-22 15:07:57,354 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 15:07:57,656 [INFO] [Fetch] Page 2 | start=1781941076 end=1782121076
+2026-06-22 15:07:57,839 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 15:07:58,147 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 15:07:58,148 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 15:08:58,149 [INFO] [Fetch] Page 0 | start=1781221138 end=1781581138
+2026-06-22 15:08:58,334 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 15:08:58,635 [INFO] [Fetch] Page 1 | start=1781581138 end=1781941138
+2026-06-22 15:08:58,849 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 15:08:59,150 [INFO] [Fetch] Page 2 | start=1781941138 end=1782121138
+2026-06-22 15:08:59,337 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 15:08:59,647 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 15:08:59,649 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 15:09:59,650 [INFO] [Fetch] Page 0 | start=1781221199 end=1781581199
+2026-06-22 15:09:59,837 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 15:10:00,138 [INFO] [Fetch] Page 1 | start=1781581199 end=1781941199
+2026-06-22 15:10:00,315 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 15:10:00,616 [INFO] [Fetch] Page 2 | start=1781941199 end=1782121199
+2026-06-22 15:10:00,791 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 15:10:01,102 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 15:10:01,104 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 15:11:01,105 [INFO] [Fetch] Page 0 | start=1781221261 end=1781581261
+2026-06-22 15:11:01,288 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 15:11:01,590 [INFO] [Fetch] Page 1 | start=1781581261 end=1781941261
+2026-06-22 15:11:01,770 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 15:11:02,070 [INFO] [Fetch] Page 2 | start=1781941261 end=1782121261
+2026-06-22 15:11:02,279 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 15:11:02,592 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 15:11:02,593 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 15:12:02,594 [INFO] [Fetch] Page 0 | start=1781221322 end=1781581322
+2026-06-22 15:12:02,781 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 15:12:03,084 [INFO] [Fetch] Page 1 | start=1781581322 end=1781941322
+2026-06-22 15:12:03,298 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 15:12:03,599 [INFO] [Fetch] Page 2 | start=1781941322 end=1782121322
+2026-06-22 15:12:03,778 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 15:12:04,090 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 15:12:04,090 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 15:13:04,094 [INFO] [Fetch] Page 0 | start=1781221384 end=1781581384
+2026-06-22 15:13:04,310 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 15:13:04,614 [INFO] [Fetch] Page 1 | start=1781581384 end=1781941384
+2026-06-22 15:13:04,801 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 15:13:05,102 [INFO] [Fetch] Page 2 | start=1781941384 end=1782121384
+2026-06-22 15:13:05,283 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 15:13:05,595 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 15:13:05,606 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 15:14:05,607 [INFO] [Fetch] Page 0 | start=1781221445 end=1781581445
+2026-06-22 15:14:05,775 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 15:14:06,091 [INFO] [Fetch] Page 1 | start=1781581445 end=1781941445
+2026-06-22 15:14:06,313 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 15:14:06,614 [INFO] [Fetch] Page 2 | start=1781941445 end=1782121445
+2026-06-22 15:14:06,851 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 15:14:07,167 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 15:14:07,169 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 15:15:07,170 [INFO] [Fetch] Page 0 | start=1781221507 end=1781581507
+2026-06-22 15:15:07,357 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 15:15:07,659 [INFO] [Fetch] Page 1 | start=1781581507 end=1781941507
+2026-06-22 15:15:07,858 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 15:15:08,160 [INFO] [Fetch] Page 2 | start=1781941507 end=1782121507
+2026-06-22 15:15:08,329 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 15:15:08,649 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 15:15:08,649 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 15:16:08,658 [INFO] [Fetch] Page 0 | start=1781221568 end=1781581568
+2026-06-22 15:16:08,843 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 15:16:09,144 [INFO] [Fetch] Page 1 | start=1781581568 end=1781941568
+2026-06-22 15:16:09,328 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 15:16:09,630 [INFO] [Fetch] Page 2 | start=1781941568 end=1782121568
+2026-06-22 15:16:09,811 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 15:16:10,122 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 15:16:10,125 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 15:17:10,125 [INFO] [Fetch] Page 0 | start=1781221630 end=1781581630
+2026-06-22 15:17:10,303 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 15:17:10,603 [INFO] [Fetch] Page 1 | start=1781581630 end=1781941630
+2026-06-22 15:17:10,789 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 15:17:11,091 [INFO] [Fetch] Page 2 | start=1781941630 end=1782121630
+2026-06-22 15:17:11,272 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 15:17:11,608 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 15:17:11,610 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 15:18:11,611 [INFO] [Fetch] Page 0 | start=1781221691 end=1781581691
+2026-06-22 15:18:11,825 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 15:18:12,140 [INFO] [Fetch] Page 1 | start=1781581691 end=1781941691
+2026-06-22 15:18:12,326 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 15:18:12,629 [INFO] [Fetch] Page 2 | start=1781941691 end=1782121691
+2026-06-22 15:18:12,807 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 15:18:13,112 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 15:18:13,112 [INFO] Built 93 Renko boxes | last close=63794
+2026-06-22 15:19:13,119 [INFO] [Fetch] Page 0 | start=1781221753 end=1781581753
+2026-06-22 15:19:13,293 [INFO] [Fetch] Page 0 returned 200 candles
+2026-06-22 15:19:13,594 [INFO] [Fetch] Page 1 | start=1781581753 end=1781941753
+2026-06-22 15:19:13,782 [INFO] [Fetch] Page 1 returned 200 candles
+2026-06-22 15:19:14,083 [INFO] [Fetch] Page 2 | start=1781941753 end=1782121753
+2026-06-22 15:19:14,254 [INFO] [Fetch] Page 2 returned 100 candles
+2026-06-22 15:19:14,564 [INFO] Fetched 126 2H candles (2026-06-12 04:00:00 -> 2026-06-22 14:00:00)
+2026-06-22 15:19:14,565 [INFO] Built 93 Renko boxes | last close=63794
