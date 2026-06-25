@@ -215,7 +215,7 @@ def run_live():
 
     fetcher  = DeltaExchangeFetcher()
     orders   = OrderManager(API_KEY, API_SECRET, testnet=TESTNET)
-    strategy = RenkoBreakoutStrategy()
+    # strategy = RenkoBreakoutStrategy()
     executor = SignalExecutor(
         swing_l        = SWING_L,
         swing_r        = SWING_R,
