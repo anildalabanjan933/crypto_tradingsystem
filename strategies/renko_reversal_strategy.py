@@ -1,8 +1,7 @@
-# strategies/renko_options_strategy.py
-# Renko Options Strategy - 3 modes
-# Inherits from base_strategy.py
-# Signal logic: 4 types (BUY_A, BUY_B, SELL_A, SELL_B)
-# Exit: Supertrend flip ONLY
+# strategies/renko_reversal_strategy.py
+# Strategy 2: Renko Reverse at S/R
+# Entry: ST FLIP at support/resistance zone
+# Exit:  ST flip only (same as Strategy 1)
 
 import numpy as np
 import pandas as pd
@@ -10,28 +9,20 @@ from strategies.base_strategy import BaseStrategy
 from indicators.renko import _trendline_value_at, RenkoBuilder, SupertrendIndicator, SwingDetector
 
 
-class RenkoOptionsStrategy(BaseStrategy):
+class RenkoReversalStrategy(BaseStrategy):
     """
-    Renko-based options strategy with 3 selectable modes.
-
-    Modes
-    -----
-    1 : Momentum Hedged   - Future + Short OTM1 + Long OTM4
-    2 : Future + DTE-0    - Future + daily DTE-0 income
-    3 : Deep ITM Covered  - Deep ITM option + daily DTE-0 sells
+    Renko Reversal Strategy - Reverse at S/R only.
 
     Signal Types
     ------------
-    BUY_A  : Bearish trendline breakout above + ST GREEN + green brick
-    BUY_B  : Near bullish sloped TL OR near horizontal support + ST GREEN + green brick
-    SELL_A : Bullish trendline breakout below + ST RED + red brick
-    SELL_B : Near bearish sloped TL OR near horizontal resistance + ST RED + red brick
+    BUY  : ST flips red->green + price near support (horizontal OR ascending TL) + min 2 swing lows + 1 green brick close
+    SELL : ST flips green->red + price near resistance (horizontal OR descending TL) + min 2 swing highs + 1 red brick close
 
     Exit
     ----
-    Supertrend flip ONLY (independent of trendline conditions)
-    GREEN -> RED exits LONG
-    RED -> GREEN exits SHORT
+    ST flip only (same as Strategy 1)
+    GREEN->RED exits LONG (1 red brick close)
+    RED->GREEN exits SHORT (1 green brick close)
     """
 
     # ------------------------------------------------------------------
@@ -39,40 +30,23 @@ class RenkoOptionsStrategy(BaseStrategy):
     # ------------------------------------------------------------------
     def __init__(self, data_dict: dict, lot_size: float = 1.0, **kwargs):
         super().__init__(
-            data_dict = data_dict,
-            lot_size  = lot_size
+            data_dict=data_dict,
+            lot_size=lot_size
         )
-
-        # Strategy mode
-        self.mode = kwargs.get('mode', 1)
 
         # Renko settings
         self.renko_box    = kwargs.get('renko_box', 200.0)
-        self.sr_tolerance = kwargs.get('sr_tolerance', 0.5)
+        self.sr_tolerance = kwargs.get('sr_tolerance', 5.0)
         self.max_tl_bars  = kwargs.get('max_tl_bars', 50)
-
-        # Position sizing
-        self.future_lots = lot_size
-        self.option_lots = kwargs.get('option_lots', 1)
 
         # Slippage (USD per side)
         self.slippage_usd = kwargs.get('slippage_usd', 0.0)
-
-        # Options parameters (Mode 1)
-        self.otm1_premium = kwargs.get('otm1_premium', 1.0)
-        self.otm4_premium = kwargs.get('otm4_premium', 1.0)
-        self.trade_dte    = kwargs.get('trade_dte', 7)
-        self.decay_pct    = kwargs.get('decay_pct', 80.0)
-
-        # Options parameters (Mode 2 / 3)
-        self.dte0_daily_premium = kwargs.get('dte0_daily_premium', 1.0)
-        self.deep_itm_premium   = kwargs.get('deep_itm_premium', 1.0)
 
         # Commission rate
         self.commission_pc = kwargs.get('commission_pct', 0.0)
 
     # ------------------------------------------------------------------
-    # ABSTRACT METHOD IMPLEMENTATIONS (required by BaseStrategy)
+    # ABSTRACT METHOD IMPLEMENTATIONS
     # ------------------------------------------------------------------
 
     @property
@@ -100,47 +74,13 @@ class RenkoOptionsStrategy(BaseStrategy):
             return price - slip if is_entry else price + slip
 
     # ------------------------------------------------------------------
-    # OPTIONS P&L HELPERS
-    # ------------------------------------------------------------------
-
-    def _theta_decay_exit_premium(self, entry_premium: float, hold_days: int) -> float:
-        decay_ratio  = min(hold_days / max(self.trade_dte, 1), 1.0)
-        return entry_premium - (entry_premium * (self.decay_pct / 100.0) * decay_ratio)
-
-    def _calc_options_pnl(self, direction: str, hold_days: int) -> float:
-        commission_per_leg = self.commission_pc / 100.0
-
-        if self.mode == 1:
-            otm1_exit  = self._theta_decay_exit_premium(self.otm1_premium, hold_days)
-            otm1_pnl   = (self.otm1_premium - otm1_exit) * self.option_lots
-            otm1_comm  = (self.otm1_premium + otm1_exit) * commission_per_leg * self.option_lots
-
-            otm4_exit  = self._theta_decay_exit_premium(self.otm4_premium, hold_days)
-            otm4_pnl   = (otm4_exit - self.otm4_premium) * self.option_lots
-            otm4_comm  = (self.otm4_premium + otm4_exit) * commission_per_leg * self.option_lots
-
-            return otm1_pnl + otm4_pnl - otm1_comm - otm4_comm
-
-        elif self.mode == 2:
-            daily_income = self.dte0_daily_premium * hold_days * self.option_lots
-            comm         = self.dte0_daily_premium * commission_per_leg * hold_days * self.option_lots
-            return daily_income - comm
-
-        elif self.mode == 3:
-            daily_income = self.dte0_daily_premium * hold_days * self.option_lots
-            comm         = self.dte0_daily_premium * commission_per_leg * hold_days * self.option_lots
-            return daily_income - comm
-
-        return 0.0
-
-    # ------------------------------------------------------------------
-    # RENKO DF BUILDER (internal - uses self._data['2H'])
+    # RENKO DF BUILDER
     # ------------------------------------------------------------------
 
     def _build_renko_df(self) -> pd.DataFrame:
         df_2h = self._data.get('2H')
         if df_2h is None or len(df_2h) == 0:
-            raise ValueError("RenkoOptionsStrategy requires '2H' timeframe data in data_dict")
+            raise ValueError("RenkoReversalStrategy requires '2H' timeframe data in data_dict")
 
         closes     = df_2h['close'].values
         timestamps = df_2h.index if isinstance(df_2h.index, pd.DatetimeIndex) else pd.to_datetime(df_2h['timestamp'])
@@ -152,7 +92,7 @@ class RenkoOptionsStrategy(BaseStrategy):
         if renko_raw is None or len(renko_raw) == 0:
             raise ValueError("RenkoBuilder produced no bricks - check box size or data range")
 
-        # Map timestamps from source candle bar_index
+        # Map timestamps
         renko_raw['timestamp'] = renko_raw['bar_index'].apply(
             lambda idx: timestamps[idx] if idx < len(timestamps) else timestamps[-1]
         )
@@ -173,10 +113,35 @@ class RenkoOptionsStrategy(BaseStrategy):
 
     def generate_signals(self) -> list:
         """
-        Builds Renko df internally from self._data['2H'] then generates signals.
-        No external df argument needed - follows BaseStrategy architecture.
+        Generate BUY/SELL signals based on ST flip at S/R zone.
         """
         df = self._build_renko_df()
+
+        # DEBUG
+        print(f"DEBUG: Total bricks = {len(df)}")
+        st_dir_temp = df['st_dir'].values
+        print(f"DEBUG: ST dir counts = {pd.Series(st_dir_temp).value_counts().to_dict()}")
+        print(f"DEBUG: ST flips red->green = {sum(1 for i in range(1, len(st_dir_temp)) if st_dir_temp[i - 1] == 1 and st_dir_temp[i] == -1)}")
+        print(f"DEBUG: ST flips green->red = {sum(1 for i in range(1, len(st_dir_temp)) if st_dir_temp[i - 1] == -1 and st_dir_temp[i] == 1)}")
+
+        # DEBUG S/R check at flip points
+        last_sh_temp = df['last_swing_high'].values
+        last_sl_temp = df['last_swing_low'].values
+        sl_hist_temp = df['swing_lows_hist'].tolist()
+        sh_hist_temp = df['swing_highs_hist'].tolist()
+        rc_temp      = df['renko_close'].values
+        rd_temp      = df['renko_dir'].values
+        box_temp     = self.renko_box
+        tol_temp     = self.sr_tolerance
+
+        for i in range(1, len(st_dir_temp)):
+            if st_dir_temp[i-1] == 1 and st_dir_temp[i] == -1 and rd_temp[i] == 1:
+                close_t  = rc_temp[i]
+                near_h   = not np.isnan(last_sl_temp[i]) and abs(close_t - last_sl_temp[i]) <= box_temp * tol_temp
+                btl      = _trendline_value_at(sl_hist_temp[i], i, self.max_tl_bars)
+                near_s   = btl is not None and abs(close_t - btl) <= box_temp * tol_temp
+                n_swings = len(sl_hist_temp[i])
+                print(f"  BUY flip i={i} close={close_t:.0f} last_sl={last_sl_temp[i]:.0f} near_h={near_h} btl={btl} near_s={near_s} swings={n_swings}")
 
         signals = []
         n = len(df)
@@ -197,10 +162,8 @@ class RenkoOptionsStrategy(BaseStrategy):
         current_direction = None
         prev_st_dir       = st_dir[0]
 
-        prev_buy_a  = False
-        prev_buy_b  = False
-        prev_sell_a = False
-        prev_sell_b = False
+        prev_buy  = False
+        prev_sell = False
 
         for i in range(1, n):
             ts    = str(pd.Timestamp(timestamps[i]).strftime('%Y-%m-%dT%H:%M:%S'))
@@ -210,9 +173,16 @@ class RenkoOptionsStrategy(BaseStrategy):
             prev_st = prev_st_dir
 
             # ----------------------------------------------------------
-            # EXIT: Supertrend flip ONLY
+            # TRENDLINE VALUES AT CURRENT BAR
             # ----------------------------------------------------------
-            if current_direction == 'long' and prev_st == -1 and st == 1:
+            bearish_tl_val = _trendline_value_at(sh_hist[i], i, max_bars)
+            bullish_tl_val = _trendline_value_at(sl_hist[i], i, max_bars)
+
+            # ----------------------------------------------------------
+            # EXIT: ST flip only
+            # ----------------------------------------------------------
+            # LONG EXIT: ST flips green->red + 1 red brick close
+            if current_direction == 'long' and prev_st == -1 and st == 1 and r_dir == -1:
                 exit_price = self._apply_slippage(close, 'long', is_entry=False)
                 signals.append({
                     'signal_type' : 'EXIT',
@@ -225,7 +195,8 @@ class RenkoOptionsStrategy(BaseStrategy):
                 })
                 current_direction = None
 
-            elif current_direction == 'short' and prev_st == 1 and st == -1:
+            # SHORT EXIT: ST flips red->green + 1 green brick close
+            elif current_direction == 'short' and prev_st == 1 and st == -1 and r_dir == 1:
                 exit_price = self._apply_slippage(close, 'short', is_entry=False)
                 signals.append({
                     'signal_type' : 'EXIT',
@@ -239,30 +210,8 @@ class RenkoOptionsStrategy(BaseStrategy):
                 current_direction = None
 
             # ----------------------------------------------------------
-            # TRENDLINE VALUES AT CURRENT BAR
+            # SUPPORT / RESISTANCE ZONE CHECK
             # ----------------------------------------------------------
-            bearish_tl_val  = _trendline_value_at(sh_hist[i],     i,     max_bars)
-            bullish_tl_val  = _trendline_value_at(sl_hist[i],     i,     max_bars)
-            bearish_tl_prev = _trendline_value_at(sh_hist[i - 1], i - 1, max_bars)
-            bullish_tl_prev = _trendline_value_at(sl_hist[i - 1], i - 1, max_bars)
-            prev_close      = renko_close[i - 1]
-
-            # ----------------------------------------------------------
-            # SIGNAL CONDITIONS
-            # ----------------------------------------------------------
-
-            # BUY_A: close crosses ABOVE bearish trendline + ST GREEN + green brick
-            buy_a = (
-                bearish_tl_val  is not None
-                and bearish_tl_prev is not None
-                and close      >  bearish_tl_val
-                and prev_close <= bearish_tl_prev
-                and st    == -1
-                and r_dir ==  1
-            )
-
-            # BUY_B: near bullish sloped TL OR near horizontal support
-            #        + ST GREEN + green brick + min 2 swing lows
             near_horizontal_support = (
                 not np.isnan(last_sl[i])
                 and abs(close - last_sl[i]) <= box * tol
@@ -271,25 +220,8 @@ class RenkoOptionsStrategy(BaseStrategy):
                 bullish_tl_val is not None
                 and abs(close - bullish_tl_val) <= box * tol
             )
-            buy_b = (
-                (near_horizontal_support or near_sloped_support)
-                and st    == -1
-                and r_dir ==  1
-                and len(sl_hist[i]) >= 2
-            )
+            near_support = near_horizontal_support or near_sloped_support
 
-            # SELL_A: close crosses BELOW bullish trendline + ST RED + red brick
-            sell_a = (
-                bullish_tl_val  is not None
-                and bullish_tl_prev is not None
-                and close      <  bullish_tl_val
-                and prev_close >= bullish_tl_prev
-                and st    ==  1
-                and r_dir == -1
-            )
-
-            # SELL_B: near bearish sloped TL OR near horizontal resistance
-            #         + ST RED + red brick + min 2 swing highs
             near_horizontal_resistance = (
                 not np.isnan(last_sh[i])
                 and abs(close - last_sh[i]) <= box * tol
@@ -298,9 +230,24 @@ class RenkoOptionsStrategy(BaseStrategy):
                 bearish_tl_val is not None
                 and abs(close - bearish_tl_val) <= box * tol
             )
-            sell_b = (
-                (near_horizontal_resistance or near_sloped_resistance)
-                and st    ==  1
+            near_resistance = near_horizontal_resistance or near_sloped_resistance
+
+            # ----------------------------------------------------------
+            # SIGNAL CONDITIONS
+            # ----------------------------------------------------------
+
+            # BUY: ST flips red->green + near support + min 2 swing lows + green brick
+            buy = (
+                prev_st == 1 and st == -1
+                and near_support
+                and r_dir == 1
+                and len(sl_hist[i]) >= 2
+            )
+
+            # SELL: ST flips green->red + near resistance + min 2 swing highs + red brick
+            sell = (
+                prev_st == -1 and st == 1
+                and near_resistance
                 and r_dir == -1
                 and len(sh_hist[i]) >= 2
             )
@@ -308,37 +255,33 @@ class RenkoOptionsStrategy(BaseStrategy):
             # ----------------------------------------------------------
             # RISING EDGE DEDUP
             # ----------------------------------------------------------
-            buy_a_edge  = buy_a  and not prev_buy_a
-            buy_b_edge  = buy_b  and not prev_buy_b
-            sell_a_edge = sell_a and not prev_sell_a
-            sell_b_edge = sell_b and not prev_sell_b
+            buy_edge  = buy  and not prev_buy
+            sell_edge = sell and not prev_sell
 
             # ----------------------------------------------------------
             # ENTRY SIGNALS
             # ----------------------------------------------------------
-            if (buy_a_edge or buy_b_edge) and current_direction != 'long':
-                entry_type  = 'BUY_A' if buy_a_edge else 'BUY_B'
+            if buy_edge and current_direction != 'long':
                 entry_price = self._apply_slippage(close, 'long', is_entry=True)
                 signals.append({
                     'signal_type' : 'ENTRY',
                     'price'       : entry_price,
                     'timestamp'   : ts,
                     'sl_price'    : close - box * 2,
-                    'entry_type'  : entry_type,
+                    'entry_type'  : 'BUY',
                     'exit_type'   : '',
                     'direction'   : 'long',
                 })
                 current_direction = 'long'
 
-            elif (sell_a_edge or sell_b_edge) and current_direction != 'short':
-                entry_type  = 'SELL_A' if sell_a_edge else 'SELL_B'
+            elif sell_edge and current_direction != 'short':
                 entry_price = self._apply_slippage(close, 'short', is_entry=True)
                 signals.append({
                     'signal_type' : 'ENTRY',
                     'price'       : entry_price,
                     'timestamp'   : ts,
                     'sl_price'    : close + box * 2,
-                    'entry_type'  : entry_type,
+                    'entry_type'  : 'SELL',
                     'exit_type'   : '',
                     'direction'   : 'short',
                 })
@@ -347,17 +290,9 @@ class RenkoOptionsStrategy(BaseStrategy):
             # ----------------------------------------------------------
             # UPDATE PREVIOUS FLAGS
             # ----------------------------------------------------------
-            prev_buy_a  = buy_a
-            prev_buy_b  = buy_b
-            prev_sell_a = sell_a
-            prev_sell_b = sell_b
+            prev_buy    = buy
+            prev_sell   = sell
             prev_st_dir = st
 
         return signals
 
-    # ------------------------------------------------------------------
-    # OPTIONS P&L ACCESSOR
-    # ------------------------------------------------------------------
-
-    def get_options_pnl(self, direction: str, hold_days: int) -> float:
-        return self._calc_options_pnl(direction, hold_days)

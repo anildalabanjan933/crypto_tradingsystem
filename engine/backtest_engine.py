@@ -13,13 +13,8 @@ from config.margin_config import margin_config
 
 
 class BacktestEngine:
-    """
-    Universal backtest engine.
-    Orchestrates entire backtest process for any strategy.
-    """
-
     def __init__(self, strategy_class, symbol, lot_size, start_date, end_date,
-                 csv_path, strategy_params=None):
+                 csv_path, strategy_params=None, slippage=0):
         self.strategy_class  = strategy_class
         self.symbol          = symbol
         self.lot_size        = lot_size
@@ -27,8 +22,9 @@ class BacktestEngine:
         self.end_date        = end_date
         self.csv_path        = csv_path
         self.strategy_params = strategy_params if strategy_params is not None else {}
+        self.slippage        = slippage
 
-        self.data_1m  = None
+        self.data_1m   = None
         self.data_dict = {}
         self.strategy  = None
         self.signals   = []
@@ -38,7 +34,6 @@ class BacktestEngine:
         self.initial_capital = backtest_config.get("initial_capital_usd", 100000)
 
     def run(self):
-        """Run complete backtest."""
         print("=" * 70)
         print(f"BACKTEST ENGINE - {self.symbol}")
         print("=" * 70)
@@ -72,41 +67,28 @@ class BacktestEngine:
         }
 
     def _load_data(self):
-        """Load 1M data from CSV."""
         loader       = DataLoader(self.csv_path)
         self.data_1m = loader.load_data()
-
         if self.data_1m is None:
             raise ValueError("Failed to load data from CSV")
-
         loader.validate_format()
         self.data_1m = loader.filter_by_date_range(self.start_date, self.end_date)
-
         if self.data_1m is None or len(self.data_1m) == 0:
             raise ValueError("No data available for specified date range")
-
         loader.validate_data_continuity()
 
     def _aggregate_timeframes(self):
-        """
-        Aggregate 1M data to ALL standard timeframes.
-        Strategy picks what it needs from data_dict internally.
-        Avoids accessing @property on uninstantiated class.
-        """
         aggregator = DataAggregator(self.data_1m)
-
-        # Always aggregate all standard timeframes
-        # Strategy will use whichever it needs via self.data_dict.get(tf)
         timeframe_map = {
             '1M'   : aggregator.get_1m_data,
             '5M'   : aggregator.get_5m_data,
             '15M'  : aggregator.get_15m_data,
             '30M'  : aggregator.get_30m_data,
             '1H'   : aggregator.get_1h_data,
+            '2H'   : aggregator.get_2h_data,   # ADDED
             '4H'   : aggregator.get_4h_data,
             'Daily': aggregator.get_daily_data,
         }
-
         for tf, getter in timeframe_map.items():
             try:
                 data = getter()
@@ -120,7 +102,6 @@ class BacktestEngine:
                 print(f"⚠️  {tf}: Aggregation failed — {e}")
 
     def _instantiate_strategy(self):
-        """Instantiate strategy with data_dict and params."""
         self.strategy = self.strategy_class(
             self.data_dict, self.lot_size, **self.strategy_params
         )
@@ -128,40 +109,34 @@ class BacktestEngine:
               f"with params {self.strategy_params}")
 
     def _generate_signals(self):
-        """
-        Generate signals from strategy.
-        Strategy reads all data from self.data_dict internally.
-        No data passed as argument — strategy manages its own timeframe selection.
-        """
         self.signals = self.strategy.generate_signals()
         print(f"✅ Generated {len(self.signals)} signals")
 
     def _build_trades(self):
-        """Build trades from signals."""
         builder = TradeBuilder(
-            size_qty       = self.lot_size,
-            initial_capital= self.initial_capital,
-            charges_config = charges_config,
-            margin_config  = margin_config,
+            size_qty        = self.lot_size,
+            initial_capital = self.initial_capital,
+            charges_config  = charges_config,
+            margin_config   = margin_config,
+            slippage        = self.slippage,
         )
         self.trades = builder.build_trades(self.signals)
         print(f"✅ Built {len(self.trades)} trades")
 
     def _calculate_metrics(self):
-        """Calculate backtest metrics."""
         calculator = MetricsCalculator(
-            trades         = self.trades,
-            initial_capital= self.initial_capital,
+            trades          = self.trades,
+            initial_capital = self.initial_capital,
         )
         self.metrics = calculator.calculate_all_metrics()
         print(f"✅ Calculated metrics")
 
 
 def run_backtest(strategy_class, symbol, lot_size, start_date, end_date,
-                 csv_path, strategy_params=None):
-    """Main function to run backtest."""
+                 csv_path, strategy_params=None, slippage=0):
     engine = BacktestEngine(
         strategy_class, symbol, lot_size,
-        start_date, end_date, csv_path, strategy_params
+        start_date, end_date, csv_path, strategy_params,
+        slippage=slippage
     )
     return engine.run()

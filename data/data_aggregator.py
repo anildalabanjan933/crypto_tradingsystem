@@ -7,7 +7,7 @@ import pandas as pd
 class DataAggregator:
     """
     Aggregates 1M OHLCV data to multiple timeframes.
-    Supports: 1M → 5M → 15M → 30M → 1H → 4H → 1D
+    Supports: 1M → 5M → 15M → 30M → 1H → 2H → 4H → 1D
 
     All output DataFrames use lowercase column names:
     open, high, low, close, volume
@@ -23,12 +23,13 @@ class DataAggregator:
         data_1m : pd.DataFrame
             1M OHLCV data with datetime index and lowercase columns
         """
-        self.data_1m   = data_1m.sort_index()
-        self.data_5m   = None
-        self.data_15m  = None
-        self.data_30m  = None
-        self.data_1h   = None
-        self.data_4h   = None
+        self.data_1m    = data_1m.sort_index()
+        self.data_5m    = None
+        self.data_15m   = None
+        self.data_30m   = None
+        self.data_1h    = None
+        self.data_2h    = None
+        self.data_4h    = None
         self.data_daily = None
 
         # Pre-aggregate all timeframes
@@ -41,6 +42,7 @@ class DataAggregator:
         self.data_15m   = self._resample('15min', '15M')
         self.data_30m   = self._resample('30min', '30M')
         self.data_1h    = self._resample('1h',    '1H')
+        self.data_2h    = self._resample('2h',    '2H')
         self.data_4h    = self._resample('4h',    '4H')
         self.data_daily = self._resample('1D',    'Daily')
 
@@ -60,7 +62,6 @@ class DataAggregator:
         pd.DataFrame
             Resampled OHLCV data with lowercase columns
         """
-        # All lowercase — matches data_loader.py output
         agg_dict = {
             'open'  : 'first',
             'high'  : 'max',
@@ -71,10 +72,7 @@ class DataAggregator:
 
         try:
             resampled = self.data_1m.resample(freq).agg(agg_dict)
-
-            # Remove rows with NaN (incomplete candles / gaps)
             resampled = resampled.dropna()
-
             print(f"✅ Aggregated to {label}: {len(resampled)} candles")
             return resampled
 
@@ -103,6 +101,10 @@ class DataAggregator:
     def get_1h_data(self):
         """Get 1H data."""
         return self.data_1h
+
+    def get_2h_data(self):
+        """Get 2H data."""
+        return self.data_2h
 
     def get_4h_data(self):
         """Get 4H data."""
@@ -136,13 +138,12 @@ class DataAggregator:
                 '15M'  : pd.Timedelta(minutes=15),
                 '30M'  : pd.Timedelta(minutes=30),
                 '1H'   : pd.Timedelta(hours=1),
+                '2H'   : pd.Timedelta(hours=2),
                 '4H'   : pd.Timedelta(hours=4),
                 'Daily': pd.Timedelta(days=1),
             }
 
             expected_freq = freq_map.get(timeframe, pd.Timedelta(hours=1))
-
-            # Find gaps (more than 1.5x expected frequency)
             gaps = time_diffs[time_diffs > expected_freq * 1.5]
 
             if len(gaps) > 0:

@@ -19,7 +19,6 @@ def run_single_strategy():
     print("=" * 70)
 
     # 1. Select Strategy
-    # The strategy_registry.get_all_strategies() already prints registered strategies
     available_strategies = strategy_registry.get_all_strategies()
     print("\nAvailable Strategies:")
     print("=" * 50)
@@ -38,7 +37,11 @@ def run_single_strategy():
     lot_size = int(input("\nEnter lot size (e.g., 1000): "))
     print(f"✅ Lot size: {lot_size}")
 
-    # 3. Select Date Range
+    # 3. Enter Slippage
+    slippage = float(input("\nEnter slippage per side in $ (or 0 for none): "))
+    print(f"✅ Slippage: {'None' if slippage == 0 else f'${slippage}/side'}")
+
+    # 4. Select Date Range
     print("\nSelect date range:")
     date_presets = backtest_config.get("date_range_presets", {})
     for i, (label, info) in enumerate(date_presets.items(), 1):
@@ -67,13 +70,13 @@ def run_single_strategy():
 
     print(f"✅ Date range: {start_date} to {end_date}")
 
-    # 4. CSV File Path
+    # 5. CSV File Path
     default_csv = backtest_config.get('default_csv_path', 'data/btc_1m_delta.csv')
     csv_input = input(f"\nEnter CSV file path (or press Enter for default):\nCSV path [{default_csv}]: ")
     csv_path = csv_input if csv_input else default_csv
     print(f"✅ CSV file: {csv_path}")
 
-    # 5. Run Backtest
+    # 6. Run Backtest
     print("\n" + "=" * 70)
     print("RUNNING BACKTEST...")
     print("=" * 70)
@@ -85,22 +88,24 @@ def run_single_strategy():
             lot_size=lot_size,
             start_date=start_date,
             end_date=end_date,
-            csv_path=csv_path
+            csv_path=csv_path,
+            slippage=slippage  # ADDED
         )
 
-        # 6. Generate Reports
-        print("\n[Step 7] Generating reports...")  # Changed message
-        generator = BacktestReportGenerator(  # RE-INSTANTIATED
+        # 7. Generate Reports
+        print("\n[Step 7] Generating reports...")
+        generator = BacktestReportGenerator(
             trades=result['trades'],
             metrics=result['metrics'],
             strategy_name=selected_strategy_name,
             symbol="BTCUSD",
             start_date=start_date,
-            end_date=end_date
+            end_date=end_date,
+            slippage=slippage  # ADDED
         )
 
-        html_report_path = generator.generate_html_report()  # GENERATE HTML
-        csv_log_path = generator.generate_csv_trade_log()  # GENERATE CSV
+        html_report_path = generator.generate_html_report()
+        csv_log_path = generator.generate_csv_trade_log()
 
         print(f"✅ HTML report saved: {html_report_path}")
         print(f"✅ Trade log saved: {csv_log_path}")
