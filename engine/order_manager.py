@@ -23,7 +23,7 @@ class OrderManager:
     """
 
     PRODUCT_SYMBOL = "BTCUSD"
-    PRODUCT_ID     = 27          # BTCUSD perpetual on Delta Exchange India
+    PRODUCT_ID     = 84          # BTCUSD perpetual on Delta Exchange Testnet
 
     def __init__(self, api_key: str, api_secret: str, testnet: bool = True):
         """
