@@ -102,6 +102,23 @@ class BacktestEngine:
                 print(f"⚠️  {tf}: Aggregation failed — {e}")
 
     def _instantiate_strategy(self):
+        from config.symbol_config import get_renko_box_size
+
+        df_2h = self.data_dict.get('2H')
+        current_price = float(df_2h['close'].iloc[-1]) if df_2h is not None else None
+
+        # If box_pct passed (from optimization), compute renko_box from price
+        if 'box_pct' in self.strategy_params:
+            pct = self.strategy_params.pop('box_pct')
+            if current_price and current_price > 0:
+                self.strategy_params['renko_box'] = max(round(current_price * pct), 1)
+            else:
+                self.strategy_params['renko_box'] = 10  # safe fallback
+
+        # Auto-resolve renko_box if still not set
+        elif 'renko_box' not in self.strategy_params:
+            self.strategy_params['renko_box'] = get_renko_box_size(self.symbol, current_price)
+
         self.strategy = self.strategy_class(
             self.data_dict, self.lot_size, **self.strategy_params
         )

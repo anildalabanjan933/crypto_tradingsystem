@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backtest Report - RenkoSMIIOSupertrendStrategy</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5; color: #333; line-height: 1.6; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header h1 { font-size: 28px; margin-bottom: 10px; }
+        .header-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; }
+        .header-item { background: rgba(255,255,255,0.1); padding: 15px; border-radius: 5px; }
+        .header-item label { font-size: 12px; opacity: 0.9; display: block; margin-bottom: 5px; }
+        .header-item value { font-size: 18px; font-weight: bold; }
+        .section { background: white; padding: 25px; margin-bottom: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .section h2 { font-size: 20px; margin-bottom: 20px; color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+        .chart-container { width: 100%; height: 400px; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { background-color: #667eea; color: white; padding: 12px; text-align: left; font-weight: 600; }
+        td { padding: 12px; border-bottom: 1px solid #ddd; }
+        tr:hover { background-color: #f9f9f9; }
+        .positive { color: #27ae60; font-weight: bold; }
+        .negative { color: #e74c3c; font-weight: bold; }
+        .neutral  { color: #8e44ad; font-weight: bold; }
+        .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
+        .metric-card { background: #f9f9f9; padding: 15px; border-radius: 5px; border-left: 4px solid #667eea; }
+        .metric-card label { font-size: 12px; color: #666; display: block; margin-bottom: 5px; }
+        .metric-card value { font-size: 18px; font-weight: bold; display: block; }
+        .footer { text-align: center; padding: 20px; color: #999; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>RenkoSMIIOSupertrendStrategy</h1>
+            <p>BTCUSD | 2025-07-02 to 2026-07-02 | Slippage: $5.0/side</p>
+            <div class="header-info">
+                <div class="header-item">
+                    <label>Total PnL</label>
+                    <value class="negative">₹-125,563</value>
+                </div>
+                <div class="header-item">
+                    <label>Total Trades</label>
+                    <value>178</value>
+                </div>
+                <div class="header-item">
+                    <label>Win Rate</label>
+                    <value>38.76%</value>
+                </div>
+                <div class="header-item">
+                    <label>Max Drawdown (₹)</label>
+                    <value class="negative">-₹405,576</value>
+                </div>
+                <div class="header-item">
+                    <label>Profit Factor</label>
+                    <value>1</value>
+                </div>
+                <div class="header-item">
+                    <label>Sharpe Ratio</label>
+                    <value>-0</value>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📈 Equity Curve</h2>
+            <div style="height:400px; width:100%;">                            <div id="2ad906dd-5952-40ad-9556-4023185fc062" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("2ad906dd-5952-40ad-9556-4023185fc062")) {                    Plotly.newPlot(                        "2ad906dd-5952-40ad-9556-4023185fc062",                        [{"fill":"tozeroy","fillcolor":"rgba(39, 174, 96, 0.2)","line":{"color":"#27ae60","width":2},"mode":"lines","name":"Cumulative PnL","x":["2025-07-02T00:00:00","2025-07-04T12:00:00","2025-07-07T00:00:00","2025-07-08T10:00:00","2025-07-13T04:00:00","2025-07-15T00:00:00","2025-07-17T08:00:00","2025-07-18T18:00:00","2025-07-20T20:00:00","2025-07-21T08:00:00","2025-07-22T16:00:00","2025-07-24T12:00:00","2025-07-26T04:00:00","2025-07-28T22:00:00","2025-07-30T00:00:00","2025-07-31T06:00:00","2025-08-02T04:00:00","2025-08-03T08:00:00","2025-08-05T12:00:00","2025-08-06T22:00:00","2025-08-09T00:00:00","2025-08-09T22:00:00","2025-08-11T18:00:00","2025-08-12T22:00:00","2025-08-14T14:00:00","2025-08-17T14:00:00","2025-08-18T22:00:00","2025-08-21T00:00:00","2025-08-22T10:00:00","2025-08-23T18:00:00","2025-08-26T06:00:00","2025-08-28T14:00:00","2025-08-31T12:00:00","2025-09-01T16:00:00","2025-09-04T10:00:00","2025-09-05T20:00:00","2025-09-07T16:00:00","2025-09-09T06:00:00","2025-09-10T00:00:00","2025-09-15T12:00:00","2025-09-16T12:00:00","2025-09-18T00:00:00","2025-09-19T10:00:00","2025-09-23T20:00:00","2025-09-24T14:00:00","2025-09-27T02:00:00","2025-09-29T00:00:00","2025-09-30T14:00:00","2025-10-05T20:00:00","2025-10-07T10:00:00","2025-10-08T16:00:00","2025-10-10T00:00:00","2025-10-12T16:00:00","2025-10-14T08:00:00","2025-10-15T14:00:00","2025-10-17T22:00:00","2025-10-20T14:00:00","2025-10-21T18:00:00","2025-10-23T10:00:00","2025-10-25T04:00:00","2025-10-28T02:00:00","2025-10-30T20:00:00","2025-11-03T00:00:00","2025-11-05T18:00:00","2025-11-07T10:00:00","2025-11-07T22:00:00","2025-11-09T22:00:00","2025-11-11T12:00:00","2025-11-12T22:00:00","2025-11-13T20:00:00","2025-11-16T22:00:00","2025-11-17T20:00:00","2025-11-19T10:00:00","2025-11-20T22:00:00","2025-11-24T08:00:00","2025-11-25T18:00:00","2025-11-26T22:00:00","2025-11-29T00:00:00","2025-12-01T06:00:00","2025-12-05T08:00:00","2025-12-07T22:00:00","2025-12-09T22:00:00","2025-12-11T10:00:00","2025-12-13T00:00:00","2025-12-15T10:00:00","2025-12-16T20:00:00","2025-12-18T18:00:00","2025-12-19T12:00:00","2025-12-21T16:00:00","2025-12-22T08:00:00","2025-12-23T08:00:00","2025-12-25T02:00:00","2025-12-26T22:00:00","2025-12-29T08:00:00","2025-12-30T20:00:00","2026-01-02T04:00:00","2026-01-06T20:00:00","2026-01-08T22:00:00","2026-01-12T10:00:00","2026-01-13T04:00:00","2026-01-16T00:00:00","2026-01-21T14:00:00","2026-01-23T00:00:00","2026-01-24T06:00:00","2026-01-26T10:00:00","2026-01-27T22:00:00","2026-01-29T06:00:00","2026-01-31T18:00:00","2026-02-02T16:00:00","2026-02-05T00:00:00","2026-02-06T10:00:00","2026-02-08T16:00:00","2026-02-10T00:00:00","2026-02-11T22:00:00","2026-02-12T22:00:00","2026-02-15T20:00:00","2026-02-18T20:00:00","2026-02-20T00:00:00","2026-02-21T10:00:00","2026-02-22T20:00:00","2026-02-24T22:00:00","2026-02-27T02:00:00","2026-03-01T00:00:00","2026-03-03T18:00:00","2026-03-05T22:00:00","2026-03-09T00:00:00","2026-03-11T06:00:00","2026-03-12T08:00:00","2026-03-13T22:00:00","2026-03-18T02:00:00","2026-03-20T06:00:00","2026-03-21T10:00:00","2026-03-22T08:00:00","2026-03-23T18:00:00","2026-03-24T20:00:00","2026-03-26T06:00:00","2026-03-29T00:00:00","2026-03-31T00:00:00","2026-04-02T06:00:00","2026-04-05T16:00:00","2026-04-07T06:00:00","2026-04-09T16:00:00","2026-04-12T08:00:00","2026-04-15T00:00:00","2026-04-16T22:00:00","2026-04-18T16:00:00","2026-04-20T04:00:00","2026-04-22T02:00:00","2026-04-23T08:00:00","2026-04-26T18:00:00","2026-04-29T10:00:00","2026-05-01T06:00:00","2026-05-04T10:00:00","2026-05-06T22:00:00","2026-05-09T08:00:00","2026-05-11T12:00:00","2026-05-12T14:00:00","2026-05-13T18:00:00","2026-05-15T14:00:00","2026-05-20T14:00:00","2026-05-24T00:00:00","2026-05-26T12:00:00","2026-05-29T22:00:00","2026-06-01T06:00:00","2026-06-04T16:00:00","2026-06-07T10:00:00","2026-06-09T12:00:00","2026-06-10T20:00:00","2026-06-15T06:00:00","2026-06-16T06:00:00","2026-06-18T02:00:00","2026-06-19T20:00:00","2026-06-22T08:00:00","2026-06-25T12:00:00","2026-06-26T12:00:00","2026-06-28T10:00:00","2026-06-29T10:00:00","2026-07-01T14:00:00"],"y":[0.0,20797.559999999707,13849.079999999609,12696.599999999511,78170.39999999927,84433.43999999907,89559.11999999941,74020.79999999976,66911.87999999936,53106.479999998875,33885.59999999829,30943.079999998386,26446.559999998484,10244.639999998093,-2012.6400000017602,-6680.520000002347,15224.159999997995,9262.679999997898,5538.119999998191,-14082.600000001956,-9570.960000001418,-19735.800000000978,-5698.560000000929,-16980.600000000733,-9402.120000000636,-12955.32000000088,-7156.800000000978,-1629.6000000007334,-8589.840000000782,-21095.760000001173,19971.839999998338,29884.679999997898,51155.999999997555,39978.95999999775,40847.51999999746,35163.239999997604,26505.359999997017,18553.079999997164,1331.3999999968219,26300.399999996822,16437.11999999697,9945.599999997066,4638.479999997653,27038.759999997506,17595.479999997653,37196.87999999814,25005.11999999819,16736.999999998778,91107.23999999883,89538.11999999941,75142.19999999902,84460.31999999844,143109.1199999982,125522.87999999814,118670.99999999756,156339.11999999697,188405.2799999974,175476.83999999712,158891.87999999692,160795.3199999972,177540.7199999977,214836.7199999977,214972.7999999973,257479.3199999972,253092.83999999712,229151.99999999756,212142.83999999712,215539.7999999973,186479.15999999677,163399.3199999972,180050.63999999687,162996.95999999653,137707.07999999594,90367.19999999536,110739.71999999526,95840.63999999565,62844.599999995844,63325.9199999955,26414.63999999565,68940.47999999521,66246.59999999462,32102.279999994964,46619.99999999511,26142.47999999521,28937.99999999511,9254.279999994964,-11684.400000005378,-35773.08000000572,-42131.040000005916,-49859.880000005476,-63928.200000005134,-68349.12000000553,-84806.40000000538,-105014.28000000597,-122152.80000000587,-125698.4400000064,-104130.60000000685,-98671.4400000064,-89561.64000000665,-100159.08000000694,-73714.20000000636,-25887.960000006307,-30283.680000006454,-33565.56000000704,-24215.520000007236,-26955.600000006845,-32427.360000006796,-54752.04000000714,-60878.16000000655,-57541.680000006454,-75018.72000000626,-101136.84000000567,-114644.88000000548,-97772.64000000543,-121146.48000000499,-105325.92000000528,-97475.28000000474,-106443.1200000043,-114626.40000000416,-123482.52000000357,-126714.84000000323,-120531.60000000318,-128363.76000000362,-148097.04000000347,-127798.44000000396,-112323.1200000043,-95006.52000000479,-106179.36000000435,-97437.48000000376,-74856.60000000318,-42701.400000002934,-53093.88000000303,-67896.36000000313,-94782.24000000372,-106622.88000000425,-107209.20000000391,-100979.76000000362,-102636.24000000372,-110896.80000000342,-113682.24000000372,-119631.96000000386,-113411.76000000362,-120717.24000000372,-105217.56000000337,-110885.04000000347,-102257.40000000293,-95862.48000000254,-97041.840000002,-93176.16000000166,-100332.96000000142,-97196.40000000171,-104558.16000000166,-95318.16000000166,-86062.20000000147,-90840.96000000142,-95007.3600000019,-106865.64000000176,-119084.2800000023,-128607.3600000019,-122829.840000002,-114553.3200000021,-119721.840000002,-101169.60000000196,-102845.40000000171,-18627.000000001222,-22076.040000001027,-28245.000000001222,-25996.32000000088,-3632.16000000044,-11155.200000000244,-594.7200000001467,-7493.640000000538,-7887.600000000733,8646.119999999413,2856.83999999956,-1161.7200000001467,-6728.400000000489,-805.560000000929],"type":"scatter"}],                        {"height":400,"hovermode":"x unified","template":{"data":{"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"#E5ECF6","showlakes":true,"showland":true,"subunitcolor":"white"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"bgcolor":"#E5ECF6","radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","gridwidth":2,"linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white"},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","gridwidth":2,"linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white"},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","gridwidth":2,"linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"bgcolor":"#E5ECF6","caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","zerolinewidth":2}}},"title":{"text":"Equity Curve (\u20b9)"},"xaxis":{"title":{"text":"Date"}},"yaxis":{"title":{"text":"Cumulative PnL (\u20b9)"}}},                        {"responsive": true}                    )                };            </script>        </div>
+        </div>
+
+        <div class="section">
+            <h2>📉 Drawdown</h2>
+            <div style="height:400px; width:100%;">                            <div id="33fe3320-d453-4035-89bd-93ea60f214e4" class="plotly-graph-div" style="height:100%; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("33fe3320-d453-4035-89bd-93ea60f214e4")) {                    Plotly.newPlot(                        "33fe3320-d453-4035-89bd-93ea60f214e4",                        [{"fill":"tozeroy","fillcolor":"rgba(231, 76, 60, 0.2)","line":{"color":"#e74c3c","width":2},"mode":"lines","name":"Drawdown (\u20b9)","x":["2025-07-02T00:00:00","2025-07-04T12:00:00","2025-07-07T00:00:00","2025-07-08T10:00:00","2025-07-13T04:00:00","2025-07-15T00:00:00","2025-07-17T08:00:00","2025-07-18T18:00:00","2025-07-20T20:00:00","2025-07-21T08:00:00","2025-07-22T16:00:00","2025-07-24T12:00:00","2025-07-26T04:00:00","2025-07-28T22:00:00","2025-07-30T00:00:00","2025-07-31T06:00:00","2025-08-02T04:00:00","2025-08-03T08:00:00","2025-08-05T12:00:00","2025-08-06T22:00:00","2025-08-09T00:00:00","2025-08-09T22:00:00","2025-08-11T18:00:00","2025-08-12T22:00:00","2025-08-14T14:00:00","2025-08-17T14:00:00","2025-08-18T22:00:00","2025-08-21T00:00:00","2025-08-22T10:00:00","2025-08-23T18:00:00","2025-08-26T06:00:00","2025-08-28T14:00:00","2025-08-31T12:00:00","2025-09-01T16:00:00","2025-09-04T10:00:00","2025-09-05T20:00:00","2025-09-07T16:00:00","2025-09-09T06:00:00","2025-09-10T00:00:00","2025-09-15T12:00:00","2025-09-16T12:00:00","2025-09-18T00:00:00","2025-09-19T10:00:00","2025-09-23T20:00:00","2025-09-24T14:00:00","2025-09-27T02:00:00","2025-09-29T00:00:00","2025-09-30T14:00:00","2025-10-05T20:00:00","2025-10-07T10:00:00","2025-10-08T16:00:00","2025-10-10T00:00:00","2025-10-12T16:00:00","2025-10-14T08:00:00","2025-10-15T14:00:00","2025-10-17T22:00:00","2025-10-20T14:00:00","2025-10-21T18:00:00","2025-10-23T10:00:00","2025-10-25T04:00:00","2025-10-28T02:00:00","2025-10-30T20:00:00","2025-11-03T00:00:00","2025-11-05T18:00:00","2025-11-07T10:00:00","2025-11-07T22:00:00","2025-11-09T22:00:00","2025-11-11T12:00:00","2025-11-12T22:00:00","2025-11-13T20:00:00","2025-11-16T22:00:00","2025-11-17T20:00:00","2025-11-19T10:00:00","2025-11-20T22:00:00","2025-11-24T08:00:00","2025-11-25T18:00:00","2025-11-26T22:00:00","2025-11-29T00:00:00","2025-12-01T06:00:00","2025-12-05T08:00:00","2025-12-07T22:00:00","2025-12-09T22:00:00","2025-12-11T10:00:00","2025-12-13T00:00:00","2025-12-15T10:00:00","2025-12-16T20:00:00","2025-12-18T18:00:00","2025-12-19T12:00:00","2025-12-21T16:00:00","2025-12-22T08:00:00","2025-12-23T08:00:00","2025-12-25T02:00:00","2025-12-26T22:00:00","2025-12-29T08:00:00","2025-12-30T20:00:00","2026-01-02T04:00:00","2026-01-06T20:00:00","2026-01-08T22:00:00","2026-01-12T10:00:00","2026-01-13T04:00:00","2026-01-16T00:00:00","2026-01-21T14:00:00","2026-01-23T00:00:00","2026-01-24T06:00:00","2026-01-26T10:00:00","2026-01-27T22:00:00","2026-01-29T06:00:00","2026-01-31T18:00:00","2026-02-02T16:00:00","2026-02-05T00:00:00","2026-02-06T10:00:00","2026-02-08T16:00:00","2026-02-10T00:00:00","2026-02-11T22:00:00","2026-02-12T22:00:00","2026-02-15T20:00:00","2026-02-18T20:00:00","2026-02-20T00:00:00","2026-02-21T10:00:00","2026-02-22T20:00:00","2026-02-24T22:00:00","2026-02-27T02:00:00","2026-03-01T00:00:00","2026-03-03T18:00:00","2026-03-05T22:00:00","2026-03-09T00:00:00","2026-03-11T06:00:00","2026-03-12T08:00:00","2026-03-13T22:00:00","2026-03-18T02:00:00","2026-03-20T06:00:00","2026-03-21T10:00:00","2026-03-22T08:00:00","2026-03-23T18:00:00","2026-03-24T20:00:00","2026-03-26T06:00:00","2026-03-29T00:00:00","2026-03-31T00:00:00","2026-04-02T06:00:00","2026-04-05T16:00:00","2026-04-07T06:00:00","2026-04-09T16:00:00","2026-04-12T08:00:00","2026-04-15T00:00:00","2026-04-16T22:00:00","2026-04-18T16:00:00","2026-04-20T04:00:00","2026-04-22T02:00:00","2026-04-23T08:00:00","2026-04-26T18:00:00","2026-04-29T10:00:00","2026-05-01T06:00:00","2026-05-04T10:00:00","2026-05-06T22:00:00","2026-05-09T08:00:00","2026-05-11T12:00:00","2026-05-12T14:00:00","2026-05-13T18:00:00","2026-05-15T14:00:00","2026-05-20T14:00:00","2026-05-24T00:00:00","2026-05-26T12:00:00","2026-05-29T22:00:00","2026-06-01T06:00:00","2026-06-04T16:00:00","2026-06-07T10:00:00","2026-06-09T12:00:00","2026-06-10T20:00:00","2026-06-15T06:00:00","2026-06-16T06:00:00","2026-06-18T02:00:00","2026-06-19T20:00:00","2026-06-22T08:00:00","2026-06-25T12:00:00","2026-06-26T12:00:00","2026-06-28T10:00:00","2026-06-29T10:00:00","2026-07-01T14:00:00"],"y":[0.0,0.0,-6948.480000000098,-8100.960000000196,0.0,0.0,0.0,-15538.319999999658,-22647.24000000005,-36452.64000000054,-55673.520000001125,-58616.04000000103,-63112.56000000093,-79314.48000000132,-91571.76000000117,-96239.64000000176,-74334.96000000142,-80296.44000000152,-84021.00000000122,-103641.72000000137,-99130.08000000083,-109294.92000000039,-95257.68000000034,-106539.72000000015,-98961.24000000005,-102514.4400000003,-96715.92000000039,-91188.72000000015,-98148.9600000002,-110654.88000000059,-69587.28000000108,-59674.440000001516,-38403.12000000186,-49580.16000000166,-48711.600000001956,-54395.88000000181,-63053.760000002396,-71006.04000000225,-88227.72000000259,-63258.72000000259,-73122.00000000244,-79613.52000000235,-84920.64000000176,-62520.36000000191,-71963.64000000176,-52362.24000000127,-64554.00000000122,-72822.12000000064,0.0,-1569.1199999994133,-15965.039999999804,-6646.920000000391,0.0,-17586.24000000005,-24438.120000000636,0.0,0.0,-12928.440000000293,-29513.40000000049,-27609.960000000196,-10864.559999999707,0.0,0.0,0.0,-4386.480000000098,-28327.319999999658,-45336.4800000001,-41939.5199999999,-71000.16000000044,-94080.0,-77428.68000000034,-94482.36000000068,-119772.24000000127,-167112.12000000186,-146739.60000000196,-161638.68000000156,-194634.72000000137,-194153.4000000017,-231064.68000000156,-188538.840000002,-191232.7200000026,-225377.04000000225,-210859.3200000021,-231336.840000002,-228541.3200000021,-248225.04000000225,-269163.7200000026,-293252.40000000293,-299610.36000000313,-307339.2000000027,-321407.52000000235,-325828.44000000274,-342285.7200000026,-362493.6000000032,-379632.1200000031,-383177.7600000036,-361609.92000000406,-356150.7600000036,-347040.96000000386,-357638.40000000416,-331193.52000000357,-283367.2800000035,-287763.00000000367,-291044.88000000425,-281694.84000000445,-284434.92000000406,-289906.680000004,-312231.36000000435,-318357.48000000376,-315021.00000000367,-332498.0400000035,-358616.1600000029,-372124.2000000027,-355251.96000000264,-378625.8000000022,-362805.2400000025,-354954.60000000196,-363922.4400000015,-372105.72000000137,-380961.8400000008,-384194.16000000044,-378010.9200000004,-385843.08000000083,-405576.3600000007,-385277.7600000012,-369802.4400000015,-352485.840000002,-363658.68000000156,-354916.800000001,-332335.9200000004,-300180.72000000015,-310573.20000000024,-325375.68000000034,-352261.5600000009,-364102.20000000147,-364688.5200000011,-358459.08000000083,-360115.5600000009,-368376.12000000064,-371161.5600000009,-377111.2800000011,-370891.08000000083,-378196.5600000009,-362696.8800000006,-368364.3600000007,-359736.72000000015,-353341.79999999976,-354521.1599999992,-350655.4799999989,-357812.27999999863,-354675.7199999989,-362037.4799999989,-352797.4799999989,-343541.5199999987,-348320.27999999863,-352486.6799999991,-364344.959999999,-376563.5999999995,-386086.6799999991,-380309.1599999992,-372032.6399999993,-377201.1599999992,-358648.91999999917,-360324.7199999989,-276106.31999999844,-279555.35999999824,-285724.31999999844,-283475.6399999981,-261111.47999999765,-268634.51999999746,-258074.03999999736,-264972.95999999775,-265366.91999999795,-248833.1999999978,-254622.47999999765,-258641.03999999736,-264207.7199999977,-258284.87999999814],"type":"scatter"}],                        {"height":400,"hovermode":"x unified","template":{"data":{"barpolar":[{"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"#E5ECF6","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"white","linecolor":"white","minorgridcolor":"white","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"#E5ECF6","showlakes":true,"showland":true,"subunitcolor":"white"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"paper_bgcolor":"white","plot_bgcolor":"#E5ECF6","polar":{"angularaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"bgcolor":"#E5ECF6","radialaxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","gridwidth":2,"linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white"},"yaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","gridwidth":2,"linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white"},"zaxis":{"backgroundcolor":"#E5ECF6","gridcolor":"white","gridwidth":2,"linecolor":"white","showbackground":true,"ticks":"","zerolinecolor":"white"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"white","linecolor":"white","ticks":""},"baxis":{"gridcolor":"white","linecolor":"white","ticks":""},"bgcolor":"#E5ECF6","caxis":{"gridcolor":"white","linecolor":"white","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"white","linecolor":"white","ticks":"","title":{"standoff":15},"zerolinecolor":"white","zerolinewidth":2}}},"title":{"text":"Drawdown (\u20b9)"},"xaxis":{"title":{"text":"Date"}},"yaxis":{"title":{"text":"Drawdown (\u20b9)"}}},                        {"responsive": true}                    )                };            </script>        </div>
+        </div>
+
+        <div class="section">
+            <h2>📅 Monthly Returns (₹)</h2>
+            <table><thead><tr><th>Month</th><th>PnL (₹)</th><th>PnL %</th></tr></thead><tbody><tr><td>2025-07</td><td class='negative'>₹-6,680</td><td class='negative'>-6.68%</td></tr><tr><td>2025-08</td><td class='positive'>₹57,836</td><td class='positive'>57.84%</td></tr><tr><td>2025-09</td><td class='negative'>₹-34,418</td><td class='negative'>-34.42%</td></tr><tr><td>2025-10</td><td class='positive'>₹198,101</td><td class='positive'>198.1%</td></tr><tr><td>2025-11</td><td class='negative'>₹-151,510</td><td class='negative'>-151.51%</td></tr><tr><td>2025-12</td><td class='negative'>₹-185,478</td><td class='negative'>-185.48%</td></tr><tr><td>2026-01</td><td class='positive'>₹67,402</td><td class='positive'>67.4%</td></tr><tr><td>2026-02</td><td class='negative'>₹-65,780</td><td class='negative'>-65.78%</td></tr><tr><td>2026-03</td><td class='positive'>₹17,895</td><td class='positive'>17.9%</td></tr><tr><td>2026-04</td><td class='positive'>₹5,439</td><td class='positive'>5.44%</td></tr><tr><td>2026-05</td><td class='negative'>₹-3,974</td><td class='negative'>-3.97%</td></tr><tr><td>2026-06</td><td class='positive'>₹94,441</td><td class='positive'>94.44%</td></tr><tr><td>2026-07</td><td class='positive'>₹4,948</td><td class='positive'>4.95%</td></tr></tbody></table>
+        </div>
+
+        <div class="section">
+            <h2>📅 Yearly Returns (₹)</h2>
+            <table><thead><tr><th>Year</th><th>PnL (₹)</th><th>PnL %</th></tr></thead><tbody><tr><td>2025</td><td class='negative'>₹-122,150</td><td class='negative'>-122.15%</td></tr><tr><td>2026</td><td class='positive'>₹120,371</td><td class='positive'>120.37%</td></tr></tbody></table>
+        </div>
+
+        <div class="section">
+            <h2>📊 Strategy Statistics</h2>
+            <div class="metric-grid">
+                <div class="metric-card">
+                    <label>Total Trades</label>
+                    <value>178</value>
+                </div>
+                <div class="metric-card">
+                    <label>Winning Trades</label>
+                    <value class="positive">69</value>
+                </div>
+                <div class="metric-card">
+                    <label>Losing Trades</label>
+                    <value class="negative">109</value>
+                </div>
+                <div class="metric-card">
+                    <label>Win Rate</label>
+                    <value>38.76%</value>
+                </div>
+                <div class="metric-card">
+                    <label>Loss Rate</label>
+                    <value class="negative">61.24%</value>
+                </div>
+                <div class="metric-card">
+                    <label>Profit Factor</label>
+                    <value>1</value>
+                </div>
+                <div class="metric-card">
+                    <label>Total PnL (₹)</label>
+                    <value class="negative">₹-125,563</value>
+                </div>
+                <div class="metric-card">
+                    <label>Expectancy (₹)</label>
+                    <value class="negative">₹-705</value>
+                </div>
+                <div class="metric-card">
+                    <label>Avg Profit on Winning Trades (₹)</label>
+                    <value class="positive">₹17,939</value>
+                </div>
+                <div class="metric-card">
+                    <label>Avg Loss on Losing Trades (₹)</label>
+                    <value class="negative">₹-11,373</value>
+                </div>
+                <div class="metric-card">
+                    <label>Max Profit in Single Trade (₹)</label>
+                    <value class="positive">₹84,218</value>
+                </div>
+                <div class="metric-card">
+                    <label>Max Loss in Single Trade (₹)</label>
+                    <value class="negative">₹-47,340</value>
+                </div>
+                <div class="metric-card">
+                    <label>Max Drawdown</label>
+                    <value class="negative">-4.83% (-₹405,576)</value>
+                </div>
+                <div class="metric-card">
+                    <label>Duration of Max Drawdown</label>
+                    <value class="negative">236 days (2025-11-07 to 2026-07-01)</value>
+                </div>
+                <div class="metric-card">
+                    <label>Return / Max Drawdown</label>
+                    <value class="positive">0</value>
+                </div>
+                <div class="metric-card">
+                    <label>Reward to Risk Ratio</label>
+                    <value class="positive">2</value>
+                </div>
+                <div class="metric-card">
+                    <label>Sharpe Ratio</label>
+                    <value>-0</value>
+                </div>
+                <div class="metric-card">
+                    <label>Max Win Streak</label>
+                    <value class="positive">5</value>
+                </div>
+                <div class="metric-card">
+                    <label>Max Loss Streak</label>
+                    <value class="negative">11</value>
+                </div>
+                <div class="metric-card">
+                    <label>Max Days in Drawdown</label>
+                    <value class="negative">236 days</value>
+                </div>
+                <div class="metric-card">
+                    <label>Avg Trade Duration</label>
+                    <value>1 days</value>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💰 Charges Breakdown (₹)</h2>
+            <table>
+                <thead>
+                    <tr><th>Charge Type</th><th>Amount (₹)</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Taker Fees (0.05%)</td>
+                        <td class="negative">₹1,495</td>
+                    </tr>
+                    <tr>
+                        <td>Slippage ($5.0/side × 2 × 178 trades)</td>
+                        <td class="negative">₹149,520</td>
+                    </tr>
+                    <tr>
+                        <td>Funding Rate (10.95%)</td>
+                        <td class="negative">₹568</td>
+                    </tr>
+                    <tr>
+                        <td>Insurance Fund</td>
+                        <td class="negative">₹0</td>
+                    </tr>
+                    <tr>
+                        <td>Tax (10% on winning trades)</td>
+                        <td class="negative">₹123,782</td>
+                    </tr>
+                    <tr style="background-color: #f0f0f0; font-weight: bold;">
+                        <td>Total Charges</td>
+                        <td class="negative">₹275,365</td>
+                    </tr>
+                    <tr style="background-color: #f0f0f0; font-weight: bold;">
+                        <td>Gross PnL</td>
+                        <td class="positive">₹149,801</td>
+                    </tr>
+                    <tr style="background-color: #e8f5e9; font-weight: bold;">
+                        <td>Net PnL (After Charges)</td>
+                        <td class="negative">₹-125,563</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="footer">
+            <p>Generated on 2026-07-02 18:55:58 | Strategy: RenkoSMIIOSupertrendStrategy | Symbol: BTCUSD | Slippage: $5.0/side</p>
+        </div>
+    </div>
+</body>
+</html>

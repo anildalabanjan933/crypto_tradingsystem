@@ -18,7 +18,7 @@ RESOLUTION  = "2h"
 OUTPUT_PATH = "data/btc_2h_delta.csv"
 
 # How many years back to fetch
-YEARS_BACK  = 3   # 3 years = ~13140 candles at 2h = ~7 requests
+YEARS_BACK  = 5   # 5 years = ~21900 candles at 2h = ~11 requests
 
 # ═══════════════════════════════════════════════════════════════
 # HELPERS

@@ -219,11 +219,11 @@ class OptimizationAnalyzer:
                 </div>
                 <div class="header-item">
                     <label>Best Return %</label>
-                    <value class="{'positive' if best_result and best_result['metrics']['total_pnl_pct'] >= 0 else 'negative'}">{round_percent(best_result['metrics']['total_pnl_pct']) if best_result else 'N/A'}%</value>
+                    <value class="{'positive' if best_result and best_result['metrics']['total_pnl_pct'] >= 0 else 'negative'}">{round_percent(best_result['metrics']['total_pnl_pct']) if best_result else 'N/A'}</value>
                 </div>
                 <div class="header-item">
                     <label>Best Win Rate</label>
-                    <value>{round_percent(best_result['metrics']['win_rate']) if best_result else 'N/A'}%</value>
+                    <value>{round_percent(best_result['metrics']['win_rate']) if best_result else 'N/A'}</value>
                 </div>
                 <div class="header-item">
                     <label>Best Sharpe Ratio</label>
@@ -231,7 +231,7 @@ class OptimizationAnalyzer:
                 </div>
                 <div class="header-item">
                     <label>Best Max Drawdown</label>
-                    <value class="{'negative' if best_result and best_result['metrics']['max_drawdown_pct'] < 0 else ''}">{round_percent(best_result['metrics']['max_drawdown_pct']) if best_result else 'N/A'}%</value>
+                    <value class="{'negative' if best_result and best_result['metrics']['max_drawdown_pct'] < 0 else ''}">{round_percent(best_result['metrics']['max_drawdown_pct']) if best_result else 'N/A'}</value>
                 </div>
             </div>
         </div>
@@ -299,8 +299,8 @@ class OptimizationAnalyzer:
         ]
         for label, value, is_currency_or_percent in key_metrics:
             if is_currency_or_percent:
-                formatted_value = format_currency(value) if 'PnL' in label or 'Expectancy' in label else round_percent(
-                    value) + '%'
+                # FIX: round_percent() already returns string with '%', do not append '%' again
+                formatted_value = format_currency(value) if 'PnL' in label or 'Expectancy' in label else round_percent(value)
             else:
                 formatted_value = format_number(value)
 
@@ -351,8 +351,9 @@ class OptimizationAnalyzer:
         # Format numeric columns
         for col in ['Total PnL (₹)']:
             df_results[col] = df_results[col].apply(lambda x: format_currency(x))
+        # FIX: round_percent() already returns string with '%', do not append '%' again
         for col in ['Return %', 'Win Rate %', 'Max Drawdown %']:
-            df_results[col] = df_results[col].apply(lambda x: round_percent(x) + '%')
+            df_results[col] = df_results[col].apply(lambda x: round_percent(x))
         for col in ['Profit Factor']:
             df_results[col] = df_results[col].apply(lambda x: format_number(x))
 
@@ -387,4 +388,3 @@ class OptimizationAnalyzer:
         html_table += "</tbody></table>"
 
         return html_table
-

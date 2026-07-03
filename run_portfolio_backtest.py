@@ -4,10 +4,17 @@
 from strategy_registry import StrategyRegistry
 from engine.backtest_engine import run_backtest
 from engine.portfolio_aggregator import PortfolioAggregator
-from backtest_analyzer import BacktestAnalyzer
+from backtest_analyzer import BacktestReportGenerator  # CHANGED: was BacktestAnalyzer
 from config.portfolio_config import portfolios
 from datetime import datetime, timedelta
 import os
+
+
+# ADDED: Auto-resolve CSV path from symbol
+SYMBOL_CSV_MAP = {
+    'BTCUSD': 'data/btc_1m_delta.csv',
+    'ETHUSD': 'data/eth_2h_delta.csv',
+}
 
 
 def run_portfolio_backtest():
@@ -73,7 +80,6 @@ def run_portfolio_backtest():
                     strategy_name, _ = strategies_list[num - 1]
                     strategy_configs.append({
                         'name': strategy_name,
-                        'symbol': 'BTCUSD'
                     })
                 else:
                     print(f"❌ Invalid strategy number: {num}")
@@ -84,6 +90,22 @@ def run_portfolio_backtest():
         except ValueError:
             print("❌ Invalid input. Use comma-separated numbers.")
             return
+
+    # ADDED: Step 2b - Get symbol (single symbol for all strategies)
+    symbol_input = input("\nEnter symbol (or press Enter for default) [BTCUSD]: ").strip().upper()
+    symbol = symbol_input if symbol_input else "BTCUSD"
+    print(f"✅ Symbol: {symbol}")
+
+    # ADDED: Auto-resolve CSV path from symbol
+    csv_path = SYMBOL_CSV_MAP.get(symbol)
+    if not csv_path:
+        print(f"❌ No CSV mapping found for symbol: {symbol}")
+        print(f"   Supported symbols: {', '.join(SYMBOL_CSV_MAP.keys())}")
+        return
+    if not os.path.exists(csv_path):
+        print(f"❌ CSV file not found: {csv_path}")
+        return
+    print(f"✅ CSV file: {csv_path}")
 
     # Step 3: Get lot sizes for each strategy
     print("\nEnter lot size for each strategy:")
@@ -101,6 +123,18 @@ def run_portfolio_backtest():
                     print("❌ Lot size must be positive")
             except ValueError:
                 print("❌ Invalid input. Enter a number.")
+
+    # ADDED: Step 3b - Get slippage
+    while True:
+        try:
+            slippage = float(input("\nEnter slippage per side in $ (or 0 for none): "))
+            if slippage >= 0:
+                print(f"✅ Slippage: {'None' if slippage == 0 else f'${slippage}/side'}")
+                break
+            else:
+                print("❌ Slippage must be 0 or positive")
+        except ValueError:
+            print("❌ Invalid input. Enter a number.")
 
     # Step 4: Get date range
     print("\nSelect date range:")
@@ -143,20 +177,7 @@ def run_portfolio_backtest():
         except ValueError:
             print("❌ Invalid input. Use YYYY-MM-DD format.")
 
-    # Step 5: Get CSV file path
-    print("\nEnter CSV file path (or press Enter for default):")
-    csv_path = input("CSV path [data/btc_ohlcv.csv]: ").strip()
-
-    if not csv_path:
-        csv_path = "data/btc_ohlcv.csv"
-
-    if not os.path.exists(csv_path):
-        print(f"❌ CSV file not found: {csv_path}")
-        return
-
-    print(f"✅ CSV file: {csv_path}")
-
-    # Step 6: Run portfolio backtest
+    # Step 5: Run portfolio backtest
     print("\n" + "=" * 70)
     print("RUNNING PORTFOLIO BACKTEST...")
     print("=" * 70)
@@ -168,7 +189,6 @@ def run_portfolio_backtest():
     try:
         for config in strategy_configs:
             strategy_name = config['name']
-            symbol = config['symbol']
             lot_size = lot_sizes[strategy_name]
 
             print(f"\n[Strategy] {strategy_name}")
@@ -181,7 +201,8 @@ def run_portfolio_backtest():
                 lot_size=lot_size,
                 start_date=start_date_str,
                 end_date=end_date_str,
-                csv_path=csv_path
+                csv_path=csv_path,
+                slippage=slippage  # ADDED
             )
 
             all_trades.append(result['trades'])
@@ -199,20 +220,24 @@ def run_portfolio_backtest():
         print("GENERATING PORTFOLIO REPORT...")
         print("=" * 70)
 
-        portfolio_name = selected_portfolio_name if portfolio_type == 1 else "Dynamic Portfolio"
+        portfolio_name = selected_portfolio_name if portfolio_type == 1 else "Portfolio_Dynamic"
 
-        analyzer = BacktestAnalyzer(
+        # CHANGED: Use BacktestReportGenerator (same as single strategy)
+        generator = BacktestReportGenerator(
             trades=combined_trades,
             metrics=portfolio_metrics,
             strategy_name=portfolio_name,
-            symbol="PORTFOLIO",
+            symbol=symbol,
             start_date=start_date_str,
-            end_date=end_date_str
+            end_date=end_date_str,
+            slippage=slippage
         )
 
-        html_file = analyzer.generate_html_report()
+        html_file = generator.generate_html_report()
+        csv_file = generator.generate_csv_trade_log()
 
         print(f"\n✅ Portfolio report generated: {html_file}")
+        print(f"✅ Trade log saved: {csv_file}")
         print("=" * 70)
 
     except Exception as e:

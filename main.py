@@ -2,7 +2,8 @@
 # Responsibility: Main menu orchestrator
 
 from run_single_strategy import run_single_strategy
-from run_optimization import run_optimization_workflow # NEW import
+from run_optimization import run_optimization_workflow
+from run_portfolio_backtest import run_portfolio_backtest  # ADDED
 import sys
 
 def main_menu():
@@ -17,7 +18,7 @@ def main_menu():
         print("1. Single Strategy Backtest")
         print("2. Portfolio Backtest (Predefined)")
         print("3. Portfolio Backtest (Dynamic)")
-        print("4. Strategy Optimization") # NEW option
+        print("4. Strategy Optimization")
         print("5. Exit")
         print("=" * 70)
 
@@ -28,8 +29,8 @@ def main_menu():
         elif choice == '2':
             print("Portfolio Backtest (Predefined) - Not yet implemented.")
         elif choice == '3':
-            print("Portfolio Backtest (Dynamic) - Not yet implemented.")
-        elif choice == '4': # NEW option handler
+            run_portfolio_backtest()  # CHANGED: was print("Not yet implemented")
+        elif choice == '4':
             run_optimization_workflow()
         elif choice == '5':
             print("Exiting. Goodbye!")
@@ -39,4 +40,3 @@ def main_menu():
 
 if __name__ == "__main__":
     main_menu()
-

@@ -10,10 +10,14 @@ backtest_config = {
 
     # Date range presets
     "date_range_presets": {
-        "1_month": {"days": 30},
-        "3_months": {"days": 90},
-        "6_months": {"days": 180},
-        "1_year": {"days": 365}
+        "1_month":   {"days": 30},
+        "3_months":  {"days": 90},
+        "6_months":  {"days": 180},
+        "1_year":    {"days": 365},
+        "2_years":   {"days": 730},
+        "3_years":   {"days": 1095},
+        "4_years":   {"days": 1460},
+        "5_years":   {"days": 1825}
     },
 
     # Timeframes

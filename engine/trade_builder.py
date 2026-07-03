@@ -30,15 +30,37 @@ class TradeBuilder:
     def build_trades(self, signals):
         sorted_signals = sorted(signals, key=lambda x: x["timestamp"])
         print(f"Building trades from {len(sorted_signals)} total signals")
+
         active_trade = None
         for signal in sorted_signals:
             signal_type = signal.get("signal_type", "").upper()
+
+            # ── Pre-paired trade record (Strategy 3) ─────────────────────────
+            if signal_type == "TRADE":
+                entry_signal = {
+                    "timestamp": signal["timestamp"],
+                    "price": signal["price"],
+                    "direction": signal["direction"],
+                    "entry_type": signal.get("entry_type", "PATTERN_BREAKOUT"),
+                    "sl_price": signal.get("sl_price", 0.0),
+                }
+                exit_signal = {
+                    "timestamp": signal["exit_timestamp"],
+                    "price": signal["exit_price"],
+                    "exit_reason": signal.get("exit_reason", "ST_flip"),
+                }
+                trade_record = self._create_trade_record(entry_signal, exit_signal)
+                self.trades.append(trade_record)
+                continue
+
+            # ── Standard entry/exit pair logic ───────────────────────────────
             if signal_type == "ENTRY" and active_trade is None:
                 active_trade = signal
             elif signal_type == "EXIT" and active_trade is not None:
                 trade_record = self._create_trade_record(active_trade, signal)
                 self.trades.append(trade_record)
                 active_trade = None
+
         if active_trade is not None:
             print(f"  Warning: Unclosed trade (Entry at {active_trade['timestamp']}) "
                   f"at end of data. Skipping.")

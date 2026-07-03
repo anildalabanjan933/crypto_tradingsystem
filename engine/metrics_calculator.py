@@ -261,7 +261,7 @@ class MetricsCalculator:
         # ══════════════════════════════════════════════════════════════════════
         # SECTION 13: AVERAGE TRADE DURATION
         # ══════════════════════════════════════════════════════════════════════
-        df_trades['entry_datetime'] = pd.to_datetime(df_trades['entry_datetime'])
+        df_trades['entry_datetime'] = pd.to_datetime(df_trades['entry_datetime'], format='mixed')
         df_trades['exit_datetime']  = pd.to_datetime(df_trades['exit_datetime'])
         df_trades['duration_days']  = (
             (df_trades['exit_datetime'] - df_trades['entry_datetime'])

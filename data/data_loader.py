@@ -23,28 +23,20 @@ class DataLoader:
         self.data = None
 
     def load_data(self):
-        """
-        Load 1M OHLCV data from CSV.
-
-        Returns
-        -------
-        pd.DataFrame
-            OHLCV data with datetime index
-        """
         try:
             df = pd.read_csv(self.csv_path)
 
-            # Ensure timestamp column exists
-            if 'timestamp' not in df.columns:
-                raise ValueError("CSV must contain 'timestamp' column")
+            # Support both timestamp and Date+Time column formats
+            if 'timestamp' in df.columns:
+                df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
+                df.set_index('timestamp', inplace=True)
+            elif 'Date' in df.columns and 'Time' in df.columns:
+                df['timestamp'] = pd.to_datetime(df['Date'] + ' ' + df['Time'])
+                df.set_index('timestamp', inplace=True)
+                df.drop(columns=['Date', 'Time'], inplace=True, errors='ignore')
+            else:
+                raise ValueError("CSV must contain 'timestamp' column or 'Date'+'Time' columns")
 
-            # Convert timestamp to datetime (Unix epoch seconds → tz-naive UTC)
-            df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
-            df.set_index('timestamp', inplace=True)
-
-            # Normalize all column names to lowercase
-            # This ensures consistency across all downstream consumers:
-            # supertrend.py, pnf.py, pnf_indicators.py all use lowercase
             df.columns = df.columns.str.lower()
 
             required_cols = ['open', 'high', 'low', 'close', 'volume']
@@ -52,14 +44,10 @@ class DataLoader:
                 if col not in df.columns:
                     raise ValueError(f"CSV must contain '{col}' column")
 
-            # Ensure numeric types
             for col in required_cols:
                 df[col] = pd.to_numeric(df[col], errors='coerce')
 
-            # Drop rows where any OHLCV value is NaN after coercion
             df = df.dropna(subset=required_cols)
-
-            # Sort by timestamp
             df = df.sort_index()
 
             self.data = df

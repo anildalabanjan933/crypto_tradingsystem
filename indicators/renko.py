@@ -269,6 +269,7 @@ class SwingDetector:
 
         high = df['renko_high'].values
         low = df['renko_low'].values
+        renko_close = df['renko_close'].values          # FIXED: use renko_close for pivot prices
 
         is_swing_high = np.zeros(n, dtype=bool)
         is_swing_low = np.zeros(n, dtype=bool)
@@ -301,14 +302,14 @@ class SwingDetector:
         for i in range(n):
             if is_swing_high[i]:
                 # The actual pivot bar is i - R (confirmed R bars ago)
-                pivot_bar = i - R if i >= R else i
-                pivot_price = high[pivot_bar]
+                pivot_bar   = i - R if i >= R else i
+                pivot_price = renko_close[pivot_bar]                 # FIXED: was high[pivot_bar]
                 sh_hist = (sh_hist + [(pivot_bar, pivot_price)])[-2:]
                 last_sh = pivot_price
 
             if is_swing_low[i]:
-                pivot_bar = i - R if i >= R else i
-                pivot_price = low[pivot_bar]
+                pivot_bar   = i - R if i >= R else i
+                pivot_price = renko_close[pivot_bar]                 # FIXED: was low[pivot_bar]
                 sl_hist = (sl_hist + [(pivot_bar, pivot_price)])[-2:]
                 last_sl = pivot_price
 

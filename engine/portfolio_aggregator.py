@@ -44,7 +44,7 @@ class PortfolioAggregator:
 
         # Sort by exit datetime
         df_all = pd.DataFrame(self.all_trades)
-        df_all['exit_datetime'] = pd.to_datetime(df_all['exit_datetime'])
+        df_all['exit_datetime'] = pd.to_datetime(df_all['exit_datetime'], format='mixed')
         df_all = df_all.sort_values('exit_datetime')
 
         self.all_trades = df_all.to_dict('records')

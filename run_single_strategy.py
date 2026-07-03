@@ -4,7 +4,7 @@
 from engine.backtest_engine import run_backtest
 from strategy_registry import strategy_registry
 from config.backtest_config import backtest_config
-from backtest_analyzer import BacktestReportGenerator # Corrected import path
+from backtest_analyzer import BacktestReportGenerator
 from datetime import datetime, timedelta
 import os
 import pandas as pd
@@ -48,14 +48,15 @@ def run_single_strategy():
         print(f"{i}. {label.replace('_', ' ').title()}")
     print(f"{len(date_presets) + 1}. Custom Date Range")
 
+    total_options = len(date_presets) + 1  # presets + Custom
     while True:
         try:
-            date_choice = int(input("\nEnter choice (1-5): "))
-            if date_choice in range(1, 6):
+            date_choice = int(input(f"\nEnter choice (1-{total_options}): "))
+            if date_choice in range(1, total_options + 1):
                 break
-            print("  Please enter a number between 1 and 5.")
+            print(f"  Please enter a number between 1 and {total_options}.")
         except ValueError:
-            print("  Invalid input. Please enter a number between 1 and 5.")
+            print(f"  Invalid input. Please enter a number between 1 and {total_options}.")
 
     start_date = None
     end_date = datetime.now().strftime("%Y-%m-%d")
@@ -76,7 +77,12 @@ def run_single_strategy():
     csv_path = csv_input if csv_input else default_csv
     print(f"✅ CSV file: {csv_path}")
 
-    # 6. Run Backtest
+    # 6. Symbol
+    symbol_input = input(f"\nEnter symbol (or press Enter for default) [BTCUSD]: ").strip().upper()
+    symbol = symbol_input if symbol_input else "BTCUSD"
+    print(f"✅ Symbol: {symbol}")
+
+    # 7. Run Backtest
     print("\n" + "=" * 70)
     print("RUNNING BACKTEST...")
     print("=" * 70)
@@ -84,24 +90,24 @@ def run_single_strategy():
     try:
         result = run_backtest(
             strategy_class=selected_strategy_class,
-            symbol="BTCUSD",
+            symbol=symbol,
             lot_size=lot_size,
             start_date=start_date,
             end_date=end_date,
             csv_path=csv_path,
-            slippage=slippage  # ADDED
+            slippage=slippage
         )
 
-        # 7. Generate Reports
-        print("\n[Step 7] Generating reports...")
+        # 8. Generate Reports
+        print("\n[Step 8] Generating reports...")
         generator = BacktestReportGenerator(
             trades=result['trades'],
             metrics=result['metrics'],
             strategy_name=selected_strategy_name,
-            symbol="BTCUSD",
+            symbol=symbol,
             start_date=start_date,
             end_date=end_date,
-            slippage=slippage  # ADDED
+            slippage=slippage
         )
 
         html_report_path = generator.generate_html_report()

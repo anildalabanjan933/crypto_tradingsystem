@@ -92,9 +92,14 @@ def run_optimization_workflow():
     print(f"✅ CSV file: {csv_path}")
 
     # Run Optimization
+    symbol = input("Enter symbol (e.g., BTCUSD, ETHUSD): ").strip().upper()
+    if not symbol:
+        symbol = "BTCUSD"
+    print(f"✅ Symbol: {symbol}")
+
     optimizer = Optimizer(
         strategy_class=selected_strategy_class,
-        symbol="BTCUSD",  # Assuming BTCUSD for now, can be made dynamic
+        symbol=symbol,
         start_date=start_date,
         end_date=end_date,
         csv_path=csv_path
@@ -112,10 +117,11 @@ def run_optimization_workflow():
     analyzer = OptimizationAnalyzer(
         optimization_results=optimization_results,
         strategy_name=selected_strategy_name,
-        symbol="BTCUSD",
+        symbol=symbol,  # <-- use the variable
         start_date=start_date,
         end_date=end_date
     )
+
     report_path = analyzer.generate_html_report()
     print(f"\n✅ Optimization report generated: {report_path}")
 

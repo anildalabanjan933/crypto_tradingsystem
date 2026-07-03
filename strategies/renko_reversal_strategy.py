@@ -15,8 +15,14 @@ class RenkoReversalStrategy(BaseStrategy):
 
     Signal Types
     ------------
-    BUY  : ST flips red->green + price near support (horizontal OR ascending TL) + min 2 swing lows + 1 green brick close
-    SELL : ST flips green->red + price near resistance (horizontal OR descending TL) + min 2 swing highs + 1 red brick close
+    BUY  : ST flips red->green + recent low touched support zone + min 2 swing lows + 1 green brick close
+    SELL : ST flips green->red + recent high touched resistance zone + min 2 swing highs + 1 red brick close
+
+    S/R Zone Check
+    --------------
+    At ST flip bar, look back 'sr_lookback' bricks to find the recent low/high.
+    Check if that recent low/high touched the S/R level within sr_tolerance boxes.
+    This correctly captures: price touched support/resistance BEFORE the ST flip confirmed the bounce.
 
     Exit
     ----
@@ -36,7 +42,8 @@ class RenkoReversalStrategy(BaseStrategy):
 
         # Renko settings
         self.renko_box    = kwargs.get('renko_box', 200.0)
-        self.sr_tolerance = kwargs.get('sr_tolerance', 5.0)
+        self.sr_tolerance = kwargs.get('sr_tolerance', 1.5)   # multiplier of box_size - auto-scales per symbol
+        self.sr_lookback  = kwargs.get('sr_lookback', 5)       # bricks to look back for S/R touch before flip
         self.max_tl_bars  = kwargs.get('max_tl_bars', 50)
 
         # Slippage (USD per side)
@@ -50,17 +57,18 @@ class RenkoReversalStrategy(BaseStrategy):
     # ------------------------------------------------------------------
 
     @property
-    def required_timeframes(self) -> list:
-        return ['2H']
-
-    @property
     def optimization_params(self) -> dict:
         return {
-            'renko_box'    : {'default': 200,  'min': 100,  'max': 500,  'step': 50},
-            'st_atr_len'   : {'default': 5,    'min': 3,    'max': 14,   'step': 1},
-            'st_factor'    : {'default': 4.0,  'min': 2.0,  'max': 6.0,  'step': 0.5},
-            'sr_tolerance' : {'default': 0.5,  'min': 0.25, 'max': 2.0,  'step': 0.25},
+            'box_pct': {'default': 0.010, 'min': 0.005, 'max': 0.020, 'step': 0.001},
+            'st_atr_len': {'default': 5, 'min': 3, 'max': 14, 'step': 1},
+            'st_factor': {'default': 4.0, 'min': 2.0, 'max': 6.0, 'step': 0.5},
+            'sr_tolerance': {'default': 1.5, 'min': 0.5, 'max': 3.0, 'step': 0.5},
+            'sr_lookback': {'default': 5, 'min': 3, 'max': 10, 'step': 1},
         }
+
+    @property
+    def required_timeframes(self) -> list:
+        return ['2H']
 
     # ------------------------------------------------------------------
     # SLIPPAGE HELPER
@@ -114,35 +122,57 @@ class RenkoReversalStrategy(BaseStrategy):
     def generate_signals(self) -> list:
         """
         Generate BUY/SELL signals based on ST flip at S/R zone.
+
+        S/R zone logic:
+        - At ST flip bar, look back sr_lookback bricks
+        - Find recent_low  = min renko_close in lookback window (for BUY)
+        - Find recent_high = max renko_close in lookback window (for SELL)
+        - Check if recent_low touched support zone (within sr_tolerance boxes)
+        - Check if recent_high touched resistance zone (within sr_tolerance boxes)
+        - This captures: price touched S/R BEFORE the flip confirmed the bounce/rejection
         """
         df = self._build_renko_df()
 
+        # ------------------------------------------------------------------
         # DEBUG
+        # ------------------------------------------------------------------
         print(f"DEBUG: Total bricks = {len(df)}")
-        st_dir_temp = df['st_dir'].values
-        print(f"DEBUG: ST dir counts = {pd.Series(st_dir_temp).value_counts().to_dict()}")
-        print(f"DEBUG: ST flips red->green = {sum(1 for i in range(1, len(st_dir_temp)) if st_dir_temp[i - 1] == 1 and st_dir_temp[i] == -1)}")
-        print(f"DEBUG: ST flips green->red = {sum(1 for i in range(1, len(st_dir_temp)) if st_dir_temp[i - 1] == -1 and st_dir_temp[i] == 1)}")
-
-        # DEBUG S/R check at flip points
-        last_sh_temp = df['last_swing_high'].values
-        last_sl_temp = df['last_swing_low'].values
-        sl_hist_temp = df['swing_lows_hist'].tolist()
-        sh_hist_temp = df['swing_highs_hist'].tolist()
+        st_dir_temp  = df['st_dir'].values
         rc_temp      = df['renko_close'].values
         rd_temp      = df['renko_dir'].values
+        last_sl_temp = df['last_swing_low'].values
+        last_sh_temp = df['last_swing_high'].values
+        sl_hist_temp = df['swing_lows_hist'].tolist()
+        sh_hist_temp = df['swing_highs_hist'].tolist()
         box_temp     = self.renko_box
-        tol_temp     = self.sr_tolerance
+
+        print(f"DEBUG: ST dir counts = {pd.Series(st_dir_temp).value_counts().to_dict()}")
+        print(f"DEBUG: ST flips red->green = {sum(1 for i in range(1, len(st_dir_temp)) if st_dir_temp[i-1] == 1 and st_dir_temp[i] == -1)}")
+        print(f"DEBUG: ST flips green->red = {sum(1 for i in range(1, len(st_dir_temp)) if st_dir_temp[i-1] == -1 and st_dir_temp[i] == 1)}")
 
         for i in range(1, len(st_dir_temp)):
             if st_dir_temp[i-1] == 1 and st_dir_temp[i] == -1 and rd_temp[i] == 1:
-                close_t  = rc_temp[i]
-                near_h   = not np.isnan(last_sl_temp[i]) and abs(close_t - last_sl_temp[i]) <= box_temp * tol_temp
-                btl      = _trendline_value_at(sl_hist_temp[i], i, self.max_tl_bars)
-                near_s   = btl is not None and abs(close_t - btl) <= box_temp * tol_temp
-                n_swings = len(sl_hist_temp[i])
-                print(f"  BUY flip i={i} close={close_t:.0f} last_sl={last_sl_temp[i]:.0f} near_h={near_h} btl={btl} near_s={near_s} swings={n_swings}")
+                close_t      = rc_temp[i]
+                sr_zone_temp = box_temp * self.sr_tolerance
+                lb_start_t   = max(0, i - self.sr_lookback)
+                recent_low_t = np.min(rc_temp[lb_start_t:i + 1])
+                near_h       = (
+                    not np.isnan(last_sl_temp[i])
+                    and last_sl_temp[i] - sr_zone_temp <= recent_low_t <= last_sl_temp[i] + sr_zone_temp
+                )
+                btl          = _trendline_value_at(sl_hist_temp[i], i, self.max_tl_bars)
+                near_s       = (
+                    btl is not None
+                    and btl - sr_zone_temp <= recent_low_t <= btl + sr_zone_temp
+                )
+                n_swings     = len(sl_hist_temp[i])
+                print(f"  BUY flip i={i} close={close_t:.0f} last_sl={last_sl_temp[i]:.0f} "
+                      f"recent_low={recent_low_t:.0f} sr_zone={sr_zone_temp:.0f} "
+                      f"near_h={near_h} btl={btl} near_s={near_s} swings={n_swings}")
 
+        # ------------------------------------------------------------------
+        # MAIN SIGNAL LOOP
+        # ------------------------------------------------------------------
         signals = []
         n = len(df)
 
@@ -156,8 +186,8 @@ class RenkoReversalStrategy(BaseStrategy):
         timestamps  = df['timestamp'].values
 
         box      = self.renko_box
-        tol      = self.sr_tolerance
         max_bars = self.max_tl_bars
+        lookback = self.sr_lookback
 
         current_direction = None
         prev_st_dir       = st_dir[0]
@@ -210,25 +240,40 @@ class RenkoReversalStrategy(BaseStrategy):
                 current_direction = None
 
             # ----------------------------------------------------------
-            # SUPPORT / RESISTANCE ZONE CHECK
+            # S/R ZONE CHECK
+            # Look back sr_lookback bricks to find recent low/high
+            # Check if recent low/high touched the S/R level before the flip
+            # This is correct because: price touches S/R first, THEN ST flips
             # ----------------------------------------------------------
+            sr_zone  = box * self.sr_tolerance   # BTC: 200*1.5=300 USD, ETH: 10*1.5=15 USD
+            lb_start = max(0, i - lookback)
+
+            # Recent low = lowest close in lookback window (for BUY support check)
+            recent_low  = np.min(renko_close[lb_start:i + 1])
+            # Recent high = highest close in lookback window (for SELL resistance check)
+            recent_high = np.max(renko_close[lb_start:i + 1])
+
+            # BUY: recent low touched support zone
+            # (price came down to support, touched it, then bounced - ST flip confirms bounce)
             near_horizontal_support = (
                 not np.isnan(last_sl[i])
-                and abs(close - last_sl[i]) <= box * tol
+                and last_sl[i] - sr_zone <= recent_low <= last_sl[i] + sr_zone
             )
             near_sloped_support = (
                 bullish_tl_val is not None
-                and abs(close - bullish_tl_val) <= box * tol
+                and bullish_tl_val - sr_zone <= recent_low <= bullish_tl_val + sr_zone
             )
             near_support = near_horizontal_support or near_sloped_support
 
+            # SELL: recent high touched resistance zone
+            # (price came up to resistance, touched it, then rejected - ST flip confirms rejection)
             near_horizontal_resistance = (
                 not np.isnan(last_sh[i])
-                and abs(close - last_sh[i]) <= box * tol
+                and last_sh[i] - sr_zone <= recent_high <= last_sh[i] + sr_zone
             )
             near_sloped_resistance = (
                 bearish_tl_val is not None
-                and abs(close - bearish_tl_val) <= box * tol
+                and bearish_tl_val - sr_zone <= recent_high <= bearish_tl_val + sr_zone
             )
             near_resistance = near_horizontal_resistance or near_sloped_resistance
 
@@ -236,7 +281,7 @@ class RenkoReversalStrategy(BaseStrategy):
             # SIGNAL CONDITIONS
             # ----------------------------------------------------------
 
-            # BUY: ST flips red->green + near support + min 2 swing lows + green brick
+            # BUY: ST flips red->green + recent low near support + min 2 swing lows + green brick
             buy = (
                 prev_st == 1 and st == -1
                 and near_support
@@ -244,7 +289,7 @@ class RenkoReversalStrategy(BaseStrategy):
                 and len(sl_hist[i]) >= 2
             )
 
-            # SELL: ST flips green->red + near resistance + min 2 swing highs + red brick
+            # SELL: ST flips green->red + recent high near resistance + min 2 swing highs + red brick
             sell = (
                 prev_st == -1 and st == 1
                 and near_resistance
@@ -295,4 +340,3 @@ class RenkoReversalStrategy(BaseStrategy):
             prev_st_dir = st
 
         return signals
-
