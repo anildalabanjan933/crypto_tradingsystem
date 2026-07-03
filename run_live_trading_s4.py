@@ -84,7 +84,14 @@ def main():
     box_size = get_renko_box_size(SYMBOL, current_price)
 
     # --- Position state (persisted across cycles) ---
-    position = None
+    pos = order_manager.get_position()
+    if pos.get('success') and pos.get('direction') == 'LONG':
+        position = 'long'
+    elif pos.get('success') and pos.get('direction') == 'SHORT':
+        position = 'short'
+    else:
+        position = None
+    logging.info(f'[STARTUP] Position synced from exchange: {position}')
 
     # --- Main loop ---
     while True:
