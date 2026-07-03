@@ -58,7 +58,15 @@ def build_2h(df):
         volume=('volume','sum')
     ).dropna()
 
-position = None
+# --- Position state ---
+pos = om.get_position()
+if pos.get('success') and pos.get('direction') == 'LONG':
+    position = 'long'
+elif pos.get('success') and pos.get('direction') == 'SHORT':
+    position = 'short'
+else:
+    position = None
+log.info(f"[STARTUP] Position synced from exchange: {position}")
 
 while True:
     try:
@@ -80,23 +88,23 @@ while True:
         signals = strategy.generate_signals()
         log.info(f"[SIGNALS] total={len(signals)}")
 
-        for sig in reversed(signals):
-            stype = sig.get('signal_type')
-            sdir  = sig.get('direction', '')
+        # --- Execute last signal ---
+        if signals:
+            last_signal = signals[-1]
+            stype = last_signal.get('signal_type')
+            sdir  = last_signal.get('direction', '')
 
             if stype == 'ENTRY' and position is None:
                 side = 'buy' if sdir == 'long' else 'sell'
                 om.place_market_order(side=side, size=LOT_SIZE)
                 position = sdir
-                log.info(f"[ORDER] ENTRY {side} {LOT_SIZE} lots | type={sig.get('entry_type')}")
-                break
+                log.info(f"[ORDER] ENTRY {side} {LOT_SIZE} lots | type={last_signal.get('entry_type')}")
 
-            if stype == 'EXIT' and position is not None:
+            elif stype == 'EXIT' and position is not None:
                 side = 'sell' if position == 'long' else 'buy'
                 om.close_position(size=LOT_SIZE, side=side)
-                log.info(f"[ORDER] EXIT {side} {LOT_SIZE} lots | type={sig.get('exit_type')}")
+                log.info(f"[ORDER] EXIT {side} {LOT_SIZE} lots | type={last_signal.get('exit_type')}")
                 position = None
-                break
 
     except Exception as e:
         log.error(f"[ERROR] {e}", exc_info=True)
