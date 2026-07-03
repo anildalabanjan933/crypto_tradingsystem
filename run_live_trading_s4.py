@@ -16,8 +16,8 @@ from config.symbol_config import get_renko_box_size
 # ===========================================================================
 # CONFIG
 # ===========================================================================
-API_KEY    = 'nsKsvJ6CegwhqobagWg6nJnKmIHA3e'
-API_SECRET = 'bbbgvx2RNqP7k3AJoy8JpRAq9ach5YMmsQf7f7TCtvyoeSNgrewDlhVXVMFL'
+API_KEY    = 'your_api_key_here'
+API_SECRET = 'your_api_secret_here'
 TESTNET    = True
 LOT_SIZE   = 100
 CSV_PATH   = 'data/btc_1m_delta.csv'
@@ -83,6 +83,9 @@ def main():
     current_price = df_1m['close'].iloc[-1]
     box_size = get_renko_box_size(SYMBOL, current_price)
 
+    # --- Position state (persisted across cycles) ---
+    position = None
+
     # --- Main loop ---
     while True:
         try:
@@ -125,29 +128,32 @@ def main():
             signals = strategy.generate_signals()
             logging.info(f'[SIGNALS] total={len(signals)}')
 
-            # Execute last signal
+            # Execute last signal with position state check
             if signals:
                 last_signal = signals[-1]
-                sig_type  = last_signal['signal_type']
-                direction = last_signal['direction']
+                sig_type   = last_signal['signal_type']
+                direction  = last_signal['direction']
                 entry_type = last_signal.get('entry_type', '')
                 exit_type  = last_signal.get('exit_type', '')
 
-                if sig_type == 'ENTRY':
+                if sig_type == 'ENTRY' and position is None:
                     if direction == 'long':
                         order_manager.place_market_order('buy', LOT_SIZE)
+                        position = 'long'
                         logging.info(f'[ORDER] ENTRY buy {LOT_SIZE} lots | type={entry_type}')
                     elif direction == 'short':
                         order_manager.place_market_order('sell', LOT_SIZE)
+                        position = 'short'
                         logging.info(f'[ORDER] ENTRY sell {LOT_SIZE} lots | type={entry_type}')
 
-                elif sig_type == 'EXIT':
-                    if direction == 'long':
+                elif sig_type == 'EXIT' and position is not None:
+                    if position == 'long':
                         order_manager.close_position(LOT_SIZE, 'sell')
                         logging.info(f'[ORDER] EXIT sell {LOT_SIZE} lots | type={exit_type}')
-                    elif direction == 'short':
+                    elif position == 'short':
                         order_manager.close_position(LOT_SIZE, 'buy')
                         logging.info(f'[ORDER] EXIT buy {LOT_SIZE} lots | type={exit_type}')
+                    position = None
 
         except Exception as e:
             logging.error(f'[ERROR] {e}')
