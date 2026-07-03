@@ -21,13 +21,9 @@ API_SECRET = 'your_api_secret_here'
 om = OrderManager(api_key=API_KEY, api_secret=API_SECRET, testnet=True)
 
 log.info("[STARTUP] Loading 1M CSV history...")
-df_1m = pd.read_csv(
-    CSV_PATH,
-    parse_dates=[['Date', 'Time']],
-    keep_date_col=False
-)
+df_1m = pd.read_csv(CSV_PATH)
+df_1m['timestamp'] = pd.to_datetime(df_1m['Date'] + ' ' + df_1m['Time'])
 df_1m = df_1m.rename(columns={
-    'Date_Time': 'timestamp',
     'Open': 'open', 'High': 'high',
     'Low': 'low', 'Close': 'close', 'Volume': 'volume'
 })
@@ -56,7 +52,7 @@ def fetch_latest_1m(since):
     return df
 
 def build_2h(df):
-    return df.resample('2H').agg(
+    return df.resample('2h').agg(
         open=('open','first'), high=('high','max'),
         low=('low','min'),     close=('close','last'),
         volume=('volume','sum')
