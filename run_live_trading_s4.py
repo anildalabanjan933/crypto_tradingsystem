@@ -1,0 +1,159 @@
+# run_live_trading_s4.py
+# S4 RenkoSMIIOSupertrend Live Trading Bot
+# Subaccount : S4RenkoSMIOsuptrend
+# Testnet    : True (forward test)
+
+import time
+import logging
+import requests
+import pandas as pd
+from datetime import datetime, timezone
+
+from strategies.renko_smiio_supertrend_strategy import RenkoSMIIOSupertrendStrategy
+from engine.order_manager import OrderManager
+from config.symbol_config import get_renko_box_size
+
+# ===========================================================================
+# CONFIG
+# ===========================================================================
+API_KEY    = 'nsKsvJ6CegwhqobagWg6nJnKmIHA3e'
+API_SECRET = 'bbbgvx2RNqP7k3AJoy8JpRAq9ach5YMmsQf7f7TCtvyoeSNgrewDlhVXVMFL'
+TESTNET    = True
+LOT_SIZE   = 100
+CSV_PATH   = 'data/btc_1m_delta.csv'
+LOG_PATH   = 'logs/live_trading_s4.log'
+SYMBOL     = 'BTCUSD'
+SLEEP_SEC  = 60
+
+BASE_URL = 'https://cdn-ind.testnet.deltaex.org' if TESTNET else 'https://api.india.delta.exchange'
+
+# ===========================================================================
+# LOGGING
+# ===========================================================================
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s %(levelname)s %(message)s',
+    handlers=[
+        logging.FileHandler(LOG_PATH),
+        logging.StreamHandler()
+    ]
+)
+
+# ===========================================================================
+# LIVE CANDLE FETCH
+# ===========================================================================
+def fetch_new_candles(start_ts: int, end_ts: int) -> list:
+    url = f'{BASE_URL}/v2/history/candles'
+    params = {'symbol': SYMBOL, 'resolution': '1m', 'start': start_ts, 'end': end_ts}
+    resp = requests.get(url, params=params, timeout=10)
+    data = resp.json()
+    return data.get('result', [])
+
+# ===========================================================================
+# MAIN LOOP
+# ===========================================================================
+def main():
+    # --- STARTUP: Load CSV ---
+    logging.info('=' * 60)
+    logging.info('S4 RenkoSMIIOSupertrend Live Trading Bot STARTING')
+    logging.info(f'Mode      : {"TESTNET" if TESTNET else "LIVE"}')
+    logging.info(f'Account   : S4RenkoSMIOsuptrend')
+    logging.info(f'Lots      : {LOT_SIZE}')
+    logging.info('=' * 60)
+
+    logging.info('[STARTUP] Loading 1M CSV history...')
+    df_csv = pd.read_csv(CSV_PATH)
+    df_csv['timestamp'] = pd.to_datetime(df_csv['Date'] + ' ' + df_csv['Time'])
+    df_csv = df_csv.rename(columns={
+        'Open': 'open', 'High': 'high', 'Low': 'low',
+        'Close': 'close', 'Volume': 'volume'
+    })
+    df_csv = df_csv[['timestamp', 'open', 'high', 'low', 'close', 'volume']]
+    df_csv = df_csv.sort_values('timestamp').reset_index(drop=True)
+    logging.info(f'[STARTUP] Loaded {len(df_csv)} 1M candles '
+                 f'({df_csv["timestamp"].iloc[0]} to {df_csv["timestamp"].iloc[-1]})')
+
+    df_1m = df_csv.copy()
+    last_ts = int(df_1m['timestamp'].iloc[-1].timestamp())
+
+    # --- OrderManager ---
+    order_manager = OrderManager(API_KEY, API_SECRET, testnet=TESTNET)
+
+    # --- Box size ---
+    current_price = df_1m['close'].iloc[-1]
+    box_size = get_renko_box_size(SYMBOL, current_price)
+
+    # --- Main loop ---
+    while True:
+        try:
+            now_ts = int(datetime.now(timezone.utc).timestamp())
+
+            # Fetch new 1M candles
+            new_candles = fetch_new_candles(last_ts + 1, now_ts)
+            if new_candles:
+                rows = []
+                for c in new_candles:
+                    rows.append({
+                        'timestamp': pd.to_datetime(c['time'], unit='s', utc=True).tz_localize(None),
+                        'open':  float(c['open']),
+                        'high':  float(c['high']),
+                        'low':   float(c['low']),
+                        'close': float(c['close']),
+                        'volume': float(c['volume']),
+                    })
+                df_new = pd.DataFrame(rows)
+                df_1m = pd.concat([df_1m, df_new], ignore_index=True)
+                df_1m = df_1m.drop_duplicates(subset='timestamp').sort_values('timestamp').reset_index(drop=True)
+                last_ts = int(df_1m['timestamp'].iloc[-1].timestamp())
+                logging.info(f'[DATA] Appended {len(df_new)} candles. Total={len(df_1m)}')
+
+            # Build 2H
+            df_1m_indexed = df_1m.set_index('timestamp')
+            df_2h = df_1m_indexed['close'].resample('2h').ohlc()
+            df_2h.columns = ['open', 'high', 'low', 'close']
+            df_2h['volume'] = df_1m_indexed['volume'].resample('2h').sum()
+            df_2h = df_2h.dropna().reset_index()
+            logging.info(f'[DATA] 2H candles={len(df_2h)}')
+
+            # Generate signals
+            strategy = RenkoSMIIOSupertrendStrategy(
+                data_dict={'2H': df_2h},
+                lot_size=LOT_SIZE,
+                renko_box=box_size,
+                symbol=SYMBOL,
+            )
+            signals = strategy.generate_signals()
+            logging.info(f'[SIGNALS] total={len(signals)}')
+
+            # Execute last signal
+            if signals:
+                last_signal = signals[-1]
+                sig_type  = last_signal['signal_type']
+                direction = last_signal['direction']
+                entry_type = last_signal.get('entry_type', '')
+                exit_type  = last_signal.get('exit_type', '')
+
+                if sig_type == 'ENTRY':
+                    if direction == 'long':
+                        order_manager.place_market_order('buy', LOT_SIZE)
+                        logging.info(f'[ORDER] ENTRY buy {LOT_SIZE} lots | type={entry_type}')
+                    elif direction == 'short':
+                        order_manager.place_market_order('sell', LOT_SIZE)
+                        logging.info(f'[ORDER] ENTRY sell {LOT_SIZE} lots | type={entry_type}')
+
+                elif sig_type == 'EXIT':
+                    if direction == 'long':
+                        order_manager.close_position(LOT_SIZE, 'sell')
+                        logging.info(f'[ORDER] EXIT sell {LOT_SIZE} lots | type={exit_type}')
+                    elif direction == 'short':
+                        order_manager.close_position(LOT_SIZE, 'buy')
+                        logging.info(f'[ORDER] EXIT buy {LOT_SIZE} lots | type={exit_type}')
+
+        except Exception as e:
+            logging.error(f'[ERROR] {e}')
+
+        time.sleep(SLEEP_SEC)
+
+
+if __name__ == '__main__':
+    main()

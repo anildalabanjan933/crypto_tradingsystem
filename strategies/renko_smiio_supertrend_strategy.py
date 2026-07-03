@@ -156,26 +156,6 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
             signal_len=self.smiio_siglen,
         )
 
-        # --- ST-DEBUG ---
-        debug_dates = {'2026-05-04'}
-        print(f"\n[ST-DEBUG] Total Renko bricks = {n}")
-        print(f"[ST-DEBUG] renko_box used = {self.renko_box:.2f}")
-        for i in range(min(5, n)):
-            ts = pd.Timestamp(timestamps[i])
-            print(f"  bar={i} ts={ts} close={closes[i]:.0f} "
-                  f"st_upper={df_st['st_upper'].values[i]:.0f} "
-                  f"st_lower={df_st['st_lower'].values[i]:.0f} "
-                  f"st={st_dir[i]}")
-        for i in range(1, n):
-            ts = pd.Timestamp(timestamps[i])
-            if ts.strftime('%Y-%m-%d') in debug_dates:
-                print(f"  bar={i} ts={ts} close={closes[i]:.0f} "
-                      f"st_upper={df_st['st_upper'].values[i]:.0f} "
-                      f"st_lower={df_st['st_lower'].values[i]:.0f} "
-                      f"smi={smi[i]:.4f} sig={sig[i]:.4f} "
-                      f"smi_cross={'UP' if smi[i] > sig[i] and smi[i - 1] <= sig[i - 1] else 'DN' if smi[i] < sig[i] and smi[i - 1] >= sig[i - 1] else '-'} "
-                      f"st={st_dir[i]} prev_st={st_dir[i - 1]} r_dir={renko_dir[i]}")
-
         # --- Signal loop ---
         # st_dir: -1 = GREEN (bullish), +1 = RED (bearish)
         signals = []
@@ -285,5 +265,4 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
                     current_direction = 'short'
                     pending = None
 
-        print(f"[SIGNAL] Total signals generated = {len(signals)}")
         return signals
