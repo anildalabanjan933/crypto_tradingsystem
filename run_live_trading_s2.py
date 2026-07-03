@@ -68,6 +68,9 @@ else:
     position = None
 log.info(f"[STARTUP] Position synced from exchange: {position}")
 
+# --- Track last executed signal timestamp to avoid re-execution ---
+last_executed_ts = None
+
 while True:
     try:
         last_ts     = df_1m.index[-1]
@@ -88,23 +91,32 @@ while True:
         signals = strategy.generate_signals()
         log.info(f"[SIGNALS] total={len(signals)}")
 
-        # --- Execute last signal ---
+        # --- Execute last new signal only (skip already executed) ---
         if signals:
-            last_signal = signals[-1]
-            stype = last_signal.get('signal_type')
-            sdir  = last_signal.get('direction', '')
+            # Find last signal not yet executed
+            last_signal = None
+            for sig in reversed(signals):
+                if sig.get('timestamp') != last_executed_ts:
+                    last_signal = sig
+                    break
 
-            if stype == 'ENTRY' and position is None:
-                side = 'buy' if sdir == 'long' else 'sell'
-                om.place_market_order(side=side, size=LOT_SIZE)
-                position = sdir
-                log.info(f"[ORDER] ENTRY {side} {LOT_SIZE} lots | type={last_signal.get('entry_type')}")
+            if last_signal:
+                stype = last_signal.get('signal_type')
+                sdir  = last_signal.get('direction', '')
 
-            elif stype == 'EXIT' and position is not None:
-                side = 'sell' if position == 'long' else 'buy'
-                om.close_position(size=LOT_SIZE, side=side)
-                log.info(f"[ORDER] EXIT {side} {LOT_SIZE} lots | type={last_signal.get('exit_type')}")
-                position = None
+                if stype == 'ENTRY' and position is None:
+                    side = 'buy' if sdir == 'long' else 'sell'
+                    om.place_market_order(side=side, size=LOT_SIZE)
+                    position = sdir
+                    last_executed_ts = last_signal.get('timestamp')
+                    log.info(f"[ORDER] ENTRY {side} {LOT_SIZE} lots | type={last_signal.get('entry_type')} | ts={last_executed_ts}")
+
+                elif stype == 'EXIT' and position is not None:
+                    side = 'sell' if position == 'long' else 'buy'
+                    om.close_position(size=LOT_SIZE, side=side)
+                    position = None
+                    last_executed_ts = last_signal.get('timestamp')
+                    log.info(f"[ORDER] EXIT {side} {LOT_SIZE} lots | type={last_signal.get('exit_type')} | ts={last_executed_ts}")
 
     except Exception as e:
         log.error(f"[ERROR] {e}", exc_info=True)
