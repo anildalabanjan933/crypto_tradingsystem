@@ -136,34 +136,31 @@ class RenkoReversalStrategy(BaseStrategy):
         # ------------------------------------------------------------------
         # DEBUG
         # ------------------------------------------------------------------
-        st_dir_temp  = df['st_dir'].values
-        rc_temp      = df['renko_close'].values
-        rd_temp      = df['renko_dir'].values
+        st_dir_temp = df['st_dir'].values
+        rc_temp = df['renko_close'].values
+        rd_temp = df['renko_dir'].values
         last_sl_temp = df['last_swing_low'].values
         last_sh_temp = df['last_swing_high'].values
         sl_hist_temp = df['swing_lows_hist'].tolist()
         sh_hist_temp = df['swing_highs_hist'].tolist()
-        box_temp     = self.renko_box
-
+        box_temp = self.renko_box
 
         for i in range(1, len(st_dir_temp)):
-            if st_dir_temp[i-1] == 1 and st_dir_temp[i] == -1 and rd_temp[i] == 1:
-                close_t      = rc_temp[i]
+            if st_dir_temp[i - 1] == 1 and st_dir_temp[i] == -1 and rd_temp[i] == 1:
+                close_t = rc_temp[i]
                 sr_zone_temp = box_temp * self.sr_tolerance
-                lb_start_t   = max(0, i - self.sr_lookback)
+                lb_start_t = max(0, i - self.sr_lookback)
                 recent_low_t = np.min(rc_temp[lb_start_t:i + 1])
-                near_h       = (
-                    not np.isnan(last_sl_temp[i])
-                    and last_sl_temp[i] - sr_zone_temp <= recent_low_t <= last_sl_temp[i] + sr_zone_temp
+                near_h = (
+                        not np.isnan(last_sl_temp[i])
+                        and last_sl_temp[i] - sr_zone_temp <= recent_low_t <= last_sl_temp[i] + sr_zone_temp
                 )
-                btl          = _trendline_value_at(sl_hist_temp[i], i, self.max_tl_bars)
-                near_s       = (
-                    btl is not None
-                    and btl - sr_zone_temp <= recent_low_t <= btl + sr_zone_temp
+                btl = _trendline_value_at(sl_hist_temp[i], i, self.max_tl_bars)
+                near_s = (
+                        btl is not None
+                        and btl - sr_zone_temp <= recent_low_t <= btl + sr_zone_temp
                 )
-                n_swings     = len(sl_hist_temp[i])
-                      f"recent_low={recent_low_t:.0f} sr_zone={sr_zone_temp:.0f} "
-                      f"near_h={near_h} btl={btl} near_s={near_s} swings={n_swings}")
+                n_swings = len(sl_hist_temp[i])
 
         # ------------------------------------------------------------------
         # MAIN SIGNAL LOOP
