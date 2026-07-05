@@ -7,7 +7,7 @@
 import numpy as np
 import pandas as pd
 from scipy import stats
-from strategies.base_strategy import BaseStrategy
+from strategies.backtest.base_strategy import BaseStrategy
 from indicators.renko import RenkoBuilder, SupertrendIndicator
 from config.symbol_config import get_renko_box_size
 
@@ -28,7 +28,7 @@ class RenkoPatternBreakoutStrategy(BaseStrategy):
 
     @property
     def required_timeframes(self):
-        return ['2H']
+        return ['2h']
 
     @property
     def optimization_params(self):
@@ -43,9 +43,9 @@ class RenkoPatternBreakoutStrategy(BaseStrategy):
     # Renko DataFrame builder  (same pattern as RenkoSMIIOSupertrend v1.30)
     # -----------------------------------------------------------------------
     def _build_renko_df(self) -> pd.DataFrame:
-        df_2h = self._data.get('2H')
+        df_2h = self._data.get('2h')
         if df_2h is None or len(df_2h) == 0:
-            raise ValueError("Requires '2H' timeframe data")
+            raise ValueError("Requires '2h' timeframe data")
 
         closes     = df_2h['close'].values
         timestamps = (df_2h.index if isinstance(df_2h.index, pd.DatetimeIndex)

@@ -8,7 +8,7 @@ from engine.metrics_calculator import MetricsCalculator
 from engine.margin_calculator import MarginCalculator
 from config.charges_config import charges_config
 from config.backtest_config import backtest_config
-from strategies.base_strategy import BaseStrategy
+from strategies.backtest.base_strategy import BaseStrategy
 from config.margin_config import margin_config
 
 
@@ -80,14 +80,14 @@ class BacktestEngine:
     def _aggregate_timeframes(self):
         aggregator = DataAggregator(self.data_1m)
         timeframe_map = {
-            '1M'   : aggregator.get_1m_data,
-            '5M'   : aggregator.get_5m_data,
-            '15M'  : aggregator.get_15m_data,
-            '30M'  : aggregator.get_30m_data,
-            '1H'   : aggregator.get_1h_data,
-            '2H'   : aggregator.get_2h_data,   # ADDED
-            '4H'   : aggregator.get_4h_data,
-            'Daily': aggregator.get_daily_data,
+            '1m': aggregator.get_1m_data,
+            '5m': aggregator.get_5m_data,
+            '15m': aggregator.get_15m_data,
+            '30m': aggregator.get_30m_data,
+            '1h': aggregator.get_1h_data,
+            '2h': aggregator.get_2h_data,
+            '4h': aggregator.get_4h_data,
+            'daily': aggregator.get_daily_data,
         }
         for tf, getter in timeframe_map.items():
             try:
@@ -101,29 +101,36 @@ class BacktestEngine:
             except Exception as e:
                 print(f"⚠️  {tf}: Aggregation failed — {e}")
 
+    # -----------------------------------------------------------------------
+    # _instantiate_strategy
+    # -----------------------------------------------------------------------
     def _instantiate_strategy(self):
         from config.symbol_config import get_renko_box_size
 
-        df_2h = self.data_dict.get('2H')
+        df_2h = self.data_dict.get('2h')  # correct
         current_price = float(df_2h['close'].iloc[-1]) if df_2h is not None else None
 
-        # If box_pct passed (from optimization), compute renko_box from price
-        if 'box_pct' in self.strategy_params:
-            pct = self.strategy_params.pop('box_pct')
+        # FIX: deepcopy params to prevent mutation of mutable values across optimization runs
+        import copy
+        params = copy.deepcopy(self.strategy_params)
+
+        # FIX: handle BOTH 'renko_box_pct' (optimizer key) AND 'box_pct' (legacy)
+        renko_pct = params.pop('renko_box_pct', None) or params.pop('box_pct', None)
+        if renko_pct is not None:
             if current_price and current_price > 0:
-                self.strategy_params['renko_box'] = max(round(current_price * pct), 1)
+                params['renko_box'] = max(round(current_price * renko_pct), 1)
             else:
-                self.strategy_params['renko_box'] = 10  # safe fallback
+                params['renko_box'] = 10
 
         # Auto-resolve renko_box if still not set
-        elif 'renko_box' not in self.strategy_params:
-            self.strategy_params['renko_box'] = get_renko_box_size(self.symbol, current_price)
+        elif 'renko_box' not in params:
+            params['renko_box'] = get_renko_box_size(self.symbol, current_price)
 
         self.strategy = self.strategy_class(
-            self.data_dict, self.lot_size, **self.strategy_params
+            self.data_dict, self.lot_size, **params
         )
         print(f"✅ Strategy instantiated: {self.strategy_class.__name__} "
-              f"with params {self.strategy_params}")
+              f"with params {params}")
 
     def _generate_signals(self):
         self.signals = self.strategy.generate_signals()

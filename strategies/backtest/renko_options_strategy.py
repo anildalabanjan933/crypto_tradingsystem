@@ -6,7 +6,7 @@
 
 import numpy as np
 import pandas as pd
-from strategies.base_strategy import BaseStrategy
+from strategies.backtest.base_strategy import BaseStrategy
 from indicators.renko import _trendline_value_at, RenkoBuilder, SupertrendIndicator, SwingDetector
 
 
@@ -77,7 +77,7 @@ class RenkoOptionsStrategy(BaseStrategy):
 
     @property
     def required_timeframes(self) -> list:
-        return ['2H']
+        return ['2h']
 
     @property
     def optimization_params(self) -> dict:
@@ -134,13 +134,13 @@ class RenkoOptionsStrategy(BaseStrategy):
         return 0.0
 
     # ------------------------------------------------------------------
-    # RENKO DF BUILDER (internal - uses self._data['2H'])
+    # RENKO DF BUILDER (internal - uses self._data['2h'])
     # ------------------------------------------------------------------
 
     def _build_renko_df(self) -> pd.DataFrame:
-        df_2h = self._data.get('2H')
+        df_2h = self._data.get('2h')
         if df_2h is None or len(df_2h) == 0:
-            raise ValueError("RenkoOptionsStrategy requires '2H' timeframe data in data_dict")
+            raise ValueError("RenkoOptionsStrategy requires '2h' timeframe data in data_dict")
 
         closes     = df_2h['close'].values
         timestamps = df_2h.index if isinstance(df_2h.index, pd.DatetimeIndex) else pd.to_datetime(df_2h['timestamp'])
@@ -173,7 +173,7 @@ class RenkoOptionsStrategy(BaseStrategy):
 
     def generate_signals(self) -> list:
         """
-        Builds Renko df internally from self._data['2H'] then generates signals.
+        Builds Renko df internally from self._data['2h'] then generates signals.
         No external df argument needed - follows BaseStrategy architecture.
         """
         df = self._build_renko_df()

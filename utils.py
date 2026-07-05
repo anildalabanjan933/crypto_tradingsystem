@@ -135,7 +135,7 @@ def format_number(value):
     -------
     str — Formatted number with commas
     """
-    return "{:,.0f}".format(float(value))
+    return "{:,.2f}".format(float(value))
 
 
 def format_currency(amount, symbol="₹"):

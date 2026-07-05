@@ -214,10 +214,10 @@ class MetricsCalculator:
         # ══════════════════════════════════════════════════════════════════════
         equity = [self.initial_capital]
         for pnl in df_trades['net_pnl']:
-            equity.append(equity[-1] + float(pnl))
+            pnl_f = float(pnl)
+            trade_tax = pnl_f * tax_rate if pnl_f > 0 else 0.0
+            equity.append(equity[-1] + pnl_f - trade_tax)
 
-        # Apply post-run tax as final deduction on last equity point
-        equity[-1] = equity[-1] - total_tax
         self.metrics['equity_curve'] = equity
 
         # INR equity curve
@@ -226,19 +226,26 @@ class MetricsCalculator:
 
         # ══════════════════════════════════════════════════════════════════════
         # SECTION 11: DRAWDOWN
+        # FIX: max_drawdown_inr uses peak_equity_inr (not initial_capital_inr)
+        # peak equity is the actual running max at the drawdown point
         # ══════════════════════════════════════════════════════════════════════
-        equity_arr  = np.array(equity, dtype=float)
+        equity_arr = np.array(equity[:-1] if len(equity) > 1 else equity, dtype=float)
         running_max = np.maximum.accumulate(equity_arr)
         drawdown_pct = np.where(
             running_max > 0,
-            (equity_arr - running_max) / running_max * 100,
+            (equity_arr - running_max) / self.initial_capital * 100,
             0.0
         )
-        self.metrics['drawdown_series']  = drawdown_pct.tolist()
-        self.metrics['max_drawdown']     = float(np.min(drawdown_pct))
+        self.metrics['drawdown_series'] = drawdown_pct.tolist()
+        self.metrics['max_drawdown'] = float(np.min(drawdown_pct))
         self.metrics['max_drawdown_pct'] = self.metrics['max_drawdown']
+
+        # FIX: use peak equity at max drawdown point — not fixed initial_capital_inr
+        max_dd_idx = int(np.argmin(drawdown_pct))
+        peak_equity_usd = float(running_max[max_dd_idx])
+        peak_equity_inr = peak_equity_usd * self.usd_to_inr_rate
         self.metrics['max_drawdown_inr'] = abs(
-            self.metrics['max_drawdown'] / 100 * self.initial_capital_inr
+            self.metrics['max_drawdown'] / 100 * peak_equity_inr
         )
 
         # ── Return to Max Drawdown ─────────────────────────────────────────────

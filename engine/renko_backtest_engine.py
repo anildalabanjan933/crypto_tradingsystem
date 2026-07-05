@@ -13,7 +13,7 @@ from datetime import datetime
 
 from engine.trade_builder import TradeBuilder
 from engine.metrics_calculator import MetricsCalculator
-from strategies.renko_options_strategy import RenkoOptionsStrategy
+from strategies.backtest.renko_options_strategy import RenkoOptionsStrategy
 from indicators.renko import RenkoBuilder, SupertrendIndicator, SwingDetector
 from config.charges_config import charges_config
 

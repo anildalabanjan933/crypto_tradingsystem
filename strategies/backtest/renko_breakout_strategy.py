@@ -4,7 +4,7 @@
 
 import numpy as np
 import pandas as pd
-from strategies.base_strategy import BaseStrategy
+from strategies.backtest.base_strategy import BaseStrategy
 from indicators.renko import RenkoBuilder, SupertrendIndicator, SwingDetector, _trendline_value_at
 
 
@@ -35,7 +35,7 @@ class RenkoBreakoutStrategy(BaseStrategy):
 
     @property
     def required_timeframes(self):
-        return ['2H']
+        return ['2h']
 
     @property
     def optimization_params(self):
@@ -123,9 +123,9 @@ class RenkoBreakoutStrategy(BaseStrategy):
         """
 
         # ---- 1. Build Renko bricks ----
-        df_2h = self._data.get('2H')
+        df_2h = self._data.get('2h')
         if df_2h is None or len(df_2h) == 0:
-            raise ValueError("RenkoBreakoutStrategy requires '2H' key in data_dict")
+            raise ValueError("RenkoBreakoutStrategy requires '2h' key in data_dict")
 
         closes     = df_2h['close'].values
         timestamps = (

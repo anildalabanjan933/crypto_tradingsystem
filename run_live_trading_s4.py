@@ -9,7 +9,7 @@ import requests
 import pandas as pd
 from datetime import datetime, timezone
 
-from strategies.renko_smiio_supertrend_strategy import RenkoSMIIOSupertrendStrategy
+from strategies.backtest.renko_smiio_supertrend_strategy import RenkoSMIIOSupertrendStrategy
 from engine.order_manager import OrderManager
 from config.symbol_config import get_renko_box_size
 

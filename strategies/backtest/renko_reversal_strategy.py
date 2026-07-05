@@ -5,7 +5,7 @@
 
 import numpy as np
 import pandas as pd
-from strategies.base_strategy import BaseStrategy
+from strategies.backtest.base_strategy import BaseStrategy
 from indicators.renko import _trendline_value_at, RenkoBuilder, SupertrendIndicator, SwingDetector
 
 
@@ -68,7 +68,7 @@ class RenkoReversalStrategy(BaseStrategy):
 
     @property
     def required_timeframes(self) -> list:
-        return ['2H']
+        return ['2h']  # CORRECT
 
     # ------------------------------------------------------------------
     # SLIPPAGE HELPER
@@ -80,15 +80,14 @@ class RenkoReversalStrategy(BaseStrategy):
             return price + slip if is_entry else price - slip
         else:
             return price - slip if is_entry else price + slip
-
     # ------------------------------------------------------------------
     # RENKO DF BUILDER
     # ------------------------------------------------------------------
 
     def _build_renko_df(self) -> pd.DataFrame:
-        df_2h = self._data.get('2H')
+        df_2h = self._data.get('2h')
         if df_2h is None or len(df_2h) == 0:
-            raise ValueError("RenkoReversalStrategy requires '2H' timeframe data in data_dict")
+            raise ValueError("RenkoReversalStrategy requires '2h' timeframe data in data_dict")
 
         closes     = df_2h['close'].values
         timestamps = df_2h.index if isinstance(df_2h.index, pd.DatetimeIndex) else pd.to_datetime(df_2h['timestamp'])

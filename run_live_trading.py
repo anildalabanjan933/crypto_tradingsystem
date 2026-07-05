@@ -1,7 +1,7 @@
 # run_live_trading.py — S1: RenkoOptionsStrategy
 import time, logging, pandas as pd
 from engine.order_manager import OrderManager
-from strategies.renko_options_strategy import RenkoOptionsStrategy
+from strategies.backtest.renko_options_strategy import RenkoOptionsStrategy
 from config.symbol_config import get_renko_box_size
 
 logging.basicConfig(

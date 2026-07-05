@@ -1,7 +1,7 @@
 # run_live_trading_s2.py — S2: RenkoReversalStrategy
 import time, logging, pandas as pd
 from engine.order_manager import OrderManager
-from strategies.renko_reversal_strategy import RenkoReversalStrategy
+from strategies.backtest.renko_reversal_strategy import RenkoReversalStrategy
 from config.symbol_config import get_renko_box_size
 
 logging.basicConfig(

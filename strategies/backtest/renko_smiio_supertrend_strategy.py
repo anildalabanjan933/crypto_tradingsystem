@@ -5,7 +5,7 @@
 
 import numpy as np
 import pandas as pd
-from strategies.base_strategy import BaseStrategy
+from strategies.backtest.base_strategy import BaseStrategy
 from indicators.renko import RenkoBuilder, SupertrendIndicator
 from config.symbol_config import get_renko_box_size
 
@@ -59,6 +59,12 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
     Exit
     ----
     ST flip + 1 brick close in exit direction
+
+    Filter Parameters (disabled by default, reserved for future optimization)
+    --------------------------------------------------------------------------
+    smiio_avoid_entry_above : float  — skip entry if abs(smi) > threshold (0.0 = disabled)
+    crossover_distance      : float  — min gap between smi and signal at crossover (0.0 = disabled)
+    crossover_count_limit   : int    — block entry if consecutive small crossovers >= N (0 = disabled)
     """
 
     # -----------------------------------------------------------------------
@@ -69,8 +75,11 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
 
         symbol        = kwargs.get('symbol', 'BTCUSD')
         current_price = kwargs.get('current_price', None)
-        self.renko_box      = kwargs.get('renko_box') or get_renko_box_size(symbol, current_price)
-        self.st_atr_length  = kwargs.get('st_atr_length',  5)
+
+        # --- Core strategy parameters ---
+        self.renko_box = kwargs.get('renko_box') or get_renko_box_size(symbol, current_price)
+        self.renko_timeframe = kwargs.get('renko_timeframe', '2h')  # ADD THIS LINE
+        self.st_atr_length = kwargs.get('st_atr_length', 5)
         self.st_factor      = kwargs.get('st_factor',      2.0)
         self.smiio_shortlen = kwargs.get('smiio_shortlen', 5)
         self.smiio_longlen  = kwargs.get('smiio_longlen',  20)
@@ -78,22 +87,35 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
         self.slippage_usd   = kwargs.get('slippage_usd',   0.0)
         self.commission_pct = kwargs.get('commission_pct', 0.0)
 
+        # --- Filter parameters (disabled by default) ---
+        # Set value > 0 to activate when optimizing for sideways/ranging markets
+        self.smiio_avoid_entry_above = kwargs.get('smiio_avoid_entry_above', 0.0)  # 0.0 = disabled
+        self.crossover_distance      = kwargs.get('crossover_distance',      0.0)  # 0.0 = disabled
+        self.crossover_count_limit   = kwargs.get('crossover_count_limit',   0)    # 0   = disabled
+
     # -----------------------------------------------------------------------
     # Abstract method implementations
     # -----------------------------------------------------------------------
     @property
     def optimization_params(self) -> dict:
         return {
+            # --- Core parameters (active optimization) ---
             'renko_box':      {'default': 200,  'min': 100,  'max': 500,  'step': 50},
             'st_atr_length':  {'default': 5,    'min': 3,    'max': 14,   'step': 1},
             'st_factor':      {'default': 2.0,  'min': 1.0,  'max': 5.0,  'step': 0.5},
             'smiio_shortlen': {'default': 5,    'min': 3,    'max': 10,   'step': 1},
             'smiio_longlen':  {'default': 20,   'min': 10,   'max': 40,   'step': 5},
+
+            # --- Filter parameters (reserved, not in active optimization) ---
+            # Uncomment below to include in optimization for sideways market tuning
+            # 'smiio_avoid_entry_above': {'default': 0.0, 'min': 0.2, 'max': 0.6, 'step': 0.1},
+            # 'crossover_distance':      {'default': 0.0, 'min': 0.1, 'max': 2.5, 'step': 0.1},
+            # 'crossover_count_limit':   {'default': 0,   'min': 1,   'max': 3,   'step': 1},
         }
 
     @property
     def required_timeframes(self) -> list:
-        return ['2H']
+        return [self.renko_timeframe]
 
     # -----------------------------------------------------------------------
     # Slippage helper
@@ -109,15 +131,16 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
     # Renko DataFrame builder
     # -----------------------------------------------------------------------
     def _build_renko_df(self) -> pd.DataFrame:
-        df_2h = self._data.get('2H')
-        if df_2h is None or len(df_2h) == 0:
-            raise ValueError("Requires '2H' timeframe data")
+        tf = self.renko_timeframe
+        df_tf = self._data.get(tf)
+        if df_tf is None or len(df_tf) == 0:
+            raise ValueError(f"Requires '{tf}' timeframe data")
 
-        closes     = df_2h['close'].values
-        timestamps = (df_2h.index if isinstance(df_2h.index, pd.DatetimeIndex)
-                      else pd.to_datetime(df_2h['timestamp']))
+        closes = df_tf['close'].values
+        timestamps = (df_tf.index if isinstance(df_tf.index, pd.DatetimeIndex)
+                      else pd.to_datetime(df_tf['timestamp']))
 
-        builder   = RenkoBuilder(box_size=self.renko_box)
+        builder = RenkoBuilder(box_size=self.renko_box)
         renko_raw = builder.build(closes)
         if renko_raw is None or len(renko_raw) == 0:
             raise ValueError("RenkoBuilder produced no bricks")
@@ -136,7 +159,7 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
         n = len(df)
         box = self.renko_box
 
-        closes = df['renko_close'].values
+        closes    = df['renko_close'].values
         renko_dir = df['renko_dir'].values
 
         # --- SupertrendIndicator (same as RenkoReversal) ---
@@ -145,7 +168,7 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
             atr_period=self.st_atr_length,
             factor=self.st_factor,
         )
-        df_st = st_ind.calculate(df)
+        df_st  = st_ind.calculate(df)
         st_dir = df_st['st_dir'].values
 
         # --- SMIIO ---
@@ -158,21 +181,21 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
 
         # --- Signal loop ---
         # st_dir: -1 = GREEN (bullish), +1 = RED (bearish)
-        signals = []
+        signals           = []
         current_direction = None
-        pending = None
+        pending           = None
 
         for i in range(1, n):
-            ts = str(pd.Timestamp(timestamps[i]).strftime('%Y-%m-%dT%H:%M:%S'))
+            ts    = str(pd.Timestamp(timestamps[i]).strftime('%Y-%m-%dT%H:%M:%S'))
             close = closes[i]
             r_dir = renko_dir[i]
-            st = st_dir[i]
+            st    = st_dir[i]
             prev_st = st_dir[i - 1]
 
             smi_cross_up   = smi[i] > sig[i] and smi[i - 1] <= sig[i - 1]
             smi_cross_down = smi[i] < sig[i] and smi[i - 1] >= sig[i - 1]
-            st_flip_green  = prev_st == 1 and st == -1   # RED -> GREEN
-            st_flip_red    = prev_st == -1 and st == 1   # GREEN -> RED
+            st_flip_green  = prev_st == 1  and st == -1   # RED -> GREEN
+            st_flip_red    = prev_st == -1 and st == 1    # GREEN -> RED
             smi_above      = smi[i] > sig[i]
             smi_below      = smi[i] < sig[i]
 
@@ -182,28 +205,28 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
             if current_direction == 'long' and st_flip_red and r_dir == -1:
                 signals.append({
                     'signal_type': 'EXIT',
-                    'price': self._apply_slippage(close, 'long', False),
-                    'timestamp': ts,
-                    'sl_price': close - box,
-                    'entry_type': '',
-                    'exit_type': 'ST_FLIP_RED',
-                    'direction': 'long',
+                    'price':       self._apply_slippage(close, 'long', False),
+                    'timestamp':   ts,
+                    'sl_price':    close - box,
+                    'entry_type':  '',
+                    'exit_type':   'ST_FLIP_RED',
+                    'direction':   'long',
                 })
                 current_direction = None
-                pending = None
+                pending           = None
 
             elif current_direction == 'short' and st_flip_green and r_dir == 1:
                 signals.append({
                     'signal_type': 'EXIT',
-                    'price': self._apply_slippage(close, 'short', False),
-                    'timestamp': ts,
-                    'sl_price': close + box,
-                    'entry_type': '',
-                    'exit_type': 'ST_FLIP_GREEN',
-                    'direction': 'short',
+                    'price':       self._apply_slippage(close, 'short', False),
+                    'timestamp':   ts,
+                    'sl_price':    close + box,
+                    'entry_type':  '',
+                    'exit_type':   'ST_FLIP_GREEN',
+                    'direction':   'short',
                 })
                 current_direction = None
-                pending = None
+                pending           = None
 
             # ----------------------------------------------------------
             # SET PENDING on crossover or ST flip (no position open)
@@ -242,27 +265,27 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
                 elif side == 'long' and r_dir == 1:
                     signals.append({
                         'signal_type': 'ENTRY',
-                        'price': self._apply_slippage(close, 'long', True),
-                        'timestamp': ts,
-                        'sl_price': close - box * 2,
-                        'entry_type': pending['entry_type'],
-                        'exit_type': '',
-                        'direction': 'long',
+                        'price':       self._apply_slippage(close, 'long', True),
+                        'timestamp':   ts,
+                        'sl_price':    close - box * 2,
+                        'entry_type':  pending['entry_type'],
+                        'exit_type':   '',
+                        'direction':   'long',
                     })
                     current_direction = 'long'
-                    pending = None
+                    pending           = None
 
                 elif side == 'short' and r_dir == -1:
                     signals.append({
                         'signal_type': 'ENTRY',
-                        'price': self._apply_slippage(close, 'short', True),
-                        'timestamp': ts,
-                        'sl_price': close + box * 2,
-                        'entry_type': pending['entry_type'],
-                        'exit_type': '',
-                        'direction': 'short',
+                        'price':       self._apply_slippage(close, 'short', True),
+                        'timestamp':   ts,
+                        'sl_price':    close + box * 2,
+                        'entry_type':  pending['entry_type'],
+                        'exit_type':   '',
+                        'direction':   'short',
                     })
                     current_direction = 'short'
-                    pending = None
+                    pending           = None
 
         return signals

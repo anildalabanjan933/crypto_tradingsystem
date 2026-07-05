@@ -5,7 +5,7 @@
 
 import numpy as np
 import pandas as pd
-from strategies.base_strategy import BaseStrategy
+from strategies.backtest.base_strategy import BaseStrategy
 from indicators.renko import _trendline_value_at, RenkoBuilder, SupertrendIndicator, SwingDetector
 
 
@@ -80,7 +80,7 @@ class RenkoTrendlinePullbackStrategy(BaseStrategy):
 
     @property
     def required_timeframes(self) -> list:
-        return ['2H']
+        return ['2h']
 
     # ------------------------------------------------------------------
     # SLIPPAGE HELPER
@@ -98,9 +98,9 @@ class RenkoTrendlinePullbackStrategy(BaseStrategy):
     # ------------------------------------------------------------------
 
     def _build_renko_df(self) -> pd.DataFrame:
-        df_2h = self._data.get('2H')
+        df_2h = self._data.get('2h')
         if df_2h is None or len(df_2h) == 0:
-            raise ValueError("RenkoTrendlinePullbackStrategy requires '2H' timeframe data")
+            raise ValueError("RenkoTrendlinePullbackStrategy requires '2h' timeframe data")
 
         closes     = df_2h['close'].values
         timestamps = df_2h.index if isinstance(df_2h.index, pd.DatetimeIndex) else pd.to_datetime(df_2h['timestamp'])

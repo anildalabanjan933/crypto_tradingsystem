@@ -4,7 +4,7 @@
 import importlib
 import inspect
 from pathlib import Path
-from strategies.base_strategy import BaseStrategy
+from strategies.backtest.base_strategy import BaseStrategy
 
 
 class StrategyRegistry:
@@ -21,7 +21,7 @@ class StrategyRegistry:
         """
         Scan strategies/ folder and load all strategy classes.
         """
-        strategy_dir = Path("strategies")
+        strategy_dir = Path("strategies/backtest")
 
         # Get all .py files in strategies folder
         for strategy_file in strategy_dir.glob("*.py"):
@@ -33,7 +33,7 @@ class StrategyRegistry:
 
             try:
                 # Import module
-                module = importlib.import_module(f"strategies.{module_name}")
+                module = importlib.import_module(f"strategies.backtest.{module_name}")
 
                 # Find all classes that inherit from BaseStrategy
                 for name, obj in inspect.getmembers(module):

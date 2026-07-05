@@ -88,7 +88,7 @@ class BacktestReportGenerator:
         equity_data_raw = self.metrics.get('equity_curve', [self.initial_capital])
 
         # Always trim last point (tax lump-sum) from equity curve display
-        equity_data_trimmed = equity_data_raw[:-1] if len(equity_data_raw) > 1 else equity_data_raw[:]
+        equity_data_trimmed = equity_data_raw[:]
         equity_data_inr     = [usd_to_inr(e - self.initial_capital, 84) for e in equity_data_trimmed]
 
         if self.trades:
@@ -145,6 +145,17 @@ class BacktestReportGenerator:
         # INR amount (negative) and % (base = Rs 1,00,000 actual capital)
         max_drawdown_inr = usd_to_inr(real_max_dd_usd, 84)   # e.g. -54,757
         max_drawdown_pct = (real_max_dd_usd / 100000) * 100  # e.g. -0.55%
+        # ── Risk Management Calculations (Dynamic) ────────────────────────
+        recommended_capital  = abs(max_drawdown_inr) * 3
+        capital_denom        = recommended_capital if recommended_capital > 0 else 1
+        return_on_capital    = (total_pnl_inr / capital_denom) * 100
+        monthly_returns_data = self.metrics.get('monthly_returns', {})
+        best_month_pnl       = max(monthly_returns_data.values()) if monthly_returns_data else 0
+        best_month_key       = max(monthly_returns_data, key=monthly_returns_data.get) if monthly_returns_data else ''
+        avg_month_pnl        = (sum(monthly_returns_data.values()) / len(monthly_returns_data)) if monthly_returns_data else 0
+        best_month_roc       = (best_month_pnl / capital_denom) * 100
+        avg_month_roc        = (avg_month_pnl / capital_denom) * 100
+        return_to_dd_ratio   = round(abs(total_pnl_inr / max_drawdown_inr), 2) if max_drawdown_inr != 0 else 0
 
         # Recompute Return/MaxDD (Calmar) using corrected drawdown
         if max_drawdown_inr != 0:
@@ -196,34 +207,34 @@ class BacktestReportGenerator:
         # ── Monthly returns table ──────────────────────────────────────────
         monthly_returns_html = (
             "<table><thead><tr>"
-            "<th>Month</th><th>PnL (₹)</th><th>PnL %</th>"
+            "<th>Month</th><th>PnL (₹)</th><th>PnL %</th><th>Return % on Capital (3x DD)</th>"
             "</tr></thead><tbody>"
         )
         monthly_returns = self.metrics.get('monthly_returns', {})
         for month, pnl in sorted(monthly_returns.items()):
-            pnl_pct   = (pnl / 100000) * 100
+            pnl_pct   = (pnl / self.initial_capital_inr) * 100
             pnl_class = 'positive' if pnl >= 0 else 'negative'
             monthly_returns_html += (
                 f"<tr><td>{month}</td>"
                 f"<td class='{pnl_class}'>{format_currency(pnl)}</td>"
-                f"<td class='{pnl_class}'>{round_percent(pnl_pct)}%</td></tr>"
+                f"<td class='{pnl_class}'>{round_percent(pnl_pct)}%</td><td class='{pnl_class}'>{round_percent((pnl / capital_denom) * 100)}%</td></tr>"
             )
         monthly_returns_html += "</tbody></table>"
 
         # ── Yearly returns table ───────────────────────────────────────────
         yearly_returns_html = (
             "<table><thead><tr>"
-            "<th>Year</th><th>PnL (₹)</th><th>PnL %</th>"
+            "<th>Year</th><th>PnL (₹)</th><th>PnL %</th><th>Return % on Capital (3x DD)</th>"
             "</tr></thead><tbody>"
         )
         yearly_returns = self.metrics.get('yearly_returns', {})
         for year, pnl in sorted(yearly_returns.items()):
-            pnl_pct   = (pnl / 100000) * 100
+            pnl_pct   = (pnl / self.initial_capital_inr) * 100
             pnl_class = 'positive' if pnl >= 0 else 'negative'
             yearly_returns_html += (
                 f"<tr><td>{year}</td>"
                 f"<td class='{pnl_class}'>{format_currency(pnl)}</td>"
-                f"<td class='{pnl_class}'>{round_percent(pnl_pct)}%</td></tr>"
+                f"<td class='{pnl_class}'>{round_percent(pnl_pct)}%</td><td class='{pnl_class}'>{round_percent((pnl / capital_denom) * 100)}%</td></tr>"
             )
         yearly_returns_html += "</tbody></table>"
 
@@ -316,6 +327,14 @@ class BacktestReportGenerator:
             '                <div class="header-item">\n'
             '                    <label>Sharpe Ratio</label>\n'
             f'                    <value>{format_number(sharpe_ratio)}</value>\n'
+            '                </div>\n'
+            '                <div class="header-item">\n'
+            '                    <label>Recommended Capital</label>\n'
+            f'                    <value>{format_currency(recommended_capital)}</value>\n'
+            '                </div>\n'
+            '                <div class="header-item">\n'
+            '                    <label>Return on Capital</label>\n'
+            f'                    <value class="{pnl_class}">{round_percent(return_on_capital)}%</value>\n'
             '                </div>\n'
             '            </div>\n'
             '        </div>\n'
@@ -443,6 +462,46 @@ class BacktestReportGenerator:
             '            </div>\n'
             '        </div>\n'
             '\n'
+            # ── SECTION 7: RISK MANAGEMENT ────────────────────────────────────
+            '        <div class="section">\n'
+            '            <h2>🛡️ Risk Management</h2>\n'
+            '            <div class="metric-grid">\n'
+            '                <div class="metric-card">\n'
+            '                    <label>Recommended Capital (3x DD)</label>\n'
+            f'                    <value>{format_currency(recommended_capital)}</value>\n'
+            '                </div>\n'
+            '                <div class="metric-card">\n'
+            '                    <label>Max Drawdown</label>\n'
+            f'                    <value class="negative">{round_percent(max_drawdown_pct)}% (-{format_currency(abs(max_drawdown_inr))})</value>\n'
+            '                </div>\n'
+            '                <div class="metric-card">\n'
+            '                    <label>Max Drawdown Duration</label>\n'
+            f'                    <value class="negative">{dd_max_days} days</value>\n'
+            '                </div>\n'
+            '                <div class="metric-card">\n'
+            '                    <label>Return on Capital (Total)</label>\n'
+            f'                    <value class="{pnl_class}">{round_percent(return_on_capital)}%</value>\n'
+            '                </div>\n'
+            '                <div class="metric-card">\n'
+            '                    <label>Best Month Return on Capital</label>\n'
+            f'                    <value class="positive">{round_percent(best_month_roc)}% ({best_month_key})</value>\n'
+            '                </div>\n'
+            '                <div class="metric-card">\n'
+            '                    <label>Avg Monthly Return on Capital</label>\n'
+            f'                    <value class="{pnl_class}">{round_percent(avg_month_roc)}%</value>\n'
+            '                </div>\n'
+            '                <div class="metric-card">\n'
+            '                    <label>Return / Max DD Ratio</label>\n'
+            f'                    <value>{return_to_dd_ratio}</value>\n'
+            '                </div>\n'
+            '                <div class="metric-card">\n'
+            '                    <label>Sharpe Ratio</label>\n'
+            f'                    <value>{format_number(sharpe_ratio)}</value>\n'
+            '                </div>\n'
+            '            </div>\n'
+            '        </div>\n'
+            '\n'
+
 
             # ── SECTION 7: CHARGES BREAKDOWN ──────────────────────────────
             '        <div class="section">\n'
@@ -560,3 +619,8 @@ class BacktestReportGenerator:
 
         except Exception:
             return "N/A", "N/A", 0
+
+
+
+
+

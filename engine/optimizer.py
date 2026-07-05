@@ -1,4 +1,5 @@
 # engine/optimizer.py
+
 # Responsibility: Orchestrates strategy optimization by running multiple backtests
 
 import itertools
@@ -15,6 +16,25 @@ class Optimizer:
     with different parameter combinations.
     """
 
+    # Parameter name mapping: PREDEFINED_RANGES keys → strategy __init__ keys
+    # engine/optimizer.py — PARAM_NAME_MAP dict (replace existing)
+
+    PARAM_NAME_MAP = {
+        # Supertrend
+        'atr_length': 'st_atr_length',
+        'factor': 'st_factor',
+        # SMIIO
+        'smiio_length': 'smiio_longlen',
+        'smiio_signal': 'smiio_siglen',
+        # Distance Filter — ADD THESE (were missing)
+        'crossover_distance': 'crossover_distance',
+        'crossover_count_limit': 'crossover_count_limit',
+        'smiio_avoid_entry_above': 'smiio_avoid_entry_above',
+        # Renko — ADD THESE (were missing, caused identical RENKO results too)
+        'renko_timeframe': 'renko_timeframe',
+        'renko_box_pct': 'renko_box_pct',
+    }
+
     def __init__(self, strategy_class, symbol, start_date, end_date, csv_path):
         self.strategy_class = strategy_class
         self.symbol = symbol
@@ -28,32 +48,29 @@ class Optimizer:
         """
         Generates parameter combinations and runs backtests for each.
         """
+        import copy
+
         print("\n" + "=" * 70)
         print(f"STRATEGY OPTIMIZATION - {self.strategy_class.__name__}")
         print("=" * 70)
 
-        # Get optimization parameters from the strategy
-        # Use self.final_params_to_optimize which is set by run_optimization.py
         params_to_optimize = self.final_params_to_optimize
         param_names = []
         param_values = []
 
         for param_name, param_info in params_to_optimize.items():
             param_names.append(param_name)
-            if 'values' in param_info:  # For discrete values
+            if 'values' in param_info:
                 param_values.append(param_info['values'])
-            else:  # For range (start-end-step)
+            else:
                 start = param_info['min']
                 end = param_info['max']
                 step = param_info['step']
-
-                # CORRECTED BLOCK: Generate float range manually
                 values = []
                 current_value = start
-                # Use a small epsilon to handle float precision issues in comparison
                 epsilon = 1e-9
-                while current_value <= end + epsilon:  # Loop until current_value exceeds end
-                    values.append(round(current_value, 5))  # Round to avoid float precision display issues
+                while current_value <= end + epsilon:
+                    values.append(round(current_value, 5))
                     current_value += step
                 param_values.append(values)
 
@@ -65,10 +82,13 @@ class Optimizer:
             print(f"\n--- Running backtest for combination {i + 1}/{len(all_combinations)} ---")
             print(f"Parameters: {param_combo}")
 
-            # Extract lot_size for the engine, rest goes to strategy
-            # Use .pop() to remove lot_size from param_combo if it's there,
-            # so it's not passed twice to strategy_params
-            lot_size = param_combo.pop('lot_size', backtest_config.get('default_lot_size', 1))
+            lot_size = param_combo.pop('lot_size', backtest_config.get('default_lot_size', 100))
+
+            mapped_combo = {self.PARAM_NAME_MAP.get(k, k): v for k, v in param_combo.items()}
+            strategy_params_copy = copy.deepcopy(mapped_combo)
+
+            # DEBUG — confirm exact params reaching engine each combo
+            print(f"[OPTIMIZER] combo {i + 1} strategy_params={strategy_params_copy}")
 
             engine = BacktestEngine(
                 strategy_class=self.strategy_class,
@@ -77,18 +97,16 @@ class Optimizer:
                 start_date=self.start_date,
                 end_date=self.end_date,
                 csv_path=self.csv_path,
-                strategy_params=param_combo  # Pass remaining optimization params to the engine
+                strategy_params=strategy_params_copy
             )
 
             results = engine.run()
-
             metrics = results['metrics']
 
             self.optimization_results.append({
-                'parameters': param_combo,  # Store the parameters used for this run
+                'parameters': mapped_combo,
                 'metrics': metrics
             })
 
         print("\n✅ Optimization complete!")
         return self.optimization_results
-

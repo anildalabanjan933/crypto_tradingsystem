@@ -1,7 +1,7 @@
 # run_live_trading_s3.py — S3: RenkoBreakoutStrategy
 import time, logging, pandas as pd
 from engine.order_manager import OrderManager
-from strategies.renko_breakout_strategy import RenkoBreakoutStrategy
+from strategies.backtest.renko_breakout_strategy import RenkoBreakoutStrategy
 from config.symbol_config import get_renko_box_size
 
 logging.basicConfig(
