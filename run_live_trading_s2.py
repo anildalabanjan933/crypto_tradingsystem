@@ -1,5 +1,8 @@
 # run_live_trading_s2.py — S2: RenkoReversalStrategy
-import time, logging, pandas as pd
+import time, os
+from dotenv import load_dotenv
+load_dotenv()
+import logging, pandas as pd
 from engine.order_manager import OrderManager
 from strategies.backtest.renko_reversal_strategy import RenkoReversalStrategy
 from config.symbol_config import get_renko_box_size
@@ -15,8 +18,8 @@ SYMBOL     = 'BTCUSD'
 LOT_SIZE   = 100
 CSV_PATH   = 'data/btc_1m_delta.csv'
 CYCLE_SEC  = 60
-API_KEY    = 'your_api_key_here'
-API_SECRET = 'your_api_secret_here'
+API_KEY    = os.getenv('S2_API_KEY')
+API_SECRET = os.getenv('S2_API_SECRET')
 
 om = OrderManager(api_key=API_KEY, api_secret=API_SECRET, testnet=True)
 
@@ -86,7 +89,7 @@ while True:
 
         box_size = get_renko_box_size(SYMBOL, float(df_2h['close'].iloc[-1]))
         strategy = RenkoReversalStrategy(
-            data_dict={'2H': df_2h}, lot_size=LOT_SIZE, renko_box=box_size
+            data_dict={'2h': df_2h}, lot_size=LOT_SIZE, renko_box=box_size
         )
         signals = strategy.generate_signals()
         log.info(f"[SIGNALS] total={len(signals)}")

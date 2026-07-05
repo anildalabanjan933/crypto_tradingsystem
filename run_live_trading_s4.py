@@ -3,7 +3,9 @@
 # Subaccount : S4RenkoSMIOsuptrend
 # Testnet    : True (forward test)
 
-import time
+import time, os
+from dotenv import load_dotenv
+load_dotenv()
 import logging
 import requests
 import pandas as pd
@@ -16,8 +18,8 @@ from config.symbol_config import get_renko_box_size
 # ===========================================================================
 # CONFIG
 # ===========================================================================
-API_KEY    = 'your_api_key_here'
-API_SECRET = 'your_api_secret_here'
+API_KEY    = os.getenv('S4_API_KEY')
+API_SECRET = os.getenv('S4_API_SECRET')
 TESTNET    = True
 LOT_SIZE   = 100
 CSV_PATH   = 'data/btc_1m_delta.csv'
@@ -127,7 +129,7 @@ def main():
 
             # Generate signals
             strategy = RenkoSMIIOSupertrendStrategy(
-                data_dict={'2H': df_2h},
+                data_dict={'2h': df_2h},
                 lot_size=LOT_SIZE,
                 renko_box=box_size,
                 symbol=SYMBOL,
