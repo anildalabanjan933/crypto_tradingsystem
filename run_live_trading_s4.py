@@ -95,6 +95,52 @@ def main():
         position = None
     logging.info(f'[STARTUP] Position synced from exchange: {position}')
 
+    # --- Fetch live candles first so last_known_ts covers all existing signals ---
+    logging.info('[STARTUP] Fetching latest candles before pre-loading signals...')
+    try:
+        _last_ts = int(df_1m['timestamp'].iloc[-1].timestamp())
+        _new = fetch_new_candles(_last_ts + 1, int(datetime.now(timezone.utc).timestamp()))
+        if _new:
+            _rows = []
+            for c in _new:
+                _rows.append({
+                    'timestamp': pd.to_datetime(c['time'], unit='s', utc=True).tz_localize(None),
+                    'open':  float(c['open']),
+                    'high':  float(c['high']),
+                    'low':   float(c['low']),
+                    'close': float(c['close']),
+                    'volume': float(c['volume']),
+                })
+            _df_new = pd.DataFrame(_rows)
+            df_1m = pd.concat([df_1m, _df_new], ignore_index=True)
+            df_1m = df_1m.drop_duplicates(subset='timestamp').sort_values('timestamp').reset_index(drop=True)
+            last_ts = int(df_1m['timestamp'].iloc[-1].timestamp())
+            logging.info(f'[STARTUP] Pre-fetched {len(_df_new)} candles. Total={len(df_1m)}')
+    except Exception as _e:
+        logging.warning(f'[STARTUP] Pre-fetch failed: {_e}')
+
+    # --- Pre-load signals from full data to get last known ts ---
+    logging.info('[STARTUP] Pre-loading signals to find last known timestamp...')
+    try:
+        _df_1m_idx = df_1m.set_index('timestamp')
+        _df_2h_init = _df_1m_idx['close'].resample('2h').ohlc()
+        _df_2h_init.columns = ['open', 'high', 'low', 'close']
+        _df_2h_init['volume'] = _df_1m_idx['volume'].resample('2h').sum()
+        _df_2h_init = _df_2h_init.dropna().reset_index()
+        _box_init = get_renko_box_size(SYMBOL, float(_df_2h_init['close'].iloc[-1]))
+        _strat_init = RenkoSMIIOSupertrendStrategy(
+            data_dict={'2h': _df_2h_init},
+            lot_size=LOT_SIZE,
+            renko_box=_box_init,
+            symbol=SYMBOL,
+        )
+        _sigs_init = _strat_init.generate_signals()
+        last_known_ts = _sigs_init[-1].get('timestamp') if _sigs_init else None
+        logging.info(f'[STARTUP] last_known_ts={last_known_ts} | total signals={len(_sigs_init)}')
+    except Exception as _e:
+        last_known_ts = None
+        logging.warning(f'[STARTUP] Pre-load failed: {_e}')
+
     # --- Main loop ---
     while True:
         try:
@@ -137,32 +183,46 @@ def main():
             signals = strategy.generate_signals()
             logging.info(f'[SIGNALS] total={len(signals)}')
 
-            # Execute last signal with position state check
-            if signals:
-                last_signal = signals[-1]
-                sig_type   = last_signal['signal_type']
-                direction  = last_signal['direction']
-                entry_type = last_signal.get('entry_type', '')
-                exit_type  = last_signal.get('exit_type', '')
+            # --- Only process signals newer than last known ts ---
+            new_signals = [
+                s for s in signals
+                if last_known_ts is None or str(s.get('timestamp', '')) > str(last_known_ts)
+            ]
+
+            if new_signals:
+                sig        = new_signals[-1]
+                sig_type   = sig.get('signal_type')
+                direction  = sig.get('direction')
+                entry_type = sig.get('entry_type', '')
+                exit_type  = sig.get('exit_type', '')
+                sig_ts     = sig.get('timestamp')
 
                 if sig_type == 'ENTRY' and position is None:
                     if direction == 'long':
                         order_manager.place_market_order('buy', LOT_SIZE)
                         position = 'long'
-                        logging.info(f'[ORDER] ENTRY buy {LOT_SIZE} lots | type={entry_type}')
+                        last_known_ts = sig_ts
+                        logging.info(f'[ORDER] ENTRY buy {LOT_SIZE} lots | type={entry_type} | ts={sig_ts}')
                     elif direction == 'short':
                         order_manager.place_market_order('sell', LOT_SIZE)
                         position = 'short'
-                        logging.info(f'[ORDER] ENTRY sell {LOT_SIZE} lots | type={entry_type}')
+                        last_known_ts = sig_ts
+                        logging.info(f'[ORDER] ENTRY sell {LOT_SIZE} lots | type={entry_type} | ts={sig_ts}')
 
                 elif sig_type == 'EXIT' and position is not None:
                     if position == 'long':
                         order_manager.close_position(LOT_SIZE, 'sell')
-                        logging.info(f'[ORDER] EXIT sell {LOT_SIZE} lots | type={exit_type}')
+                        logging.info(f'[ORDER] EXIT sell {LOT_SIZE} lots | type={exit_type} | ts={sig_ts}')
                     elif position == 'short':
                         order_manager.close_position(LOT_SIZE, 'buy')
-                        logging.info(f'[ORDER] EXIT buy {LOT_SIZE} lots | type={exit_type}')
+                        logging.info(f'[ORDER] EXIT buy {LOT_SIZE} lots | type={exit_type} | ts={sig_ts}')
                     position = None
+                    last_known_ts = sig_ts
+
+                else:
+                    logging.info(f'[SKIP] Signal blocked | sig_type={sig_type} | position={position} | ts={sig_ts}')
+            else:
+                logging.info(f'[WAIT] No new signals since {last_known_ts}')
 
         except Exception as e:
             logging.error(f'[ERROR] {e}')
