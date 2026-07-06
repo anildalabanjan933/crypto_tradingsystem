@@ -41,10 +41,14 @@ class RenkoReversalStrategy(BaseStrategy):
         )
 
         # Renko settings
-        self.renko_box    = kwargs.get('renko_box', 200.0)
+        self.renko_box_pct = kwargs.get('renko_box_pct', 0.0010)
+        self.renko_timeframe = kwargs.get('renko_timeframe', '1h')
+        self.last_exit_ts = None
         self.sr_tolerance = kwargs.get('sr_tolerance', 1.5)   # multiplier of box_size - auto-scales per symbol
         self.sr_lookback  = kwargs.get('sr_lookback', 5)       # bricks to look back for S/R touch before flip
         self.max_tl_bars  = kwargs.get('max_tl_bars', 50)
+        self.st_atr_length = kwargs.get('st_atr_length', 5)
+        self.st_factor     = kwargs.get('st_factor', 1.5)
 
         # Slippage (USD per side)
         self.slippage_usd = kwargs.get('slippage_usd', 0.0)
@@ -68,7 +72,7 @@ class RenkoReversalStrategy(BaseStrategy):
 
     @property
     def required_timeframes(self) -> list:
-        return ['2h']  # CORRECT
+        return [self.renko_timeframe]  # CORRECT
 
     # ------------------------------------------------------------------
     # SLIPPAGE HELPER
@@ -85,15 +89,17 @@ class RenkoReversalStrategy(BaseStrategy):
     # ------------------------------------------------------------------
 
     def _build_renko_df(self) -> pd.DataFrame:
-        df_2h = self._data.get('2h')
+        df_2h = self._data.get(self.renko_timeframe)
         if df_2h is None or len(df_2h) == 0:
-            raise ValueError("RenkoReversalStrategy requires '2h' timeframe data in data_dict")
+            raise ValueError("RenkoReversalStrategy requires timeframe data in data_dict")
 
         closes     = df_2h['close'].values
         timestamps = df_2h.index if isinstance(df_2h.index, pd.DatetimeIndex) else pd.to_datetime(df_2h['timestamp'])
 
         # Build Renko bricks
-        builder   = RenkoBuilder(box_size=self.renko_box)
+        current_price = self._data[self.renko_timeframe]['close'].iloc[-1]
+        box_size = max(1, round(current_price * self.renko_box_pct))
+        builder   = RenkoBuilder(box_size=box_size)
         renko_raw = builder.build(closes)
 
         if renko_raw is None or len(renko_raw) == 0:
@@ -105,7 +111,7 @@ class RenkoReversalStrategy(BaseStrategy):
         )
 
         # Add Supertrend
-        st_indicator = SupertrendIndicator(atr_period=5, factor=4.0)
+        st_indicator = SupertrendIndicator(atr_period=self.st_atr_length, factor=self.st_factor)
         renko_st     = st_indicator.calculate(renko_raw)
 
         # Add Swing detection
@@ -133,35 +139,6 @@ class RenkoReversalStrategy(BaseStrategy):
         df = self._build_renko_df()
 
         # ------------------------------------------------------------------
-        # DEBUG
-        # ------------------------------------------------------------------
-        st_dir_temp = df['st_dir'].values
-        rc_temp = df['renko_close'].values
-        rd_temp = df['renko_dir'].values
-        last_sl_temp = df['last_swing_low'].values
-        last_sh_temp = df['last_swing_high'].values
-        sl_hist_temp = df['swing_lows_hist'].tolist()
-        sh_hist_temp = df['swing_highs_hist'].tolist()
-        box_temp = self.renko_box
-
-        for i in range(1, len(st_dir_temp)):
-            if st_dir_temp[i - 1] == 1 and st_dir_temp[i] == -1 and rd_temp[i] == 1:
-                close_t = rc_temp[i]
-                sr_zone_temp = box_temp * self.sr_tolerance
-                lb_start_t = max(0, i - self.sr_lookback)
-                recent_low_t = np.min(rc_temp[lb_start_t:i + 1])
-                near_h = (
-                        not np.isnan(last_sl_temp[i])
-                        and last_sl_temp[i] - sr_zone_temp <= recent_low_t <= last_sl_temp[i] + sr_zone_temp
-                )
-                btl = _trendline_value_at(sl_hist_temp[i], i, self.max_tl_bars)
-                near_s = (
-                        btl is not None
-                        and btl - sr_zone_temp <= recent_low_t <= btl + sr_zone_temp
-                )
-                n_swings = len(sl_hist_temp[i])
-
-        # ------------------------------------------------------------------
         # MAIN SIGNAL LOOP
         # ------------------------------------------------------------------
         signals = []
@@ -176,7 +153,8 @@ class RenkoReversalStrategy(BaseStrategy):
         sl_hist     = df['swing_lows_hist'].tolist()
         timestamps  = df['timestamp'].values
 
-        box      = self.renko_box
+        current_price = self._data[self.renko_timeframe]['close'].iloc[-1]
+        box      = max(1, round(current_price * self.renko_box_pct))
         max_bars = self.max_tl_bars
         lookback = self.sr_lookback
 
@@ -215,6 +193,7 @@ class RenkoReversalStrategy(BaseStrategy):
                     'direction'   : 'long',
                 })
                 current_direction = None
+                self.last_exit_ts = ts
 
             # SHORT EXIT: ST flips red->green + 1 green brick close
             elif current_direction == 'short' and prev_st == 1 and st == -1 and r_dir == 1:
@@ -297,7 +276,7 @@ class RenkoReversalStrategy(BaseStrategy):
             # ----------------------------------------------------------
             # ENTRY SIGNALS
             # ----------------------------------------------------------
-            if buy_edge and current_direction != 'long':
+            if buy_edge and current_direction != 'long' and ts != self.last_exit_ts:
                 entry_price = self._apply_slippage(close, 'long', is_entry=True)
                 signals.append({
                     'signal_type' : 'ENTRY',
@@ -310,7 +289,7 @@ class RenkoReversalStrategy(BaseStrategy):
                 })
                 current_direction = 'long'
 
-            elif sell_edge and current_direction != 'short':
+            elif sell_edge and current_direction != 'short' and ts != self.last_exit_ts:
                 entry_price = self._apply_slippage(close, 'short', is_entry=True)
                 signals.append({
                     'signal_type' : 'ENTRY',

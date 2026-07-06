@@ -16,24 +16,23 @@ import itertools
 
 PREDEFINED_RANGES = {
     "supertrend": {
-        "atr_length": {"values": [5, 7, 10, 14]},
-        "factor":     {"values": [1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 5.0]}
+        "st_atr_length": {"values": [5, 7, 10, 14]},
+        "st_factor":     {"values": [1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 5.0]}
     },
     "smiio": {
-        "smiio_length": {"values": [10, 14, 20, 30]},
-        "smiio_signal": {"values": [3, 5, 7, 9]}
+        "smiio_shortlen": {"values": [10, 14, 20, 30]},
+        "smiio_siglen": {"values": [3, 5, 7, 9]}
     },
     "distance_filter": {
         # Corrected: cross_gap values in data are 0.06–2.09 (SMI scale)
         # Range now covers actual gap distribution to trigger filter
-        "crossover_distance":      {"values": [0.1, 0.2, 0.3, 0.5, 0.7, 1.0, 1.5, 2.0, 2.5]},
-        "crossover_count_limit":   {"values": [1, 2, 3]},
-        "smiio_avoid_entry_above": {"values": [0.2, 0.3, 0.4, 0.5, 0.6]}
+        "crossover_distance":      {"values": [1.0, 1.5, 2.0, 2.5, 3.0]},
+        "crossover_count_limit":   {"values": [2, 3, 4, 5]},
+        "smiio_avoid_entry_above": {"values": [20.0, 30.0, 40.0, 50.0, 60.0]}
     },
     "renko": {
         "renko_timeframe": {"values": ["1m", "5m", "15m", "30m", "1h", "2h"]},
-        "renko_box_pct":   {"values": [0.0004, 0.0005, 0.0006, 0.0007, 0.0008,
-                                        0.0009, 0.0010, 0.0015, 0.0020, 0.0025]}
+        "renko_box_pct":   {"values": [0.0010, 0.0015, 0.0020, 0.0025, 0.0030, 0.0035, 0.0040]}
     }
 }
 

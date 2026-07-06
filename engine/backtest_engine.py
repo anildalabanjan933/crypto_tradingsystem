@@ -114,16 +114,12 @@ class BacktestEngine:
         import copy
         params = copy.deepcopy(self.strategy_params)
 
-        # FIX: handle BOTH 'renko_box_pct' (optimizer key) AND 'box_pct' (legacy)
-        renko_pct = params.pop('renko_box_pct', None) or params.pop('box_pct', None)
-        if renko_pct is not None:
-            if current_price and current_price > 0:
-                params['renko_box'] = max(round(current_price * renko_pct), 1)
-            else:
-                params['renko_box'] = 10
-
-        # Auto-resolve renko_box if still not set
-        elif 'renko_box' not in params:
+        # renko_box_pct passed through directly - strategy handles conversion internally
+        # Auto-resolve renko_box only if strategy does not use renko_box_pct at all
+        import inspect
+        init_src = inspect.getsource(self.strategy_class.__init__)
+        strategy_uses_pct = 'renko_box_pct' in init_src
+        if not strategy_uses_pct and 'renko_box_pct' not in params and 'renko_box' not in params:
             params['renko_box'] = get_renko_box_size(self.symbol, current_price)
 
         self.strategy = self.strategy_class(

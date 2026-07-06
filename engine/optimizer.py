@@ -20,17 +20,10 @@ class Optimizer:
     # engine/optimizer.py — PARAM_NAME_MAP dict (replace existing)
 
     PARAM_NAME_MAP = {
-        # Supertrend
-        'atr_length': 'st_atr_length',
-        'factor': 'st_factor',
-        # SMIIO
-        'smiio_length': 'smiio_longlen',
-        'smiio_signal': 'smiio_siglen',
-        # Distance Filter — ADD THESE (were missing)
-        'crossover_distance': 'crossover_distance',
-        'crossover_count_limit': 'crossover_count_limit',
-        'smiio_avoid_entry_above': 'smiio_avoid_entry_above',
-        # Renko — ADD THESE (were missing, caused identical RENKO results too)
+        'st_atr_length': 'st_atr_length',
+        'st_factor': 'st_factor',
+        'smiio_shortlen': 'smiio_shortlen',
+        'smiio_siglen': 'smiio_siglen',
         'renko_timeframe': 'renko_timeframe',
         'renko_box_pct': 'renko_box_pct',
     }
