@@ -3,7 +3,8 @@
 
 from run_single_strategy import run_single_strategy
 from run_optimization import run_optimization_workflow
-from run_portfolio_backtest import run_portfolio_backtest  # ADDED
+from run_portfolio_backtest import run_portfolio_backtest
+from data.download_market_data import run_download_menu
 import sys
 
 def main_menu():
@@ -16,23 +17,26 @@ def main_menu():
         print("=" * 70)
         print("\nMain Menu:")
         print("1. Single Strategy Backtest")
-        print("2. Portfolio Backtest (Predefined)")
-        print("3. Portfolio Backtest (Dynamic)")
+        print("2. Portfolio Backtest - Predefined")
+        print("3. Portfolio Backtest - Dynamic")
         print("4. Strategy Optimization")
-        print("5. Exit")
+        print("5. Download / Update Market Data")
+        print("6. Exit")
         print("=" * 70)
 
-        choice = input("Enter choice (1-5): ")
+        choice = input("Enter choice (1-6): ")
 
-        if choice == '1':
+        if choice == "1":
             run_single_strategy()
-        elif choice == '2':
-            print("Portfolio Backtest (Predefined) - Not yet implemented.")
-        elif choice == '3':
-            run_portfolio_backtest()  # CHANGED: was print("Not yet implemented")
-        elif choice == '4':
+        elif choice == "2":
+            print("Portfolio Backtest - Predefined - Not yet implemented.")
+        elif choice == "3":
+            run_portfolio_backtest()
+        elif choice == "4":
             run_optimization_workflow()
-        elif choice == '5':
+        elif choice == "5":
+            run_download_menu()
+        elif choice == "6":
             print("Exiting. Goodbye!")
             sys.exit()
         else:
