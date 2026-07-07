@@ -276,7 +276,7 @@ class RenkoReversalStrategy(BaseStrategy):
             # ----------------------------------------------------------
             # ENTRY SIGNALS
             # ----------------------------------------------------------
-            if buy_edge and current_direction != 'long' and ts != self.last_exit_ts:
+            if buy_edge and current_direction != 'long':
                 entry_price = self._apply_slippage(close, 'long', is_entry=True)
                 signals.append({
                     'signal_type' : 'ENTRY',
@@ -289,7 +289,7 @@ class RenkoReversalStrategy(BaseStrategy):
                 })
                 current_direction = 'long'
 
-            elif sell_edge and current_direction != 'short' and ts != self.last_exit_ts:
+            elif sell_edge and current_direction != 'short':
                 entry_price = self._apply_slippage(close, 'short', is_entry=True)
                 signals.append({
                     'signal_type' : 'ENTRY',

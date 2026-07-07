@@ -243,7 +243,7 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
             # SET PENDING — FIX 1: skip same bar as exit
             #             — FIX 3: single if/elif chain
             # ----------------------------------------------------------
-            if current_direction is None and ts != last_exit_ts:
+            if current_direction is None:
 
                 if smi_cross_up and st == -1:
                     pending = {'side': 'long', 'entry_type': 'BUY_A'}
