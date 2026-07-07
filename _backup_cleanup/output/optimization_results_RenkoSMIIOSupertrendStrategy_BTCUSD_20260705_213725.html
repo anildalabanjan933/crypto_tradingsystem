@@ -1,0 +1,226 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimization Report - RenkoSMIIOSupertrendStrategy</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5; color: #333; line-height: 1.6;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; padding: 30px; border-radius: 8px;
+            margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .header h1 { font-size: 28px; margin-bottom: 10px; }
+        .header-info {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px; margin-top: 20px;
+        }
+        .header-item {
+            background: rgba(255,255,255,0.1); padding: 15px; border-radius: 5px;
+        }
+        .header-item label {
+            font-size: 12px; opacity: 0.9; display: block; margin-bottom: 5px;
+        }
+        .header-item value { font-size: 18px; font-weight: bold; }
+        .section {
+            background: white; padding: 25px; margin-bottom: 20px;
+            border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            font-size: 20px; margin-bottom: 20px; color: #667eea;
+            border-bottom: 2px solid #667eea; padding-bottom: 10px;
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th {
+            background-color: #667eea; color: white;
+            padding: 12px; text-align: left; font-weight: 600;
+        }
+        td { padding: 12px; border-bottom: 1px solid #ddd; }
+        tr:hover { background-color: #f9f9f9; }
+        .positive { color: #27ae60; font-weight: bold; }
+        .negative { color: #e74c3c; font-weight: bold; }
+        .metric-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px; margin-top: 15px;
+        }
+        .metric-card {
+            background: #f9f9f9; padding: 15px; border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        .metric-card label {
+            font-size: 12px; color: #666; display: block; margin-bottom: 5px;
+        }
+        .metric-card value { font-size: 18px; font-weight: bold; display: block; }
+        .footer { text-align: center; padding: 20px; color: #999; font-size: 12px; }
+        .info-bar {
+            background: rgba(255,255,255,0.15); padding: 10px 15px;
+            border-radius: 5px; margin-top: 15px; font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Optimization Report: RenkoSMIIOSupertrendStrategy</h1>
+            <p>BTCUSD | 2025-07-05 to 2026-07-05</p>
+
+            <div class="info-bar">
+                Lot Size: <strong>100 lots</strong> &nbsp;|&nbsp;
+                Slippage: <strong>$5.0/side</strong> &nbsp;|&nbsp;
+                Capital: <strong>₹8,400,000 INR</strong> &nbsp;|&nbsp;
+                Charges: <strong>Included (same as backtest)</strong>
+            </div>
+
+            <div class="header-info">
+                <div class="header-item">
+                    <label>Total Combinations</label>
+                    <value>60</value>
+                </div>
+                <div class="header-item">
+                    <label>Best PnL (₹)</label>
+                    <value class="positive">
+                        ₹11,404,975.26
+                    </value>
+                </div>
+                <div class="header-item">
+                    <label>Best Return %</label>
+                    <!-- FIX: net_pnl_inr / initial_capital_inr * 100 (portfolio margin, matches backtest top card) -->
+                    <value class="positive">
+                        135.77%
+                    </value>
+                </div>
+                <div class="header-item">
+                    <label>Best Win Rate</label>
+                    <value>55.45%</value>
+                </div>
+                <div class="header-item">
+                    <label>Best Sharpe Ratio</label>
+                    <value>5.87</value>
+                </div>
+                <div class="header-item">
+                    <label>Best Max Drawdown</label>
+                    <!-- FIX: "-X.XX% (-₹Y,YYY)" format matching backtest HTML card -->
+                    <value class="negative">
+                        -0.10% (-₹9,732.35)
+                    </value>
+                </div>
+                <div class="header-item">
+                    <label>Recommended Capital</label>
+                    <value>₹29,197.06</value>
+                </div>
+                <div class="header-item">
+                    <label>Return on Capital</label>
+                    <value class="positive">39062.07%</value>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Best Performing Parameters</h2>
+            <div class='metric-grid'>
+            <div class="metric-card">
+                <label>Renko Timeframe</label>
+                <value>5m</value>
+            </div>
+            <div class="metric-card">
+                <label>Renko Box Pct</label>
+                <value>0.0004</value>
+            </div></div>
+        </div>
+
+        <div class="section">
+            <h2>Best Performance Metrics</h2>
+            <div class='metric-grid'>
+            <div class="metric-card">
+                <label>Total PnL (₹)</label>
+                <value class="positive">₹11,404,975.26</value>
+            </div>
+            <div class="metric-card">
+                <label>Gross PnL (₹)</label>
+                <value class="positive">₹13,003,620.00</value>
+            </div>
+            <div class="metric-card">
+                <label>Total Charges (₹)</label>
+                <value class="">₹1,598,644.74</value>
+            </div>
+            <div class="metric-card">
+                <label>Return %</label>
+                <value class="positive">135.77%</value>
+            </div>
+            <div class="metric-card">
+                <label>Win Rate %</label>
+                <value class="">55.45%</value>
+            </div>
+            <div class="metric-card">
+                <label>Profit Factor</label>
+                <value class="">7.88</value>
+            </div>
+            <div class="metric-card">
+                <label>Expectancy (₹)</label>
+                <value class="positive">₹854.05</value>
+            </div>
+            <div class="metric-card">
+                <label>Avg Win (₹)</label>
+                <value class="positive">₹1,992.24</value>
+            </div>
+            <div class="metric-card">
+                <label>Avg Loss (₹)</label>
+                <value class="negative">₹-314.73</value>
+            </div>
+            <div class="metric-card">
+                <label>Max Drawdown</label>
+                <value class="negative">-0.10% (-₹9,732.35)</value>
+            </div>
+            <div class="metric-card">
+                <label>Sharpe Ratio</label>
+                <value class="">5.87</value>
+            </div>
+            <div class="metric-card">
+                <label>Total Trades</label>
+                <value class="">13,354.00</value>
+            </div></div>
+        </div>
+
+        <div class="section">
+            <h2>Monthly Returns (₹) — Best Combo: renko_timeframe=5m, renko_box_pct=0.0004</h2>
+            <table><thead><tr><th>Month</th><th>PnL (₹)</th><th>PnL %</th><th>Return % on Capital (3x DD)</th></tr></thead><tbody><tr><td>2025-07</td><td class='positive'>₹1,072,596.84</td><td class='positive'>12.77%</td><td class='positive'>3673.65%</td></tr><tr><td>2025-08</td><td class='positive'>₹1,103,610.48</td><td class='positive'>13.14%</td><td class='positive'>3779.87%</td></tr><tr><td>2025-09</td><td class='positive'>₹606,110.40</td><td class='positive'>7.22%</td><td class='positive'>2075.93%</td></tr><tr><td>2025-10</td><td class='positive'>₹1,863,240.96</td><td class='positive'>22.18%</td><td class='positive'>6381.60%</td></tr><tr><td>2025-11</td><td class='positive'>₹1,965,019.56</td><td class='positive'>23.39%</td><td class='positive'>6730.20%</td></tr><tr><td>2025-12</td><td class='positive'>₹1,135,637.16</td><td class='positive'>13.52%</td><td class='positive'>3889.56%</td></tr><tr><td>2026-01</td><td class='positive'>₹899,681.16</td><td class='positive'>10.71%</td><td class='positive'>3081.41%</td></tr><tr><td>2026-02</td><td class='positive'>₹1,474,421.76</td><td class='positive'>17.55%</td><td class='positive'>5049.90%</td></tr><tr><td>2026-03</td><td class='positive'>₹1,008,483.84</td><td class='positive'>12.01%</td><td class='positive'>3454.06%</td></tr><tr><td>2026-04</td><td class='positive'>₹546,866.04</td><td class='positive'>6.51%</td><td class='positive'>1873.02%</td></tr><tr><td>2026-05</td><td class='positive'>₹386,087.52</td><td class='positive'>4.60%</td><td class='positive'>1322.35%</td></tr><tr><td>2026-06</td><td class='positive'>₹775,539.24</td><td class='positive'>9.23%</td><td class='positive'>2656.22%</td></tr><tr><td>2026-07</td><td class='positive'>₹42,934.08</td><td class='positive'>0.51%</td><td class='positive'>147.05%</td></tr></tbody></table>
+        </div>
+
+        <div class="section">
+            <h2>Yearly Returns (₹) — Best Combo: renko_timeframe=5m, renko_box_pct=0.0004</h2>
+            <table><thead><tr><th>Year</th><th>PnL (₹)</th><th>PnL %</th><th>Return % on Capital (3x DD)</th></tr></thead><tbody><tr><td>2025</td><td class='positive'>₹7,746,215.40</td><td class='positive'>92.22%</td><td class='positive'>26530.81%</td></tr><tr><td>2026</td><td class='positive'>₹5,134,013.64</td><td class='positive'>61.12%</td><td class='positive'>17584.01%</td></tr></tbody></table>
+        </div>
+
+        <div class='section'>
+            <h2>Risk Management</h2>
+            <div class='metric-grid'>
+                <div class='metric-card'><label>Recommended Capital</label><value>₹29,197.06</value></div>
+                <div class='metric-card'><label>Max Drawdown (₹)</label><value class='negative'>₹9,732.35</value></div>
+                <div class='metric-card'><label>Max DD Duration</label><value>N/A</value></div>
+                <div class='metric-card'><label>Return on Capital Total</label><value class='positive'>39062.07%</value></div>
+                <div class='metric-card'><label>Best Month ROC</label><value class='positive'>6730.20%</value></div>
+                <div class='metric-card'><label>Avg Monthly ROC</label><value>3393.45%</value></div>
+                <div class='metric-card'><label>Return / Max DD Ratio</label><value>1,171.86</value></div>
+                <div class='metric-card'><label>Sharpe Ratio</label><value>5.87</value></div>
+            </div>
+        </div>
+
+
+        <div class="section">
+            <h2>All Optimization Results</h2>
+            <table><thead><tr><th>Renko Timeframe</th><th>Renko Box Pct</th><th>Total PnL (₹)</th><th>Return %</th><th>Win Rate %</th><th>Profit Factor</th><th>Sharpe Ratio</th><th>Max Drawdown</th><th>Total Trades</th></tr></thead><tbody><tr><td class=''>1m</td><td class=''>0.0004</td><td class='positive'>₹8,349,988.92</td><td class='positive'>99.40%</td><td class=''>38.30%</td><td class=''>2.35</td><td class=''>1.65</td><td class='negative'>-0.42% (-₹69,565.80)</td><td class=''>34,540.00</td></tr><tr><td class=''>1m</td><td class=''>0.0005</td><td class='positive'>₹4,943,393.78</td><td class='positive'>58.85%</td><td class=''>34.40%</td><td class=''>1.79</td><td class=''>1.82</td><td class='negative'>-1.20% (-₹160,405.79)</td><td class=''>27,693.00</td></tr><tr><td class=''>1m</td><td class=''>0.0006</td><td class='positive'>₹2,913,397.45</td><td class='positive'>34.68%</td><td class=''>31.94%</td><td class=''>1.51</td><td class=''>1.55</td><td class='negative'>-2.06% (-₹235,033.71)</td><td class=''>22,423.00</td></tr><tr><td class=''>1m</td><td class=''>0.0007</td><td class='positive'>₹1,177,841.87</td><td class='positive'>14.02%</td><td class=''>29.89%</td><td class=''>1.27</td><td class=''>1.40</td><td class='negative'>-4.08% (-₹403,848.80)</td><td class=''>18,757.00</td></tr><tr><td class=''>1m</td><td class=''>0.0008</td><td class='positive'>₹160,162.80</td><td class='positive'>1.91%</td><td class=''>28.88%</td><td class=''>1.13</td><td class=''>0.11</td><td class='negative'>-6.00% (-₹543,637.14)</td><td class=''>15,792.00</td></tr><tr><td class=''>1m</td><td class=''>0.0009</td><td class='negative'>₹-635,416.66</td><td class='negative'>-7.56%</td><td class=''>27.31%</td><td class=''>1.02</td><td class=''>-0.03</td><td class='negative'>-8.68% (-₹737,137.88)</td><td class=''>13,205.00</td></tr><tr><td class=''>1m</td><td class=''>0.001</td><td class='negative'>₹-1,280,023.84</td><td class='negative'>-15.24%</td><td class=''>26.07%</td><td class=''>0.93</td><td class=''>-0.11</td><td class='negative'>-15.23% (-₹1,278,973.00)</td><td class=''>11,511.00</td></tr><tr><td class=''>1m</td><td class=''>0.0015</td><td class='negative'>₹-2,967,346.45</td><td class='negative'>-35.33%</td><td class=''>22.29%</td><td class=''>0.65</td><td class=''>-2.71</td><td class='negative'>-35.38% (-₹2,972,072.98)</td><td class=''>6,403.00</td></tr><tr><td class=''>1m</td><td class=''>0.002</td><td class='negative'>₹-3,384,658.20</td><td class='negative'>-40.29%</td><td class=''>19.37%</td><td class=''>0.53</td><td class=''>-2.85</td><td class='negative'>-40.42% (-₹3,394,969.79)</td><td class=''>4,182.00</td></tr><tr><td class=''>1m</td><td class=''>0.0025</td><td class='negative'>₹-3,144,517.66</td><td class='negative'>-37.43%</td><td class=''>18.28%</td><td class=''>0.49</td><td class=''>-4.26</td><td class='negative'>-37.53% (-₹3,152,622.31)</td><td class=''>2,877.00</td></tr><tr><td class=''>5m</td><td class=''>0.0004</td><td class='positive'>₹11,404,975.26</td><td class='positive'>135.77%</td><td class=''>55.45%</td><td class=''>7.88</td><td class=''>5.87</td><td class='negative'>-0.10% (-₹9,732.35)</td><td class=''>13,354.00</td></tr><tr><td class=''>5m</td><td class=''>0.0005</td><td class='positive'>₹8,962,582.36</td><td class='positive'>106.70%</td><td class=''>49.92%</td><td class=''>5.39</td><td class=''>5.71</td><td class='negative'>-0.16% (-₹21,420.41)</td><td class=''>11,556.00</td></tr><tr><td class=''>5m</td><td class=''>0.0006</td><td class='positive'>₹7,434,450.07</td><td class='positive'>88.51%</td><td class=''>46.84%</td><td class=''>4.31</td><td class=''>5.29</td><td class='negative'>-0.16% (-₹15,448.11)</td><td class=''>9,988.00</td></tr><tr><td class=''>5m</td><td class=''>0.0007</td><td class='positive'>₹5,941,860.04</td><td class='positive'>70.74%</td><td class=''>42.79%</td><td class=''>3.35</td><td class=''>4.86</td><td class='negative'>-0.25% (-₹34,464.75)</td><td class=''>8,832.00</td></tr><tr><td class=''>5m</td><td class=''>0.0008</td><td class='positive'>₹5,010,934.74</td><td class='positive'>59.65%</td><td class=''>40.99%</td><td class=''>2.90</td><td class=''>3.71</td><td class='negative'>-0.24% (-₹21,832.16)</td><td class=''>7,795.00</td></tr><tr><td class=''>5m</td><td class=''>0.0009</td><td class='positive'>₹3,998,620.75</td><td class='positive'>47.60%</td><td class=''>39.28%</td><td class=''>2.50</td><td class=''>3.59</td><td class='negative'>-0.34% (-₹40,796.81)</td><td class=''>6,742.00</td></tr><tr><td class=''>5m</td><td class=''>0.001</td><td class='positive'>₹3,207,673.81</td><td class='positive'>38.19%</td><td class=''>36.84%</td><td class=''>2.17</td><td class=''>3.30</td><td class='negative'>-0.41% (-₹36,783.14)</td><td class=''>6,061.00</td></tr><tr><td class=''>5m</td><td class=''>0.0015</td><td class='positive'>₹816,214.14</td><td class='positive'>9.72%</td><td class=''>31.04%</td><td class=''>1.37</td><td class=''>1.25</td><td class='negative'>-1.38% (-₹124,806.77)</td><td class=''>3,785.00</td></tr><tr><td class=''>5m</td><td class=''>0.002</td><td class='negative'>₹-143,451.00</td><td class='negative'>-1.71%</td><td class=''>27.18%</td><td class=''>1.06</td><td class=''>0.78</td><td class='negative'>-2.82% (-₹236,623.38)</td><td class=''>2,575.00</td></tr><tr><td class=''>5m</td><td class=''>0.0025</td><td class='negative'>₹-751,456.02</td><td class='negative'>-8.95%</td><td class=''>24.32%</td><td class=''>0.86</td><td class=''>-0.82</td><td class='negative'>-9.00% (-₹756,023.87)</td><td class=''>1,871.00</td></tr><tr><td class=''>15m</td><td class=''>0.0004</td><td class='positive'>₹10,060,497.89</td><td class='positive'>119.77%</td><td class=''>68.77%</td><td class=''>21.20</td><td class=''>8.42</td><td class='negative'>-0.08% (-₹14,297.34)</td><td class=''>6,125.00</td></tr><tr><td class=''>15m</td><td class=''>0.0005</td><td class='positive'>₹8,599,919.08</td><td class='positive'>102.38%</td><td class=''>63.66%</td><td class=''>13.72</td><td class=''>8.11</td><td class='negative'>-0.08% (-₹13,663.73)</td><td class=''>5,559.00</td></tr><tr><td class=''>15m</td><td class=''>0.0006</td><td class='positive'>₹7,431,265.21</td><td class='positive'>88.47%</td><td class=''>58.47%</td><td class=''>9.93</td><td class=''>7.62</td><td class='negative'>-0.09% (-₹12,127.90)</td><td class=''>5,033.00</td></tr><tr><td class=''>15m</td><td class=''>0.0007</td><td class='positive'>₹6,342,705.94</td><td class='positive'>75.51%</td><td class=''>54.28%</td><td class=''>7.27</td><td class=''>7.25</td><td class='negative'>-0.11% (-₹16,187.26)</td><td class=''>4,576.00</td></tr><tr><td class=''>15m</td><td class=''>0.0008</td><td class='positive'>₹5,643,121.85</td><td class='positive'>67.18%</td><td class=''>51.88%</td><td class=''>6.06</td><td class=''>6.34</td><td class='negative'>-0.13% (-₹17,074.95)</td><td class=''>4,167.00</td></tr><tr><td class=''>15m</td><td class=''>0.0009</td><td class='positive'>₹4,813,847.81</td><td class='positive'>57.31%</td><td class=''>48.52%</td><td class=''>4.94</td><td class=''>6.02</td><td class='negative'>-0.20% (-₹25,435.73)</td><td class=''>3,755.00</td></tr><tr><td class=''>15m</td><td class=''>0.001</td><td class='positive'>₹4,248,313.86</td><td class='positive'>50.58%</td><td class=''>45.38%</td><td class=''>4.24</td><td class=''>5.55</td><td class='negative'>-0.22% (-₹20,404.12)</td><td class=''>3,449.00</td></tr><tr><td class=''>15m</td><td class=''>0.0015</td><td class='positive'>₹2,191,912.13</td><td class='positive'>26.09%</td><td class=''>37.24%</td><td class=''>2.41</td><td class=''>3.62</td><td class='negative'>-0.34% (-₹36,444.39)</td><td class=''>2,395.00</td></tr><tr><td class=''>15m</td><td class=''>0.002</td><td class='positive'>₹1,034,377.51</td><td class='positive'>12.31%</td><td class=''>32.29%</td><td class=''>1.66</td><td class=''>2.71</td><td class='negative'>-0.73% (-₹65,827.08)</td><td class=''>1,728.00</td></tr><tr><td class=''>15m</td><td class=''>0.0025</td><td class='positive'>₹780,981.18</td><td class='positive'>9.30%</td><td class=''>30.22%</td><td class=''>1.54</td><td class=''>1.99</td><td class='negative'>-1.35% (-₹125,186.32)</td><td class=''>1,274.00</td></tr><tr><td class=''>30m</td><td class=''>0.0004</td><td class='positive'>₹8,226,764.70</td><td class='positive'>97.94%</td><td class=''>76.23%</td><td class=''>43.19</td><td class=''>9.56</td><td class='negative'>-0.04% (-₹6,647.99)</td><td class=''>3,391.00</td></tr><tr><td class=''>30m</td><td class=''>0.0005</td><td class='positive'>₹7,721,144.17</td><td class='positive'>91.92%</td><td class=''>71.86%</td><td class=''>28.51</td><td class=''>9.23</td><td class='negative'>-0.05% (-₹6,722.73)</td><td class=''>3,149.00</td></tr><tr><td class=''>30m</td><td class=''>0.0006</td><td class='positive'>₹6,723,892.48</td><td class='positive'>80.05%</td><td class=''>67.20%</td><td class=''>19.16</td><td class=''>8.60</td><td class='negative'>-0.08% (-₹11,474.73)</td><td class=''>2,930.00</td></tr><tr><td class=''>30m</td><td class=''>0.0007</td><td class='positive'>₹6,066,038.83</td><td class='positive'>72.21%</td><td class=''>62.72%</td><td class=''>14.77</td><td class=''>8.54</td><td class='negative'>-0.06% (-₹7,896.69)</td><td class=''>2,739.00</td></tr><tr><td class=''>30m</td><td class=''>0.0008</td><td class='positive'>₹5,464,035.70</td><td class='positive'>65.05%</td><td class=''>60.28%</td><td class=''>11.24</td><td class=''>7.71</td><td class='negative'>-0.08% (-₹10,743.72)</td><td class=''>2,545.00</td></tr><tr><td class=''>30m</td><td class=''>0.0009</td><td class='positive'>₹5,026,191.58</td><td class='positive'>59.84%</td><td class=''>57.35%</td><td class=''>9.56</td><td class=''>7.65</td><td class='negative'>-0.09% (-₹8,045.17)</td><td class=''>2,326.00</td></tr><tr><td class=''>30m</td><td class=''>0.001</td><td class='positive'>₹4,365,565.76</td><td class='positive'>51.97%</td><td class=''>53.90%</td><td class=''>7.41</td><td class=''>7.18</td><td class='negative'>-0.12% (-₹11,824.13)</td><td class=''>2,191.00</td></tr><tr><td class=''>30m</td><td class=''>0.0015</td><td class='positive'>₹2,626,252.27</td><td class='positive'>31.26%</td><td class=''>43.43%</td><td class=''>3.73</td><td class=''>5.28</td><td class='negative'>-0.29% (-₹25,820.60)</td><td class=''>1,607.00</td></tr><tr><td class=''>30m</td><td class=''>0.002</td><td class='positive'>₹1,957,022.00</td><td class='positive'>23.30%</td><td class=''>38.77%</td><td class=''>2.87</td><td class=''>4.65</td><td class='negative'>-0.35% (-₹35,642.45)</td><td class=''>1,189.00</td></tr><tr><td class=''>30m</td><td class=''>0.0025</td><td class='positive'>₹1,151,226.55</td><td class='positive'>13.71%</td><td class=''>34.06%</td><td class=''>2.04</td><td class=''>3.27</td><td class='negative'>-1.14% (-₹109,147.14)</td><td class=''>963.00</td></tr><tr><td class=''>1h</td><td class=''>0.0004</td><td class='positive'>₹6,784,436.23</td><td class='positive'>80.77%</td><td class=''>84.22%</td><td class=''>96.90</td><td class=''>10.47</td><td class='negative'>-0.02% (-₹2,767.19)</td><td class=''>1,838.00</td></tr><tr><td class=''>1h</td><td class=''>0.0005</td><td class='positive'>₹6,131,679.20</td><td class='positive'>73.00%</td><td class=''>79.65%</td><td class=''>58.03</td><td class=''>10.50</td><td class='negative'>-0.02% (-₹2,599.59)</td><td class=''>1,759.00</td></tr><tr><td class=''>1h</td><td class=''>0.0006</td><td class='positive'>₹5,742,261.42</td><td class='positive'>68.36%</td><td class=''>75.34%</td><td class=''>40.79</td><td class=''>10.10</td><td class='negative'>-0.03% (-₹2,594.89)</td><td class=''>1,679.00</td></tr><tr><td class=''>1h</td><td class=''>0.0007</td><td class='positive'>₹5,363,377.66</td><td class='positive'>63.85%</td><td class=''>72.40%</td><td class=''>28.64</td><td class=''>9.90</td><td class='negative'>-0.05% (-₹6,373.81)</td><td class=''>1,594.00</td></tr><tr><td class=''>1h</td><td class=''>0.0008</td><td class='positive'>₹4,687,101.89</td><td class='positive'>55.80%</td><td class=''>67.94%</td><td class=''>19.58</td><td class=''>8.91</td><td class='negative'>-0.06% (-₹7,145.57)</td><td class=''>1,519.00</td></tr><tr><td class=''>1h</td><td class=''>0.0009</td><td class='positive'>₹4,394,503.68</td><td class='positive'>52.32%</td><td class=''>63.77%</td><td class=''>15.19</td><td class=''>8.83</td><td class='negative'>-0.09% (-₹10,299.62)</td><td class=''>1,427.00</td></tr><tr><td class=''>1h</td><td class=''>0.001</td><td class='positive'>₹4,076,056.49</td><td class='positive'>48.52%</td><td class=''>61.82%</td><td class=''>12.80</td><td class=''>8.45</td><td class='negative'>-0.11% (-₹13,524.66)</td><td class=''>1,362.00</td></tr><tr><td class=''>1h</td><td class=''>0.0015</td><td class='positive'>₹2,912,429.02</td><td class='positive'>34.67%</td><td class=''>51.91%</td><td class=''>6.51</td><td class=''>7.44</td><td class='negative'>-0.21% (-₹21,931.38)</td><td class=''>1,048.00</td></tr><tr><td class=''>1h</td><td class=''>0.002</td><td class='positive'>₹2,126,105.77</td><td class='positive'>25.31%</td><td class=''>46.88%</td><td class=''>4.53</td><td class=''>6.50</td><td class='negative'>-0.29% (-₹30,564.04)</td><td class=''>817.00</td></tr><tr><td class=''>1h</td><td class=''>0.0025</td><td class='positive'>₹1,392,685.56</td><td class='positive'>16.58%</td><td class=''>38.98%</td><td class=''>2.88</td><td class=''>4.61</td><td class='negative'>-0.32% (-₹31,584.66)</td><td class=''>667.00</td></tr><tr><td class=''>2h</td><td class=''>0.0004</td><td class='positive'>₹4,982,079.65</td><td class='positive'>59.31%</td><td class=''>88.82%</td><td class=''>172.41</td><td class=''>11.85</td><td class='negative'>-0.02% (-₹2,293.07)</td><td class=''>993.00</td></tr><tr><td class=''>2h</td><td class=''>0.0005</td><td class='positive'>₹4,644,703.48</td><td class='positive'>55.29%</td><td class=''>86.48%</td><td class=''>125.33</td><td class=''>11.85</td><td class='negative'>-0.02% (-₹2,403.51)</td><td class=''>947.00</td></tr><tr><td class=''>2h</td><td class=''>0.0006</td><td class='positive'>₹4,705,949.05</td><td class='positive'>56.02%</td><td class=''>81.20%</td><td class=''>82.34</td><td class=''>11.16</td><td class='negative'>-0.02% (-₹2,339.72)</td><td class=''>915.00</td></tr><tr><td class=''>2h</td><td class=''>0.0007</td><td class='positive'>₹4,282,393.50</td><td class='positive'>50.98%</td><td class=''>79.16%</td><td class=''>61.63</td><td class=''>10.98</td><td class='negative'>-0.02% (-₹1,879.17)</td><td class=''>878.00</td></tr><tr><td class=''>2h</td><td class=''>0.0008</td><td class='positive'>₹4,175,932.07</td><td class='positive'>49.71%</td><td class=''>78.59%</td><td class=''>50.55</td><td class=''>10.60</td><td class='negative'>-0.03% (-₹3,276.84)</td><td class=''>836.00</td></tr><tr><td class=''>2h</td><td class=''>0.0009</td><td class='positive'>₹3,735,943.18</td><td class='positive'>44.48%</td><td class=''>73.33%</td><td class=''>30.31</td><td class=''>10.12</td><td class='negative'>-0.06% (-₹7,347.87)</td><td class=''>810.00</td></tr><tr><td class=''>2h</td><td class=''>0.001</td><td class='positive'>₹3,807,199.54</td><td class='positive'>45.32%</td><td class=''>69.57%</td><td class=''>25.78</td><td class=''>10.20</td><td class='negative'>-0.08% (-₹9,578.67)</td><td class=''>782.00</td></tr><tr><td class=''>2h</td><td class=''>0.0015</td><td class='positive'>₹2,840,605.15</td><td class='positive'>33.82%</td><td class=''>61.59%</td><td class=''>12.83</td><td class=''>9.43</td><td class='negative'>-0.10% (-₹11,264.14)</td><td class=''>630.00</td></tr><tr><td class=''>2h</td><td class=''>0.002</td><td class='positive'>₹2,115,603.67</td><td class='positive'>25.19%</td><td class=''>53.83%</td><td class=''>7.16</td><td class=''>7.87</td><td class='negative'>-0.17% (-₹13,867.39)</td><td class=''>535.00</td></tr><tr><td class=''>2h</td><td class=''>0.0025</td><td class='positive'>₹1,760,353.14</td><td class='positive'>20.96%</td><td class=''>49.56%</td><td class=''>5.45</td><td class=''>7.13</td><td class='negative'>-0.20% (-₹20,533.64)</td><td class=''>454.00</td></tr></tbody></table>
+        </div>
+
+        <div class="footer">
+            <p>Generated on 2026-07-05 21:37:25</p>
+        </div>
+    </div>
+</body>
+</html>

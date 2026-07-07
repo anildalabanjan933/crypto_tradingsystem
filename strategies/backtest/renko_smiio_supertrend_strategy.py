@@ -11,7 +11,7 @@ from indicators.renko import RenkoBuilder, SupertrendIndicator
 
 # ===========================================================================
 # SMIIO INDICATOR
-# ===========================================================================
+# =====tree /F D:\crypto_trading_system======================================================================
 def compute_smiio(closes: np.ndarray, short_len: int = 5, long_len: int = 20, signal_len: int = 5) -> tuple:
     n = len(closes)
     mom     = np.zeros(n)

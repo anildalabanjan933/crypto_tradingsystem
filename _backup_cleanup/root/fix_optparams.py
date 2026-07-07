@@ -1,0 +1,7 @@
+﻿content = open('run_optimization.py', 'r').read()
+content = content.replace('"atr_length"', '"st_atr_length"')
+content = content.replace('"factor"', '"st_factor"')
+content = content.replace('"smiio_length"', '"smiio_shortlen"')
+content = content.replace('"smiio_signal"', '"smiio_siglen"')
+open('run_optimization.py', 'w').write(content)
+print('DONE')
