@@ -117,6 +117,24 @@ def run_single_strategy():
         print(f"✅ Trade log saved: {csv_log_path}")
         print(f"✅ Reports generated successfully")
 
+        # 9. User Report (hidden strategy name)
+        user_report = input('\nGenerate user report (strategy name hidden)? (Y/N): ').strip().upper()
+        if user_report == 'Y':
+            user_gen = BacktestReportGenerator(
+                trades=result['trades'],
+                metrics=result['metrics'],
+                strategy_name='Alpha Strategy',
+                symbol=symbol,
+                start_date=start_date,
+                end_date=end_date,
+                slippage=slippage
+            )
+            user_html = user_gen.generate_html_report()
+            user_csv = user_gen.generate_csv_trade_log()
+            print('\nUser report saved:')
+            print(f'  HTML: {user_html}')
+            print(f'  CSV : {user_csv}')
+
     except Exception as e:
         print(f"\n❌ Error: {e}")
         import traceback
