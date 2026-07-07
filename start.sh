@@ -1,16 +1,27 @@
 #!/bin/bash
-cd /home/anildalabanjan933/crypto_trading_system
+REPO=/home/anildalabanjan933/crypto_trading_system
+cd $REPO
+
+# Activate venv
 source .venv/bin/activate
 
-# Kill existing screens if running
+# Ensure dependencies installed
+pip install -r requirements.txt -q
+
+# Ensure logs folder exists
+mkdir -p logs
+
+# Load API keys from .env
+export $(grep -v '^#' .env | xargs)
+
+# Kill existing screens
 screen -S live_s2 -X quit 2>/dev/null
 screen -S live_s4 -X quit 2>/dev/null
-
 sleep 2
 
-# Start fresh screens
-screen -dmS live_s2 bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && python3 run_live_trading_s2.py > logs/live_trading_s2.log 2>&1"
-screen -dmS live_s4 bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && python3 run_live_trading_s4.py > logs/live_trading_s4.log 2>&1"
+# Start fresh screens with log redirection
+screen -dmS live_s2 bash -c "cd $REPO && source .venv/bin/activate && export $(grep -v '^#' .env | xargs) && python3 run_live_trading_s2.py > logs/live_trading_s2.log 2>&1"
+screen -dmS live_s4 bash -c "cd $REPO && source .venv/bin/activate && export $(grep -v '^#' .env | xargs) && python3 run_live_trading_s4.py > logs/live_trading_s4.log 2>&1"
 
 echo "S2 and S4 started"
 screen -ls
