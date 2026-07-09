@@ -371,6 +371,102 @@ for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s
     except Exception as e:
         warnings.append(f"{bot} duplicate check failed: {e}")
 
+
+# 11. CHECK BOT CYCLING HEALTH (last [SIGNALS] line timestamp)
+for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+    try:
+        if os.path.exists(log):
+            lines = open(log).readlines()
+            signal_lines = [l for l in lines if '[SIGNALS]' in l or '[WAIT]' in l or '[DATA]' in l]
+            if signal_lines:
+                last_line = signal_lines[-1]
+                import re
+                match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_line)
+                if match:
+                    last_time = datetime.datetime.strptime(match.group(1), '%Y-%m-%d %H:%M:%S')
+                    age_mins = (datetime.datetime.now() - last_time).total_seconds() / 60
+                    if age_mins > 10:
+                        errors.append(f"{bot} BOT FROZEN: No cycle in {int(age_mins)}m - bot may be stuck or crashed")
+                    elif age_mins > 5:
+                        warnings.append(f"{bot} bot cycle: {int(age_mins)}m ago - slightly delayed")
+                    else:
+                        ok.append(f"{bot} bot cycling: OK ({int(age_mins)}m ago)")
+            else:
+                warnings.append(f"{bot} no cycle lines found in log")
+    except Exception as e:
+        warnings.append(f"{bot} cycle check failed: {e}")
+
+# 12. FORWARD TEST END DATE REMINDER
+try:
+    forward_end = datetime.datetime(2026, 7, 24)
+    days_left = (forward_end - datetime.datetime.now()).days
+    if days_left < 0:
+        errors.append("FORWARD TEST ENDED - review Algotest MTM results and decide go-live")
+    elif days_left == 0:
+        errors.append("FORWARD TEST ENDS TODAY - review Algotest MTM results now")
+    elif days_left <= 3:
+        warnings.append(f"FORWARD TEST ENDS IN {days_left} DAYS - prepare go-live review")
+    elif days_left <= 7:
+        warnings.append(f"Forward test ends in {days_left} days (July 24)")
+    else:
+        ok.append(f"Forward test: {days_left} days remaining (ends July 24)")
+except Exception as e:
+    warnings.append(f"Forward test date check failed: {e}")
+
+# 13. CHECK .ENV FILE EXISTS AND HAS API KEYS
+try:
+    if os.path.exists('.env'):
+        env_content = open('.env').read()
+        required_keys = ['S2_API_KEY', 'S4_API_KEY', 'S2_API_SECRET', 'S4_API_SECRET']
+        missing_keys = [k for k in required_keys if k not in env_content]
+        if missing_keys:
+            errors.append(f".env MISSING API KEYS: {missing_keys} - bots cannot trade")
+        else:
+            ok.append(".env file: exists with all API keys")
+    else:
+        errors.append(".env FILE MISSING - all API keys gone - run bash start.sh")
+except Exception as e:
+    warnings.append(f".env check failed: {e}")
+
+# 14. CHECK DELTA API CONNECTIVITY
+try:
+    import requests as req
+    resp = req.get('https://api.india.delta.exchange/v2/products?contract_types=perpetual_futures&limit=1', timeout=5)
+    if resp.status_code == 200:
+        ok.append("Delta API connectivity: REACHABLE")
+    else:
+        warnings.append(f"Delta API returned status {resp.status_code} - may have issues")
+except Exception as e:
+    errors.append(f"Delta API UNREACHABLE: {e} - check VM internet connection")
+
+# 15. CHECK VM INTERNET (ping Google DNS)
+try:
+    import subprocess as sp
+    result = sp.run(['curl', '-s', '--max-time', '3', 'https://8.8.8.8'], capture_output=True)
+    ok.append("VM internet: CONNECTED")
+except Exception as e:
+    errors.append(f"VM internet check failed: {e}")
+
+# 16. CHECK ALGOTEST WEBHOOK URLS REACHABLE (quick HEAD check)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+    import requests as req
+    test_url = os.getenv('ALGOTEST_WEBHOOK_S4_BUY_ENTRY')
+    if test_url:
+        try:
+            resp = req.post(test_url, json={"access_token": os.getenv('ALGOTEST_ACCESS_TOKEN', 'n7FJcMHANHN4F8HdqbU5QMDJn5JO79K9'), "alert_name": "ping"}, timeout=5)
+            if resp.status_code in [200, 201, 202, 400, 422]:
+                ok.append("Algotest webhook URL: REACHABLE")
+            else:
+                warnings.append(f"Algotest webhook returned {resp.status_code} - check signal config")
+        except Exception as e:
+            errors.append(f"Algotest webhook UNREACHABLE: {e}")
+    else:
+        errors.append("Algotest webhook URL missing from .env")
+except Exception as e:
+    warnings.append(f"Algotest connectivity check failed: {e}")
+
 # DISPLAY RESULTS
 if errors:
     st.error(f"ERRORS DETECTED: {len(errors)} issue(s) require attention")
