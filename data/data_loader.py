@@ -31,7 +31,7 @@ class DataLoader:
                 df['timestamp'] = pd.to_datetime(df['timestamp'], unit='s')
                 df.set_index('timestamp', inplace=True)
             elif 'Date' in df.columns and 'Time' in df.columns:
-                df['timestamp'] = pd.to_datetime(df['Date'] + ' ' + df['Time'])
+                df['timestamp'] = pd.to_datetime(df['Date'] + ' ' + df['Time'], format='mixed')
                 df.set_index('timestamp', inplace=True)
                 df.drop(columns=['Date', 'Time'], inplace=True, errors='ignore')
             else:
