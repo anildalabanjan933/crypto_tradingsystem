@@ -174,6 +174,224 @@ else:
 
 
 
+
+# ================================================================
+# SECTION 1B - ERROR MONITOR (auto-checks all systems)
+# ================================================================
+st.markdown("<div class='section-title'>SYSTEM ERROR MONITOR</div>", unsafe_allow_html=True)
+
+import subprocess, os, datetime
+
+errors = []
+warnings = []
+ok = []
+
+# 1. CHECK BOT SCREENS RUNNING
+try:
+    result = subprocess.run(['screen', '-ls'], capture_output=True, text=True)
+    if 'live_s2' in result.stdout:
+        ok.append("S2 bot screen: RUNNING")
+    else:
+        errors.append("S2 bot screen: NOT RUNNING - run bash start.sh on VM")
+    if 'live_s4' in result.stdout:
+        ok.append("S4 bot screen: RUNNING")
+    else:
+        errors.append("S4 bot screen: NOT RUNNING - run bash start.sh on VM")
+except Exception as e:
+    errors.append(f"Screen check failed: {e}")
+
+# 2. CHECK LOG FILES EXIST AND RECENT
+for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+    try:
+        if os.path.exists(log):
+            mtime = os.path.getmtime(log)
+            age_mins = (datetime.datetime.now().timestamp() - mtime) / 60
+            if age_mins < 5:
+                ok.append(f"{bot} log: ACTIVE (updated {int(age_mins)}m ago)")
+            elif age_mins < 30:
+                warnings.append(f"{bot} log: STALE ({int(age_mins)}m ago) - bot may be stuck")
+            else:
+                errors.append(f"{bot} log: NOT UPDATING ({int(age_mins)}m ago) - bot likely crashed")
+        else:
+            errors.append(f"{bot} log: FILE MISSING - bot never started")
+    except Exception as e:
+        errors.append(f"{bot} log check failed: {e}")
+
+# 3. CHECK FOR ERRORS IN LOGS
+for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+    try:
+        if os.path.exists(log):
+            lines = open(log).readlines()
+            recent = lines[-50:] if len(lines) > 50 else lines
+            error_lines = [l.strip() for l in recent if 'ERROR' in l]
+            algotest_errors = [l.strip() for l in recent if 'ALGOTEST' in l and ('ERROR' in l or 'WARNING' in l)]
+            api_errors = [l.strip() for l in recent if any(x in l for x in ['InvalidApiKey','insufficient_margin','rate_limit','IP not whitelisted']) or ('ERROR' in l and any(x in l for x in ['401','403','429']))]
+            if error_lines:
+                for el in error_lines[-3:]:
+                    errors.append(f"{bot} ERROR: {el[-100:]}")
+            if algotest_errors:
+                for al in algotest_errors[-2:]:
+                    errors.append(f"{bot} ALGOTEST: {al[-100:]}")
+            if api_errors:
+                for al in api_errors[-2:]:
+                    errors.append(f"{bot} API ERROR: {al[-100:]}")
+            if not error_lines and not algotest_errors and not api_errors:
+                ok.append(f"{bot} log: No errors in last 50 lines")
+    except Exception as e:
+        errors.append(f"{bot} error scan failed: {e}")
+
+# 4. CHECK ALGOTEST WEBHOOK KEYS IN ENV
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+    webhook_keys = [
+        'ALGOTEST_WEBHOOK_S2_BUY_ENTRY','ALGOTEST_WEBHOOK_S2_BUY_EXIT',
+        'ALGOTEST_WEBHOOK_S2_SELL_ENTRY','ALGOTEST_WEBHOOK_S2_SELL_EXIT',
+        'ALGOTEST_WEBHOOK_S4_BUY_ENTRY','ALGOTEST_WEBHOOK_S4_BUY_EXIT',
+        'ALGOTEST_WEBHOOK_S4_SELL_ENTRY','ALGOTEST_WEBHOOK_S4_SELL_EXIT'
+    ]
+    missing = [k for k in webhook_keys if not os.getenv(k)]
+    if missing:
+        for m in missing:
+            errors.append(f"WEBHOOK KEY MISSING in .env: {m}")
+    else:
+        ok.append("All 8 Algotest webhook keys: CONFIGURED")
+except Exception as e:
+    warnings.append(f"Webhook key check failed: {e}")
+
+# 5. CHECK DISK SPACE
+try:
+    import shutil
+    total, used, free = shutil.disk_usage('.')
+    pct = int(used/total*100)
+    free_gb = round(free/1024**3, 1)
+    if pct > 80:
+        errors.append(f"DISK CRITICAL: {pct}% used - only {free_gb}GB free - clean immediately")
+    elif pct > 70:
+        warnings.append(f"DISK WARNING: {pct}% used - {free_gb}GB free - monitor closely")
+    else:
+        ok.append(f"Disk: {pct}% used - {free_gb}GB free")
+except Exception as e:
+    warnings.append(f"Disk check failed: {e}")
+
+# 6. CHECK SYSTEMD SERVICE
+try:
+    result = subprocess.run(['systemctl', 'is-active', 'tradingbot.service'], capture_output=True, text=True)
+    status = result.stdout.strip()
+    if status == 'active':
+        ok.append("systemd tradingbot.service: ACTIVE")
+    else:
+        warnings.append(f"systemd tradingbot.service: {status} - auto-restart may not work")
+except Exception as e:
+    warnings.append(f"Service check failed: {e}")
+
+# 7. CHECK RECENT ALGOTEST SUCCESS
+for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+    try:
+        if os.path.exists(log):
+            lines = open(log).readlines()
+            recent = lines[-200:] if len(lines) > 200 else lines
+            algotest_ok = [l for l in recent if 'ALGOTEST' in l and 'Status: 200' in l]
+            algotest_fail = [l for l in recent if 'ALGOTEST' in l and 'Status: 200' not in l and 'WARNING' not in l and 'ERROR' in l]
+            if algotest_ok:
+                ok.append(f"{bot} last Algotest webhook: SUCCESS (Status 200)")
+            if algotest_fail:
+                errors.append(f"{bot} Algotest webhook FAILED: {algotest_fail[-1].strip()[-80:]}")
+    except:
+        pass
+
+
+# 8. CHECK OPEN POSITION > 24H (orphan position risk)
+for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+    try:
+        if os.path.exists(log):
+            lines = open(log).readlines()
+            entry_lines = [l for l in lines if '[ORDER] ENTRY' in l]
+            exit_lines = [l for l in lines if '[ORDER] EXIT' in l]
+            if entry_lines:
+                last_entry = entry_lines[-1]
+                last_exit = exit_lines[-1] if exit_lines else None
+                import re
+                entry_match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_entry)
+                exit_match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_exit) if last_exit else None
+                if entry_match:
+                    entry_time = datetime.datetime.strptime(entry_match.group(1), '%Y-%m-%d %H:%M:%S')
+                    if last_exit is None or (exit_match and entry_time > datetime.datetime.strptime(exit_match.group(1), '%Y-%m-%d %H:%M:%S')):
+                        age_hours = (datetime.datetime.now() - entry_time).total_seconds() / 3600
+                        if age_hours > 48:
+                            errors.append(f"{bot} ORPHAN POSITION: Entry {int(age_hours)}h ago with no exit - check Delta account immediately")
+                        elif age_hours > 24:
+                            warnings.append(f"{bot} OPEN POSITION: {int(age_hours)}h since entry - no exit yet - monitor closely")
+                        else:
+                            ok.append(f"{bot} position: open {int(age_hours)}h - normal")
+                    else:
+                        ok.append(f"{bot} position: closed cleanly")
+    except Exception as e:
+        warnings.append(f"{bot} position check failed: {e}")
+
+# 9. CHECK NO ORDERS IN LAST 48H (bot alive but not trading)
+for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+    try:
+        if os.path.exists(log):
+            lines = open(log).readlines()
+            order_lines = [l for l in lines if '[ORDER]' in l]
+            if order_lines:
+                import re
+                last_order = order_lines[-1]
+                match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_order)
+                if match:
+                    last_time = datetime.datetime.strptime(match.group(1), '%Y-%m-%d %H:%M:%S')
+                    age_hours = (datetime.datetime.now() - last_time).total_seconds() / 3600
+                    if age_hours > 48:
+                        warnings.append(f"{bot} last order: {int(age_hours)}h ago - strategy may be in low signal period")
+                    else:
+                        ok.append(f"{bot} last order: {int(age_hours)}h ago - normal")
+            else:
+                ok.append(f"{bot} no orders yet - waiting for first signal")
+    except Exception as e:
+        warnings.append(f"{bot} order check failed: {e}")
+
+# 10. CHECK DUPLICATE ORDERS (same timestamp fired twice)
+for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+    try:
+        if os.path.exists(log):
+            lines = open(log).readlines()
+            order_lines = [l for l in lines if '[ORDER]' in l]
+            timestamps = []
+            import re
+            for l in order_lines:
+                match = re.search(r'ts=(\S+)', l)
+                if match:
+                    timestamps.append(match.group(1))
+            duplicates = [t for t in timestamps if timestamps.count(t) > 1]
+            if duplicates:
+                errors.append(f"{bot} DUPLICATE ORDERS detected at timestamps: {list(set(duplicates))}")
+            else:
+                ok.append(f"{bot} duplicate order check: CLEAN")
+    except Exception as e:
+        warnings.append(f"{bot} duplicate check failed: {e}")
+
+# DISPLAY RESULTS
+if errors:
+    st.error(f"ERRORS DETECTED: {len(errors)} issue(s) require attention")
+    for e in errors:
+        st.markdown(f"<div class='alert-red'>ERROR: {e}</div>", unsafe_allow_html=True)
+elif warnings:
+    st.warning(f"WARNINGS: {len(warnings)} item(s) to monitor")
+else:
+    st.success("ALL SYSTEMS HEALTHY - No errors detected")
+
+if warnings:
+    for w in warnings:
+        st.markdown(f"<div class='alert-yellow'>WARNING: {w}</div>", unsafe_allow_html=True)
+
+with st.expander("Show all OK checks"):
+    for o in ok:
+        st.markdown(f"OK: {o}")
+
+st.caption(f"Last checked: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Auto-refreshes every 30s")
+st.markdown("---")
+
 # ================================================================
 # SECTION 2 - BOT CONTROL
 # ================================================================

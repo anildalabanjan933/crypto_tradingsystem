@@ -1,4 +1,5 @@
 import os
+import logging
 import requests
 from dotenv import load_dotenv
 
@@ -21,14 +22,14 @@ def post_signal(strategy, direction, signal_type):
     try:
         url = WEBHOOKS[strategy][direction][signal_type]
         if not url:
-            print(f"[ALGOTEST] WARNING: No URL for {strategy} {direction} {signal_type}")
+            logging.warning(f"[ALGOTEST] WARNING: No URL for {strategy} {direction} {signal_type}")
             return
         alert_name = "Entry" if signal_type == "entry" else "Exit"
         payload = {"access_token": ACCESS_TOKEN, "alert_name": alert_name}
         response = requests.post(url, json=payload, timeout=10)
-        print(f"[ALGOTEST] {strategy} {direction} {signal_type} | Status: {response.status_code} | Response: {response.text}")
+        logging.info(f"[ALGOTEST] {strategy} {direction} {signal_type} | Status: {response.status_code} | Response: {response.text}")
     except Exception as e:
-        print(f"[ALGOTEST] ERROR: {e}")
+        logging.error(f"[ALGOTEST] ERROR: {e}")
 
 if __name__ == "__main__":
     post_signal("S2", "BUY", "entry")
