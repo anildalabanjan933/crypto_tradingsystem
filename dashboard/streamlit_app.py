@@ -5,18 +5,72 @@ st.set_page_config(page_title="Crypto Trading Dashboard", layout="wide", page_ic
 
 st.markdown("""
 <style>
+/* COMPACT PRO THEME */
 .stApp { background-color: #ffffff; }
-[data-testid="stMetricValue"] { font-size: 16px !important; }
-[data-testid="stMetricLabel"] { font-size: 12px !important; }
-.section-title { color: #1a73e8; font-size: 18px; font-weight: bold; 
-                 border-bottom: 2px solid #1a73e8; padding-bottom: 5px; 
-                 margin-bottom: 15px; margin-top: 20px; }
-.alert-red { background: #ffebee; border: 1px solid #dc3545; border-radius: 8px; 
-             padding: 10px; color: #dc3545; font-weight: bold; margin: 5px 0; }
-.alert-yellow { background: #fff8e1; border: 1px solid #ffc107; border-radius: 8px; 
-                padding: 10px; color: #856404; font-weight: bold; margin: 5px 0; }
-.alert-green { background: #e8f5e9; border: 1px solid #28a745; border-radius: 8px; 
-               padding: 10px; color: #28a745; font-weight: bold; margin: 5px 0; }
+.block-container { padding: 0.5rem 1rem 0.5rem 1rem !important; max-width: 100% !important; }
+section[data-testid="stSidebar"] { display: none; }
+
+/* COMPACT FONTS */
+html, body, [class*="css"] { font-size: 12px !important; }
+h1 { font-size: 16px !important; font-weight: 700 !important; margin: 0 !important; padding: 0 !important; }
+h2 { font-size: 14px !important; font-weight: 600 !important; margin: 0 !important; }
+h3 { font-size: 13px !important; font-weight: 600 !important; margin: 0 !important; }
+p  { font-size: 12px !important; margin: 0 !important; }
+
+/* COMPACT METRICS */
+[data-testid="stMetricValue"] { font-size: 13px !important; font-weight: 600 !important; }
+[data-testid="stMetricLabel"] { font-size: 11px !important; color: #666 !important; }
+[data-testid="metric-container"] { padding: 4px 8px !important; border: 1px solid #e0e0e0; border-radius: 4px; }
+
+/* COMPACT SECTION TITLES */
+.section-title { color: #1a73e8; font-size: 12px !important; font-weight: 700;
+                 border-bottom: 1px solid #1a73e8; padding-bottom: 2px;
+                 margin-bottom: 6px; margin-top: 8px; text-transform: uppercase;
+                 letter-spacing: 0.5px; }
+
+/* COMPACT ALERTS */
+.alert-red { background: #ffebee; border-left: 3px solid #dc3545;
+             padding: 4px 8px; color: #dc3545; font-weight: 600;
+             font-size: 11px !important; margin: 2px 0; border-radius: 2px; }
+.alert-yellow { background: #fff8e1; border-left: 3px solid #ffc107;
+                padding: 4px 8px; color: #856404; font-weight: 600;
+                font-size: 11px !important; margin: 2px 0; border-radius: 2px; }
+.alert-green { background: #e8f5e9; border-left: 3px solid #28a745;
+               padding: 4px 8px; color: #28a745; font-weight: 600;
+               font-size: 11px !important; margin: 2px 0; border-radius: 2px; }
+
+/* COMPACT BUTTONS */
+.stButton > button { padding: 2px 10px !important; font-size: 11px !important;
+                     height: 26px !important; border-radius: 3px !important; }
+
+/* COMPACT INPUTS */
+.stSelectbox, .stNumberInput, .stDateInput { font-size: 11px !important; }
+.stSelectbox > div > div { padding: 2px 6px !important; min-height: 28px !important; }
+
+/* COMPACT TABS */
+.stTabs [data-baseweb="tab"] { padding: 4px 12px !important; font-size: 11px !important; }
+
+/* COMPACT DATAFRAME */
+.stDataFrame { font-size: 11px !important; }
+
+/* REMOVE EXTRA PADDING */
+.stMarkdown { margin: 0 !important; padding: 0 !important; }
+div[data-testid="stVerticalBlock"] > div { gap: 0.3rem !important; }
+.element-container { margin: 0 !important; padding: 0 !important; }
+
+/* COMPACT SUCCESS/ERROR/WARNING BOXES */
+.stSuccess, .stError, .stWarning, .stInfo {
+    padding: 4px 8px !important; font-size: 11px !important;
+    margin: 2px 0 !important; border-radius: 3px !important; }
+
+/* HORIZONTAL DIVIDER */
+hr { margin: 4px 0 !important; border-color: #e0e0e0 !important; }
+
+/* CAPTION */
+.stCaption { font-size: 10px !important; color: #888 !important; }
+
+/* CODE BLOCK */
+.stCode { font-size: 10px !important; }
 </style>
 """, unsafe_allow_html=True)
 
