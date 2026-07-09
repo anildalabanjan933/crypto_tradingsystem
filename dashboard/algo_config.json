@@ -1,0 +1,40 @@
+{
+  "algos": [
+    {
+      "name": "S2",
+      "file": "run_live_trading_s2.py",
+      "strategy": "RenkoReversalStrategy",
+      "symbol": "BTCUSD",
+      "lots": 100,
+      "direction": "BOTH",
+      "active": true
+    },
+    {
+      "name": "S4",
+      "file": "run_live_trading_s4.py",
+      "strategy": "RenkoSMIIOSupertrendStrategy",
+      "symbol": "BTCUSD",
+      "lots": 100,
+      "direction": "BOTH",
+      "active": true
+    }
+  ],
+  "contracts": [
+    {
+      "symbol": "BTCUSD",
+      "name": "Bitcoin Perpetual",
+      "lots": 100,
+      "active": true
+    }
+  ],
+  "forward_test": {
+    "start_date": "2026-07-07",
+    "end_date": "2026-07-24"
+  },
+  "system": {
+    "version": "v3.9",
+    "commit": "321c96b",
+    "log_path_s2": "logs/live_trading_s2.log",
+    "log_path_s4": "logs/live_trading_s4.log"
+  }
+}
