@@ -220,6 +220,19 @@ final_bt = {
 }
 log(f'[Step 2] Final backtest metrics: trades={final_bt["trades"]} winrate={final_bt["winrate"]} pnl_inr={final_bt["pnl_inr"]} dd={final_bt["dd_pct"]} sharpe={final_bt["sharpe"]}')
 
+# Read backtest trade log for detail table
+import glob as _glob, csv as _csv
+bt_trade_logs = sorted(_glob.glob(os.path.join(BASE_DIR, f'output/trade_log_{STRATEGY_NAME}_{SYMBOL}_*.csv')), reverse=True)
+bt_trades_detail = []
+if bt_trade_logs:
+    try:
+        with open(bt_trade_logs[0], 'r') as tf:
+            reader = _csv.DictReader(tf)
+            for row in reader:
+                bt_trades_detail.append(row)
+        log(f'[Step 2] Loaded {len(bt_trades_detail)} backtest trades for detail table')
+    except Exception as e:
+        log(f'[Step 2] Warning trade log: {e}')
 log('STEP_2_DONE')
 
 # ── STEP 3: Fetch Delta API forward data ──────────────────────────────────────
@@ -536,6 +549,26 @@ tr:hover {{background:#f9f9f9}}
         <td>{status_badge(tc_col, tc_st)}</td>
         <td>{'Fills: '+str(fwd['fills_count']) if has_fwd_data else 'Waiting for trades'}</td></tr>
   </table>
+</div>
+
+<div class="section">
+  <h2>Section 2B - Trade Detail Comparison (Backtest vs Forward) - {FROM_DATE} to {TO_DATE}</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px">
+    <div>
+      <p style="font-weight:bold;color:#667eea;margin-bottom:8px;font-size:13px">BACKTEST TRADES ({len(bt_trades_detail)} trades)</p>
+      <table>
+        <tr><th>#</th><th>Dir</th><th>Entry Time</th><th>Exit Time</th><th>Entry $</th><th>Exit $</th><th>PnL INR</th></tr>
+        {''.join([f'<tr><td>{t.get("trade_number","")}</td><td style="color:{"#27ae60" if t.get("direction","")=="long" else "#e74c3c"}">{t.get("direction","").upper()}</td><td>{t.get("entry_datetime","")[:16]}</td><td>{t.get("exit_datetime","")[:16]}</td><td>{float(t.get("entry_price",0)):,.1f}</td><td>{float(t.get("exit_price",0)):,.1f}</td><td class="{"positive" if float(t.get("net_pnl_inr",0))>=0 else "negative"}">&#8377;{float(t.get("net_pnl_inr",0)):,.0f}</td></tr>' for t in bt_trades_detail]) if bt_trades_detail else '<tr><td colspan=7>No backtest trades</td></tr>'}
+      </table>
+    </div>
+    <div>
+      <p style="font-weight:bold;color:#667eea;margin-bottom:8px;font-size:13px">FORWARD TRADES - Delta API ({fwd['trade_count']} orders)</p>
+      <table>
+        <tr><th>#</th><th>Side</th><th>Time (UTC)</th><th>Avg Price $</th><th>Size</th><th>Commission $</th></tr>
+        {''.join([f'<tr><td>{i+1}</td><td style="color:{"#27ae60" if o["side"]=="buy" else "#e74c3c"}">{o["side"].upper()}</td><td>{o["created_at"][:16]}</td><td>{o["wavg_price"]:,.1f}</td><td>{o["size"]:.0f}</td><td>-</td></tr>' for i,o in enumerate(sorted(order_summary.values(), key=lambda x: x['created_at']))]) if order_summary else '<tr><td colspan=6>No forward trades yet</td></tr>'}
+      </table>
+    </div>
+  </div>
 </div>
 
 <div class="section">
