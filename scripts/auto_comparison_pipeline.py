@@ -1,4 +1,3 @@
-cat > ~/crypto_trading_system/scripts/auto_comparison_pipeline.py << 'EOF'
 #!/usr/bin/env python3
 """
 auto_comparison_pipeline.py
@@ -659,4 +658,3 @@ with open(out_file, 'w') as f:
 log(f'REPORT_FILE:{out_file}')
 log('STEP_4_DONE')
 log('PIPELINE_COMPLETE')
-EOF
