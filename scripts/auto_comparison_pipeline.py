@@ -428,6 +428,7 @@ algo_label = f'{ALGO_KEY}: {STRATEGY_NAME}'
 from datetime import datetime as _dt
 _days_running = (_dt.now() - _dt.strptime(FROM_DATE, '%Y-%m-%d')).days
 has_fwd_data = fwd['trade_count'] > 0
+has_charges = fwd['commission'] > 0 or fwd['funding'] > 0
 is_early_stage = _days_running < 7
 if has_fwd_data:
     tc_col, tc_st   = ('grey', 'PENDING') if is_early_stage else check_metric(fwd['trade_count'], final_bt['trades'], 20)
@@ -542,14 +543,14 @@ tr:hover {{background:#f9f9f9}}
   <table>
     <tr><th>Charge Type</th><th>Backtest Assumed</th><th>Forward Real (Delta API)</th><th>Status</th></tr>
     <tr><td>Slippage (both sides)</td><td>${SLIPPAGE*2:.2f}</td>
-        <td>{'${:.4f}'.format(fwd['commission']/fwd['trade_count']) if fwd['trade_count']>0 else 'PENDING'}</td>
+        <td>{'${:.4f}'.format(fwd['commission']/fwd['trade_count']) if fwd['trade_count']>0 else ('${:.4f}'.format(fwd['commission']) if has_charges else 'PENDING')}</td>
         <td>{status_badge('grey','PENDING') if not has_fwd_data else status_badge('blue','AUTO FETCHED')}</td></tr>
     <tr><td>Taker Fee (both sides)</td><td>${LOTS*0.001:.2f}</td>
-        <td>{'${:.4f}'.format(fwd['commission']) if has_fwd_data else 'PENDING'}</td>
-        <td>{status_badge('green','AUTO FETCHED') if has_fwd_data else status_badge('grey','PENDING')}</td></tr>
+        <td>{'${:.4f}'.format(fwd['commission']) if has_charges else 'PENDING'}</td>
+        <td>{status_badge('green','AUTO FETCHED') if has_charges else status_badge('grey','PENDING')}</td></tr>
     <tr><td>Funding (total)</td><td>-</td>
-        <td>{'${:.4f}'.format(fwd['funding']) if has_fwd_data else 'PENDING'}</td>
-        <td>{status_badge('green','AUTO FETCHED') if has_fwd_data else status_badge('grey','PENDING')}</td></tr>
+        <td>{'${:.4f}'.format(fwd['funding']) if has_charges else 'PENDING'}</td>
+        <td>{status_badge('green','AUTO FETCHED') if has_charges else status_badge('grey','PENDING')}</td></tr>
     <tr><td>Insurance Fund</td><td>$0.00</td><td>$0.00</td><td>{status_badge('green','MATCH')}</td></tr>
     <tr><td>Tax (income)</td><td colspan="2">NOT per trade - pay yearly to CA</td><td>{status_badge('green','NOTED')}</td></tr>
     <tr style="font-weight:bold;background:#f0f0f0"><td>Total Commission (Delta API)</td>
