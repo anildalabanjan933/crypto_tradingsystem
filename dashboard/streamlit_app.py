@@ -138,9 +138,9 @@ s4_log = system.get("log_path_s4", "logs/live_trading_s4.log")
 # ================================================================
 # TOP HEADER
 # ================================================================
-col_title, col_status = st.columns([4, 1])
+col_title, col_status = st.columns([6, 1])
 with col_title:
-    st.markdown('<div style="display:flex;align-items:center;gap:20px"><span style="font-size:20px;font-weight:700">CRYPTO TRADING SYSTEM</span><span style="color:#FFD700;font-style:italic;font-size:13px;font-weight:600">✦ Created by Anil Dalbanjan · Gandhi Nagar, THI</span></div>', unsafe_allow_html=True)
+    st.markdown('<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:20px;font-weight:700">CRYPTO TRADING SYSTEM</span><span style="color:#FFD700;font-style:italic;font-size:13px;font-weight:600">✦ Created by Anil Dalbanjan · Gandhi Nagar, THI</span></div>', unsafe_allow_html=True)
     st.markdown("BTC Algo Trading Dashboard - Single Control Centre")
 with col_status:
     st.markdown("<br>", unsafe_allow_html=True)
