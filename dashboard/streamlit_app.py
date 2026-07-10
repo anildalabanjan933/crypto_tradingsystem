@@ -827,49 +827,83 @@ comp_tab_s2, comp_tab_s4 = st.tabs(["S2 - RenkoReversalStrategy", "S4 - RenkoSMI
 
 for comp_tab, algo_name, algo_key in [(comp_tab_s2, "S2", "s2"), (comp_tab_s4, "S4", "s4")]:
     with comp_tab:
-        st.markdown(f"**{algo_name} - Algotest Data (manual input)**")
-        c1, c2, c3 = st.columns(3)
+        st.markdown(f"**{algo_name} - Auto Pipeline (market data + backtest + Delta API)**")
+        c1, c2 = st.columns(2)
         with c1:
-            at_pnl = st.number_input("Algotest MTM PnL (INR)", value=0.0, key=f"at_pnl_{algo_key}")
-            at_trades = st.number_input("Algotest Trade Count", min_value=0, value=0, key=f"at_trades_{algo_key}")
+            from_date = st.date_input(
+                "Forward Test From Date",
+                value=datetime.date(2026, 7, 7),
+                key=f"from_date_{algo_key}"
+            )
         with c2:
-            at_wr = st.number_input("Algotest Win Rate (%)", min_value=0.0, value=0.0, key=f"at_wr_{algo_key}")
-            at_dd = st.number_input("Algotest Max DD (%)", min_value=0.0, value=0.0, key=f"at_dd_{algo_key}")
-        with c3:
-            at_sharpe = st.number_input("Algotest Sharpe", value=0.0, key=f"at_sharpe_{algo_key}")
-            fetch_delta = st.checkbox("Auto Fetch Delta API", value=True, key=f"fetch_delta_{algo_key}")
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.info(f"To Date: TODAY ({datetime.date.today().strftime('%Y-%m-%d')}) - auto")
 
-        col1, col2 = st.columns(2)
-        with col1:
-            gen_btn = st.button(f"GENERATE {algo_name} REPORT", key=f"gen_report_{algo_key}")
-        with col2:
-            st.caption("Fetches commission + funding from Delta API automatically")
+        st.caption("Pipeline: 1) Download market data  2) Run backtest  3) Fetch Delta API trades  4) Generate report")
+
+        gen_btn = st.button(f"GENERATE {algo_name} REPORT", key=f"gen_report_{algo_key}")
 
         if gen_btn:
-            with st.spinner(f"Generating {algo_name} comparison report..."):
-                try:
-                    cmd = [
-                        ".venv/bin/python", "scripts/generate_comparison_report.py",
-                        "--algo", algo_name,
-                        "--start", "2026-07-07",
-                        "--end", "2026-07-24",
-                        "--algotest_pnl", str(at_pnl),
-                        "--algotest_trades", str(at_trades),
-                        "--algotest_winrate", str(at_wr),
-                        "--algotest_dd", str(at_dd),
-                        "--algotest_sharpe", str(at_sharpe),
-                    ]
-                    if fetch_delta:
-                        cmd.append("--fetch_delta")
-                    result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-                    if result.returncode == 0:
-                        st.success(f"{algo_name} comparison report generated")
-                        st.code(result.stdout)
-                    else:
-                        st.error("Report generation failed")
-                        st.code(result.stderr[-1000:])
-                except Exception as e:
-                    st.error(f"Error: {e}")
+            progress_bar = st.progress(0)
+            status_box   = st.empty()
+            status_box.info("Starting pipeline...")
+            progress_bar.progress(5)
+            try:
+                cmd = [
+                    ".venv/bin/python", "scripts/auto_comparison_pipeline.py",
+                    "--strategy", algo_name,
+                    "--from_date", from_date.strftime("%Y-%m-%d"),
+                ]
+                env = os.environ.copy()
+                env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+                if os.path.exists(env_path):
+                    with open(env_path) as ef:
+                        for line in ef:
+                            line = line.strip()
+                            if '=' in line and not line.startswith('#'):
+                                k, v = line.split('=', 1)
+                                env[k.strip()] = v.strip()
+                process = subprocess.Popen(
+                    cmd,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    cwd=os.path.dirname(os.path.dirname(__file__)),
+                    env=env
+                )
+                report_file = None
+                step_msgs = {
+                    'STEP_1_START': ('Downloading market data...', 10),
+                    'STEP_1_DONE':  ('Market data updated', 30),
+                    'STEP_2_START': ('Running backtest...', 35),
+                    'STEP_2_DONE':  ('Backtest complete', 60),
+                    'STEP_3_START': ('Fetching Delta API trades...', 65),
+                    'STEP_3_DONE':  ('Delta API data fetched', 85),
+                    'STEP_4_START': ('Generating HTML report...', 88),
+                    'STEP_4_DONE':  ('Report generated', 98),
+                    'PIPELINE_COMPLETE': ('Pipeline complete', 100),
+                }
+                all_output = []
+                for line in process.stdout:
+                    line = line.strip()
+                    all_output.append(line)
+                    if line in step_msgs:
+                        msg, pct = step_msgs[line]
+                        status_box.info(f"[{pct}%] {msg}")
+                        progress_bar.progress(pct)
+                    elif line.startswith('REPORT_FILE:'):
+                        report_file = line.replace('REPORT_FILE:', '').strip()
+                    elif line.startswith('[Step'):
+                        status_box.info(line)
+                process.wait()
+                if process.returncode == 0 and report_file and os.path.exists(report_file):
+                    progress_bar.progress(100)
+                    status_box.success(f"Report ready: {os.path.basename(report_file)}")
+                else:
+                    status_box.error("Pipeline failed - check output below")
+                    st.code('\n'.join(all_output[-20:]))
+            except Exception as e:
+                status_box.error(f"Error: {e}")
 
         comp_html_files = sorted([f for f in glob.glob(f"output/comparison_report_{algo_name}_*.html")], reverse=True)
         if comp_html_files:
@@ -883,7 +917,7 @@ for comp_tab, algo_name, algo_key in [(comp_tab_s2, "S2", "s2"), (comp_tab_s4, "
             with c3:
                 try:
                     user_comp = open(sel_comp, encoding='utf-8').read()
-                    for sname in ['RenkoReversalStrategy','RenkoSMIIOSupertrendStrategy']:
+                    for sname in ['RenkoReversalStrategy', 'RenkoSMIIOSupertrendStrategy']:
                         user_comp = user_comp.replace(sname, 'Alpha Strategy')
                     st.download_button("DOWNLOAD USER HTML", user_comp.encode('utf-8'), file_name=f"alpha_{algo_name}_comparison.html", mime="text/html", key=f"dl_comp_user_{algo_key}")
                 except Exception as e:
