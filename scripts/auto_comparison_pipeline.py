@@ -211,7 +211,7 @@ else:
 
 # Use config values as fallback for missing keys
 final_bt = {
-    'trades':   bt_metrics.get('total_trades', BT_TRADES),
+    'trades':   int(bt_metrics.get('total_trades', BT_TRADES)),
     'winrate':  round(float(bt_metrics.get('win_rate', BT_WINRATE)), 2),
     'pnl_inr':  bt_metrics.get('total_pnl_inr', BT_PNL_INR),
     'dd_pct':   round(abs(float(bt_metrics.get('max_drawdown_pct', BT_DD))), 4),
@@ -425,9 +425,12 @@ now_str    = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 algo_label = f'{ALGO_KEY}: {STRATEGY_NAME}'
 
 # Determine overall status
+from datetime import datetime as _dt
+_days_running = (_dt.now() - _dt.strptime(FROM_DATE, '%Y-%m-%d')).days
 has_fwd_data = fwd['trade_count'] > 0
+is_early_stage = _days_running < 7
 if has_fwd_data:
-    tc_col, tc_st   = check_metric(fwd['trade_count'], final_bt['trades'], 20)
+    tc_col, tc_st   = ('grey', 'PENDING') if is_early_stage else check_metric(fwd['trade_count'], final_bt['trades'], 20)
     wr_col, wr_st   = check_metric(fwd['winrate'], final_bt['winrate'], 5)
     pnl_col, pnl_st = check_metric(abs(fwd['pnl_inr']), abs(final_bt['pnl_inr']), 20)
     dd_col, dd_st   = check_metric(fwd['max_dd'], final_bt['dd_pct'], 50)
