@@ -820,6 +820,80 @@ else:
     else:
         st.markdown("<div class='alert-yellow'>PENDING - Enter forward test values above to compare</div>", unsafe_allow_html=True)
 
+st.markdown("---")
+st.markdown("**Generate Detailed Comparison Report**")
+
+comp_tab_s2, comp_tab_s4 = st.tabs(["S2 - RenkoReversalStrategy", "S4 - RenkoSMIIOSupertrendStrategy"])
+
+for comp_tab, algo_name, algo_key in [(comp_tab_s2, "S2", "s2"), (comp_tab_s4, "S4", "s4")]:
+    with comp_tab:
+        st.markdown(f"**{algo_name} - Algotest Data (manual input)**")
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            at_pnl = st.number_input("Algotest MTM PnL (INR)", value=0.0, key=f"at_pnl_{algo_key}")
+            at_trades = st.number_input("Algotest Trade Count", min_value=0, value=0, key=f"at_trades_{algo_key}")
+        with c2:
+            at_wr = st.number_input("Algotest Win Rate (%)", min_value=0.0, value=0.0, key=f"at_wr_{algo_key}")
+            at_dd = st.number_input("Algotest Max DD (%)", min_value=0.0, value=0.0, key=f"at_dd_{algo_key}")
+        with c3:
+            at_sharpe = st.number_input("Algotest Sharpe", value=0.0, key=f"at_sharpe_{algo_key}")
+            fetch_delta = st.checkbox("Auto Fetch Delta API", value=True, key=f"fetch_delta_{algo_key}")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            gen_btn = st.button(f"GENERATE {algo_name} REPORT", key=f"gen_report_{algo_key}")
+        with col2:
+            st.caption("Fetches commission + funding from Delta API automatically")
+
+        if gen_btn:
+            with st.spinner(f"Generating {algo_name} comparison report..."):
+                try:
+                    cmd = [
+                        ".venv/bin/python", "scripts/generate_comparison_report.py",
+                        "--algo", algo_name,
+                        "--start", "2026-07-07",
+                        "--end", "2026-07-24",
+                        "--algotest_pnl", str(at_pnl),
+                        "--algotest_trades", str(at_trades),
+                        "--algotest_winrate", str(at_wr),
+                        "--algotest_dd", str(at_dd),
+                        "--algotest_sharpe", str(at_sharpe),
+                    ]
+                    if fetch_delta:
+                        cmd.append("--fetch_delta")
+                    result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
+                    if result.returncode == 0:
+                        st.success(f"{algo_name} comparison report generated")
+                        st.code(result.stdout)
+                    else:
+                        st.error("Report generation failed")
+                        st.code(result.stderr[-1000:])
+                except Exception as e:
+                    st.error(f"Error: {e}")
+
+        comp_html_files = sorted([f for f in glob.glob(f"output/comparison_report_{algo_name}_*.html")], reverse=True)
+        if comp_html_files:
+            sel_comp = st.selectbox(f"Select {algo_name} Report", comp_html_files, key=f"comp_sel_{algo_key}")
+            c1, c2, c3 = st.columns(3)
+            with c1:
+                view_comp = st.button(f"VIEW {algo_name} REPORT", key=f"view_comp_{algo_key}")
+            with c2:
+                with open(sel_comp, 'rb') as fh:
+                    st.download_button("DOWNLOAD HTML", fh, file_name=os.path.basename(sel_comp), key=f"dl_comp_{algo_key}")
+            with c3:
+                try:
+                    user_comp = open(sel_comp, encoding='utf-8').read()
+                    for sname in ['RenkoReversalStrategy','RenkoSMIIOSupertrendStrategy']:
+                        user_comp = user_comp.replace(sname, 'Alpha Strategy')
+                    st.download_button("DOWNLOAD USER HTML", user_comp.encode('utf-8'), file_name=f"alpha_{algo_name}_comparison.html", mime="text/html", key=f"dl_comp_user_{algo_key}")
+                except Exception as e:
+                    st.error(f"Error: {e}")
+            if view_comp:
+                content = open(sel_comp, encoding='utf-8').read()
+                st.components.v1.html(content, height=2500, scrolling=True)
+        else:
+            st.info(f"No {algo_name} comparison reports found. Click GENERATE to create one.")
+
 
 # ================================================================
 # SECTION 5 - BACKTEST
