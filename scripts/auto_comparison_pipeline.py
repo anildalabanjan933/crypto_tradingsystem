@@ -100,8 +100,12 @@ def incremental_download(symbol, resolution, csv_path, full_start='2024-01-01'):
 
     if os.path.exists(csv_path):
         existing = pd.read_csv(csv_path)
-        last_dt  = pd.to_datetime(existing['Date'] + ' ' + existing['Time'],
-                                   utc=True).max()
+        if 'Date' in existing.columns:
+            last_dt = pd.to_datetime(existing['Date'] + ' ' + existing['Time'], utc=True).max()
+        elif 'datetime' in existing.columns:
+            last_dt = pd.to_datetime(existing['datetime'], utc=True).max()
+        else:
+            last_dt = pd.to_datetime(existing['timestamp'], unit='s', utc=True).max()
         start_ts = int(last_dt.timestamp()) + step
         log(f'[Step 1] Incremental from {last_dt}')
     else:
