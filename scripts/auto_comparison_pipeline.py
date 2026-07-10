@@ -215,7 +215,7 @@ final_bt = {
     'winrate':  round(float(bt_metrics.get('win_rate', BT_WINRATE)), 2),
     'pnl_inr':  bt_metrics.get('total_pnl_inr', BT_PNL_INR),
     'dd_pct':   round(abs(float(bt_metrics.get('max_drawdown_pct', BT_DD))), 4),
-    'sharpe':   bt_metrics.get('sharpe_ratio', BT_SHARPE),
+    'sharpe':   round(float(bt_metrics.get('sharpe_ratio', BT_SHARPE)), 2),
     'slippage': SLIPPAGE
 }
 log(f'[Step 2] Final backtest metrics: trades={final_bt["trades"]} winrate={final_bt["winrate"]} pnl_inr={final_bt["pnl_inr"]} dd={final_bt["dd_pct"]} sharpe={final_bt["sharpe"]}')
