@@ -93,9 +93,21 @@ def candles_to_df(candles):
     df['Time'] = df['datetime'].dt.strftime('%H:%M:%S')
     df = df.rename(columns={'open':'Open','high':'High','low':'Low',
                              'close':'Close','volume':'Volume'})
+    # Always return clean 7-column format - no extra columns ever
     return df[['Date','Time','Open','High','Low','Close','Volume']]
 
+def clean_csv(csv_path):
+    if not os.path.exists(csv_path):
+        return
+    df = pd.read_csv(csv_path)
+    # Fix corrupted CSV - keep only Date/Time/OHLCV columns
+    if 'Date' in df.columns and 'Time' in df.columns:
+        df = df[['Date','Time','Open','High','Low','Close','Volume']].dropna()
+        df = df.drop_duplicates(subset=['Date','Time']).sort_values(['Date','Time'])
+        df.to_csv(csv_path, index=False)
+
 def incremental_download(symbol, resolution, csv_path, full_start='2024-01-01'):
+    clean_csv(csv_path)  # Fix any corrupted columns before reading
     candle_secs = {'1m':60,'5m':300,'15m':900,'1h':3600,'2h':7200,'4h':14400,'1d':86400}
     step = candle_secs.get(resolution, 3600)
     now_ts = int(datetime.now(timezone.utc).timestamp())
@@ -202,10 +214,11 @@ final_bt = {
     'trades':   bt_metrics.get('total_trades', BT_TRADES),
     'winrate':  bt_metrics.get('win_rate', BT_WINRATE),
     'pnl_inr':  bt_metrics.get('total_pnl_inr', BT_PNL_INR),
-    'dd_pct':   bt_metrics.get('max_drawdown_pct', BT_DD),
+    'dd_pct':   abs(float(bt_metrics.get('max_drawdown_pct', BT_DD))),
     'sharpe':   bt_metrics.get('sharpe_ratio', BT_SHARPE),
     'slippage': SLIPPAGE
 }
+log(f'[Step 2] Final backtest metrics: trades={final_bt["trades"]} winrate={final_bt["winrate"]} pnl_inr={final_bt["pnl_inr"]} dd={final_bt["dd_pct"]} sharpe={final_bt["sharpe"]}')
 
 log('STEP_2_DONE')
 
