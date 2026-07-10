@@ -322,6 +322,7 @@ fwd_pnl_inr     = 0.0
 fwd_max_dd      = 0.0
 INR_RATE        = 84.0  # approximate USD to INR
 
+order_summary = {}
 if all_fills:
     # Count unique orders not fills (Delta splits large orders into multiple fills)
     buy_orders  = set(f['order_id'] for f in all_fills if f.get('side') == 'buy')
@@ -332,6 +333,7 @@ if all_fills:
 
     # Group fills by order_id and calculate weighted average price per order
     from collections import defaultdict
+    order_summary = {}
     order_fills = defaultdict(list)
     for f in all_fills:
         order_fills[f['order_id']].append(f)
