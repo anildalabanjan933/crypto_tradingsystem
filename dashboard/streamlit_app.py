@@ -912,12 +912,24 @@ csv_files = sorted([f for f in glob.glob("output/*.csv") if "trade_log_" in f], 
 st.markdown("**HTML Reports**")
 if html_files:
     selected_html = st.selectbox("Select HTML Report", html_files, key="sec6_html_select")
-    c1, c2 = st.columns(2)
+    c1, c2, c3 = st.columns(3)
     with c1:
         view_html_s5 = st.button("VIEW HTML REPORT", key="sec6_view_html")
     with c2:
         with open(selected_html, 'rb') as f:
             st.download_button("DOWNLOAD HTML", f, file_name=os.path.basename(selected_html), key="sec6_dl_html")
+    with c3:
+        try:
+            user_content = open(selected_html, encoding='utf-8').read()
+            user_content = user_content.replace('<title>Backtest Report - RenkoReversalStrategy</title>', '<title>Backtest Report - Alpha Strategy</title>')
+            user_content = user_content.replace('<title>Backtest Report - RenkoSMIIOSupertrendStrategy</title>', '<title>Backtest Report - Alpha Strategy</title>')
+            for sname in ['RenkoReversalStrategy','RenkoSMIIOSupertrendStrategy','RenkoBreakoutStrategy','RenkoTrendlinePullbackStrategy','RenkoOptionsStrategy']:
+                user_content = user_content.replace(f'<h1>{sname}</h1>', '<h1>Alpha Strategy</h1>')
+                user_content = user_content.replace(f'Strategy: {sname}', 'Strategy: Alpha Strategy')
+                user_content = user_content.replace(f'<title>Backtest Report - {sname}</title>', '<title>Backtest Report - Alpha Strategy</title>')
+            st.download_button("DOWNLOAD USER HTML", user_content.encode('utf-8'), file_name="alpha_strategy_report.html", mime="text/html", key="sec6_dl_user_html")
+        except Exception as e:
+            st.error(f"Error: {e}")
     if view_html_s5:
         try:
             content = open(selected_html, encoding='utf-8').read()
@@ -1073,11 +1085,11 @@ with port_tab2:
 # ================================================================
 
 st.markdown("---")
-st.markdown("**Portfolio Reports**")
-port_html = sorted([f for f in glob.glob("output/*.html") if "backtest_report_" in f and "optimization" not in f], reverse=True)
-port_csv = sorted([f for f in glob.glob("output/*.csv") if "trade_log_" in f], reverse=True)
+st.markdown("**Backtest Reports**")
+port_html = sorted([f for f in glob.glob("output/*.html") if "portfolio_report_" in f], reverse=True)
+port_csv = sorted([f for f in glob.glob("output/*.csv") if "portfolio_trade_log_" in f], reverse=True)
 
-st.markdown("**HTML Reports**")
+st.markdown("**Select Report to View/Download**")
 if port_html:
     sel_port_html = st.selectbox("Select Portfolio HTML", port_html, key="port_html_sel")
     c1, c2 = st.columns(2)

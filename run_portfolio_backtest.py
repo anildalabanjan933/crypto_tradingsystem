@@ -235,6 +235,18 @@ def run_portfolio_backtest():
 
         html_file = generator.generate_html_report()
         csv_file = generator.generate_csv_trade_log()
+        # Rename to portfolio_report_* for dashboard identification
+        import shutil, os
+        from datetime import datetime as _dt
+        _ts = _dt.now().strftime("%Y%m%d_%H%M%S")
+        _new_html = f"output/portfolio_report_{portfolio_name}_{symbol}_{_ts}.html"
+        _new_csv  = f"output/portfolio_trade_log_{portfolio_name}_{symbol}_{_ts}.csv"
+        if html_file and os.path.exists(html_file):
+            shutil.move(html_file, _new_html)
+            html_file = _new_html
+        if csv_file and os.path.exists(csv_file):
+            shutil.move(csv_file, _new_csv)
+            csv_file = _new_csv
 
         print(f"\n✅ Portfolio report generated: {html_file}")
         print(f"✅ Trade log saved: {csv_file}")
