@@ -1107,12 +1107,22 @@ port_csv = sorted([f for f in glob.glob("output/*.csv") if "portfolio_trade_log_
 st.markdown("**Select Report to View/Download**")
 if port_html:
     sel_port_html = st.selectbox("Select Portfolio HTML", port_html, key="port_html_sel")
-    c1, c2 = st.columns(2)
+    c1, c2, c3 = st.columns(3)
     with c1:
         view_html_5b = st.button("VIEW HTML", key="port_view_html")
     with c2:
         with open(sel_port_html, 'rb') as f:
             st.download_button("DOWNLOAD HTML", f, file_name=os.path.basename(sel_port_html), key="port_dl_html")
+    with c3:
+        try:
+            user_content = open(sel_port_html, encoding='utf-8').read()
+            for sname in ['Portfolio_Dynamic','RenkoReversalStrategy','RenkoSMIIOSupertrendStrategy','RenkoBreakoutStrategy','RenkoTrendlinePullbackStrategy','RenkoOptionsStrategy']:
+                user_content = user_content.replace(f'<h1>{sname}</h1>', '<h1>Alpha Strategy</h1>')
+                user_content = user_content.replace(f'Strategy: {sname}', 'Strategy: Alpha Strategy')
+                user_content = user_content.replace(f'<title>Backtest Report - {sname}</title>', '<title>Backtest Report - Alpha Strategy</title>')
+            st.download_button("DOWNLOAD USER HTML", user_content.encode('utf-8'), file_name="alpha_portfolio_report.html", mime="text/html", key="port_dl_user_html")
+        except Exception as e:
+            st.error(f"Error: {e}")
     if view_html_5b:
         content = open(sel_port_html, encoding='utf-8').read()
         st.components.v1.html(content, height=2000, scrolling=True)
