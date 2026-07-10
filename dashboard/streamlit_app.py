@@ -142,7 +142,7 @@ s4_log = system.get("log_path_s4", "logs/live_trading_s4.log")
 # ================================================================
 col_title, col_status = st.columns([6, 1])
 with col_title:
-    st.markdown('<span class="main-title">CRYPTO TRADING SYSTEM</span><span class="creator-name">✦ Created by Anil Dalbanjan · Gandhi Nagar, THI</span>', unsafe_allow_html=True)
+    st.markdown("**CRYPTO TRADING SYSTEM** &nbsp;&nbsp; ✦ *Created by Anil Dalbanjan · Gandhi Nagar, THI*")
     st.markdown("BTC Algo Trading Dashboard - Single Control Centre")
 with col_status:
     st.markdown("<br>", unsafe_allow_html=True)
