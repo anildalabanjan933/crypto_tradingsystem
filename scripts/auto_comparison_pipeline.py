@@ -310,8 +310,10 @@ fwd_max_dd      = 0.0
 INR_RATE        = 84.0  # approximate USD to INR
 
 if all_fills:
-    # Each fill = one side of a trade, count unique orders
-    fwd_trade_count = len(all_fills)
+    # Count unique orders not fills (Delta splits large orders into multiple fills)
+    buy_orders  = set(f['order_id'] for f in all_fills if f.get('side') == 'buy')
+    sell_orders = set(f['order_id'] for f in all_fills if f.get('side') == 'sell')
+    fwd_trade_count = min(len(buy_orders), len(sell_orders))
     buys  = [f for f in all_fills if f.get('side') == 'buy']
     sells = [f for f in all_fills if f.get('side') == 'sell']
 
