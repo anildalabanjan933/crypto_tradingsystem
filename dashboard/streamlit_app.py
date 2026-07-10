@@ -23,6 +23,8 @@ p  { font-size: 12px !important; margin: 0 !important; }
 [data-testid="metric-container"] { padding: 4px 8px !important; border: 1px solid #e0e0e0; border-radius: 4px; }
 
 /* COMPACT SECTION TITLES */
+.main-title { font-size: 18px !important; font-weight: 800 !important; color: #1a1a1a !important; display: inline !important; }
+.creator-name { font-size: 12px !important; font-style: italic !important; color: #FFD700 !important; font-weight: 600 !important; margin-left: 20px !important; display: inline !important; }
 .section-title { color: #1a73e8; font-size: 12px !important; font-weight: 700;
                  border-bottom: 1px solid #1a73e8; padding-bottom: 2px;
                  margin-bottom: 6px; margin-top: 8px; text-transform: uppercase;
@@ -140,7 +142,7 @@ s4_log = system.get("log_path_s4", "logs/live_trading_s4.log")
 # ================================================================
 col_title, col_status = st.columns([6, 1])
 with col_title:
-    st.markdown("### CRYPTO TRADING SYSTEM &nbsp;&nbsp;&nbsp; *✦ Created by Anil Dalbanjan · Gandhi Nagar, THI*")
+    st.markdown('<span class="main-title">CRYPTO TRADING SYSTEM</span><span class="creator-name">✦ Created by Anil Dalbanjan · Gandhi Nagar, THI</span>', unsafe_allow_html=True)
     st.markdown("BTC Algo Trading Dashboard - Single Control Centre")
 with col_status:
     st.markdown("<br>", unsafe_allow_html=True)
