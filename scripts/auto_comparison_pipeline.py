@@ -317,18 +317,36 @@ if all_fills:
     buys  = [f for f in all_fills if f.get('side') == 'buy']
     sells = [f for f in all_fills if f.get('side') == 'sell']
 
-    # Calculate PnL from buy/sell fill pairs + commission from fills
+    # Group fills by order_id and calculate weighted average price per order
+    from collections import defaultdict
+    order_fills = defaultdict(list)
+    for f in all_fills:
+        order_fills[f['order_id']].append(f)
+
+    # Calculate weighted avg price per order
+    order_summary = {}
+    for oid, fills in order_fills.items():
+        total_size = sum(float(f['size']) for f in fills)
+        wavg_price = sum(float(f['price']) * float(f['size']) for f in fills) / total_size if total_size > 0 else 0
+        order_summary[oid] = {
+            'side': fills[0]['side'],
+            'size': total_size,
+            'wavg_price': wavg_price,
+            'created_at': fills[0]['created_at']
+        }
+
+    # Sort orders by time and pair buy/sell round trips
+    buy_orders_list  = sorted([o for o in order_summary.values() if o['side']=='buy'],  key=lambda x: x['created_at'])
+    sell_orders_list = sorted([o for o in order_summary.values() if o['side']=='sell'], key=lambda x: x['created_at'])
+
     pnl_list = []
-    total_commission_from_fills = 0.0
-    buys_sorted  = sorted(buys,  key=lambda x: x['created_at'])
-    sells_sorted = sorted(sells, key=lambda x: x['created_at'])
-    pairs = min(len(buys_sorted), len(sells_sorted))
+    contract_value = 0.001
+    pairs = min(len(buy_orders_list), len(sell_orders_list))
     for i in range(pairs):
         try:
-            buy_price  = float(buys_sorted[i]['price'])
-            sell_price = float(sells_sorted[i]['price'])
-            size       = float(buys_sorted[i]['size'])
-            contract_value = 0.001
+            buy_price  = buy_orders_list[i]['wavg_price']
+            sell_price = sell_orders_list[i]['wavg_price']
+            size       = buy_orders_list[i]['size']
             pnl = (sell_price - buy_price) * size * contract_value
             pnl_list.append(pnl)
             fwd_pnl_usd += pnl
@@ -336,11 +354,9 @@ if all_fills:
                 fwd_wins += 1
         except:
             pass
-    for f in all_fills:
-        try:
-            total_commission_from_fills += float(f.get('commission', 0) or 0)
-        except:
-            pass
+
+    # Commission from fills
+    total_commission_from_fills = sum(float(f.get('commission', 0) or 0) for f in all_fills)
     if total_commission_from_fills > 0:
         total_commission = total_commission_from_fills
 
