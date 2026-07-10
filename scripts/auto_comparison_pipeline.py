@@ -166,8 +166,8 @@ log('STEP_2_START')
 log(f'[Step 2] Running backtest: {STRATEGY_NAME} | {STRATEGY_TF} | {LOTS} lots...')
 
 import subprocess
-bt_start = '2024-01-01'
-bt_end   = TO_DATE
+bt_start = FROM_DATE  # Same as forward test start
+bt_end   = TO_DATE    # Same as forward test end
 bt_script = os.path.join(BASE_DIR, 'scripts', 'run_backtest_cli.py')
 
 bt_cmd = [
