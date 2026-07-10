@@ -16,6 +16,8 @@ import hmac
 import hashlib
 import argparse
 import requests
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 import pandas as pd
 from datetime import datetime, timezone, timedelta
 
@@ -44,7 +46,7 @@ SYMBOL        = algo['symbol']
 LOTS          = algo['lots']
 SLIPPAGE      = algo['backtest_slippage']
 PRODUCT_ID    = algo['delta_product_id']
-DELTA_URL     = algo['delta_url']
+DELTA_URL     = algo['delta_url']  # use testnet for demo account
 API_KEY       = os.environ.get(algo['delta_api_key_env'], '')
 API_SECRET    = os.environ.get(algo['delta_api_secret_env'], '')
 
@@ -211,16 +213,13 @@ log('STEP_2_DONE')
 log('STEP_3_START')
 log(f'[Step 3] Fetching Delta API trades from {FROM_DATE} to {TO_DATE}...')
 
-def sign(secret, method, path, qs, body, ts):
-    msg = method + ts + path + qs + body
-    return hmac.new(secret.encode(), msg.encode(), hashlib.sha256).hexdigest()
-
 def delta_get(path, params=None):
     if params is None:
         params = {}
     ts  = str(int(time.time()))
     qs  = '?' + '&'.join(f'{k}={v}' for k,v in params.items()) if params else ''
-    sig = sign(API_SECRET, 'GET', path, qs, '', ts)
+    msg = 'GET' + ts + path + qs + ''
+    sig = hmac.new(API_SECRET.encode(), msg.encode(), hashlib.sha256).hexdigest()
     headers = {
         'api-key': API_KEY,
         'timestamp': ts,
@@ -229,7 +228,7 @@ def delta_get(path, params=None):
         'User-Agent': 'python-rest-client'
     }
     url = DELTA_URL + path
-    r = requests.get(url, params=params, headers=headers, timeout=30)
+    r = requests.get(url, params=params, headers=headers, timeout=(5, 15), verify=False)
     r.raise_for_status()
     return r.json()
 
@@ -241,7 +240,7 @@ to_ts   = int(datetime.now(timezone.utc).timestamp())
 all_fills = []
 try:
     page = 1
-    while True:
+    while page <= 10:
         resp = delta_get('/v2/fills', {
             'product_id': PRODUCT_ID,
             'page_size': 100,
@@ -250,13 +249,15 @@ try:
         fills = resp.get('result', [])
         if not fills:
             break
-        # Filter by date range
+        found_old = False
         for f in fills:
             ft = int(datetime.strptime(f['created_at'][:19],
                      '%Y-%m-%dT%H:%M:%S').replace(tzinfo=timezone.utc).timestamp())
             if ft >= from_ts:
                 all_fills.append(f)
-        if len(fills) < 100:
+            else:
+                found_old = True
+        if found_old or len(fills) < 100:
             break
         page += 1
         time.sleep(0.2)
@@ -272,7 +273,8 @@ try:
         'product_id': PRODUCT_ID,
         'page_size': 200
     })
-    txns = resp.get('result', {}).get('data', [])
+    result = resp.get('result', [])
+    txns = result if isinstance(result, list) else result.get('data', [])
     for t in txns:
         tt = int(datetime.strptime(t['created_at'][:19],
                  '%Y-%m-%dT%H:%M:%S').replace(tzinfo=timezone.utc).timestamp())
@@ -295,25 +297,37 @@ fwd_max_dd      = 0.0
 INR_RATE        = 84.0  # approximate USD to INR
 
 if all_fills:
-    # Group fills into round trips (buy+sell pairs)
+    # Each fill = one side of a trade, count unique orders
+    fwd_trade_count = len(all_fills)
     buys  = [f for f in all_fills if f.get('side') == 'buy']
     sells = [f for f in all_fills if f.get('side') == 'sell']
-    fwd_trade_count = min(len(buys), len(sells))
 
-    # Calculate PnL from fills
+    # Calculate PnL from buy/sell fill pairs + commission from fills
     pnl_list = []
-    for i in range(fwd_trade_count):
+    total_commission_from_fills = 0.0
+    buys_sorted  = sorted(buys,  key=lambda x: x['created_at'])
+    sells_sorted = sorted(sells, key=lambda x: x['created_at'])
+    pairs = min(len(buys_sorted), len(sells_sorted))
+    for i in range(pairs):
         try:
-            buy_price  = float(buys[i]['price'])
-            sell_price = float(sells[i]['price'])
-            size       = float(buys[i]['size'])
-            pnl        = (sell_price - buy_price) * size
+            buy_price  = float(buys_sorted[i]['price'])
+            sell_price = float(sells_sorted[i]['price'])
+            size       = float(buys_sorted[i]['size'])
+            contract_value = 0.001
+            pnl = (sell_price - buy_price) * size * contract_value
             pnl_list.append(pnl)
             fwd_pnl_usd += pnl
             if pnl > 0:
                 fwd_wins += 1
         except:
             pass
+    for f in all_fills:
+        try:
+            total_commission_from_fills += float(f.get('commission', 0) or 0)
+        except:
+            pass
+    if total_commission_from_fills > 0:
+        total_commission = total_commission_from_fills
 
     fwd_pnl_inr = fwd_pnl_usd * INR_RATE
     fwd_winrate = (fwd_wins / fwd_trade_count * 100) if fwd_trade_count > 0 else 0.0
