@@ -212,9 +212,9 @@ else:
 # Use config values as fallback for missing keys
 final_bt = {
     'trades':   bt_metrics.get('total_trades', BT_TRADES),
-    'winrate':  bt_metrics.get('win_rate', BT_WINRATE),
+    'winrate':  round(float(bt_metrics.get('win_rate', BT_WINRATE)), 2),
     'pnl_inr':  bt_metrics.get('total_pnl_inr', BT_PNL_INR),
-    'dd_pct':   abs(float(bt_metrics.get('max_drawdown_pct', BT_DD))),
+    'dd_pct':   round(abs(float(bt_metrics.get('max_drawdown_pct', BT_DD))), 4),
     'sharpe':   bt_metrics.get('sharpe_ratio', BT_SHARPE),
     'slippage': SLIPPAGE
 }
