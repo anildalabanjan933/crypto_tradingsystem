@@ -1,5 +1,5 @@
 # run_live_trading_s2.py — S2: RenkoReversalStrategy
-import time, os, datetime
+import time, os, datetime, math
 # REMOVED: post_signal call
 from dotenv import load_dotenv
 load_dotenv()
@@ -18,7 +18,17 @@ log = logging.getLogger(__name__)
 SYMBOL     = "BTCUSD"
 LOT_SIZE   = 100
 CSV_PATH   = "data/btc_1m_delta.csv"
-CYCLE_SEC  = 60
+CYCLE_SEC  = 60          # fallback only
+CANDLE_SEC = 3600        # 1H candle = 3600 seconds
+
+def sleep_until_next_candle_close(candle_seconds, buffer_sec=5):
+    """Sleep until next candle close + buffer. Matches backtest entry timing exactly."""
+    now = datetime.now(timezone.utc).timestamp()
+    next_close = (math.floor(now / candle_seconds) + 1) * candle_seconds
+    sleep_secs = next_close - now + buffer_sec
+    next_close_dt = datetime.fromtimestamp(next_close, tz=timezone.utc).strftime('%Y-%m-%dT%H:%M:%S')
+    log.info(f'[SLEEP] Next candle close: {next_close_dt} | Sleeping {sleep_secs:.0f}s')
+    time.sleep(max(sleep_secs, 1))
 API_KEY    = os.getenv("S2_API_KEY")
 API_SECRET = os.getenv("S2_API_SECRET")
 
@@ -163,4 +173,4 @@ while True:
     except Exception as e:
         log.error(f"[ERROR] {e}", exc_info=True)
 
-    time.sleep(CYCLE_SEC)
+    sleep_until_next_candle_close(CANDLE_SEC)

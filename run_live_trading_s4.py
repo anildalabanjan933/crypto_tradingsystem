@@ -3,7 +3,7 @@
 # Subaccount : S4RenkoSMIOsuptrend
 # Testnet    : True (forward test)
 
-import time, os
+import time, os, math
 # REMOVED: post_signal call
 from dotenv import load_dotenv
 load_dotenv()
@@ -26,7 +26,17 @@ LOT_SIZE   = 100
 CSV_PATH   = 'data/btc_1m_delta.csv'
 LOG_PATH   = 'logs/live_trading_s4.log'
 SYMBOL     = 'BTCUSD'
-SLEEP_SEC  = 60
+SLEEP_SEC  = 60          # fallback only
+CANDLE_SEC = 7200        # 2H candle = 7200 seconds
+
+def sleep_until_next_candle_close(candle_seconds, buffer_sec=5):
+    """Sleep until next candle close + buffer. Matches backtest entry timing exactly."""
+    now = datetime.now(timezone.utc).timestamp()
+    next_close = (math.floor(now / candle_seconds) + 1) * candle_seconds
+    sleep_secs = next_close - now + buffer_sec
+    next_close_dt = datetime.fromtimestamp(next_close, tz=timezone.utc).strftime('%Y-%m-%dT%H:%M:%S')
+    logging.info(f'[SLEEP] Next candle close: {next_close_dt} | Sleeping {sleep_secs:.0f}s')
+    time.sleep(max(sleep_secs, 1))
 
 BASE_URL = 'https://cdn-ind.testnet.deltaex.org' if TESTNET else 'https://api.india.delta.exchange'
 
@@ -245,7 +255,7 @@ def main():
         except Exception as e:
             logging.error(f'[ERROR] {e}')
 
-        time.sleep(SLEEP_SEC)
+        sleep_until_next_candle_close(CANDLE_SEC)
 
 
 if __name__ == '__main__':
