@@ -1001,11 +1001,19 @@ with port_tab1:
         st.info("Running predefined portfolio backtest...")
         with st.spinner("Running..."):
             try:
-                result = subprocess.run(
-                    [".venv/bin/python", "run_portfolio_backtest.py"],
-                    capture_output=True, text=True, timeout=600,
-                    input="1\n1\n"
-                )
+                cmd = [
+                    ".venv/bin/python", "scripts/run_portfolio_cli.py",
+                    "--strategies", "RenkoReversalStrategy,RenkoSMIIOSupertrendStrategy",
+                    "--lots", str(port_lots),
+                    "--start", str(port_start),
+                    "--end", str(port_end),
+                    "--slippage", str(port_slippage),
+                    "--symbol", "BTCUSD",
+                    "--csv", "data/btc_1m_delta.csv"
+                ]
+                if not port_include_charges:
+                    cmd.append("--no-charges")
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
                 if result.returncode == 0:
                     st.success("Portfolio backtest complete")
                     st.code(result.stdout[-3000:])
@@ -1066,12 +1074,19 @@ with port_tab2:
             st.info(f"Running dynamic portfolio: {selected_strategies}")
             with st.spinner("Running..."):
                 try:
-                    strategies_input = "\n".join([str(i+1) for i in range(len(selected_strategies))])
-                    result = subprocess.run(
-                        [".venv/bin/python", "run_portfolio_backtest.py"],
-                        capture_output=True, text=True, timeout=600,
-                        input=f"2\n{strategies_input}\n"
-                    )
+                    cmd = [
+                        ".venv/bin/python", "scripts/run_portfolio_cli.py",
+                        "--strategies", ",".join(selected_strategies),
+                        "--lots", str(port_dyn_lots),
+                        "--start", str(port_dyn_start),
+                        "--end", str(port_dyn_end),
+                        "--slippage", str(port_dyn_slip),
+                        "--symbol", "BTCUSD",
+                        "--csv", "data/btc_1m_delta.csv"
+                    ]
+                    if not port_dyn_include_charges:
+                        cmd.append("--no-charges")
+                    result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
                     if result.returncode == 0:
                         st.success("Dynamic portfolio backtest complete")
                         st.code(result.stdout[-3000:])
