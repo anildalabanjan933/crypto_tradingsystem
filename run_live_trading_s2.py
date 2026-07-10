@@ -55,11 +55,19 @@ def fetch_latest_1m(since):
     return df
 
 def build_2h(df):
-    return df.resample("2h").agg(
+    from datetime import datetime, timezone
+    df_2h = df.resample("2h").agg(
         open=("open","first"), high=("high","max"),
         low=("low","min"),     close=("close","last"),
         volume=("volume","sum")
     ).dropna()
+    # Drop last incomplete 2H candle - only use fully closed candles (matches backtest)
+    now_utc = datetime.now(timezone.utc).replace(tzinfo=None)
+    last_candle_ts = df_2h.index[-1]
+    candle_age_minutes = (now_utc - last_candle_ts).total_seconds() / 60
+    if candle_age_minutes < 120:
+        df_2h = df_2h.iloc[:-1]
+    return df_2h
 
 # --- Position state ---
 pos = om.get_position()
