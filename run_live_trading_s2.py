@@ -54,20 +54,20 @@ def fetch_latest_1m(since):
     df = pd.DataFrame(rows).set_index("timestamp").sort_index()
     return df
 
-def build_2h(df):
+def build_1h(df):
     from datetime import datetime, timezone
-    df_2h = df.resample("2h").agg(
+    df_1h = df.resample("1h").agg(
         open=("open","first"), high=("high","max"),
         low=("low","min"),     close=("close","last"),
         volume=("volume","sum")
     ).dropna()
     # Drop last incomplete 2H candle - only use fully closed candles (matches backtest)
     now_utc = datetime.now(timezone.utc).replace(tzinfo=None)
-    last_candle_ts = df_2h.index[-1]
+    last_candle_ts = df_1h.index[-1]
     candle_age_minutes = (now_utc - last_candle_ts).total_seconds() / 60
-    if candle_age_minutes < 120:
-        df_2h = df_2h.iloc[:-1]
-    return df_2h
+    if candle_age_minutes < 60:
+        df_1h = df_1h.iloc[:-1]
+    return df_1h
 
 # --- Position state ---
 pos = om.get_position()
@@ -95,11 +95,11 @@ except Exception as _e:
 # --- Pre-load signals from full data to get last known ts ---
 log.info("[STARTUP] Pre-loading signals to find last known timestamp...")
 try:
-    _df_2h_init = build_2h(df_1m)
-    _box_init   = get_renko_box_size(SYMBOL, float(_df_2h_init["close"].iloc[-1]))
+    _df_1h_init = build_1h(df_1m)
+    _box_init   = get_renko_box_size(SYMBOL, float(_df_1h_init["close"].iloc[-1]))
     _strat_init = RenkoReversalStrategy(
-        data_dict={"2h": _df_2h_init}, lot_size=LOT_SIZE,
-        renko_box=_box_init, renko_timeframe="2h"
+        data_dict={"1h": _df_1h_init}, lot_size=LOT_SIZE,
+        renko_box=_box_init, renko_timeframe="1h"
     )
     _sigs_init    = _strat_init.generate_signals()
     last_known_ts = _sigs_init[-1].get("timestamp") if _sigs_init else None
@@ -118,13 +118,13 @@ while True:
                 df_1m = pd.concat([df_1m, new_candles]).sort_index()
                 log.info(f"[DATA] Appended {len(new_candles)} candles. Total={len(df_1m)}")
 
-        df_2h = build_2h(df_1m)
-        log.info(f"[DATA] 2H candles={len(df_2h)}")
+        df_1h = build_1h(df_1m)
+        log.info(f"[DATA] 1H candles={len(df_1h)}")
 
-        box_size = get_renko_box_size(SYMBOL, float(df_2h["close"].iloc[-1]))
+        box_size = get_renko_box_size(SYMBOL, float(df_1h["close"].iloc[-1]))
         strategy = RenkoReversalStrategy(
-            data_dict={"2h": df_2h}, lot_size=LOT_SIZE,
-            renko_box=box_size, renko_timeframe="2h"
+            data_dict={"1h": df_1h}, lot_size=LOT_SIZE,
+            renko_box=box_size, renko_timeframe="1h"
         )
         signals = strategy.generate_signals()
         log.info(f"[SIGNALS] total={len(signals)}")
