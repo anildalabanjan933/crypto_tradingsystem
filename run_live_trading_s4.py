@@ -4,6 +4,7 @@
 # Testnet    : True (forward test)
 
 import time, os
+from algotest_webhook import post_signal
 from dotenv import load_dotenv
 load_dotenv()
 import logging
@@ -199,11 +200,13 @@ def main():
                 if sig_type == 'ENTRY' and position is None:
                     if direction == 'long':
                         order_manager.place_market_order('buy', LOT_SIZE)
+                        post_signal('S4', 'BUY', 'entry')
                         position = 'long'
                         last_known_ts = sig_ts
                         logging.info(f'[ORDER] ENTRY buy {LOT_SIZE} lots | type={entry_type} | ts={sig_ts}')
                     elif direction == 'short':
                         order_manager.place_market_order('sell', LOT_SIZE)
+                        post_signal('S4', 'SELL', 'entry')
                         position = 'short'
                         last_known_ts = sig_ts
                         logging.info(f'[ORDER] ENTRY sell {LOT_SIZE} lots | type={entry_type} | ts={sig_ts}')
@@ -211,9 +214,11 @@ def main():
                 elif sig_type == 'EXIT' and position is not None:
                     if position == 'long':
                         order_manager.close_position(LOT_SIZE, 'sell')
+                        post_signal('S4', 'BUY', 'exit')
                         logging.info(f'[ORDER] EXIT sell {LOT_SIZE} lots | type={exit_type} | ts={sig_ts}')
                     elif position == 'short':
                         order_manager.close_position(LOT_SIZE, 'buy')
+                        post_signal('S4', 'SELL', 'exit')
                         logging.info(f'[ORDER] EXIT buy {LOT_SIZE} lots | type={exit_type} | ts={sig_ts}')
                     position = None
                     last_known_ts = sig_ts

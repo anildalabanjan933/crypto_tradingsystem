@@ -20,6 +20,7 @@ parser.add_argument('--end', required=True)
 parser.add_argument('--slippage', type=float, default=5.0)
 parser.add_argument('--symbol', default='BTCUSD')
 parser.add_argument('--csv', default='data/btc_1m_delta.csv')
+parser.add_argument('--no-charges', action='store_true', default=False)
 args = parser.parse_args()
 
 print(f"Running optimisation: {args.strategy} | Group: {args.group} | {args.start} to {args.end}")
@@ -51,9 +52,15 @@ if args.group not in PREDEFINED_RANGES:
 
 param_ranges = PREDEFINED_RANGES[args.group]
 
+if args.no_charges:
+    import config.charges_config as cc
+    cc.charges_config['taker_fee_rate'] = 0.0
+    cc.charges_config['tax_rate'] = 0.0
+    cc.charges_config['funding_rate_annual'] = 0.0
+    cc.charges_config['insurance_fund_rate'] = 0.0
+
 optimizer = Optimizer(
     strategy_class=available[args.strategy],
-    strategy_name=args.strategy,
     param_ranges=param_ranges,
     lot_size=args.lots,
     slippage_per_side=args.slippage,

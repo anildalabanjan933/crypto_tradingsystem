@@ -1,5 +1,6 @@
 # run_live_trading_s2.py — S2: RenkoReversalStrategy
 import time, os, datetime
+from algotest_webhook import post_signal
 from dotenv import load_dotenv
 load_dotenv()
 import logging, pandas as pd
@@ -136,6 +137,7 @@ while True:
             if stype == "ENTRY" and position is None:
                 side = "buy" if sdir == "long" else "sell"
                 om.place_market_order(side=side, size=LOT_SIZE)
+                post_signal("S2", "BUY" if side == "buy" else "SELL", "entry")
                 position = sdir
                 last_known_ts = sig_ts
                 log.info(f"[ORDER] ENTRY {side} {LOT_SIZE} lots | type={sig.get("entry_type")} | ts={sig_ts}")
@@ -143,6 +145,7 @@ while True:
             elif stype == "EXIT" and position is not None:
                 side = "sell" if position == "long" else "buy"
                 om.close_position(size=LOT_SIZE, side=side)
+                post_signal("S2", "SELL" if side == "sell" else "BUY", "exit")
                 position = None
                 last_known_ts = sig_ts
                 log.info(f"[ORDER] EXIT {side} {LOT_SIZE} lots | type={sig.get("exit_type")} | ts={sig_ts}")
