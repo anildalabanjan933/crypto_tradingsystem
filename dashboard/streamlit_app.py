@@ -542,6 +542,67 @@ with st.expander("Show all OK checks"):
 st.caption(f"Last checked: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Auto-refreshes every 30s")
 st.markdown("---")
 
+
+# ================================================================
+# SECTION 1.3 - VM HEALTH (CPU + RAM + UPTIME)
+# ================================================================
+st.markdown("<div class='section-title'>SECTION 1.3 - VM HEALTH</div>", unsafe_allow_html=True)
+try:
+    import psutil
+    cpu = psutil.cpu_percent(interval=1)
+    ram = psutil.virtual_memory()
+    ram_used = ram.percent
+    ram_free_gb = round(ram.available / (1024**3), 2)
+    uptime_secs = int(datetime.datetime.now().timestamp() - psutil.boot_time())
+    uptime_hrs = uptime_secs // 3600
+    uptime_mins = (uptime_secs % 3600) // 60
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        cpu_color = "metric-red" if cpu > 80 else "metric-yellow" if cpu > 60 else "metric-green"
+        st.markdown(f"<div class='metric-box {cpu_color}'><div class='metric-label'>CPU USAGE</div><div class='metric-value'>{cpu:.1f}%</div></div>", unsafe_allow_html=True)
+    with col2:
+        ram_color = "metric-red" if ram_used > 80 else "metric-yellow" if ram_used > 60 else "metric-green"
+        st.markdown(f"<div class='metric-box {ram_color}'><div class='metric-label'>RAM USAGE</div><div class='metric-value'>{ram_used:.1f}%</div></div>", unsafe_allow_html=True)
+    with col3:
+        st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>RAM FREE</div><div class='metric-value'>{ram_free_gb} GB</div></div>", unsafe_allow_html=True)
+    with col4:
+        st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>UPTIME</div><div class='metric-value'>{uptime_hrs}h {uptime_mins}m</div></div>", unsafe_allow_html=True)
+    # App folder sizes
+    import subprocess
+    col5, col6, col7, col8 = st.columns(4)
+    with col5:
+        try:
+            r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system'], capture_output=True, text=True)
+            app_size = r.stdout.split()[0] if r.stdout else 'N/A'
+        except:
+            app_size = 'N/A'
+        st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>APP SIZE</div><div class='metric-value'>{app_size}</div></div>", unsafe_allow_html=True)
+    with col6:
+        try:
+            r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/logs'], capture_output=True, text=True)
+            log_size = r.stdout.split()[0] if r.stdout else 'N/A'
+        except:
+            log_size = 'N/A'
+        log_color = "metric-yellow" if log_size not in ['N/A'] and float(log_size.replace('M','').replace('G','').replace('K','') or 0) > 100 else "metric-green"
+        st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>LOGS SIZE</div><div class='metric-value'>{log_size}</div></div>", unsafe_allow_html=True)
+    with col7:
+        try:
+            r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/data'], capture_output=True, text=True)
+            data_size = r.stdout.split()[0] if r.stdout else 'N/A'
+        except:
+            data_size = 'N/A'
+        st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>DATA SIZE</div><div class='metric-value'>{data_size}</div></div>", unsafe_allow_html=True)
+    with col8:
+        try:
+            r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/.venv'], capture_output=True, text=True)
+            venv_size = r.stdout.split()[0] if r.stdout else 'N/A'
+        except:
+            venv_size = 'N/A'
+        st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>VENV SIZE</div><div class='metric-value'>{venv_size}</div></div>", unsafe_allow_html=True)
+except Exception as e:
+    st.warning(f"VM health check failed: {e}. Install psutil: pip install psutil")
+st.markdown("---")
+
 # ================================================================
 # SECTION 2 - BOT CONTROL
 # ================================================================
