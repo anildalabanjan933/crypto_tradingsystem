@@ -659,17 +659,48 @@ for i, algo in enumerate(algos):
                 st.warning(f"{algo['name']} deactivated")
 
 st.markdown("---")
-b1, b2, b3, b4 = st.columns(4)
+b1,b2,b3,b4,b5,b6 = st.columns(6)
 with b1:
-    if st.button("START ALL BOTS", key="sec2_start"):
-        st.info("Connect to VM to start bots - use SSH terminal")
+    if st.button("START ALL", key="sec2_start"):
+        try:
+            import subprocess
+            subprocess.Popen(['bash','-c','cd /home/anildalabanjan933/crypto_trading_system && bash start.sh'])
+            st.success("Starting...")
+        except Exception as e:
+            st.error(str(e))
 with b2:
-    if st.button("STOP ALL BOTS", key="sec2_stop"):
-        st.warning("Connect to VM to stop bots - use SSH terminal")
+    if st.button("STOP ALL", key="sec2_stop"):
+        try:
+            import subprocess
+            subprocess.Popen(['bash','-c','screen -S live_s2 -X quit; screen -S live_s4 -X quit'])
+            st.warning("Stopped")
+        except Exception as e:
+            st.error(str(e))
 with b3:
-    if st.button("RESTART ALL BOTS", key="sec2_restart"):
-        st.info("Connect to VM to restart - use SSH terminal")
+    if st.button("RESTART ALL", key="sec2_restart"):
+        try:
+            import subprocess
+            subprocess.Popen(['bash','-c','cd /home/anildalabanjan933/crypto_trading_system && bash start.sh'])
+            st.success("Restarting...")
+        except Exception as e:
+            st.error(str(e))
 with b4:
+    if st.button("RESTART S2", key="sec2_restart_s2"):
+        try:
+            import subprocess
+            subprocess.Popen(['bash','-c','screen -S live_s2 -X quit; sleep 2; screen -dmS live_s2 bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && python3 run_live_trading_s2.py > logs/live_trading_s2.log 2>&1"'])
+            st.success("S2 restarting...")
+        except Exception as e:
+            st.error(str(e))
+with b5:
+    if st.button("RESTART S4", key="sec2_restart_s4"):
+        try:
+            import subprocess
+            subprocess.Popen(['bash','-c','screen -S live_s4 -X quit; sleep 2; screen -dmS live_s4 bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && python3 run_live_trading_s4.py > logs/live_trading_s4.log 2>&1"'])
+            st.success("S4 restarting...")
+        except Exception as e:
+            st.error(str(e))
+with b6:
     if st.button("ADD NEW ALGO", key="sec2_add"):
         st.session_state['show_add_algo'] = True
 

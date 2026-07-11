@@ -1,5 +1,5 @@
 # run_live_trading_s2.py — S2: RenkoReversalStrategy
-import time, os, datetime, math
+import time, os, datetime, math, json
 # REMOVED: post_signal call
 from dotenv import load_dotenv
 load_dotenv()
@@ -16,7 +16,17 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 SYMBOL     = "BTCUSD"
-LOT_SIZE   = 100
+LOT_SIZE   = 100  # default - overridden by algo_config.json
+
+def get_lot_size():
+    try:
+        cfg = json.load(open('dashboard/algo_config.json'))
+        for a in cfg.get('algos', []):
+            if a.get('name') == 'S2':
+                return int(a.get('lots', 100))
+    except:
+        pass
+    return LOT_SIZE
 CSV_PATH   = "data/btc_1m_delta.csv"
 CYCLE_SEC  = 60          # fallback only
 CANDLE_SEC = 3600        # 1H candle = 3600 seconds
@@ -148,7 +158,7 @@ while True:
 
             if stype == "ENTRY" and position is None:
                 side = "buy" if sdir == "long" else "sell"
-                om.place_market_order(side=side, size=LOT_SIZE)
+                om.place_market_order(side=side, size=get_lot_size())
 # REMOVED: post_signal call
                 position = sdir
                 last_known_ts = sig_ts
@@ -156,7 +166,7 @@ while True:
 
             elif stype == "EXIT" and position is not None:
                 side = "sell" if position == "long" else "buy"
-                om.close_position(size=LOT_SIZE, side=side)
+                om.close_position(size=get_lot_size(), side=side)
 # REMOVED: post_signal call
                 position = None
                 last_known_ts = sig_ts

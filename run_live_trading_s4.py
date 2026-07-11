@@ -3,7 +3,7 @@
 # Subaccount : S4RenkoSMIOsuptrend
 # Testnet    : True (forward test)
 
-import time, os, math
+import time, os, math, json
 # REMOVED: post_signal call
 from dotenv import load_dotenv
 load_dotenv()
@@ -22,7 +22,17 @@ from config.symbol_config import get_renko_box_size
 API_KEY    = os.getenv('S4_API_KEY')
 API_SECRET = os.getenv('S4_API_SECRET')
 TESTNET    = True
-LOT_SIZE   = 100
+LOT_SIZE   = 100  # default - overridden by algo_config.json
+
+def get_lot_size():
+    try:
+        cfg = json.load(open('dashboard/algo_config.json'))
+        for a in cfg.get('algos', []):
+            if a.get('name') == 'S4':
+                return int(a.get('lots', 100))
+    except:
+        pass
+    return LOT_SIZE
 CSV_PATH   = 'data/btc_1m_delta.csv'
 LOG_PATH   = 'logs/live_trading_s4.log'
 SYMBOL     = 'BTCUSD'
@@ -211,13 +221,13 @@ def main():
 
                 if sig_type == 'ENTRY' and position is None:
                     if direction == 'long':
-                        order_manager.place_market_order('buy', LOT_SIZE)
+                        order_manager.place_market_order('buy', get_lot_size())
 # REMOVED: post_signal call
                         position = 'long'
                         last_known_ts = sig_ts
                         logging.info(f'[ORDER] ENTRY buy {LOT_SIZE} lots | type={entry_type} | ts={sig_ts}')
                     elif direction == 'short':
-                        order_manager.place_market_order('sell', LOT_SIZE)
+                        order_manager.place_market_order('sell', get_lot_size())
 # REMOVED: post_signal call
                         position = 'short'
                         last_known_ts = sig_ts
@@ -225,11 +235,11 @@ def main():
 
                 elif sig_type == 'EXIT' and position is not None:
                     if position == 'long':
-                        order_manager.close_position(LOT_SIZE, 'sell')
+                        order_manager.close_position(get_lot_size(), 'sell')
 # REMOVED: post_signal call
                         logging.info(f'[ORDER] EXIT sell {LOT_SIZE} lots | type={exit_type} | ts={sig_ts}')
                     elif position == 'short':
-                        order_manager.close_position(LOT_SIZE, 'buy')
+                        order_manager.close_position(get_lot_size(), 'buy')
 # REMOVED: post_signal call
                         logging.info(f'[ORDER] EXIT buy {LOT_SIZE} lots | type={exit_type} | ts={sig_ts}')
                     position = None
