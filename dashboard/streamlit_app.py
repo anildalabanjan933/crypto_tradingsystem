@@ -201,8 +201,19 @@ with c4:
 
 with c5:
     st.markdown("**DELTA API**")
-    st.info("MANUAL CHECK")
-    st.caption("Visit Delta Exchange")
+    try:
+        import requests as _req, warnings as _w
+        _w.filterwarnings('ignore')
+        _r = _req.get('https://cdn-ind.testnet.deltaex.org/v2/products/84', timeout=3, verify=False)
+        if _r.status_code == 200:
+            st.success("CONNECTED")
+            st.caption("Testnet OK")
+        else:
+            st.error("ERROR")
+            st.caption(f"Status: {_r.status_code}")
+    except:
+        st.error("UNREACHABLE")
+        st.caption("Check network")
 
 # ================================================================
 # ALERT BANNER
@@ -223,12 +234,70 @@ if s2_error:
 if s4_error:
     alerts.append(("red", f"S4 ERROR DETECTED: {s4_error}"))
 
+# Bot activity check - warn if no log update in last 5 minutes
+try:
+    import time as _t
+    now_ts = _t.time()
+    for bot_name, log_path in [("S2", s2_log), ("S4", s4_log)]:
+        if os.path.exists(log_path):
+            log_age = now_ts - os.path.getmtime(log_path)
+            if log_age > 300:
+                alerts.append(("yellow", f"{bot_name} BOT INACTIVE: No log update for {int(log_age//60)} minutes - check if bot is running"))
+except:
+    pass
+
+# New order detection
+try:
+    for bot_name, log_path in [("S2", s2_log), ("S4", s4_log)]:
+        if os.path.exists(log_path):
+            with open(log_path, 'r') as lf:
+                lines = lf.readlines()
+            recent = [l for l in lines[-50:] if '[ORDER]' in l]
+            if recent:
+                last_order = recent[-1].strip()
+                order_time = last_order[:19] if len(last_order) > 19 else last_order
+                import datetime as _dt2
+                try:
+                    ot = _dt2.datetime.strptime(order_time, '%Y-%m-%d %H:%M:%S,%f'[:len(order_time)])
+                    age_mins = (_dt2.datetime.now() - ot).total_seconds() / 60
+                    if age_mins < 10:
+                        alerts.append(("green", f"{bot_name} NEW ORDER: {last_order[20:80]}"))
+                except:
+                    pass
+except:
+    pass
+
+# Position closed detection
+try:
+    for bot_name, log_path in [("S2", s2_log), ("S4", s4_log)]:
+        if os.path.exists(log_path):
+            with open(log_path, 'r') as lf:
+                lines = lf.readlines()
+            exits = [l for l in lines[-50:] if 'EXIT' in l and '[ORDER]' in l]
+            if exits:
+                last_exit = exits[-1].strip()
+                exit_time = last_exit[:19]
+                import datetime as _dt3
+                try:
+                    et = _dt3.datetime.strptime(exit_time, '%Y-%m-%d %H:%M:%S,%f'[:len(exit_time)])
+                    age_mins = (_dt3.datetime.now() - et).total_seconds() / 60
+                    if age_mins < 30:
+                        alerts.append(("green", f"{bot_name} POSITION CLOSED: {last_exit[20:80]}"))
+                except:
+                    pass
+except:
+    pass
+
 if alerts:
     for level, msg in alerts:
         if level == "red":
             st.markdown(f"<div class='alert-red'>ERROR: {msg}</div>", unsafe_allow_html=True)
         elif level == "yellow":
             st.markdown(f"<div class='alert-yellow'>WARNING: {msg}</div>", unsafe_allow_html=True)
+        elif level == "green":
+            st.markdown(f"<div class='alert-green'>INFO: {msg}</div>", unsafe_allow_html=True)
+    if not any(l == "red" for l, _ in alerts):
+        st.markdown("<div class='alert-green'>ALL SYSTEMS HEALTHY - No critical errors</div>", unsafe_allow_html=True)
 else:
     st.markdown("<div class='alert-green'>ALL SYSTEMS HEALTHY - No errors detected</div>", unsafe_allow_html=True)
 
