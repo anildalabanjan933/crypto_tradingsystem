@@ -173,4 +173,4 @@ while True:
     except Exception as e:
         log.error(f"[ERROR] {e}", exc_info=True)
 
-    sleep_until_next_candle_close(CANDLE_SEC)
+    time.sleep(CYCLE_SEC)

@@ -255,7 +255,7 @@ def main():
         except Exception as e:
             logging.error(f'[ERROR] {e}')
 
-        sleep_until_next_candle_close(CANDLE_SEC)
+        time.sleep(SLEEP_SEC)
 
 
 if __name__ == '__main__':
