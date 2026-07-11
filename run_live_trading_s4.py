@@ -137,13 +137,7 @@ def main():
         _df_2h_init.columns = ['open', 'high', 'low', 'close']
         _df_2h_init['volume'] = _df_1m_idx['volume'].resample('2h').sum()
         _df_2h_init = _df_2h_init.dropna().reset_index()
-        # Drop last incomplete 2H candle at startup - only use fully closed candles
-        _now_utc = datetime.now(timezone.utc).replace(tzinfo=None)
-        _last_candle_ts = pd.Timestamp(_df_2h_init["timestamp"].iloc[-1])
-        _candle_age_min = (_now_utc - _last_candle_ts).total_seconds() / 60
-        if _candle_age_min < 120:
-            _df_2h_init = _df_2h_init.iloc[:-1].reset_index(drop=True)
-            logging.info(f"[STARTUP] Dropped incomplete 2H candle at {_last_candle_ts} (age={_candle_age_min:.0f}min)")
+
         _box_init = get_renko_box_size(SYMBOL, float(_df_2h_init['close'].iloc[-1]))
         _strat_init = RenkoSMIIOSupertrendStrategy(
             data_dict={'2h': _df_2h_init},
@@ -188,13 +182,7 @@ def main():
             df_2h.columns = ['open', 'high', 'low', 'close']
             df_2h['volume'] = df_1m_indexed['volume'].resample('2h').sum()
             df_2h = df_2h.dropna().reset_index()
-            # Drop last incomplete 2H candle - only use fully closed candles (matches backtest)
-            now_utc = datetime.now(timezone.utc).replace(tzinfo=None)
-            last_candle_ts = pd.Timestamp(df_2h["timestamp"].iloc[-1])
-            candle_age_minutes = (now_utc - last_candle_ts).total_seconds() / 60
-            if candle_age_minutes < 120:
-                df_2h = df_2h.iloc[:-1].reset_index(drop=True)
-                logging.info(f"[DATA] Dropped incomplete 2H candle at {last_candle_ts} (age={candle_age_minutes:.0f}min)")
+
             logging.info(f'[DATA] 2H candles={len(df_2h)}')
 
             # Generate signals

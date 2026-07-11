@@ -71,12 +71,6 @@ def build_1h(df):
         low=("low","min"),     close=("close","last"),
         volume=("volume","sum")
     ).dropna()
-    # Drop last incomplete 2H candle - only use fully closed candles (matches backtest)
-    now_utc = datetime.now(timezone.utc).replace(tzinfo=None)
-    last_candle_ts = df_1h.index[-1]
-    candle_age_minutes = (now_utc - last_candle_ts).total_seconds() / 60
-    if candle_age_minutes < 60:
-        df_1h = df_1h.iloc[:-1]
     return df_1h
 
 # --- Position state ---
