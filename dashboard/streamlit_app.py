@@ -944,7 +944,219 @@ with tab1:
     else:
         st.info("No open positions")
 
-    st.caption(f"Last updated: {datetime.datetime.now().strftime('%H:%M:%S')} | Testnet")
+    # ── ORDER HISTORY ──────────────────────────────────────────
+    st.markdown("---")
+    st.markdown("**Order History**")
+
+    # Filters row 1
+    f1, f2, f3, f4 = st.columns(4)
+    with f1:
+        period = st.radio("Period", ["TODAY","YESTERDAY","2 DAYS","1 WEEK","1 MONTH","CUSTOM"], horizontal=True, key="oh_period")
+    with f2:
+        strat_filter = st.radio("Strategy", ["ALL","S2","S4"], horizontal=True, key="oh_strat")
+    with f3:
+        # Member filter
+        members_cfg_oh = json.load(open('dashboard/members_config.json')) if os.path.exists('dashboard/members_config.json') else {'members':[]}
+        member_names = ['ALL','My Account'] + [m['name'] for m in members_cfg_oh.get('members',[])]
+        member_filter = st.selectbox("Member", member_names, key="oh_member")
+    with f4:
+        curr_filter = st.radio("Currency", ["BOTH","USD","INR"], horizontal=True, key="oh_curr")
+
+    # Custom date range
+    if period == "CUSTOM":
+        cd1, cd2 = st.columns(2)
+        with cd1:
+            from_date = st.date_input("From", key="oh_from")
+        with cd2:
+            to_date = st.date_input("To", key="oh_to")
+    else:
+        import datetime as _dt
+        today = _dt.date.today()
+        period_map = {"TODAY":0,"YESTERDAY":1,"2 DAYS":2,"1 WEEK":7,"1 MONTH":30}
+        days_back = period_map.get(period, 0)
+        from_date = today - _dt.timedelta(days=days_back)
+        to_date = today
+
+    from_ts_oh = int(datetime.datetime.combine(from_date, datetime.time.min).replace(tzinfo=datetime.timezone.utc).timestamp())
+    to_ts_oh   = int(datetime.datetime.combine(to_date, datetime.time.max).replace(tzinfo=datetime.timezone.utc).timestamp())
+
+    def fetch_orders_full(api_key, api_secret, from_ts, to_ts, product_id=84):
+        from collections import defaultdict
+        import warnings
+        warnings.filterwarnings('ignore')
+        all_fills = []
+        try:
+            for page in range(1, 10):
+                resp = delta_get_auth(api_key, api_secret, '/v2/fills', {'product_id': product_id, 'page_size': 100, 'page_num': page})
+                fills = resp.get('result', [])
+                if not fills:
+                    break
+                found_old = False
+                for f in fills:
+                    ft = int(datetime.datetime.strptime(f['created_at'][:19], '%Y-%m-%dT%H:%M:%S').replace(tzinfo=datetime.timezone.utc).timestamp())
+                    if ft >= from_ts and ft <= to_ts:
+                        all_fills.append(f)
+                    elif ft < from_ts:
+                        found_old = True
+                if found_old or len(fills) < 100:
+                    break
+        except:
+            pass
+
+        order_fills = defaultdict(list)
+        for f in all_fills:
+            order_fills[f['order_id']].append(f)
+
+        orders = []
+        for oid, fills in order_fills.items():
+            total_size = sum(float(f['size']) for f in fills)
+            wavg = sum(float(f['price'])*float(f['size']) for f in fills) / total_size if total_size > 0 else 0
+            orders.append({
+                'order_id': oid,
+                'side': fills[0]['side'].upper(),
+                'size': total_size,
+                'price': wavg,
+                'time': fills[0]['created_at'][:16],
+                'fills_count': len(fills)
+            })
+        return sorted(orders, key=lambda x: x['time'])
+
+    def fetch_commission_funding(api_key, api_secret, from_ts):
+        total_comm = 0.0
+        total_fund = 0.0
+        try:
+            resp = delta_get_auth(api_key, api_secret, '/v2/wallet/transactions', {'product_id': 84, 'page_size': 200})
+            txns = resp.get('result', [])
+            if isinstance(txns, dict):
+                txns = txns.get('data', [])
+            for t in txns:
+                tt = int(datetime.datetime.strptime(t['created_at'][:19], '%Y-%m-%dT%H:%M:%S').replace(tzinfo=datetime.timezone.utc).timestamp())
+                if tt >= from_ts:
+                    amt = abs(float(t.get('amount', 0)))
+                    if t.get('transaction_type') == 'commission':
+                        total_comm += amt
+                    elif t.get('transaction_type') == 'funding':
+                        total_fund += amt
+        except:
+            pass
+        return total_comm, total_fund
+
+    def pair_orders(orders):
+        buys  = [o for o in orders if o['side']=='BUY']
+        sells = [o for o in orders if o['side']=='SELL']
+        pairs = []
+        for i in range(min(len(buys), len(sells))):
+            pnl = (sells[i]['price'] - buys[i]['price']) * buys[i]['size'] * 0.001
+            pairs.append({
+                'buy_time': buys[i]['time'],
+                'sell_time': sells[i]['time'],
+                'entry': buys[i]['price'],
+                'exit': sells[i]['price'],
+                'size': buys[i]['size'],
+                'pnl': pnl,
+                'trade_count': 1
+            })
+        return pairs
+
+    INR_OH = 84.0
+
+    # Build account list to fetch
+    accounts_to_fetch = []
+    if member_filter in ['ALL', 'My Account']:
+        accounts_to_fetch.append(('My Account', 'S2', os.getenv('S2_API_KEY',''), os.getenv('S2_API_SECRET','')))
+        accounts_to_fetch.append(('My Account', 'S4', os.getenv('S4_API_KEY',''), os.getenv('S4_API_SECRET','')))
+    for m in members_cfg_oh.get('members', []):
+        if member_filter in ['ALL', m['name']]:
+            if strat_filter in ['ALL','S2'] and m.get('s2_key'):
+                accounts_to_fetch.append((m['name'], 'S2', m['s2_key'], m['s2_secret']))
+            if strat_filter in ['ALL','S4'] and m.get('s4_key'):
+                accounts_to_fetch.append((m['name'], 'S4', m['s4_key'], m['s4_secret']))
+
+    # Filter by strategy
+    if strat_filter != 'ALL':
+        accounts_to_fetch = [(mn, s, k, sec) for mn, s, k, sec in accounts_to_fetch if s == strat_filter]
+
+    # Fetch all data
+    all_pairs = []
+    total_comm_all = 0.0
+    total_fund_all = 0.0
+    for member_name, strat, api_key, api_secret in accounts_to_fetch:
+        if not api_key:
+            continue
+        orders = fetch_orders_full(api_key, api_secret, from_ts_oh, to_ts_oh)
+        pairs  = pair_orders(orders)
+        for p in pairs:
+            p['strat']  = strat
+            p['member'] = member_name
+        all_pairs.extend(pairs)
+        comm, fund = fetch_commission_funding(api_key, api_secret, from_ts_oh)
+        total_comm_all += comm
+        total_fund_all += fund
+
+    # Summary metrics
+    total_pnl_oh  = sum(p['pnl'] for p in all_pairs)
+    wins_oh       = len([p for p in all_pairs if p['pnl'] > 0])
+    losses_oh     = len([p for p in all_pairs if p['pnl'] < 0])
+    total_tr_oh   = len(all_pairs)
+    wr_oh         = (wins_oh/total_tr_oh*100) if total_tr_oh > 0 else 0
+    unreal_oh     = sum(p['unreal_pnl'] for p in all_pos) if all_pos else 0.0
+
+    sm1,sm2,sm3,sm4,sm5,sm6,sm7,sm8 = st.columns(8)
+    pnl_c = "normal" if total_pnl_oh >= 0 else "inverse"
+    sm1.metric("Total PnL $", f"${total_pnl_oh:,.2f}")
+    sm2.metric("Total PnL ₹", f"₹{total_pnl_oh*INR_OH:,.0f}")
+    sm3.metric("Unrealised", f"${unreal_oh:,.2f}")
+    sm4.metric("Trades", total_tr_oh)
+    sm5.metric("Wins", wins_oh)
+    sm6.metric("Losses", losses_oh)
+    sm7.metric("Win Rate", f"{wr_oh:.1f}%")
+    sm8.metric("Commission", f"${total_comm_all:,.2f}")
+
+    # Order table
+    if all_pairs:
+        hdr = st.columns([1,2,1,1,1,2,2,1,2,2,1,1])
+        for col, h in zip(hdr, ['#','DateTime','Member','Strat','Side','Entry$','Exit$','Lots','PnL$','PnL₹','Count','Status']):
+            col.markdown(f"**{h}**")
+        for i, p in enumerate(sorted(all_pairs, key=lambda x: x['buy_time']), 1):
+            rc = st.columns([1,2,1,1,1,2,2,1,2,2,1,1])
+            rc[0].write(i)
+            rc[1].write(p['buy_time'])
+            rc[2].write(p['member'])
+            rc[3].write(p['strat'])
+            rc[4].markdown("<span style='color:green'>BUY→SELL</span>", unsafe_allow_html=True)
+            rc[5].write(f"${p['entry']:,.1f}")
+            rc[6].write(f"${p['exit']:,.1f}")
+            rc[7].write(f"{p['size']:.0f}")
+            pc = "green" if p['pnl']>=0 else "red"
+            if curr_filter in ['BOTH','USD']:
+                rc[8].markdown(f"<span style='color:{pc}'>${p['pnl']:,.2f}</span>", unsafe_allow_html=True)
+            if curr_filter in ['BOTH','INR']:
+                rc[9].markdown(f"<span style='color:{pc}'>₹{p['pnl']*INR_OH:,.0f}</span>", unsafe_allow_html=True)
+            rc[10].write(p['trade_count'])
+            rc[11].write("CLOSED")
+        # Open positions
+        for pos in all_pos:
+            if strat_filter not in ['ALL', pos['account']]:
+                continue
+            rc = st.columns([1,2,1,1,1,2,2,1,2,2,1,1])
+            rc[0].write("-")
+            rc[1].write("OPEN")
+            rc[2].write("My Account")
+            rc[3].write(pos['account'])
+            sc = "green" if pos['side']=='LONG' else "red"
+            rc[4].markdown(f"<span style='color:{sc}'>{pos['side']}</span>", unsafe_allow_html=True)
+            rc[5].write(f"${pos['entry']:,.1f}")
+            rc[6].write("-")
+            rc[7].write(f"{pos['size']:.0f}")
+            pc = "green" if pos['unreal_pnl']>=0 else "red"
+            rc[8].markdown(f"<span style='color:{pc}'>${pos['unreal_pnl']:,.2f}</span>", unsafe_allow_html=True)
+            rc[9].markdown(f"<span style='color:{pc}'>₹{pos['unreal_pnl']*INR_OH:,.0f}</span>", unsafe_allow_html=True)
+            rc[10].write("-")
+            rc[11].markdown("<span style='color:orange'>OPEN</span>", unsafe_allow_html=True)
+    else:
+        st.info("No closed orders found for selected period")
+
+    st.caption(f"Funding paid: ${total_fund_all:,.4f} | Commission paid: ${total_comm_all:,.4f} | Last updated: {datetime.datetime.now().strftime('%H:%M:%S')} | Testnet")
 
 with tab2:
     st.markdown("**Algotest Forward Test Monitor**")
