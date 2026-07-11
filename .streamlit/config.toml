@@ -1,0 +1,13 @@
+[browser]
+gatherUsageStats = false
+
+[server]
+runOnSave = false
+headless = true
+
+[runner]
+fastReruns = true
+
+[client]
+showErrorDetails = false
+toolbarMode = "minimal"

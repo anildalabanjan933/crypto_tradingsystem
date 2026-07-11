@@ -9,6 +9,12 @@ st.markdown("""
 .stApp { background-color: #ffffff; }
 .block-container { padding: 0.5rem 1rem 0.5rem 1rem !important; max-width: 100% !important; }
 section[data-testid="stSidebar"] { display: none; }
+/* Hide spinner overlay */
+div[data-testid="stSpinner"] { display: none !important; }
+div.stSpinner { display: none !important; }
+/* Hide top running bar */
+div[data-testid="stStatusWidget"] { display: none !important; }
+header[data-testid="stHeader"] { background: transparent !important; }
 
 /* COMPACT FONTS */
 html, body, [class*="css"] { font-size: 12px !important; }
@@ -1060,21 +1066,19 @@ with tab1:
 
     INR_OH = 84.0
 
-    # Build account list to fetch
+    # Build account list to fetch - apply all filters here
     accounts_to_fetch = []
     if member_filter in ['ALL', 'My Account']:
-        accounts_to_fetch.append(('My Account', 'S2', os.getenv('S2_API_KEY',''), os.getenv('S2_API_SECRET','')))
-        accounts_to_fetch.append(('My Account', 'S4', os.getenv('S4_API_KEY',''), os.getenv('S4_API_SECRET','')))
+        if strat_filter in ['ALL', 'S2']:
+            accounts_to_fetch.append(('My Account', 'S2', os.getenv('S2_API_KEY',''), os.getenv('S2_API_SECRET','')))
+        if strat_filter in ['ALL', 'S4']:
+            accounts_to_fetch.append(('My Account', 'S4', os.getenv('S4_API_KEY',''), os.getenv('S4_API_SECRET','')))
     for m in members_cfg_oh.get('members', []):
         if member_filter in ['ALL', m['name']]:
             if strat_filter in ['ALL','S2'] and m.get('s2_key'):
                 accounts_to_fetch.append((m['name'], 'S2', m['s2_key'], m['s2_secret']))
             if strat_filter in ['ALL','S4'] and m.get('s4_key'):
                 accounts_to_fetch.append((m['name'], 'S4', m['s4_key'], m['s4_secret']))
-
-    # Filter by strategy
-    if strat_filter != 'ALL':
-        accounts_to_fetch = [(mn, s, k, sec) for mn, s, k, sec in accounts_to_fetch if s == strat_filter]
 
     # Fetch all data
     all_pairs = []
@@ -1099,26 +1103,47 @@ with tab1:
     losses_oh     = len([p for p in all_pairs if p['pnl'] < 0])
     total_tr_oh   = len(all_pairs)
     wr_oh         = (wins_oh/total_tr_oh*100) if total_tr_oh > 0 else 0
-    unreal_oh     = sum(p['unreal_pnl'] for p in all_pos) if all_pos else 0.0
+    unreal_oh = sum(p.get('unreal_pnl',0.0) for p in all_pos if strat_filter in ['ALL', p.get('account','')]) if all_pos else 0.0
 
-    sm1,sm2,sm3,sm4,sm5,sm6,sm7,sm8 = st.columns(8)
-    pnl_c = "normal" if total_pnl_oh >= 0 else "inverse"
+    sm1,sm2,sm3,sm4,sm5,sm6,sm7,sm8,sm9,sm10 = st.columns(10)
     sm1.metric("Total PnL $", f"${total_pnl_oh:,.2f}")
     sm2.metric("Total PnL ₹", f"₹{total_pnl_oh*INR_OH:,.0f}")
-    sm3.metric("Unrealised", f"${unreal_oh:,.2f}")
-    sm4.metric("Trades", total_tr_oh)
-    sm5.metric("Wins", wins_oh)
-    sm6.metric("Losses", losses_oh)
-    sm7.metric("Win Rate", f"{wr_oh:.1f}%")
-    sm8.metric("Commission", f"${total_comm_all:,.2f}")
+    sm3.metric("Unrealised $", f"${unreal_oh:,.2f}")
+    sm4.metric("Unrealised ₹", f"₹{unreal_oh*INR_OH:,.0f}")
+    sm5.metric("Trades", total_tr_oh)
+    sm6.metric("Wins", wins_oh)
+    sm7.metric("Losses", losses_oh)
+    sm8.metric("Win Rate", f"{wr_oh:.1f}%")
+    sm9.metric("Commission", f"${total_comm_all:,.2f} | ₹{total_comm_all*INR_OH:,.0f}")
+    sm10.metric("Funding", f"${total_fund_all:,.2f} | ₹{total_fund_all*INR_OH:,.0f}")
 
-    # Order table
-    if all_pairs:
-        hdr = st.columns([1,2,1,1,1,2,2,1,2,2,1,1])
-        for col, h in zip(hdr, ['#','DateTime','Member','Strat','Side','Entry$','Exit$','Lots','PnL$','PnL₹','Count','Status']):
+    # Order table - show always (closed + open)
+    import pandas as pd
+    open_pos_filtered = [p for p in all_pos if strat_filter in ['ALL', p.get('account','')]]
+
+    # Build CSV data for download
+    csv_rows = []
+    cum_csv = 0.0
+    for p in sorted(all_pairs, key=lambda x: x['buy_time']):
+        cum_csv += p['pnl']
+        csv_rows.append({'DateTime':p['buy_time'],'Member':p['member'],'Strat':p['strat'],'Side':'BUY→SELL','Entry$':round(p['entry'],1),'Exit$':round(p['exit'],1),'Lots':int(p['size']),'PnL$':round(p['pnl'],2),'PnL₹':round(p['pnl']*INR_OH,0),'CumPnL$':round(cum_csv,2),'Count':p['trade_count'],'Status':'CLOSED'})
+    for pos in open_pos_filtered:
+        csv_rows.append({'DateTime':datetime.datetime.now().strftime('%Y-%m-%dT%H:%M'),'Member':'My Account','Strat':pos['account'],'Side':pos['side'],'Entry$':round(pos['entry'],1),'Exit$':'-','Lots':int(pos['size']),'PnL$':round(pos['unreal_pnl'],2),'PnL₹':round(pos['unreal_pnl']*INR_OH,0),'CumPnL$':'-','Count':1,'Status':'OPEN'})
+
+    # Download button inline with table header
+    dl_col, hdr_space = st.columns([2,10])
+    with dl_col:
+        if csv_rows:
+            df_csv = pd.DataFrame(csv_rows)
+            st.download_button("⬇ CSV", df_csv.to_csv(index=False), file_name=f"orders_{strat_filter}_{period}_{datetime.datetime.now().strftime('%Y%m%d')}.csv", mime="text/csv", key="oh_dl_csv")
+
+    if all_pairs or open_pos_filtered:
+        hdr = st.columns([1,2,1,1,1,2,2,1,2,2,2,1,1])
+        for col, h in zip(hdr, ['#','DateTime','Member','Strat','Side','Entry$','Exit$','Lots','PnL$','PnL₹','Cum PnL$','Count','Status']):
             col.markdown(f"**{h}**")
+        cum_pnl = 0.0
         for i, p in enumerate(sorted(all_pairs, key=lambda x: x['buy_time']), 1):
-            rc = st.columns([1,2,1,1,1,2,2,1,2,2,1,1])
+            rc = st.columns([1,2,1,1,1,2,2,1,2,2,2,1,1])
             rc[0].write(i)
             rc[1].write(p['buy_time'])
             rc[2].write(p['member'])
@@ -1126,35 +1151,38 @@ with tab1:
             rc[4].markdown("<span style='color:green'>BUY→SELL</span>", unsafe_allow_html=True)
             rc[5].write(f"${p['entry']:,.1f}")
             rc[6].write(f"${p['exit']:,.1f}")
-            rc[7].write(f"{p['size']:.0f}")
+            rc[7].write(int(p['size']))
             pc = "green" if p['pnl']>=0 else "red"
-            if curr_filter in ['BOTH','USD']:
-                rc[8].markdown(f"<span style='color:{pc}'>${p['pnl']:,.2f}</span>", unsafe_allow_html=True)
-            if curr_filter in ['BOTH','INR']:
-                rc[9].markdown(f"<span style='color:{pc}'>₹{p['pnl']*INR_OH:,.0f}</span>", unsafe_allow_html=True)
-            rc[10].write(p['trade_count'])
-            rc[11].write("CLOSED")
+            rc[8].markdown(f"<span style='color:{pc}'>${p['pnl']:,.2f}</span>" if curr_filter in ['BOTH','USD'] else "<span>-</span>", unsafe_allow_html=True)
+            rc[9].markdown(f"<span style='color:{pc}'>₹{p['pnl']*INR_OH:,.0f}</span>" if curr_filter in ['BOTH','INR'] else "<span>-</span>", unsafe_allow_html=True)
+            cum_pnl += p['pnl']
+            cum_c = "green" if cum_pnl >= 0 else "red"
+            rc[10].markdown(f"<span style='color:{cum_c}'>${cum_pnl:,.2f}</span>", unsafe_allow_html=True)
+            rc[11].write(p['trade_count'])
+            rc[12].markdown("<span style='color:gray'>CLOSED</span>", unsafe_allow_html=True)
         # Open positions
-        for pos in all_pos:
-            if strat_filter not in ['ALL', pos['account']]:
-                continue
-            rc = st.columns([1,2,1,1,1,2,2,1,2,2,1,1])
-            rc[0].write("-")
-            rc[1].write("OPEN")
-            rc[2].write("My Account")
-            rc[3].write(pos['account'])
-            sc = "green" if pos['side']=='LONG' else "red"
-            rc[4].markdown(f"<span style='color:{sc}'>{pos['side']}</span>", unsafe_allow_html=True)
-            rc[5].write(f"${pos['entry']:,.1f}")
-            rc[6].write("-")
-            rc[7].write(f"{pos['size']:.0f}")
-            pc = "green" if pos['unreal_pnl']>=0 else "red"
-            rc[8].markdown(f"<span style='color:{pc}'>${pos['unreal_pnl']:,.2f}</span>", unsafe_allow_html=True)
-            rc[9].markdown(f"<span style='color:{pc}'>₹{pos['unreal_pnl']*INR_OH:,.0f}</span>", unsafe_allow_html=True)
-            rc[10].write("-")
-            rc[11].markdown("<span style='color:orange'>OPEN</span>", unsafe_allow_html=True)
     else:
-        st.info("No closed orders found for selected period")
+        if not open_pos_filtered:
+            st.info("No orders found for selected period")
+    # Always show open positions as rows
+    row_start = len(all_pairs) + 1
+    for idx, pos in enumerate(open_pos_filtered):
+        rc = st.columns([1,2,1,1,1,2,2,1,2,2,2,1,1])
+        rc[0].write(row_start + idx)
+        rc[1].write(datetime.datetime.now().strftime('%Y-%m-%dT%H:%M'))
+        rc[2].write("My Account")
+        rc[3].write(pos['account'])
+        sc = "green" if pos['side']=='LONG' else "red"
+        rc[4].markdown(f"<span style='color:{sc}'>{pos['side']}</span>", unsafe_allow_html=True)
+        rc[5].write(f"${pos['entry']:,.1f}")
+        rc[6].markdown("**-**", unsafe_allow_html=False)
+        rc[7].write(int(pos['size']))
+        pc = "green" if pos['unreal_pnl']>=0 else "red"
+        rc[8].markdown(f"<span style='color:{pc}'>${pos['unreal_pnl']:,.2f}</span>" if curr_filter in ['BOTH','USD'] else "<span>-</span>", unsafe_allow_html=True)
+        rc[9].markdown(f"<span style='color:{pc}'>₹{pos['unreal_pnl']*INR_OH:,.0f}</span>" if curr_filter in ['BOTH','INR'] else "<span>-</span>", unsafe_allow_html=True)
+        rc[10].markdown("**-**", unsafe_allow_html=False)
+        rc[11].write(1)
+        rc[12].markdown("<span style='color:orange'>OPEN</span>", unsafe_allow_html=True)
 
     st.caption(f"Funding paid: ${total_fund_all:,.4f} | Commission paid: ${total_comm_all:,.4f} | Last updated: {datetime.datetime.now().strftime('%H:%M:%S')} | Testnet")
 
@@ -1674,7 +1702,7 @@ with col3:
     opt_lots = st.number_input("Lots", min_value=1, max_value=10000, value=100, key="sec7_lots")
 
 st.markdown("**Date Range**")
-opt_range = st.radio("", ["1 Month","6 Months","1 Year","1.5 Years","2 Years","Full CSV","Custom"], index=2, horizontal=True, key="sec7_range")
+opt_range = st.radio("Date Range", ["1 Month","6 Months","1 Year","1.5 Years","2 Years","Full CSV","Custom"], index=2, horizontal=True, key="sec7_range")
 today = datetime.date.today()
 if opt_range == "1 Month":
     opt_start = today - datetime.timedelta(days=30); opt_end = today
