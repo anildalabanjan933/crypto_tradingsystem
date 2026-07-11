@@ -736,6 +736,106 @@ if st.session_state.get('show_add_algo', False):
             st.session_state['show_add_algo'] = False
 
 
+
+# ================================================================
+# SECTION 2.4 - MEMBER MANAGEMENT
+# ================================================================
+st.markdown("<div class='section-title'>SECTION 2.4 - MEMBER MANAGEMENT</div>", unsafe_allow_html=True)
+
+# Load members from config
+members_config_file = 'dashboard/members_config.json'
+if not os.path.exists(members_config_file):
+    json.dump({'members': []}, open(members_config_file, 'w'), indent=2)
+
+members_cfg = json.load(open(members_config_file))
+members = members_cfg.get('members', [])
+
+# Member table
+if members:
+    m_cols = st.columns([2,2,1,1,1,1,1])
+    m_cols[0].markdown("**Name**")
+    m_cols[1].markdown("**Account**")
+    m_cols[2].markdown("**S2**")
+    m_cols[3].markdown("**S4**")
+    m_cols[4].markdown("**Start**")
+    m_cols[5].markdown("**Stop**")
+    m_cols[6].markdown("**Remove**")
+    for idx, m in enumerate(members):
+        mc = st.columns([2,2,1,1,1,1,1])
+        mc[0].write(m.get('name',''))
+        mc[1].write(m.get('account','Testnet'))
+        # Check S2 status
+        s2_screen = f"m{idx}_s2"
+        s4_screen = f"m{idx}_s4"
+        import subprocess
+        s2_running = s2_screen in subprocess.run(['screen','-ls'], capture_output=True, text=True).stdout
+        s4_running = s4_screen in subprocess.run(['screen','-ls'], capture_output=True, text=True).stdout
+        mc[2].markdown(f"<span style='color:{'green' if s2_running else 'red'}'>{'ON' if s2_running else 'OFF'}</span>", unsafe_allow_html=True)
+        mc[3].markdown(f"<span style='color:{'green' if s4_running else 'red'}'>{'ON' if s4_running else 'OFF'}</span>", unsafe_allow_html=True)
+        if mc[4].button("▶", key=f"m_start_{idx}"):
+            try:
+                env = f"S2_API_KEY={m.get('s2_key','')} S2_API_SECRET={m.get('s2_secret','')} S4_API_KEY={m.get('s4_key','')} S4_API_SECRET={m.get('s4_secret','')}"
+                subprocess.Popen(['bash','-c',f'screen -dmS {s2_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && export {env} && python3 run_live_trading_s2.py > logs/live_trading_{s2_screen}.log 2>&1"'])
+                subprocess.Popen(['bash','-c',f'screen -dmS {s4_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && export {env} && python3 run_live_trading_s4.py > logs/live_trading_{s4_screen}.log 2>&1"'])
+                st.success(f"{m.get('name')} bots started")
+            except Exception as e:
+                st.error(str(e))
+        if mc[5].button("■", key=f"m_stop_{idx}"):
+            try:
+                subprocess.Popen(['bash','-c',f'screen -S {s2_screen} -X quit; screen -S {s4_screen} -X quit'])
+                st.warning(f"{m.get('name')} bots stopped")
+            except Exception as e:
+                st.error(str(e))
+        if mc[6].button("✕", key=f"m_remove_{idx}"):
+            members.pop(idx)
+            members_cfg['members'] = members
+            json.dump(members_cfg, open(members_config_file,'w'), indent=2)
+            st.rerun()
+else:
+    st.info("No members added yet. Add members below.")
+
+# Add member form
+with st.expander("+ ADD MEMBER"):
+    with st.form("add_member_form"):
+        m_name    = st.text_input("Member Name (e.g. Friend1)")
+        m_account = st.text_input("Account Label (e.g. Testnet)")
+        m_bots    = st.multiselect("Bots to enable", ["S2","S4"], default=["S2","S4"])
+        col1, col2 = st.columns(2)
+        with col1:
+            if "S2" in m_bots:
+                m_s2_key  = st.text_input("S2 API Key")
+                m_s2_sec  = st.text_input("S2 API Secret", type="password")
+                m_lots_s2 = st.number_input("S2 Lots", min_value=1, value=100)
+            else:
+                m_s2_key = m_s2_sec = ""; m_lots_s2 = 100
+        with col2:
+            if "S4" in m_bots:
+                m_s4_key  = st.text_input("S4 API Key")
+                m_s4_sec  = st.text_input("S4 API Secret", type="password")
+                m_lots_s4 = st.number_input("S4 Lots", min_value=1, value=100)
+            else:
+                m_s4_key = m_s4_sec = ""; m_lots_s4 = 100
+        if st.form_submit_button("ADD MEMBER"):
+            if m_name and m_bots:
+                members.append({
+                    'name': m_name,
+                    'account': m_account,
+                    'bots': m_bots,
+                    's2_key': m_s2_key,
+                    's2_secret': m_s2_sec,
+                    's4_key': m_s4_key,
+                    's4_secret': m_s4_sec,
+                    'lots_s2': m_lots_s2,
+                    'lots_s4': m_lots_s4
+                })
+                members_cfg['members'] = members
+                json.dump(members_cfg, open(members_config_file,'w'), indent=2)
+                st.success(f"Member {m_name} added with bots: {m_bots}")
+                st.rerun()
+            else:
+                st.error("Name + at least one bot required")
+st.markdown("---")
+
 # ================================================================
 # SECTION 3 - PLATFORM MONITOR
 # ================================================================
@@ -1442,7 +1542,7 @@ for i, contract in enumerate(contracts):
     with c2:
         st.write(contract.get('name',''))
     with c3:
-        new_c_lots = st.number_input("", min_value=1, value=contract.get('lots',100),
+        new_c_lots = st.number_input("Lots", min_value=1, value=contract.get('lots',100),
             key=f"sec10_lots_{i}", label_visibility="collapsed")
         if new_c_lots != contract.get('lots',100):
             contracts[i]['lots'] = new_c_lots
