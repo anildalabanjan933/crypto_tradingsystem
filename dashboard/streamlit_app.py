@@ -844,24 +844,107 @@ st.markdown("<div class='section-title'>SECTION 3 - PLATFORM MONITOR</div>", uns
 tab1, tab2, tab3 = st.tabs(["DELTA EXCHANGE", "ALGOTEST", "TRADETRON"])
 
 with tab1:
-    st.markdown("**Delta Exchange Account**")
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        st.metric("Account Balance", "Manual Check")
-        st.metric("Unrealised PnL", "Manual Check")
-    with c2:
-        st.metric("Realised PnL Today", "Manual Check")
-        st.metric("Funding Rate", "Manual Check")
-    with c3:
-        st.metric("Open Positions", "Manual Check")
-        st.metric("Last Order", "Manual Check")
-    st.info("Visit Delta Exchange to check live account data: https://www.delta.exchange")
-    st.markdown("**API Status**")
-    col_a, col_b = st.columns(2)
-    with col_a:
-        st.success("API KEY: CONFIGURED")
-    with col_b:
-        st.success("TRADING: ENABLED")
+    import requests, hmac, hashlib, time as _time, json as _json
+
+    DELTA_URL = 'https://cdn-ind.testnet.deltaex.org'
+    INR_RATE  = 84.0
+
+    def delta_get_auth(api_key, api_secret, path, params={}):
+        try:
+            ts  = str(int(_time.time()))
+            msg = 'GET' + ts + path
+            sig = hmac.new(api_secret.encode(), msg.encode(), hashlib.sha256).hexdigest()
+            hdrs = {'api-key': api_key, 'timestamp': ts, 'signature': sig, 'Content-Type': 'application/json'}
+            r = requests.get(DELTA_URL + path, params=params, headers=hdrs, timeout=(3,10), verify=False)
+            return r.json()
+        except:
+            return {}
+
+    def get_account_data(api_key, api_secret):
+        # Balance
+        bal_resp = delta_get_auth(api_key, api_secret, '/v2/wallet/balances')
+        balance_usd = 0.0
+        for b in bal_resp.get('result', []):
+            if b.get('asset_symbol') == 'USD':
+                balance_usd = float(b.get('balance', 0))
+                break
+
+        # Positions
+        pos_resp = delta_get_auth(api_key, api_secret, '/v2/positions/margined')
+        positions = []
+        unreal_pnl = 0.0
+        for p in pos_resp.get('result', []):
+            size = float(p.get('size', 0))
+            symbol = p.get('product', {}).get('symbol', p.get('product_symbol',''))
+            if size != 0:
+                entry = float(p.get('entry_price', 0))
+                unreal = float(p.get('unrealized_pnl', 0))
+                unreal_pnl += unreal
+                positions.append({
+                    'symbol': symbol,
+                    'side': 'LONG' if size > 0 else 'SHORT',
+                    'size': abs(size),
+                    'entry': entry,
+                    'unreal_pnl': unreal
+                })
+        return balance_usd, unreal_pnl, positions
+
+    # Load members
+    members_cfg_file = 'dashboard/members_config.json'
+    all_accounts = [{'name': 'My Account', 's2_key': os.getenv('S2_API_KEY',''), 's2_secret': os.getenv('S2_API_SECRET',''), 's4_key': os.getenv('S4_API_KEY',''), 's4_secret': os.getenv('S4_API_SECRET','')}]
+    if os.path.exists(members_cfg_file):
+        mcfg = _json.load(open(members_cfg_file))
+        all_accounts += mcfg.get('members', [])
+
+    # Account selector
+    acct_names = [a['name'] for a in all_accounts]
+    selected_acct = st.selectbox("Select Account", acct_names, key="delta_acct_select")
+    acct = next(a for a in all_accounts if a['name'] == selected_acct)
+
+    import warnings
+    warnings.filterwarnings('ignore')
+
+    # Fetch S2 data
+    s2_bal, s2_unreal, s2_pos = get_account_data(acct.get('s2_key',''), acct.get('s2_secret',''))
+    # Fetch S4 data
+    s4_bal, s4_unreal, s4_pos = get_account_data(acct.get('s4_key',''), acct.get('s4_secret',''))
+
+    total_bal   = s2_bal + s4_bal
+    total_unreal = s2_unreal + s4_unreal
+
+    # Summary row
+    st.markdown(f"**{selected_acct} - Live Account Summary**")
+    c1, c2, c3, c4 = st.columns(4)
+    c1.metric("Total Balance", f"${total_bal:,.2f}", f"₹{total_bal*INR_RATE:,.0f}")
+    c2.metric("Unrealised PnL", f"${total_unreal:,.2f}", f"₹{total_unreal*INR_RATE:,.0f}")
+    c3.metric("S2 Balance", f"${s2_bal:,.2f}")
+    c4.metric("S4 Balance", f"${s4_bal:,.2f}")
+
+    # Open positions
+    st.markdown("**Open Positions**")
+    all_pos = [dict(p, account='S2') for p in s2_pos] + [dict(p, account='S4') for p in s4_pos]
+    if all_pos:
+        p_cols = st.columns([1,1,1,1,1,1])
+        p_cols[0].markdown("**Account**")
+        p_cols[1].markdown("**Symbol**")
+        p_cols[2].markdown("**Side**")
+        p_cols[3].markdown("**Size**")
+        p_cols[4].markdown("**Entry $**")
+        p_cols[5].markdown("**Unreal PnL**")
+        for p in all_pos:
+            pc = st.columns([1,1,1,1,1,1])
+            pc[0].write(p['account'])
+            pc[1].write(p['symbol'])
+            color = "green" if p['side']=='LONG' else "red"
+            pc[2].markdown(f"<span style='color:{color}'>{p['side']}</span>", unsafe_allow_html=True)
+            pc[3].write(f"{p['size']:.0f}")
+            pc[4].write(f"${p['entry']:,.1f}")
+            pnl_color = "green" if p['unreal_pnl'] >= 0 else "red"
+            pc[5].markdown(f"<span style='color:{pnl_color}'>${p['unreal_pnl']:,.2f} | ₹{p['unreal_pnl']*INR_RATE:,.0f}</span>", unsafe_allow_html=True)
+    else:
+        st.info("No open positions")
+
+    st.caption(f"Last updated: {datetime.datetime.now().strftime('%H:%M:%S')} | Testnet")
 
 with tab2:
     st.markdown("**Algotest Forward Test Monitor**")
