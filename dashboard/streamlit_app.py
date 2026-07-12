@@ -1581,12 +1581,12 @@ if st.button("RUN BACKTEST", key="sec6_run"):
                 _progress.progress(100)
                 _status.success("Step 3/3 - Backtest complete! Report ready below.")
                 import glob as _glob, time as _time
-                _time.sleep(1)
+                _time.sleep(3)
                 _new_files = sorted([f for f in _glob.glob("output/*.html") if "backtest_report_" in f and "optimization" not in f], reverse=True)
                 if _new_files:
                     st.session_state["sec6_html_select"] = _new_files[0]
-                st.session_state["sec6_force_latest"] = True
-                import time as _t; _t.sleep(2)
+                    st.session_state["sec6_force_latest"] = False
+                import time as _t; _t.sleep(1)
                 st.rerun()
             else:
                 _progress.progress(100)
@@ -1722,12 +1722,12 @@ with port_tab1:
                     _pp_progress.progress(100)
                     _pp_status.success("Step 3/3 - Portfolio backtest complete! Report ready below.")
                     import glob as _glob, time as _time
-                    _time.sleep(1)
+                    _time.sleep(3)
                     _new_port = sorted([f for f in _glob.glob("output/*.html") if "portfolio_report_" in f], reverse=True)
                     if _new_port:
                         st.session_state["port_html_sel"] = _new_port[0]
-                    st.session_state["port_force_latest"] = True
-                    import time as _t; _t.sleep(2)
+                        st.session_state["port_force_latest"] = False
+                    import time as _t; _t.sleep(1)
                     st.rerun()
                 else:
                     _pp_progress.progress(100)
@@ -1811,12 +1811,12 @@ with port_tab2:
                         _pd_progress.progress(100)
                         _pd_status.success("Step 3/3 - Dynamic portfolio complete! Report ready below.")
                         import glob as _glob, time as _time
-                        _time.sleep(1)
+                        _time.sleep(3)
                         _new_dyn = sorted([f for f in _glob.glob("output/*.html") if "portfolio_report_" in f], reverse=True)
                         if _new_dyn:
                             st.session_state["port_html_sel"] = _new_dyn[0]
-                        st.session_state["port_force_latest"] = True
-                        import time as _t; _t.sleep(2)
+                            st.session_state["port_force_latest"] = False
+                        import time as _t; _t.sleep(1)
                         st.rerun()
                     else:
                         _pd_progress.progress(100)
@@ -1943,12 +1943,12 @@ if st.button("RUN OPTIMISATION", key="sec7_run"):
             _opt_progress.progress(100)
             _opt_status.success("Step 3/3 - Optimisation complete! Report ready below.")
             import glob as _glob, time as _time
-            _time.sleep(1)
+            _time.sleep(3)
             _new_opt = sorted([f for f in _glob.glob("output/*.html") if "optimization_results_" in f], reverse=True)
             if _new_opt:
                 st.session_state["sec7_html_sel"] = _new_opt[0]
-            st.session_state["sec7_force_latest"] = True
-            import time as _t; _t.sleep(2)
+                st.session_state["sec7_force_latest"] = False
+            import time as _t; _t.sleep(1)
             st.rerun()
         else:
             _opt_progress.progress(100)
