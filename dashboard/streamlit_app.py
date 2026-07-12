@@ -5,25 +5,25 @@ st.set_page_config(page_title="Crypto Trading Dashboard", layout="wide", page_ic
 
 st.markdown("""
 <style>
-/* CRYPTO TRADING DASHBOARD - UNIFIED SOFT THEME */
+/* CRYPTO TRADING DASHBOARD - TRADINGVIEW INSPIRED THEME */
 
-/* BASE */
-.stApp { background-color: #F8F9FA; }
+/* BASE - clean white like TradingView */
+.stApp { background-color: #FFFFFF; }
 .block-container { padding: 0.4rem 1rem 0.4rem 1rem !important; max-width: 100% !important; }
 section[data-testid="stSidebar"] { display: none; }
 header[data-testid="stHeader"] { background: transparent !important; }
 
-/* FONTS */
-html, body, [class*="css"] { font-size: 12px !important; color: #2C3E50 !important; }
-h1 { font-size: 16px !important; font-weight: 700 !important; margin: 0 !important; color: #2C3E50 !important; }
-h2 { font-size: 14px !important; font-weight: 600 !important; margin: 0 !important; color: #2C3E50 !important; }
-h3 { font-size: 13px !important; font-weight: 600 !important; margin: 0 !important; color: #2C3E50 !important; }
-p  { font-size: 12px !important; margin: 0 !important; color: #2C3E50 !important; }
+/* FONTS - dark on white, sharp and clear */
+html, body, [class*="css"] { font-size: 12px !important; color: #131722 !important; }
+h1 { font-size: 16px !important; font-weight: 700 !important; margin: 0 !important; color: #131722 !important; }
+h2 { font-size: 14px !important; font-weight: 600 !important; margin: 0 !important; color: #131722 !important; }
+h3 { font-size: 13px !important; font-weight: 600 !important; margin: 0 !important; color: #131722 !important; }
+p  { font-size: 12px !important; margin: 0 !important; color: #131722 !important; }
 
-/* ── SECTION TITLES (st.markdown div) ── same as expander ── */
+/* SECTION TITLES - white bg, dark text, teal left accent */
 .section-title {
-    background-color: #7EB5D6 !important;
-    color: #FFFFFF !important;
+    background-color: #F0F3FA !important;
+    color: #131722 !important;
     font-size: 11px !important;
     font-weight: 700 !important;
     padding: 6px 14px !important;
@@ -32,142 +32,143 @@ p  { font-size: 12px !important; margin: 0 !important; color: #2C3E50 !important
     text-transform: uppercase !important;
     letter-spacing: 1px !important;
     border-radius: 3px !important;
-    border-left: 4px solid #5A93B5 !important;
+    border-left: 4px solid #2196F3 !important;
+    border-bottom: 1px solid #E0E3EB !important;
     display: block !important;
     width: 100% !important;
     box-sizing: border-box !important;
 }
 
-/* ── EXPANDER - EXACT SAME COLOR AS SECTION TITLE ── */
+/* EXPANDER - same style as section title */
 div[data-testid="stExpander"] {
-    border: 1px solid #C8E0F0 !important;
+    border: 1px solid #E0E3EB !important;
+    border-left: 4px solid #2196F3 !important;
     border-radius: 3px !important;
     margin-bottom: 5px !important;
     margin-top: 3px !important;
     background: #FFFFFF !important;
 }
-
-/* Target the summary element inside expander */
 div[data-testid="stExpander"] details summary {
-    background-color: #7EB5D6 !important;
-    color: #FFFFFF !important;
+    background-color: #F0F3FA !important;
+    color: #131722 !important;
     font-weight: 700 !important;
     font-size: 11px !important;
     padding: 6px 14px !important;
-    border-radius: 3px !important;
+    border-radius: 2px !important;
     text-transform: uppercase !important;
     letter-spacing: 1px !important;
     list-style: none !important;
 }
 div[data-testid="stExpander"] details summary:hover {
-    background-color: #6AA3C4 !important;
+    background-color: #E8EDF5 !important;
     cursor: pointer !important;
 }
 div[data-testid="stExpander"] details summary p {
-    color: #FFFFFF !important;
+    color: #131722 !important;
     font-weight: 700 !important;
     font-size: 11px !important;
 }
 div[data-testid="stExpander"] details summary span {
-    color: #FFFFFF !important;
+    color: #131722 !important;
 }
 div[data-testid="stExpander"] details summary svg {
-    color: #FFFFFF !important;
-    fill: #FFFFFF !important;
-    stroke: #FFFFFF !important;
+    color: #2196F3 !important;
+    fill: #2196F3 !important;
+    stroke: #2196F3 !important;
 }
 div[data-testid="stExpander"] details[open] summary {
-    background-color: #6AA3C4 !important;
-    border-bottom: 1px solid #37474F !important;
-    border-radius: 3px 3px 0 0 !important;
+    background-color: #E8EDF5 !important;
+    border-bottom: 1px solid #E0E3EB !important;
 }
 
-/* ── METRICS ── */
-[data-testid="stMetricValue"] { font-size: 13px !important; font-weight: 700 !important; color: #2C3E50 !important; }
-[data-testid="stMetricLabel"] { font-size: 10px !important; color: #78909C !important; font-weight: 600 !important; }
+/* METRICS */
+[data-testid="stMetricValue"] { font-size: 13px !important; font-weight: 700 !important; color: #131722 !important; }
+[data-testid="stMetricLabel"] { font-size: 10px !important; color: #787B86 !important; font-weight: 600 !important; }
 [data-testid="metric-container"] {
     padding: 6px 10px !important;
-    border: 1px solid #CFD8DC !important;
+    border: 1px solid #E0E3EB !important;
     border-radius: 4px !important;
     background: #FFFFFF !important;
-    border-left: 3px solid #7EB5D6 !important;
+    border-left: 3px solid #2196F3 !important;
 }
 
-/* ── ALERTS ── */
+/* ALERTS */
 .alert-red {
-    background: #FDEDEC; border-left: 4px solid #E74C3C;
-    padding: 5px 10px; color: #922B21 !important;
+    background: #FFF0F0; border-left: 4px solid #F23645;
+    padding: 5px 10px; color: #B71C1C !important;
     font-weight: 700; font-size: 11px !important;
     margin: 2px 0; border-radius: 3px;
 }
 .alert-yellow {
-    background: #FEF9E7; border-left: 4px solid #F39C12;
-    padding: 5px 10px; color: #9A7D0A !important;
+    background: #FFFBF0; border-left: 4px solid #FF9800;
+    padding: 5px 10px; color: #E65100 !important;
     font-weight: 700; font-size: 11px !important;
     margin: 2px 0; border-radius: 3px;
 }
 .alert-green {
-    background: #EAFAF1; border-left: 4px solid #27AE60;
-    padding: 5px 10px; color: #1E8449 !important;
+    background: #F0FFF4; border-left: 4px solid #089981;
+    padding: 5px 10px; color: #065F46 !important;
     font-weight: 700; font-size: 11px !important;
     margin: 2px 0; border-radius: 3px;
 }
 
-/* ── BUTTONS ── */
+/* BUTTONS */
 .stButton > button {
     padding: 3px 12px !important; font-size: 11px !important;
     height: 28px !important; border-radius: 3px !important;
-    font-weight: 600 !important; border: 1px solid #7EB5D6 !important;
-    color: #7EB5D6 !important; background: #FFFFFF !important;
+    font-weight: 600 !important;
+    border: 1px solid #E0E3EB !important;
+    color: #131722 !important; background: #F0F3FA !important;
 }
 .stButton > button:hover {
-    background: #7EB5D6 !important; color: #FFFFFF !important;
+    background: #2196F3 !important; color: #FFFFFF !important;
+    border-color: #2196F3 !important;
 }
 
-/* ── INPUTS ── */
+/* INPUTS */
 .stSelectbox, .stNumberInput, .stDateInput { font-size: 11px !important; }
 .stSelectbox > div > div { padding: 2px 6px !important; min-height: 28px !important; }
 
-/* ── TABS ── */
+/* TABS */
 .stTabs [data-baseweb="tab"] {
     padding: 4px 14px !important; font-size: 11px !important;
-    font-weight: 600 !important; color: #78909C !important;
+    font-weight: 600 !important; color: #787B86 !important;
 }
 .stTabs [aria-selected="true"] {
-    color: #7EB5D6 !important; border-bottom: 2px solid #7EB5D6 !important;
+    color: #2196F3 !important; border-bottom: 2px solid #2196F3 !important;
 }
 
-/* ── STATUS BOXES ── */
-.stSuccess { background: #EAFAF1 !important; color: #1E8449 !important;
-    border-left: 4px solid #27AE60 !important; padding: 4px 8px !important;
+/* STATUS BOXES */
+.stSuccess { background: #F0FFF4 !important; color: #065F46 !important;
+    border-left: 4px solid #089981 !important; padding: 4px 8px !important;
     font-size: 11px !important; margin: 2px 0 !important; border-radius: 3px !important; }
-.stError { background: #FDEDEC !important; color: #922B21 !important;
-    border-left: 4px solid #E74C3C !important; padding: 4px 8px !important;
+.stError { background: #FFF0F0 !important; color: #B71C1C !important;
+    border-left: 4px solid #F23645 !important; padding: 4px 8px !important;
     font-size: 11px !important; margin: 2px 0 !important; border-radius: 3px !important; }
-.stWarning { background: #FEF9E7 !important; color: #9A7D0A !important;
-    border-left: 4px solid #F39C12 !important; padding: 4px 8px !important;
+.stWarning { background: #FFFBF0 !important; color: #E65100 !important;
+    border-left: 4px solid #FF9800 !important; padding: 4px 8px !important;
     font-size: 11px !important; margin: 2px 0 !important; border-radius: 3px !important; }
-.stInfo { background: #EBF5FB !important; color: #1A5276 !important;
-    border-left: 4px solid #7EB5D6 !important; padding: 4px 8px !important;
+.stInfo { background: #F0F8FF !important; color: #0D47A1 !important;
+    border-left: 4px solid #2196F3 !important; padding: 4px 8px !important;
     font-size: 11px !important; margin: 2px 0 !important; border-radius: 3px !important; }
 
-/* ── SPACING ── */
+/* SPACING */
 .stMarkdown { margin: 0 !important; padding: 0 !important; }
 div[data-testid="stVerticalBlock"] > div { gap: 0.25rem !important; }
 .element-container { margin: 0 !important; padding: 0 !important; }
-hr { margin: 4px 0 !important; border-color: #CFD8DC !important; }
-.stCaption { font-size: 10px !important; color: #95A5A6 !important; }
+hr { margin: 4px 0 !important; border-color: #E0E3EB !important; }
+.stCaption { font-size: 10px !important; color: #787B86 !important; }
 .stCode { font-size: 10px !important; }
 
-/* ── METRIC BOX CUSTOM ── */
+/* METRIC BOX CUSTOM */
 .metric-box { padding: 6px 10px; border-radius: 4px;
-    border: 1px solid #CFD8DC; background: #FFFFFF; margin-bottom: 4px; }
-.metric-label { font-size: 10px; color: #78909C; font-weight: 600; text-transform: uppercase; }
-.metric-value { font-size: 14px; font-weight: 700; color: #2C3E50; }
-.metric-green  { border-left: 3px solid #27AE60; }
-.metric-red    { border-left: 3px solid #E74C3C; }
-.metric-yellow { border-left: 3px solid #F39C12; }
-.metric-blue   { border-left: 3px solid #7EB5D6; }
+    border: 1px solid #E0E3EB; background: #FFFFFF; margin-bottom: 4px; }
+.metric-label { font-size: 10px; color: #787B86; font-weight: 600; text-transform: uppercase; }
+.metric-value { font-size: 14px; font-weight: 700; color: #131722; }
+.metric-green  { border-left: 3px solid #089981; }
+.metric-red    { border-left: 3px solid #F23645; }
+.metric-yellow { border-left: 3px solid #FF9800; }
+.metric-blue   { border-left: 3px solid #2196F3; }
 </style>
 """, unsafe_allow_html=True)
 
