@@ -952,7 +952,6 @@ if st.session_state.get('show_add_algo', False):
 # ================================================================
 if 'exp_24' not in st.session_state: st.session_state['exp_24'] = False
 with st.expander("SECTION 2.4 - MEMBER MANAGEMENT", expanded=st.session_state.get('exp_24', False)):
- st.session_state['exp_24'] = True
 
     # Load members from config
     members_config_file = 'dashboard/members_config.json'
@@ -1007,45 +1006,45 @@ with st.expander("SECTION 2.4 - MEMBER MANAGEMENT", expanded=st.session_state.ge
         st.info("No members added yet. Add members below.")
 
     # Add member form
-with st.expander("+ ADD MEMBER"):
-    with st.form("add_member_form"):
-        m_name    = st.text_input("Member Name (e.g. Friend1)")
-        m_account = st.text_input("Account Label (e.g. Testnet)")
-        m_bots    = st.multiselect("Bots to enable", ["S2","S4"], default=["S2","S4"])
-        col1, col2 = st.columns(2)
-        with col1:
-            if "S2" in m_bots:
-                m_s2_key  = st.text_input("S2 API Key")
-                m_s2_sec  = st.text_input("S2 API Secret", type="password")
-                m_lots_s2 = st.number_input("S2 Lots", min_value=1, value=100)
-            else:
-                m_s2_key = m_s2_sec = ""; m_lots_s2 = 100
-        with col2:
-            if "S4" in m_bots:
-                m_s4_key  = st.text_input("S4 API Key")
-                m_s4_sec  = st.text_input("S4 API Secret", type="password")
-                m_lots_s4 = st.number_input("S4 Lots", min_value=1, value=100)
-            else:
-                m_s4_key = m_s4_sec = ""; m_lots_s4 = 100
-        if st.form_submit_button("ADD MEMBER"):
-            if m_name and m_bots:
-                members.append({
-                    'name': m_name,
-                    'account': m_account,
-                    'bots': m_bots,
-                    's2_key': m_s2_key,
-                    's2_secret': m_s2_sec,
-                    's4_key': m_s4_key,
-                    's4_secret': m_s4_sec,
-                    'lots_s2': m_lots_s2,
-                    'lots_s4': m_lots_s4
-                })
-                members_cfg['members'] = members
-                json.dump(members_cfg, open(members_config_file,'w'), indent=2)
-                st.success(f"Member {m_name} added with bots: {m_bots}")
-                st.rerun()
-            else:
-                st.error("Name + at least one bot required")
+    with st.expander("+ ADD MEMBER"):
+        with st.form("add_member_form"):
+            m_name    = st.text_input("Member Name (e.g. Friend1)")
+            m_account = st.text_input("Account Label (e.g. Testnet)")
+            m_bots    = st.multiselect("Bots to enable", ["S2","S4"], default=["S2","S4"])
+            col1, col2 = st.columns(2)
+            with col1:
+                if "S2" in m_bots:
+                    m_s2_key  = st.text_input("S2 API Key")
+                    m_s2_sec  = st.text_input("S2 API Secret", type="password")
+                    m_lots_s2 = st.number_input("S2 Lots", min_value=1, value=100)
+                else:
+                    m_s2_key = m_s2_sec = ""; m_lots_s2 = 100
+            with col2:
+                if "S4" in m_bots:
+                    m_s4_key  = st.text_input("S4 API Key")
+                    m_s4_sec  = st.text_input("S4 API Secret", type="password")
+                    m_lots_s4 = st.number_input("S4 Lots", min_value=1, value=100)
+                else:
+                    m_s4_key = m_s4_sec = ""; m_lots_s4 = 100
+            if st.form_submit_button("ADD MEMBER"):
+                if m_name and m_bots:
+                    members.append({
+                        'name': m_name,
+                        'account': m_account,
+                        'bots': m_bots,
+                        's2_key': m_s2_key,
+                        's2_secret': m_s2_sec,
+                        's4_key': m_s4_key,
+                        's4_secret': m_s4_sec,
+                        'lots_s2': m_lots_s2,
+                        'lots_s4': m_lots_s4
+                    })
+                    members_cfg['members'] = members
+                    json.dump(members_cfg, open(members_config_file,'w'), indent=2)
+                    st.success(f"Member {m_name} added with bots: {m_bots}")
+                    st.rerun()
+                else:
+                    st.error("Name + at least one bot required")
 st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
 # ================================================================
@@ -1528,114 +1527,114 @@ with tab3:
 # ================================================================
 if 'exp_4' not in st.session_state: st.session_state['exp_4'] = False
 with st.expander("SECTION 4 - FORWARD TEST vs BACKTEST COMPARE", expanded=st.session_state.get('exp_4', False)):
- st.session_state['exp_4'] = True
 
-st.markdown("**Generate Detailed Comparison Report**")
 
-comp_tab_s2, comp_tab_s4 = st.tabs(["S2 - RenkoReversalStrategy", "S4 - RenkoSMIIOSupertrendStrategy"])
+    st.markdown("**Generate Detailed Comparison Report**")
 
-for comp_tab, algo_name, algo_key in [(comp_tab_s2, "S2", "s2"), (comp_tab_s4, "S4", "s4")]:
-    with comp_tab:
-        st.markdown(f"**{algo_name} - Auto Pipeline (market data + backtest + Delta API)**")
-        c1, c2 = st.columns(2)
-        with c1:
-            from_date = st.date_input(
-                "Forward Test From Date",
-                value=datetime.date(2026, 7, 7),
-                key=f"from_date_{algo_key}"
-            )
-        with c2:
-            st.markdown("<br>", unsafe_allow_html=True)
-            st.info(f"To Date: TODAY ({datetime.date.today().strftime('%Y-%m-%d')}) - auto")
+    comp_tab_s2, comp_tab_s4 = st.tabs(["S2 - RenkoReversalStrategy", "S4 - RenkoSMIIOSupertrendStrategy"])
 
-        st.caption("Pipeline: 1) Download market data  2) Run backtest  3) Fetch Delta API trades  4) Generate report")
-
-        gen_btn = st.button(f"GENERATE {algo_name} REPORT", key=f"gen_report_{algo_key}")
-
-        if gen_btn:
-            progress_bar = st.progress(0)
-            status_box   = st.empty()
-            status_box.info("Starting pipeline...")
-            progress_bar.progress(5)
-            try:
-                cmd = [
-                    ".venv/bin/python", "scripts/auto_comparison_pipeline.py",
-                    "--strategy", algo_name,
-                    "--from_date", from_date.strftime("%Y-%m-%d"),
-                ]
-                env = os.environ.copy()
-                env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
-                if os.path.exists(env_path):
-                    with open(env_path) as ef:
-                        for line in ef:
-                            line = line.strip()
-                            if '=' in line and not line.startswith('#'):
-                                k, v = line.split('=', 1)
-                                env[k.strip()] = v.strip()
-                process = subprocess.Popen(
-                    cmd,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT,
-                    text=True,
-                    cwd=os.path.dirname(os.path.dirname(__file__)),
-                    env=env
-                )
-                report_file = None
-                step_msgs = {
-                    'STEP_1_START': ('Downloading market data...', 10),
-                    'STEP_1_DONE':  ('Market data updated', 30),
-                    'STEP_2_START': ('Running backtest...', 35),
-                    'STEP_2_DONE':  ('Backtest complete', 60),
-                    'STEP_3_START': ('Fetching Delta API trades...', 65),
-                    'STEP_3_DONE':  ('Delta API data fetched', 85),
-                    'STEP_4_START': ('Generating HTML report...', 88),
-                    'STEP_4_DONE':  ('Report generated', 98),
-                    'PIPELINE_COMPLETE': ('Pipeline complete', 100),
-                }
-                all_output = []
-                for line in process.stdout:
-                    line = line.strip()
-                    all_output.append(line)
-                    if line in step_msgs:
-                        msg, pct = step_msgs[line]
-                        status_box.info(f"[{pct}%] {msg}")
-                        progress_bar.progress(pct)
-                    elif line.startswith('REPORT_FILE:'):
-                        report_file = line.replace('REPORT_FILE:', '').strip()
-                    elif line.startswith('[Step'):
-                        status_box.info(line)
-                process.wait()
-                if process.returncode == 0 and report_file and os.path.exists(report_file):
-                    progress_bar.progress(100)
-                    status_box.success(f"Report ready: {os.path.basename(report_file)}")
-                else:
-                    status_box.error("Pipeline failed - check output below")
-                    st.code('\n'.join(all_output[-20:]))
-            except Exception as e:
-                status_box.error(f"Error: {e}")
-
-        comp_html_files = sorted([f for f in glob.glob(f"output/comparison_report_{algo_name}_*.html")], reverse=True)
-        if comp_html_files:
-            sel_comp = st.selectbox(f"Select {algo_name} Report", comp_html_files, key=f"comp_sel_{algo_key}")
-            c1, c2, c3 = st.columns(3)
+    for comp_tab, algo_name, algo_key in [(comp_tab_s2, "S2", "s2"), (comp_tab_s4, "S4", "s4")]:
+        with comp_tab:
+            st.markdown(f"**{algo_name} - Auto Pipeline (market data + backtest + Delta API)**")
+            c1, c2 = st.columns(2)
             with c1:
-                view_comp = st.button(f"VIEW {algo_name} REPORT", key=f"view_comp_{algo_key}")
+                from_date = st.date_input(
+                    "Forward Test From Date",
+                    value=datetime.date(2026, 7, 7),
+                    key=f"from_date_{algo_key}"
+                )
             with c2:
-                with open(sel_comp, 'rb') as fh:
-                    st.download_button("DOWNLOAD HTML", fh, file_name=os.path.basename(sel_comp), key=f"dl_comp_{algo_key}")
-            with c3:
+                st.markdown("<br>", unsafe_allow_html=True)
+                st.info(f"To Date: TODAY ({datetime.date.today().strftime('%Y-%m-%d')}) - auto")
+
+            st.caption("Pipeline: 1) Download market data  2) Run backtest  3) Fetch Delta API trades  4) Generate report")
+
+            gen_btn = st.button(f"GENERATE {algo_name} REPORT", key=f"gen_report_{algo_key}")
+
+            if gen_btn:
+                progress_bar = st.progress(0)
+                status_box   = st.empty()
+                status_box.info("Starting pipeline...")
+                progress_bar.progress(5)
                 try:
-                    user_comp = open(sel_comp, encoding='utf-8').read()
-                    for sname in ['RenkoReversalStrategy', 'RenkoSMIIOSupertrendStrategy']:
-                        user_comp = user_comp.replace(sname, 'Alpha Strategy')
-                    st.download_button("DOWNLOAD USER HTML", user_comp.encode('utf-8'), file_name=f"alpha_{algo_name}_comparison.html", mime="text/html", key=f"dl_comp_user_{algo_key}")
+                    cmd = [
+                        ".venv/bin/python", "scripts/auto_comparison_pipeline.py",
+                        "--strategy", algo_name,
+                        "--from_date", from_date.strftime("%Y-%m-%d"),
+                    ]
+                    env = os.environ.copy()
+                    env_path = os.path.join(os.path.dirname(__file__), '..', '.env')
+                    if os.path.exists(env_path):
+                        with open(env_path) as ef:
+                            for line in ef:
+                                line = line.strip()
+                                if '=' in line and not line.startswith('#'):
+                                    k, v = line.split('=', 1)
+                                    env[k.strip()] = v.strip()
+                    process = subprocess.Popen(
+                        cmd,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT,
+                        text=True,
+                        cwd=os.path.dirname(os.path.dirname(__file__)),
+                        env=env
+                    )
+                    report_file = None
+                    step_msgs = {
+                        'STEP_1_START': ('Downloading market data...', 10),
+                        'STEP_1_DONE':  ('Market data updated', 30),
+                        'STEP_2_START': ('Running backtest...', 35),
+                        'STEP_2_DONE':  ('Backtest complete', 60),
+                        'STEP_3_START': ('Fetching Delta API trades...', 65),
+                        'STEP_3_DONE':  ('Delta API data fetched', 85),
+                        'STEP_4_START': ('Generating HTML report...', 88),
+                        'STEP_4_DONE':  ('Report generated', 98),
+                        'PIPELINE_COMPLETE': ('Pipeline complete', 100),
+                    }
+                    all_output = []
+                    for line in process.stdout:
+                        line = line.strip()
+                        all_output.append(line)
+                        if line in step_msgs:
+                            msg, pct = step_msgs[line]
+                            status_box.info(f"[{pct}%] {msg}")
+                            progress_bar.progress(pct)
+                        elif line.startswith('REPORT_FILE:'):
+                            report_file = line.replace('REPORT_FILE:', '').strip()
+                        elif line.startswith('[Step'):
+                            status_box.info(line)
+                    process.wait()
+                    if process.returncode == 0 and report_file and os.path.exists(report_file):
+                        progress_bar.progress(100)
+                        status_box.success(f"Report ready: {os.path.basename(report_file)}")
+                    else:
+                        status_box.error("Pipeline failed - check output below")
+                        st.code('\n'.join(all_output[-20:]))
                 except Exception as e:
-                    st.error(f"Error: {e}")
-            if view_comp:
-                content = open(sel_comp, encoding='utf-8').read()
-                st.components.v1.html(content, height=2500, scrolling=True)
-        else:
-            st.info(f"No {algo_name} comparison reports found. Click GENERATE to create one.")
+                    status_box.error(f"Error: {e}")
+
+            comp_html_files = sorted([f for f in glob.glob(f"output/comparison_report_{algo_name}_*.html")], reverse=True)
+            if comp_html_files:
+                sel_comp = st.selectbox(f"Select {algo_name} Report", comp_html_files, key=f"comp_sel_{algo_key}")
+                c1, c2, c3 = st.columns(3)
+                with c1:
+                    view_comp = st.button(f"VIEW {algo_name} REPORT", key=f"view_comp_{algo_key}")
+                with c2:
+                    with open(sel_comp, 'rb') as fh:
+                        st.download_button("DOWNLOAD HTML", fh, file_name=os.path.basename(sel_comp), key=f"dl_comp_{algo_key}")
+                with c3:
+                    try:
+                        user_comp = open(sel_comp, encoding='utf-8').read()
+                        for sname in ['RenkoReversalStrategy', 'RenkoSMIIOSupertrendStrategy']:
+                            user_comp = user_comp.replace(sname, 'Alpha Strategy')
+                        st.download_button("DOWNLOAD USER HTML", user_comp.encode('utf-8'), file_name=f"alpha_{algo_name}_comparison.html", mime="text/html", key=f"dl_comp_user_{algo_key}")
+                    except Exception as e:
+                        st.error(f"Error: {e}")
+                if view_comp:
+                    content = open(sel_comp, encoding='utf-8').read()
+                    st.components.v1.html(content, height=2500, scrolling=True)
+            else:
+                st.info(f"No {algo_name} comparison reports found. Click GENERATE to create one.")
 
 
 # ================================================================
@@ -1988,45 +1987,45 @@ with st.expander("SECTION 5B - PORTFOLIO BACKTEST", expanded=True):
 
 # ================================================================
 
-st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
-st.markdown("**Backtest Reports**")
-port_html = sorted([f for f in glob.glob("output/*.html") if "portfolio_report_" in f], key=_glob_os.path.getmtime, reverse=True)
-port_csv = sorted([f for f in glob.glob("output/*.csv") if "portfolio_trade_log_" in f], reverse=True)
+    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
+    st.markdown("**Backtest Reports**")
+    port_html = sorted([f for f in glob.glob("output/*.html") if "portfolio_report_" in f], key=_glob_os.path.getmtime, reverse=True)
+    port_csv = sorted([f for f in glob.glob("output/*.csv") if "portfolio_trade_log_" in f], reverse=True)
 
-st.markdown("**Select Report to View/Download**")
-if port_html:
-    if "port_html_sel" not in st.session_state or st.session_state.get("port_force_latest"):
-        st.session_state["port_html_sel"] = port_html[0] if port_html else None
-        st.session_state["port_force_latest"] = False
-    sel_port_html = st.selectbox("Select Portfolio HTML", port_html, key="port_html_sel")
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        view_html_5b = st.button("VIEW HTML", key="port_view_html")
-    with c2:
-        with open(sel_port_html, 'rb') as f:
-            st.download_button("DOWNLOAD HTML", f, file_name=os.path.basename(sel_port_html), key="port_dl_html")
-    with c3:
-        try:
-            user_content = open(sel_port_html, encoding='utf-8').read()
-            for sname in ['Portfolio_Dynamic','RenkoReversalStrategy','RenkoSMIIOSupertrendStrategy','RenkoBreakoutStrategy','RenkoTrendlinePullbackStrategy','RenkoOptionsStrategy']:
-                user_content = user_content.replace(f'<h1>{sname}</h1>', '<h1>Alpha Strategy</h1>')
-                user_content = user_content.replace(f'Strategy: {sname}', 'Strategy: Alpha Strategy')
-                user_content = user_content.replace(f'<title>Backtest Report - {sname}</title>', '<title>Backtest Report - Alpha Strategy</title>')
-            st.download_button("DOWNLOAD USER HTML", user_content.encode('utf-8'), file_name="alpha_portfolio_report.html", mime="text/html", key="port_dl_user_html")
-        except Exception as e:
-            st.error(f"Error: {e}")
-    if view_html_5b:
-        content = open(sel_port_html, encoding='utf-8').read()
-        st.components.v1.html(content, height=2000, scrolling=True)
-else:
-    st.info("No portfolio HTML reports found in output/ folder")
-st.markdown("**CSV Results**")
-if port_csv:
-    sel_port_csv = st.selectbox("Select Portfolio CSV", port_csv, key="port_csv_sel")
-    with open(sel_port_csv, 'rb') as f:
-        st.download_button("DOWNLOAD CSV", f, file_name=os.path.basename(sel_port_csv), key="port_dl_csv")
-else:
-    st.info("No portfolio CSV files found in output/ folder")
+    st.markdown("**Select Report to View/Download**")
+    if port_html:
+        if "port_html_sel" not in st.session_state or st.session_state.get("port_force_latest"):
+            st.session_state["port_html_sel"] = port_html[0] if port_html else None
+            st.session_state["port_force_latest"] = False
+        sel_port_html = st.selectbox("Select Portfolio HTML", port_html, key="port_html_sel")
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            view_html_5b = st.button("VIEW HTML", key="port_view_html")
+        with c2:
+            with open(sel_port_html, 'rb') as f:
+                st.download_button("DOWNLOAD HTML", f, file_name=os.path.basename(sel_port_html), key="port_dl_html")
+        with c3:
+            try:
+                user_content = open(sel_port_html, encoding='utf-8').read()
+                for sname in ['Portfolio_Dynamic','RenkoReversalStrategy','RenkoSMIIOSupertrendStrategy','RenkoBreakoutStrategy','RenkoTrendlinePullbackStrategy','RenkoOptionsStrategy']:
+                    user_content = user_content.replace(f'<h1>{sname}</h1>', '<h1>Alpha Strategy</h1>')
+                    user_content = user_content.replace(f'Strategy: {sname}', 'Strategy: Alpha Strategy')
+                    user_content = user_content.replace(f'<title>Backtest Report - {sname}</title>', '<title>Backtest Report - Alpha Strategy</title>')
+                st.download_button("DOWNLOAD USER HTML", user_content.encode('utf-8'), file_name="alpha_portfolio_report.html", mime="text/html", key="port_dl_user_html")
+            except Exception as e:
+                st.error(f"Error: {e}")
+        if view_html_5b:
+            content = open(sel_port_html, encoding='utf-8').read()
+            st.components.v1.html(content, height=2000, scrolling=True)
+    else:
+        st.info("No portfolio HTML reports found in output/ folder")
+    st.markdown("**CSV Results**")
+    if port_csv:
+        sel_port_csv = st.selectbox("Select Portfolio CSV", port_csv, key="port_csv_sel")
+        with open(sel_port_csv, 'rb') as f:
+            st.download_button("DOWNLOAD CSV", f, file_name=os.path.basename(sel_port_csv), key="port_dl_csv")
+    else:
+        st.info("No portfolio CSV files found in output/ folder")
 
 # ================================================================
 # SECTION 6 - OPTIMISATION
@@ -2049,7 +2048,6 @@ with st.expander("SECTION 6 - OPTIMISATION", expanded=True):
     with col3:
         opt_lots = st.number_input("Lots", min_value=1, max_value=10000, value=100, key="sec7_lots")
 
-    st.markdown("**Date Range**")
     opt_range = st.radio("Date Range", ["1 Month","6 Months","1 Year","1.5 Years","2 Years","Full CSV","Custom"], index=2, horizontal=True, key="sec7_range")
     today = datetime.date.today()
     if opt_range == "1 Month":
@@ -2167,7 +2165,7 @@ with st.expander("SECTION 6 - OPTIMISATION", expanded=True):
 # ================================================================
 if 'exp_8' not in st.session_state: st.session_state['exp_8'] = False
 with st.expander("SECTION 8 - BATCH BACKTEST + COIN SCANNER", expanded=st.session_state.get('exp_8', False)):
- st.session_state['exp_8'] = True
+
     st.warning("PLACEHOLDER - Activates in Phase 8 after July 24")
     col1, col2 = st.columns(2)
     with col1:
@@ -2185,7 +2183,7 @@ with st.expander("SECTION 8 - BATCH BACKTEST + COIN SCANNER", expanded=st.sessio
 # ================================================================
 if 'exp_9' not in st.session_state: st.session_state['exp_9'] = False
 with st.expander("SECTION 9 - CONTRACT MANAGER", expanded=st.session_state.get('exp_9', False)):
- st.session_state['exp_9'] = True
+
 
     contracts = config.get("contracts", [])
 
@@ -2247,7 +2245,7 @@ with st.expander("SECTION 9 - CONTRACT MANAGER", expanded=st.session_state.get('
 # ================================================================
 if 'exp_10' not in st.session_state: st.session_state['exp_10'] = False
 with st.expander("SECTION 10 - GITHUB SYNC", expanded=st.session_state.get('exp_10', False)):
- st.session_state['exp_10'] = True
+
 
     import subprocess
 
@@ -2299,7 +2297,7 @@ with st.expander("SECTION 10 - GITHUB SYNC", expanded=st.session_state.get('exp_
 # ================================================================
 if 'exp_11' not in st.session_state: st.session_state['exp_11'] = False
 with st.expander("SECTION 11 - MAINTENANCE", expanded=st.session_state.get('exp_11', False)):
- st.session_state['exp_11'] = True
+
 
     import shutil, os, subprocess
 
@@ -2454,7 +2452,7 @@ with col_auto:
 # ================================================================
 if 'exp_13s' not in st.session_state: st.session_state['exp_13s'] = False
 with st.expander("SECTION 13 - STRATEGY PERFORMANCE SUMMARY", expanded=st.session_state.get('exp_13s', False)):
- st.session_state['exp_13s'] = True
+
 
     import glob, re as regex
 
