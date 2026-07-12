@@ -24,25 +24,25 @@ h3 { font-size: 13px !important; font-weight: 600 !important; margin: 0 !importa
 p  { font-size: 12px !important; margin: 0 !important; }
 
 /* COMPACT METRICS */
-[data-testid="stMetricValue"] { font-size: 13px !important; font-weight: 600 !important; }
-[data-testid="stMetricLabel"] { font-size: 11px !important; color: #666 !important; }
-[data-testid="metric-container"] { padding: 4px 8px !important; border: 1px solid #e0e0e0; border-radius: 4px; }
+[data-testid="stMetricValue"] { font-size: 13px !important; font-weight: 700 !important; color: #212121 !important; }
+[data-testid="stMetricLabel"] { font-size: 11px !important; color: #546E7A !important; }
+[data-testid="metric-container"] { padding: 4px 8px !important; border: 1px solid #CFD8DC; border-radius: 4px; background: #FAFAFA; }
 
 /* COMPACT SECTION TITLES */
-.section-title { color: #1a73e8; font-size: 12px !important; font-weight: 700;
-                 border-bottom: 1px solid #1a73e8; padding-bottom: 2px;
+.section-title { color: #1565C0; font-size: 12px !important; font-weight: 700;
+                 border-bottom: 2px solid #1565C0; padding-bottom: 2px;
                  margin-bottom: 6px; margin-top: 8px; text-transform: uppercase;
                  letter-spacing: 0.5px; }
 
 /* COMPACT ALERTS */
-.alert-red { background: #ffebee; border-left: 3px solid #dc3545;
-             padding: 4px 8px; color: #dc3545; font-weight: 600;
+.alert-red { background: #FFEBEE; border-left: 4px solid #C62828;
+             padding: 4px 8px; color: #C62828; font-weight: 600;
              font-size: 11px !important; margin: 2px 0; border-radius: 2px; }
-.alert-yellow { background: #fff8e1; border-left: 3px solid #ffc107;
-                padding: 4px 8px; color: #856404; font-weight: 600;
+.alert-yellow { background: #FFF8E1; border-left: 4px solid #E65100;
+                padding: 4px 8px; color: #E65100; font-weight: 600;
                 font-size: 11px !important; margin: 2px 0; border-radius: 2px; }
-.alert-green { background: #e8f5e9; border-left: 3px solid #28a745;
-               padding: 4px 8px; color: #28a745; font-weight: 600;
+.alert-green { background: #E8F5E9; border-left: 4px solid #2E7D32;
+               padding: 4px 8px; color: #2E7D32; font-weight: 600;
                font-size: 11px !important; margin: 2px 0; border-radius: 2px; }
 
 /* COMPACT BUTTONS */
@@ -307,7 +307,9 @@ else:
 # ================================================================
 # SECTION 1B - ERROR MONITOR (auto-checks all systems)
 # ================================================================
-st.markdown("<div class='section-title'>SYSTEM ERROR MONITOR</div>", unsafe_allow_html=True)
+if 'exp_1b' not in st.session_state: st.session_state['exp_1b'] = False
+with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b', False)):
+ st.session_state['exp_1b'] = True
 
 import subprocess, os, datetime
 
@@ -614,14 +616,16 @@ with st.expander("Show all OK checks"):
     for o in ok:
         st.markdown(f"OK: {o}")
 
-st.caption(f"Last checked: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Auto-refreshes every 30s")
+    st.caption(f"Last checked: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Auto-refreshes every 30s")
 st.markdown("---")
 
 
 # ================================================================
 # SECTION 1.3 - VM HEALTH (CPU + RAM + UPTIME)
 # ================================================================
-st.markdown("<div class='section-title'>SECTION 1.3 - VM HEALTH</div>", unsafe_allow_html=True)
+if 'exp_13' not in st.session_state: st.session_state['exp_13'] = False
+with st.expander("SECTION 1.3 - VM HEALTH", expanded=st.session_state.get('exp_13', False)):
+ st.session_state['exp_13'] = True
 try:
     import psutil
     cpu = psutil.cpu_percent(interval=1)
@@ -815,7 +819,9 @@ if st.session_state.get('show_add_algo', False):
 # ================================================================
 # SECTION 2.4 - MEMBER MANAGEMENT
 # ================================================================
-st.markdown("<div class='section-title'>SECTION 2.4 - MEMBER MANAGEMENT</div>", unsafe_allow_html=True)
+if 'exp_24' not in st.session_state: st.session_state['exp_24'] = False
+with st.expander("SECTION 2.4 - MEMBER MANAGEMENT", expanded=st.session_state.get('exp_24', False)):
+ st.session_state['exp_24'] = True
 
 # Load members from config
 members_config_file = 'dashboard/members_config.json'
@@ -1389,7 +1395,9 @@ with tab3:
 # ================================================================
 # SECTION 4 - FORWARD TEST vs BACKTEST COMPARE
 # ================================================================
-st.markdown("<div class='section-title'>SECTION 4 - FORWARD TEST vs BACKTEST COMPARE</div>", unsafe_allow_html=True)
+if 'exp_4' not in st.session_state: st.session_state['exp_4'] = False
+with st.expander("SECTION 4 - FORWARD TEST vs BACKTEST COMPARE", expanded=st.session_state.get('exp_4', False)):
+ st.session_state['exp_4'] = True
 
 st.markdown("**Generate Detailed Comparison Report**")
 
@@ -2018,49 +2026,14 @@ if opt_csv_files:
 else:
     st.info("No optimisation CSV files found in output/ folder")
 
-# ================================================================
-# SECTION 7 - MARKET DATA
-# ================================================================
-st.markdown("<div class='section-title'>SECTION 7 - MARKET DATA</div>", unsafe_allow_html=True)
 
-import subprocess
-col1, col2 = st.columns(2)
-with col1:
-    data_symbol = st.selectbox("Select Symbol", ["BTCUSD", "ETHUSD"], key="sec9_symbol")
-with col2:
-    data_timeframe = st.selectbox("Select Timeframe", ["1m", "5m", "15m", "30m", "1h", "2h", "4h", "1d"], key="sec9_tf")
-
-if st.button("DOWNLOAD MARKET DATA", key="sec9_download"):
-    st.info(f"Downloading {data_symbol} {data_timeframe} data...")
-    with st.spinner("Downloading..."):
-        try:
-            result = subprocess.run(
-                [".venv/bin/python", "data/download_market_data.py", "--symbol", data_symbol],
-                capture_output=True, text=True, timeout=120
-            )
-            if result.returncode == 0:
-                st.success("Download complete")
-                st.code(result.stdout[-1000:])
-            else:
-                st.error("Download failed")
-                st.code(result.stderr[-1000:])
-        except Exception as e:
-            st.error(f"Error: {e}")
-
-import glob, os
-csv_data_files = glob.glob("data/*.csv")
-st.markdown("**Available Data Files**")
-if csv_data_files:
-    for f in sorted(csv_data_files):
-        size = round(os.path.getsize(f)/1024/1024, 1)
-        st.caption(f"{os.path.basename(f)} - {size} MB")
-else:
-    st.info("No CSV data files found")
 
 # ================================================================
 # SECTION 8 - BATCH BACKTEST + SCANNER (PLACEHOLDER)
 # ================================================================
-st.markdown("<div class='section-title'>SECTION 8 - BATCH BACKTEST + COIN SCANNER</div>", unsafe_allow_html=True)
+if 'exp_8' not in st.session_state: st.session_state['exp_8'] = False
+with st.expander("SECTION 8 - BATCH BACKTEST + COIN SCANNER", expanded=st.session_state.get('exp_8', False)):
+ st.session_state['exp_8'] = True
 st.warning("PLACEHOLDER - Activates in Phase 8 after July 24")
 col1, col2 = st.columns(2)
 with col1:
@@ -2076,7 +2049,9 @@ with col2:
 # ================================================================
 # SECTION 9 - CONTRACT MANAGER
 # ================================================================
-st.markdown("<div class='section-title'>SECTION 9 - CONTRACT MANAGER</div>", unsafe_allow_html=True)
+if 'exp_9' not in st.session_state: st.session_state['exp_9'] = False
+with st.expander("SECTION 9 - CONTRACT MANAGER", expanded=st.session_state.get('exp_9', False)):
+ st.session_state['exp_9'] = True
 
 contracts = config.get("contracts", [])
 
@@ -2136,7 +2111,9 @@ with st.form("add_contract_form"):
 # ================================================================
 # SECTION 10 - GITHUB SYNC
 # ================================================================
-st.markdown("<div class='section-title'>SECTION 10 - GITHUB SYNC</div>", unsafe_allow_html=True)
+if 'exp_10' not in st.session_state: st.session_state['exp_10'] = False
+with st.expander("SECTION 10 - GITHUB SYNC", expanded=st.session_state.get('exp_10', False)):
+ st.session_state['exp_10'] = True
 
 import subprocess
 
@@ -2186,7 +2163,9 @@ if st.button("COMMIT + PUSH", key="sec11_commit_push"):
 # ================================================================
 # SECTION 11 - MAINTENANCE
 # ================================================================
-st.markdown("<div class='section-title'>SECTION 11 - MAINTENANCE</div>", unsafe_allow_html=True)
+if 'exp_11' not in st.session_state: st.session_state['exp_11'] = False
+with st.expander("SECTION 11 - MAINTENANCE", expanded=st.session_state.get('exp_11', False)):
+ st.session_state['exp_11'] = True
 
 import shutil, os, subprocess
 
@@ -2339,7 +2318,9 @@ with col_auto:
 # ================================================================
 # SECTION 13 - STRATEGY PERFORMANCE SUMMARY
 # ================================================================
-st.markdown("<div class='section-title'>SECTION 13 - STRATEGY PERFORMANCE SUMMARY</div>", unsafe_allow_html=True)
+if 'exp_13s' not in st.session_state: st.session_state['exp_13s'] = False
+with st.expander("SECTION 13 - STRATEGY PERFORMANCE SUMMARY", expanded=st.session_state.get('exp_13s', False)):
+ st.session_state['exp_13s'] = True
 
 import glob, re as regex
 
