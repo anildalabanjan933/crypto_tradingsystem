@@ -1679,9 +1679,9 @@ with port_tab1:
         port_include_charges = st.checkbox("Include Tax & All Charges", value=True, key="port_charges")
 
     if st.button("RUN PREDEFINED PORTFOLIO", key="port_run_pre"):
-    with st.spinner("Updating market data..."):
-        import subprocess as _sp
-        _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+        with st.spinner("Updating market data..."):
+            import subprocess as _sp
+            _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
         st.info("Running predefined portfolio backtest...")
         with st.spinner("Running..."):
             try:
@@ -1752,9 +1752,9 @@ with port_tab2:
         port_dyn_include_charges = st.checkbox("Include Tax & All Charges", value=True, key="port_dyn_charges")
 
     if st.button("RUN DYNAMIC PORTFOLIO", key="port_run_dyn"):
-    with st.spinner("Updating market data..."):
-        import subprocess as _sp
-        _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+        with st.spinner("Updating market data..."):
+            import subprocess as _sp
+            _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
         if not selected_strategies:
             st.error("Please select at least one strategy")
         else:
