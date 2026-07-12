@@ -146,10 +146,10 @@ while True:
         df_1h = build_1h(df_1m)
         log.info(f"[DATA] 1H candles={len(df_1h)}")
 
-        box_size = get_renko_box_size(SYMBOL, float(df_1h["close"].iloc[-1]))
         strategy = RenkoReversalStrategy(
             data_dict={"1h": df_1h}, lot_size=LOT_SIZE,
-            renko_box=box_size, renko_timeframe="1h"
+            renko_box_pct=0.001, renko_timeframe="1h",
+            st_atr_length=5, st_factor=1.5
         )
         signals = strategy.generate_signals()
         log.info(f"[SIGNALS] total={len(signals)}")
@@ -169,21 +169,25 @@ while True:
 
             if stype == "ENTRY" and position is None:
                 side = "buy" if sdir == "long" else "sell"
-                om.place_market_order(side=side, size=get_lot_size())
-# REMOVED: post_signal call
-                position = sdir
-                last_known_ts = sig_ts
-                open('logs/last_known_ts_s2.txt','w').write(str(sig_ts))
-                log.info(f"[ORDER] ENTRY {side} {LOT_SIZE} lots | type={sig.get("entry_type")} | ts={sig_ts}")
+                result = om.place_market_order(side=side, size=get_lot_size())
+                if result.get("success"):
+                    position = sdir
+                    last_known_ts = sig_ts
+                    open('logs/last_known_ts_s2.txt','w').write(str(sig_ts))
+                    log.info(f"[ORDER] ENTRY {side} {LOT_SIZE} lots | type={sig.get('entry_type')} | ts={sig_ts}")
+                else:
+                    log.error(f"[ORDER] ENTRY FAILED | error={result.get('error')} | ts={sig_ts}")
 
             elif stype == "EXIT" and position is not None:
                 side = "sell" if position == "long" else "buy"
-                om.close_position(size=get_lot_size(), side=side)
-# REMOVED: post_signal call
-                position = None
-                last_known_ts = sig_ts
-                open('logs/last_known_ts_s2.txt','w').write(str(sig_ts))
-                log.info(f"[ORDER] EXIT {side} {LOT_SIZE} lots | type={sig.get("exit_type")} | ts={sig_ts}")
+                result = om.close_position(size=get_lot_size(), side=side)
+                if result.get("success"):
+                    position = None
+                    last_known_ts = sig_ts
+                    open('logs/last_known_ts_s2.txt','w').write(str(sig_ts))
+                    log.info(f"[ORDER] EXIT {side} {LOT_SIZE} lots | type={sig.get('exit_type')} | ts={sig_ts}")
+                else:
+                    log.error(f"[ORDER] EXIT FAILED | error={result.get('error')} | ts={sig_ts}")
         else:
             log.info(f"[WAIT] No new signals since {last_known_ts}")
 
