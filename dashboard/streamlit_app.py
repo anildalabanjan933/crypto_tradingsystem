@@ -1603,6 +1603,65 @@ with tab3:
 
 
 # ================================================================
+# SECTION 3B - AUTO MAINTENANCE STATUS
+# ================================================================
+if 'exp_maint' not in st.session_state: st.session_state['exp_maint'] = False
+with st.expander("SYSTEM MAINTENANCE - Auto Daily 3AM UTC", expanded=False):
+    import glob as _glob
+    maint_log = 'logs/maintenance.log'
+    if os.path.exists(maint_log):
+        lines = open(maint_log).readlines()
+        # Get last run block
+        last_run_lines = []
+        for line in reversed(lines):
+            last_run_lines.insert(0, line.strip())
+            if 'Starting auto maintenance' in line:
+                break
+        if last_run_lines:
+            # Extract key metrics
+            last_run_time = next((l for l in last_run_lines if 'Starting' in l), '')
+            disk_line     = next((l for l in last_run_lines if 'Disk' in l), '')
+            pycache_line  = next((l for l in last_run_lines if 'Pycache' in l), '')
+            output_line   = next((l for l in last_run_lines if 'Output folder' in l), '')
+            log_lines     = [l for l in last_run_lines if 'Log' in l and 'maintenance' not in l.lower()]
+
+            c1, c2, c3, c4 = st.columns(4)
+            with c1:
+                disk_pct = ''
+                if 'Disk' in disk_line:
+                    import re as _re
+                    m = _re.search(r'([\d.]+)% used', disk_line)
+                    disk_pct = m.group(1) + '%' if m else 'OK'
+                    color = 'normal' if float(m.group(1)) < 70 else 'inverse' if m else 'normal'
+                st.metric("Disk Usage", disk_pct if disk_pct else "OK")
+            with c2:
+                files_del = ''
+                if 'deleted' in output_line:
+                    import re as _re
+                    m = _re.search(r'deleted (\d+) files', output_line)
+                    files_del = m.group(1) + ' files' if m else '0'
+                st.metric("Last Cleanup", files_del if files_del else "0 files")
+            with c3:
+                out_mb = ''
+                if 'Output folder' in output_line:
+                    import re as _re
+                    m = _re.search(r'([\d.]+)MB', output_line)
+                    out_mb = m.group(1) + ' MB' if m else 'OK'
+                st.metric("Output Size", out_mb if out_mb else "OK")
+            with c4:
+                st.metric("Next Run", "Daily 3AM UTC")
+
+            st.caption(f"Last maintenance: {last_run_time.split('[MAINTENANCE]')[-1].strip() if last_run_time else 'Never'}")
+            if disk_line:
+                if 'WARNING' in disk_line or 'ERROR' in disk_line:
+                    st.error(disk_line)
+                else:
+                    st.success(disk_line.split('[MAINTENANCE]')[-1].strip())
+    else:
+        st.info("No maintenance log yet. First run at 3AM UTC tonight.")
+        st.caption("Auto maintenance runs daily: pycache clean + log trim + output cleanup + disk check")
+
+# ================================================================
 # SECTION 4 - FORWARD TEST vs BACKTEST COMPARE
 # ================================================================
 if 'exp_4' not in st.session_state: st.session_state['exp_4'] = False
