@@ -1,4 +1,4 @@
-import sys, os, requests, time, glob, pandas as pd
+import sys, os, requests, time, pandas as pd, re
 from datetime import datetime, timezone
 sys.path.insert(0, '/home/anildalabanjan933/crypto_trading_system')
 
@@ -10,22 +10,16 @@ from backtest_analyzer import BacktestReportGenerator
 BASE     = 'https://cdn-ind.testnet.deltaex.org'
 CSV_PATH = 'data/btc_1m_delta.csv'
 
-# Auto-read VALID_FROM from last_known_ts files (updates after every restart)
 def get_valid_from():
     ts_s2, ts_s4 = None, None
     if os.path.exists('logs/last_known_ts_s2.txt'):
         ts_s2 = open('logs/last_known_ts_s2.txt').read().strip()
     if os.path.exists('logs/last_known_ts_s4.txt'):
         ts_s4 = open('logs/last_known_ts_s4.txt').read().strip()
-    # Use the LATER of the two (both bots must be past this point)
-    if ts_s2 and ts_s4:
-        return max(ts_s2, ts_s4)
-    elif ts_s2:
-        return ts_s2
-    elif ts_s4:
-        return ts_s4
-    else:
-        return '2026-07-12T11:00:00'  # fallback
+    if ts_s2 and ts_s4: return max(ts_s2, ts_s4)
+    elif ts_s2: return ts_s2
+    elif ts_s4: return ts_s4
+    else: return '2026-07-12T00:00:00'
 
 VALID_FROM = get_valid_from()
 TODAY      = datetime.now(timezone.utc).strftime('%Y-%m-%d')
@@ -74,86 +68,169 @@ def get_backtest_signals(strategy_class, name, params):
     trades = [r.strip().split(',') for r in rows[1:] if r.strip()]
     return [t for t in trades if t[3] >= VALID_FROM]
 
-def get_live_orders(log_file):
-    orders = []
+def get_live_trades(log_file):
+    # Parse ENTRY and EXIT pairs from log
+    entries = {}  # direction -> entry_time
+    trades  = []
     if not os.path.exists(log_file):
-        return orders
+        return trades
     for line in open(log_file):
-        if '[ORDER]' in line and ('ENTRY' in line or 'EXIT' in line):
-            # Extract timestamp from log line and compare
-            try:
-                log_ts = line.split(' INFO')[0].strip()
-                log_dt = pd.Timestamp(log_ts)
-                valid_dt = pd.Timestamp(VALID_FROM)
-                if log_dt >= valid_dt:
-                    orders.append(line.strip())
-            except:
-                pass
-    return orders
+        try:
+            log_ts = pd.Timestamp(line.split(' INFO')[0].strip())
+            if log_ts < pd.Timestamp(VALID_FROM):
+                continue
+        except:
+            continue
 
-# ── Step 1: Update CSV ──────────────────────────────────────
+        if '[ORDER]' not in line:
+            continue
+
+        # Parse ENTRY
+        # Example: [ORDER] ENTRY buy 100 lots @ 63500.0 | signal_ts=2026-07-12T14:00:00
+        entry_match = re.search(
+            r'ENTRY\s+(buy|sell)\s+\d+\s+lots\s+@\s+([\d.]+).*signal_ts=(\S+)', line, re.I)
+        if entry_match:
+            side      = entry_match.group(1).lower()
+            price     = entry_match.group(2)
+            signal_ts = entry_match.group(3).rstrip('|').strip()
+            direction = 'long' if side == 'buy' else 'short'
+            entries[signal_ts] = {'direction': direction,
+                                   'entry_time': signal_ts,
+                                   'entry_price': price}
+            continue
+
+        # Parse EXIT
+        exit_match = re.search(
+            r'EXIT\s+(sell|buy)\s+\d+\s+lots\s+@\s+([\d.]+).*signal_ts=(\S+)', line, re.I)
+        if exit_match:
+            price     = exit_match.group(2)
+            signal_ts = exit_match.group(3).rstrip('|').strip()
+            # Match to open entry
+            for ets, entry in list(entries.items()):
+                trades.append({
+                    'direction'  : entry['direction'],
+                    'entry_time' : entry['entry_time'],
+                    'entry_price': entry['entry_price'],
+                    'exit_time'  : signal_ts,
+                    'exit_price' : price,
+                    'status'     : 'CLOSED'
+                })
+                del entries[ets]
+                break
+
+    # Any remaining entries = still open
+    for ets, entry in entries.items():
+        trades.append({
+            'direction'  : entry['direction'],
+            'entry_time' : entry['entry_time'],
+            'entry_price': entry['entry_price'],
+            'exit_time'  : '(open)',
+            'exit_price' : '-',
+            'status'     : 'OPEN'
+        })
+    return trades
+
+def compare(label, bt_signals, lv_trades):
+    print(f"\n{'='*60}")
+    print(f"  {label}")
+    print(f"{'='*60}")
+    print(f"  Backtest trades : {len(bt_signals)}")
+    print(f"  Live trades     : {len(lv_trades)}")
+
+    if len(bt_signals) == 0 and len(lv_trades) == 0:
+        print(f"\n  STATUS: BOTH FLAT - NO SIGNAL YET - MATCH OK")
+        return True
+
+    full_match  = 0
+    mismatch    = 0
+    pending     = 0
+    max_trades  = max(len(bt_signals), len(lv_trades))
+
+    for i in range(max_trades):
+        print(f"\n  Trade #{i+1}:")
+        bt = bt_signals[i] if i < len(bt_signals) else None
+        lv = lv_trades[i]  if i < len(lv_trades)  else None
+
+        bt_dir   = bt[5]  if bt else 'MISSING'
+        bt_entry = bt[3]  if bt else 'MISSING'
+        bt_exit  = bt[4]  if bt else 'MISSING'
+
+        lv_dir   = lv['direction']   if lv else 'MISSING'
+        lv_entry = lv['entry_time']  if lv else 'MISSING'
+        lv_exit  = lv['exit_time']   if lv else 'MISSING'
+        lv_stat  = lv['status']      if lv else 'MISSING'
+
+        print(f"    BT : Dir={bt_dir:6s}  Entry={bt_entry}  Exit={bt_exit}")
+        print(f"    LV : Dir={lv_dir:6s}  Entry={lv_entry}  Exit={lv_exit}")
+
+        dir_match   = bt_dir.lower()   == lv_dir.lower()   if bt and lv else False
+        entry_match = bt_entry         == lv_entry          if bt and lv else False
+        exit_match  = bt_exit          == lv_exit           if bt and lv else False
+
+        print(f"    Direction  : {'MATCH' if dir_match   else 'MISMATCH'}")
+        print(f"    Entry time : {'MATCH' if entry_match else 'MISMATCH'}")
+
+        if lv_stat == 'OPEN':
+            print(f"    Exit time  : PENDING (trade still open)")
+            if dir_match and entry_match:
+                print(f"    STATUS     : ENTRY MATCH - waiting for exit")
+                pending += 1
+            else:
+                print(f"    STATUS     : MISMATCH")
+                mismatch += 1
+        elif not bt:
+            print(f"    Exit time  : EXTRA LIVE ORDER - not in backtest")
+            print(f"    STATUS     : MISMATCH")
+            mismatch += 1
+        elif not lv:
+            print(f"    Exit time  : MISSING LIVE ORDER")
+            print(f"    STATUS     : MISMATCH")
+            mismatch += 1
+        else:
+            print(f"    Exit time  : {'MATCH' if exit_match else 'MISMATCH'}")
+            if dir_match and entry_match and exit_match:
+                print(f"    STATUS     : FULL MATCH")
+                full_match += 1
+            else:
+                print(f"    STATUS     : MISMATCH")
+                mismatch += 1
+
+    print(f"\n  SUMMARY: {full_match} FULL MATCH | {pending} PENDING | {mismatch} MISMATCH")
+    return mismatch == 0
+
+# ── MAIN ────────────────────────────────────────────────────
 print("=" * 60)
-print(f"VERIFY MATCH REPORT")
+print("VERIFY MATCH REPORT")
 print(f"Valid from : {VALID_FROM}  (auto from last_known_ts files)")
 print(f"Run time   : {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
 print("=" * 60)
+
 print("\nSTEP 1: Updating CSV...")
 update_csv()
 
-# ── Step 2: Run backtests silently ──────────────────────────
 print("\nSTEP 2: Running backtests (silent)...")
 import io
 from contextlib import redirect_stdout, redirect_stderr
 with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
-    s2_signals = get_backtest_signals(
+    s2_bt = get_backtest_signals(
         RenkoReversalStrategy, 'RenkoReversalStrategy',
         {'renko_timeframe':'1h','renko_box_pct':0.001,
          'st_atr_length':5,'st_factor':1.5})
-    s4_signals = get_backtest_signals(
+    s4_bt = get_backtest_signals(
         RenkoSMIIOSupertrendStrategy, 'RenkoSMIIOSupertrendStrategy',
         {'renko_timeframe':'2h','renko_box_pct':0.001,'st_atr_length':10,
          'st_factor':2.0,'smiio_shortlen':20,'smiio_siglen':7})
 print("Done.")
 
-# ── Step 3: Get live orders ─────────────────────────────────
 print("\nSTEP 3: Reading live bot orders...")
-s2_orders = get_live_orders('logs/live_trading_s2.log')
-s4_orders = get_live_orders('logs/live_trading_s4.log')
+s2_lv = get_live_trades('logs/live_trading_s2.log')
+s4_lv = get_live_trades('logs/live_trading_s4.log')
 
-# ── Step 4: Compare ─────────────────────────────────────────
-print("\n" + "=" * 60)
-print("COMPARISON RESULT")
-print("=" * 60)
+s2_ok = compare("S2 RenkoReversal",  s2_bt, s2_lv)
+s4_ok = compare("S4 RenkoSMIIO",     s4_bt, s4_lv)
 
-all_match = True
-
-for label, signals, orders in [("S2 RenkoReversal", s2_signals, s2_orders),
-                                ("S4 RenkoSMIIO",   s4_signals, s4_orders)]:
-    print(f"\n--- {label} ---")
-    print(f"Backtest signals after {VALID_FROM}: {len(signals)}")
-    for s in signals:
-        print(f"  BT: Dir={s[5]:6s} Entry={s[3]} Exit={s[4]}")
-    print(f"Live orders after {VALID_FROM}: {len(orders)}")
-    for o in orders:
-        print(f"  LV: {o}")
-
-    if len(signals) == 0 and len(orders) == 0:
-        print(f"  STATUS: BOTH FLAT - NO SIGNAL YET - MATCH OK")
-    elif len(signals) > 0 and len(orders) == 0:
-        print(f"  STATUS: MISMATCH - Backtest={len(signals)} signal(s), Live=0 orders")
-        all_match = False
-    elif len(signals) == 0 and len(orders) > 0:
-        print(f"  STATUS: MISMATCH - Live={len(orders)} order(s), Backtest=0 signals")
-        all_match = False
-    else:
-        if len(signals) == len(orders):
-            print(f"  STATUS: TRADE COUNT MATCH - {len(signals)} trades each")
-        else:
-            print(f"  STATUS: COUNT MISMATCH - Backtest={len(signals)} Live={len(orders)}")
-            all_match = False
-
-print("\n" + "=" * 60)
-if all_match:
+print(f"\n{'='*60}")
+if s2_ok and s4_ok:
     print("OVERALL: MATCH OK - system working correctly")
 else:
     print("OVERALL: MISMATCH FOUND - paste this output in chat for fix")

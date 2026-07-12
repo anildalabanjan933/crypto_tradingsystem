@@ -1611,7 +1611,158 @@ with st.expander("SECTION 4 - FORWARD TEST vs BACKTEST COMPARE", expanded=st.ses
 
     st.markdown("**Generate Detailed Comparison Report**")
 
-    comp_tab_s2, comp_tab_s4 = st.tabs(["S2 - RenkoReversalStrategy", "S4 - RenkoSMIIOSupertrendStrategy"])
+    comp_tab_s2, comp_tab_s4, comp_tab_match = st.tabs(["S2 - RenkoReversalStrategy", "S4 - RenkoSMIIOSupertrendStrategy", "LIVE MATCH REPORT"])
+
+    # LIVE MATCH REPORT TAB
+    with comp_tab_match:
+        st.markdown("**Live Backtest vs Forward Test Match Report**")
+        st.caption("Compares every trade fired by live bot against backtest. Updates on each run.")
+
+        col_run, col_auto = st.columns([1, 3])
+        with col_run:
+            run_match = st.button("RUN MATCH CHECK", key="run_match_btn")
+        with col_auto:
+            st.caption("Run after every new [ORDER] in logs to verify direction + entry + exit match")
+
+        if run_match or st.session_state.get('match_result'):
+            if run_match:
+                with st.spinner("Updating CSV and running backtests..."):
+                    import subprocess, sys
+                    result = subprocess.run(
+                        [".venv/bin/python3", "scripts/verify_match.py"],
+                        capture_output=True, text=True,
+                        cwd="/home/anildalabanjan933/crypto_trading_system"
+                    )
+                    st.session_state['match_result'] = result.stdout
+                    st.session_state['match_stderr'] = result.stderr
+
+            output = st.session_state.get('match_result', '')
+            stderr = st.session_state.get('match_stderr', '')
+
+            if not output:
+                st.warning("No output from match script")
+            else:
+                # Parse and display nicely
+                lines = output.strip().split("\n")
+
+                # Overall result
+                overall = [l for l in lines if "OVERALL:" in l]
+                if overall:
+                    if "MATCH OK" in overall[0]:
+                        st.success(overall[0].replace("OVERALL:", "").strip())
+                    else:
+                        st.error(overall[0].replace("OVERALL:", "").strip())
+
+                # Valid from and run time
+                for l in lines:
+                    if "Valid from" in l or "Run time" in l:
+                        st.caption(l.strip())
+
+                # CSV update status
+                for l in lines:
+                    if "CSV updated" in l or "CSV already" in l:
+                        st.caption(l.strip())
+
+                st.markdown("---")
+
+                # Per strategy results
+                for strategy in ["S2 RenkoReversal", "S4 RenkoSMIIO"]:
+                    # Find section for this strategy
+                    start = None
+                    for i, l in enumerate(lines):
+                        if strategy in l and "===" in l:
+                            start = i
+                            break
+                    if start is None:
+                        continue
+
+                    st.markdown(f"**{strategy}**")
+
+                    # Get trades count
+                    bt_count = lv_count = 0
+                    for l in lines[start:start+5]:
+                        if "Backtest trades" in l:
+                            bt_count = int(l.split(":")[-1].strip())
+                        if "Live trades" in l:
+                            lv_count = int(l.split(":")[-1].strip())
+
+                    c1, c2 = st.columns(2)
+                    with c1:
+                        st.metric("Backtest Trades", bt_count)
+                    with c2:
+                        st.metric("Live Trades", lv_count)
+
+                    # Find all trade blocks
+                    trade_blocks = []
+                    current_block = []
+                    in_section = False
+                    for l in lines[start:]:
+                        if "Trade #" in l:
+                            if current_block:
+                                trade_blocks.append(current_block)
+                            current_block = [l]
+                            in_section = True
+                        elif in_section and l.strip():
+                            current_block.append(l)
+                        elif "SUMMARY:" in l:
+                            if current_block:
+                                trade_blocks.append(current_block)
+                            # Show summary
+                            st.caption(l.strip())
+                            break
+
+                    if not trade_blocks:
+                        # No trades yet
+                        for l in lines[start:start+10]:
+                            if "STATUS:" in l:
+                                if "MATCH OK" in l:
+                                    st.success(l.strip())
+                                elif "MISMATCH" in l:
+                                    st.error(l.strip())
+                                else:
+                                    st.info(l.strip())
+                    else:
+                        for block in trade_blocks:
+                            trade_num = block[0].strip()
+                            bt_line = next((l for l in block if "BT :" in l), "")
+                            lv_line = next((l for l in block if "LV :" in l), "")
+                            dir_line = next((l for l in block if "Direction" in l), "")
+                            entry_line = next((l for l in block if "Entry time" in l), "")
+                            exit_line = next((l for l in block if "Exit time" in l), "")
+                            status_line = next((l for l in block if "STATUS" in l), "")
+
+                            with st.expander(f"{trade_num} - {status_line.strip()}", expanded=True):
+                                col1, col2 = st.columns(2)
+                                with col1:
+                                    st.markdown("**Backtest**")
+                                    st.code(bt_line.strip())
+                                with col2:
+                                    st.markdown("**Live Bot**")
+                                    st.code(lv_line.strip())
+
+                                d1, d2, d3 = st.columns(3)
+                                with d1:
+                                    if "MATCH" in dir_line and "MISMATCH" not in dir_line:
+                                        st.success(dir_line.strip())
+                                    else:
+                                        st.error(dir_line.strip())
+                                with d2:
+                                    if "MATCH" in entry_line and "MISMATCH" not in entry_line:
+                                        st.success(entry_line.strip())
+                                    else:
+                                        st.error(entry_line.strip())
+                                with d3:
+                                    if "PENDING" in exit_line:
+                                        st.warning(exit_line.strip())
+                                    elif "MATCH" in exit_line and "MISMATCH" not in exit_line:
+                                        st.success(exit_line.strip())
+                                    else:
+                                        st.error(exit_line.strip())
+
+                    st.markdown("---")
+
+            if stderr and "DeprecationWarning" not in stderr and "RuntimeWarning" not in stderr:
+                st.error(f"Script error: {stderr[:200]}")
 
     for comp_tab, algo_name, algo_key in [(comp_tab_s2, "S2", "s2"), (comp_tab_s4, "S4", "s4")]:
         with comp_tab:
