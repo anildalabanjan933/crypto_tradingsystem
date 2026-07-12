@@ -1580,9 +1580,9 @@ if st.button("RUN BACKTEST", key="sec6_run"):
             if result.returncode == 0:
                 _progress.progress(100)
                 _status.success("Step 3/3 - Backtest complete! Report ready below.")
-                import glob as _glob, time as _time
+                import glob as _glob, time as _time, os as _glob_os
                 _time.sleep(3)
-                _new_files = sorted([f for f in _glob.glob("output/*.html") if "backtest_report_" in f and "optimization" not in f], reverse=True)
+                _new_files = sorted([f for f in _glob.glob("output/*.html") if "backtest_report_" in f and "optimization" not in f], key=_glob_os.path.getmtime, reverse=True)
                 if _new_files:
                     st.session_state["sec6_html_select"] = _new_files[0]
                     st.session_state["sec6_force_latest"] = False
@@ -1600,7 +1600,7 @@ if st.button("RUN BACKTEST", key="sec6_run"):
 st.markdown("---")
 st.markdown("**Backtest Reports**")
 
-html_files = sorted([f for f in glob.glob("output/*.html") if "backtest_report_" in f and "optimization" not in f], reverse=True)
+import os as _glob_os; html_files = sorted([f for f in glob.glob("output/*.html") if "backtest_report_" in f and "optimization" not in f], key=_glob_os.path.getmtime, reverse=True)
 csv_files = sorted([f for f in glob.glob("output/*.csv") if "trade_log_" in f], reverse=True)
 
 st.markdown("**HTML Reports**")
@@ -1721,9 +1721,9 @@ with port_tab1:
                 if result.returncode == 0:
                     _pp_progress.progress(100)
                     _pp_status.success("Step 3/3 - Portfolio backtest complete! Report ready below.")
-                    import glob as _glob, time as _time
+                    import glob as _glob, time as _time, os as _glob_os
                     _time.sleep(3)
-                    _new_port = sorted([f for f in _glob.glob("output/*.html") if "portfolio_report_" in f], reverse=True)
+                    _new_port = sorted([f for f in _glob.glob("output/*.html") if "portfolio_report_" in f], key=_glob_os.path.getmtime, reverse=True)
                     if _new_port:
                         st.session_state["port_html_sel"] = _new_port[0]
                         st.session_state["port_force_latest"] = False
@@ -1810,9 +1810,9 @@ with port_tab2:
                     if result.returncode == 0:
                         _pd_progress.progress(100)
                         _pd_status.success("Step 3/3 - Dynamic portfolio complete! Report ready below.")
-                        import glob as _glob, time as _time
+                        import glob as _glob, time as _time, os as _glob_os
                         _time.sleep(3)
-                        _new_dyn = sorted([f for f in _glob.glob("output/*.html") if "portfolio_report_" in f], reverse=True)
+                        _new_dyn = sorted([f for f in _glob.glob("output/*.html") if "portfolio_report_" in f], key=_glob_os.path.getmtime, reverse=True)
                         if _new_dyn:
                             st.session_state["port_html_sel"] = _new_dyn[0]
                             st.session_state["port_force_latest"] = False
@@ -1830,7 +1830,7 @@ with port_tab2:
 
 st.markdown("---")
 st.markdown("**Backtest Reports**")
-port_html = sorted([f for f in glob.glob("output/*.html") if "portfolio_report_" in f], reverse=True)
+port_html = sorted([f for f in glob.glob("output/*.html") if "portfolio_report_" in f], key=_glob_os.path.getmtime, reverse=True)
 port_csv = sorted([f for f in glob.glob("output/*.csv") if "portfolio_trade_log_" in f], reverse=True)
 
 st.markdown("**Select Report to View/Download**")
@@ -1942,9 +1942,9 @@ if st.button("RUN OPTIMISATION", key="sec7_run"):
         if result.returncode == 0:
             _opt_progress.progress(100)
             _opt_status.success("Step 3/3 - Optimisation complete! Report ready below.")
-            import glob as _glob, time as _time
+            import glob as _glob, time as _time, os as _glob_os
             _time.sleep(3)
-            _new_opt = sorted([f for f in _glob.glob("output/*.html") if "optimization_results_" in f], reverse=True)
+            _new_opt = sorted([f for f in _glob.glob("output/*.html") if "optimization_results_" in f], key=_glob_os.path.getmtime, reverse=True)
             if _new_opt:
                 st.session_state["sec7_html_sel"] = _new_opt[0]
                 st.session_state["sec7_force_latest"] = False
@@ -1963,7 +1963,7 @@ st.markdown("---")
 st.markdown("**Optimisation Results**")
 
 opt_csv_files = sorted([f for f in glob.glob("output/*.csv") if "optimization_results_" in f], reverse=True)
-opt_html_files = sorted([f for f in glob.glob("output/*.html") if "optimization_results_" in f], reverse=True)
+opt_html_files = sorted([f for f in glob.glob("output/*.html") if "optimization_results_" in f], key=_glob_os.path.getmtime, reverse=True)
 
 st.markdown("**HTML Reports**")
 if opt_html_files:
