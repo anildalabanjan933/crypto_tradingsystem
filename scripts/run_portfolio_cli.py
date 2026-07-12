@@ -75,7 +75,8 @@ generator = BacktestReportGenerator(
     symbol=args.symbol,
     start_date=args.start,
     end_date=args.end,
-    slippage=args.slippage
+    slippage=args.slippage,
+    lot_size=args.lots
 )
 
 html_file = generator.generate_html_report()

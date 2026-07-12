@@ -1586,7 +1586,7 @@ if st.button("RUN BACKTEST", key="sec6_run"):
                 if _new_files:
                     st.session_state["sec6_html_select"] = _new_files[0]
                 st.session_state["sec6_force_latest"] = True
-                st.code(result.stdout[-3000:] if len(result.stdout) > 3000 else result.stdout)
+                st.rerun()
             else:
                 _progress.progress(100)
                 _status.error("Backtest failed - see error below")
@@ -1726,7 +1726,7 @@ with port_tab1:
                     if _new_port:
                         st.session_state["port_html_sel"] = _new_port[0]
                     st.session_state["port_force_latest"] = True
-                    st.code(result.stdout[-3000:])
+                    st.rerun()
                 else:
                     _pp_progress.progress(100)
                     _pp_status.error("Portfolio backtest failed - see error below")
@@ -1814,7 +1814,7 @@ with port_tab2:
                         if _new_dyn:
                             st.session_state["port_html_sel"] = _new_dyn[0]
                         st.session_state["port_force_latest"] = True
-                        st.code(result.stdout[-3000:])
+                        st.rerun()
                     else:
                         _pd_progress.progress(100)
                         _pd_status.error("Dynamic portfolio failed - see error below")
@@ -1945,7 +1945,7 @@ if st.button("RUN OPTIMISATION", key="sec7_run"):
             if _new_opt:
                 st.session_state["sec7_html_sel"] = _new_opt[0]
             st.session_state["sec7_force_latest"] = True
-            st.code(result.stdout[-3000:] if len(result.stdout) > 3000 else result.stdout)
+            st.rerun()
         else:
             _opt_progress.progress(100)
             _opt_status.error("Optimisation failed - see error below")

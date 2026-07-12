@@ -14,7 +14,7 @@ from utils import format_currency, format_number, round_price, round_percent, us
 class BacktestReportGenerator:
 
     def __init__(self, trades, metrics, strategy_name, symbol,
-                 start_date, end_date, slippage=0):
+                 start_date, end_date, slippage=0, lot_size=100):
         self.trades              = trades
         self.metrics             = metrics
         self.strategy_name       = strategy_name
@@ -22,6 +22,7 @@ class BacktestReportGenerator:
         self.start_date          = start_date
         self.end_date            = end_date
         self.slippage            = slippage
+        self.lot_size            = lot_size
         self.initial_capital     = 100000
         self.initial_capital_inr = usd_to_inr(self.initial_capital, 84)
 
@@ -301,7 +302,7 @@ class BacktestReportGenerator:
             # ── SECTION 1: HEADER ──────────────────────────────────────────
             '        <div class="header">\n'
             f'            <h1>{self.strategy_name}</h1>\n'
-            f'            <p>{self.symbol} | {self.start_date} to {self.end_date} | '
+            f'            <p>{self.symbol} | {self.start_date} to {self.end_date} | Lots: {self.lot_size} | '
             f'Slippage: {"$" + str(self.slippage) + "/side" if self.slippage > 0 else "None"}</p>\n'
             '            <div class="header-info">\n'
             '                <div class="header-item">\n'
@@ -528,7 +529,7 @@ class BacktestReportGenerator:
             f'                        <td class="negative">{format_currency(total_insurance_inr)}</td>\n'
             '                    </tr>\n'
             '                    <tr>\n'
-            '                        <td>Tax (10% on winning trades)</td>\n'
+            f'                        <td>Tax ({int(self.metrics.get("tax_rate", 0.10)*100) if self.metrics.get("tax_rate", 0.10) > 0 else 0}% on winning trades)</td>\n'
             f'                        <td class="negative">{format_currency(total_tax_inr)}</td>\n'
             '                    </tr>\n'
             '                    <tr style="background-color: #f0f0f0; font-weight: bold;">\n'

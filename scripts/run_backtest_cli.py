@@ -64,7 +64,8 @@ if result:
         symbol=args.symbol,
         start_date=args.start,
         end_date=args.end,
-        slippage=args.slippage
+        slippage=args.slippage,
+        lot_size=args.lots
     )
     reporter.generate_html_report()
     reporter.generate_csv_trade_log()
