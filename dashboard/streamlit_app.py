@@ -1618,24 +1618,40 @@ with st.expander("SECTION 4 - FORWARD TEST vs BACKTEST COMPARE", expanded=st.ses
         st.markdown("**Live Backtest vs Forward Test Match Report**")
         st.caption("Compares every trade fired by live bot against backtest. Updates on each run.")
 
+        # Auto-refresh every 5 minutes
+        import time as _time
+        AUTO_INTERVAL = 300  # 5 minutes
+        last_run = st.session_state.get('match_last_run', 0)
+        now_ts   = _time.time()
+        auto_due = (now_ts - last_run) >= AUTO_INTERVAL
+
         col_run, col_auto = st.columns([1, 3])
         with col_run:
             run_match = st.button("RUN MATCH CHECK", key="run_match_btn")
         with col_auto:
-            st.caption("Run after every new [ORDER] in logs to verify direction + entry + exit match")
+            if last_run > 0:
+                last_run_str = datetime.datetime.fromtimestamp(last_run).strftime('%H:%M:%S')
+                next_run_secs = max(0, int(AUTO_INTERVAL - (now_ts - last_run)))
+                st.caption(f"Last check: {last_run_str} | Next auto-check in {next_run_secs}s")
+            else:
+                st.caption("Auto-checks every 5 minutes. Also runs on every page refresh.")
 
-        if run_match or st.session_state.get('match_result'):
-            if run_match:
-                with st.spinner("Updating CSV and running backtests..."):
-                    import subprocess, sys
-                    result = subprocess.run(
-                        [".venv/bin/python3", "scripts/verify_match.py"],
-                        capture_output=True, text=True,
-                        cwd="/home/anildalabanjan933/crypto_trading_system"
-                    )
-                    st.session_state['match_result'] = result.stdout
-                    st.session_state['match_stderr'] = result.stderr
+        # Run if: button clicked OR auto interval due OR no result yet
+        should_run = run_match or auto_due or not st.session_state.get('match_result')
 
+        if should_run:
+            with st.spinner("Updating CSV and running backtests..."):
+                import subprocess
+                result = subprocess.run(
+                    [".venv/bin/python3", "scripts/verify_match.py"],
+                    capture_output=True, text=True,
+                    cwd="/home/anildalabanjan933/crypto_trading_system"
+                )
+                st.session_state['match_result'] = result.stdout
+                st.session_state['match_stderr'] = result.stderr
+                st.session_state['match_last_run'] = _time.time()
+
+        if st.session_state.get('match_result'):
             output = st.session_state.get('match_result', '')
             stderr = st.session_state.get('match_stderr', '')
 
