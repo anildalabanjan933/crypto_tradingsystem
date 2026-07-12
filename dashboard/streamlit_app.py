@@ -1586,6 +1586,7 @@ if st.button("RUN BACKTEST", key="sec6_run"):
                 if _new_files:
                     st.session_state["sec6_html_select"] = _new_files[0]
                 st.session_state["sec6_force_latest"] = True
+                import time as _t; _t.sleep(2)
                 st.rerun()
             else:
                 _progress.progress(100)
@@ -1726,6 +1727,7 @@ with port_tab1:
                     if _new_port:
                         st.session_state["port_html_sel"] = _new_port[0]
                     st.session_state["port_force_latest"] = True
+                    import time as _t; _t.sleep(2)
                     st.rerun()
                 else:
                     _pp_progress.progress(100)
@@ -1814,6 +1816,7 @@ with port_tab2:
                         if _new_dyn:
                             st.session_state["port_html_sel"] = _new_dyn[0]
                         st.session_state["port_force_latest"] = True
+                        import time as _t; _t.sleep(2)
                         st.rerun()
                     else:
                         _pd_progress.progress(100)
@@ -1945,6 +1948,7 @@ if st.button("RUN OPTIMISATION", key="sec7_run"):
             if _new_opt:
                 st.session_state["sec7_html_sel"] = _new_opt[0]
             st.session_state["sec7_force_latest"] = True
+            import time as _t; _t.sleep(2)
             st.rerun()
         else:
             _opt_progress.progress(100)
