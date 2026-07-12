@@ -1799,10 +1799,16 @@ with port_tab2:
         if not selected_strategies:
             _pd_status.error("Please select at least one strategy")
         else:
-            _pd_status.info("Step 1/3 - Downloading latest market data...")
-            _pd_progress.progress(10)
-            import subprocess as _sp
-            _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+            import os as _os3, time as _tm3
+            _csv_age3 = _tm3.time() - _os3.path.getmtime("data/btc_1m_delta.csv") if _os3.path.exists("data/btc_1m_delta.csv") else 9999
+            if _csv_age3 > 1800:
+                _pd_status.info("Step 1/3 - Downloading latest market data...")
+                _pd_progress.progress(10)
+                import subprocess as _sp
+                _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+            else:
+                _pd_status.info("Step 1/3 - Market data is fresh, skipping download...")
+                _pd_progress.progress(10)
             _pd_status.info(f"Step 2/3 - Running dynamic portfolio: {selected_strategies} | {port_dyn_start} to {port_dyn_end}")
             _pd_progress.progress(40)
             if True:
