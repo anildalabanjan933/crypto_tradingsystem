@@ -22,7 +22,7 @@ p  { font-size: 12px !important; margin: 0 !important; color: #2C3E50 !important
 
 /* ── SECTION TITLES (st.markdown div) ── same as expander ── */
 .section-title {
-    background-color: #546E7A !important;
+    background-color: #5B8DB8 !important;
     color: #FFFFFF !important;
     font-size: 11px !important;
     font-weight: 700 !important;
@@ -32,7 +32,7 @@ p  { font-size: 12px !important; margin: 0 !important; color: #2C3E50 !important
     text-transform: uppercase !important;
     letter-spacing: 1px !important;
     border-radius: 3px !important;
-    border-left: 4px solid #37474F !important;
+    border-left: 4px solid #3A6F9A !important;
     display: block !important;
     width: 100% !important;
     box-sizing: border-box !important;
@@ -40,7 +40,7 @@ p  { font-size: 12px !important; margin: 0 !important; color: #2C3E50 !important
 
 /* ── EXPANDER - EXACT SAME COLOR AS SECTION TITLE ── */
 div[data-testid="stExpander"] {
-    border: 1px solid #90A4AE !important;
+    border: 1px solid #A8C8E8 !important;
     border-radius: 3px !important;
     margin-bottom: 5px !important;
     margin-top: 3px !important;
@@ -49,7 +49,7 @@ div[data-testid="stExpander"] {
 
 /* Target the summary element inside expander */
 div[data-testid="stExpander"] details summary {
-    background-color: #546E7A !important;
+    background-color: #5B8DB8 !important;
     color: #FFFFFF !important;
     font-weight: 700 !important;
     font-size: 11px !important;
@@ -60,7 +60,7 @@ div[data-testid="stExpander"] details summary {
     list-style: none !important;
 }
 div[data-testid="stExpander"] details summary:hover {
-    background-color: #455A64 !important;
+    background-color: #4A7BA3 !important;
     cursor: pointer !important;
 }
 div[data-testid="stExpander"] details summary p {
@@ -77,7 +77,7 @@ div[data-testid="stExpander"] details summary svg {
     stroke: #FFFFFF !important;
 }
 div[data-testid="stExpander"] details[open] summary {
-    background-color: #455A64 !important;
+    background-color: #4A7BA3 !important;
     border-bottom: 1px solid #37474F !important;
     border-radius: 3px 3px 0 0 !important;
 }
@@ -90,7 +90,7 @@ div[data-testid="stExpander"] details[open] summary {
     border: 1px solid #CFD8DC !important;
     border-radius: 4px !important;
     background: #FFFFFF !important;
-    border-left: 3px solid #546E7A !important;
+    border-left: 3px solid #5B8DB8 !important;
 }
 
 /* ── ALERTS ── */
@@ -117,11 +117,11 @@ div[data-testid="stExpander"] details[open] summary {
 .stButton > button {
     padding: 3px 12px !important; font-size: 11px !important;
     height: 28px !important; border-radius: 3px !important;
-    font-weight: 600 !important; border: 1px solid #546E7A !important;
-    color: #546E7A !important; background: #FFFFFF !important;
+    font-weight: 600 !important; border: 1px solid #5B8DB8 !important;
+    color: #5B8DB8 !important; background: #FFFFFF !important;
 }
 .stButton > button:hover {
-    background: #546E7A !important; color: #FFFFFF !important;
+    background: #5B8DB8 !important; color: #FFFFFF !important;
 }
 
 /* ── INPUTS ── */
@@ -134,7 +134,7 @@ div[data-testid="stExpander"] details[open] summary {
     font-weight: 600 !important; color: #78909C !important;
 }
 .stTabs [aria-selected="true"] {
-    color: #546E7A !important; border-bottom: 2px solid #546E7A !important;
+    color: #5B8DB8 !important; border-bottom: 2px solid #5B8DB8 !important;
 }
 
 /* ── STATUS BOXES ── */
@@ -148,7 +148,7 @@ div[data-testid="stExpander"] details[open] summary {
     border-left: 4px solid #F39C12 !important; padding: 4px 8px !important;
     font-size: 11px !important; margin: 2px 0 !important; border-radius: 3px !important; }
 .stInfo { background: #EBF5FB !important; color: #1A5276 !important;
-    border-left: 4px solid #546E7A !important; padding: 4px 8px !important;
+    border-left: 4px solid #5B8DB8 !important; padding: 4px 8px !important;
     font-size: 11px !important; margin: 2px 0 !important; border-radius: 3px !important; }
 
 /* ── SPACING ── */
@@ -167,7 +167,7 @@ hr { margin: 4px 0 !important; border-color: #CFD8DC !important; }
 .metric-green  { border-left: 3px solid #27AE60; }
 .metric-red    { border-left: 3px solid #E74C3C; }
 .metric-yellow { border-left: 3px solid #F39C12; }
-.metric-blue   { border-left: 3px solid #546E7A; }
+.metric-blue   { border-left: 3px solid #5B8DB8; }
 </style>
 """, unsafe_allow_html=True)
 
