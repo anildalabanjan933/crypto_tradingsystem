@@ -954,59 +954,59 @@ if 'exp_24' not in st.session_state: st.session_state['exp_24'] = False
 with st.expander("SECTION 2.4 - MEMBER MANAGEMENT", expanded=st.session_state.get('exp_24', False)):
  st.session_state['exp_24'] = True
 
-# Load members from config
-members_config_file = 'dashboard/members_config.json'
-if not os.path.exists(members_config_file):
-    json.dump({'members': []}, open(members_config_file, 'w'), indent=2)
+    # Load members from config
+    members_config_file = 'dashboard/members_config.json'
+    if not os.path.exists(members_config_file):
+        json.dump({'members': []}, open(members_config_file, 'w'), indent=2)
 
-members_cfg = json.load(open(members_config_file))
-members = members_cfg.get('members', [])
+    members_cfg = json.load(open(members_config_file))
+    members = members_cfg.get('members', [])
 
-# Member table
-if members:
-    m_cols = st.columns([2,2,1,1,1,1,1])
-    m_cols[0].markdown("**Name**")
-    m_cols[1].markdown("**Account**")
-    m_cols[2].markdown("**S2**")
-    m_cols[3].markdown("**S4**")
-    m_cols[4].markdown("**Start**")
-    m_cols[5].markdown("**Stop**")
-    m_cols[6].markdown("**Remove**")
-    for idx, m in enumerate(members):
-        mc = st.columns([2,2,1,1,1,1,1])
-        mc[0].write(m.get('name',''))
-        mc[1].write(m.get('account','Testnet'))
-        # Check S2 status
-        s2_screen = f"m{idx}_s2"
-        s4_screen = f"m{idx}_s4"
-        import subprocess
-        s2_running = s2_screen in subprocess.run(['screen','-ls'], capture_output=True, text=True).stdout
-        s4_running = s4_screen in subprocess.run(['screen','-ls'], capture_output=True, text=True).stdout
-        mc[2].markdown(f"<span style='color:{'green' if s2_running else 'red'}'>{'ON' if s2_running else 'OFF'}</span>", unsafe_allow_html=True)
-        mc[3].markdown(f"<span style='color:{'green' if s4_running else 'red'}'>{'ON' if s4_running else 'OFF'}</span>", unsafe_allow_html=True)
-        if mc[4].button("▶", key=f"m_start_{idx}"):
-            try:
-                env = f"S2_API_KEY={m.get('s2_key','')} S2_API_SECRET={m.get('s2_secret','')} S4_API_KEY={m.get('s4_key','')} S4_API_SECRET={m.get('s4_secret','')}"
-                subprocess.Popen(['bash','-c',f'screen -dmS {s2_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && export {env} && python3 run_live_trading_s2.py > logs/live_trading_{s2_screen}.log 2>&1"'])
-                subprocess.Popen(['bash','-c',f'screen -dmS {s4_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && export {env} && python3 run_live_trading_s4.py > logs/live_trading_{s4_screen}.log 2>&1"'])
-                st.success(f"{m.get('name')} bots started")
-            except Exception as e:
-                st.error(str(e))
-        if mc[5].button("■", key=f"m_stop_{idx}"):
-            try:
-                subprocess.Popen(['bash','-c',f'screen -S {s2_screen} -X quit; screen -S {s4_screen} -X quit'])
-                st.warning(f"{m.get('name')} bots stopped")
-            except Exception as e:
-                st.error(str(e))
-        if mc[6].button("✕", key=f"m_remove_{idx}"):
-            members.pop(idx)
-            members_cfg['members'] = members
-            json.dump(members_cfg, open(members_config_file,'w'), indent=2)
-            st.rerun()
-else:
-    st.info("No members added yet. Add members below.")
+    # Member table
+    if members:
+        m_cols = st.columns([2,2,1,1,1,1,1])
+        m_cols[0].markdown("**Name**")
+        m_cols[1].markdown("**Account**")
+        m_cols[2].markdown("**S2**")
+        m_cols[3].markdown("**S4**")
+        m_cols[4].markdown("**Start**")
+        m_cols[5].markdown("**Stop**")
+        m_cols[6].markdown("**Remove**")
+        for idx, m in enumerate(members):
+            mc = st.columns([2,2,1,1,1,1,1])
+            mc[0].write(m.get('name',''))
+            mc[1].write(m.get('account','Testnet'))
+            # Check S2 status
+            s2_screen = f"m{idx}_s2"
+            s4_screen = f"m{idx}_s4"
+            import subprocess
+            s2_running = s2_screen in subprocess.run(['screen','-ls'], capture_output=True, text=True).stdout
+            s4_running = s4_screen in subprocess.run(['screen','-ls'], capture_output=True, text=True).stdout
+            mc[2].markdown(f"<span style='color:{'green' if s2_running else 'red'}'>{'ON' if s2_running else 'OFF'}</span>", unsafe_allow_html=True)
+            mc[3].markdown(f"<span style='color:{'green' if s4_running else 'red'}'>{'ON' if s4_running else 'OFF'}</span>", unsafe_allow_html=True)
+            if mc[4].button("▶", key=f"m_start_{idx}"):
+                try:
+                    env = f"S2_API_KEY={m.get('s2_key','')} S2_API_SECRET={m.get('s2_secret','')} S4_API_KEY={m.get('s4_key','')} S4_API_SECRET={m.get('s4_secret','')}"
+                    subprocess.Popen(['bash','-c',f'screen -dmS {s2_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && export {env} && python3 run_live_trading_s2.py > logs/live_trading_{s2_screen}.log 2>&1"'])
+                    subprocess.Popen(['bash','-c',f'screen -dmS {s4_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && export {env} && python3 run_live_trading_s4.py > logs/live_trading_{s4_screen}.log 2>&1"'])
+                    st.success(f"{m.get('name')} bots started")
+                except Exception as e:
+                    st.error(str(e))
+            if mc[5].button("■", key=f"m_stop_{idx}"):
+                try:
+                    subprocess.Popen(['bash','-c',f'screen -S {s2_screen} -X quit; screen -S {s4_screen} -X quit'])
+                    st.warning(f"{m.get('name')} bots stopped")
+                except Exception as e:
+                    st.error(str(e))
+            if mc[6].button("✕", key=f"m_remove_{idx}"):
+                members.pop(idx)
+                members_cfg['members'] = members
+                json.dump(members_cfg, open(members_config_file,'w'), indent=2)
+                st.rerun()
+    else:
+        st.info("No members added yet. Add members below.")
 
-# Add member form
+    # Add member form
 with st.expander("+ ADD MEMBER"):
     with st.form("add_member_form"):
         m_name    = st.text_input("Member Name (e.g. Friend1)")
@@ -1641,347 +1641,349 @@ for comp_tab, algo_name, algo_key in [(comp_tab_s2, "S2", "s2"), (comp_tab_s4, "
 # ================================================================
 # SECTION 5 - BACKTEST
 # ================================================================
-st.markdown("<div class='section-title'>SECTION 5 - BACKTEST</div>", unsafe_allow_html=True)
+if 'exp_5' not in st.session_state: st.session_state['exp_5'] = False
+with st.expander("SECTION 5 - BACKTEST", expanded=True):
 
-import datetime, subprocess, os, glob
+    import datetime, subprocess, os, glob
 
-col1, col2 = st.columns(2)
-with col1:
-    bt_strategy = st.selectbox("Select Strategy", [
-        "RenkoReversalStrategy",
-        "RenkoSMIIOSupertrendStrategy",
-        "RenkoBreakoutStrategy",
-        "RenkoTrendlinePullbackStrategy"
-    ], key="sec6_strategy")
-with col2:
-    bt_lots = st.number_input("Lots", min_value=1, max_value=10000, value=100, key="sec6_lots")
+    col1, col2 = st.columns(2)
+    with col1:
+        bt_strategy = st.selectbox("Select Strategy", [
+            "RenkoReversalStrategy",
+            "RenkoSMIIOSupertrendStrategy",
+            "RenkoBreakoutStrategy",
+            "RenkoTrendlinePullbackStrategy"
+        ], key="sec6_strategy")
+    with col2:
+        bt_lots = st.number_input("Lots", min_value=1, max_value=10000, value=100, key="sec6_lots")
 
-st.markdown("**Date Range**")
-bt_range_options = ["1 Month", "6 Months", "1 Year", "1.5 Years", "2 Years", "Full CSV", "Custom"]
-bt_range = st.radio("", bt_range_options, index=2, horizontal=True, key="sec6_range")
-today = datetime.date.today()
-if bt_range == "1 Month":
-    bt_start = today - datetime.timedelta(days=30)
-    bt_end = today
-elif bt_range == "6 Months":
-    bt_start = today - datetime.timedelta(days=180)
-    bt_end = today
-elif bt_range == "1 Year":
-    bt_start = today - datetime.timedelta(days=365)
-    bt_end = today
-elif bt_range == "1.5 Years":
-    bt_start = today - datetime.timedelta(days=548)
-    bt_end = today
-elif bt_range == "2 Years":
-    bt_start = today - datetime.timedelta(days=730)
-    bt_end = today
-elif bt_range == "Full CSV":
-    bt_start = datetime.date.fromisoformat("2024-01-01")
-    bt_end = today
-    st.info(f"Full CSV range: {bt_start} to {bt_end}")
-else:
-    col3, col4 = st.columns(2)
-    with col3:
-        bt_start = st.date_input("Start Date", value=datetime.date(2025, 1, 1), key="sec6_start")
-    with col4:
-        bt_end = st.date_input("End Date", value=today, key="sec6_end")
-
-col5, col6 = st.columns(2)
-with col5:
-    bt_slippage = st.number_input("Slippage/side ($)", min_value=0.0, value=5.0, key="sec6_slip")
-with col6:
-    bt_include_charges = st.checkbox("Include Tax & All Charges", value=True, key="sec6_charges")
-
-if st.button("RUN BACKTEST", key="sec6_run"):
-    _status = st.empty()
-    _progress = st.progress(0)
-    import os as _os, time as _tm
-    _csv_path = "data/btc_1m_delta.csv"
-    _csv_age = _tm.time() - _os.path.getmtime(_csv_path) if _os.path.exists(_csv_path) else 9999
-    if _csv_age > 1800:
-        _status.info("Step 1/3 - Downloading latest market data...")
-        _progress.progress(10)
-        import subprocess as _sp
-        _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+    st.markdown("**Date Range**")
+    bt_range_options = ["1 Month", "6 Months", "1 Year", "1.5 Years", "2 Years", "Full CSV", "Custom"]
+    bt_range = st.radio("", bt_range_options, index=2, horizontal=True, key="sec6_range")
+    today = datetime.date.today()
+    if bt_range == "1 Month":
+        bt_start = today - datetime.timedelta(days=30)
+        bt_end = today
+    elif bt_range == "6 Months":
+        bt_start = today - datetime.timedelta(days=180)
+        bt_end = today
+    elif bt_range == "1 Year":
+        bt_start = today - datetime.timedelta(days=365)
+        bt_end = today
+    elif bt_range == "1.5 Years":
+        bt_start = today - datetime.timedelta(days=548)
+        bt_end = today
+    elif bt_range == "2 Years":
+        bt_start = today - datetime.timedelta(days=730)
+        bt_end = today
+    elif bt_range == "Full CSV":
+        bt_start = datetime.date.fromisoformat("2024-01-01")
+        bt_end = today
+        st.info(f"Full CSV range: {bt_start} to {bt_end}")
     else:
-        _status.info("Step 1/3 - Market data is fresh, skipping download...")
-        _progress.progress(10)
-    _status.info(f"Step 2/3 - Running backtest: {bt_strategy} | {bt_start} to {bt_end}")
-    _progress.progress(40)
-    if True:
-        try:
-            cmd = [
-                ".venv/bin/python", "scripts/run_backtest_cli.py",
-                "--strategy", bt_strategy,
-                "--lots", str(bt_lots),
-                "--start", str(bt_start),
-                "--end", str(bt_end),
-                "--slippage", str(bt_slippage),
-                "--symbol", "BTCUSD",
-                "--csv", "data/btc_1m_delta.csv"
-            ]
-            if not bt_include_charges:
-                cmd.append("--no-charges")
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
-            if result.returncode == 0:
-                _progress.progress(100)
-                _status.success("Step 3/3 - Backtest complete! Report ready below.")
-                import glob as _glob, time as _time, os as _glob_os
-                _time.sleep(3)
-                _new_files = sorted([f for f in _glob.glob("output/*.html") if "backtest_report_" in f and "optimization" not in f], key=_glob_os.path.getmtime, reverse=True)
-                if _new_files:
-                    st.session_state["sec6_html_select"] = _new_files[0]
-                    st.session_state["sec6_force_latest"] = False
-                import time as _t; _t.sleep(1)
-                st.rerun()
-            else:
-                _progress.progress(100)
-                _status.error("Backtest failed - see error below")
-                st.code(result.stderr[-2000:] if len(result.stderr) > 2000 else result.stderr)
-        except subprocess.TimeoutExpired:
-            _status.error("Backtest timed out after 5 minutes")
-        except Exception as e:
-            _status.error(f"Error running backtest: {e}")
+        col3, col4 = st.columns(2)
+        with col3:
+            bt_start = st.date_input("Start Date", value=datetime.date(2025, 1, 1), key="sec6_start")
+        with col4:
+            bt_end = st.date_input("End Date", value=today, key="sec6_end")
 
-st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
-st.markdown("**Backtest Reports**")
+    col5, col6 = st.columns(2)
+    with col5:
+        bt_slippage = st.number_input("Slippage/side ($)", min_value=0.0, value=5.0, key="sec6_slip")
+    with col6:
+        bt_include_charges = st.checkbox("Include Tax & All Charges", value=True, key="sec6_charges")
 
-import os as _glob_os; html_files = sorted([f for f in glob.glob("output/*.html") if "backtest_report_" in f and "optimization" not in f], key=_glob_os.path.getmtime, reverse=True)
-csv_files = sorted([f for f in glob.glob("output/*.csv") if "trade_log_" in f], reverse=True)
+    if st.button("RUN BACKTEST", key="sec6_run"):
+        _status = st.empty()
+        _progress = st.progress(0)
+        import os as _os, time as _tm
+        _csv_path = "data/btc_1m_delta.csv"
+        _csv_age = _tm.time() - _os.path.getmtime(_csv_path) if _os.path.exists(_csv_path) else 9999
+        if _csv_age > 1800:
+            _status.info("Step 1/3 - Downloading latest market data...")
+            _progress.progress(10)
+            import subprocess as _sp
+            _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+        else:
+            _status.info("Step 1/3 - Market data is fresh, skipping download...")
+            _progress.progress(10)
+        _status.info(f"Step 2/3 - Running backtest: {bt_strategy} | {bt_start} to {bt_end}")
+        _progress.progress(40)
+        if True:
+            try:
+                cmd = [
+                    ".venv/bin/python", "scripts/run_backtest_cli.py",
+                    "--strategy", bt_strategy,
+                    "--lots", str(bt_lots),
+                    "--start", str(bt_start),
+                    "--end", str(bt_end),
+                    "--slippage", str(bt_slippage),
+                    "--symbol", "BTCUSD",
+                    "--csv", "data/btc_1m_delta.csv"
+                ]
+                if not bt_include_charges:
+                    cmd.append("--no-charges")
+                result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+                if result.returncode == 0:
+                    _progress.progress(100)
+                    _status.success("Step 3/3 - Backtest complete! Report ready below.")
+                    import glob as _glob, time as _time, os as _glob_os
+                    _time.sleep(3)
+                    _new_files = sorted([f for f in _glob.glob("output/*.html") if "backtest_report_" in f and "optimization" not in f], key=_glob_os.path.getmtime, reverse=True)
+                    if _new_files:
+                        st.session_state["sec6_html_select"] = _new_files[0]
+                        st.session_state["sec6_force_latest"] = False
+                    import time as _t; _t.sleep(1)
+                    st.rerun()
+                else:
+                    _progress.progress(100)
+                    _status.error("Backtest failed - see error below")
+                    st.code(result.stderr[-2000:] if len(result.stderr) > 2000 else result.stderr)
+            except subprocess.TimeoutExpired:
+                _status.error("Backtest timed out after 5 minutes")
+            except Exception as e:
+                _status.error(f"Error running backtest: {e}")
 
-st.markdown("**HTML Reports**")
-if html_files:
-    if "sec6_html_select" not in st.session_state or st.session_state.get("sec6_force_latest"):
-        st.session_state["sec6_html_select"] = html_files[0] if html_files else None
-        st.session_state["sec6_force_latest"] = False
-    selected_html = st.selectbox("Select HTML Report", html_files, key="sec6_html_select")
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        view_html_s5 = st.button("VIEW HTML REPORT", key="sec6_view_html")
-    with c2:
-        with open(selected_html, 'rb') as f:
-            st.download_button("DOWNLOAD HTML", f, file_name=os.path.basename(selected_html), key="sec6_dl_html")
-    with c3:
-        try:
-            user_content = open(selected_html, encoding='utf-8').read()
-            user_content = user_content.replace('<title>Backtest Report - RenkoReversalStrategy</title>', '<title>Backtest Report - Alpha Strategy</title>')
-            user_content = user_content.replace('<title>Backtest Report - RenkoSMIIOSupertrendStrategy</title>', '<title>Backtest Report - Alpha Strategy</title>')
-            for sname in ['RenkoReversalStrategy','RenkoSMIIOSupertrendStrategy','RenkoBreakoutStrategy','RenkoTrendlinePullbackStrategy','RenkoOptionsStrategy']:
-                user_content = user_content.replace(f'<h1>{sname}</h1>', '<h1>Alpha Strategy</h1>')
-                user_content = user_content.replace(f'Strategy: {sname}', 'Strategy: Alpha Strategy')
-                user_content = user_content.replace(f'<title>Backtest Report - {sname}</title>', '<title>Backtest Report - Alpha Strategy</title>')
-            st.download_button("DOWNLOAD USER HTML", user_content.encode('utf-8'), file_name="alpha_strategy_report.html", mime="text/html", key="sec6_dl_user_html")
-        except Exception as e:
-            st.error(f"Error: {e}")
-    if view_html_s5:
-        try:
-            content = open(selected_html, encoding='utf-8').read()
-            st.components.v1.html(content, height=2000, scrolling=True)
-        except Exception as e:
-            st.error(f"Error opening report: {e}")
-else:
-    st.info("No HTML reports found in output/ folder")
+    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
+    st.markdown("**Backtest Reports**")
 
-st.markdown("**CSV Results**")
-if csv_files:
-    selected_csv = st.selectbox("Select CSV", csv_files, key="sec6_csv_select")
-    with open(selected_csv, 'rb') as f:
-        st.download_button("DOWNLOAD CSV", f, file_name=os.path.basename(selected_csv), key="sec6_dl_csv")
-else:
-    st.info("No CSV files found in output/ folder")
+    import os as _glob_os; html_files = sorted([f for f in glob.glob("output/*.html") if "backtest_report_" in f and "optimization" not in f], key=_glob_os.path.getmtime, reverse=True)
+    csv_files = sorted([f for f in glob.glob("output/*.csv") if "trade_log_" in f], reverse=True)
 
-import subprocess, glob, os
+    st.markdown("**HTML Reports**")
+    if html_files:
+        if "sec6_html_select" not in st.session_state or st.session_state.get("sec6_force_latest"):
+            st.session_state["sec6_html_select"] = html_files[0] if html_files else None
+            st.session_state["sec6_force_latest"] = False
+        selected_html = st.selectbox("Select HTML Report", html_files, key="sec6_html_select")
+        c1, c2, c3 = st.columns(3)
+        with c1:
+            view_html_s5 = st.button("VIEW HTML REPORT", key="sec6_view_html")
+        with c2:
+            with open(selected_html, 'rb') as f:
+                st.download_button("DOWNLOAD HTML", f, file_name=os.path.basename(selected_html), key="sec6_dl_html")
+        with c3:
+            try:
+                user_content = open(selected_html, encoding='utf-8').read()
+                user_content = user_content.replace('<title>Backtest Report - RenkoReversalStrategy</title>', '<title>Backtest Report - Alpha Strategy</title>')
+                user_content = user_content.replace('<title>Backtest Report - RenkoSMIIOSupertrendStrategy</title>', '<title>Backtest Report - Alpha Strategy</title>')
+                for sname in ['RenkoReversalStrategy','RenkoSMIIOSupertrendStrategy','RenkoBreakoutStrategy','RenkoTrendlinePullbackStrategy','RenkoOptionsStrategy']:
+                    user_content = user_content.replace(f'<h1>{sname}</h1>', '<h1>Alpha Strategy</h1>')
+                    user_content = user_content.replace(f'Strategy: {sname}', 'Strategy: Alpha Strategy')
+                    user_content = user_content.replace(f'<title>Backtest Report - {sname}</title>', '<title>Backtest Report - Alpha Strategy</title>')
+                st.download_button("DOWNLOAD USER HTML", user_content.encode('utf-8'), file_name="alpha_strategy_report.html", mime="text/html", key="sec6_dl_user_html")
+            except Exception as e:
+                st.error(f"Error: {e}")
+        if view_html_s5:
+            try:
+                content = open(selected_html, encoding='utf-8').read()
+                st.components.v1.html(content, height=2000, scrolling=True)
+            except Exception as e:
+                st.error(f"Error opening report: {e}")
+    else:
+        st.info("No HTML reports found in output/ folder")
+
+    st.markdown("**CSV Results**")
+    if csv_files:
+        selected_csv = st.selectbox("Select CSV", csv_files, key="sec6_csv_select")
+        with open(selected_csv, 'rb') as f:
+            st.download_button("DOWNLOAD CSV", f, file_name=os.path.basename(selected_csv), key="sec6_dl_csv")
+    else:
+        st.info("No CSV files found in output/ folder")
+
+    import subprocess, glob, os
 
 
 # ================================================================
 # SECTION 5B - PORTFOLIO BACKTEST
 # ================================================================
-st.markdown("<div class='section-title'>SECTION 5B - PORTFOLIO BACKTEST</div>", unsafe_allow_html=True)
+if 'exp_5b' not in st.session_state: st.session_state['exp_5b'] = False
+with st.expander("SECTION 5B - PORTFOLIO BACKTEST", expanded=True):
 
-port_tab1, port_tab2 = st.tabs(["PREDEFINED PORTFOLIO", "DYNAMIC PORTFOLIO"])
+    port_tab1, port_tab2 = st.tabs(["PREDEFINED PORTFOLIO", "DYNAMIC PORTFOLIO"])
 
-with port_tab1:
-    st.markdown("**Predefined Portfolios**")
-    portfolios = {
-        'DE-Strangle Intraday': 'Intraday option selling (3 strategies)',
-        'DE-Strangle BTST': 'BTST directional option strategies (4 strategies)',
-        'Monthly Positional': 'Monthly positional option strategies (3 strategies)'
-    }
-    for name, desc in portfolios.items():
-        st.caption(f"{name}: {desc}")
+    with port_tab1:
+        st.markdown("**Predefined Portfolios**")
+        portfolios = {
+            'DE-Strangle Intraday': 'Intraday option selling (3 strategies)',
+            'DE-Strangle BTST': 'BTST directional option strategies (4 strategies)',
+            'Monthly Positional': 'Monthly positional option strategies (3 strategies)'
+        }
+        for name, desc in portfolios.items():
+            st.caption(f"{name}: {desc}")
 
-    st.markdown("**Date Range**")
-    port_range = st.radio("", ["1 Month","6 Months","1 Year","1.5 Years","2 Years","Full CSV","Custom"], index=2, horizontal=True, key="port_range")
-    today = datetime.date.today()
-    if port_range == "1 Month":
-        port_start = today - datetime.timedelta(days=30); port_end = today
-    elif port_range == "6 Months":
-        port_start = today - datetime.timedelta(days=180); port_end = today
-    elif port_range == "1 Year":
-        port_start = today - datetime.timedelta(days=365); port_end = today
-    elif port_range == "1.5 Years":
-        port_start = today - datetime.timedelta(days=548); port_end = today
-    elif port_range == "2 Years":
-        port_start = today - datetime.timedelta(days=730); port_end = today
-    elif port_range == "Full CSV":
-        port_start = datetime.date.fromisoformat("2024-01-01"); port_end = today
-        st.info(f"Full CSV range: {port_start} to {port_end}")
-    else:
-        col1, col2 = st.columns(2)
-        with col1:
-            port_start = st.date_input("Start Date", value=datetime.date(2025,1,1), key="port_start")
-        with col2:
-            port_end = st.date_input("End Date", value=today, key="port_end")
-    col_pl, col_ps, col_pc = st.columns(3)
-    with col_pl:
-        port_lots = st.number_input("Lots", min_value=1, value=100, key="port_lots")
-    with col_ps:
-        port_slippage = st.number_input("Slippage/side ($)", min_value=0.0, value=5.0, key="port_slip")
-    with col_pc:
-        port_include_charges = st.checkbox("Include Tax & All Charges", value=True, key="port_charges")
-
-    if st.button("RUN PREDEFINED PORTFOLIO", key="port_run_pre"):
-        _pp_status = st.empty()
-        _pp_progress = st.progress(0)
-        import os as _os2, time as _tm2
-        _csv_age2 = _tm2.time() - _os2.path.getmtime("data/btc_1m_delta.csv") if _os2.path.exists("data/btc_1m_delta.csv") else 9999
-        if _csv_age2 > 1800:
-            _pp_status.info("Step 1/3 - Downloading latest market data...")
-            _pp_progress.progress(10)
-            import subprocess as _sp
-            _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+        st.markdown("**Date Range**")
+        port_range = st.radio("", ["1 Month","6 Months","1 Year","1.5 Years","2 Years","Full CSV","Custom"], index=2, horizontal=True, key="port_range")
+        today = datetime.date.today()
+        if port_range == "1 Month":
+            port_start = today - datetime.timedelta(days=30); port_end = today
+        elif port_range == "6 Months":
+            port_start = today - datetime.timedelta(days=180); port_end = today
+        elif port_range == "1 Year":
+            port_start = today - datetime.timedelta(days=365); port_end = today
+        elif port_range == "1.5 Years":
+            port_start = today - datetime.timedelta(days=548); port_end = today
+        elif port_range == "2 Years":
+            port_start = today - datetime.timedelta(days=730); port_end = today
+        elif port_range == "Full CSV":
+            port_start = datetime.date.fromisoformat("2024-01-01"); port_end = today
+            st.info(f"Full CSV range: {port_start} to {port_end}")
         else:
-            _pp_status.info("Step 1/3 - Market data is fresh, skipping download...")
-            _pp_progress.progress(10)
-        _pp_status.info(f"Step 2/3 - Running portfolio backtest: {port_start} to {port_end}")
-        _pp_progress.progress(40)
-        if True:
-            try:
-                cmd = [
-                    ".venv/bin/python", "scripts/run_portfolio_cli.py",
-                    "--strategies", "RenkoReversalStrategy,RenkoSMIIOSupertrendStrategy",
-                    "--lots", str(port_lots),
-                    "--start", str(port_start),
-                    "--end", str(port_end),
-                    "--slippage", str(port_slippage),
-                    "--symbol", "BTCUSD",
-                    "--csv", "data/btc_1m_delta.csv"
-                ]
-                if not port_include_charges:
-                    cmd.append("--no-charges")
-                result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
-                if result.returncode == 0:
-                    _pp_progress.progress(100)
-                    _pp_status.success("Step 3/3 - Portfolio backtest complete! Report ready below.")
-                    import glob as _glob, time as _time, os as _glob_os
-                    _time.sleep(3)
-                    _new_port = sorted([f for f in _glob.glob("output/*.html") if "portfolio_report_" in f], key=_glob_os.path.getmtime, reverse=True)
-                    if _new_port:
-                        st.session_state["port_html_sel"] = _new_port[0]
-                        st.session_state["port_force_latest"] = False
-                    import time as _t; _t.sleep(1)
-                    st.rerun()
-                else:
-                    _pp_progress.progress(100)
-                    _pp_status.error("Portfolio backtest failed - see error below")
-                    st.code(result.stderr[-2000:])
-            except Exception as e:
-                _pp_status.error(f"Error: {e}")
+            col1, col2 = st.columns(2)
+            with col1:
+                port_start = st.date_input("Start Date", value=datetime.date(2025,1,1), key="port_start")
+            with col2:
+                port_end = st.date_input("End Date", value=today, key="port_end")
+        col_pl, col_ps, col_pc = st.columns(3)
+        with col_pl:
+            port_lots = st.number_input("Lots", min_value=1, value=100, key="port_lots")
+        with col_ps:
+            port_slippage = st.number_input("Slippage/side ($)", min_value=0.0, value=5.0, key="port_slip")
+        with col_pc:
+            port_include_charges = st.checkbox("Include Tax & All Charges", value=True, key="port_charges")
 
-with port_tab2:
-    st.markdown("**Dynamic Portfolio - Select Strategies**")
-    available_strategies = [
-        "RenkoReversalStrategy",
-        "RenkoSMIIOSupertrendStrategy",
-        "RenkoBreakoutStrategy",
-        "RenkoTrendlinePullbackStrategy"
-    ]
-    selected_strategies = st.multiselect(
-        "Select Strategies",
-        available_strategies,
-        default=["RenkoReversalStrategy", "RenkoSMIIOSupertrendStrategy"],
-        key="port_dyn_strategies"
-    )
-    st.markdown("**Date Range**")
-    port_dyn_range = st.radio("", ["1 Month","6 Months","1 Year","1.5 Years","2 Years","Full CSV","Custom"], index=2, horizontal=True, key="port_dyn_range")
-    today = datetime.date.today()
-    if port_dyn_range == "1 Month":
-        port_dyn_start = today - datetime.timedelta(days=30); port_dyn_end = today
-    elif port_dyn_range == "6 Months":
-        port_dyn_start = today - datetime.timedelta(days=180); port_dyn_end = today
-    elif port_dyn_range == "1 Year":
-        port_dyn_start = today - datetime.timedelta(days=365); port_dyn_end = today
-    elif port_dyn_range == "1.5 Years":
-        port_dyn_start = today - datetime.timedelta(days=548); port_dyn_end = today
-    elif port_dyn_range == "2 Years":
-        port_dyn_start = today - datetime.timedelta(days=730); port_dyn_end = today
-    elif port_dyn_range == "Full CSV":
-        port_dyn_start = datetime.date.fromisoformat("2024-01-01"); port_dyn_end = today
-        st.info(f"Full CSV range: {port_dyn_start} to {port_dyn_end}")
-    else:
-        col1, col2 = st.columns(2)
-        with col1:
-            port_dyn_start = st.date_input("Start Date", value=datetime.date(2025,1,1), key="port_dyn_start")
-        with col2:
-            port_dyn_end = st.date_input("End Date", value=today, key="port_dyn_end")
-    col_dl, col_ds, col_dc = st.columns(3)
-    with col_dl:
-        port_dyn_lots = st.number_input("Lots", min_value=1, value=100, key="port_dyn_lots")
-    with col_ds:
-        port_dyn_slip = st.number_input("Slippage/side ($)", min_value=0.0, value=5.0, key="port_dyn_slip")
-    with col_dc:
-        port_dyn_include_charges = st.checkbox("Include Tax & All Charges", value=True, key="port_dyn_charges")
-
-    if st.button("RUN DYNAMIC PORTFOLIO", key="port_run_dyn"):
-        _pd_status = st.empty()
-        _pd_progress = st.progress(0)
-        if not selected_strategies:
-            _pd_status.error("Please select at least one strategy")
-        else:
-            import os as _os3, time as _tm3
-            _csv_age3 = _tm3.time() - _os3.path.getmtime("data/btc_1m_delta.csv") if _os3.path.exists("data/btc_1m_delta.csv") else 9999
-            if _csv_age3 > 1800:
-                _pd_status.info("Step 1/3 - Downloading latest market data...")
-                _pd_progress.progress(10)
+        if st.button("RUN PREDEFINED PORTFOLIO", key="port_run_pre"):
+            _pp_status = st.empty()
+            _pp_progress = st.progress(0)
+            import os as _os2, time as _tm2
+            _csv_age2 = _tm2.time() - _os2.path.getmtime("data/btc_1m_delta.csv") if _os2.path.exists("data/btc_1m_delta.csv") else 9999
+            if _csv_age2 > 1800:
+                _pp_status.info("Step 1/3 - Downloading latest market data...")
+                _pp_progress.progress(10)
                 import subprocess as _sp
                 _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
             else:
-                _pd_status.info("Step 1/3 - Market data is fresh, skipping download...")
-                _pd_progress.progress(10)
-            _pd_status.info(f"Step 2/3 - Running dynamic portfolio: {selected_strategies} | {port_dyn_start} to {port_dyn_end}")
-            _pd_progress.progress(40)
+                _pp_status.info("Step 1/3 - Market data is fresh, skipping download...")
+                _pp_progress.progress(10)
+            _pp_status.info(f"Step 2/3 - Running portfolio backtest: {port_start} to {port_end}")
+            _pp_progress.progress(40)
             if True:
                 try:
                     cmd = [
                         ".venv/bin/python", "scripts/run_portfolio_cli.py",
-                        "--strategies", ",".join(selected_strategies),
-                        "--lots", str(port_dyn_lots),
-                        "--start", str(port_dyn_start),
-                        "--end", str(port_dyn_end),
-                        "--slippage", str(port_dyn_slip),
+                        "--strategies", "RenkoReversalStrategy,RenkoSMIIOSupertrendStrategy",
+                        "--lots", str(port_lots),
+                        "--start", str(port_start),
+                        "--end", str(port_end),
+                        "--slippage", str(port_slippage),
                         "--symbol", "BTCUSD",
                         "--csv", "data/btc_1m_delta.csv"
                     ]
-                    if not port_dyn_include_charges:
+                    if not port_include_charges:
                         cmd.append("--no-charges")
                     result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
                     if result.returncode == 0:
-                        _pd_progress.progress(100)
-                        _pd_status.success("Step 3/3 - Dynamic portfolio complete! Report ready below.")
+                        _pp_progress.progress(100)
+                        _pp_status.success("Step 3/3 - Portfolio backtest complete! Report ready below.")
                         import glob as _glob, time as _time, os as _glob_os
                         _time.sleep(3)
-                        _new_dyn = sorted([f for f in _glob.glob("output/*.html") if "portfolio_report_" in f], key=_glob_os.path.getmtime, reverse=True)
-                        if _new_dyn:
-                            st.session_state["port_html_sel"] = _new_dyn[0]
+                        _new_port = sorted([f for f in _glob.glob("output/*.html") if "portfolio_report_" in f], key=_glob_os.path.getmtime, reverse=True)
+                        if _new_port:
+                            st.session_state["port_html_sel"] = _new_port[0]
                             st.session_state["port_force_latest"] = False
                         import time as _t; _t.sleep(1)
                         st.rerun()
                     else:
-                        _pd_progress.progress(100)
-                        _pd_status.error("Dynamic portfolio failed - see error below")
+                        _pp_progress.progress(100)
+                        _pp_status.error("Portfolio backtest failed - see error below")
                         st.code(result.stderr[-2000:])
                 except Exception as e:
-                    _pd_status.error(f"Error: {e}")
+                    _pp_status.error(f"Error: {e}")
+
+    with port_tab2:
+        st.markdown("**Dynamic Portfolio - Select Strategies**")
+        available_strategies = [
+            "RenkoReversalStrategy",
+            "RenkoSMIIOSupertrendStrategy",
+            "RenkoBreakoutStrategy",
+            "RenkoTrendlinePullbackStrategy"
+        ]
+        selected_strategies = st.multiselect(
+            "Select Strategies",
+            available_strategies,
+            default=["RenkoReversalStrategy", "RenkoSMIIOSupertrendStrategy"],
+            key="port_dyn_strategies"
+        )
+        st.markdown("**Date Range**")
+        port_dyn_range = st.radio("", ["1 Month","6 Months","1 Year","1.5 Years","2 Years","Full CSV","Custom"], index=2, horizontal=True, key="port_dyn_range")
+        today = datetime.date.today()
+        if port_dyn_range == "1 Month":
+            port_dyn_start = today - datetime.timedelta(days=30); port_dyn_end = today
+        elif port_dyn_range == "6 Months":
+            port_dyn_start = today - datetime.timedelta(days=180); port_dyn_end = today
+        elif port_dyn_range == "1 Year":
+            port_dyn_start = today - datetime.timedelta(days=365); port_dyn_end = today
+        elif port_dyn_range == "1.5 Years":
+            port_dyn_start = today - datetime.timedelta(days=548); port_dyn_end = today
+        elif port_dyn_range == "2 Years":
+            port_dyn_start = today - datetime.timedelta(days=730); port_dyn_end = today
+        elif port_dyn_range == "Full CSV":
+            port_dyn_start = datetime.date.fromisoformat("2024-01-01"); port_dyn_end = today
+            st.info(f"Full CSV range: {port_dyn_start} to {port_dyn_end}")
+        else:
+            col1, col2 = st.columns(2)
+            with col1:
+                port_dyn_start = st.date_input("Start Date", value=datetime.date(2025,1,1), key="port_dyn_start")
+            with col2:
+                port_dyn_end = st.date_input("End Date", value=today, key="port_dyn_end")
+        col_dl, col_ds, col_dc = st.columns(3)
+        with col_dl:
+            port_dyn_lots = st.number_input("Lots", min_value=1, value=100, key="port_dyn_lots")
+        with col_ds:
+            port_dyn_slip = st.number_input("Slippage/side ($)", min_value=0.0, value=5.0, key="port_dyn_slip")
+        with col_dc:
+            port_dyn_include_charges = st.checkbox("Include Tax & All Charges", value=True, key="port_dyn_charges")
+
+        if st.button("RUN DYNAMIC PORTFOLIO", key="port_run_dyn"):
+            _pd_status = st.empty()
+            _pd_progress = st.progress(0)
+            if not selected_strategies:
+                _pd_status.error("Please select at least one strategy")
+            else:
+                import os as _os3, time as _tm3
+                _csv_age3 = _tm3.time() - _os3.path.getmtime("data/btc_1m_delta.csv") if _os3.path.exists("data/btc_1m_delta.csv") else 9999
+                if _csv_age3 > 1800:
+                    _pd_status.info("Step 1/3 - Downloading latest market data...")
+                    _pd_progress.progress(10)
+                    import subprocess as _sp
+                    _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+                else:
+                    _pd_status.info("Step 1/3 - Market data is fresh, skipping download...")
+                    _pd_progress.progress(10)
+                _pd_status.info(f"Step 2/3 - Running dynamic portfolio: {selected_strategies} | {port_dyn_start} to {port_dyn_end}")
+                _pd_progress.progress(40)
+                if True:
+                    try:
+                        cmd = [
+                            ".venv/bin/python", "scripts/run_portfolio_cli.py",
+                            "--strategies", ",".join(selected_strategies),
+                            "--lots", str(port_dyn_lots),
+                            "--start", str(port_dyn_start),
+                            "--end", str(port_dyn_end),
+                            "--slippage", str(port_dyn_slip),
+                            "--symbol", "BTCUSD",
+                            "--csv", "data/btc_1m_delta.csv"
+                        ]
+                        if not port_dyn_include_charges:
+                            cmd.append("--no-charges")
+                        result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+                        if result.returncode == 0:
+                            _pd_progress.progress(100)
+                            _pd_status.success("Step 3/3 - Dynamic portfolio complete! Report ready below.")
+                            import glob as _glob, time as _time, os as _glob_os
+                            _time.sleep(3)
+                            _new_dyn = sorted([f for f in _glob.glob("output/*.html") if "portfolio_report_" in f], key=_glob_os.path.getmtime, reverse=True)
+                            if _new_dyn:
+                                st.session_state["port_html_sel"] = _new_dyn[0]
+                                st.session_state["port_force_latest"] = False
+                            import time as _t; _t.sleep(1)
+                            st.rerun()
+                        else:
+                            _pd_progress.progress(100)
+                            _pd_status.error("Dynamic portfolio failed - see error below")
+                            st.code(result.stderr[-2000:])
+                    except Exception as e:
+                        _pd_status.error(f"Error: {e}")
 
 
 # ================================================================
@@ -2029,133 +2031,134 @@ else:
 # ================================================================
 # SECTION 6 - OPTIMISATION
 # ================================================================
-st.markdown("<div class='section-title'>SECTION 6 - OPTIMISATION</div>", unsafe_allow_html=True)
+if 'exp_6' not in st.session_state: st.session_state['exp_6'] = False
+with st.expander("SECTION 6 - OPTIMISATION", expanded=True):
 
-import subprocess, glob, os
+    import subprocess, glob, os
 
-col1, col2, col3 = st.columns(3)
-with col1:
-    opt_strategy = st.selectbox("Select Strategy", [
-        "RenkoReversalStrategy",
-        "RenkoSMIIOSupertrendStrategy"
-    ], key="sec7_strategy")
-with col2:
-    opt_group = st.selectbox("Select Group", [
-        "renko", "supertrend", "smiio"
-    ], key="sec7_group")
-with col3:
-    opt_lots = st.number_input("Lots", min_value=1, max_value=10000, value=100, key="sec7_lots")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        opt_strategy = st.selectbox("Select Strategy", [
+            "RenkoReversalStrategy",
+            "RenkoSMIIOSupertrendStrategy"
+        ], key="sec7_strategy")
+    with col2:
+        opt_group = st.selectbox("Select Group", [
+            "renko", "supertrend", "smiio"
+        ], key="sec7_group")
+    with col3:
+        opt_lots = st.number_input("Lots", min_value=1, max_value=10000, value=100, key="sec7_lots")
 
-st.markdown("**Date Range**")
-opt_range = st.radio("Date Range", ["1 Month","6 Months","1 Year","1.5 Years","2 Years","Full CSV","Custom"], index=2, horizontal=True, key="sec7_range")
-today = datetime.date.today()
-if opt_range == "1 Month":
-    opt_start = today - datetime.timedelta(days=30); opt_end = today
-elif opt_range == "6 Months":
-    opt_start = today - datetime.timedelta(days=180); opt_end = today
-elif opt_range == "1 Year":
-    opt_start = today - datetime.timedelta(days=365); opt_end = today
-elif opt_range == "1.5 Years":
-    opt_start = today - datetime.timedelta(days=548); opt_end = today
-elif opt_range == "2 Years":
-    opt_start = today - datetime.timedelta(days=730); opt_end = today
-elif opt_range == "Full CSV":
-    opt_start = datetime.date.fromisoformat("2024-01-01"); opt_end = today
-    st.info(f"Full CSV range: {opt_start} to {opt_end}")
-else:
-    col4, col5 = st.columns(2)
-    with col4:
-        opt_start = st.date_input("Start Date", value=datetime.date(2025, 1, 1), key="sec7_start")
-    with col5:
-        opt_end = st.date_input("End Date", value=today, key="sec7_end")
-
-col6, col7 = st.columns(2)
-with col6:
-    opt_slippage = st.number_input("Slippage/side ($)", min_value=0.0, value=5.0, key="sec7_slip")
-with col7:
-    opt_include_charges = st.checkbox("Include Tax & All Charges", value=True, key="sec7_charges")
-
-if st.button("RUN OPTIMISATION", key="sec7_run"):
-    _opt_status = st.empty()
-    _opt_progress = st.progress(0)
-    import os as _os4, time as _tm4
-    _csv_age4 = _tm4.time() - _os4.path.getmtime("data/btc_1m_delta.csv") if _os4.path.exists("data/btc_1m_delta.csv") else 9999
-    if _csv_age4 > 1800:
-        _opt_status.info("Step 1/3 - Downloading latest market data...")
-        _opt_progress.progress(10)
-        import subprocess as _sp
-        _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+    st.markdown("**Date Range**")
+    opt_range = st.radio("Date Range", ["1 Month","6 Months","1 Year","1.5 Years","2 Years","Full CSV","Custom"], index=2, horizontal=True, key="sec7_range")
+    today = datetime.date.today()
+    if opt_range == "1 Month":
+        opt_start = today - datetime.timedelta(days=30); opt_end = today
+    elif opt_range == "6 Months":
+        opt_start = today - datetime.timedelta(days=180); opt_end = today
+    elif opt_range == "1 Year":
+        opt_start = today - datetime.timedelta(days=365); opt_end = today
+    elif opt_range == "1.5 Years":
+        opt_start = today - datetime.timedelta(days=548); opt_end = today
+    elif opt_range == "2 Years":
+        opt_start = today - datetime.timedelta(days=730); opt_end = today
+    elif opt_range == "Full CSV":
+        opt_start = datetime.date.fromisoformat("2024-01-01"); opt_end = today
+        st.info(f"Full CSV range: {opt_start} to {opt_end}")
     else:
-        _opt_status.info("Step 1/3 - Market data is fresh, skipping download...")
-        _opt_progress.progress(10)
-    _opt_status.info(f"Step 2/3 - Running optimisation: {opt_strategy} | {opt_start} to {opt_end} (may take several minutes...)")
-    _opt_progress.progress(40)
-    try:
-        cmd = [
-            ".venv/bin/python", "scripts/run_optimization_cli.py",
-            "--strategy", opt_strategy,
-            "--group", opt_group,
-            "--lots", str(opt_lots),
-            "--start", str(opt_start),
-            "--end", str(opt_end),
-            "--slippage", str(opt_slippage)
-        ]
-        if not opt_include_charges:
-            cmd.append("--no-charges")
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
-        if result.returncode == 0:
-            _opt_progress.progress(100)
-            _opt_status.success("Step 3/3 - Optimisation complete! Report ready below.")
-            import glob as _glob, time as _time, os as _glob_os
-            _time.sleep(3)
-            _new_opt = sorted([f for f in _glob.glob("output/*.html") if "optimization_results_" in f], key=_glob_os.path.getmtime, reverse=True)
-            if _new_opt:
-                st.session_state["sec7_html_sel"] = _new_opt[0]
-            st.session_state["sec7_force_latest"] = False
-            import time as _t; _t.sleep(1)
-            st.rerun()
+        col4, col5 = st.columns(2)
+        with col4:
+            opt_start = st.date_input("Start Date", value=datetime.date(2025, 1, 1), key="sec7_start")
+        with col5:
+            opt_end = st.date_input("End Date", value=today, key="sec7_end")
+
+    col6, col7 = st.columns(2)
+    with col6:
+        opt_slippage = st.number_input("Slippage/side ($)", min_value=0.0, value=5.0, key="sec7_slip")
+    with col7:
+        opt_include_charges = st.checkbox("Include Tax & All Charges", value=True, key="sec7_charges")
+
+    if st.button("RUN OPTIMISATION", key="sec7_run"):
+        _opt_status = st.empty()
+        _opt_progress = st.progress(0)
+        import os as _os4, time as _tm4
+        _csv_age4 = _tm4.time() - _os4.path.getmtime("data/btc_1m_delta.csv") if _os4.path.exists("data/btc_1m_delta.csv") else 9999
+        if _csv_age4 > 1800:
+            _opt_status.info("Step 1/3 - Downloading latest market data...")
+            _opt_progress.progress(10)
+            import subprocess as _sp
+            _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
         else:
-            _opt_progress.progress(100)
-            _opt_status.error("Optimisation failed - see error below")
-            st.code(result.stderr[-2000:] if len(result.stderr) > 2000 else result.stderr)
-    except subprocess.TimeoutExpired:
-        _opt_status.error("Optimisation timed out after 10 minutes")
-    except Exception as e:
-        _opt_status.error(f"Error: {e}")
-
-st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
-st.markdown("**Optimisation Results**")
-
-opt_csv_files = sorted([f for f in glob.glob("output/*.csv") if "optimization_results_" in f], reverse=True)
-opt_html_files = sorted([f for f in glob.glob("output/*.html") if "optimization_results_" in f], key=_glob_os.path.getmtime, reverse=True)
-
-st.markdown("**HTML Reports**")
-if opt_html_files:
-    if "sec7_html_sel" not in st.session_state or st.session_state.get("sec7_force_latest"):
-        st.session_state["sec7_html_sel"] = opt_html_files[0] if opt_html_files else None
-        st.session_state["sec7_force_latest"] = False
-    sel_opt_html = st.selectbox("Select Optimisation HTML", opt_html_files, key="sec7_html_sel")
-    c1, c2 = st.columns(2)
-    with c1:
-        view_html_s6 = st.button("VIEW HTML", key="sec7_view_html")
-    with c2:
-        with open(sel_opt_html, 'rb') as f:
-            st.download_button("DOWNLOAD HTML", f, file_name=os.path.basename(sel_opt_html), key="sec7_dl_html")
-    if view_html_s6:
+            _opt_status.info("Step 1/3 - Market data is fresh, skipping download...")
+            _opt_progress.progress(10)
+        _opt_status.info(f"Step 2/3 - Running optimisation: {opt_strategy} | {opt_start} to {opt_end} (may take several minutes...)")
+        _opt_progress.progress(40)
         try:
-            content = open(sel_opt_html, encoding='utf-8').read()
-            st.components.v1.html(content, height=2000, scrolling=True)
+            cmd = [
+                ".venv/bin/python", "scripts/run_optimization_cli.py",
+                "--strategy", opt_strategy,
+                "--group", opt_group,
+                "--lots", str(opt_lots),
+                "--start", str(opt_start),
+                "--end", str(opt_end),
+                "--slippage", str(opt_slippage)
+            ]
+            if not opt_include_charges:
+                cmd.append("--no-charges")
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+            if result.returncode == 0:
+                _opt_progress.progress(100)
+                _opt_status.success("Step 3/3 - Optimisation complete! Report ready below.")
+                import glob as _glob, time as _time, os as _glob_os
+                _time.sleep(3)
+                _new_opt = sorted([f for f in _glob.glob("output/*.html") if "optimization_results_" in f], key=_glob_os.path.getmtime, reverse=True)
+                if _new_opt:
+                    st.session_state["sec7_html_sel"] = _new_opt[0]
+                st.session_state["sec7_force_latest"] = False
+                import time as _t; _t.sleep(1)
+                st.rerun()
+            else:
+                _opt_progress.progress(100)
+                _opt_status.error("Optimisation failed - see error below")
+                st.code(result.stderr[-2000:] if len(result.stderr) > 2000 else result.stderr)
+        except subprocess.TimeoutExpired:
+            _opt_status.error("Optimisation timed out after 10 minutes")
         except Exception as e:
-            st.error(f"Error: {e}")
-else:
-    st.info("No optimisation HTML files found in output/ folder")
-st.markdown("**CSV Results**")
-if opt_csv_files:
-    sel_opt_csv = st.selectbox("Select Optimisation CSV", opt_csv_files, key="sec7_csv_sel")
-    with open(sel_opt_csv, 'rb') as f:
-        st.download_button("DOWNLOAD CSV", f, file_name=os.path.basename(sel_opt_csv), key="sec7_dl_csv")
-else:
-    st.info("No optimisation CSV files found in output/ folder")
+            _opt_status.error(f"Error: {e}")
+
+    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
+    st.markdown("**Optimisation Results**")
+
+    opt_csv_files = sorted([f for f in glob.glob("output/*.csv") if "optimization_results_" in f], reverse=True)
+    opt_html_files = sorted([f for f in glob.glob("output/*.html") if "optimization_results_" in f], key=_glob_os.path.getmtime, reverse=True)
+
+    st.markdown("**HTML Reports**")
+    if opt_html_files:
+        if "sec7_html_sel" not in st.session_state or st.session_state.get("sec7_force_latest"):
+            st.session_state["sec7_html_sel"] = opt_html_files[0] if opt_html_files else None
+            st.session_state["sec7_force_latest"] = False
+        sel_opt_html = st.selectbox("Select Optimisation HTML", opt_html_files, key="sec7_html_sel")
+        c1, c2 = st.columns(2)
+        with c1:
+            view_html_s6 = st.button("VIEW HTML", key="sec7_view_html")
+        with c2:
+            with open(sel_opt_html, 'rb') as f:
+                st.download_button("DOWNLOAD HTML", f, file_name=os.path.basename(sel_opt_html), key="sec7_dl_html")
+        if view_html_s6:
+            try:
+                content = open(sel_opt_html, encoding='utf-8').read()
+                st.components.v1.html(content, height=2000, scrolling=True)
+            except Exception as e:
+                st.error(f"Error: {e}")
+    else:
+        st.info("No optimisation HTML files found in output/ folder")
+    st.markdown("**CSV Results**")
+    if opt_csv_files:
+        sel_opt_csv = st.selectbox("Select Optimisation CSV", opt_csv_files, key="sec7_csv_sel")
+        with open(sel_opt_csv, 'rb') as f:
+            st.download_button("DOWNLOAD CSV", f, file_name=os.path.basename(sel_opt_csv), key="sec7_dl_csv")
+    else:
+        st.info("No optimisation CSV files found in output/ folder")
 
 
 
@@ -2165,17 +2168,17 @@ else:
 if 'exp_8' not in st.session_state: st.session_state['exp_8'] = False
 with st.expander("SECTION 8 - BATCH BACKTEST + COIN SCANNER", expanded=st.session_state.get('exp_8', False)):
  st.session_state['exp_8'] = True
-st.warning("PLACEHOLDER - Activates in Phase 8 after July 24")
-col1, col2 = st.columns(2)
-with col1:
-    st.markdown("**Batch Backtest**")
-    st.info("Multi-coin batch backtest will be available in Phase 8")
-    st.multiselect("Select Coins", ["BTCUSD", "ETHUSD"], disabled=True, key="sec8_coins")
-    st.button("RUN BATCH BACKTEST", disabled=True, key="sec8_run")
-with col2:
-    st.markdown("**Coin Scanner**")
-    st.info("Trend filter scanner will be available in Phase 8")
-    st.button("RUN SCANNER", disabled=True, key="sec8_scan")
+    st.warning("PLACEHOLDER - Activates in Phase 8 after July 24")
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("**Batch Backtest**")
+        st.info("Multi-coin batch backtest will be available in Phase 8")
+        st.multiselect("Select Coins", ["BTCUSD", "ETHUSD"], disabled=True, key="sec8_coins")
+        st.button("RUN BATCH BACKTEST", disabled=True, key="sec8_run")
+    with col2:
+        st.markdown("**Coin Scanner**")
+        st.info("Trend filter scanner will be available in Phase 8")
+        st.button("RUN SCANNER", disabled=True, key="sec8_scan")
 
 # ================================================================
 # SECTION 9 - CONTRACT MANAGER
@@ -2184,60 +2187,60 @@ if 'exp_9' not in st.session_state: st.session_state['exp_9'] = False
 with st.expander("SECTION 9 - CONTRACT MANAGER", expanded=st.session_state.get('exp_9', False)):
  st.session_state['exp_9'] = True
 
-contracts = config.get("contracts", [])
+    contracts = config.get("contracts", [])
 
-col_h1, col_h2, col_h3, col_h4, col_h5 = st.columns([2,2,1,2,2])
-col_h1.markdown("**Symbol**")
-col_h2.markdown("**Name**")
-col_h3.markdown("**Lots**")
-col_h4.markdown("**Status**")
-col_h5.markdown("**Action**")
-st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
+    col_h1, col_h2, col_h3, col_h4, col_h5 = st.columns([2,2,1,2,2])
+    col_h1.markdown("**Symbol**")
+    col_h2.markdown("**Name**")
+    col_h3.markdown("**Lots**")
+    col_h4.markdown("**Status**")
+    col_h5.markdown("**Action**")
+    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
-for i, contract in enumerate(contracts):
-    c1, c2, c3, c4, c5 = st.columns([2,2,1,2,2])
-    with c1:
-        st.write(contract.get('symbol',''))
-    with c2:
-        st.write(contract.get('name',''))
-    with c3:
-        new_c_lots = st.number_input("Lots", min_value=1, value=contract.get('lots',100),
-            key=f"sec10_lots_{i}", label_visibility="collapsed")
-        if new_c_lots != contract.get('lots',100):
-            contracts[i]['lots'] = new_c_lots
+    for i, contract in enumerate(contracts):
+        c1, c2, c3, c4, c5 = st.columns([2,2,1,2,2])
+        with c1:
+            st.write(contract.get('symbol',''))
+        with c2:
+            st.write(contract.get('name',''))
+        with c3:
+            new_c_lots = st.number_input("Lots", min_value=1, value=contract.get('lots',100),
+                key=f"sec10_lots_{i}", label_visibility="collapsed")
+            if new_c_lots != contract.get('lots',100):
+                contracts[i]['lots'] = new_c_lots
+                config['contracts'] = contracts
+                json.dump(config, open('dashboard/algo_config.json','w'), indent=2)
+                st.success("Updated")
+        with c4:
+            if contract.get('active', True):
+                st.success("ACTIVE")
+            else:
+                st.error("INACTIVE")
+        with c5:
+            if st.button("REMOVE", key=f"sec10_remove_{i}"):
+                contracts.pop(i)
+                config['contracts'] = contracts
+                json.dump(config, open('dashboard/algo_config.json','w'), indent=2)
+                st.warning("Contract removed")
+                st.rerun()
+
+    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
+    st.markdown("**Add New Contract**")
+    with st.form("add_contract_form"):
+        new_sym = st.text_input("Symbol (e.g. ETHUSD)")
+        new_cname = st.text_input("Name (e.g. Ethereum Perpetual)")
+        new_clots = st.number_input("Lots", min_value=1, value=100)
+        add_submitted = st.form_submit_button("ADD CONTRACT")
+        if add_submitted and new_sym:
+            contracts.append({
+                'symbol': new_sym.upper(),
+                'name': new_cname,
+                'lots': int(new_clots),
+                'active': True
+            })
             config['contracts'] = contracts
             json.dump(config, open('dashboard/algo_config.json','w'), indent=2)
-            st.success("Updated")
-    with c4:
-        if contract.get('active', True):
-            st.success("ACTIVE")
-        else:
-            st.error("INACTIVE")
-    with c5:
-        if st.button("REMOVE", key=f"sec10_remove_{i}"):
-            contracts.pop(i)
-            config['contracts'] = contracts
-            json.dump(config, open('dashboard/algo_config.json','w'), indent=2)
-            st.warning("Contract removed")
-            st.rerun()
-
-st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
-st.markdown("**Add New Contract**")
-with st.form("add_contract_form"):
-    new_sym = st.text_input("Symbol (e.g. ETHUSD)")
-    new_cname = st.text_input("Name (e.g. Ethereum Perpetual)")
-    new_clots = st.number_input("Lots", min_value=1, value=100)
-    add_submitted = st.form_submit_button("ADD CONTRACT")
-    if add_submitted and new_sym:
-        contracts.append({
-            'symbol': new_sym.upper(),
-            'name': new_cname,
-            'lots': int(new_clots),
-            'active': True
-        })
-        config['contracts'] = contracts
-        json.dump(config, open('dashboard/algo_config.json','w'), indent=2)
-        st.success(f"Contract {new_sym.upper()} added")
+            st.success(f"Contract {new_sym.upper()} added")
 
 # ================================================================
 # SECTION 10 - GITHUB SYNC
@@ -2246,50 +2249,50 @@ if 'exp_10' not in st.session_state: st.session_state['exp_10'] = False
 with st.expander("SECTION 10 - GITHUB SYNC", expanded=st.session_state.get('exp_10', False)):
  st.session_state['exp_10'] = True
 
-import subprocess
+    import subprocess
 
-def run_git(cmd):
-    try:
-        result = subprocess.run(cmd, capture_output=True, text=True, cwd='.', timeout=30)
-        return result.stdout + result.stderr
-    except Exception as e:
-        return str(e)
+    def run_git(cmd):
+        try:
+            result = subprocess.run(cmd, capture_output=True, text=True, cwd='.', timeout=30)
+            return result.stdout + result.stderr
+        except Exception as e:
+            return str(e)
 
-local_commit = run_git(["git", "log", "--oneline", "-1"])
-st.markdown("**Sync Status**")
-c1, c2, c3 = st.columns(3)
-with c1:
-    st.success(f"LOCAL: {local_commit[:20]}")
-with c2:
-    st.success(f"VM: Check manually")
-with c3:
-    st.success(f"GITHUB: {local_commit[:20]}")
+    local_commit = run_git(["git", "log", "--oneline", "-1"])
+    st.markdown("**Sync Status**")
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.success(f"LOCAL: {local_commit[:20]}")
+    with c2:
+        st.success(f"VM: Check manually")
+    with c3:
+        st.success(f"GITHUB: {local_commit[:20]}")
 
-st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
-b1, b2, b3 = st.columns(3)
-with b1:
-    if st.button("GIT STATUS", key="sec11_status"):
-        out = run_git(["git", "status"])
-        st.code(out)
-with b2:
-    if st.button("GIT PULL", key="sec11_pull"):
-        out = run_git(["git", "pull", "origin", "master"])
-        st.code(out)
-with b3:
-    if st.button("GIT PUSH", key="sec11_push"):
-        out = run_git(["git", "push", "origin", "master"])
-        st.code(out)
+    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
+    b1, b2, b3 = st.columns(3)
+    with b1:
+        if st.button("GIT STATUS", key="sec11_status"):
+            out = run_git(["git", "status"])
+            st.code(out)
+    with b2:
+        if st.button("GIT PULL", key="sec11_pull"):
+            out = run_git(["git", "pull", "origin", "master"])
+            st.code(out)
+    with b3:
+        if st.button("GIT PUSH", key="sec11_push"):
+            out = run_git(["git", "push", "origin", "master"])
+            st.code(out)
 
-commit_msg = st.text_input("Commit Message", placeholder="Enter commit message", key="sec11_msg")
-if st.button("COMMIT + PUSH", key="sec11_commit_push"):
-    if commit_msg:
-        out1 = run_git(["git", "add", "."])
-        out2 = run_git(["git", "commit", "-m", commit_msg])
-        out3 = run_git(["git", "push", "origin", "master"])
-        st.code(out1 + out2 + out3)
-        st.success("Committed and pushed")
-    else:
-        st.error("Please enter a commit message")
+    commit_msg = st.text_input("Commit Message", placeholder="Enter commit message", key="sec11_msg")
+    if st.button("COMMIT + PUSH", key="sec11_commit_push"):
+        if commit_msg:
+            out1 = run_git(["git", "add", "."])
+            out2 = run_git(["git", "commit", "-m", commit_msg])
+            out3 = run_git(["git", "push", "origin", "master"])
+            st.code(out1 + out2 + out3)
+            st.success("Committed and pushed")
+        else:
+            st.error("Please enter a commit message")
 
 # ================================================================
 # SECTION 11 - MAINTENANCE
@@ -2298,69 +2301,69 @@ if 'exp_11' not in st.session_state: st.session_state['exp_11'] = False
 with st.expander("SECTION 11 - MAINTENANCE", expanded=st.session_state.get('exp_11', False)):
  st.session_state['exp_11'] = True
 
-import shutil, os, subprocess
+    import shutil, os, subprocess
 
-disk_pct2, disk_free2 = get_disk_usage()
-c1, c2, c3, c4, c5 = st.columns(5)
-with c1:
-    if disk_pct2 > 80:
-        st.error(f"DISK: {disk_pct2}%")
-    elif disk_pct2 > 60:
-        st.warning(f"DISK: {disk_pct2}%")
-    else:
-        st.success(f"DISK: {disk_pct2}%")
-with c2:
-    pycache_exists = any(True for _ in __import__('pathlib').Path('.').rglob('__pycache__'))
-    if pycache_exists:
-        st.warning("PYCACHE: EXISTS")
-    else:
-        st.success("PYCACHE: CLEAN")
-with c3:
-    s2_size = round(os.path.getsize(s2_log)/1024/1024, 1) if os.path.exists(s2_log) else 0
-    s4_size = round(os.path.getsize(s4_log)/1024/1024, 1) if os.path.exists(s4_log) else 0
-    total_log = s2_size + s4_size
-    if total_log > 100:
-        st.warning(f"LOGS: {total_log}MB")
-    else:
-        st.success(f"LOGS: {total_log}MB")
-with c4:
-    venv_ok = os.path.exists('.venv') or os.path.exists('venv')
-    if venv_ok:
-        st.success("VENV: OK")
-    else:
-        st.error("VENV: MISSING")
-with c5:
-    st.info("SERVICE: CHECK VM")
+    disk_pct2, disk_free2 = get_disk_usage()
+    c1, c2, c3, c4, c5 = st.columns(5)
+    with c1:
+        if disk_pct2 > 80:
+            st.error(f"DISK: {disk_pct2}%")
+        elif disk_pct2 > 60:
+            st.warning(f"DISK: {disk_pct2}%")
+        else:
+            st.success(f"DISK: {disk_pct2}%")
+    with c2:
+        pycache_exists = any(True for _ in __import__('pathlib').Path('.').rglob('__pycache__'))
+        if pycache_exists:
+            st.warning("PYCACHE: EXISTS")
+        else:
+            st.success("PYCACHE: CLEAN")
+    with c3:
+        s2_size = round(os.path.getsize(s2_log)/1024/1024, 1) if os.path.exists(s2_log) else 0
+        s4_size = round(os.path.getsize(s4_log)/1024/1024, 1) if os.path.exists(s4_log) else 0
+        total_log = s2_size + s4_size
+        if total_log > 100:
+            st.warning(f"LOGS: {total_log}MB")
+        else:
+            st.success(f"LOGS: {total_log}MB")
+    with c4:
+        venv_ok = os.path.exists('.venv') or os.path.exists('venv')
+        if venv_ok:
+            st.success("VENV: OK")
+        else:
+            st.error("VENV: MISSING")
+    with c5:
+        st.info("SERVICE: CHECK VM")
 
-st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
-b1, b2, b3 = st.columns(3)
-with b1:
-    if st.button("CHECK DISK", key="sec12_disk"):
-        st.info(f"Disk: {disk_pct2}% used | {disk_free2} GB free")
-with b2:
-    if st.button("CLEAN PYCACHE", key="sec12_pycache"):
-        try:
-            import pathlib
-            count = 0
-            for p in pathlib.Path('.').rglob('__pycache__'):
-                __import__('shutil').rmtree(p, ignore_errors=True)
-                count += 1
-            st.success(f"Cleaned {count} pycache folders")
-        except Exception as e:
-            st.error(f"Error: {e}")
-with b3:
-    if st.button("TRIM LOGS", key="sec12_trim"):
-        try:
-            for log_path in [s2_log, s4_log]:
-                if os.path.exists(log_path):
-                    lines = open(log_path, encoding='utf-8', errors='ignore').readlines()
-                    if len(lines) > 10000:
-                        open(log_path, 'w').writelines(lines[-10000:])
-                        st.success(f"Trimmed {log_path} to 10000 lines")
-                    else:
-                        st.info(f"{log_path}: {len(lines)} lines - no trim needed")
-        except Exception as e:
-            st.error(f"Error: {e}")
+    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
+    b1, b2, b3 = st.columns(3)
+    with b1:
+        if st.button("CHECK DISK", key="sec12_disk"):
+            st.info(f"Disk: {disk_pct2}% used | {disk_free2} GB free")
+    with b2:
+        if st.button("CLEAN PYCACHE", key="sec12_pycache"):
+            try:
+                import pathlib
+                count = 0
+                for p in pathlib.Path('.').rglob('__pycache__'):
+                    __import__('shutil').rmtree(p, ignore_errors=True)
+                    count += 1
+                st.success(f"Cleaned {count} pycache folders")
+            except Exception as e:
+                st.error(f"Error: {e}")
+    with b3:
+        if st.button("TRIM LOGS", key="sec12_trim"):
+            try:
+                for log_path in [s2_log, s4_log]:
+                    if os.path.exists(log_path):
+                        lines = open(log_path, encoding='utf-8', errors='ignore').readlines()
+                        if len(lines) > 10000:
+                            open(log_path, 'w').writelines(lines[-10000:])
+                            st.success(f"Trimmed {log_path} to 10000 lines")
+                        else:
+                            st.info(f"{log_path}: {len(lines)} lines - no trim needed")
+            except Exception as e:
+                st.error(f"Error: {e}")
 
 
 # ================================================================
@@ -2453,67 +2456,67 @@ if 'exp_13s' not in st.session_state: st.session_state['exp_13s'] = False
 with st.expander("SECTION 13 - STRATEGY PERFORMANCE SUMMARY", expanded=st.session_state.get('exp_13s', False)):
  st.session_state['exp_13s'] = True
 
-import glob, re as regex
+    import glob, re as regex
 
-def extract_metric_from_html(html_path, metric_name):
-    try:
-        content = open(html_path, encoding='utf-8', errors='ignore').read()
-        pattern = metric_name + r'.*?([0-9,.-]+%?)'
-        match = regex.search(pattern, content, regex.IGNORECASE)
-        if match:
-            return match.group(1).strip()
-        return 'N/A'
-    except:
-        return 'N/A'
+    def extract_metric_from_html(html_path, metric_name):
+        try:
+            content = open(html_path, encoding='utf-8', errors='ignore').read()
+            pattern = metric_name + r'.*?([0-9,.-]+%?)'
+            match = regex.search(pattern, content, regex.IGNORECASE)
+            if match:
+                return match.group(1).strip()
+            return 'N/A'
+        except:
+            return 'N/A'
 
-def get_latest_html(strategy_keyword):
-    files = sorted(glob.glob(f"output/backtest_report_{strategy_keyword}*.html"), reverse=True)
-    return files[0] if files else None
+    def get_latest_html(strategy_keyword):
+        files = sorted(glob.glob(f"output/backtest_report_{strategy_keyword}*.html"), reverse=True)
+        return files[0] if files else None
 
-s2_html = get_latest_html("RenkoReversal")
-s4_html = get_latest_html("RenkoSMIIO")
+    s2_html = get_latest_html("RenkoReversal")
+    s4_html = get_latest_html("RenkoSMIIO")
 
-col_s2, col_s4 = st.columns(2)
+    col_s2, col_s4 = st.columns(2)
 
-with col_s2:
-    st.markdown("**S2 - RenkoReversalStrategy**")
-    if s2_html:
-        st.caption(f"Source: {os.path.basename(s2_html)}")
-        st.metric("Total Trades", "1506")
-        st.metric("Win Rate", "52.26%")
-        st.metric("Net PnL", "26.37L INR")
-        st.metric("Max Drawdown", "-0.27%")
-        st.metric("Sharpe Ratio", "5.55")
-        st.metric("Profit Factor", "3.83")
-        st.metric("ROC", "3939.61%")
-        st.success("13/13 months profitable")
-        st.caption("Params: renko_box_pct=0.001, st_atr=5, st_factor=1.5")
-        with open(s2_html, 'rb') as f:
-            st.download_button("DOWNLOAD S2 REPORT", f,
-                file_name=os.path.basename(s2_html), key="sec13_dl_s2")
-    else:
-        st.warning("No S2 backtest HTML found in output/ folder")
-        st.info("Run backtest from Section 6 to generate report")
+    with col_s2:
+        st.markdown("**S2 - RenkoReversalStrategy**")
+        if s2_html:
+            st.caption(f"Source: {os.path.basename(s2_html)}")
+            st.metric("Total Trades", "1506")
+            st.metric("Win Rate", "52.26%")
+            st.metric("Net PnL", "26.37L INR")
+            st.metric("Max Drawdown", "-0.27%")
+            st.metric("Sharpe Ratio", "5.55")
+            st.metric("Profit Factor", "3.83")
+            st.metric("ROC", "3939.61%")
+            st.success("13/13 months profitable")
+            st.caption("Params: renko_box_pct=0.001, st_atr=5, st_factor=1.5")
+            with open(s2_html, 'rb') as f:
+                st.download_button("DOWNLOAD S2 REPORT", f,
+                    file_name=os.path.basename(s2_html), key="sec13_dl_s2")
+        else:
+            st.warning("No S2 backtest HTML found in output/ folder")
+            st.info("Run backtest from Section 6 to generate report")
 
-with col_s4:
-    st.markdown("**S4 - RenkoSMIIOSupertrendStrategy**")
-    if s4_html:
-        st.caption(f"Source: {os.path.basename(s4_html)}")
-        st.metric("Total Trades", "659")
-        st.metric("Win Rate", "57.66%")
-        st.metric("Net PnL", "23.37L INR")
-        st.metric("Max Drawdown", "-0.28%")
-        st.metric("Sharpe Ratio", "6.92")
-        st.metric("Profit Factor", "4.89")
-        st.metric("ROC", "N/A")
-        st.success("13/13 months profitable")
-        st.caption("Params: renko_box_pct=0.001, st_atr=10, st_factor=2.0, smiio_short=20, smiio_sig=7")
-        with open(s4_html, 'rb') as f:
-            st.download_button("DOWNLOAD S4 REPORT", f,
-                file_name=os.path.basename(s4_html), key="sec13_dl_s4")
-    else:
-        st.warning("No S4 backtest HTML found in output/ folder")
-        st.info("Run backtest from Section 6 to generate report")
+    with col_s4:
+        st.markdown("**S4 - RenkoSMIIOSupertrendStrategy**")
+        if s4_html:
+            st.caption(f"Source: {os.path.basename(s4_html)}")
+            st.metric("Total Trades", "659")
+            st.metric("Win Rate", "57.66%")
+            st.metric("Net PnL", "23.37L INR")
+            st.metric("Max Drawdown", "-0.28%")
+            st.metric("Sharpe Ratio", "6.92")
+            st.metric("Profit Factor", "4.89")
+            st.metric("ROC", "N/A")
+            st.success("13/13 months profitable")
+            st.caption("Params: renko_box_pct=0.001, st_atr=10, st_factor=2.0, smiio_short=20, smiio_sig=7")
+            with open(s4_html, 'rb') as f:
+                st.download_button("DOWNLOAD S4 REPORT", f,
+                    file_name=os.path.basename(s4_html), key="sec13_dl_s4")
+        else:
+            st.warning("No S4 backtest HTML found in output/ folder")
+            st.info("Run backtest from Section 6 to generate report")
 
 # ================================================================
 # FOOTER
