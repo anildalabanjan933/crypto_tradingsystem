@@ -14,7 +14,7 @@ from utils import format_currency, format_number, round_price, round_percent, us
 class BacktestReportGenerator:
 
     def __init__(self, trades, metrics, strategy_name, symbol,
-                 start_date, end_date, slippage=0, lot_size=100):
+                 start_date, end_date, slippage=0, lot_size=100, include_charges=True):
         self.trades              = trades
         self.metrics             = metrics
         self.strategy_name       = strategy_name
@@ -23,6 +23,7 @@ class BacktestReportGenerator:
         self.end_date            = end_date
         self.slippage            = slippage
         self.lot_size            = lot_size
+        self.include_charges     = include_charges
         self.initial_capital     = 100000
         self.initial_capital_inr = usd_to_inr(self.initial_capital, 84)
 
@@ -529,7 +530,7 @@ class BacktestReportGenerator:
             f'                        <td class="negative">{format_currency(total_insurance_inr)}</td>\n'
             '                    </tr>\n'
             '                    <tr>\n'
-            f'                        <td>Tax ({int(self.metrics.get("tax_rate", 0.10)*100) if self.metrics.get("tax_rate", 0.10) > 0 else 0}% on winning trades)</td>\n'
+            f'                        <td>Tax ({"10" if self.include_charges else "0"}% on winning trades)</td>\n'
             f'                        <td class="negative">{format_currency(total_tax_inr)}</td>\n'
             '                    </tr>\n'
             '                    <tr style="background-color: #f0f0f0; font-weight: bold;">\n'
@@ -552,8 +553,9 @@ class BacktestReportGenerator:
             # ── FOOTER ─────────────────────────────────────────────────────
             '        <div class="footer">\n'
             f'            <p>Generated on {datetime.now().strftime("%Y-%m-%d %H:%M:%S")} | '
-            f'Strategy: {self.strategy_name} | Symbol: {self.symbol} | '
-            f'Slippage: {"$" + str(self.slippage) + "/side" if self.slippage > 0 else "None"}</p>\n'
+            f'Strategy: {self.strategy_name} | Symbol: {self.symbol} | Lots: {self.lot_size} | '
+            f'Slippage: {"$" + str(self.slippage) + "/side" if self.slippage > 0 else "None"} | '
+            f'Charges: {"Included" if self.include_charges else "Excluded"}</p>\n'
             '        </div>\n'
             '    </div>\n'
             '</body>\n'

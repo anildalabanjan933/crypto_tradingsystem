@@ -65,7 +65,8 @@ if result:
         start_date=args.start,
         end_date=args.end,
         slippage=args.slippage,
-        lot_size=args.lots
+        lot_size=args.lots,
+        include_charges=not args.no_charges
     )
     reporter.generate_html_report()
     reporter.generate_csv_trade_log()
