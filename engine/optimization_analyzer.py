@@ -14,13 +14,14 @@ class OptimizationAnalyzer:
     """
 
     def __init__(self, optimization_results, strategy_name, symbol,
-                 start_date, end_date, lot_size=100, slippage=0):
+                 start_date, end_date, lot_size=100, slippage=0, include_charges=True):
         self.optimization_results = optimization_results
         self.strategy_name        = strategy_name
         self.symbol               = symbol
         self.start_date           = start_date
         self.end_date             = end_date
         self.lot_size             = lot_size
+        self.include_charges      = include_charges
         self.slippage             = slippage
         self.usd_to_inr_rate      = backtest_config.get('usd_to_inr_rate', 84)
         self.initial_capital_usd  = backtest_config.get('initial_capital_usd', 100000)
@@ -217,7 +218,7 @@ class OptimizationAnalyzer:
                 Lot Size: <strong>{self.lot_size} lots</strong> &nbsp;|&nbsp;
                 Slippage: <strong>${self.slippage}/side</strong> &nbsp;|&nbsp;
                 Capital: <strong>₹{self.initial_capital_inr:,.0f} INR</strong> &nbsp;|&nbsp;
-                Charges: <strong>Included (same as backtest)</strong>
+                Charges: <strong>{"Included" if self.include_charges else "Excluded"} (same as backtest)</strong>
             </div>
 
             <div class="header-info">
