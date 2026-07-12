@@ -6,7 +6,6 @@ load_dotenv()
 import logging, pandas as pd
 from engine.order_manager import OrderManager
 from strategies.backtest.renko_reversal_strategy import RenkoReversalStrategy
-from config.symbol_config import get_renko_box_size
 
 logging.basicConfig(
     filename="logs/live_trading_s2.log",
@@ -110,10 +109,10 @@ except Exception as _e:
 log.info("[STARTUP] Pre-loading signals to find last known timestamp...")
 try:
     _df_1h_init = build_1h(df_1m)
-    _box_init   = get_renko_box_size(SYMBOL, float(_df_1h_init["close"].iloc[-1]))
     _strat_init = RenkoReversalStrategy(
         data_dict={"1h": _df_1h_init}, lot_size=LOT_SIZE,
-        renko_box=_box_init, renko_timeframe="1h"
+        renko_box_pct=0.001, renko_timeframe="1h",
+        st_atr_length=5, st_factor=1.5
     )
     _sigs_init    = _strat_init.generate_signals()
     last_known_ts = _sigs_init[-1].get("timestamp") if _sigs_init else None

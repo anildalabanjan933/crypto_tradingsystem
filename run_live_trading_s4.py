@@ -14,7 +14,6 @@ from datetime import datetime, timezone
 
 from strategies.backtest.renko_smiio_supertrend_strategy import RenkoSMIIOSupertrendStrategy
 from engine.order_manager import OrderManager
-from config.symbol_config import get_renko_box_size
 
 # ===========================================================================
 # CONFIG
@@ -101,10 +100,6 @@ def main():
     # --- OrderManager ---
     order_manager = OrderManager(API_KEY, API_SECRET, testnet=TESTNET)
 
-    # --- Box size ---
-    current_price = df_1m['close'].iloc[-1]
-    box_size = get_renko_box_size(SYMBOL, current_price)
-
     # --- Position state (persisted across cycles) ---
     pos = order_manager.get_position()
     if pos.get('success') and pos.get('direction') == 'LONG':
@@ -148,12 +143,15 @@ def main():
         _df_2h_init['volume'] = _df_1m_idx['volume'].resample('2h').sum()
         _df_2h_init = _df_2h_init.dropna().reset_index()
 
-        _box_init = get_renko_box_size(SYMBOL, float(_df_2h_init['close'].iloc[-1]))
         _strat_init = RenkoSMIIOSupertrendStrategy(
             data_dict={'2h': _df_2h_init},
             lot_size=LOT_SIZE,
-            renko_box=_box_init,
-            symbol=SYMBOL,
+            renko_box_pct=0.001,
+            renko_timeframe='2h',
+            st_atr_length=10,
+            st_factor=2.0,
+            smiio_shortlen=20,
+            smiio_siglen=7,
         )
         _sigs_init = _strat_init.generate_signals()
         last_known_ts = _sigs_init[-1].get('timestamp') if _sigs_init else None
