@@ -1554,11 +1554,15 @@ with col6:
     bt_include_charges = st.checkbox("Include Tax & All Charges", value=True, key="sec6_charges")
 
 if st.button("RUN BACKTEST", key="sec6_run"):
-    with st.spinner("Updating market data..."):
-        import subprocess as _sp
-        _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
-    st.info(f"Running backtest: {bt_strategy} | Lots: {bt_lots} | {bt_start} to {bt_end}")
-    with st.spinner("Running backtest..."):
+    _status = st.empty()
+    _progress = st.progress(0)
+    _status.info("Step 1/3 - Downloading latest market data...")
+    _progress.progress(10)
+    import subprocess as _sp
+    _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+    _status.info(f"Step 2/3 - Running backtest: {bt_strategy} | {bt_start} to {bt_end}")
+    _progress.progress(40)
+    if True:
         try:
             cmd = [
                 ".venv/bin/python", "scripts/run_backtest_cli.py",
@@ -1574,16 +1578,18 @@ if st.button("RUN BACKTEST", key="sec6_run"):
                 cmd.append("--no-charges")
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
             if result.returncode == 0:
-                st.success("Backtest complete")
+                _progress.progress(100)
+                _status.success("Step 3/3 - Backtest complete! Report ready below.")
                 st.session_state["sec6_force_latest"] = True
                 st.code(result.stdout[-3000:] if len(result.stdout) > 3000 else result.stdout)
             else:
-                st.error("Backtest failed")
+                _progress.progress(100)
+                _status.error("Backtest failed - see error below")
                 st.code(result.stderr[-2000:] if len(result.stderr) > 2000 else result.stderr)
         except subprocess.TimeoutExpired:
-            st.error("Backtest timed out after 5 minutes")
+            _status.error("Backtest timed out after 5 minutes")
         except Exception as e:
-            st.error(f"Error running backtest: {e}")
+            _status.error(f"Error running backtest: {e}")
 
 st.markdown("---")
 st.markdown("**Backtest Reports**")
@@ -1683,11 +1689,15 @@ with port_tab1:
         port_include_charges = st.checkbox("Include Tax & All Charges", value=True, key="port_charges")
 
     if st.button("RUN PREDEFINED PORTFOLIO", key="port_run_pre"):
-        with st.spinner("Updating market data..."):
-            import subprocess as _sp
-            _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
-        st.info("Running predefined portfolio backtest...")
-        with st.spinner("Running..."):
+        _pp_status = st.empty()
+        _pp_progress = st.progress(0)
+        _pp_status.info("Step 1/3 - Downloading latest market data...")
+        _pp_progress.progress(10)
+        import subprocess as _sp
+        _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+        _pp_status.info(f"Step 2/3 - Running portfolio backtest: {port_start} to {port_end}")
+        _pp_progress.progress(40)
+        if True:
             try:
                 cmd = [
                     ".venv/bin/python", "scripts/run_portfolio_cli.py",
@@ -1703,14 +1713,16 @@ with port_tab1:
                     cmd.append("--no-charges")
                 result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
                 if result.returncode == 0:
-                    st.success("Portfolio backtest complete")
+                    _pp_progress.progress(100)
+                    _pp_status.success("Step 3/3 - Portfolio backtest complete! Report ready below.")
                     st.session_state["port_force_latest"] = True
                     st.code(result.stdout[-3000:])
                 else:
-                    st.error("Portfolio backtest failed")
+                    _pp_progress.progress(100)
+                    _pp_status.error("Portfolio backtest failed - see error below")
                     st.code(result.stderr[-2000:])
             except Exception as e:
-                st.error(f"Error: {e}")
+                _pp_status.error(f"Error: {e}")
 
 with port_tab2:
     st.markdown("**Dynamic Portfolio - Select Strategies**")
@@ -1757,14 +1769,18 @@ with port_tab2:
         port_dyn_include_charges = st.checkbox("Include Tax & All Charges", value=True, key="port_dyn_charges")
 
     if st.button("RUN DYNAMIC PORTFOLIO", key="port_run_dyn"):
-        with st.spinner("Updating market data..."):
+        _pd_status = st.empty()
+        _pd_progress = st.progress(0)
+        if not selected_strategies:
+            _pd_status.error("Please select at least one strategy")
+        else:
+            _pd_status.info("Step 1/3 - Downloading latest market data...")
+            _pd_progress.progress(10)
             import subprocess as _sp
             _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
-        if not selected_strategies:
-            st.error("Please select at least one strategy")
-        else:
-            st.info(f"Running dynamic portfolio: {selected_strategies}")
-            with st.spinner("Running..."):
+            _pd_status.info(f"Step 2/3 - Running dynamic portfolio: {selected_strategies} | {port_dyn_start} to {port_dyn_end}")
+            _pd_progress.progress(40)
+            if True:
                 try:
                     cmd = [
                         ".venv/bin/python", "scripts/run_portfolio_cli.py",
@@ -1780,13 +1796,16 @@ with port_tab2:
                         cmd.append("--no-charges")
                     result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
                     if result.returncode == 0:
-                        st.success("Dynamic portfolio backtest complete")
+                        _pd_progress.progress(100)
+                        _pd_status.success("Step 3/3 - Dynamic portfolio complete! Report ready below.")
+                        st.session_state["port_force_latest"] = True
                         st.code(result.stdout[-3000:])
                     else:
-                        st.error("Dynamic portfolio backtest failed")
+                        _pd_progress.progress(100)
+                        _pd_status.error("Dynamic portfolio failed - see error below")
                         st.code(result.stderr[-2000:])
                 except Exception as e:
-                    st.error(f"Error: {e}")
+                    _pd_status.error(f"Error: {e}")
 
 
 # ================================================================
@@ -1881,35 +1900,40 @@ with col7:
     opt_include_charges = st.checkbox("Include Tax & All Charges", value=True, key="sec7_charges")
 
 if st.button("RUN OPTIMISATION", key="sec7_run"):
-    with st.spinner("Updating market data..."):
-        import subprocess as _sp
-        _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
-    st.info(f"Running optimisation: {opt_strategy} | Group: {opt_group} | Lots: {opt_lots} | Slippage: ${opt_slippage}/side | Charges: {'Included' if opt_include_charges else 'Excluded'}")
-    with st.spinner("Running optimisation - this may take several minutes..."):
-        try:
-            cmd = [
-                ".venv/bin/python", "scripts/run_optimization_cli.py",
-                "--strategy", opt_strategy,
-                "--group", opt_group,
-                "--lots", str(opt_lots),
-                "--start", str(opt_start),
-                "--end", str(opt_end),
-                "--slippage", str(opt_slippage)
-            ]
-            if not opt_include_charges:
-                cmd.append("--no-charges")
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
-            if result.returncode == 0:
-                st.success("Optimisation complete")
-                st.session_state["sec7_force_latest"] = True
-                st.code(result.stdout[-3000:] if len(result.stdout) > 3000 else result.stdout)
-            else:
-                st.error("Optimisation failed")
-                st.code(result.stderr[-2000:] if len(result.stderr) > 2000 else result.stderr)
-        except subprocess.TimeoutExpired:
-            st.error("Optimisation timed out after 10 minutes")
-        except Exception as e:
-            st.error(f"Error: {e}")
+    _opt_status = st.empty()
+    _opt_progress = st.progress(0)
+    _opt_status.info("Step 1/3 - Downloading latest market data...")
+    _opt_progress.progress(10)
+    import subprocess as _sp
+    _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+    _opt_status.info(f"Step 2/3 - Running optimisation: {opt_strategy} | {opt_start} to {opt_end} (may take several minutes...)")
+    _opt_progress.progress(40)
+    try:
+        cmd = [
+            ".venv/bin/python", "scripts/run_optimization_cli.py",
+            "--strategy", opt_strategy,
+            "--group", opt_group,
+            "--lots", str(opt_lots),
+            "--start", str(opt_start),
+            "--end", str(opt_end),
+            "--slippage", str(opt_slippage)
+        ]
+        if not opt_include_charges:
+            cmd.append("--no-charges")
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+        if result.returncode == 0:
+            _opt_progress.progress(100)
+            _opt_status.success("Step 3/3 - Optimisation complete! Report ready below.")
+            st.session_state["sec7_force_latest"] = True
+            st.code(result.stdout[-3000:] if len(result.stdout) > 3000 else result.stdout)
+        else:
+            _opt_progress.progress(100)
+            _opt_status.error("Optimisation failed - see error below")
+            st.code(result.stderr[-2000:] if len(result.stderr) > 2000 else result.stderr)
+    except subprocess.TimeoutExpired:
+        _opt_status.error("Optimisation timed out after 10 minutes")
+    except Exception as e:
+        _opt_status.error(f"Error: {e}")
 
 st.markdown("---")
 st.markdown("**Optimisation Results**")
