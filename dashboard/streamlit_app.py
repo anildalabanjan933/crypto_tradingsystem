@@ -26,9 +26,9 @@ p  { font-size: 12px !important; margin: 0 !important; color: #131722 !important
     color: #131722 !important;
     font-size: 11px !important;
     font-weight: 700 !important;
-    padding: 6px 14px !important;
-    margin-bottom: 6px !important;
-    margin-top: 8px !important;
+    padding: 4px 10px !important;
+    margin-bottom: 4px !important;
+    margin-top: 6px !important;
     text-transform: uppercase !important;
     letter-spacing: 1px !important;
     border-radius: 3px !important;
@@ -43,8 +43,8 @@ div[data-testid="stExpander"] {
     border: 1px solid #C8D0DC !important;
     border-left: 4px solid #2196F3 !important;
     border-radius: 3px !important;
-    margin-bottom: 5px !important;
-    margin-top: 3px !important;
+    margin-bottom: 3px !important;
+    margin-top: 2px !important;
     background: #FFFFFF !important;
     box-shadow: none !important;
     outline: none !important;
@@ -61,7 +61,7 @@ div[data-testid="stExpander"] details summary {
     color: #131722 !important;
     font-weight: 700 !important;
     font-size: 11px !important;
-    padding: 6px 14px !important;
+    padding: 4px 10px !important;
     border-radius: 2px !important;
     text-transform: uppercase !important;
     letter-spacing: 1px !important;
