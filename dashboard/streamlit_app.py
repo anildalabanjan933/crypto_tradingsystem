@@ -1972,7 +1972,7 @@ if st.button("RUN OPTIMISATION", key="sec7_run"):
             _new_opt = sorted([f for f in _glob.glob("output/*.html") if "optimization_results_" in f], key=_glob_os.path.getmtime, reverse=True)
             if _new_opt:
                 st.session_state["sec7_html_sel"] = _new_opt[0]
-                st.session_state["sec7_force_latest"] = False
+            st.session_state["sec7_force_latest"] = False
             import time as _t; _t.sleep(1)
             st.rerun()
         else:

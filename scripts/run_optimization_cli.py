@@ -71,7 +71,7 @@ optimizer.final_params_to_optimize = param_ranges
 results = optimizer.run_optimization()
 
 if results:
-    analyzer = OptimizationAnalyzer(results, args.strategy, args.symbol, args.start, args.end, include_charges=not args.no_charges)
+    analyzer = OptimizationAnalyzer(results, args.strategy, args.symbol, args.start, args.end, lot_size=args.lots, slippage=args.slippage, include_charges=not args.no_charges)
     analyzer.generate_html_report()
     print("Optimisation complete - reports saved to output/")
 else:
