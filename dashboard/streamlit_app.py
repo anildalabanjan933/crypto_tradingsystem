@@ -1554,6 +1554,9 @@ with col6:
     bt_include_charges = st.checkbox("Include Tax & All Charges", value=True, key="sec6_charges")
 
 if st.button("RUN BACKTEST", key="sec6_run"):
+    with st.spinner("Updating market data..."):
+        import subprocess as _sp
+        _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
     st.info(f"Running backtest: {bt_strategy} | Lots: {bt_lots} | {bt_start} to {bt_end}")
     with st.spinner("Running backtest..."):
         try:
@@ -1676,6 +1679,9 @@ with port_tab1:
         port_include_charges = st.checkbox("Include Tax & All Charges", value=True, key="port_charges")
 
     if st.button("RUN PREDEFINED PORTFOLIO", key="port_run_pre"):
+    with st.spinner("Updating market data..."):
+        import subprocess as _sp
+        _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
         st.info("Running predefined portfolio backtest...")
         with st.spinner("Running..."):
             try:
@@ -1746,6 +1752,9 @@ with port_tab2:
         port_dyn_include_charges = st.checkbox("Include Tax & All Charges", value=True, key="port_dyn_charges")
 
     if st.button("RUN DYNAMIC PORTFOLIO", key="port_run_dyn"):
+    with st.spinner("Updating market data..."):
+        import subprocess as _sp
+        _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
         if not selected_strategies:
             st.error("Please select at least one strategy")
         else:
@@ -1864,6 +1873,9 @@ with col7:
     opt_include_charges = st.checkbox("Include Tax & All Charges", value=True, key="sec7_charges")
 
 if st.button("RUN OPTIMISATION", key="sec7_run"):
+    with st.spinner("Updating market data..."):
+        import subprocess as _sp
+        _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
     st.info(f"Running optimisation: {opt_strategy} | Group: {opt_group} | Lots: {opt_lots} | Slippage: ${opt_slippage}/side | Charges: {'Included' if opt_include_charges else 'Excluded'}")
     with st.spinner("Running optimisation - this may take several minutes..."):
         try:
