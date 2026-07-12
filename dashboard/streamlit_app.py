@@ -1556,10 +1556,17 @@ with col6:
 if st.button("RUN BACKTEST", key="sec6_run"):
     _status = st.empty()
     _progress = st.progress(0)
-    _status.info("Step 1/3 - Downloading latest market data...")
-    _progress.progress(10)
-    import subprocess as _sp
-    _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+    import os as _os, time as _tm
+    _csv_path = "data/btc_1m_delta.csv"
+    _csv_age = _tm.time() - _os.path.getmtime(_csv_path) if _os.path.exists(_csv_path) else 9999
+    if _csv_age > 1800:
+        _status.info("Step 1/3 - Downloading latest market data...")
+        _progress.progress(10)
+        import subprocess as _sp
+        _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+    else:
+        _status.info("Step 1/3 - Market data is fresh, skipping download...")
+        _progress.progress(10)
     _status.info(f"Step 2/3 - Running backtest: {bt_strategy} | {bt_start} to {bt_end}")
     _progress.progress(40)
     if True:
@@ -1697,10 +1704,16 @@ with port_tab1:
     if st.button("RUN PREDEFINED PORTFOLIO", key="port_run_pre"):
         _pp_status = st.empty()
         _pp_progress = st.progress(0)
-        _pp_status.info("Step 1/3 - Downloading latest market data...")
-        _pp_progress.progress(10)
-        import subprocess as _sp
-        _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+        import os as _os2, time as _tm2
+        _csv_age2 = _tm2.time() - _os2.path.getmtime("data/btc_1m_delta.csv") if _os2.path.exists("data/btc_1m_delta.csv") else 9999
+        if _csv_age2 > 1800:
+            _pp_status.info("Step 1/3 - Downloading latest market data...")
+            _pp_progress.progress(10)
+            import subprocess as _sp
+            _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+        else:
+            _pp_status.info("Step 1/3 - Market data is fresh, skipping download...")
+            _pp_progress.progress(10)
         _pp_status.info(f"Step 2/3 - Running portfolio backtest: {port_start} to {port_end}")
         _pp_progress.progress(40)
         if True:
@@ -1920,10 +1933,16 @@ with col7:
 if st.button("RUN OPTIMISATION", key="sec7_run"):
     _opt_status = st.empty()
     _opt_progress = st.progress(0)
-    _opt_status.info("Step 1/3 - Downloading latest market data...")
-    _opt_progress.progress(10)
-    import subprocess as _sp
-    _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+    import os as _os4, time as _tm4
+    _csv_age4 = _tm4.time() - _os4.path.getmtime("data/btc_1m_delta.csv") if _os4.path.exists("data/btc_1m_delta.csv") else 9999
+    if _csv_age4 > 1800:
+        _opt_status.info("Step 1/3 - Downloading latest market data...")
+        _opt_progress.progress(10)
+        import subprocess as _sp
+        _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+    else:
+        _opt_status.info("Step 1/3 - Market data is fresh, skipping download...")
+        _opt_progress.progress(10)
     _opt_status.info(f"Step 2/3 - Running optimisation: {opt_strategy} | {opt_start} to {opt_end} (may take several minutes...)")
     _opt_progress.progress(40)
     try:
