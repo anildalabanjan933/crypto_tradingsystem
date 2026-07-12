@@ -56,33 +56,34 @@ div[data-testid="stExpander"]:focus-within {
     box-shadow: none !important;
     outline: none !important;
 }
+div[data-testid="stExpander"] details summary,
+details > summary,
+details[open] > summary,
+summary,
+.streamlit-expanderHeader,
+[data-testid="stExpander"] summary,
 div[data-testid="stExpander"] details summary {
     background-color: #E8D5D5 !important;
     color: #2d1515 !important;
     font-weight: 700 !important;
     font-size: 11px !important;
-    padding: 4px 10px !important;
-    border-radius: 2px !important;
     text-transform: uppercase !important;
     letter-spacing: 1px !important;
+    padding: 4px 10px !important;
+    border-left: 4px solid #b05070 !important;
+    border-radius: 2px !important;
     list-style: none !important;
     outline: none !important;
 }
-[data-testid="stExpander"] summary {
-    background-color: #E8D5D5 !important;
-    color: #2d1515 !important;
-    font-weight: 700 !important;
-    font-size: 11px !important;
-    padding: 4px 10px !important;
-    border-radius: 2px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 1px !important;
-}
-[data-testid="stExpander"] summary:hover {
+details summary:hover,
+details > summary:hover,
+summary:hover,
+.streamlit-expanderHeader:hover {
     background-color: #dfc8c8 !important;
-    color: #2d1515 !important;
 }
-[data-testid="stExpander"] summary p {
+details summary p, details summary span, details summary div,
+summary p, summary span, summary div,
+.streamlit-expanderHeader p, .streamlit-expanderHeader span {
     color: #2d1515 !important;
     font-weight: 700 !important;
     font-size: 11px !important;
@@ -93,40 +94,14 @@ div[data-testid="stExpander"] details summary {
     border: 1px solid #E8D5D5 !important;
     border-radius: 3px !important;
 }
-/* Streamlit 1.59.x expander selectors */
-div[data-testid="stExpander"] details summary {
+[data-testid="stExpanderToggleIcon"] {
+    color: #b05070 !important;
+}
+div[data-testid="stExpander"] > div:first-child {
     background-color: #E8D5D5 !important;
-    color: #2d1515 !important;
     border-left: 4px solid #b05070 !important;
-}
-div[data-testid="stExpander"] details summary:hover {
-    background-color: #dfc8c8 !important;
-}
-div[data-testid="stExpander"] details summary div,
-div[data-testid="stExpander"] details summary span,
-div[data-testid="stExpander"] details summary p {
-    color: #2d1515 !important;
-    font-weight: 700 !important;
-    font-size: 11px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 1px !important;
-}
-.streamlit-expanderHeader {
-    background-color: #E8D5D5 !important;
-    color: #2d1515 !important;
-    font-weight: 700 !important;
-    font-size: 11px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 1px !important;
-    border-left: 4px solid #b05070 !important;
-}
-.streamlit-expanderHeader p,
-.streamlit-expanderHeader span {
-    color: #2d1515 !important;
-    font-weight: 700 !important;
-    font-size: 11px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 1px !important;
+    border-radius: 3px !important;
+    padding: 0 !important;
 }
 /* Nested expanders inside expanders */
 div[data-testid="stExpander"] div[data-testid="stExpander"] > div:first-child {
@@ -1108,7 +1083,7 @@ with st.expander("SECTION 2.4 - MEMBER MANAGEMENT", expanded=st.session_state.ge
                 json.dump(members_cfg, open(members_config_file,'w'), indent=2)
                 st.rerun()
     else:
-        st.info("No members added yet. Add members below.")
+        st.markdown("<div style='background:#f0f4ff;padding:6px 10px;border-radius:3px;font-size:11px;color:#555;'>No members added yet. Add members below.</div>", unsafe_allow_html=True)
 
     # Add member form
     with st.expander("+ ADD MEMBER"):
