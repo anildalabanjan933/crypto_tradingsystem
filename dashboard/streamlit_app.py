@@ -1538,7 +1538,7 @@ elif bt_range == "2 Years":
     bt_end = today
 elif bt_range == "Full CSV":
     bt_start = datetime.date.fromisoformat("2024-01-01")
-    bt_end = datetime.date.fromisoformat("2026-07-10")
+    bt_end = today
     st.info(f"Full CSV range: {bt_start} to {bt_end}")
 else:
     col3, col4 = st.columns(2)
@@ -1575,6 +1575,7 @@ if st.button("RUN BACKTEST", key="sec6_run"):
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
             if result.returncode == 0:
                 st.success("Backtest complete")
+                st.session_state["sec6_force_latest"] = True
                 st.code(result.stdout[-3000:] if len(result.stdout) > 3000 else result.stdout)
             else:
                 st.error("Backtest failed")
@@ -1592,6 +1593,9 @@ csv_files = sorted([f for f in glob.glob("output/*.csv") if "trade_log_" in f], 
 
 st.markdown("**HTML Reports**")
 if html_files:
+    if "sec6_html_select" not in st.session_state or st.session_state.get("sec6_force_latest"):
+        st.session_state["sec6_html_select"] = html_files[0] if html_files else None
+        st.session_state["sec6_force_latest"] = False
     selected_html = st.selectbox("Select HTML Report", html_files, key="sec6_html_select")
     c1, c2, c3 = st.columns(3)
     with c1:
@@ -1662,7 +1666,7 @@ with port_tab1:
     elif port_range == "2 Years":
         port_start = today - datetime.timedelta(days=730); port_end = today
     elif port_range == "Full CSV":
-        port_start = datetime.date.fromisoformat("2024-01-01"); port_end = datetime.date.fromisoformat("2026-07-10")
+        port_start = datetime.date.fromisoformat("2024-01-01"); port_end = today
         st.info(f"Full CSV range: {port_start} to {port_end}")
     else:
         col1, col2 = st.columns(2)
@@ -1700,6 +1704,7 @@ with port_tab1:
                 result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
                 if result.returncode == 0:
                     st.success("Portfolio backtest complete")
+                    st.session_state["port_force_latest"] = True
                     st.code(result.stdout[-3000:])
                 else:
                     st.error("Portfolio backtest failed")
@@ -1735,7 +1740,7 @@ with port_tab2:
     elif port_dyn_range == "2 Years":
         port_dyn_start = today - datetime.timedelta(days=730); port_dyn_end = today
     elif port_dyn_range == "Full CSV":
-        port_dyn_start = datetime.date.fromisoformat("2024-01-01"); port_dyn_end = datetime.date.fromisoformat("2026-07-10")
+        port_dyn_start = datetime.date.fromisoformat("2024-01-01"); port_dyn_end = today
         st.info(f"Full CSV range: {port_dyn_start} to {port_dyn_end}")
     else:
         col1, col2 = st.columns(2)
@@ -1793,6 +1798,9 @@ port_csv = sorted([f for f in glob.glob("output/*.csv") if "portfolio_trade_log_
 
 st.markdown("**Select Report to View/Download**")
 if port_html:
+    if "port_html_sel" not in st.session_state or st.session_state.get("port_force_latest"):
+        st.session_state["port_html_sel"] = port_html[0] if port_html else None
+        st.session_state["port_force_latest"] = False
     sel_port_html = st.selectbox("Select Portfolio HTML", port_html, key="port_html_sel")
     c1, c2, c3 = st.columns(3)
     with c1:
@@ -1857,7 +1865,7 @@ elif opt_range == "1.5 Years":
 elif opt_range == "2 Years":
     opt_start = today - datetime.timedelta(days=730); opt_end = today
 elif opt_range == "Full CSV":
-    opt_start = datetime.date.fromisoformat("2024-01-01"); opt_end = datetime.date.fromisoformat("2026-07-10")
+    opt_start = datetime.date.fromisoformat("2024-01-01"); opt_end = today
     st.info(f"Full CSV range: {opt_start} to {opt_end}")
 else:
     col4, col5 = st.columns(2)
@@ -1893,6 +1901,7 @@ if st.button("RUN OPTIMISATION", key="sec7_run"):
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
             if result.returncode == 0:
                 st.success("Optimisation complete")
+                st.session_state["sec7_force_latest"] = True
                 st.code(result.stdout[-3000:] if len(result.stdout) > 3000 else result.stdout)
             else:
                 st.error("Optimisation failed")
@@ -1910,6 +1919,9 @@ opt_html_files = sorted([f for f in glob.glob("output/*.html") if "optimization_
 
 st.markdown("**HTML Reports**")
 if opt_html_files:
+    if "sec7_html_sel" not in st.session_state or st.session_state.get("sec7_force_latest"):
+        st.session_state["sec7_html_sel"] = opt_html_files[0] if opt_html_files else None
+        st.session_state["sec7_force_latest"] = False
     sel_opt_html = st.selectbox("Select Optimisation HTML", opt_html_files, key="sec7_html_sel")
     c1, c2 = st.columns(2)
     with c1:
