@@ -254,15 +254,40 @@ s4_log = system.get("log_path_s4", "logs/live_trading_s4.log")
 # ================================================================
 # TOP HEADER
 # ================================================================
-col_title, col_status = st.columns([4, 1])
-with col_title:
-    st.markdown("## CRYPTO TRADING SYSTEM")
-    st.markdown("BTC Algo Trading Dashboard - Single Control Centre")
-with col_status:
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.success("SYSTEM ONLINE")
+# Fetch live BTC price for header
+try:
+    import requests as _req
+    _r = _req.get("https://api.india.delta.exchange/v2/tickers/BTCUSD", timeout=3)
+    _d = _r.json()
+    _btc_price = float(_d['result']['mark_price'])
+    _btc_change = float(_d['result']['mark_change_24h'])
+    _chg_color = "#26a69a" if _btc_change >= 0 else "#ef5350"
+    _chg_sign = "+" if _btc_change >= 0 else ""
+    _btc_html = f'''<span style="color:#26a69a;font-weight:700;font-size:15px;">${_btc_price:,.1f}</span>
+        <span style="color:{_chg_color};font-size:11px;margin-left:6px;">{_chg_sign}{_btc_change:.2f}%</span>'''
+except:
+    _btc_html = '<span style="color:#888;font-size:11px;">BTC N/A</span>'
 
-st.markdown("---")
+col_title, col_status = st.columns([5, 1])
+with col_title:
+    st.markdown(
+        f'''<div style="display:flex;align-items:center;gap:20px;padding:4px 0;">
+        <span style="font-size:16px;font-weight:700;color:#131722;">CRYPTO TRADING SYSTEM</span>
+        <span style="font-size:11px;color:#555;">BTC Algo Dashboard</span>
+        <span style="font-size:11px;color:#888;">BTC/USD:</span>
+        {_btc_html}
+        </div>''',
+        unsafe_allow_html=True
+    )
+with col_status:
+    st.markdown(
+        '<div style="text-align:right;padding-top:4px;">' +
+        '<span style="background:#e8f5e9;color:#2e7d32;font-weight:700;font-size:10px;' +
+        'padding:4px 10px;border-radius:3px;border:1px solid #a5d6a7;letter-spacing:1px;">SYSTEM ONLINE</span></div>',
+        unsafe_allow_html=True
+    )
+
+st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
 # ================================================================
 # SECTION 1 - SYSTEM STATUS CARDS
@@ -328,7 +353,7 @@ with c5:
 # ================================================================
 # ALERT BANNER
 # ================================================================
-st.markdown("---")
+st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 alerts = []
 
 if disk_pct > 80:
@@ -409,7 +434,7 @@ if alerts:
     if not any(l == "red" for l, _ in alerts):
         st.markdown("<div class='alert-green'>ALL SYSTEMS HEALTHY - No critical errors</div>", unsafe_allow_html=True)
 else:
-    st.markdown("<div class='alert-green'>ALL SYSTEMS HEALTHY - No errors detected</div>", unsafe_allow_html=True)
+    pass  # No alerts - healthy state shown in error monitor below
 
 
 
@@ -417,317 +442,316 @@ else:
 # ================================================================
 # SECTION 1B - ERROR MONITOR (auto-checks all systems)
 # ================================================================
+st.markdown('<div style="margin-top:-8px;"></div>', unsafe_allow_html=True)
 if 'exp_1b' not in st.session_state: st.session_state['exp_1b'] = False
 with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b', False)):
- st.session_state['exp_1b'] = True
+    import subprocess, os, datetime
 
-import subprocess, os, datetime
+    errors = []
+    warnings = []
+    ok = []
 
-errors = []
-warnings = []
-ok = []
-
-# 1. CHECK BOT SCREENS RUNNING
-try:
-    result = subprocess.run(['screen', '-ls'], capture_output=True, text=True)
-    if 'live_s2' in result.stdout:
-        ok.append("S2 bot screen: RUNNING")
-    else:
-        errors.append("S2 bot screen: NOT RUNNING - run bash start.sh on VM")
-    if 'live_s4' in result.stdout:
-        ok.append("S4 bot screen: RUNNING")
-    else:
-        errors.append("S4 bot screen: NOT RUNNING - run bash start.sh on VM")
-except Exception as e:
-    errors.append(f"Screen check failed: {e}")
-
-# 2. CHECK LOG FILES EXIST AND RECENT
-for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+    # 1. CHECK BOT SCREENS RUNNING
     try:
-        if os.path.exists(log):
-            mtime = os.path.getmtime(log)
-            age_mins = (datetime.datetime.now().timestamp() - mtime) / 60
-            if age_mins < 5:
-                ok.append(f"{bot} log: ACTIVE (updated {int(age_mins)}m ago)")
-            elif age_mins < 30:
-                warnings.append(f"{bot} log: STALE ({int(age_mins)}m ago) - bot may be stuck")
-            else:
-                errors.append(f"{bot} log: NOT UPDATING ({int(age_mins)}m ago) - bot likely crashed")
+        result = subprocess.run(['screen', '-ls'], capture_output=True, text=True)
+        if 'live_s2' in result.stdout:
+            ok.append("S2 bot screen: RUNNING")
         else:
-            errors.append(f"{bot} log: FILE MISSING - bot never started")
-    except Exception as e:
-        errors.append(f"{bot} log check failed: {e}")
-
-# 3. CHECK FOR ERRORS IN LOGS
-for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
-    try:
-        if os.path.exists(log):
-            lines = open(log).readlines()
-            recent = lines[-50:] if len(lines) > 50 else lines
-            error_lines = [l.strip() for l in recent if 'ERROR' in l]
-            algotest_errors = [l.strip() for l in recent if 'ALGOTEST' in l and ('ERROR' in l or 'WARNING' in l)]
-            api_errors = [l.strip() for l in recent if any(x in l for x in ['InvalidApiKey','insufficient_margin','rate_limit','IP not whitelisted']) or ('ERROR' in l and any(x in l for x in ['401','403','429']))]
-            if error_lines:
-                for el in error_lines[-3:]:
-                    errors.append(f"{bot} ERROR: {el[-100:]}")
-            if algotest_errors:
-                for al in algotest_errors[-2:]:
-                    errors.append(f"{bot} ALGOTEST: {al[-100:]}")
-            if api_errors:
-                for al in api_errors[-2:]:
-                    errors.append(f"{bot} API ERROR: {al[-100:]}")
-            if not error_lines and not algotest_errors and not api_errors:
-                ok.append(f"{bot} log: No errors in last 50 lines")
-    except Exception as e:
-        errors.append(f"{bot} error scan failed: {e}")
-
-# 4. CHECK ALGOTEST WEBHOOK KEYS IN ENV
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-    webhook_keys = [
-        'ALGOTEST_WEBHOOK_S2_BUY_ENTRY','ALGOTEST_WEBHOOK_S2_BUY_EXIT',
-        'ALGOTEST_WEBHOOK_S2_SELL_ENTRY','ALGOTEST_WEBHOOK_S2_SELL_EXIT',
-        'ALGOTEST_WEBHOOK_S4_BUY_ENTRY','ALGOTEST_WEBHOOK_S4_BUY_EXIT',
-        'ALGOTEST_WEBHOOK_S4_SELL_ENTRY','ALGOTEST_WEBHOOK_S4_SELL_EXIT'
-    ]
-    missing = [k for k in webhook_keys if not os.getenv(k)]
-    if missing:
-        for m in missing:
-            errors.append(f"WEBHOOK KEY MISSING in .env: {m}")
-    else:
-        ok.append("All 8 Algotest webhook keys: CONFIGURED")
-except Exception as e:
-    warnings.append(f"Webhook key check failed: {e}")
-
-# 5. CHECK DISK SPACE
-try:
-    import shutil
-    total, used, free = shutil.disk_usage('.')
-    pct = int(used/total*100)
-    free_gb = round(free/1024**3, 1)
-    if pct > 80:
-        errors.append(f"DISK CRITICAL: {pct}% used - only {free_gb}GB free - clean immediately")
-    elif pct > 70:
-        warnings.append(f"DISK WARNING: {pct}% used - {free_gb}GB free - monitor closely")
-    else:
-        ok.append(f"Disk: {pct}% used - {free_gb}GB free")
-except Exception as e:
-    warnings.append(f"Disk check failed: {e}")
-
-# 6. CHECK SYSTEMD SERVICE
-try:
-    result = subprocess.run(['systemctl', 'is-active', 'tradingbot.service'], capture_output=True, text=True)
-    status = result.stdout.strip()
-    if status == 'active':
-        ok.append("systemd tradingbot.service: ACTIVE")
-    else:
-        warnings.append(f"systemd tradingbot.service: {status} - auto-restart may not work")
-except Exception as e:
-    warnings.append(f"Service check failed: {e}")
-
-# 7. CHECK RECENT ALGOTEST SUCCESS
-for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
-    try:
-        if os.path.exists(log):
-            lines = open(log).readlines()
-            recent = lines[-200:] if len(lines) > 200 else lines
-            algotest_ok = [l for l in recent if 'ALGOTEST' in l and 'Status: 200' in l]
-            algotest_fail = [l for l in recent if 'ALGOTEST' in l and 'Status: 200' not in l and 'WARNING' not in l and 'ERROR' in l]
-            if algotest_ok:
-                ok.append(f"{bot} last Algotest webhook: SUCCESS (Status 200)")
-            if algotest_fail:
-                errors.append(f"{bot} Algotest webhook FAILED: {algotest_fail[-1].strip()[-80:]}")
-    except:
-        pass
-
-
-# 8. CHECK OPEN POSITION > 24H (orphan position risk)
-for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
-    try:
-        if os.path.exists(log):
-            lines = open(log).readlines()
-            entry_lines = [l for l in lines if '[ORDER] ENTRY' in l]
-            exit_lines = [l for l in lines if '[ORDER] EXIT' in l]
-            if entry_lines:
-                last_entry = entry_lines[-1]
-                last_exit = exit_lines[-1] if exit_lines else None
-                import re
-                entry_match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_entry)
-                exit_match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_exit) if last_exit else None
-                if entry_match:
-                    entry_time = datetime.datetime.strptime(entry_match.group(1), '%Y-%m-%d %H:%M:%S')
-                    if last_exit is None or (exit_match and entry_time > datetime.datetime.strptime(exit_match.group(1), '%Y-%m-%d %H:%M:%S')):
-                        age_hours = (datetime.datetime.now() - entry_time).total_seconds() / 3600
-                        if age_hours > 48:
-                            errors.append(f"{bot} ORPHAN POSITION: Entry {int(age_hours)}h ago with no exit - check Delta account immediately")
-                        elif age_hours > 24:
-                            warnings.append(f"{bot} OPEN POSITION: {int(age_hours)}h since entry - no exit yet - monitor closely")
-                        else:
-                            ok.append(f"{bot} position: open {int(age_hours)}h - normal")
-                    else:
-                        ok.append(f"{bot} position: closed cleanly")
-    except Exception as e:
-        warnings.append(f"{bot} position check failed: {e}")
-
-# 9. CHECK NO ORDERS IN LAST 48H (bot alive but not trading)
-for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
-    try:
-        if os.path.exists(log):
-            lines = open(log).readlines()
-            order_lines = [l for l in lines if '[ORDER]' in l]
-            if order_lines:
-                import re
-                last_order = order_lines[-1]
-                match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_order)
-                if match:
-                    last_time = datetime.datetime.strptime(match.group(1), '%Y-%m-%d %H:%M:%S')
-                    age_hours = (datetime.datetime.now() - last_time).total_seconds() / 3600
-                    if age_hours > 48:
-                        warnings.append(f"{bot} last order: {int(age_hours)}h ago - strategy may be in low signal period")
-                    else:
-                        ok.append(f"{bot} last order: {int(age_hours)}h ago - normal")
-            else:
-                ok.append(f"{bot} no orders yet - waiting for first signal")
-    except Exception as e:
-        warnings.append(f"{bot} order check failed: {e}")
-
-# 10. CHECK DUPLICATE ORDERS (same timestamp fired twice)
-for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
-    try:
-        if os.path.exists(log):
-            lines = open(log).readlines()
-            order_lines = [l for l in lines if '[ORDER]' in l]
-            timestamps = []
-            import re
-            for l in order_lines:
-                match = re.search(r'ts=(\S+)', l)
-                if match:
-                    timestamps.append(match.group(1))
-            duplicates = [t for t in timestamps if timestamps.count(t) > 1]
-            if duplicates:
-                errors.append(f"{bot} DUPLICATE ORDERS detected at timestamps: {list(set(duplicates))}")
-            else:
-                ok.append(f"{bot} duplicate order check: CLEAN")
-    except Exception as e:
-        warnings.append(f"{bot} duplicate check failed: {e}")
-
-
-# 11. CHECK BOT CYCLING HEALTH (last [SIGNALS] line timestamp)
-for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
-    try:
-        if os.path.exists(log):
-            lines = open(log).readlines()
-            signal_lines = [l for l in lines if '[SIGNALS]' in l or '[WAIT]' in l or '[DATA]' in l]
-            if signal_lines:
-                last_line = signal_lines[-1]
-                import re
-                match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_line)
-                if match:
-                    last_time = datetime.datetime.strptime(match.group(1), '%Y-%m-%d %H:%M:%S')
-                    age_mins = (datetime.datetime.now() - last_time).total_seconds() / 60
-                    if age_mins > 10:
-                        errors.append(f"{bot} BOT FROZEN: No cycle in {int(age_mins)}m - bot may be stuck or crashed")
-                    elif age_mins > 5:
-                        warnings.append(f"{bot} bot cycle: {int(age_mins)}m ago - slightly delayed")
-                    else:
-                        ok.append(f"{bot} bot cycling: OK ({int(age_mins)}m ago)")
-            else:
-                warnings.append(f"{bot} no cycle lines found in log")
-    except Exception as e:
-        warnings.append(f"{bot} cycle check failed: {e}")
-
-# 12. FORWARD TEST END DATE REMINDER
-try:
-    forward_end = datetime.datetime(2026, 7, 24)
-    days_left = (forward_end - datetime.datetime.now()).days
-    if days_left < 0:
-        errors.append("FORWARD TEST ENDED - review Algotest MTM results and decide go-live")
-    elif days_left == 0:
-        errors.append("FORWARD TEST ENDS TODAY - review Algotest MTM results now")
-    elif days_left <= 3:
-        warnings.append(f"FORWARD TEST ENDS IN {days_left} DAYS - prepare go-live review")
-    elif days_left <= 7:
-        warnings.append(f"Forward test ends in {days_left} days (July 24)")
-    else:
-        ok.append(f"Forward test: {days_left} days remaining (ends July 24)")
-except Exception as e:
-    warnings.append(f"Forward test date check failed: {e}")
-
-# 13. CHECK .ENV FILE EXISTS AND HAS API KEYS
-try:
-    if os.path.exists('.env'):
-        env_content = open('.env').read()
-        required_keys = ['S2_API_KEY', 'S4_API_KEY', 'S2_API_SECRET', 'S4_API_SECRET']
-        missing_keys = [k for k in required_keys if k not in env_content]
-        if missing_keys:
-            errors.append(f".env MISSING API KEYS: {missing_keys} - bots cannot trade")
+            errors.append("S2 bot screen: NOT RUNNING - run bash start.sh on VM")
+        if 'live_s4' in result.stdout:
+            ok.append("S4 bot screen: RUNNING")
         else:
-            ok.append(".env file: exists with all API keys")
-    else:
-        errors.append(".env FILE MISSING - all API keys gone - run bash start.sh")
-except Exception as e:
-    warnings.append(f".env check failed: {e}")
+            errors.append("S4 bot screen: NOT RUNNING - run bash start.sh on VM")
+    except Exception as e:
+        errors.append(f"Screen check failed: {e}")
 
-# 14. CHECK DELTA API CONNECTIVITY
-try:
-    import requests as req
-    resp = req.get('https://api.india.delta.exchange/v2/products?contract_types=perpetual_futures&limit=1', timeout=5)
-    if resp.status_code == 200:
-        ok.append("Delta API connectivity: REACHABLE")
-    else:
-        warnings.append(f"Delta API returned status {resp.status_code} - may have issues")
-except Exception as e:
-    errors.append(f"Delta API UNREACHABLE: {e} - check VM internet connection")
-
-# 15. CHECK VM INTERNET (ping Google DNS)
-try:
-    import subprocess as sp
-    result = sp.run(['curl', '-s', '--max-time', '3', 'https://8.8.8.8'], capture_output=True)
-    ok.append("VM internet: CONNECTED")
-except Exception as e:
-    errors.append(f"VM internet check failed: {e}")
-
-# 16. CHECK ALGOTEST WEBHOOK URLS REACHABLE (quick HEAD check)
-try:
-    from dotenv import load_dotenv
-    load_dotenv()
-    import requests as req
-    test_url = os.getenv('ALGOTEST_WEBHOOK_S4_BUY_ENTRY')
-    if test_url:
+    # 2. CHECK LOG FILES EXIST AND RECENT
+    for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
         try:
-            resp = req.post(test_url, json={"access_token": os.getenv('ALGOTEST_ACCESS_TOKEN', 'n7FJcMHANHN4F8HdqbU5QMDJn5JO79K9'), "alert_name": "ping"}, timeout=5)
-            if resp.status_code in [200, 201, 202, 400, 422]:
-                ok.append("Algotest webhook URL: REACHABLE")
+            if os.path.exists(log):
+                mtime = os.path.getmtime(log)
+                age_mins = (datetime.datetime.now().timestamp() - mtime) / 60
+                if age_mins < 5:
+                    ok.append(f"{bot} log: ACTIVE (updated {int(age_mins)}m ago)")
+                elif age_mins < 30:
+                    warnings.append(f"{bot} log: STALE ({int(age_mins)}m ago) - bot may be stuck")
+                else:
+                    errors.append(f"{bot} log: NOT UPDATING ({int(age_mins)}m ago) - bot likely crashed")
             else:
-                warnings.append(f"Algotest webhook returned {resp.status_code} - check signal config")
+                errors.append(f"{bot} log: FILE MISSING - bot never started")
         except Exception as e:
-            errors.append(f"Algotest webhook UNREACHABLE: {e}")
+            errors.append(f"{bot} log check failed: {e}")
+
+    # 3. CHECK FOR ERRORS IN LOGS
+    for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+        try:
+            if os.path.exists(log):
+                lines = open(log).readlines()
+                recent = lines[-50:] if len(lines) > 50 else lines
+                error_lines = [l.strip() for l in recent if 'ERROR' in l]
+                algotest_errors = [l.strip() for l in recent if 'ALGOTEST' in l and ('ERROR' in l or 'WARNING' in l)]
+                api_errors = [l.strip() for l in recent if any(x in l for x in ['InvalidApiKey','insufficient_margin','rate_limit','IP not whitelisted']) or ('ERROR' in l and any(x in l for x in ['401','403','429']))]
+                if error_lines:
+                    for el in error_lines[-3:]:
+                        errors.append(f"{bot} ERROR: {el[-100:]}")
+                if algotest_errors:
+                    for al in algotest_errors[-2:]:
+                        errors.append(f"{bot} ALGOTEST: {al[-100:]}")
+                if api_errors:
+                    for al in api_errors[-2:]:
+                        errors.append(f"{bot} API ERROR: {al[-100:]}")
+                if not error_lines and not algotest_errors and not api_errors:
+                    ok.append(f"{bot} log: No errors in last 50 lines")
+        except Exception as e:
+            errors.append(f"{bot} error scan failed: {e}")
+
+    # 4. CHECK ALGOTEST WEBHOOK KEYS IN ENV
+    try:
+        from dotenv import load_dotenv
+        load_dotenv()
+        webhook_keys = [
+            'ALGOTEST_WEBHOOK_S2_BUY_ENTRY','ALGOTEST_WEBHOOK_S2_BUY_EXIT',
+            'ALGOTEST_WEBHOOK_S2_SELL_ENTRY','ALGOTEST_WEBHOOK_S2_SELL_EXIT',
+            'ALGOTEST_WEBHOOK_S4_BUY_ENTRY','ALGOTEST_WEBHOOK_S4_BUY_EXIT',
+            'ALGOTEST_WEBHOOK_S4_SELL_ENTRY','ALGOTEST_WEBHOOK_S4_SELL_EXIT'
+        ]
+        missing = [k for k in webhook_keys if not os.getenv(k)]
+        if missing:
+            for m in missing:
+                errors.append(f"WEBHOOK KEY MISSING in .env: {m}")
+        else:
+            ok.append("All 8 Algotest webhook keys: CONFIGURED")
+    except Exception as e:
+        warnings.append(f"Webhook key check failed: {e}")
+
+    # 5. CHECK DISK SPACE
+    try:
+        import shutil
+        total, used, free = shutil.disk_usage('.')
+        pct = int(used/total*100)
+        free_gb = round(free/1024**3, 1)
+        if pct > 80:
+            errors.append(f"DISK CRITICAL: {pct}% used - only {free_gb}GB free - clean immediately")
+        elif pct > 70:
+            warnings.append(f"DISK WARNING: {pct}% used - {free_gb}GB free - monitor closely")
+        else:
+            ok.append(f"Disk: {pct}% used - {free_gb}GB free")
+    except Exception as e:
+        warnings.append(f"Disk check failed: {e}")
+
+    # 6. CHECK SYSTEMD SERVICE
+    try:
+        result = subprocess.run(['systemctl', 'is-active', 'tradingbot.service'], capture_output=True, text=True)
+        status = result.stdout.strip()
+        if status == 'active':
+            ok.append("systemd tradingbot.service: ACTIVE")
+        else:
+            warnings.append(f"systemd tradingbot.service: {status} - auto-restart may not work")
+    except Exception as e:
+        warnings.append(f"Service check failed: {e}")
+
+    # 7. CHECK RECENT ALGOTEST SUCCESS
+    for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+        try:
+            if os.path.exists(log):
+                lines = open(log).readlines()
+                recent = lines[-200:] if len(lines) > 200 else lines
+                algotest_ok = [l for l in recent if 'ALGOTEST' in l and 'Status: 200' in l]
+                algotest_fail = [l for l in recent if 'ALGOTEST' in l and 'Status: 200' not in l and 'WARNING' not in l and 'ERROR' in l]
+                if algotest_ok:
+                    ok.append(f"{bot} last Algotest webhook: SUCCESS (Status 200)")
+                if algotest_fail:
+                    errors.append(f"{bot} Algotest webhook FAILED: {algotest_fail[-1].strip()[-80:]}")
+        except:
+            pass
+
+
+    # 8. CHECK OPEN POSITION > 24H (orphan position risk)
+    for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+        try:
+            if os.path.exists(log):
+                lines = open(log).readlines()
+                entry_lines = [l for l in lines if '[ORDER] ENTRY' in l]
+                exit_lines = [l for l in lines if '[ORDER] EXIT' in l]
+                if entry_lines:
+                    last_entry = entry_lines[-1]
+                    last_exit = exit_lines[-1] if exit_lines else None
+                    import re
+                    entry_match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_entry)
+                    exit_match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_exit) if last_exit else None
+                    if entry_match:
+                        entry_time = datetime.datetime.strptime(entry_match.group(1), '%Y-%m-%d %H:%M:%S')
+                        if last_exit is None or (exit_match and entry_time > datetime.datetime.strptime(exit_match.group(1), '%Y-%m-%d %H:%M:%S')):
+                            age_hours = (datetime.datetime.now() - entry_time).total_seconds() / 3600
+                            if age_hours > 48:
+                                errors.append(f"{bot} ORPHAN POSITION: Entry {int(age_hours)}h ago with no exit - check Delta account immediately")
+                            elif age_hours > 24:
+                                warnings.append(f"{bot} OPEN POSITION: {int(age_hours)}h since entry - no exit yet - monitor closely")
+                            else:
+                                ok.append(f"{bot} position: open {int(age_hours)}h - normal")
+                        else:
+                            ok.append(f"{bot} position: closed cleanly")
+        except Exception as e:
+            warnings.append(f"{bot} position check failed: {e}")
+
+    # 9. CHECK NO ORDERS IN LAST 48H (bot alive but not trading)
+    for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+        try:
+            if os.path.exists(log):
+                lines = open(log).readlines()
+                order_lines = [l for l in lines if '[ORDER]' in l]
+                if order_lines:
+                    import re
+                    last_order = order_lines[-1]
+                    match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_order)
+                    if match:
+                        last_time = datetime.datetime.strptime(match.group(1), '%Y-%m-%d %H:%M:%S')
+                        age_hours = (datetime.datetime.now() - last_time).total_seconds() / 3600
+                        if age_hours > 48:
+                            warnings.append(f"{bot} last order: {int(age_hours)}h ago - strategy may be in low signal period")
+                        else:
+                            ok.append(f"{bot} last order: {int(age_hours)}h ago - normal")
+                else:
+                    ok.append(f"{bot} no orders yet - waiting for first signal")
+        except Exception as e:
+            warnings.append(f"{bot} order check failed: {e}")
+
+    # 10. CHECK DUPLICATE ORDERS (same timestamp fired twice)
+    for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+        try:
+            if os.path.exists(log):
+                lines = open(log).readlines()
+                order_lines = [l for l in lines if '[ORDER]' in l]
+                timestamps = []
+                import re
+                for l in order_lines:
+                    match = re.search(r'ts=(\S+)', l)
+                    if match:
+                        timestamps.append(match.group(1))
+                duplicates = [t for t in timestamps if timestamps.count(t) > 1]
+                if duplicates:
+                    errors.append(f"{bot} DUPLICATE ORDERS detected at timestamps: {list(set(duplicates))}")
+                else:
+                    ok.append(f"{bot} duplicate order check: CLEAN")
+        except Exception as e:
+            warnings.append(f"{bot} duplicate check failed: {e}")
+
+
+    # 11. CHECK BOT CYCLING HEALTH (last [SIGNALS] line timestamp)
+    for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+        try:
+            if os.path.exists(log):
+                lines = open(log).readlines()
+                signal_lines = [l for l in lines if '[SIGNALS]' in l or '[WAIT]' in l or '[DATA]' in l]
+                if signal_lines:
+                    last_line = signal_lines[-1]
+                    import re
+                    match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_line)
+                    if match:
+                        last_time = datetime.datetime.strptime(match.group(1), '%Y-%m-%d %H:%M:%S')
+                        age_mins = (datetime.datetime.now() - last_time).total_seconds() / 60
+                        if age_mins > 10:
+                            errors.append(f"{bot} BOT FROZEN: No cycle in {int(age_mins)}m - bot may be stuck or crashed")
+                        elif age_mins > 5:
+                            warnings.append(f"{bot} bot cycle: {int(age_mins)}m ago - slightly delayed")
+                        else:
+                            ok.append(f"{bot} bot cycling: OK ({int(age_mins)}m ago)")
+                else:
+                    warnings.append(f"{bot} no cycle lines found in log")
+        except Exception as e:
+            warnings.append(f"{bot} cycle check failed: {e}")
+
+    # 12. FORWARD TEST END DATE REMINDER
+    try:
+        forward_end = datetime.datetime(2026, 7, 24)
+        days_left = (forward_end - datetime.datetime.now()).days
+        if days_left < 0:
+            errors.append("FORWARD TEST ENDED - review Algotest MTM results and decide go-live")
+        elif days_left == 0:
+            errors.append("FORWARD TEST ENDS TODAY - review Algotest MTM results now")
+        elif days_left <= 3:
+            warnings.append(f"FORWARD TEST ENDS IN {days_left} DAYS - prepare go-live review")
+        elif days_left <= 7:
+            warnings.append(f"Forward test ends in {days_left} days (July 24)")
+        else:
+            ok.append(f"Forward test: {days_left} days remaining (ends July 24)")
+    except Exception as e:
+        warnings.append(f"Forward test date check failed: {e}")
+
+    # 13. CHECK .ENV FILE EXISTS AND HAS API KEYS
+    try:
+        if os.path.exists('.env'):
+            env_content = open('.env').read()
+            required_keys = ['S2_API_KEY', 'S4_API_KEY', 'S2_API_SECRET', 'S4_API_SECRET']
+            missing_keys = [k for k in required_keys if k not in env_content]
+            if missing_keys:
+                errors.append(f".env MISSING API KEYS: {missing_keys} - bots cannot trade")
+            else:
+                ok.append(".env file: exists with all API keys")
+        else:
+            errors.append(".env FILE MISSING - all API keys gone - run bash start.sh")
+    except Exception as e:
+        warnings.append(f".env check failed: {e}")
+
+    # 14. CHECK DELTA API CONNECTIVITY
+    try:
+        import requests as req
+        resp = req.get('https://api.india.delta.exchange/v2/products?contract_types=perpetual_futures&limit=1', timeout=5)
+        if resp.status_code == 200:
+            ok.append("Delta API connectivity: REACHABLE")
+        else:
+            warnings.append(f"Delta API returned status {resp.status_code} - may have issues")
+    except Exception as e:
+        errors.append(f"Delta API UNREACHABLE: {e} - check VM internet connection")
+
+    # 15. CHECK VM INTERNET (ping Google DNS)
+    try:
+        import subprocess as sp
+        result = sp.run(['curl', '-s', '--max-time', '3', 'https://8.8.8.8'], capture_output=True)
+        ok.append("VM internet: CONNECTED")
+    except Exception as e:
+        errors.append(f"VM internet check failed: {e}")
+
+    # 16. CHECK ALGOTEST WEBHOOK URLS REACHABLE (quick HEAD check)
+    try:
+        from dotenv import load_dotenv
+        load_dotenv()
+        import requests as req
+        test_url = os.getenv('ALGOTEST_WEBHOOK_S4_BUY_ENTRY')
+        if test_url:
+            try:
+                resp = req.post(test_url, json={"access_token": os.getenv('ALGOTEST_ACCESS_TOKEN', 'n7FJcMHANHN4F8HdqbU5QMDJn5JO79K9'), "alert_name": "ping"}, timeout=5)
+                if resp.status_code in [200, 201, 202, 400, 422]:
+                    ok.append("Algotest webhook URL: REACHABLE")
+                else:
+                    warnings.append(f"Algotest webhook returned {resp.status_code} - check signal config")
+            except Exception as e:
+                errors.append(f"Algotest webhook UNREACHABLE: {e}")
+        else:
+            errors.append("Algotest webhook URL missing from .env")
+    except Exception as e:
+        warnings.append(f"Algotest connectivity check failed: {e}")
+
+    # DISPLAY RESULTS
+    if errors:
+        st.error(f"ERRORS DETECTED: {len(errors)} issue(s) require attention")
+        for e in errors:
+            st.markdown(f"<div class='alert-red'>ERROR: {e}</div>", unsafe_allow_html=True)
+    elif warnings:
+        st.warning(f"WARNINGS: {len(warnings)} item(s) to monitor")
     else:
-        errors.append("Algotest webhook URL missing from .env")
-except Exception as e:
-    warnings.append(f"Algotest connectivity check failed: {e}")
+        st.success("ALL SYSTEMS HEALTHY - No errors detected")
 
-# DISPLAY RESULTS
-if errors:
-    st.error(f"ERRORS DETECTED: {len(errors)} issue(s) require attention")
-    for e in errors:
-        st.markdown(f"<div class='alert-red'>ERROR: {e}</div>", unsafe_allow_html=True)
-elif warnings:
-    st.warning(f"WARNINGS: {len(warnings)} item(s) to monitor")
-else:
-    st.success("ALL SYSTEMS HEALTHY - No errors detected")
+    if warnings:
+        for w in warnings:
+            st.markdown(f"<div class='alert-yellow'>WARNING: {w}</div>", unsafe_allow_html=True)
 
-if warnings:
-    for w in warnings:
-        st.markdown(f"<div class='alert-yellow'>WARNING: {w}</div>", unsafe_allow_html=True)
+    with st.expander("SHOW ALL OK CHECKS"):
+        for o in ok:
+            st.markdown(f"OK: {o}")
 
-with st.expander("Show all OK checks"):
-    for o in ok:
-        st.markdown(f"OK: {o}")
-
-    st.caption(f"Last checked: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Auto-refreshes every 30s")
-st.markdown("---")
+        st.caption(f"Last checked: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Auto-refreshes every 30s")
+st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
 
 # ================================================================
@@ -735,62 +759,59 @@ st.markdown("---")
 # ================================================================
 if 'exp_13' not in st.session_state: st.session_state['exp_13'] = False
 with st.expander("SECTION 1.3 - VM HEALTH", expanded=st.session_state.get('exp_13', False)):
- st.session_state['exp_13'] = True
-try:
-    import psutil
-    cpu = psutil.cpu_percent(interval=1)
-    ram = psutil.virtual_memory()
-    ram_used = ram.percent
-    ram_free_gb = round(ram.available / (1024**3), 2)
-    uptime_secs = int(datetime.datetime.now().timestamp() - psutil.boot_time())
-    uptime_hrs = uptime_secs // 3600
-    uptime_mins = (uptime_secs % 3600) // 60
-    col1, col2, col3, col4 = st.columns(4)
-    with col1:
-        cpu_color = "metric-red" if cpu > 80 else "metric-yellow" if cpu > 60 else "metric-green"
-        st.markdown(f"<div class='metric-box {cpu_color}'><div class='metric-label'>CPU USAGE</div><div class='metric-value'>{cpu:.1f}%</div></div>", unsafe_allow_html=True)
-    with col2:
-        ram_color = "metric-red" if ram_used > 80 else "metric-yellow" if ram_used > 60 else "metric-green"
-        st.markdown(f"<div class='metric-box {ram_color}'><div class='metric-label'>RAM USAGE</div><div class='metric-value'>{ram_used:.1f}%</div></div>", unsafe_allow_html=True)
-    with col3:
-        st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>RAM FREE</div><div class='metric-value'>{ram_free_gb} GB</div></div>", unsafe_allow_html=True)
-    with col4:
-        st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>UPTIME</div><div class='metric-value'>{uptime_hrs}h {uptime_mins}m</div></div>", unsafe_allow_html=True)
-    # App folder sizes
-    import subprocess
-    col5, col6, col7, col8 = st.columns(4)
-    with col5:
-        try:
-            r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system'], capture_output=True, text=True)
-            app_size = r.stdout.split()[0] if r.stdout else 'N/A'
-        except:
-            app_size = 'N/A'
-        st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>APP SIZE</div><div class='metric-value'>{app_size}</div></div>", unsafe_allow_html=True)
-    with col6:
-        try:
-            r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/logs'], capture_output=True, text=True)
-            log_size = r.stdout.split()[0] if r.stdout else 'N/A'
-        except:
-            log_size = 'N/A'
-        log_color = "metric-yellow" if log_size not in ['N/A'] and float(log_size.replace('M','').replace('G','').replace('K','') or 0) > 100 else "metric-green"
-        st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>LOGS SIZE</div><div class='metric-value'>{log_size}</div></div>", unsafe_allow_html=True)
-    with col7:
-        try:
-            r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/data'], capture_output=True, text=True)
-            data_size = r.stdout.split()[0] if r.stdout else 'N/A'
-        except:
-            data_size = 'N/A'
-        st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>DATA SIZE</div><div class='metric-value'>{data_size}</div></div>", unsafe_allow_html=True)
-    with col8:
-        try:
-            r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/.venv'], capture_output=True, text=True)
-            venv_size = r.stdout.split()[0] if r.stdout else 'N/A'
-        except:
-            venv_size = 'N/A'
-        st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>VENV SIZE</div><div class='metric-value'>{venv_size}</div></div>", unsafe_allow_html=True)
-except Exception as e:
-    st.warning(f"VM health check failed: {e}. Install psutil: pip install psutil")
-st.markdown("---")
+    try:
+        import psutil
+        cpu = psutil.cpu_percent(interval=1)
+        ram = psutil.virtual_memory()
+        ram_used = ram.percent
+        ram_free_gb = round(ram.available / (1024**3), 2)
+        uptime_secs = int(datetime.datetime.now().timestamp() - psutil.boot_time())
+        uptime_hrs = uptime_secs // 3600
+        uptime_mins = (uptime_secs % 3600) // 60
+        col1, col2, col3, col4 = st.columns(4)
+        with col1:
+            cpu_color = "metric-red" if cpu > 80 else "metric-yellow" if cpu > 60 else "metric-green"
+            st.markdown(f"<div class='metric-box {cpu_color}'><div class='metric-label'>CPU USAGE</div><div class='metric-value'>{cpu:.1f}%</div></div>", unsafe_allow_html=True)
+        with col2:
+            ram_color = "metric-red" if ram_used > 80 else "metric-yellow" if ram_used > 60 else "metric-green"
+            st.markdown(f"<div class='metric-box {ram_color}'><div class='metric-label'>RAM USAGE</div><div class='metric-value'>{ram_used:.1f}%</div></div>", unsafe_allow_html=True)
+        with col3:
+            st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>RAM FREE</div><div class='metric-value'>{ram_free_gb} GB</div></div>", unsafe_allow_html=True)
+        with col4:
+            st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>UPTIME</div><div class='metric-value'>{uptime_hrs}h {uptime_mins}m</div></div>", unsafe_allow_html=True)
+        import subprocess
+        col5, col6, col7, col8 = st.columns(4)
+        with col5:
+            try:
+                r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system'], capture_output=True, text=True)
+                app_size = r.stdout.split()[0] if r.stdout else 'N/A'
+            except:
+                app_size = 'N/A'
+            st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>APP SIZE</div><div class='metric-value'>{app_size}</div></div>", unsafe_allow_html=True)
+        with col6:
+            try:
+                r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/logs'], capture_output=True, text=True)
+                log_size = r.stdout.split()[0] if r.stdout else 'N/A'
+            except:
+                log_size = 'N/A'
+            st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>LOGS SIZE</div><div class='metric-value'>{log_size}</div></div>", unsafe_allow_html=True)
+        with col7:
+            try:
+                r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/data'], capture_output=True, text=True)
+                data_size = r.stdout.split()[0] if r.stdout else 'N/A'
+            except:
+                data_size = 'N/A'
+            st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>DATA SIZE</div><div class='metric-value'>{data_size}</div></div>", unsafe_allow_html=True)
+        with col8:
+            try:
+                r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/.venv'], capture_output=True, text=True)
+                venv_size = r.stdout.split()[0] if r.stdout else 'N/A'
+            except:
+                venv_size = 'N/A'
+            st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>VENV SIZE</div><div class='metric-value'>{venv_size}</div></div>", unsafe_allow_html=True)
+    except Exception as e:
+        st.warning(f"VM health check failed: {e}. Install psutil: pip install psutil")
+st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
 # ================================================================
 # SECTION 2 - BOT CONTROL
@@ -806,7 +827,7 @@ col_h3.markdown("**Symbol**")
 col_h4.markdown("**Lots**")
 col_h5.markdown("**Status**")
 col_h6.markdown("**Action**")
-st.markdown("---")
+st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
 for i, algo in enumerate(algos):
     c1, c2, c3, c4, c5, c6 = st.columns([1,2,2,1,2,2])
@@ -847,7 +868,7 @@ for i, algo in enumerate(algos):
                 json.dump(config, open('dashboard/algo_config.json','w'), indent=2)
                 st.warning(f"{algo['name']} deactivated")
 
-st.markdown("---")
+st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 b1,b2,b3,b4,b5,b6 = st.columns(6)
 with b1:
     if st.button("START ALL", key="sec2_start"):
@@ -1025,7 +1046,7 @@ with st.expander("+ ADD MEMBER"):
                 st.rerun()
             else:
                 st.error("Name + at least one bot required")
-st.markdown("---")
+st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
 # ================================================================
 # SECTION 3 - PLATFORM MONITOR
@@ -1138,7 +1159,7 @@ with tab1:
         st.info("No open positions")
 
     # ── ORDER HISTORY ──────────────────────────────────────────
-    st.markdown("---")
+    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
     with st.expander("ORDER HISTORY", expanded=False):
 
@@ -1457,7 +1478,7 @@ with tab2:
         st.metric("Days Left", days_left)
 
     st.progress(progress, text=f"Forward Test Progress: {int(progress*100)}%")
-    st.markdown("---")
+    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
     st.markdown("**Webhook Status**")
     webhooks = [
@@ -1475,7 +1496,7 @@ with tab2:
     if st.button("TEST ALL WEBHOOKS", key="sec3_test_webhooks"):
         st.info("Run: python algotest_webhook.py on VM to test all webhooks")
 
-    st.markdown("---")
+    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
     st.markdown("**Forward Test Metrics**")
     m1, m2, m3, m4 = st.columns(4)
     with m1:
@@ -1491,7 +1512,7 @@ with tab2:
 with tab3:
     st.markdown("**Tradetron Marketplace**")
     st.warning("NOT CONNECTED - Tradetron setup pending after July 24")
-    st.markdown("---")
+    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
     c1, c2, c3 = st.columns(3)
     with c1:
         st.metric("Status", "NOT CONNECTED")
@@ -1722,7 +1743,7 @@ if st.button("RUN BACKTEST", key="sec6_run"):
         except Exception as e:
             _status.error(f"Error running backtest: {e}")
 
-st.markdown("---")
+st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 st.markdown("**Backtest Reports**")
 
 import os as _glob_os; html_files = sorted([f for f in glob.glob("output/*.html") if "backtest_report_" in f and "optimization" not in f], key=_glob_os.path.getmtime, reverse=True)
@@ -1965,7 +1986,7 @@ with port_tab2:
 
 # ================================================================
 
-st.markdown("---")
+st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 st.markdown("**Backtest Reports**")
 port_html = sorted([f for f in glob.glob("output/*.html") if "portfolio_report_" in f], key=_glob_os.path.getmtime, reverse=True)
 port_csv = sorted([f for f in glob.glob("output/*.csv") if "portfolio_trade_log_" in f], reverse=True)
@@ -2102,7 +2123,7 @@ if st.button("RUN OPTIMISATION", key="sec7_run"):
     except Exception as e:
         _opt_status.error(f"Error: {e}")
 
-st.markdown("---")
+st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 st.markdown("**Optimisation Results**")
 
 opt_csv_files = sorted([f for f in glob.glob("output/*.csv") if "optimization_results_" in f], reverse=True)
@@ -2171,7 +2192,7 @@ col_h2.markdown("**Name**")
 col_h3.markdown("**Lots**")
 col_h4.markdown("**Status**")
 col_h5.markdown("**Action**")
-st.markdown("---")
+st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
 for i, contract in enumerate(contracts):
     c1, c2, c3, c4, c5 = st.columns([2,2,1,2,2])
@@ -2200,7 +2221,7 @@ for i, contract in enumerate(contracts):
             st.warning("Contract removed")
             st.rerun()
 
-st.markdown("---")
+st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 st.markdown("**Add New Contract**")
 with st.form("add_contract_form"):
     new_sym = st.text_input("Symbol (e.g. ETHUSD)")
@@ -2244,7 +2265,7 @@ with c2:
 with c3:
     st.success(f"GITHUB: {local_commit[:20]}")
 
-st.markdown("---")
+st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 b1, b2, b3 = st.columns(3)
 with b1:
     if st.button("GIT STATUS", key="sec11_status"):
@@ -2311,7 +2332,7 @@ with c4:
 with c5:
     st.info("SERVICE: CHECK VM")
 
-st.markdown("---")
+st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 b1, b2, b3 = st.columns(3)
 with b1:
     if st.button("CHECK DISK", key="sec12_disk"):
@@ -2497,5 +2518,5 @@ with col_s4:
 # ================================================================
 # FOOTER
 # ================================================================
-st.markdown("---")
+st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 st.caption(f"Version: {system.get('version', 'v3.9')} | Commit: {git_commit} | Last refresh: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
