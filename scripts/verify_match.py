@@ -86,25 +86,24 @@ def get_live_trades(log_file):
             continue
 
         # Parse ENTRY
-        # Example: [ORDER] ENTRY buy 100 lots @ 63500.0 | signal_ts=2026-07-12T14:00:00
+        # Actual log format: [ORDER] ENTRY buy 100 lots | type=BUY_A | ts=2026-07-12T14:00:00
         entry_match = re.search(
-            r'ENTRY\s+(buy|sell)\s+\d+\s+lots\s+@\s+([\d.]+).*signal_ts=(\S+)', line, re.I)
+            r'ENTRY\s+(buy|sell)\s+\d+\s+lots.*ts=(\S+)', line, re.I)
         if entry_match:
             side      = entry_match.group(1).lower()
-            price     = entry_match.group(2)
-            signal_ts = entry_match.group(3).rstrip('|').strip()
+            signal_ts = entry_match.group(2).rstrip('|').strip()
             direction = 'long' if side == 'buy' else 'short'
             entries[signal_ts] = {'direction': direction,
                                    'entry_time': signal_ts,
-                                   'entry_price': price}
+                                   'entry_price': '-'}
             continue
 
         # Parse EXIT
+        # Actual log format: [ORDER] EXIT sell 100 lots | type=ST_FLIP_RED | ts=2026-07-12T18:00:00
         exit_match = re.search(
-            r'EXIT\s+(sell|buy)\s+\d+\s+lots\s+@\s+([\d.]+).*signal_ts=(\S+)', line, re.I)
+            r'EXIT\s+(sell|buy)\s+\d+\s+lots.*ts=(\S+)', line, re.I)
         if exit_match:
-            price     = exit_match.group(2)
-            signal_ts = exit_match.group(3).rstrip('|').strip()
+            signal_ts = exit_match.group(2).rstrip('|').strip()
             # Match to open entry
             for ets, entry in list(entries.items()):
                 trades.append({
