@@ -5,7 +5,7 @@ st.set_page_config(page_title="Crypto Trading Dashboard", layout="wide", page_ic
 
 st.markdown("""
 <style>
-/* CRYPTO TRADING DASHBOARD - SOFT PROFESSIONAL THEME */
+/* CRYPTO TRADING DASHBOARD - UNIFIED SOFT THEME */
 
 /* BASE */
 .stApp { background-color: #F8F9FA; }
@@ -20,192 +20,154 @@ h2 { font-size: 14px !important; font-weight: 600 !important; margin: 0 !importa
 h3 { font-size: 13px !important; font-weight: 600 !important; margin: 0 !important; color: #2C3E50 !important; }
 p  { font-size: 12px !important; margin: 0 !important; color: #2C3E50 !important; }
 
-/* SECTION TITLES - soft teal, white text, easy on eyes */
+/* ── SECTION TITLES (st.markdown div) ── same as expander ── */
 .section-title {
-    background: linear-gradient(90deg, #2E86AB 0%, #3A9BC1 100%);
+    background-color: #546E7A !important;
     color: #FFFFFF !important;
     font-size: 11px !important;
-    font-weight: 700;
-    padding: 5px 12px;
-    margin-bottom: 6px;
-    margin-top: 8px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border-radius: 3px;
-    border-left: 4px solid #1A6B8A;
-    display: block;
-    width: 100%;
+    font-weight: 700 !important;
+    padding: 6px 14px !important;
+    margin-bottom: 6px !important;
+    margin-top: 8px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    border-radius: 3px !important;
+    border-left: 4px solid #37474F !important;
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
 }
 
-/* EXPANDER - soft teal header, white text */
+/* ── EXPANDER - EXACT SAME COLOR AS SECTION TITLE ── */
 div[data-testid="stExpander"] {
-    border: 1px solid #B2D8E8 !important;
-    border-radius: 4px !important;
+    border: 1px solid #90A4AE !important;
+    border-radius: 3px !important;
     margin-bottom: 5px !important;
     margin-top: 3px !important;
     background: #FFFFFF !important;
 }
-div[data-testid="stExpander"] details > summary {
-    background: linear-gradient(90deg, #2E86AB 0%, #3A9BC1 100%) !important;
+
+/* Target the summary element inside expander */
+div[data-testid="stExpander"] details summary {
+    background-color: #546E7A !important;
     color: #FFFFFF !important;
     font-weight: 700 !important;
     font-size: 11px !important;
-    padding: 6px 12px !important;
+    padding: 6px 14px !important;
     border-radius: 3px !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.8px !important;
+    letter-spacing: 1px !important;
+    list-style: none !important;
 }
-div[data-testid="stExpander"] details > summary:hover {
-    background: linear-gradient(90deg, #1A6B8A 0%, #2E86AB 100%) !important;
+div[data-testid="stExpander"] details summary:hover {
+    background-color: #455A64 !important;
     cursor: pointer !important;
 }
-div[data-testid="stExpander"] details > summary svg {
+div[data-testid="stExpander"] details summary p {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    font-size: 11px !important;
+}
+div[data-testid="stExpander"] details summary span {
+    color: #FFFFFF !important;
+}
+div[data-testid="stExpander"] details summary svg {
     color: #FFFFFF !important;
     fill: #FFFFFF !important;
     stroke: #FFFFFF !important;
 }
-div[data-testid="stExpander"] details[open] > summary {
-    background: linear-gradient(90deg, #1A6B8A 0%, #2E86AB 100%) !important;
+div[data-testid="stExpander"] details[open] summary {
+    background-color: #455A64 !important;
+    border-bottom: 1px solid #37474F !important;
+    border-radius: 3px 3px 0 0 !important;
 }
 
-/* METRICS */
+/* ── METRICS ── */
 [data-testid="stMetricValue"] { font-size: 13px !important; font-weight: 700 !important; color: #2C3E50 !important; }
-[data-testid="stMetricLabel"] { font-size: 10px !important; color: #7F8C8D !important; font-weight: 600 !important; }
+[data-testid="stMetricLabel"] { font-size: 10px !important; color: #78909C !important; font-weight: 600 !important; }
 [data-testid="metric-container"] {
     padding: 6px 10px !important;
-    border: 1px solid #D5E8F0 !important;
+    border: 1px solid #CFD8DC !important;
     border-radius: 4px !important;
     background: #FFFFFF !important;
-    border-left: 3px solid #2E86AB !important;
+    border-left: 3px solid #546E7A !important;
 }
 
-/* ALERTS */
+/* ── ALERTS ── */
 .alert-red {
-    background: #FDEDEC;
-    border-left: 4px solid #E74C3C;
-    padding: 5px 10px;
-    color: #922B21 !important;
-    font-weight: 700;
-    font-size: 11px !important;
-    margin: 2px 0;
-    border-radius: 3px;
+    background: #FDEDEC; border-left: 4px solid #E74C3C;
+    padding: 5px 10px; color: #922B21 !important;
+    font-weight: 700; font-size: 11px !important;
+    margin: 2px 0; border-radius: 3px;
 }
 .alert-yellow {
-    background: #FEF9E7;
-    border-left: 4px solid #F39C12;
-    padding: 5px 10px;
-    color: #9A7D0A !important;
-    font-weight: 700;
-    font-size: 11px !important;
-    margin: 2px 0;
-    border-radius: 3px;
+    background: #FEF9E7; border-left: 4px solid #F39C12;
+    padding: 5px 10px; color: #9A7D0A !important;
+    font-weight: 700; font-size: 11px !important;
+    margin: 2px 0; border-radius: 3px;
 }
 .alert-green {
-    background: #EAFAF1;
-    border-left: 4px solid #27AE60;
-    padding: 5px 10px;
-    color: #1E8449 !important;
-    font-weight: 700;
-    font-size: 11px !important;
-    margin: 2px 0;
-    border-radius: 3px;
+    background: #EAFAF1; border-left: 4px solid #27AE60;
+    padding: 5px 10px; color: #1E8449 !important;
+    font-weight: 700; font-size: 11px !important;
+    margin: 2px 0; border-radius: 3px;
 }
 
-/* BUTTONS */
+/* ── BUTTONS ── */
 .stButton > button {
-    padding: 3px 12px !important;
-    font-size: 11px !important;
-    height: 28px !important;
-    border-radius: 3px !important;
-    font-weight: 600 !important;
-    border: 1px solid #2E86AB !important;
-    color: #2E86AB !important;
-    background: #FFFFFF !important;
+    padding: 3px 12px !important; font-size: 11px !important;
+    height: 28px !important; border-radius: 3px !important;
+    font-weight: 600 !important; border: 1px solid #546E7A !important;
+    color: #546E7A !important; background: #FFFFFF !important;
 }
 .stButton > button:hover {
-    background: #2E86AB !important;
-    color: #FFFFFF !important;
+    background: #546E7A !important; color: #FFFFFF !important;
 }
 
-/* INPUTS */
+/* ── INPUTS ── */
 .stSelectbox, .stNumberInput, .stDateInput { font-size: 11px !important; }
 .stSelectbox > div > div { padding: 2px 6px !important; min-height: 28px !important; }
 
-/* TABS */
+/* ── TABS ── */
 .stTabs [data-baseweb="tab"] {
-    padding: 4px 14px !important;
-    font-size: 11px !important;
-    font-weight: 600 !important;
-    color: #7F8C8D !important;
+    padding: 4px 14px !important; font-size: 11px !important;
+    font-weight: 600 !important; color: #78909C !important;
 }
 .stTabs [aria-selected="true"] {
-    color: #2E86AB !important;
-    border-bottom: 2px solid #2E86AB !important;
+    color: #546E7A !important; border-bottom: 2px solid #546E7A !important;
 }
 
-/* DATAFRAME */
-.stDataFrame { font-size: 11px !important; }
+/* ── STATUS BOXES ── */
+.stSuccess { background: #EAFAF1 !important; color: #1E8449 !important;
+    border-left: 4px solid #27AE60 !important; padding: 4px 8px !important;
+    font-size: 11px !important; margin: 2px 0 !important; border-radius: 3px !important; }
+.stError { background: #FDEDEC !important; color: #922B21 !important;
+    border-left: 4px solid #E74C3C !important; padding: 4px 8px !important;
+    font-size: 11px !important; margin: 2px 0 !important; border-radius: 3px !important; }
+.stWarning { background: #FEF9E7 !important; color: #9A7D0A !important;
+    border-left: 4px solid #F39C12 !important; padding: 4px 8px !important;
+    font-size: 11px !important; margin: 2px 0 !important; border-radius: 3px !important; }
+.stInfo { background: #EBF5FB !important; color: #1A5276 !important;
+    border-left: 4px solid #546E7A !important; padding: 4px 8px !important;
+    font-size: 11px !important; margin: 2px 0 !important; border-radius: 3px !important; }
 
-/* STATUS BOXES */
-.stSuccess {
-    background: #EAFAF1 !important;
-    color: #1E8449 !important;
-    border-left: 4px solid #27AE60 !important;
-    padding: 4px 8px !important;
-    font-size: 11px !important;
-    margin: 2px 0 !important;
-    border-radius: 3px !important;
-}
-.stError {
-    background: #FDEDEC !important;
-    color: #922B21 !important;
-    border-left: 4px solid #E74C3C !important;
-    padding: 4px 8px !important;
-    font-size: 11px !important;
-    margin: 2px 0 !important;
-    border-radius: 3px !important;
-}
-.stWarning {
-    background: #FEF9E7 !important;
-    color: #9A7D0A !important;
-    border-left: 4px solid #F39C12 !important;
-    padding: 4px 8px !important;
-    font-size: 11px !important;
-    margin: 2px 0 !important;
-    border-radius: 3px !important;
-}
-.stInfo {
-    background: #EBF5FB !important;
-    color: #1A5276 !important;
-    border-left: 4px solid #2E86AB !important;
-    padding: 4px 8px !important;
-    font-size: 11px !important;
-    margin: 2px 0 !important;
-    border-radius: 3px !important;
-}
-
-/* SPACING */
+/* ── SPACING ── */
 .stMarkdown { margin: 0 !important; padding: 0 !important; }
 div[data-testid="stVerticalBlock"] > div { gap: 0.25rem !important; }
 .element-container { margin: 0 !important; padding: 0 !important; }
-hr { margin: 4px 0 !important; border-color: #D5E8F0 !important; }
+hr { margin: 4px 0 !important; border-color: #CFD8DC !important; }
 .stCaption { font-size: 10px !important; color: #95A5A6 !important; }
 .stCode { font-size: 10px !important; }
 
-/* METRIC BOX CUSTOM */
-.metric-box {
-    padding: 6px 10px;
-    border-radius: 4px;
-    border: 1px solid #D5E8F0;
-    background: #FFFFFF;
-    margin-bottom: 4px;
-}
-.metric-label { font-size: 10px; color: #7F8C8D; font-weight: 600; text-transform: uppercase; }
+/* ── METRIC BOX CUSTOM ── */
+.metric-box { padding: 6px 10px; border-radius: 4px;
+    border: 1px solid #CFD8DC; background: #FFFFFF; margin-bottom: 4px; }
+.metric-label { font-size: 10px; color: #78909C; font-weight: 600; text-transform: uppercase; }
 .metric-value { font-size: 14px; font-weight: 700; color: #2C3E50; }
 .metric-green  { border-left: 3px solid #27AE60; }
 .metric-red    { border-left: 3px solid #E74C3C; }
 .metric-yellow { border-left: 3px solid #F39C12; }
-.metric-blue   { border-left: 3px solid #2E86AB; }
+.metric-blue   { border-left: 3px solid #546E7A; }
 </style>
 """, unsafe_allow_html=True)
 
