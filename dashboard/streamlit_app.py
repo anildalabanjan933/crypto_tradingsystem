@@ -5,78 +5,207 @@ st.set_page_config(page_title="Crypto Trading Dashboard", layout="wide", page_ic
 
 st.markdown("""
 <style>
-/* COMPACT PRO THEME */
-.stApp { background-color: #ffffff; }
-.block-container { padding: 0.5rem 1rem 0.5rem 1rem !important; max-width: 100% !important; }
+/* CRYPTO TRADING DASHBOARD - SOFT PROFESSIONAL THEME */
+
+/* BASE */
+.stApp { background-color: #F8F9FA; }
+.block-container { padding: 0.4rem 1rem 0.4rem 1rem !important; max-width: 100% !important; }
 section[data-testid="stSidebar"] { display: none; }
-/* Hide spinner overlay */
-div[data-testid="stSpinner"] { display: none !important; }
-div.stSpinner { display: none !important; }
-/* Hide top running bar */
-div[data-testid="stStatusWidget"] { display: none !important; }
 header[data-testid="stHeader"] { background: transparent !important; }
 
-/* COMPACT FONTS */
-html, body, [class*="css"] { font-size: 12px !important; }
-h1 { font-size: 16px !important; font-weight: 700 !important; margin: 0 !important; padding: 0 !important; }
-h2 { font-size: 14px !important; font-weight: 600 !important; margin: 0 !important; }
-h3 { font-size: 13px !important; font-weight: 600 !important; margin: 0 !important; }
-p  { font-size: 12px !important; margin: 0 !important; }
+/* FONTS */
+html, body, [class*="css"] { font-size: 12px !important; color: #2C3E50 !important; }
+h1 { font-size: 16px !important; font-weight: 700 !important; margin: 0 !important; color: #2C3E50 !important; }
+h2 { font-size: 14px !important; font-weight: 600 !important; margin: 0 !important; color: #2C3E50 !important; }
+h3 { font-size: 13px !important; font-weight: 600 !important; margin: 0 !important; color: #2C3E50 !important; }
+p  { font-size: 12px !important; margin: 0 !important; color: #2C3E50 !important; }
 
-/* COMPACT METRICS */
-[data-testid="stMetricValue"] { font-size: 13px !important; font-weight: 700 !important; color: #212121 !important; }
-[data-testid="stMetricLabel"] { font-size: 11px !important; color: #546E7A !important; }
-[data-testid="metric-container"] { padding: 4px 8px !important; border: 1px solid #CFD8DC; border-radius: 4px; background: #FAFAFA; }
+/* SECTION TITLES - soft teal, white text, easy on eyes */
+.section-title {
+    background: linear-gradient(90deg, #2E86AB 0%, #3A9BC1 100%);
+    color: #FFFFFF !important;
+    font-size: 11px !important;
+    font-weight: 700;
+    padding: 5px 12px;
+    margin-bottom: 6px;
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 3px;
+    border-left: 4px solid #1A6B8A;
+    display: block;
+    width: 100%;
+}
 
-/* COMPACT SECTION TITLES */
-.section-title { color: #1565C0; font-size: 12px !important; font-weight: 700;
-                 border-bottom: 2px solid #1565C0; padding-bottom: 2px;
-                 margin-bottom: 6px; margin-top: 8px; text-transform: uppercase;
-                 letter-spacing: 0.5px; }
+/* EXPANDER - soft teal header, white text */
+div[data-testid="stExpander"] {
+    border: 1px solid #B2D8E8 !important;
+    border-radius: 4px !important;
+    margin-bottom: 5px !important;
+    margin-top: 3px !important;
+    background: #FFFFFF !important;
+}
+div[data-testid="stExpander"] details > summary {
+    background: linear-gradient(90deg, #2E86AB 0%, #3A9BC1 100%) !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    font-size: 11px !important;
+    padding: 6px 12px !important;
+    border-radius: 3px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.8px !important;
+}
+div[data-testid="stExpander"] details > summary:hover {
+    background: linear-gradient(90deg, #1A6B8A 0%, #2E86AB 100%) !important;
+    cursor: pointer !important;
+}
+div[data-testid="stExpander"] details > summary svg {
+    color: #FFFFFF !important;
+    fill: #FFFFFF !important;
+    stroke: #FFFFFF !important;
+}
+div[data-testid="stExpander"] details[open] > summary {
+    background: linear-gradient(90deg, #1A6B8A 0%, #2E86AB 100%) !important;
+}
 
-/* COMPACT ALERTS */
-.alert-red { background: #FFEBEE; border-left: 4px solid #C62828;
-             padding: 4px 8px; color: #C62828; font-weight: 600;
-             font-size: 11px !important; margin: 2px 0; border-radius: 2px; }
-.alert-yellow { background: #FFF8E1; border-left: 4px solid #E65100;
-                padding: 4px 8px; color: #E65100; font-weight: 600;
-                font-size: 11px !important; margin: 2px 0; border-radius: 2px; }
-.alert-green { background: #E8F5E9; border-left: 4px solid #2E7D32;
-               padding: 4px 8px; color: #2E7D32; font-weight: 600;
-               font-size: 11px !important; margin: 2px 0; border-radius: 2px; }
+/* METRICS */
+[data-testid="stMetricValue"] { font-size: 13px !important; font-weight: 700 !important; color: #2C3E50 !important; }
+[data-testid="stMetricLabel"] { font-size: 10px !important; color: #7F8C8D !important; font-weight: 600 !important; }
+[data-testid="metric-container"] {
+    padding: 6px 10px !important;
+    border: 1px solid #D5E8F0 !important;
+    border-radius: 4px !important;
+    background: #FFFFFF !important;
+    border-left: 3px solid #2E86AB !important;
+}
 
-/* COMPACT BUTTONS */
-.stButton > button { padding: 2px 10px !important; font-size: 11px !important;
-                     height: 26px !important; border-radius: 3px !important; }
+/* ALERTS */
+.alert-red {
+    background: #FDEDEC;
+    border-left: 4px solid #E74C3C;
+    padding: 5px 10px;
+    color: #922B21 !important;
+    font-weight: 700;
+    font-size: 11px !important;
+    margin: 2px 0;
+    border-radius: 3px;
+}
+.alert-yellow {
+    background: #FEF9E7;
+    border-left: 4px solid #F39C12;
+    padding: 5px 10px;
+    color: #9A7D0A !important;
+    font-weight: 700;
+    font-size: 11px !important;
+    margin: 2px 0;
+    border-radius: 3px;
+}
+.alert-green {
+    background: #EAFAF1;
+    border-left: 4px solid #27AE60;
+    padding: 5px 10px;
+    color: #1E8449 !important;
+    font-weight: 700;
+    font-size: 11px !important;
+    margin: 2px 0;
+    border-radius: 3px;
+}
 
-/* COMPACT INPUTS */
+/* BUTTONS */
+.stButton > button {
+    padding: 3px 12px !important;
+    font-size: 11px !important;
+    height: 28px !important;
+    border-radius: 3px !important;
+    font-weight: 600 !important;
+    border: 1px solid #2E86AB !important;
+    color: #2E86AB !important;
+    background: #FFFFFF !important;
+}
+.stButton > button:hover {
+    background: #2E86AB !important;
+    color: #FFFFFF !important;
+}
+
+/* INPUTS */
 .stSelectbox, .stNumberInput, .stDateInput { font-size: 11px !important; }
 .stSelectbox > div > div { padding: 2px 6px !important; min-height: 28px !important; }
 
-/* COMPACT TABS */
-.stTabs [data-baseweb="tab"] { padding: 4px 12px !important; font-size: 11px !important; }
+/* TABS */
+.stTabs [data-baseweb="tab"] {
+    padding: 4px 14px !important;
+    font-size: 11px !important;
+    font-weight: 600 !important;
+    color: #7F8C8D !important;
+}
+.stTabs [aria-selected="true"] {
+    color: #2E86AB !important;
+    border-bottom: 2px solid #2E86AB !important;
+}
 
-/* COMPACT DATAFRAME */
+/* DATAFRAME */
 .stDataFrame { font-size: 11px !important; }
 
-/* REMOVE EXTRA PADDING */
+/* STATUS BOXES */
+.stSuccess {
+    background: #EAFAF1 !important;
+    color: #1E8449 !important;
+    border-left: 4px solid #27AE60 !important;
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+    margin: 2px 0 !important;
+    border-radius: 3px !important;
+}
+.stError {
+    background: #FDEDEC !important;
+    color: #922B21 !important;
+    border-left: 4px solid #E74C3C !important;
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+    margin: 2px 0 !important;
+    border-radius: 3px !important;
+}
+.stWarning {
+    background: #FEF9E7 !important;
+    color: #9A7D0A !important;
+    border-left: 4px solid #F39C12 !important;
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+    margin: 2px 0 !important;
+    border-radius: 3px !important;
+}
+.stInfo {
+    background: #EBF5FB !important;
+    color: #1A5276 !important;
+    border-left: 4px solid #2E86AB !important;
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+    margin: 2px 0 !important;
+    border-radius: 3px !important;
+}
+
+/* SPACING */
 .stMarkdown { margin: 0 !important; padding: 0 !important; }
-div[data-testid="stVerticalBlock"] > div { gap: 0.3rem !important; }
+div[data-testid="stVerticalBlock"] > div { gap: 0.25rem !important; }
 .element-container { margin: 0 !important; padding: 0 !important; }
-
-/* COMPACT SUCCESS/ERROR/WARNING BOXES */
-.stSuccess, .stError, .stWarning, .stInfo {
-    padding: 4px 8px !important; font-size: 11px !important;
-    margin: 2px 0 !important; border-radius: 3px !important; }
-
-/* HORIZONTAL DIVIDER */
-hr { margin: 4px 0 !important; border-color: #e0e0e0 !important; }
-
-/* CAPTION */
-.stCaption { font-size: 10px !important; color: #888 !important; }
-
-/* CODE BLOCK */
+hr { margin: 4px 0 !important; border-color: #D5E8F0 !important; }
+.stCaption { font-size: 10px !important; color: #95A5A6 !important; }
 .stCode { font-size: 10px !important; }
+
+/* METRIC BOX CUSTOM */
+.metric-box {
+    padding: 6px 10px;
+    border-radius: 4px;
+    border: 1px solid #D5E8F0;
+    background: #FFFFFF;
+    margin-bottom: 4px;
+}
+.metric-label { font-size: 10px; color: #7F8C8D; font-weight: 600; text-transform: uppercase; }
+.metric-value { font-size: 14px; font-weight: 700; color: #2C3E50; }
+.metric-green  { border-left: 3px solid #27AE60; }
+.metric-red    { border-left: 3px solid #E74C3C; }
+.metric-yellow { border-left: 3px solid #F39C12; }
+.metric-blue   { border-left: 3px solid #2E86AB; }
 </style>
 """, unsafe_allow_html=True)
 
