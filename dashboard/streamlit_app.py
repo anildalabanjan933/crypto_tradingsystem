@@ -22,8 +22,8 @@ p  { font-size: 12px !important; margin: 0 !important; color: #131722 !important
 
 /* SECTION TITLES - medium grey shade, dark text, blue left accent */
 .section-title {
-    background-color: #DDE3ED !important;
-    color: #131722 !important;
+    background-color: #E8D5D5 !important;
+    color: #2d1515 !important;
     font-size: 11px !important;
     font-weight: 700 !important;
     padding: 4px 10px !important;
@@ -32,7 +32,7 @@ p  { font-size: 12px !important; margin: 0 !important; color: #131722 !important
     text-transform: uppercase !important;
     letter-spacing: 1px !important;
     border-radius: 3px !important;
-    border-left: 4px solid #2196F3 !important;
+    border-left: 4px solid #b05070 !important;
     display: block !important;
     width: 100% !important;
     box-sizing: border-box !important;
@@ -57,8 +57,8 @@ div[data-testid="stExpander"]:focus-within {
     outline: none !important;
 }
 div[data-testid="stExpander"] details summary {
-    background-color: #DDE3ED !important;
-    color: #131722 !important;
+    background-color: #E8D5D5 !important;
+    color: #2d1515 !important;
     font-weight: 700 !important;
     font-size: 11px !important;
     padding: 4px 10px !important;
@@ -1985,7 +1985,7 @@ with st.expander("SECTION 5B - PORTFOLIO BACKTEST", expanded=True):
                         _pd_status.error(f"Error: {e}")
 
 
-# ================================================================
+    # ================================================================
 
     st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
     st.markdown("**Backtest Reports**")
