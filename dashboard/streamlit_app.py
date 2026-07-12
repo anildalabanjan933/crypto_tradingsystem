@@ -5,24 +5,24 @@ st.set_page_config(page_title="Crypto Trading Dashboard", layout="wide", page_ic
 
 st.markdown("""
 <style>
-/* CRYPTO TRADING DASHBOARD - TRADINGVIEW INSPIRED THEME */
+/* CRYPTO TRADING DASHBOARD - CLEAN PROFESSIONAL THEME */
 
-/* BASE - clean white like TradingView */
+/* BASE */
 .stApp { background-color: #FFFFFF; }
 .block-container { padding: 0.4rem 1rem 0.4rem 1rem !important; max-width: 100% !important; }
 section[data-testid="stSidebar"] { display: none; }
 header[data-testid="stHeader"] { background: transparent !important; }
 
-/* FONTS - dark on white, sharp and clear */
+/* FONTS */
 html, body, [class*="css"] { font-size: 12px !important; color: #131722 !important; }
 h1 { font-size: 16px !important; font-weight: 700 !important; margin: 0 !important; color: #131722 !important; }
 h2 { font-size: 14px !important; font-weight: 600 !important; margin: 0 !important; color: #131722 !important; }
 h3 { font-size: 13px !important; font-weight: 600 !important; margin: 0 !important; color: #131722 !important; }
 p  { font-size: 12px !important; margin: 0 !important; color: #131722 !important; }
 
-/* SECTION TITLES - white bg, dark text, teal left accent */
+/* SECTION TITLES - medium grey shade, dark text, blue left accent */
 .section-title {
-    background-color: #F0F3FA !important;
+    background-color: #DDE3ED !important;
     color: #131722 !important;
     font-size: 11px !important;
     font-weight: 700 !important;
@@ -33,23 +33,31 @@ p  { font-size: 12px !important; margin: 0 !important; color: #131722 !important
     letter-spacing: 1px !important;
     border-radius: 3px !important;
     border-left: 4px solid #2196F3 !important;
-    border-bottom: 1px solid #E0E3EB !important;
     display: block !important;
     width: 100% !important;
     box-sizing: border-box !important;
 }
 
-/* EXPANDER - same style as section title */
+/* EXPANDER - same shade as section title, NO red border */
 div[data-testid="stExpander"] {
-    border: 1px solid #E0E3EB !important;
+    border: 1px solid #C8D0DC !important;
     border-left: 4px solid #2196F3 !important;
     border-radius: 3px !important;
     margin-bottom: 5px !important;
     margin-top: 3px !important;
     background: #FFFFFF !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
+div[data-testid="stExpander"]:focus,
+div[data-testid="stExpander"]:focus-within {
+    border: 1px solid #C8D0DC !important;
+    border-left: 4px solid #2196F3 !important;
+    box-shadow: none !important;
+    outline: none !important;
 }
 div[data-testid="stExpander"] details summary {
-    background-color: #F0F3FA !important;
+    background-color: #DDE3ED !important;
     color: #131722 !important;
     font-weight: 700 !important;
     font-size: 11px !important;
@@ -58,10 +66,15 @@ div[data-testid="stExpander"] details summary {
     text-transform: uppercase !important;
     letter-spacing: 1px !important;
     list-style: none !important;
+    outline: none !important;
 }
 div[data-testid="stExpander"] details summary:hover {
-    background-color: #E8EDF5 !important;
+    background-color: #CDD5E2 !important;
     cursor: pointer !important;
+}
+div[data-testid="stExpander"] details summary:focus {
+    outline: none !important;
+    box-shadow: none !important;
 }
 div[data-testid="stExpander"] details summary p {
     color: #131722 !important;
@@ -77,19 +90,20 @@ div[data-testid="stExpander"] details summary svg {
     stroke: #2196F3 !important;
 }
 div[data-testid="stExpander"] details[open] summary {
-    background-color: #E8EDF5 !important;
-    border-bottom: 1px solid #E0E3EB !important;
+    background-color: #CDD5E2 !important;
+    border-bottom: 1px solid #C8D0DC !important;
 }
 
-/* METRICS */
+/* METRICS - white card with visible border + shadow */
 [data-testid="stMetricValue"] { font-size: 13px !important; font-weight: 700 !important; color: #131722 !important; }
 [data-testid="stMetricLabel"] { font-size: 10px !important; color: #787B86 !important; font-weight: 600 !important; }
 [data-testid="metric-container"] {
     padding: 6px 10px !important;
-    border: 1px solid #E0E3EB !important;
+    border: 1px solid #C8D0DC !important;
     border-radius: 4px !important;
     background: #FFFFFF !important;
     border-left: 3px solid #2196F3 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
 }
 
 /* ALERTS */
@@ -117,7 +131,7 @@ div[data-testid="stExpander"] details[open] summary {
     padding: 3px 12px !important; font-size: 11px !important;
     height: 28px !important; border-radius: 3px !important;
     font-weight: 600 !important;
-    border: 1px solid #E0E3EB !important;
+    border: 1px solid #C8D0DC !important;
     color: #131722 !important; background: #F0F3FA !important;
 }
 .stButton > button:hover {
@@ -161,8 +175,12 @@ hr { margin: 4px 0 !important; border-color: #E0E3EB !important; }
 .stCode { font-size: 10px !important; }
 
 /* METRIC BOX CUSTOM */
-.metric-box { padding: 6px 10px; border-radius: 4px;
-    border: 1px solid #E0E3EB; background: #FFFFFF; margin-bottom: 4px; }
+.metric-box {
+    padding: 6px 10px; border-radius: 4px;
+    border: 1px solid #C8D0DC; background: #FFFFFF;
+    margin-bottom: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
 .metric-label { font-size: 10px; color: #787B86; font-weight: 600; text-transform: uppercase; }
 .metric-value { font-size: 14px; font-weight: 700; color: #131722; }
 .metric-green  { border-left: 3px solid #089981; }
