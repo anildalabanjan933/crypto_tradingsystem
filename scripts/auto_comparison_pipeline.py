@@ -580,8 +580,8 @@ tr:hover {{background:#f9f9f9}}
     <tr><td>Slippage (both sides)</td><td>${SLIPPAGE*2:.2f}</td>
         <td>{'${:.4f}'.format(fwd['commission']/fwd['trade_count']) if fwd['trade_count']>0 else ('${:.4f}'.format(fwd['commission']) if has_charges else 'PENDING')}</td>
         <td>{status_badge('grey','PENDING') if not has_fwd_data else status_badge('blue','AUTO FETCHED')}</td></tr>
-    <tr><td>Taker Fee (both sides)</td><td>${LOTS*0.001:.2f}</td>
-        <td>{'${:.4f}'.format(fwd['commission']) if has_charges else 'PENDING'}</td>
+    <tr><td>Taker Fee (both sides)</td><td>0.05% per side (included in commission)</td>
+        <td>Included in commission row above</td>
         <td>{status_badge('green','AUTO FETCHED') if has_charges else status_badge('grey','PENDING')}</td></tr>
     <tr><td>Funding (total)</td><td>-</td>
         <td>{'${:.4f}'.format(fwd['funding']) if has_charges else 'PENDING'}</td>
@@ -690,7 +690,7 @@ tr:hover {{background:#f9f9f9}}
   <h2>Section 9 - Tax Estimate (Yearly)</h2>
   <table>
     <tr><th>Item</th><th>Amount</th><th>Note</th></tr>
-    <tr><td>Annual PnL estimate (backtest basis)</td><td class="positive">&#8377;{final_bt['pnl_inr']:,.0f}</td><td>Full history backtest</td></tr>
+    <tr><td>Period PnL (backtest - same date range)</td><td class="positive">&#8377;{final_bt['pnl_inr']:,.0f}</td><td>Backtest for same period as forward test</td></tr>
     <tr><td>Tax reserve (30%)</td><td class="negative">&#8377;{tax_reserve:,.0f}</td><td>Keep reserved - do not trade</td></tr>
     <tr><td>Post-tax estimate</td><td class="positive">&#8377;{post_tax:,.0f}</td><td>Approximate only</td></tr>
     <tr><td>Capital buffer (3x DD)</td><td>&#8377;{cap_buffer:,.0f}</td><td>Keep in account always</td></tr>

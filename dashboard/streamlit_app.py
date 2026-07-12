@@ -1787,7 +1787,7 @@ with st.expander("SECTION 4 - FORWARD TEST vs BACKTEST COMPARE", expanded=st.ses
             with c1:
                 from_date = st.date_input(
                     "Forward Test From Date",
-                    value=datetime.date(2026, 7, 7),
+                    value=datetime.date(2026, 7, 11),
                     key=f"from_date_{algo_key}"
                 )
             with c2:
