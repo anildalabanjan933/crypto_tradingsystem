@@ -46,7 +46,7 @@ om = OrderManager(api_key=API_KEY, api_secret=API_SECRET, testnet=True)
 
 log.info("[STARTUP] Loading 1M CSV history...")
 df_1m = pd.read_csv(CSV_PATH)
-df_1m["timestamp"] = pd.to_datetime(df_1m["Date"] + " " + df_1m["Time"])
+df_1m["timestamp"] = pd.to_datetime(df_1m["Date"] + " " + df_1m["Time"], format="mixed")
 df_1m = df_1m.rename(columns={
     "Open": "open", "High": "high",
     "Low": "low", "Close": "close", "Volume": "volume"

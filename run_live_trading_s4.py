@@ -85,7 +85,7 @@ def main():
 
     logging.info('[STARTUP] Loading 1M CSV history...')
     df_csv = pd.read_csv(CSV_PATH)
-    df_csv['timestamp'] = pd.to_datetime(df_csv['Date'] + ' ' + df_csv['Time'])
+    df_csv['timestamp'] = pd.to_datetime(df_csv['Date'] + ' ' + df_csv['Time'], format='mixed')
     df_csv = df_csv.rename(columns={
         'Open': 'open', 'High': 'high', 'Low': 'low',
         'Close': 'close', 'Volume': 'volume'
