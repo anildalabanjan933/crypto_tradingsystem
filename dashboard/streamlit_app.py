@@ -128,6 +128,37 @@ div[data-testid="stExpander"] details summary p {
     text-transform: uppercase !important;
     letter-spacing: 1px !important;
 }
+/* Nested expanders inside expanders */
+div[data-testid="stExpander"] div[data-testid="stExpander"] > div:first-child {
+    background-color: #E8D5D5 !important;
+    border-left: 4px solid #b05070 !important;
+}
+div[data-testid="stExpander"] div[data-testid="stExpander"] details summary {
+    background-color: #E8D5D5 !important;
+    color: #2d1515 !important;
+    border-left: 4px solid #b05070 !important;
+}
+/* Force ALL summary elements site-wide */
+summary {
+    background-color: #E8D5D5 !important;
+    color: #2d1515 !important;
+    border-left: 4px solid #b05070 !important;
+    font-weight: 700 !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    padding: 4px 10px !important;
+}
+summary:hover {
+    background-color: #dfc8c8 !important;
+}
+summary p, summary span, summary div {
+    color: #2d1515 !important;
+    font-weight: 700 !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
 /* Streamlit 1.59 specific - stExpanderToggleIcon parent */
 [data-testid="stExpanderToggleIcon"] {
     color: #b05070 !important;
