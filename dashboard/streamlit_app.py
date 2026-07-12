@@ -68,6 +68,31 @@ div[data-testid="stExpander"] details summary {
     list-style: none !important;
     outline: none !important;
 }
+[data-testid="stExpander"] summary {
+    background-color: #E8D5D5 !important;
+    color: #2d1515 !important;
+    font-weight: 700 !important;
+    font-size: 11px !important;
+    padding: 4px 10px !important;
+    border-radius: 2px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
+[data-testid="stExpander"] summary:hover {
+    background-color: #dfc8c8 !important;
+    color: #2d1515 !important;
+}
+[data-testid="stExpander"] summary p {
+    color: #2d1515 !important;
+    font-weight: 700 !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
+[data-testid="stExpander"] > details {
+    border: 1px solid #E8D5D5 !important;
+    border-radius: 3px !important;
+}
 div[data-testid="stExpander"] details summary:hover {
     background-color: #CDD5E2 !important;
     cursor: pointer !important;
