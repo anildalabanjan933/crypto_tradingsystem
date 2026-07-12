@@ -93,6 +93,55 @@ div[data-testid="stExpander"] details summary {
     border: 1px solid #E8D5D5 !important;
     border-radius: 3px !important;
 }
+/* Streamlit 1.59.x expander selectors */
+div[data-testid="stExpander"] details summary {
+    background-color: #E8D5D5 !important;
+    color: #2d1515 !important;
+    border-left: 4px solid #b05070 !important;
+}
+div[data-testid="stExpander"] details summary:hover {
+    background-color: #dfc8c8 !important;
+}
+div[data-testid="stExpander"] details summary div,
+div[data-testid="stExpander"] details summary span,
+div[data-testid="stExpander"] details summary p {
+    color: #2d1515 !important;
+    font-weight: 700 !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
+.streamlit-expanderHeader {
+    background-color: #E8D5D5 !important;
+    color: #2d1515 !important;
+    font-weight: 700 !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    border-left: 4px solid #b05070 !important;
+}
+.streamlit-expanderHeader p,
+.streamlit-expanderHeader span {
+    color: #2d1515 !important;
+    font-weight: 700 !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
+/* Streamlit 1.59 specific - stExpanderToggleIcon parent */
+[data-testid="stExpanderToggleIcon"] {
+    color: #b05070 !important;
+}
+div[data-testid="stExpander"] {
+    border: none !important;
+    box-shadow: none !important;
+}
+div[data-testid="stExpander"] > div:first-child {
+    background-color: #E8D5D5 !important;
+    border-left: 4px solid #b05070 !important;
+    border-radius: 3px !important;
+    padding: 0 !important;
+}
 div[data-testid="stExpander"] details summary:hover {
     background-color: #CDD5E2 !important;
     cursor: pointer !important;
