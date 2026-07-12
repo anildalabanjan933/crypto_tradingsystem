@@ -265,7 +265,7 @@ def main():
                 logging.info(f'[WAIT] No new signals since {last_known_ts}')
 
         except Exception as e:
-            logging.error(f'[ERROR] {e}')
+            logging.error(f'[ERROR] {e}', exc_info=True)
 
         time.sleep(SLEEP_SEC)
 

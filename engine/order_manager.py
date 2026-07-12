@@ -7,6 +7,7 @@ import hmac
 import time
 import requests
 import json
+import logging
 from datetime import datetime
 
 
@@ -68,12 +69,20 @@ class OrderManager:
             "User-Agent":   "python-rest-client"
         }
 
-    def _post(self, path: str, payload: dict) -> dict:
+    def _post(self, path: str, payload: dict, retries: int = 3) -> dict:
         body    = json.dumps(payload)
         headers = self._sign("POST", path, "", body)
         url     = self.base_url + path
-        resp    = self.session.post(url, data=body, headers=headers, timeout=(3, 27))
-        return resp.json()
+        for attempt in range(1, retries + 1):
+            try:
+                resp = self.session.post(url, data=body, headers=headers, timeout=(3, 27))
+                return resp.json()
+            except Exception as e:
+                logging.warning(f"[OrderManager] POST attempt {attempt}/{retries} failed: {e}")
+                if attempt < retries:
+                    time.sleep(2 * attempt)
+        logging.error(f"[OrderManager] POST failed after {retries} attempts: {path}")
+        return {"success": False, "error": "max_retries_exceeded"}
 
     def _delete(self, path: str, payload: dict) -> dict:
         body    = json.dumps(payload)
@@ -82,14 +91,22 @@ class OrderManager:
         resp    = self.session.delete(url, data=body, headers=headers, timeout=(3, 27))
         return resp.json()
 
-    def _get(self, path: str, params: dict = None) -> dict:
+    def _get(self, path: str, params: dict = None, retries: int = 3) -> dict:
         params     = params or {}
         query_str  = "&".join(f"{k}={v}" for k, v in sorted(params.items()))
         query_part = ("?" + query_str) if query_str else ""
         headers    = self._sign("GET", path, query_part, "")
         url        = self.base_url + path
-        resp       = self.session.get(url, params=params, headers=headers, timeout=(3, 27))
-        return resp.json()
+        for attempt in range(1, retries + 1):
+            try:
+                resp = self.session.get(url, params=params, headers=headers, timeout=(3, 27))
+                return resp.json()
+            except Exception as e:
+                logging.warning(f"[OrderManager] GET attempt {attempt}/{retries} failed: {e}")
+                if attempt < retries:
+                    time.sleep(2 * attempt)
+        logging.error(f"[OrderManager] GET failed after {retries} attempts: {path}")
+        return {"success": False, "error": "max_retries_exceeded"}
 
     # ------------------------------------------------------------------
     # Public API
@@ -115,12 +132,12 @@ class OrderManager:
         if client_order_id:
             payload["client_order_id"] = client_order_id[:32]
 
-        print(f"[OrderManager] Placing {side.upper()} market order | size={size} lots")
+        logging.info(f"[OrderManager] Placing {side.upper()} market order | size={size} lots")
         resp = self._post("/v2/orders", payload)
 
         if resp.get("success"):
             result = resp["result"]
-            print(f"[OrderManager] Order placed | id={result['id']} state={result['state']}")
+            logging.info(f"[OrderManager] Order placed | id={result['id']} state={result['state']}")
             return {
                 "success":      True,
                 "order_id":     result["id"],
@@ -130,7 +147,7 @@ class OrderManager:
                 "filled_price": result.get("limit_price", "market")
             }
         else:
-            print(f"[OrderManager] Order FAILED: {resp.get('error')}")
+            logging.error(f"[OrderManager] Order FAILED: {resp.get('error')}")
             return {"success": False, "error": resp.get("error")}
 
     def close_position(self, size: int, side: str, client_order_id: str = None) -> dict:
@@ -153,19 +170,19 @@ class OrderManager:
         if client_order_id:
             payload["client_order_id"] = client_order_id[:32]
 
-        print(f"[OrderManager] Closing position | {side.upper()} {size} lots (reduce_only)")
+        logging.info(f"[OrderManager] Closing position | {side.upper()} {size} lots (reduce_only)")
         resp = self._post("/v2/orders", payload)
 
         if resp.get("success"):
             result = resp["result"]
-            print(f"[OrderManager] Close order placed | id={result['id']} state={result['state']}")
+            logging.info(f"[OrderManager] Close order placed | id={result['id']} state={result['state']}")
             return {
                 "success":  True,
                 "order_id": result["id"],
                 "state":    result["state"]
             }
         else:
-            print(f"[OrderManager] Close FAILED: {resp.get('error')}")
+            logging.error(f"[OrderManager] Close FAILED: {resp.get('error')}")
             return {"success": False, "error": resp.get("error")}
 
     def get_position(self) -> dict:
@@ -192,12 +209,12 @@ class OrderManager:
     def cancel_all_orders(self) -> dict:
         """Cancel all open orders for BTCUSD."""
         payload = {"product_id": self.PRODUCT_ID}
-        print("[OrderManager] Cancelling all open orders for BTCUSD")
+        logging.info("[OrderManager] Cancelling all open orders for BTCUSD")
         resp = self._delete("/v2/orders/all", payload)
         if resp.get("success"):
-            print("[OrderManager] All orders cancelled")
+            logging.info("[OrderManager] All orders cancelled")
         else:
-            print(f"[OrderManager] Cancel all failed: {resp.get('error')}")
+            logging.error(f"[OrderManager] Cancel all failed: {resp.get('error')}")
         return resp
 
     def get_order_status(self, order_id: int) -> dict:
