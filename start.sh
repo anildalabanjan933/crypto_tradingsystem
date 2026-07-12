@@ -17,6 +17,7 @@ export $(grep -v '^#' .env | xargs)
 # Kill existing screens
 screen -S live_s2 -X quit 2>/dev/null
 screen -S live_s4 -X quit 2>/dev/null
+screen -S dashboard -X quit 2>/dev/null
 sleep 2
 
 # Start fresh screens with log redirection
