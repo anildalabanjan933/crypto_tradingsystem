@@ -61,16 +61,14 @@ if args.no_charges:
 
 optimizer = Optimizer(
     strategy_class=available[args.strategy],
-    param_ranges=param_ranges,
-    lot_size=args.lots,
-    slippage_per_side=args.slippage,
+    symbol=args.symbol,
     start_date=args.start,
     end_date=args.end,
-    symbol=args.symbol,
     csv_path=args.csv
 )
+optimizer.final_params_to_optimize = param_ranges
 
-results = optimizer.run()
+results = optimizer.run_optimization()
 
 if results:
     analyzer = OptimizationAnalyzer(results, args.strategy, args.symbol)
