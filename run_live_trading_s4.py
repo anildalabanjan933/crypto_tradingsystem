@@ -162,6 +162,17 @@ def main():
         last_known_ts = None
         logging.warning(f'[STARTUP] Pre-load failed: {_e}')
 
+    # Load last_known_ts from file if exists (survives restart)
+    try:
+        _ts_file = 'logs/last_known_ts_s4.txt'
+        if os.path.exists(_ts_file):
+            _saved_ts = open(_ts_file).read().strip()
+            if _saved_ts and (last_known_ts is None or str(_saved_ts) > str(last_known_ts)):
+                last_known_ts = _saved_ts
+                logging.info(f'[STARTUP] Loaded last_known_ts from file: {last_known_ts}')
+    except Exception as _e2:
+        logging.warning(f'[STARTUP] Could not load ts file: {_e2}')
+
     # --- Main loop ---
     while True:
         try:
@@ -225,12 +236,14 @@ def main():
 # REMOVED: post_signal call
                         position = 'long'
                         last_known_ts = sig_ts
+                        open('logs/last_known_ts_s4.txt','w').write(str(sig_ts))
                         logging.info(f'[ORDER] ENTRY buy {LOT_SIZE} lots | type={entry_type} | ts={sig_ts}')
                     elif direction == 'short':
                         order_manager.place_market_order('sell', get_lot_size())
 # REMOVED: post_signal call
                         position = 'short'
                         last_known_ts = sig_ts
+                        open('logs/last_known_ts_s4.txt','w').write(str(sig_ts))
                         logging.info(f'[ORDER] ENTRY sell {LOT_SIZE} lots | type={entry_type} | ts={sig_ts}')
 
                 elif sig_type == 'EXIT' and position is not None:
@@ -244,6 +257,7 @@ def main():
                         logging.info(f'[ORDER] EXIT buy {LOT_SIZE} lots | type={exit_type} | ts={sig_ts}')
                     position = None
                     last_known_ts = sig_ts
+                    open('logs/last_known_ts_s4.txt','w').write(str(sig_ts))
 
                 else:
                     logging.info(f'[SKIP] Signal blocked | sig_type={sig_type} | position={position} | ts={sig_ts}')

@@ -122,6 +122,17 @@ except Exception as _e:
     last_known_ts = None
     log.warning(f"[STARTUP] Could not pre-load signals: {_e}")
 
+# Load last_known_ts from file if exists (survives restart)
+try:
+    _ts_file = 'logs/last_known_ts_s2.txt'
+    if os.path.exists(_ts_file):
+        _saved_ts = open(_ts_file).read().strip()
+        if _saved_ts and (last_known_ts is None or str(_saved_ts) > str(last_known_ts)):
+            last_known_ts = _saved_ts
+            log.info(f"[STARTUP] Loaded last_known_ts from file: {last_known_ts}")
+except Exception as _e2:
+    log.warning(f"[STARTUP] Could not load ts file: {_e2}")
+
 while True:
     try:
         last_ts     = df_1m.index[-1]
@@ -162,6 +173,7 @@ while True:
 # REMOVED: post_signal call
                 position = sdir
                 last_known_ts = sig_ts
+                open('logs/last_known_ts_s2.txt','w').write(str(sig_ts))
                 log.info(f"[ORDER] ENTRY {side} {LOT_SIZE} lots | type={sig.get("entry_type")} | ts={sig_ts}")
 
             elif stype == "EXIT" and position is not None:
@@ -170,6 +182,7 @@ while True:
 # REMOVED: post_signal call
                 position = None
                 last_known_ts = sig_ts
+                open('logs/last_known_ts_s2.txt','w').write(str(sig_ts))
                 log.info(f"[ORDER] EXIT {side} {LOT_SIZE} lots | type={sig.get("exit_type")} | ts={sig_ts}")
         else:
             log.info(f"[WAIT] No new signals since {last_known_ts}")
