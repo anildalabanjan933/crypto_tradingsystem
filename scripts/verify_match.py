@@ -16,13 +16,13 @@ def get_valid_from():
         ts_s2 = open('logs/last_known_ts_s2.txt').read().strip()
     if os.path.exists('logs/last_known_ts_s4.txt'):
         ts_s4 = open('logs/last_known_ts_s4.txt').read().strip()
-    if ts_s2 and ts_s4: return max(ts_s2, ts_s4)
+    if ts_s2 and ts_s4: return min(ts_s2, ts_s4)  # EARLIER of two - catch all trades
     elif ts_s2: return ts_s2
     elif ts_s4: return ts_s4
     else: return '2026-07-12T00:00:00'
 
 VALID_FROM = get_valid_from()
-TODAY      = datetime.now(timezone.utc).strftime('%Y-%m-%d')
+TODAY      = (datetime.now(timezone.utc) + __import__('datetime').timedelta(days=1)).strftime('%Y-%m-%d')
 
 def update_csv():
     df = pd.read_csv(CSV_PATH)
@@ -51,9 +51,11 @@ def update_csv():
         print(f"CSV already up to date: {last_ts}")
 
 def get_backtest_signals(strategy_class, name, params):
+    # Always use tomorrow as end_date to include all of today's candles
+    _end = (datetime.now(timezone.utc) + __import__('datetime').timedelta(days=1)).strftime('%Y-%m-%d')
     engine = BacktestEngine(
         strategy_class=strategy_class, symbol='BTCUSD',
-        lot_size=100, start_date='2024-01-10', end_date=TODAY,
+        lot_size=100, start_date='2024-01-10', end_date=_end,
         csv_path=CSV_PATH, strategy_params=params, slippage=5.0
     )
     results = engine.run()
@@ -104,6 +106,7 @@ def get_live_trades(log_file):
             r'EXIT\s+(sell|buy)\s+\d+\s+lots.*ts=(\S+)', line, re.I)
         if exit_match:
             signal_ts = exit_match.group(2).rstrip('|').strip()
+            price = '-'
             # Match to open entry
             for ets, entry in list(entries.items()):
                 trades.append({
