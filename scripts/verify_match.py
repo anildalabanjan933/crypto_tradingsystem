@@ -26,7 +26,11 @@ TODAY      = (datetime.now(timezone.utc) + __import__('datetime').timedelta(days
 
 def update_csv():
     df = pd.read_csv(CSV_PATH)
-    last_ts = pd.Timestamp(df.iloc[-1]['Date'] + ' ' + df.iloc[-1]['Time'])
+    # Clean CSV before reading last timestamp
+    df = df.dropna(subset=['Date','Time'])
+    df = df[df['Date'].astype(str).str.match(r'\d{4}-\d{2}-\d{2}')]
+    df = df[df['Time'].astype(str).str.match(r'\d{2}:\d{2}')]
+    last_ts = pd.Timestamp(str(df.iloc[-1]['Date']) + ' ' + str(df.iloc[-1]['Time']))
     start_ts = int(last_ts.timestamp())
     end_ts   = int(time.time())
     r = requests.get(f'{BASE}/v2/history/candles',
@@ -62,13 +66,30 @@ def get_backtest_signals(strategy_class, name, params):
     gen = BacktestReportGenerator(
         trades=results['trades'], metrics=results['metrics'],
         strategy_name=name, symbol='BTCUSD',
-        start_date='2024-01-10', end_date=TODAY,
+        start_date='2024-01-10', end_date=_end,
         slippage=5.0, lot_size=100, include_charges=True
     )
     csv_path = gen.generate_csv_trade_log()
     rows = open(csv_path).readlines()
     trades = [r.strip().split(',') for r in rows[1:] if r.strip()]
-    return [t for t in trades if t[3] >= VALID_FROM]
+    closed = [t for t in trades if t[3] >= VALID_FROM]
+
+    # Include currently open signal (unclosed trade skipped by engine)
+    signals = results.get('signals', [])
+    if signals:
+        last_sig  = signals[-1]
+        last_ts   = str(last_sig.get('timestamp', ''))
+        last_dir  = last_sig.get('direction', '')
+        last_type = last_sig.get('signal_type', '')
+        if last_type == 'ENTRY' and last_ts >= VALID_FROM:
+            already = any(t[3] == last_ts for t in closed)
+            if not already:
+                open_trade = [''] * 31
+                open_trade[3] = last_ts
+                open_trade[4] = ''
+                open_trade[5] = last_dir
+                closed.append(open_trade)
+    return closed
 
 def get_live_trades(log_file):
     # Parse ENTRY and EXIT pairs from log
