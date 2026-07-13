@@ -697,14 +697,28 @@ with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b',
             warnings.append(f"{bot} order check failed: {e}")
 
     # 10. CHECK DUPLICATE ORDERS (same timestamp fired twice)
-    for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+    # Only check orders after VALID_FROM (last_known_ts file)
+    for bot, log, ts_file in [('S2', 'logs/live_trading_s2.log', 'logs/last_known_ts_s2.txt'),
+                               ('S4', 'logs/live_trading_s4.log', 'logs/last_known_ts_s4.txt')]:
         try:
             if os.path.exists(log):
+                # Get valid from timestamp
+                valid_from = None
+                if os.path.exists(ts_file):
+                    valid_from = open(ts_file).read().strip()
                 lines = open(log).readlines()
                 order_lines = [l for l in lines if '[ORDER]' in l]
                 timestamps = []
                 import re
                 for l in order_lines:
+                    # Only check recent orders - filter by log timestamp
+                    if valid_from:
+                        try:
+                            log_dt = l.split(' INFO')[0].strip()
+                            if log_dt < valid_from.replace('T',' '):
+                                continue
+                        except:
+                            pass
                     match = re.search(r'ts=(\S+)', l)
                     if match:
                         timestamps.append(match.group(1))
