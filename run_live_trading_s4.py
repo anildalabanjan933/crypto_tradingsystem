@@ -240,17 +240,20 @@ def main():
                         # Save ts BEFORE order to prevent duplicate on crash/restart
                         last_known_ts = sig_ts
                         open('logs/last_known_ts_s4.txt','w').write(str(sig_ts))
+                        # Use actual exchange position size to close correctly
+                        actual = order_manager.get_position()
+                        close_size = abs(actual.get('size', open_lot_size)) if actual.get('success') else open_lot_size
                         if position == 'long':
-                            result = order_manager.close_position(get_lot_size(), 'sell')
+                            result = order_manager.close_position(close_size, 'sell')
                             if result.get('success'):
-                                logging.info(f'[ORDER] EXIT sell {LOT_SIZE} lots | type={exit_type} | ts={sig_ts}')
+                                logging.info(f'[ORDER] EXIT sell {close_size} lots | type={exit_type} | ts={sig_ts}')
                             else:
                                 logging.error(f'[ORDER] EXIT sell FAILED | error={result.get("error")} | ts={sig_ts}')
                                 break
                         elif position == 'short':
-                            result = order_manager.close_position(get_lot_size(), 'buy')
+                            result = order_manager.close_position(close_size, 'buy')
                             if result.get('success'):
-                                logging.info(f'[ORDER] EXIT buy {LOT_SIZE} lots | type={exit_type} | ts={sig_ts}')
+                                logging.info(f'[ORDER] EXIT buy {close_size} lots | type={exit_type} | ts={sig_ts}')
                             else:
                                 logging.error(f'[ORDER] EXIT buy FAILED | error={result.get("error")} | ts={sig_ts}')
                                 break
@@ -261,19 +264,20 @@ def main():
                         # Save ts BEFORE order to prevent duplicate on crash/restart
                         last_known_ts = sig_ts
                         open('logs/last_known_ts_s4.txt','w').write(str(sig_ts))
+                        open_lot_size = get_lot_size()  # Lock lot size at entry
                         if direction == 'long':
-                            result = order_manager.place_market_order('buy', get_lot_size())
+                            result = order_manager.place_market_order('buy', open_lot_size)
                             if result.get('success'):
                                 position = 'long'
-                                logging.info(f'[ORDER] ENTRY buy {LOT_SIZE} lots | type={entry_type} | ts={sig_ts}')
+                                logging.info(f'[ORDER] ENTRY buy {open_lot_size} lots | type={entry_type} | ts={sig_ts}')
                             else:
                                 logging.error(f'[ORDER] ENTRY buy FAILED | error={result.get("error")} | ts={sig_ts}')
                                 break
                         elif direction == 'short':
-                            result = order_manager.place_market_order('sell', get_lot_size())
+                            result = order_manager.place_market_order('sell', open_lot_size)
                             if result.get('success'):
                                 position = 'short'
-                                logging.info(f'[ORDER] ENTRY sell {LOT_SIZE} lots | type={entry_type} | ts={sig_ts}')
+                                logging.info(f'[ORDER] ENTRY sell {open_lot_size} lots | type={entry_type} | ts={sig_ts}')
                             else:
                                 logging.error(f'[ORDER] ENTRY sell FAILED | error={result.get("error")} | ts={sig_ts}')
                                 break

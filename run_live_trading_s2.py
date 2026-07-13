@@ -90,6 +90,7 @@ elif pos.get("success") and pos.get("direction") == "SHORT":
     position = "short"
 else:
     position = None
+open_lot_size = get_lot_size()  # Initialize lot size
 log.info(f"[STARTUP] Position synced from exchange: {position}")
 
 # --- Fetch live candles first so last_known_ts covers all existing signals ---
@@ -174,10 +175,13 @@ while True:
                     # Save ts BEFORE order to prevent duplicate on crash/restart
                     last_known_ts = sig_ts
                     open('logs/last_known_ts_s2.txt','w').write(str(sig_ts))
-                    result = om.close_position(size=get_lot_size(), side=side)
+                    # Use actual exchange position size to close correctly
+                    actual = om.get_position()
+                    close_size = abs(actual.get('size', open_lot_size)) if actual.get('success') else open_lot_size
+                    result = om.close_position(size=close_size, side=side)
                     if result.get("success"):
                         position = None
-                        log.info(f"[ORDER] EXIT {side} {LOT_SIZE} lots | type={sig.get('exit_type')} | ts={sig_ts}")
+                        log.info(f"[ORDER] EXIT {side} {close_size} lots | type={sig.get('exit_type')} | ts={sig_ts}")
                     else:
                         log.error(f"[ORDER] EXIT FAILED | error={result.get('error')} | ts={sig_ts}")
                         break  # Stop processing if exit failed
@@ -187,10 +191,11 @@ while True:
                     # Save ts BEFORE order to prevent duplicate on crash/restart
                     last_known_ts = sig_ts
                     open('logs/last_known_ts_s2.txt','w').write(str(sig_ts))
-                    result = om.place_market_order(side=side, size=get_lot_size())
+                    open_lot_size = get_lot_size()  # Lock lot size at entry
+                    result = om.place_market_order(side=side, size=open_lot_size)
                     if result.get("success"):
                         position = sdir
-                        log.info(f"[ORDER] ENTRY {side} {LOT_SIZE} lots | type={sig.get('entry_type')} | ts={sig_ts}")
+                        log.info(f"[ORDER] ENTRY {side} {open_lot_size} lots | type={sig.get('entry_type')} | ts={sig_ts}")
                     else:
                         log.error(f"[ORDER] ENTRY FAILED | error={result.get('error')} | ts={sig_ts}")
                         break  # Stop processing if entry failed
