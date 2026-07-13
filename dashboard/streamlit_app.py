@@ -1712,7 +1712,8 @@ with st.expander("SECTION 4 - FORWARD TEST vs BACKTEST COMPARE", expanded=st.ses
                 st.caption("Auto-checks every 5 minutes. Also runs on every page refresh.")
 
         # Run if: button clicked OR auto interval due OR no result yet
-        should_run = run_match or auto_due or not st.session_state.get('match_result')
+        # Always re-run on page load (no cached stale result)
+        should_run = run_match or auto_due or not st.session_state.get('match_result') or True
 
         if should_run:
             with st.spinner("Updating CSV and running backtests..."):
