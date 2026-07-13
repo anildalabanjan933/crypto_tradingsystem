@@ -141,6 +141,41 @@ while True:
             if len(new_candles) > 0:
                 df_1m = pd.concat([df_1m, new_candles]).sort_index()
                 log.info(f"[DATA] Appended {len(new_candles)} candles. Total={len(df_1m)}")
+                try:
+                    df_csv = pd.read_csv(CSV_PATH)
+                    new_rows = []
+                    for ts, row in new_candles.iterrows():
+                        new_rows.append({
+                            'Date': ts.strftime('%Y-%m-%d'),
+                            'Time': ts.strftime('%H:%M:%S'),
+                            'Open': row['open'], 'High': row['high'],
+                            'Low': row['low'], 'Close': row['close'],
+                            'Volume': row['volume']
+                        })
+                    df_csv = pd.concat([df_csv, pd.DataFrame(new_rows)], ignore_index=True)
+                    df_csv.drop_duplicates(subset=['Date','Time'], keep='last', inplace=True)
+                    df_csv.sort_values(['Date','Time'], inplace=True)
+                    df_csv.to_csv(CSV_PATH, index=False)
+                except Exception as _csv_e:
+                    log.warning(f"[DATA] CSV sync failed: {_csv_e}")
+                # Sync new candles to CSV so backtest uses identical data
+                try:
+                    df_csv = pd.read_csv(CSV_PATH)
+                    new_rows = []
+                    for ts, row in new_candles.iterrows():
+                        new_rows.append({
+                            'Date': ts.strftime('%Y-%m-%d'),
+                            'Time': ts.strftime('%H:%M:%S'),
+                            'Open': row['open'], 'High': row['high'],
+                            'Low': row['low'], 'Close': row['close'],
+                            'Volume': row['volume']
+                        })
+                    df_csv = pd.concat([df_csv, pd.DataFrame(new_rows)], ignore_index=True)
+                    df_csv.drop_duplicates(subset=['Date','Time'], keep='last', inplace=True)
+                    df_csv.sort_values(['Date','Time'], inplace=True)
+                    df_csv.to_csv(CSV_PATH, index=False)
+                except Exception as _csv_e:
+                    log.warning(f"[DATA] CSV sync failed: {_csv_e}")
 
         df_1h = build_1h(df_1m)
         log.info(f"[DATA] 1H candles={len(df_1h)}")
