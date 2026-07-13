@@ -1,5 +1,108 @@
+
 import streamlit as st
 import json, os, subprocess, datetime, shutil, glob
+
+# ================================================================
+# PERFORMANCE HELPERS - prevents heavy ops on every widget click
+# ================================================================
+import time as _perf_time
+
+def _timed(key, ttl, fn, *args, **kwargs):
+    """Run fn only when TTL seconds have passed. Stores in session_state."""
+    ts_key = key + "__ts"
+    now = _perf_time.time()
+    if key not in st.session_state or (now - st.session_state.get(ts_key, 0)) > ttl:
+        try:
+            st.session_state[key] = fn(*args, **kwargs)
+        except Exception:
+            if key not in st.session_state:
+                st.session_state[key] = None
+        st.session_state[ts_key] = now
+    return st.session_state[key]
+
+def _fetch_btc_price():
+    import requests as _r2
+    r = _r2.get("https://api.india.delta.exchange/v2/tickers/BTCUSD", timeout=3)
+    d = r.json()
+    return float(d['result']['mark_price']), float(d['result']['mark_change_24h'])
+
+def _fetch_disk():
+    import shutil as _sh2
+    total, used, free = _sh2.disk_usage(".")
+    return int(used / total * 100), round(free / 1024**3, 1)
+
+def _fetch_git():
+    r = subprocess.run(["git","log","--oneline","-1"], capture_output=True, text=True)
+    return r.stdout.strip()[:10] if r.stdout else "unknown"
+
+def _fetch_log_signal(log_path, keyword="ORDER"):
+    if os.path.exists(log_path):
+        lines = open(log_path, encoding="utf-8", errors="ignore").readlines()
+        for line in reversed(lines):
+            if keyword in line:
+                return line.strip()[-60:]
+        return "No signal yet"
+    return "Log not found"
+
+def _fetch_log_errors(log_path):
+    if os.path.exists(log_path):
+        lines = open(log_path, encoding="utf-8", errors="ignore").readlines()
+        for line in reversed(lines[-50:]):
+            if "ERROR" in line:
+                return line.strip()
+    return None
+
+def _fetch_account_data(api_key, api_secret):
+    import requests as _rq, hmac as _hm, hashlib as _hs, time as _tm, warnings as _wn
+    _wn.filterwarnings('ignore')
+    DELTA_URL = 'https://cdn-ind.testnet.deltaex.org'
+    def _get(path, params={}):
+        try:
+            ts = str(int(_tm.time()))
+            qs = '&'.join(f"{k}={v}" for k,v in params.items())
+            qp = path + ('?' + qs if qs else '')
+            sig = _hm.new(api_secret.encode(), ('GET'+ts+qp).encode(), _hs.sha256).hexdigest()
+            hdrs = {'api-key': api_key, 'timestamp': ts, 'signature': sig, 'Content-Type': 'application/json'}
+            return _rq.get(DELTA_URL+path, params=params, headers=hdrs, timeout=(3,10), verify=False).json()
+        except:
+            return {}
+    bal_resp = _get('/v2/wallet/balances')
+    balance_usd = 0.0
+    for b in bal_resp.get('result', []):
+        if b.get('asset_symbol') == 'USD':
+            balance_usd = float(b.get('balance', 0)); break
+    pos_resp = _get('/v2/positions/margined')
+    positions, unreal_pnl = [], 0.0
+    for p in pos_resp.get('result', []):
+        size = float(p.get('size', 0))
+        if size != 0:
+            symbol = p.get('product', {}).get('symbol', p.get('product_symbol',''))
+            entry = float(p.get('entry_price', 0))
+            unreal = float(p.get('unrealized_pnl', 0))
+            unreal_pnl += unreal
+            positions.append({'symbol': symbol, 'side': 'LONG' if size > 0 else 'SHORT',
+                'size': abs(size), 'entry': entry, 'unreal_pnl': unreal})
+    return balance_usd, unreal_pnl, positions
+
+def _fetch_vm_health():
+    import psutil as _ps
+    cpu = _ps.cpu_percent(interval=0)
+    ram = _ps.virtual_memory()
+    uptime = int(datetime.datetime.now().timestamp() - _ps.boot_time())
+    return {'cpu': cpu, 'ram_pct': ram.percent,
+            'ram_free_gb': round(ram.available/(1024**3),2),
+            'uptime_hrs': uptime//3600, 'uptime_mins': (uptime%3600)//60}
+
+def _fetch_screen_list():
+    return subprocess.run(['screen','-ls'], capture_output=True, text=True).stdout
+
+def _fetch_delta_api_status():
+    import requests as _rq2
+    r = _rq2.get('https://api.india.delta.exchange/v2/products?contract_types=perpetual_futures&limit=1', timeout=5)
+    return r.status_code
+# ================================================================
+# END PERFORMANCE HELPERS
+# ================================================================
 
 st.set_page_config(page_title="Crypto Trading Dashboard", layout="wide", page_icon="📈")
 
@@ -254,6 +357,40 @@ hr { margin: 4px 0 !important; border-color: #E0E3EB !important; }
 .stCaption { font-size: 10px !important; color: #787B86 !important; }
 .stCode { font-size: 10px !important; }
 
+/* FIX OVERLAPPING SECTION TITLES */
+div[data-testid="stExpander"] > div:first-child p {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    line-height: 1.4 !important;
+}
+div[data-testid="stExpander"] summary {
+    min-height: 28px !important;
+    display: flex !important;
+    align-items: center !important;
+}
+div[data-testid="stExpander"] summary p,
+div[data-testid="stExpander"] summary span {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* FIX SLOW SCROLL - hardware acceleration */
+.main .block-container {
+    scroll-behavior: auto !important;
+}
+html {
+    scroll-behavior: auto !important;
+}
+* {
+    scroll-behavior: auto !important;
+}
+.stApp {
+    overflow-y: auto !important;
+    scroll-behavior: auto !important;
+}
+
 /* METRIC BOX CUSTOM */
 .metric-box {
     padding: 6px 10px; border-radius: 4px;
@@ -335,17 +472,13 @@ s4_log = system.get("log_path_s4", "logs/live_trading_s4.log")
 # TOP HEADER
 # ================================================================
 # Fetch live BTC price for header
-try:
-    import requests as _req
-    _r = _req.get("https://api.india.delta.exchange/v2/tickers/BTCUSD", timeout=3)
-    _d = _r.json()
-    _btc_price = float(_d['result']['mark_price'])
-    _btc_change = float(_d['result']['mark_change_24h'])
+_btc_result = _timed('btc_price', 10, _fetch_btc_price)
+if _btc_result:
+    _btc_price, _btc_change = _btc_result
     _chg_color = "#26a69a" if _btc_change >= 0 else "#ef5350"
     _chg_sign = "+" if _btc_change >= 0 else ""
-    _btc_html = f'''<span style="color:#26a69a;font-weight:700;font-size:15px;">${_btc_price:,.1f}</span>
-        <span style="color:{_chg_color};font-size:11px;margin-left:6px;">{_chg_sign}{_btc_change:.2f}%</span>'''
-except:
+    _btc_html = f'<span style="color:#26a69a;font-weight:700;font-size:15px;">${_btc_price:,.1f}</span><span style="color:{_chg_color};font-size:11px;margin-left:6px;">{_chg_sign}{_btc_change:.2f}%</span>'
+else:
     _btc_html = '<span style="color:#888;font-size:11px;">BTC N/A</span>'
 
 col_title, col_status = st.columns([5, 1])
@@ -374,12 +507,12 @@ st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e
 # ================================================================
 st.markdown("<div class='section-title'>SECTION 1 - SYSTEM STATUS</div>", unsafe_allow_html=True)
 
-disk_pct, disk_free = get_disk_usage()
-git_commit = get_git_commit()
-s2_last = get_last_log_signal(s2_log)
-s4_last = get_last_log_signal(s4_log)
-s2_error = check_log_for_errors(s2_log)
-s4_error = check_log_for_errors(s4_log)
+disk_pct, disk_free = _timed('disk_usage', 30, _fetch_disk)
+git_commit = _timed('git_commit', 60, _fetch_git)
+s2_last = _timed('s2_last_sig', 15, _fetch_log_signal, s2_log)
+s4_last = _timed('s4_last_sig', 15, _fetch_log_signal, s4_log)
+s2_error = _timed('s2_log_err', 15, _fetch_log_errors, s2_log)
+s4_error = _timed('s4_log_err', 15, _fetch_log_errors, s4_log)
 
 c1, c2, c3, c4, c5 = st.columns(5)
 
@@ -531,14 +664,14 @@ with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b',
     warnings = []
     ok = []
 
-    # 1. CHECK BOT SCREENS RUNNING
+    # 1. CHECK BOT SCREENS RUNNING (cached 30s)
     try:
-        result = subprocess.run(['screen', '-ls'], capture_output=True, text=True)
-        if 'live_s2' in result.stdout:
+        _scr_ls = _timed('err_screen_ls', 30, _fetch_screen_list)
+        if 'live_s2' in _scr_ls:
             ok.append("S2 bot screen: RUNNING")
         else:
             errors.append("S2 bot screen: NOT RUNNING - run bash start.sh on VM")
-        if 'live_s4' in result.stdout:
+        if 'live_s4' in _scr_ls:
             ok.append("S4 bot screen: RUNNING")
         else:
             errors.append("S4 bot screen: NOT RUNNING - run bash start.sh on VM")
@@ -789,16 +922,17 @@ with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b',
     except Exception as e:
         warnings.append(f".env check failed: {e}")
 
-    # 14. CHECK DELTA API CONNECTIVITY
+    # 14. CHECK DELTA API CONNECTIVITY (cached 60s)
     try:
-        import requests as req
-        resp = req.get('https://api.india.delta.exchange/v2/products?contract_types=perpetual_futures&limit=1', timeout=5)
-        if resp.status_code == 200:
+        _api_st = _timed('delta_api_status', 60, _fetch_delta_api_status)
+        if _api_st == 200:
             ok.append("Delta API connectivity: REACHABLE")
+        elif _api_st:
+            warnings.append(f"Delta API returned status {_api_st} - may have issues")
         else:
-            warnings.append(f"Delta API returned status {resp.status_code} - may have issues")
+            errors.append("Delta API UNREACHABLE - check VM internet connection")
     except Exception as e:
-        errors.append(f"Delta API UNREACHABLE: {e} - check VM internet connection")
+        errors.append(f"Delta API check failed: {e}")
 
     # 15. CHECK VM INTERNET (ping Google DNS)
     try:
@@ -808,23 +942,24 @@ with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b',
     except Exception as e:
         errors.append(f"VM internet check failed: {e}")
 
-    # 16. CHECK ALGOTEST WEBHOOK URLS REACHABLE (quick HEAD check)
+    # 16. CHECK ALGOTEST WEBHOOK URLS REACHABLE (cached 120s - avoid hammering)
     try:
-        from dotenv import load_dotenv
-        load_dotenv()
-        import requests as req
-        test_url = os.getenv('ALGOTEST_WEBHOOK_S4_BUY_ENTRY')
-        if test_url:
-            try:
-                resp = req.post(test_url, json={"access_token": os.getenv('ALGOTEST_ACCESS_TOKEN', 'n7FJcMHANHN4F8HdqbU5QMDJn5JO79K9'), "alert_name": "ping"}, timeout=5)
-                if resp.status_code in [200, 201, 202, 400, 422]:
-                    ok.append("Algotest webhook URL: REACHABLE")
-                else:
-                    warnings.append(f"Algotest webhook returned {resp.status_code} - check signal config")
-            except Exception as e:
-                errors.append(f"Algotest webhook UNREACHABLE: {e}")
-        else:
+        def _check_webhook():
+            from dotenv import load_dotenv
+            load_dotenv()
+            import requests as _rqwh
+            test_url = os.getenv('ALGOTEST_WEBHOOK_S4_BUY_ENTRY')
+            if not test_url:
+                return None
+            resp = _rqwh.post(test_url, json={"access_token": os.getenv('ALGOTEST_ACCESS_TOKEN', 'n7FJcMHANHN4F8HdqbU5QMDJn5JO79K9'), "alert_name": "ping"}, timeout=5)
+            return resp.status_code
+        _wh_status = _timed('webhook_check', 120, _check_webhook)
+        if _wh_status in [200, 201, 202, 400, 422]:
+            ok.append("Algotest webhook URL: REACHABLE")
+        elif _wh_status is None:
             errors.append("Algotest webhook URL missing from .env")
+        else:
+            warnings.append(f"Algotest webhook returned {_wh_status} - check signal config")
     except Exception as e:
         warnings.append(f"Algotest connectivity check failed: {e}")
 
@@ -857,7 +992,7 @@ if 'exp_13' not in st.session_state: st.session_state['exp_13'] = False
 with st.expander("SECTION 1.3 - VM HEALTH", expanded=st.session_state.get('exp_13', False)):
     try:
         import psutil
-        cpu = psutil.cpu_percent(interval=1)
+        cpu = psutil.cpu_percent(interval=0)
         ram = psutil.virtual_memory()
         ram_used = ram.percent
         ram_free_gb = round(ram.available / (1024**3), 2)
@@ -1075,8 +1210,9 @@ with st.expander("SECTION 2.4 - MEMBER MANAGEMENT", expanded=st.session_state.ge
             s2_screen = f"m{idx}_s2"
             s4_screen = f"m{idx}_s4"
             import subprocess
-            s2_running = s2_screen in subprocess.run(['screen','-ls'], capture_output=True, text=True).stdout
-            s4_running = s4_screen in subprocess.run(['screen','-ls'], capture_output=True, text=True).stdout
+            _scr_out = _timed('screen_list', 30, _fetch_screen_list)
+            s2_running = s2_screen in _scr_out
+            s4_running = s4_screen in _scr_out
             mc[2].markdown(f"<span style='color:{'green' if s2_running else 'red'}'>{'ON' if s2_running else 'OFF'}</span>", unsafe_allow_html=True)
             mc[3].markdown(f"<span style='color:{'green' if s4_running else 'red'}'>{'ON' if s4_running else 'OFF'}</span>", unsafe_allow_html=True)
             if mc[4].button("▶", key=f"m_start_{idx}"):
@@ -1213,10 +1349,12 @@ with tab1:
     import warnings
     warnings.filterwarnings('ignore')
 
-    # Fetch S2 data
-    s2_bal, s2_unreal, s2_pos = get_account_data(acct.get('s2_key',''), acct.get('s2_secret',''))
-    # Fetch S4 data
-    s4_bal, s4_unreal, s4_pos = get_account_data(acct.get('s4_key',''), acct.get('s4_secret',''))
+    # Fetch S2+S4 data - cached 30s, null-safe
+    _acct_key = acct.get('s2_key','')[:8]
+    s2_bal, s2_unreal, s2_pos = _timed('s2_acct_'+_acct_key, 30, _fetch_account_data, acct.get('s2_key',''), acct.get('s2_secret',''))
+    s4_bal, s4_unreal, s4_pos = _timed('s4_acct_'+_acct_key, 30, _fetch_account_data, acct.get('s4_key',''), acct.get('s4_secret',''))
+    if not s2_bal: s2_bal, s2_unreal, s2_pos = 0.0, 0.0, []
+    if not s4_bal: s4_bal, s4_unreal, s4_pos = 0.0, 0.0, []
 
     total_bal   = s2_bal + s4_bal
     total_unreal = s2_unreal + s4_unreal
@@ -1233,23 +1371,27 @@ with tab1:
     st.markdown("**Open Positions**")
     all_pos = [dict(p, account='S2') for p in s2_pos] + [dict(p, account='S4') for p in s4_pos]
     if all_pos:
-        p_cols = st.columns([1,1,1,1,1,1])
-        p_cols[0].markdown("**Account**")
-        p_cols[1].markdown("**Symbol**")
-        p_cols[2].markdown("**Side**")
-        p_cols[3].markdown("**Size**")
-        p_cols[4].markdown("**Entry $**")
-        p_cols[5].markdown("**Unreal PnL**")
-        for p in all_pos:
-            pc = st.columns([1,1,1,1,1,1])
-            pc[0].write(p['account'])
-            pc[1].write(p['symbol'])
-            color = "green" if p['side']=='LONG' else "red"
-            pc[2].markdown(f"<span style='color:{color}'>{p['side']}</span>", unsafe_allow_html=True)
-            pc[3].write(f"{p['size']:.0f}")
-            pc[4].write(f"${p['entry']:,.1f}")
-            pnl_color = "green" if p['unreal_pnl'] >= 0 else "red"
-            pc[5].markdown(f"<span style='color:{pnl_color}'>${p['unreal_pnl']:,.2f} | ₹{p['unreal_pnl']*INR_RATE:,.0f}</span>", unsafe_allow_html=True)
+        TH = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;"
+        TD = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;"
+        h = "<div style='overflow-x:auto;margin:4px 0;'><table style='width:100%;border-collapse:collapse;'>"
+        h += "<thead><tr>"
+        for col in ['Account','Symbol','Side','Size','Entry $','Unreal PnL']:
+            h += "<th style='{}'>{}</th>".format(TH, col)
+        h += "</tr></thead><tbody>"
+        for i, p in enumerate(all_pos):
+            bg = "#ffffff" if i % 2 == 0 else "#fafafa"
+            sc = "#089981" if p['side'] == 'LONG' else "#F23645"
+            pc = "#089981" if p['unreal_pnl'] >= 0 else "#F23645"
+            h += "<tr style='background:{};'>".format(bg)
+            h += "<td style='{}'>{}</td>".format(TD, p['account'])
+            h += "<td style='{}'>{}</td>".format(TD, p['symbol'])
+            h += "<td style='{}'><span style='color:{};font-weight:700'>{}</span></td>".format(TD, sc, p['side'])
+            h += "<td style='{}'>{}</td>".format(TD, int(p['size']))
+            h += "<td style='{}text-align:right'>${:,.1f}</td>".format(TD, p['entry'])
+            h += "<td style='{}'><span style='color:{};font-weight:600'>${:,.2f} | ₹{:,.0f}</span></td>".format(TD, pc, p['unreal_pnl'], p['unreal_pnl']*INR_RATE)
+            h += "</tr>"
+        h += "</tbody></table></div>"
+        st.markdown(h, unsafe_allow_html=True)
     else:
         st.info("No open positions")
 
@@ -1498,13 +1640,19 @@ with tab1:
                 )
 
         if all_pairs or open_pos_filtered:
-            hdr = st.columns([1,2,1,1,1,2,2,1,2,2,2,2,1,1])
-            for col, h in zip(hdr, ['#','DateTime','Member','Strat','Side','Entry$','Exit$','Lots','PnL$','PnL₹','Charges$|₹','Cum PnL$','Count','Status']):
-                col.markdown(f"**{h}**")
+            TH2 = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;white-space:nowrap;"
+            TD2 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;"
+            TDR2 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;text-align:right;"
+            _heads = ['#','DateTime','Member','Strat','Side','Entry$','Exit$','Lots','PnL$','PnL₹','Charges$|₹','Cum PnL$','Count','Status']
+            _tbl = "<div style='overflow-x:auto;margin:4px 0;'><table style='width:100%;border-collapse:collapse;'><thead><tr>"
+            _tbl += "".join("<th style='{}'>{}</th>".format(TH2, hh) for hh in _heads)
+            _tbl += "</tr></thead><tbody>"
+            # placeholder - rows added below
+            _rows = ""
 
             cum_pnl = 0.0
             for i, p in enumerate(sorted(all_pairs, key=lambda x: x['buy_time']), 1):
-                rc           = st.columns([1,2,1,1,1,2,2,1,2,2,2,2,1,1])
+                rc           = [None]*14  # replaced by HTML grid
                 trade_tax    = p['pnl'] * 0.30 if p['pnl'] > 0 else 0.0
                 trade_charge = p['commission'] + fund_per_trade + trade_tax
                 cum_pnl     += p['pnl']
@@ -1512,40 +1660,51 @@ with tab1:
                 side_color   = 'green' if side_label == 'LONG' else 'red'
                 pc           = "green" if p['pnl'] >= 0 else "red"
                 cum_c        = "green" if cum_pnl >= 0 else "red"
-                rc[0].write(i)
-                rc[1].write(p['buy_time'])
-                rc[2].write(p['member'])
-                rc[3].write(p['strat'])
-                rc[4].markdown(f"<span style='color:{side_color}'>{side_label}</span>", unsafe_allow_html=True)
-                rc[5].write(f"${p['entry']:,.1f}")
-                rc[6].write(f"${p['exit']:,.1f}")
-                rc[7].write(int(p['size']))
-                rc[8].markdown(f"<span style='color:{pc}'>${p['pnl']:,.2f}</span>" if curr_filter in ['BOTH','USD'] else "<span>-</span>", unsafe_allow_html=True)
-                rc[9].markdown(f"<span style='color:{pc}'>₹{p['pnl']*INR_OH:,.0f}</span>" if curr_filter in ['BOTH','INR'] else "<span>-</span>", unsafe_allow_html=True)
-                rc[10].markdown(f"<span style='color:#e65100'>${trade_charge:,.2f} | ₹{trade_charge*INR_OH:,.0f}</span>", unsafe_allow_html=True)
-                rc[11].markdown(f"<span style='color:{cum_c}'>${cum_pnl:,.2f}</span>", unsafe_allow_html=True)
-                rc[12].write(p['trade_count'])
-                rc[13].markdown("<span style='color:gray'>CLOSED</span>", unsafe_allow_html=True)
+                bg2 = "#ffffff" if i % 2 == 0 else "#fafafa"
+                pnl_u = "<span style='color:{}'>${:,.2f}</span>".format(pc, p['pnl']) if curr_filter in ['BOTH','USD'] else "-"
+                pnl_i = "<span style='color:{}'>₹{:,.0f}</span>".format(pc, p['pnl']*INR_OH) if curr_filter in ['BOTH','INR'] else "-"
+                _rows += "<tr style='background:{};'>".format(bg2)
+                _rows += "<td style='{}'>{}</td>".format(TD2, i)
+                _rows += "<td style='{}'>{}</td>".format(TD2, p['buy_time'])
+                _rows += "<td style='{}'>{}</td>".format(TD2, p['member'])
+                _rows += "<td style='{}'>{}</td>".format(TD2, p['strat'])
+                _rows += "<td style='{}'><span style='color:{};font-weight:700'>{}</span></td>".format(TD2, sc, side_label)
+                _rows += "<td style='{}'>${:,.1f}</td>".format(TDR2, p['entry'])
+                _rows += "<td style='{}'>${:,.1f}</td>".format(TDR2, p['exit'])
+                _rows += "<td style='{}'>{}</td>".format(TDR2, int(p['size']))
+                _rows += "<td style='{}'>{}</td>".format(TDR2, pnl_u)
+                _rows += "<td style='{}'>{}</td>".format(TDR2, pnl_i)
+                _rows += "<td style='{}'><span style='color:#e65100'>${:,.2f}|₹{:,.0f}</span></td>".format(TDR2, trade_charge, trade_charge*INR_OH)
+                _rows += "<td style='{}'><span style='color:{}'>${:,.2f}</span></td>".format(TDR2, cum_c, cum_pnl)
+                _rows += "<td style='{}'>{}</td>".format(TD2, p['trade_count'])
+                _rows += "<td style='{}'>CLOSED</td>".format(TD2)
+                _rows += "</tr>"
 
             row_start = len(all_pairs) + 1
             for idx, pos in enumerate(open_pos_filtered):
-                rc = st.columns([1,2,1,1,1,2,2,1,2,2,2,2,1,1])
-                sc = "green" if pos['side']=='LONG' else "red"
-                pc = "green" if pos['unreal_pnl'] >= 0 else "red"
-                rc[0].write(row_start + idx)
-                rc[1].write(datetime.datetime.now().strftime('%Y-%m-%dT%H:%M'))
-                rc[2].write("My Account")
-                rc[3].write(pos['account'])
-                rc[4].markdown(f"<span style='color:{sc}'>{pos['side']}</span>", unsafe_allow_html=True)
-                rc[5].write(f"${pos['entry']:,.1f}")
-                rc[6].markdown("-")
-                rc[7].write(int(pos['size']))
-                rc[8].markdown(f"<span style='color:{pc}'>${pos['unreal_pnl']:,.2f}</span>" if curr_filter in ['BOTH','USD'] else "<span>-</span>", unsafe_allow_html=True)
-                rc[9].markdown(f"<span style='color:{pc}'>₹{pos['unreal_pnl']*INR_OH:,.0f}</span>" if curr_filter in ['BOTH','INR'] else "<span>-</span>", unsafe_allow_html=True)
-                rc[10].markdown("<span style='color:#e65100'>$0.00 | ₹0</span>", unsafe_allow_html=True)
-                rc[11].markdown("-")
-                rc[12].write(1)
-                rc[13].markdown("<span style='color:orange'>OPEN</span>", unsafe_allow_html=True)
+                sc = "#089981" if pos['side']=='LONG' else "#F23645"
+                pc = "#089981" if pos['unreal_pnl'] >= 0 else "#F23645"
+                bg3 = "#fff8f0"
+                pnl_u2 = "<span style='color:{}'>${:,.2f}</span>".format(pc, pos['unreal_pnl']) if curr_filter in ['BOTH','USD'] else "-"
+                pnl_i2 = "<span style='color:{}'>₹{:,.0f}</span>".format(pc, pos['unreal_pnl']*INR_OH) if curr_filter in ['BOTH','INR'] else "-"
+                _rows += "<tr style='background:{};'>".format(bg3)
+                _rows += "<td style='{}'>{}</td>".format(TD2, row_start+idx)
+                _rows += "<td style='{}'>{}</td>".format(TD2, datetime.datetime.now().strftime('%Y-%m-%dT%H:%M'))
+                _rows += "<td style='{}'>My Account</td>".format(TD2)
+                _rows += "<td style='{}'>{}</td>".format(TD2, pos['account'])
+                _rows += "<td style='{}'><span style='color:{};font-weight:700'>{}</span></td>".format(TD2, sc, pos['side'])
+                _rows += "<td style='{}'>${:,.1f}</td>".format(TDR2, pos['entry'])
+                _rows += "<td style='{}'>-</td>".format(TD2)
+                _rows += "<td style='{}'>{}</td>".format(TDR2, int(pos['size']))
+                _rows += "<td style='{}'>{}</td>".format(TDR2, pnl_u2)
+                _rows += "<td style='{}'>{}</td>".format(TDR2, pnl_i2)
+                _rows += "<td style='{}'>-</td>".format(TD2)
+                _rows += "<td style='{}'>-</td>".format(TD2)
+                _rows += "<td style='{}'>1</td>".format(TD2)
+                _rows += "<td style='{}'><span style='color:#FF9800;font-weight:700'>OPEN</span></td>".format(TD2)
+                _rows += "</tr>"
+            _tbl += _rows + "</tbody></table></div>"
+            st.markdown(_tbl, unsafe_allow_html=True)
         else:
             st.info("No orders found for selected period and filters")
 
@@ -1691,170 +1850,188 @@ with st.expander("SECTION 4 - FORWARD TEST vs BACKTEST COMPARE", expanded=st.ses
     # LIVE MATCH REPORT TAB
     with comp_tab_match:
         st.markdown("**Live Backtest vs Forward Test Match Report**")
-        st.caption("Compares every trade fired by live bot against backtest. Updates on each run.")
+        st.caption("Trade count | Direction | Entry time | Exit time | MATCH or MISMATCH per trade")
 
-        # Auto-refresh every 5 minutes
         import time as _time
-        AUTO_INTERVAL = 300  # 5 minutes
-        last_run = st.session_state.get('match_last_run', 0)
-        now_ts   = _time.time()
-        auto_due = (now_ts - last_run) >= AUTO_INTERVAL
+        import re as _re3
+        AUTO_INTERVAL = 300
 
-        col_run, col_auto = st.columns([1, 3])
+        last_run  = st.session_state.get('match_last_run', 0)
+        now_ts    = _time.time()
+        auto_due  = (now_ts - last_run) >= AUTO_INTERVAL
+
+        col_run, col_info = st.columns([1, 4])
         with col_run:
             run_match = st.button("RUN MATCH CHECK", key="run_match_btn")
-        with col_auto:
+        with col_info:
             if last_run > 0:
-                last_run_str = datetime.datetime.fromtimestamp(last_run).strftime('%H:%M:%S')
-                next_run_secs = max(0, int(AUTO_INTERVAL - (now_ts - last_run)))
-                st.caption(f"Last check: {last_run_str} | Next auto-check in {next_run_secs}s")
+                last_str  = datetime.datetime.fromtimestamp(last_run).strftime('%H:%M:%S')
+                next_secs = max(0, int(AUTO_INTERVAL - (now_ts - last_run)))
+                st.caption(f"Last check: {last_str} | Next auto in {next_secs}s")
             else:
-                st.caption("Auto-checks every 5 minutes. Also runs on every page refresh.")
+                st.caption("Auto-checks every 5 minutes")
 
-        # Run if: button clicked OR auto interval due OR no result yet
-        # Always re-run on page load (no cached stale result)
-        should_run = run_match or auto_due or not st.session_state.get('match_result') or True
-
+        # Always run fresh on every page load - permanent fix
+        should_run = True
         if should_run:
-            with st.spinner("Updating CSV and running backtests..."):
+            with st.spinner("Running match check..."):
                 import subprocess
-                result = subprocess.run(
+                _r = subprocess.run(
                     [".venv/bin/python3", "scripts/verify_match.py"],
                     capture_output=True, text=True,
                     cwd="/home/anildalabanjan933/crypto_trading_system"
                 )
-                st.session_state['match_result'] = result.stdout
-                st.session_state['match_stderr'] = result.stderr
+                st.session_state['match_result']   = _r.stdout
+                st.session_state['match_stderr']   = _r.stderr
                 st.session_state['match_last_run'] = _time.time()
 
-        if st.session_state.get('match_result'):
-            output = st.session_state.get('match_result', '')
-            stderr = st.session_state.get('match_stderr', '')
+        output = st.session_state.get('match_result', '')
+        if not output:
+            st.warning("No result yet - click RUN MATCH CHECK")
+        else:
+            lines = output.strip().split("\n")
 
-            if not output:
-                st.warning("No output from match script")
+            overall_line = next((l for l in lines if "OVERALL:" in l), "")
+            if "MATCH OK" in overall_line:
+                st.success("ALL MATCH OK - Backtest and Forward Test are in sync")
+            elif "MISMATCH" in overall_line:
+                st.error("MISMATCH FOUND - see table below")
             else:
-                # Parse and display nicely
-                lines = output.strip().split("\n")
+                st.info("Checking...")
 
-                # Overall result
-                overall = [l for l in lines if "OVERALL:" in l]
-                if overall:
-                    if "MATCH OK" in overall[0]:
-                        st.success(overall[0].replace("OVERALL:", "").strip())
-                    else:
-                        st.error(overall[0].replace("OVERALL:", "").strip())
+            m1, m2, m3 = st.columns(3)
+            for l in lines:
+                if "Valid from" in l:  m1.caption(l.strip())
+                if "Run time"   in l:  m2.caption(l.strip())
+                if "CSV updated" in l or "CSV already" in l: m3.caption(l.strip())
 
-                # Valid from and run time
-                for l in lines:
-                    if "Valid from" in l or "Run time" in l:
-                        st.caption(l.strip())
+            st.markdown("---")
 
-                # CSV update status
-                for l in lines:
-                    if "CSV updated" in l or "CSV already" in l:
-                        st.caption(l.strip())
+            def _parse_block(lines, key):
+                start = next((i for i,l in enumerate(lines) if key in l), None)
+                if start is None:
+                    return 0, 0, [], ""
+                bt_n = lv_n = 0
+                summary = ""
+                for l in lines[start:start+5]:
+                    if "Backtest trades" in l:
+                        try: bt_n = int(l.split(":")[-1].strip())
+                        except: pass
+                    if "Live trades" in l:
+                        try: lv_n = int(l.split(":")[-1].strip())
+                        except: pass
+                trades = []
+                i = start
+                while i < len(lines):
+                    if "Trade #" in lines[i]:
+                        blk = lines[i:i+10]
+                        def _ex(line, k):
+                            m = _re3.search(k + r'=(\S+)', line)
+                            return m.group(1) if m else "-"
+                        bt_l = next((l for l in blk if "BT :" in l), "")
+                        lv_l = next((l for l in blk if "LV :" in l), "")
+                        di_l = next((l for l in blk if "Direction" in l), "")
+                        en_l = next((l for l in blk if "Entry time" in l), "")
+                        ex_l = next((l for l in blk if "Exit time" in l), "")
+                        st_l = next((l for l in blk if "STATUS" in l), "")
+                        trades.append({
+                            "num"      : lines[i].strip(),
+                            "bt_dir"   : _ex(bt_l, "Dir"),
+                            "bt_entry" : _ex(bt_l, "Entry"),
+                            "bt_exit"  : _ex(bt_l, "Exit"),
+                            "lv_dir"   : _ex(lv_l, "Dir"),
+                            "lv_entry" : _ex(lv_l, "Entry"),
+                            "lv_exit"  : _ex(lv_l, "Exit"),
+                            "dir_ok"   : "MATCH" in di_l and "MISMATCH" not in di_l,
+                            "entry_ok" : "MATCH" in en_l and "MISMATCH" not in en_l,
+                            "pending"  : "PENDING" in ex_l or "PENDING" in st_l,
+                            "full_ok"  : "FULL MATCH" in st_l,
+                            "status"   : st_l.replace("STATUS","").replace(":","").strip()
+                        })
+                    if "SUMMARY:" in lines[i]:
+                        summary = lines[i].strip()
+                        break
+                    i += 1
+                return bt_n, lv_n, trades, summary
+
+            for s_key, s_label in [
+                ("S2 RenkoReversal", "S2 - RenkoReversalStrategy"),
+                ("S4 RenkoSMIIO",    "S4 - RenkoSMIIOSupertrendStrategy")
+            ]:
+                bt_n, lv_n, trades, summary = _parse_block(lines, s_key)
+                st.markdown(f"**{s_label}**")
+
+                cc = st.columns(4)
+                cc[0].metric("Backtest Trades", bt_n)
+                cc[1].metric("Live Trades",     lv_n)
+                if bt_n == lv_n:
+                    cc[2].success("COUNT MATCH")
+                elif lv_n > 0 and bt_n == 0:
+                    cc[2].warning("PENDING (CSV updating)")
+                else:
+                    cc[2].error(f"COUNT MISMATCH diff={abs(bt_n-lv_n)}")
+                if summary:
+                    cc[3].caption(summary.replace("SUMMARY:","").strip())
+
+                if not trades:
+                    st.success("BOTH FLAT - NO SIGNAL YET - MATCH OK")
+                else:
+                    hh = st.columns([1,2,2,2,4,4,4,4,2,2])
+                    for col,hdr in zip(hh,["#","RESULT","BT Dir","LV Dir","BT Entry","LV Entry","BT Exit","LV Exit","Dir","Entry"]):
+                        col.markdown(f"<small><b>{hdr}</b></small>", unsafe_allow_html=True)
+
+                    def _fmt(v):
+                        if not v or v in ["-","MISSING","PENDING"]: return v or "-"
+                        return v[:16].replace("T"," ")
+
+                    for t in trades:
+                        rr = st.columns([1,2,2,2,4,4,4,4,2,2])
+                        rr[0].write(t["num"].replace("Trade #","").replace(":","").strip())
+
+                        if t["full_ok"]:
+                            rr[1].success("MATCH")
+                        elif t["pending"]:
+                            rr[1].warning("PENDING")
+                        else:
+                            rr[1].error("MISMATCH")
+
+                        bd = t["bt_dir"].upper()
+                        if bd in ["MISSING","PENDING","-"]:
+                            rr[2].warning(bd)
+                        elif bd == "LONG":
+                            rr[2].markdown("<span style='color:green;font-weight:700'>LONG</span>", unsafe_allow_html=True)
+                        else:
+                            rr[2].markdown("<span style='color:red;font-weight:700'>SHORT</span>", unsafe_allow_html=True)
+
+                        ld = t["lv_dir"].upper()
+                        if ld in ["MISSING","-"]:
+                            rr[3].error("MISSING")
+                        elif ld == "LONG":
+                            rr[3].markdown("<span style='color:green;font-weight:700'>LONG</span>", unsafe_allow_html=True)
+                        else:
+                            rr[3].markdown("<span style='color:red;font-weight:700'>SHORT</span>", unsafe_allow_html=True)
+
+                        rr[4].write(_fmt(t["bt_entry"]))
+                        rr[5].write(_fmt(t["lv_entry"]))
+                        rr[6].write(_fmt(t["bt_exit"]) if t["bt_exit"] not in ["","-"] else "-")
+                        rr[7].write("OPEN" if t["lv_exit"] == "(open)" else _fmt(t["lv_exit"]))
+
+                        if t["dir_ok"]:
+                            rr[8].success("OK")
+                        else:
+                            rr[8].error("FAIL")
+
+                        if t["entry_ok"]:
+                            rr[9].success("OK")
+                        else:
+                            rr[9].error("FAIL")
 
                 st.markdown("---")
 
-                # Per strategy results
-                for strategy in ["S2 RenkoReversal", "S4 RenkoSMIIO"]:
-                    # Find section for this strategy
-                    start = None
-                    for i, l in enumerate(lines):
-                        if strategy in l and "===" in l:
-                            start = i
-                            break
-                    if start is None:
-                        continue
-
-                    st.markdown(f"**{strategy}**")
-
-                    # Get trades count
-                    bt_count = lv_count = 0
-                    for l in lines[start:start+5]:
-                        if "Backtest trades" in l:
-                            bt_count = int(l.split(":")[-1].strip())
-                        if "Live trades" in l:
-                            lv_count = int(l.split(":")[-1].strip())
-
-                    c1, c2 = st.columns(2)
-                    with c1:
-                        st.metric("Backtest Trades", bt_count)
-                    with c2:
-                        st.metric("Live Trades", lv_count)
-
-                    # Find all trade blocks
-                    trade_blocks = []
-                    current_block = []
-                    in_section = False
-                    for l in lines[start:]:
-                        if "Trade #" in l:
-                            if current_block:
-                                trade_blocks.append(current_block)
-                            current_block = [l]
-                            in_section = True
-                        elif in_section and l.strip():
-                            current_block.append(l)
-                        elif "SUMMARY:" in l:
-                            if current_block:
-                                trade_blocks.append(current_block)
-                            # Show summary
-                            st.caption(l.strip())
-                            break
-
-                    if not trade_blocks:
-                        # No trades yet
-                        for l in lines[start:start+10]:
-                            if "STATUS:" in l:
-                                if "MATCH OK" in l:
-                                    st.success(l.strip())
-                                elif "MISMATCH" in l:
-                                    st.error(l.strip())
-                                else:
-                                    st.info(l.strip())
-                    else:
-                        for block in trade_blocks:
-                            trade_num = block[0].strip()
-                            bt_line = next((l for l in block if "BT :" in l), "")
-                            lv_line = next((l for l in block if "LV :" in l), "")
-                            dir_line = next((l for l in block if "Direction" in l), "")
-                            entry_line = next((l for l in block if "Entry time" in l), "")
-                            exit_line = next((l for l in block if "Exit time" in l), "")
-                            status_line = next((l for l in block if "STATUS" in l), "")
-
-                            with st.expander(f"{trade_num} - {status_line.strip()}", expanded=True):
-                                col1, col2 = st.columns(2)
-                                with col1:
-                                    st.markdown("**Backtest**")
-                                    st.code(bt_line.strip())
-                                with col2:
-                                    st.markdown("**Live Bot**")
-                                    st.code(lv_line.strip())
-
-                                d1, d2, d3 = st.columns(3)
-                                with d1:
-                                    if "MATCH" in dir_line and "MISMATCH" not in dir_line:
-                                        st.success(dir_line.strip())
-                                    else:
-                                        st.error(dir_line.strip())
-                                with d2:
-                                    if "MATCH" in entry_line and "MISMATCH" not in entry_line:
-                                        st.success(entry_line.strip())
-                                    else:
-                                        st.error(entry_line.strip())
-                                with d3:
-                                    if "PENDING" in exit_line:
-                                        st.warning(exit_line.strip())
-                                    elif "MATCH" in exit_line and "MISMATCH" not in exit_line:
-                                        st.success(exit_line.strip())
-                                    else:
-                                        st.error(exit_line.strip())
-
-                    st.markdown("---")
-
-            if stderr and "DeprecationWarning" not in stderr and "RuntimeWarning" not in stderr:
-                st.error(f"Script error: {stderr[:200]}")
+            err = st.session_state.get('match_stderr','')
+            if err and "DeprecationWarning" not in err and "RuntimeWarning" not in err:
+                with st.expander("Script errors"):
+                    st.code(err[:500])
 
     for comp_tab, algo_name, algo_key in [(comp_tab_s2, "S2", "s2"), (comp_tab_s4, "S4", "s4")]:
         with comp_tab:
@@ -2624,7 +2801,7 @@ with st.expander("SECTION 11 - MAINTENANCE", expanded=st.session_state.get('exp_
 
     import shutil, os, subprocess
 
-    disk_pct2, disk_free2 = get_disk_usage()
+    disk_pct2, disk_free2 = _timed('disk_usage', 30, _fetch_disk)
     c1, c2, c3, c4, c5 = st.columns(5)
     with c1:
         if disk_pct2 > 80:
@@ -2764,9 +2941,8 @@ with col_ref:
 with col_auto:
     auto_refresh = st.checkbox("AUTO REFRESH 30s", key="sec5_autorefresh")
     if auto_refresh:
-        import time
-        time.sleep(30)
-        st.rerun()
+        import streamlit.components.v1 as _stc
+        _stc.html('<script>setTimeout(function(){window.location.reload();},30000);</script>', height=0)
 
 
 
@@ -2844,3 +3020,4 @@ with st.expander("SECTION 13 - STRATEGY PERFORMANCE SUMMARY", expanded=st.sessio
 # ================================================================
 st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 st.caption(f"Version: {system.get('version', 'v3.9')} | Commit: {git_commit} | Last refresh: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+# This line intentionally left blank

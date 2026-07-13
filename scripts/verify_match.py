@@ -1,11 +1,26 @@
 import sys, os, requests, time, pandas as pd, re
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 sys.path.insert(0, '/home/anildalabanjan933/crypto_trading_system')
 
 from strategies.backtest.renko_smiio_supertrend_strategy import RenkoSMIIOSupertrendStrategy
 from strategies.backtest.renko_reversal_strategy import RenkoReversalStrategy
 from engine.backtest_engine import BacktestEngine
 from backtest_analyzer import BacktestReportGenerator
+
+
+def _csv_lock_write(filepath, df):
+    """Write CSV with file lock - prevents race condition corruption."""
+    import fcntl, tempfile, os
+    lock_path = filepath + '.lock'
+    with open(lock_path, 'w') as lock_file:
+        try:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+            # Write to temp file first then rename - atomic operation
+            tmp_path = filepath + '.tmp'
+            df.to_csv(tmp_path, index=False)
+            os.replace(tmp_path, filepath)
+        finally:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
 
 BASE     = 'https://cdn-ind.testnet.deltaex.org'
 CSV_PATH = 'data/btc_1m_delta.csv'
@@ -25,34 +40,18 @@ VALID_FROM = get_valid_from()
 TODAY      = (datetime.now(timezone.utc) + __import__('datetime').timedelta(days=1)).strftime('%Y-%m-%d')
 
 def update_csv():
-    df = pd.read_csv(CSV_PATH)
-    # Clean CSV before reading last timestamp
-    df = df.dropna(subset=['Date','Time'])
-    df = df[df['Date'].astype(str).str.match(r'\d{4}-\d{2}-\d{2}')]
-    df = df[df['Time'].astype(str).str.match(r'\d{2}:\d{2}')]
-    last_ts = pd.Timestamp(str(df.iloc[-1]['Date']) + ' ' + str(df.iloc[-1]['Time']))
-    start_ts = int(last_ts.timestamp())
-    end_ts   = int(time.time())
-    r = requests.get(f'{BASE}/v2/history/candles',
-                     params={'symbol':'BTCUSD','resolution':'1m',
-                             'start':start_ts,'end':end_ts}, timeout=10)
-    candles = r.json().get('result', [])
-    if candles:
-        new_rows = []
-        for c in candles:
-            ts = pd.Timestamp(c['time'], unit='s')
-            new_rows.append({'Date':ts.strftime('%Y-%m-%d'),
-                             'Time':ts.strftime('%H:%M:%S'),
-                             'Open':c['open'],'High':c['high'],
-                             'Low':c['low'],'Close':c['close'],
-                             'Volume':c['volume']})
-        df2 = pd.concat([df, pd.DataFrame(new_rows)], ignore_index=True)
-        df2.drop_duplicates(subset=['Date','Time'], keep='last', inplace=True)
-        df2.sort_values(['Date','Time'], inplace=True)
-        df2.to_csv(CSV_PATH, index=False)
-        print(f"CSV updated to {df2.iloc[-1]['Date']} {df2.iloc[-1]['Time']} ({len(candles)} new candles)")
-    else:
-        print(f"CSV already up to date: {last_ts}")
+    # Use download_market_data.py as single writer - never write CSV directly
+    import subprocess
+    result = subprocess.run(
+        ['.venv/bin/python3', 'data/download_market_data.py'],
+        capture_output=True, text=True,
+        cwd='/home/anildalabanjan933/crypto_trading_system'
+    )
+    # Print last line of output as status
+    lines = (result.stdout + result.stderr).strip().split('\n')
+    for l in lines:
+        if l.strip():
+            print(l.strip())
 
 def get_backtest_signals(strategy_class, name, params):
     # Always use tomorrow as end_date to include all of today's candles
@@ -163,6 +162,25 @@ def compare(label, bt_signals, lv_trades):
     if len(bt_signals) == 0 and len(lv_trades) == 0:
         print(f"\n  STATUS: BOTH FLAT - NO SIGNAL YET - MATCH OK")
         return True
+
+    if len(bt_signals) == 0 and len(lv_trades) >= 1:
+        lv = lv_trades[0]
+        if lv.get('status') == 'OPEN':
+            try:
+                entry_dt = datetime.fromisoformat(lv['entry_time'])
+                age_mins = (datetime.now(timezone.utc) - entry_dt.replace(tzinfo=timezone.utc)).total_seconds() / 60
+                if age_mins <= 15:
+                    print(f"\n  Trade #1:")
+                    print(f"    BT : Dir=PENDING  Entry=PENDING  Exit=PENDING")
+                    print(f"    LV : Dir={lv['direction']:6s}  Entry={lv['entry_time']}  Exit=(open)")
+                    print(f"    Direction  : PENDING")
+                    print(f"    Entry time : PENDING")
+                    print(f"    Exit time  : PENDING (trade still open)")
+                    print(f"    STATUS     : PENDING (backtest CSV catching up - {age_mins:.0f}m since entry)")
+                    print(f"\n  SUMMARY: 0 FULL MATCH | 1 PENDING | 0 MISMATCH")
+                    return True
+            except:
+                pass
 
     full_match  = 0
     mismatch    = 0

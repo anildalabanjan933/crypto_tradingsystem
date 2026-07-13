@@ -96,6 +96,21 @@ def candles_to_df(candles):
     # Always return clean 7-column format - no extra columns ever
     return df[['Date','Time','Open','High','Low','Close','Volume']]
 
+
+def _csv_lock_write(filepath, df):
+    """Write CSV with file lock - prevents race condition corruption."""
+    import fcntl, tempfile, os
+    lock_path = filepath + '.lock'
+    with open(lock_path, 'w') as lock_file:
+        try:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+            # Write to temp file first then rename - atomic operation
+            tmp_path = filepath + '.tmp'
+            df.to_csv(tmp_path, index=False)
+            os.replace(tmp_path, filepath)
+        finally:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+
 def clean_csv(csv_path):
     if not os.path.exists(csv_path):
         return
@@ -104,55 +119,22 @@ def clean_csv(csv_path):
     if 'Date' in df.columns and 'Time' in df.columns:
         df = df[['Date','Time','Open','High','Low','Close','Volume']].dropna()
         df = df.drop_duplicates(subset=['Date','Time']).sort_values(['Date','Time'])
-        df.to_csv(csv_path, index=False)
+        _csv_lock_write(csv_path, df)
 
 def incremental_download(symbol, resolution, csv_path, full_start='2024-01-01'):
-    clean_csv(csv_path)  # Fix any corrupted columns before reading
-    candle_secs = {'1m':60,'5m':300,'15m':900,'1h':3600,'2h':7200,'4h':14400,'1d':86400}
-    step = candle_secs.get(resolution, 3600)
-    now_ts = int(datetime.now(timezone.utc).timestamp())
-
-    if os.path.exists(csv_path):
-        existing = pd.read_csv(csv_path)
-        if 'Date' in existing.columns:
-            last_dt = pd.to_datetime(existing['Date'] + ' ' + existing['Time'], utc=True).max()
-        elif 'datetime' in existing.columns:
-            last_dt = pd.to_datetime(existing['datetime'], utc=True).max()
-        else:
-            last_dt = pd.to_datetime(existing['timestamp'], unit='s', utc=True).max()
-        start_ts = int(last_dt.timestamp()) + step
-        log(f'[Step 1] Incremental from {last_dt}')
-    else:
-        start_ts = int(datetime.strptime(full_start, '%Y-%m-%d')
-                       .replace(tzinfo=timezone.utc).timestamp())
-        existing = pd.DataFrame()
-        log(f'[Step 1] Full download from {full_start}')
-
-    all_candles = []
-    chunk = 2000
-    ts = start_ts
-    while ts < now_ts:
-        end_chunk = min(ts + step * chunk, now_ts)
-        try:
-            candles = fetch_candles_dl(symbol, resolution, ts, end_chunk)
-            if candles:
-                all_candles.extend(candles)
-        except Exception as e:
-            log(f'[Step 1] Warning: {e}')
-        ts = end_chunk + step
-        time.sleep(0.2)
-
-    if all_candles:
-        new_df = candles_to_df(all_candles)
-        if not existing.empty:
-            combined = pd.concat([existing, new_df], ignore_index=True)
-        else:
-            combined = new_df
-        combined = combined.drop_duplicates(subset=['Date','Time']).sort_values(['Date','Time'])
-        combined.to_csv(csv_path, index=False)
-        log(f'[Step 1] Saved {len(combined)} candles to {csv_path}')
-    else:
-        log(f'[Step 1] Already up to date: {csv_path}')
+    # Use download_market_data.py as single writer - never write CSV directly
+    import subprocess
+    log('[Step 1] Updating CSV via download_market_data.py...')
+    result = subprocess.run(
+        ['.venv/bin/python3', 'data/download_market_data.py'],
+        capture_output=True, text=True,
+        cwd='/home/anildalabanjan933/crypto_trading_system'
+    )
+    lines = (result.stdout + result.stderr).strip().split('\n')
+    for l in lines:
+        if l.strip():
+            log(f'[Step 1] {l.strip()}')
+    log('STEP_1_DONE')
 
 try:
     incremental_download(SYMBOL, STRATEGY_TF, STRATEGY_CSV)

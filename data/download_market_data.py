@@ -43,6 +43,21 @@ def candles_to_df(candles):
     return df
 
 
+
+def _csv_lock_write(filepath, df):
+    """Write CSV with file lock - prevents race condition corruption."""
+    import fcntl, tempfile, os
+    lock_path = filepath + '.lock'
+    with open(lock_path, 'w') as lock_file:
+        try:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
+            # Write to temp file first then rename - atomic operation
+            tmp_path = filepath + '.tmp'
+            df.to_csv(tmp_path, index=False)
+            os.replace(tmp_path, filepath)
+        finally:
+            fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
+
 def get_last_timestamp(filepath):
     if not os.path.exists(filepath):
         return None
@@ -115,11 +130,11 @@ def download_or_update(asset_key):
         existing_df = pd.read_csv(filepath)
         combined = pd.concat([existing_df, new_df], ignore_index=True)
         combined = combined.drop_duplicates(subset=["Date", "Time"]).sort_values(["Date", "Time"]).reset_index(drop=True)
-        combined.to_csv(filepath, index=False)
+        _csv_lock_write(filepath, combined)
         print("  Updated: " + str(len(new_df)) + " new rows added. Total rows: " + str(len(combined)) + ".")
     else:
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
-        new_df.to_csv(filepath, index=False)
+        _csv_lock_write(filepath, new_df)
         print("  Created: " + str(len(new_df)) + " rows saved to " + filepath + ".")
 
 
