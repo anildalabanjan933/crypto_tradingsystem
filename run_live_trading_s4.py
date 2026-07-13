@@ -165,11 +165,48 @@ def main():
         _ts_file = 'logs/last_known_ts_s4.txt'
         if os.path.exists(_ts_file):
             _saved_ts = open(_ts_file).read().strip()
-            if _saved_ts and (last_known_ts is None or str(_saved_ts) > str(last_known_ts)):
-                last_known_ts = _saved_ts
-                logging.info(f'[STARTUP] Loaded last_known_ts from file: {last_known_ts}')
+            # FIX ROOT CAUSE 3: validate format - reject garbage/manual edits
+            if _saved_ts and re.match(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$', _saved_ts):
+                if last_known_ts is None or str(_saved_ts) > str(last_known_ts):
+                    last_known_ts = _saved_ts
+                    logging.info(f'[STARTUP] Loaded last_known_ts from file: {last_known_ts}')
+            elif _saved_ts:
+                logging.warning(f'[STARTUP] Rejected invalid ts file value: {repr(_saved_ts)}')
     except Exception as _e2:
         logging.warning(f'[STARTUP] Could not load ts file: {_e2}')
+
+    # FIX ROOT CAUSE 1+2: reconcile exchange position vs last signal
+    # If exchange has open position but bot thinks FLAT (crash between ts-save and order)
+    # OR if bot thinks open but exchange is FLAT (crash after order but before position update)
+    try:
+        _exch_pos2 = order_manager.get_position()
+        _exch_dir2 = None
+        if _exch_pos2.get('success'):
+            if _exch_pos2.get('direction') == 'LONG':
+                _exch_dir2 = 'long'
+            elif _exch_pos2.get('direction') == 'SHORT':
+                _exch_dir2 = 'short'
+
+        if _exch_dir2 != position:
+            logging.warning(f'[STARTUP] Position mismatch: exchange={_exch_dir2} bot={position} - syncing to exchange')
+            position = _exch_dir2
+            if position is not None:
+                _entry_sigs4 = [s for s in (_sigs_init or [])
+                                if s.get('signal_type') == 'ENTRY'
+                                and s.get('direction') == position]
+                if _entry_sigs4:
+                    _last_entry4 = _entry_sigs4[-1]
+                    _entry_ts4   = _last_entry4.get('timestamp')
+                    _actual4 = order_manager.get_position()
+                    if _actual4.get('success') and abs(_actual4.get('size', 0)) > 0:
+                        open_lot_size = abs(_actual4.get('size', open_lot_size))
+                    logging.info(f'[STARTUP] Reconciled: position={position} | entry_ts={_entry_ts4} | lots={open_lot_size}')
+                else:
+                    logging.warning(f'[STARTUP] Open position on exchange but no matching entry signal found')
+            else:
+                logging.info(f'[STARTUP] Reconciled: both exchange and bot now FLAT')
+    except Exception as _e3:
+        logging.warning(f'[STARTUP] Reconciliation check failed: {_e3}')
 
     # --- Main loop ---
     while True:
