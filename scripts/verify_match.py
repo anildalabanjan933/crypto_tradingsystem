@@ -169,7 +169,7 @@ def compare(label, bt_signals, lv_trades):
             try:
                 entry_dt = datetime.fromisoformat(lv['entry_time'])
                 age_mins = (datetime.now(timezone.utc) - entry_dt.replace(tzinfo=timezone.utc)).total_seconds() / 60
-                if age_mins <= 15:
+                if age_mins <= 30:
                     print(f"\n  Trade #1:")
                     print(f"    BT : Dir=PENDING  Entry=PENDING  Exit=PENDING")
                     print(f"    LV : Dir={lv['direction']:6s}  Entry={lv['entry_time']}  Exit=(open)")
