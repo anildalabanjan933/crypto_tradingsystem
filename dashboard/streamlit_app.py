@@ -721,7 +721,9 @@ with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b',
                             pass
                     match = re.search(r'ts=(\S+)', l)
                     if match:
-                        timestamps.append(match.group(1))
+                        # Include order type to avoid flagging EXIT+ENTRY at same ts
+                        order_type = 'ENTRY' if 'ENTRY' in l else 'EXIT'
+                        timestamps.append(f"{order_type}_{match.group(1)}")
                 duplicates = [t for t in timestamps if timestamps.count(t) > 1]
                 if duplicates:
                     errors.append(f"{bot} DUPLICATE ORDERS detected at timestamps: {list(set(duplicates))}")
