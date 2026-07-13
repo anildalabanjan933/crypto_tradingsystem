@@ -88,6 +88,26 @@ def trim_logs():
             log(f"[MAINTENANCE] Log OK: {os.path.basename(lf)} | {size_mb:.2f}MB")
 
 # ── 3. OUTPUT CLEANUP ─────────────────────────────────────────
+def clean_junk_files():
+    """Remove .bak* and .lock files from repo permanently."""
+    import glob
+    patterns = ['**/*.bak*', '**/*.lock', '*.bak*', '*.lock']
+    removed = 0
+    for pattern in patterns:
+        for f in glob.glob(os.path.join(BASE, pattern), recursive=True):
+            # Never delete log files or .env
+            if '.env' in f or 'logs/' in f:
+                continue
+            try:
+                os.remove(f)
+                removed += 1
+            except:
+                pass
+    if removed > 0:
+        log(f"[MAINTENANCE] Junk files cleaned: {removed} .bak/.lock files removed")
+    else:
+        log(f"[MAINTENANCE] Junk files: clean")
+
 def clean_output():
     output_dir = os.path.join(BASE, 'output')
     if not os.path.exists(output_dir):
