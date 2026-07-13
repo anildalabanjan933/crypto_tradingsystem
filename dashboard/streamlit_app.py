@@ -108,9 +108,9 @@ st.set_page_config(page_title="Crypto Trading Dashboard", layout="wide", page_ic
 
 st.markdown("""
 <style>
-/* CRYPTO TRADING DASHBOARD - CLEAN PROFESSIONAL THEME */
+/* CRYPTO TRADING DASHBOARD - TRADINGVIEW PRO THEME */
 
-/* BASE */
+/* BASE - pure white, light, fast */
 .stApp { background-color: #FFFFFF; }
 .block-container { padding: 0.4rem 1rem 0.4rem 1rem !important; max-width: 100% !important; }
 section[data-testid="stSidebar"] { display: none; }
@@ -123,10 +123,10 @@ h2 { font-size: 14px !important; font-weight: 600 !important; margin: 0 !importa
 h3 { font-size: 13px !important; font-weight: 600 !important; margin: 0 !important; color: #131722 !important; }
 p  { font-size: 12px !important; margin: 0 !important; color: #131722 !important; }
 
-/* SECTION TITLES - medium grey shade, dark text, blue left accent */
+/* SECTION TITLES - TradingView dark navy, white text, blue accent */
 .section-title {
-    background-color: #E8D5D5 !important;
-    color: #2d1515 !important;
+    background-color: #E8ECF2 !important;
+    color: #131722 !important;
     font-size: 11px !important;
     font-weight: 700 !important;
     padding: 4px 10px !important;
@@ -135,7 +135,7 @@ p  { font-size: 12px !important; margin: 0 !important; color: #131722 !important
     text-transform: uppercase !important;
     letter-spacing: 1px !important;
     border-radius: 3px !important;
-    border-left: 4px solid #b05070 !important;
+    border-left: 4px solid #2196F3 !important;
     display: block !important;
     width: 100% !important;
     box-sizing: border-box !important;
@@ -166,14 +166,14 @@ summary,
 .streamlit-expanderHeader,
 [data-testid="stExpander"] summary,
 div[data-testid="stExpander"] details summary {
-    background-color: #E8D5D5 !important;
-    color: #2d1515 !important;
+    background-color: #E8ECF2 !important;
+    color: #131722 !important;
     font-weight: 700 !important;
     font-size: 11px !important;
     text-transform: uppercase !important;
     letter-spacing: 1px !important;
     padding: 4px 10px !important;
-    border-left: 4px solid #b05070 !important;
+    border-left: 4px solid #2196F3 !important;
     border-radius: 2px !important;
     list-style: none !important;
     outline: none !important;
@@ -182,45 +182,46 @@ details summary:hover,
 details > summary:hover,
 summary:hover,
 .streamlit-expanderHeader:hover {
-    background-color: #dfc8c8 !important;
+    background-color: #D8DCE6 !important;
 }
+summary:hover { background-color: #D8DCE6 !important; }
 details summary p, details summary span, details summary div,
 summary p, summary span, summary div,
 .streamlit-expanderHeader p, .streamlit-expanderHeader span {
-    color: #2d1515 !important;
+    color: #FFFFFF !important;
     font-weight: 700 !important;
     font-size: 11px !important;
     text-transform: uppercase !important;
     letter-spacing: 1px !important;
 }
 [data-testid="stExpander"] > details {
-    border: 1px solid #E8D5D5 !important;
+    border: 1px solid #E0E3EB !important;
     border-radius: 3px !important;
 }
 [data-testid="stExpanderToggleIcon"] {
-    color: #b05070 !important;
+    color: #2196F3 !important;
 }
 div[data-testid="stExpander"] > div:first-child {
-    background-color: #E8D5D5 !important;
-    border-left: 4px solid #b05070 !important;
+    background-color: #E8ECF2 !important;
+    border-left: 4px solid #2196F3 !important;
     border-radius: 3px !important;
     padding: 0 !important;
 }
 /* Nested expanders inside expanders */
 div[data-testid="stExpander"] div[data-testid="stExpander"] > div:first-child {
-    background-color: #E8D5D5 !important;
-    border-left: 4px solid #b05070 !important;
+    background-color: #E8ECF2 !important;
+    border-left: 4px solid #2196F3 !important;
 }
 div[data-testid="stExpander"] div[data-testid="stExpander"] details summary {
-    background-color: #E8D5D5 !important;
-    color: #2d1515 !important;
-    border-left: 4px solid #b05070 !important;
+    background-color: #E8ECF2 !important;
+    color: #131722 !important;
+    border-left: 4px solid #2196F3 !important;
 }
 /* Force ALL summary elements site-wide */
 summary {
-    background-color: #E8D5D5 !important;
-    color: #2d1515 !important;
-    border-left: 4px solid #b05070 !important;
+    background-color: #E8ECF2 !important;
+    color: #131722 !important;
+    border-left: 4px solid #2196F3 !important;
     font-weight: 700 !important;
     font-size: 11px !important;
     text-transform: uppercase !important;
@@ -228,10 +229,11 @@ summary {
     padding: 4px 10px !important;
 }
 summary:hover {
-    background-color: #dfc8c8 !important;
+    background-color: #D8DCE6 !important;
 }
+summary:hover { background-color: #D8DCE6 !important; }
 summary p, summary span, summary div {
-    color: #2d1515 !important;
+    color: #FFFFFF !important;
     font-weight: 700 !important;
     font-size: 11px !important;
     text-transform: uppercase !important;
@@ -239,20 +241,20 @@ summary p, summary span, summary div {
 }
 /* Streamlit 1.59 specific - stExpanderToggleIcon parent */
 [data-testid="stExpanderToggleIcon"] {
-    color: #b05070 !important;
+    color: #2196F3 !important;
 }
 div[data-testid="stExpander"] {
     border: none !important;
     box-shadow: none !important;
 }
 div[data-testid="stExpander"] > div:first-child {
-    background-color: #E8D5D5 !important;
-    border-left: 4px solid #b05070 !important;
+    background-color: #E8ECF2 !important;
+    border-left: 4px solid #2196F3 !important;
     border-radius: 3px !important;
     padding: 0 !important;
 }
 div[data-testid="stExpander"] details summary:hover {
-    background-color: #CDD5E2 !important;
+    background-color: #D8DCE6 !important;
     cursor: pointer !important;
 }
 div[data-testid="stExpander"] details summary:focus {
@@ -273,8 +275,8 @@ div[data-testid="stExpander"] details summary svg {
     stroke: #2196F3 !important;
 }
 div[data-testid="stExpander"] details[open] summary {
-    background-color: #CDD5E2 !important;
-    border-bottom: 1px solid #C8D0DC !important;
+    background-color: #D8DCE6 !important;
+    border-bottom: 1px solid #363A45 !important;
 }
 
 /* METRICS - white card with visible border + shadow */
@@ -353,7 +355,7 @@ div[data-testid="stExpander"] details[open] summary {
 .stMarkdown { margin: 0 !important; padding: 0 !important; }
 div[data-testid="stVerticalBlock"] > div { gap: 0.25rem !important; }
 .element-container { margin: 0 !important; padding: 0 !important; }
-hr { margin: 4px 0 !important; border-color: #E0E3EB !important; }
+hr { margin: 4px 0 !important; border-color: #131722 !important; }
 .stCaption { font-size: 10px !important; color: #787B86 !important; }
 .stCode { font-size: 10px !important; }
 
