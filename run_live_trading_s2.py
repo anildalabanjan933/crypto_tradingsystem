@@ -57,7 +57,7 @@ def fetch_latest_1m(since):
     import requests
     since_ts = int(since.timestamp())
     now_ts   = int(time.time())
-    url      = "https://cdn-ind.testnet.deltaex.org/v2/history/candles"
+    url      = "https://api.india.delta.exchange/v2/history/candles"
     params   = {"symbol": SYMBOL, "resolution": "1m", "start": since_ts, "end": now_ts}
     resp     = requests.get(url, params=params, timeout=10)
     data     = resp.json()

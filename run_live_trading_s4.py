@@ -47,7 +47,7 @@ def sleep_until_next_candle_close(candle_seconds, buffer_sec=5):
     logging.info(f'[SLEEP] Next candle close: {next_close_dt} | Sleeping {sleep_secs:.0f}s')
     time.sleep(max(sleep_secs, 1))
 
-BASE_URL = 'https://cdn-ind.testnet.deltaex.org' if TESTNET else 'https://api.india.delta.exchange'
+BASE_URL = 'https://api.india.delta.exchange'  # Always use production for candle data (matches CSV source)
 
 # ===========================================================================
 # LOGGING
