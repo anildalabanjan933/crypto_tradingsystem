@@ -199,17 +199,22 @@ def main():
                     csv_rows = []
                     for _, row in df_new.iterrows():
                         ts = row['timestamp']
+                        if pd.isna(ts):
+                            continue
                         csv_rows.append({
-                            'Date': ts.strftime('%Y-%m-%d'),
-                            'Time': ts.strftime('%H:%M:%S'),
+                            'Date': pd.Timestamp(ts).strftime('%Y-%m-%d'),
+                            'Time': pd.Timestamp(ts).strftime('%H:%M:%S'),
                             'Open': row['open'], 'High': row['high'],
                             'Low': row['low'], 'Close': row['close'],
                             'Volume': row['volume']
                         })
-                    df_csv = pd.concat([df_csv, pd.DataFrame(csv_rows)], ignore_index=True)
-                    df_csv.drop_duplicates(subset=['Date','Time'], keep='last', inplace=True)
-                    df_csv.sort_values(['Date','Time'], inplace=True)
-                    df_csv.to_csv(CSV_PATH, index=False)
+                    if csv_rows:
+                        df_new_csv = pd.DataFrame(csv_rows)
+                        df_new_csv = df_new_csv.dropna(subset=['Date','Time'])
+                        df_csv = pd.concat([df_csv, df_new_csv], ignore_index=True)
+                        df_csv.drop_duplicates(subset=['Date','Time'], keep='last', inplace=True)
+                        df_csv.sort_values(['Date','Time'], inplace=True)
+                        df_csv.to_csv(CSV_PATH, index=False)
                 except Exception as _csv_e:
                     logging.warning(f'[DATA] CSV sync failed: {_csv_e}')
                 # Sync new candles to CSV so backtest uses identical data
@@ -218,17 +223,22 @@ def main():
                     csv_rows = []
                     for _, row in df_new.iterrows():
                         ts = row['timestamp']
+                        if pd.isna(ts):
+                            continue
                         csv_rows.append({
-                            'Date': ts.strftime('%Y-%m-%d'),
-                            'Time': ts.strftime('%H:%M:%S'),
+                            'Date': pd.Timestamp(ts).strftime('%Y-%m-%d'),
+                            'Time': pd.Timestamp(ts).strftime('%H:%M:%S'),
                             'Open': row['open'], 'High': row['high'],
                             'Low': row['low'], 'Close': row['close'],
                             'Volume': row['volume']
                         })
-                    df_csv = pd.concat([df_csv, pd.DataFrame(csv_rows)], ignore_index=True)
-                    df_csv.drop_duplicates(subset=['Date','Time'], keep='last', inplace=True)
-                    df_csv.sort_values(['Date','Time'], inplace=True)
-                    df_csv.to_csv(CSV_PATH, index=False)
+                    if csv_rows:
+                        df_new_csv = pd.DataFrame(csv_rows)
+                        df_new_csv = df_new_csv.dropna(subset=['Date','Time'])
+                        df_csv = pd.concat([df_csv, df_new_csv], ignore_index=True)
+                        df_csv.drop_duplicates(subset=['Date','Time'], keep='last', inplace=True)
+                        df_csv.sort_values(['Date','Time'], inplace=True)
+                        df_csv.to_csv(CSV_PATH, index=False)
                 except Exception as _csv_e:
                     logging.warning(f'[DATA] CSV sync failed: {_csv_e}')
 
