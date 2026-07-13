@@ -378,20 +378,15 @@ div[data-testid="stExpander"] summary span {
     text-overflow: ellipsis !important;
 }
 
-/* FIX SLOW SCROLL - hardware acceleration */
-.main .block-container {
-    scroll-behavior: auto !important;
-}
-html {
-    scroll-behavior: auto !important;
-}
-* {
-    scroll-behavior: auto !important;
-}
-.stApp {
-    overflow-y: auto !important;
-    scroll-behavior: auto !important;
-}
+/* FIX SCROLL - instant, no block, no overlay freeze */
+.main .block-container { scroll-behavior: auto !important; }
+html { scroll-behavior: auto !important; }
+* { scroll-behavior: auto !important; }
+.stApp { overflow-y: auto !important; scroll-behavior: auto !important; }
+.stApp [data-testid="stStatusWidget"] { display: none !important; }
+div[data-testid="stDecoration"] { display: none !important; }
+#MainMenu { display: none !important; }
+footer { display: none !important; }
 
 /* METRIC BOX CUSTOM */
 .metric-box {
@@ -1873,8 +1868,8 @@ with st.expander("SECTION 4 - FORWARD TEST vs BACKTEST COMPARE", expanded=st.ses
             else:
                 st.caption("Auto-checks every 5 minutes")
 
-        # Always run fresh on every page load - permanent fix
-        should_run = True
+        # Run when button clicked OR auto interval due - not on every page load
+        should_run = run_match or auto_due
         if should_run:
             with st.spinner("Running match check..."):
                 import subprocess
