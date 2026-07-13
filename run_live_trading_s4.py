@@ -3,7 +3,7 @@
 # Subaccount : S4RenkoSMIOsuptrend
 # Testnet    : True (forward test)
 
-import time, os, math, json
+import time, os, math, json, re
 # REMOVED: post_signal call
 from dotenv import load_dotenv
 load_dotenv()
@@ -109,6 +109,7 @@ def main():
     else:
         position = None
     logging.info(f'[STARTUP] Position synced from exchange: {position}')
+    open_lot_size = get_lot_size()  # Initialize - prevents UnboundLocalError on first EXIT
 
     # --- Fetch live candles first so last_known_ts covers all existing signals ---
     logging.info('[STARTUP] Fetching latest candles before pre-loading signals...')
