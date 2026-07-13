@@ -159,5 +159,6 @@ log(f"[MAINTENANCE] Starting auto maintenance - {datetime.now(timezone.utc).strf
 clean_pycache()
 trim_logs()
 clean_output()
+clean_junk_files()
 check_disk()
 log(f"[MAINTENANCE] Auto maintenance complete")
