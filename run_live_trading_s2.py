@@ -160,33 +160,38 @@ while True:
         ]
 
         if new_signals:
-            # Take the latest signal only
-            sig   = new_signals[-1]
-            stype = sig.get("signal_type")
-            sdir  = sig.get("direction", "")
-            sig_ts = sig.get("timestamp")
+            # Process signals IN ORDER - EXIT first then ENTRY
+            for sig in new_signals:
+                stype  = sig.get("signal_type")
+                sdir   = sig.get("direction", "")
+                sig_ts = sig.get("timestamp")
 
-            if stype == "ENTRY" and position is None:
-                side = "buy" if sdir == "long" else "sell"
-                result = om.place_market_order(side=side, size=get_lot_size())
-                if result.get("success"):
-                    position = sdir
-                    last_known_ts = sig_ts
-                    open('logs/last_known_ts_s2.txt','w').write(str(sig_ts))
-                    log.info(f"[ORDER] ENTRY {side} {LOT_SIZE} lots | type={sig.get('entry_type')} | ts={sig_ts}")
-                else:
-                    log.error(f"[ORDER] ENTRY FAILED | error={result.get('error')} | ts={sig_ts}")
+                if stype == "EXIT" and position is not None:
+                    side = "sell" if position == "long" else "buy"
+                    result = om.close_position(size=get_lot_size(), side=side)
+                    if result.get("success"):
+                        position = None
+                        last_known_ts = sig_ts
+                        open('logs/last_known_ts_s2.txt','w').write(str(sig_ts))
+                        log.info(f"[ORDER] EXIT {side} {LOT_SIZE} lots | type={sig.get('exit_type')} | ts={sig_ts}")
+                    else:
+                        log.error(f"[ORDER] EXIT FAILED | error={result.get('error')} | ts={sig_ts}")
+                        break  # Stop processing if exit failed
 
-            elif stype == "EXIT" and position is not None:
-                side = "sell" if position == "long" else "buy"
-                result = om.close_position(size=get_lot_size(), side=side)
-                if result.get("success"):
-                    position = None
-                    last_known_ts = sig_ts
-                    open('logs/last_known_ts_s2.txt','w').write(str(sig_ts))
-                    log.info(f"[ORDER] EXIT {side} {LOT_SIZE} lots | type={sig.get('exit_type')} | ts={sig_ts}")
+                elif stype == "ENTRY" and position is None:
+                    side = "buy" if sdir == "long" else "sell"
+                    result = om.place_market_order(side=side, size=get_lot_size())
+                    if result.get("success"):
+                        position = sdir
+                        last_known_ts = sig_ts
+                        open('logs/last_known_ts_s2.txt','w').write(str(sig_ts))
+                        log.info(f"[ORDER] ENTRY {side} {LOT_SIZE} lots | type={sig.get('entry_type')} | ts={sig_ts}")
+                    else:
+                        log.error(f"[ORDER] ENTRY FAILED | error={result.get('error')} | ts={sig_ts}")
+                        break  # Stop processing if entry failed
+
                 else:
-                    log.error(f"[ORDER] EXIT FAILED | error={result.get('error')} | ts={sig_ts}")
+                    log.info(f"[SKIP] Signal blocked | sig_type={stype} | position={position} | ts={sig_ts}")
         else:
             log.info(f"[WAIT] No new signals since {last_known_ts}")
 

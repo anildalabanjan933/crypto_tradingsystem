@@ -225,53 +225,58 @@ def main():
             ]
 
             if new_signals:
-                sig        = new_signals[-1]
-                sig_type   = sig.get('signal_type')
-                direction  = sig.get('direction')
-                entry_type = sig.get('entry_type', '')
-                exit_type  = sig.get('exit_type', '')
-                sig_ts     = sig.get('timestamp')
+                # Process signals IN ORDER - EXIT first then ENTRY
+                for sig in new_signals:
+                    sig_type   = sig.get('signal_type')
+                    direction  = sig.get('direction')
+                    entry_type = sig.get('entry_type', '')
+                    exit_type  = sig.get('exit_type', '')
+                    sig_ts     = sig.get('timestamp')
 
-                if sig_type == 'ENTRY' and position is None:
-                    if direction == 'long':
-                        result = order_manager.place_market_order('buy', get_lot_size())
+                    if sig_type == 'EXIT' and position is not None:
+                        if position == 'long':
+                            result = order_manager.close_position(get_lot_size(), 'sell')
+                            if result.get('success'):
+                                logging.info(f'[ORDER] EXIT sell {LOT_SIZE} lots | type={exit_type} | ts={sig_ts}')
+                            else:
+                                logging.error(f'[ORDER] EXIT sell FAILED | error={result.get("error")} | ts={sig_ts}')
+                                break
+                        elif position == 'short':
+                            result = order_manager.close_position(get_lot_size(), 'buy')
+                            if result.get('success'):
+                                logging.info(f'[ORDER] EXIT buy {LOT_SIZE} lots | type={exit_type} | ts={sig_ts}')
+                            else:
+                                logging.error(f'[ORDER] EXIT buy FAILED | error={result.get("error")} | ts={sig_ts}')
+                                break
                         if result.get('success'):
-                            position = 'long'
+                            position = None
                             last_known_ts = sig_ts
                             open('logs/last_known_ts_s4.txt','w').write(str(sig_ts))
-                            logging.info(f'[ORDER] ENTRY buy {LOT_SIZE} lots | type={entry_type} | ts={sig_ts}')
-                        else:
-                            logging.error(f'[ORDER] ENTRY buy FAILED | error={result.get("error")} | ts={sig_ts}')
-                    elif direction == 'short':
-                        result = order_manager.place_market_order('sell', get_lot_size())
-                        if result.get('success'):
-                            position = 'short'
-                            last_known_ts = sig_ts
-                            open('logs/last_known_ts_s4.txt','w').write(str(sig_ts))
-                            logging.info(f'[ORDER] ENTRY sell {LOT_SIZE} lots | type={entry_type} | ts={sig_ts}')
-                        else:
-                            logging.error(f'[ORDER] ENTRY sell FAILED | error={result.get("error")} | ts={sig_ts}')
 
-                elif sig_type == 'EXIT' and position is not None:
-                    if position == 'long':
-                        result = order_manager.close_position(get_lot_size(), 'sell')
-                        if result.get('success'):
-                            logging.info(f'[ORDER] EXIT sell {LOT_SIZE} lots | type={exit_type} | ts={sig_ts}')
-                        else:
-                            logging.error(f'[ORDER] EXIT sell FAILED | error={result.get("error")} | ts={sig_ts}')
-                    elif position == 'short':
-                        result = order_manager.close_position(get_lot_size(), 'buy')
-                        if result.get('success'):
-                            logging.info(f'[ORDER] EXIT buy {LOT_SIZE} lots | type={exit_type} | ts={sig_ts}')
-                        else:
-                            logging.error(f'[ORDER] EXIT buy FAILED | error={result.get("error")} | ts={sig_ts}')
-                    if result.get('success'):
-                        position = None
-                        last_known_ts = sig_ts
-                        open('logs/last_known_ts_s4.txt','w').write(str(sig_ts))
+                    elif sig_type == 'ENTRY' and position is None:
+                        if direction == 'long':
+                            result = order_manager.place_market_order('buy', get_lot_size())
+                            if result.get('success'):
+                                position = 'long'
+                                last_known_ts = sig_ts
+                                open('logs/last_known_ts_s4.txt','w').write(str(sig_ts))
+                                logging.info(f'[ORDER] ENTRY buy {LOT_SIZE} lots | type={entry_type} | ts={sig_ts}')
+                            else:
+                                logging.error(f'[ORDER] ENTRY buy FAILED | error={result.get("error")} | ts={sig_ts}')
+                                break
+                        elif direction == 'short':
+                            result = order_manager.place_market_order('sell', get_lot_size())
+                            if result.get('success'):
+                                position = 'short'
+                                last_known_ts = sig_ts
+                                open('logs/last_known_ts_s4.txt','w').write(str(sig_ts))
+                                logging.info(f'[ORDER] ENTRY sell {LOT_SIZE} lots | type={entry_type} | ts={sig_ts}')
+                            else:
+                                logging.error(f'[ORDER] ENTRY sell FAILED | error={result.get("error")} | ts={sig_ts}')
+                                break
 
-                else:
-                    logging.info(f'[SKIP] Signal blocked | sig_type={sig_type} | position={position} | ts={sig_ts}')
+                    else:
+                        logging.info(f'[SKIP] Signal blocked | sig_type={sig_type} | position={position} | ts={sig_ts}')
             else:
                 logging.info(f'[WAIT] No new signals since {last_known_ts}')
 
