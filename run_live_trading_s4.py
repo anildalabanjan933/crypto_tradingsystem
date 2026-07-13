@@ -194,53 +194,9 @@ def main():
                 df_1m = df_1m.drop_duplicates(subset='timestamp').sort_values('timestamp').reset_index(drop=True)
                 last_ts = int(df_1m['timestamp'].iloc[-1].timestamp())
                 logging.info(f'[DATA] Appended {len(df_new)} candles. Total={len(df_1m)}')
-                try:
-                    df_csv = pd.read_csv(CSV_PATH)
-                    csv_rows = []
-                    for _, row in df_new.iterrows():
-                        ts = row['timestamp']
-                        if pd.isna(ts):
-                            continue
-                        csv_rows.append({
-                            'Date': pd.Timestamp(ts).strftime('%Y-%m-%d'),
-                            'Time': pd.Timestamp(ts).strftime('%H:%M:%S'),
-                            'Open': row['open'], 'High': row['high'],
-                            'Low': row['low'], 'Close': row['close'],
-                            'Volume': row['volume']
-                        })
-                    if csv_rows:
-                        df_new_csv = pd.DataFrame(csv_rows)
-                        df_new_csv = df_new_csv.dropna(subset=['Date','Time'])
-                        df_csv = pd.concat([df_csv, df_new_csv], ignore_index=True)
-                        df_csv.drop_duplicates(subset=['Date','Time'], keep='last', inplace=True)
-                        df_csv.sort_values(['Date','Time'], inplace=True)
-                        df_csv.to_csv(CSV_PATH, index=False)
-                except Exception as _csv_e:
-                    logging.warning(f'[DATA] CSV sync failed: {_csv_e}')
+
                 # Sync new candles to CSV so backtest uses identical data
-                try:
-                    df_csv = pd.read_csv(CSV_PATH)
-                    csv_rows = []
-                    for _, row in df_new.iterrows():
-                        ts = row['timestamp']
-                        if pd.isna(ts):
-                            continue
-                        csv_rows.append({
-                            'Date': pd.Timestamp(ts).strftime('%Y-%m-%d'),
-                            'Time': pd.Timestamp(ts).strftime('%H:%M:%S'),
-                            'Open': row['open'], 'High': row['high'],
-                            'Low': row['low'], 'Close': row['close'],
-                            'Volume': row['volume']
-                        })
-                    if csv_rows:
-                        df_new_csv = pd.DataFrame(csv_rows)
-                        df_new_csv = df_new_csv.dropna(subset=['Date','Time'])
-                        df_csv = pd.concat([df_csv, df_new_csv], ignore_index=True)
-                        df_csv.drop_duplicates(subset=['Date','Time'], keep='last', inplace=True)
-                        df_csv.sort_values(['Date','Time'], inplace=True)
-                        df_csv.to_csv(CSV_PATH, index=False)
-                except Exception as _csv_e:
-                    logging.warning(f'[DATA] CSV sync failed: {_csv_e}')
+
 
             # Build 2H
             df_1m_indexed = df_1m.set_index('timestamp')
@@ -281,6 +237,9 @@ def main():
                     sig_ts     = sig.get('timestamp')
 
                     if sig_type == 'EXIT' and position is not None:
+                        # Save ts BEFORE order to prevent duplicate on crash/restart
+                        last_known_ts = sig_ts
+                        open('logs/last_known_ts_s4.txt','w').write(str(sig_ts))
                         if position == 'long':
                             result = order_manager.close_position(get_lot_size(), 'sell')
                             if result.get('success'):
@@ -297,16 +256,15 @@ def main():
                                 break
                         if result.get('success'):
                             position = None
-                            last_known_ts = sig_ts
-                            open('logs/last_known_ts_s4.txt','w').write(str(sig_ts))
 
                     elif sig_type == 'ENTRY' and position is None:
+                        # Save ts BEFORE order to prevent duplicate on crash/restart
+                        last_known_ts = sig_ts
+                        open('logs/last_known_ts_s4.txt','w').write(str(sig_ts))
                         if direction == 'long':
                             result = order_manager.place_market_order('buy', get_lot_size())
                             if result.get('success'):
                                 position = 'long'
-                                last_known_ts = sig_ts
-                                open('logs/last_known_ts_s4.txt','w').write(str(sig_ts))
                                 logging.info(f'[ORDER] ENTRY buy {LOT_SIZE} lots | type={entry_type} | ts={sig_ts}')
                             else:
                                 logging.error(f'[ORDER] ENTRY buy FAILED | error={result.get("error")} | ts={sig_ts}')
@@ -315,8 +273,6 @@ def main():
                             result = order_manager.place_market_order('sell', get_lot_size())
                             if result.get('success'):
                                 position = 'short'
-                                last_known_ts = sig_ts
-                                open('logs/last_known_ts_s4.txt','w').write(str(sig_ts))
                                 logging.info(f'[ORDER] ENTRY sell {LOT_SIZE} lots | type={entry_type} | ts={sig_ts}')
                             else:
                                 logging.error(f'[ORDER] ENTRY sell FAILED | error={result.get("error")} | ts={sig_ts}')
