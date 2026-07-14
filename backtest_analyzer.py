@@ -14,7 +14,8 @@ from utils import format_currency, format_number, round_price, round_percent, us
 class BacktestReportGenerator:
 
     def __init__(self, trades, metrics, strategy_name, symbol,
-                 start_date, end_date, slippage=0, lot_size=100, include_charges=True):
+                 start_date, end_date, slippage=0, lot_size=100, include_charges=True,
+                 portfolio_capital=None):
         self.trades              = trades
         self.metrics             = metrics
         self.strategy_name       = strategy_name
@@ -24,6 +25,7 @@ class BacktestReportGenerator:
         self.slippage            = slippage
         self.lot_size            = lot_size
         self.include_charges     = include_charges
+        self.portfolio_capital   = portfolio_capital
         self.initial_capital     = 100000
         self.initial_capital_inr = usd_to_inr(self.initial_capital, 84)
 
@@ -148,7 +150,7 @@ class BacktestReportGenerator:
         max_drawdown_inr = usd_to_inr(real_max_dd_usd, 84)   # e.g. -54,757
         max_drawdown_pct = (real_max_dd_usd / 100000) * 100  # e.g. -0.55%
         # ── Risk Management Calculations (Dynamic) ────────────────────────
-        recommended_capital  = abs(max_drawdown_inr) * 3
+        recommended_capital  = self.portfolio_capital if self.portfolio_capital else abs(max_drawdown_inr) * 3
         capital_denom        = recommended_capital if recommended_capital > 0 else 1
         return_on_capital    = (total_pnl_inr / capital_denom) * 100
         monthly_returns_data = self.metrics.get('monthly_returns', {})

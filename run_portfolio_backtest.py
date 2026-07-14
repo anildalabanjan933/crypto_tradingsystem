@@ -185,6 +185,7 @@ def run_portfolio_backtest():
     registry = StrategyRegistry()
     aggregator = PortfolioAggregator(initial_capital=100000)
     all_trades = []
+    individual_capitals = []
 
     try:
         for config in strategy_configs:
@@ -206,6 +207,9 @@ def run_portfolio_backtest():
             )
 
             all_trades.append(result['trades'])
+            # Collect individual recommended capital = 3x individual max DD
+            ind_dd = result.get('metrics', {}).get('max_drawdown_inr', 0)
+            individual_capitals.append(abs(ind_dd) * 3)
 
         # Aggregate trades
         print("\n" + "=" * 70)
@@ -223,6 +227,7 @@ def run_portfolio_backtest():
         portfolio_name = selected_portfolio_name if portfolio_type == 1 else "Portfolio_Dynamic"
 
         # CHANGED: Use BacktestReportGenerator (same as single strategy)
+        portfolio_capital = sum(individual_capitals) if individual_capitals else None
         generator = BacktestReportGenerator(
             trades=combined_trades,
             metrics=portfolio_metrics,
@@ -230,7 +235,8 @@ def run_portfolio_backtest():
             symbol=symbol,
             start_date=start_date_str,
             end_date=end_date_str,
-            slippage=slippage
+            slippage=slippage,
+            portfolio_capital=portfolio_capital
         )
 
         html_file = generator.generate_html_report()
