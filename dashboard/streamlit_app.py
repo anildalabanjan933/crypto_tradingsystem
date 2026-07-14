@@ -2983,29 +2983,35 @@ with st.expander("SECTION 13 - STRATEGY PERFORMANCE SUMMARY", expanded=st.sessio
         if s2_html:
             st.caption(f"Source: {os.path.basename(s2_html)}")
             try:
-                import glob as _g2, pandas as _pd2
-                _s2_csv = sorted(_g2.glob("output/trade_log_RenkoReversal*.csv"))[-1]
+                import glob as _g2, pandas as _pd2, re as _re2, os as _os2
+                # Match CSV to same timestamp as HTML
+                _s2_ts = os.path.basename(s2_html).replace("backtest_report_RenkoReversalStrategy_BTCUSD_","").replace(".html","")
+                _s2_csv_match = f"output/trade_log_RenkoReversalStrategy_BTCUSD_{_s2_ts}.csv"
+                if _os2.path.exists(_s2_csv_match):
+                    _s2_csv = _s2_csv_match
+                else:
+                    _s2_csv = sorted(_g2.glob("output/trade_log_RenkoReversal*.csv"))[-1]
                 _s2 = _pd2.read_csv(_s2_csv)
                 _s2_trades = len(_s2)
                 _s2_wins = (_s2['net_pnl'] > 0).sum()
                 _s2_winrate = f"{_s2_wins / _s2_trades * 100:.2f}%" if _s2_trades > 0 else "N/A"
                 _s2_netpnl_usd = _s2['net_pnl'].sum()
                 _s2_netpnl_inr = _s2['net_pnl_inr'].sum() if 'net_pnl_inr' in _s2.columns else _s2_netpnl_usd * 84
-                _s2_netpnl_inr_l = f"{_s2_netpnl_inr/100000:.2f}L INR"
-                _s2_cum = _s2['cumulative_pnl'].values
-                _s2_peak = _s2_cum[0]
-                _s2_dd = 0.0
-                for v in _s2_cum:
-                    if v > _s2_peak: _s2_peak = v
-                    dd = (_s2_peak - v) / abs(_s2_peak) * 100 if _s2_peak != 0 else 0
-                    if dd > _s2_dd: _s2_dd = dd
+                _s2_netpnl_combined = f"{_s2_netpnl_inr/100000:.2f}L INR / ${_s2_netpnl_usd:,.2f}"
+                _s2_html_content = open(s2_html, encoding='utf-8').read()
+                _s2_html_lines = _s2_html_content.split('\n')
+                _s2_dd = "N/A"
+                for _idx, _ln in enumerate(_s2_html_lines):
+                    if '<label>Max Drawdown</label>' in _ln and _idx+1 < len(_s2_html_lines):
+                        _m = _re2.search(r'(-[\d\.]+%)', _s2_html_lines[_idx+1])
+                        if _m: _s2_dd = _m.group(1); break
                 st.metric("Total Trades", str(_s2_trades))
                 st.metric("Win Rate", _s2_winrate)
-                st.metric("Net PnL", _s2_netpnl_inr_l)
-                st.metric("Max Drawdown", f"-{_s2_dd:.2f}%")
+                st.metric("Net PnL", _s2_netpnl_combined)
+                st.metric("Max Drawdown", _s2_dd)
                 st.metric("Net PnL (USD)", f"${_s2_netpnl_usd:,.2f}")
             except Exception as _e2:
-                st.warning(f"Could not load S2 CSV: {_e2}")
+                st.warning(f"Could not load S2 data: {_e2}")
             st.caption("Params: renko_box_pct=0.001, st_atr=5, st_factor=1.5")
             with open(s2_html, 'rb') as f:
                 st.download_button("DOWNLOAD S2 REPORT", f,
@@ -3019,29 +3025,35 @@ with st.expander("SECTION 13 - STRATEGY PERFORMANCE SUMMARY", expanded=st.sessio
         if s4_html:
             st.caption(f"Source: {os.path.basename(s4_html)}")
             try:
-                import glob as _g4, pandas as _pd4
-                _s4_csv = sorted(_g4.glob("output/trade_log_RenkoSMIIO*.csv"))[-1]
+                import glob as _g4, pandas as _pd4, re as _re4, os as _os4
+                # Match CSV to same timestamp as HTML
+                _s4_ts = os.path.basename(s4_html).replace("backtest_report_RenkoSMIIOSupertrendStrategy_BTCUSD_","").replace(".html","")
+                _s4_csv_match = f"output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_{_s4_ts}.csv"
+                if _os4.path.exists(_s4_csv_match):
+                    _s4_csv = _s4_csv_match
+                else:
+                    _s4_csv = sorted(_g4.glob("output/trade_log_RenkoSMIIO*.csv"))[-1]
                 _s4 = _pd4.read_csv(_s4_csv)
                 _s4_trades = len(_s4)
                 _s4_wins = (_s4['net_pnl'] > 0).sum()
                 _s4_winrate = f"{_s4_wins / _s4_trades * 100:.2f}%" if _s4_trades > 0 else "N/A"
                 _s4_netpnl_usd = _s4['net_pnl'].sum()
                 _s4_netpnl_inr = _s4['net_pnl_inr'].sum() if 'net_pnl_inr' in _s4.columns else _s4_netpnl_usd * 84
-                _s4_netpnl_inr_l = f"{_s4_netpnl_inr/100000:.2f}L INR"
-                _s4_cum = _s4['cumulative_pnl'].values
-                _s4_peak = _s4_cum[0]
-                _s4_dd = 0.0
-                for v in _s4_cum:
-                    if v > _s4_peak: _s4_peak = v
-                    dd = (_s4_peak - v) / abs(_s4_peak) * 100 if _s4_peak != 0 else 0
-                    if dd > _s4_dd: _s4_dd = dd
+                _s4_netpnl_combined = f"{_s4_netpnl_inr/100000:.2f}L INR / ${_s4_netpnl_usd:,.2f}"
+                _s4_html_content = open(s4_html, encoding='utf-8').read()
+                _s4_html_lines = _s4_html_content.split('\n')
+                _s4_dd = "N/A"
+                for _idx, _ln in enumerate(_s4_html_lines):
+                    if '<label>Max Drawdown</label>' in _ln and _idx+1 < len(_s4_html_lines):
+                        _m = _re4.search(r'(-[\d\.]+%)', _s4_html_lines[_idx+1])
+                        if _m: _s4_dd = _m.group(1); break
                 st.metric("Total Trades", str(_s4_trades))
                 st.metric("Win Rate", _s4_winrate)
-                st.metric("Net PnL", _s4_netpnl_inr_l)
-                st.metric("Max Drawdown", f"-{_s4_dd:.2f}%")
+                st.metric("Net PnL", _s4_netpnl_combined)
+                st.metric("Max Drawdown", _s4_dd)
                 st.metric("Net PnL (USD)", f"${_s4_netpnl_usd:,.2f}")
             except Exception as _e4:
-                st.warning(f"Could not load S4 CSV: {_e4}")
+                st.warning(f"Could not load S4 data: {_e4}")
             st.caption("Params: renko_box_pct=0.001, st_atr=10, st_factor=2.0, smiio_short=20, smiio_sig=7")
             with open(s4_html, 'rb') as f:
                 st.download_button("DOWNLOAD S4 REPORT", f,
@@ -3056,3 +3068,122 @@ with st.expander("SECTION 13 - STRATEGY PERFORMANCE SUMMARY", expanded=st.sessio
 st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 st.caption(f"Version: {system.get('version', 'v3.9')} | Commit: {git_commit} | Last refresh: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 # This line intentionally left blank
+
+
+
+
+# ============================================================
+# SECTION 14 - SLIPPAGE COMPARISON
+# ============================================================
+st.markdown("""
+<div style="background:#CDD3E0;padding:6px 12px;border-left:4px solid #2962FF;margin:18px 0 8px 0;">
+<span style="font-weight:700;font-size:12px;color:#131722;letter-spacing:1px;">
+SECTION 14 - SLIPPAGE COMPARISON ($5/side vs $10/side)</span></div>
+""", unsafe_allow_html=True)
+
+_TH14  = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;"
+_TD14  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;"
+_TDR   = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:center;"
+_TDG   = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
+_TDO   = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#e07000;font-weight:700;text-align:center;"
+_TDB   = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#2962FF;font-weight:700;text-align:center;"
+_THGR  = "padding:5px 8px;border:1px solid #C8D0DC;background:#089981;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+_THOG  = "padding:5px 8px;border:1px solid #C8D0DC;background:#e07000;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+_SUBHDR= "padding:4px 8px;border:1px solid #C8D0DC;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
+_DASH  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#aaa;text-align:center;"
+
+st.markdown(f"""
+<p style="font-size:11px;color:#555;margin:2px 0 8px 0;">
+Period: 2024-01-01 to 2026-07-14 &nbsp;|&nbsp; 31 months &nbsp;|&nbsp; BTCUSD Perpetual &nbsp;|&nbsp; 100 lots/trade</p>
+
+<div style="overflow-x:auto;margin:4px 0;">
+<table style="width:100%;border-collapse:collapse;table-layout:fixed;">
+<colgroup>
+  <col style="width:22%">
+  <col style="width:13%"><col style="width:13%">
+  <col style="width:13%"><col style="width:13%">
+  <col style="width:13%"><col style="width:13%">
+</colgroup>
+<thead>
+<tr>
+  <th style="{_TH14}" rowspan="2">Metric</th>
+  <th style="{_THGR}" colspan="3">$5/side (Realistic)</th>
+  <th style="{_THOG}" colspan="3">$10/side (Conservative)</th>
+</tr>
+<tr>
+  <th style="{_THGR}">S2</th>
+  <th style="{_THGR}">S4</th>
+  <th style="{_THGR}">Portfolio</th>
+  <th style="{_THOG}">S2</th>
+  <th style="{_THOG}">S4</th>
+  <th style="{_THOG}">Portfolio</th>
+</tr>
+</thead>
+<tbody>
+<tr><td colspan="7" style="{_SUBHDR}">TRADE COUNT</td></tr>
+<tr style="background:#ffffff;">
+  <td style="{_TD14}">Total Trades</td>
+  <td style="{_TDR}">7,556</td><td style="{_TDR}">3,898</td><td style="{_TDB}">11,454</td>
+  <td style="{_TDR}">7,556</td><td style="{_TDR}">3,898</td><td style="{_TDR}">11,454</td>
+</tr>
+
+<tr><td colspan="7" style="{_SUBHDR}">GREEN MONTHS</td></tr>
+<tr style="background:#fafafa;">
+  <td style="{_TD14}">Green Months</td>
+  <td style="{_TDG}">31/31</td><td style="{_TDG}">31/31</td><td style="{_TDG}">31/31</td>
+  <td style="{_TDO}">25/31</td><td style="{_TDG}">31/31</td><td style="{_TDG}">31/31</td>
+</tr>
+
+<tr><td colspan="7" style="{_SUBHDR}">NET PnL (AFTER TAX)</td></tr>
+<tr style="background:#ffffff;">
+  <td style="{_TD14}">Net PnL</td>
+  <td style="{_TDG}">₹1,43,86,981</td><td style="{_TDG}">₹1,55,60,542</td><td style="{_TDB}">₹2,99,47,523</td>
+  <td style="{_TDR}">₹83,37,327</td><td style="{_TDR}">₹1,24,90,523</td><td style="{_TDR}">₹2,08,27,850</td>
+</tr>
+
+<tr><td colspan="7" style="{_SUBHDR}">RECOMMENDED CAPITAL (3 x MAX DD)</td></tr>
+<tr style="background:#fafafa;">
+  <td style="{_TD14}">Rec Capital</td>
+  <td style="{_TDG}">₹1,11,354</td><td style="{_TDG}">₹41,247</td><td style="{_TDB}">₹1,52,601</td>
+  <td style="{_TDO}">₹5,08,896</td><td style="{_TDO}">₹69,194</td><td style="{_TDO}">₹5,78,090</td>
+</tr>
+
+<tr><td colspan="7" style="{_SUBHDR}">RETURN ON CAPITAL</td></tr>
+<tr style="background:#ffffff;">
+  <td style="{_TD14}">ROC (Total)</td>
+  <td style="{_TDG}">12,920%</td><td style="{_TDG}">37,724%</td><td style="{_TDB}">19,624%</td>
+  <td style="{_TDR}">1,638%</td><td style="{_TDG}">18,051%</td><td style="{_TDR}">3,602%</td>
+</tr>
+<tr style="background:#fafafa;">
+  <td style="{_TD14}">Monthly avg ROC</td>
+  <td style="{_TDG}">416%</td><td style="{_TDG}">1,216%</td><td style="{_TDB}">633%</td>
+  <td style="{_TDR}">53%</td><td style="{_TDG}">582%</td><td style="{_TDR}">116%</td>
+</tr>
+
+<tr><td colspan="7" style="{_SUBHDR}">MAX DRAWDOWN ($5/side only)</td></tr>
+<tr style="background:#ffffff;">
+  <td style="{_TD14}">Max DD</td>
+  <td style="{_TDR}">-0.48% (₹37,118)</td><td style="{_TDR}">-0.16% (₹13,749)</td><td style="{_DASH}">-</td>
+  <td style="{_DASH}">-</td><td style="{_DASH}">-</td><td style="{_DASH}">-</td>
+</tr>
+<tr style="background:#fafafa;">
+  <td style="{_TD14}">Avg Margin/trade</td>
+  <td style="{_TDR}">$41.89 = ₹3,519</td><td style="{_TDR}">$41.98 = ₹3,526</td><td style="{_DASH}">-</td>
+  <td style="{_DASH}">-</td><td style="{_DASH}">-</td><td style="{_DASH}">-</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div style="background:#f0f4ff;border-left:3px solid #2962FF;padding:8px 12px;margin:10px 0 4px 0;font-size:11px;color:#131722;">
+<b>Key Observations:</b>
+<ul style="margin:4px 0;padding-left:16px;">
+<li>Trade count identical at both slippages - strategy logic is unchanged</li>
+<li style="color:#089981;font-weight:600;">$5/side: S2 improves from 25/31 to 31/31 green months - all months profitable</li>
+<li style="color:#089981;font-weight:600;">$5/side: Portfolio Rec Capital 3.8x lower = ROC jumps from 3,602% to 19,624%</li>
+<li>$10/side is conservative/safe assumption for live trading presentation</li>
+<li>$5/side is realistic for actual Delta Exchange execution (taker ~$3-5/side)</li>
+<li>Both are valid - use $10 for conservative view, $5 for realistic view</li>
+</ul>
+</div>
+""", unsafe_allow_html=True)
