@@ -2982,14 +2982,30 @@ with st.expander("SECTION 13 - STRATEGY PERFORMANCE SUMMARY", expanded=st.sessio
         st.markdown("**S2 - RenkoReversalStrategy**")
         if s2_html:
             st.caption(f"Source: {os.path.basename(s2_html)}")
-            st.metric("Total Trades", "1506")
-            st.metric("Win Rate", "52.26%")
-            st.metric("Net PnL", "26.37L INR")
-            st.metric("Max Drawdown", "-0.27%")
-            st.metric("Sharpe Ratio", "5.55")
-            st.metric("Profit Factor", "3.83")
-            st.metric("ROC", "3939.61%")
-            st.success("13/13 months profitable")
+            try:
+                import glob as _g2, pandas as _pd2
+                _s2_csv = sorted(_g2.glob("output/trade_log_RenkoReversal*.csv"))[-1]
+                _s2 = _pd2.read_csv(_s2_csv)
+                _s2_trades = len(_s2)
+                _s2_wins = (_s2['net_pnl'] > 0).sum()
+                _s2_winrate = f"{_s2_wins / _s2_trades * 100:.2f}%" if _s2_trades > 0 else "N/A"
+                _s2_netpnl_usd = _s2['net_pnl'].sum()
+                _s2_netpnl_inr = _s2['net_pnl_inr'].sum() if 'net_pnl_inr' in _s2.columns else _s2_netpnl_usd * 84
+                _s2_netpnl_inr_l = f"{_s2_netpnl_inr/100000:.2f}L INR"
+                _s2_cum = _s2['cumulative_pnl'].values
+                _s2_peak = _s2_cum[0]
+                _s2_dd = 0.0
+                for v in _s2_cum:
+                    if v > _s2_peak: _s2_peak = v
+                    dd = (_s2_peak - v) / abs(_s2_peak) * 100 if _s2_peak != 0 else 0
+                    if dd > _s2_dd: _s2_dd = dd
+                st.metric("Total Trades", str(_s2_trades))
+                st.metric("Win Rate", _s2_winrate)
+                st.metric("Net PnL", _s2_netpnl_inr_l)
+                st.metric("Max Drawdown", f"-{_s2_dd:.2f}%")
+                st.metric("Net PnL (USD)", f"${_s2_netpnl_usd:,.2f}")
+            except Exception as _e2:
+                st.warning(f"Could not load S2 CSV: {_e2}")
             st.caption("Params: renko_box_pct=0.001, st_atr=5, st_factor=1.5")
             with open(s2_html, 'rb') as f:
                 st.download_button("DOWNLOAD S2 REPORT", f,
@@ -3002,14 +3018,30 @@ with st.expander("SECTION 13 - STRATEGY PERFORMANCE SUMMARY", expanded=st.sessio
         st.markdown("**S4 - RenkoSMIIOSupertrendStrategy**")
         if s4_html:
             st.caption(f"Source: {os.path.basename(s4_html)}")
-            st.metric("Total Trades", "659")
-            st.metric("Win Rate", "57.66%")
-            st.metric("Net PnL", "23.37L INR")
-            st.metric("Max Drawdown", "-0.28%")
-            st.metric("Sharpe Ratio", "6.92")
-            st.metric("Profit Factor", "4.89")
-            st.metric("ROC", "N/A")
-            st.success("13/13 months profitable")
+            try:
+                import glob as _g4, pandas as _pd4
+                _s4_csv = sorted(_g4.glob("output/trade_log_RenkoSMIIO*.csv"))[-1]
+                _s4 = _pd4.read_csv(_s4_csv)
+                _s4_trades = len(_s4)
+                _s4_wins = (_s4['net_pnl'] > 0).sum()
+                _s4_winrate = f"{_s4_wins / _s4_trades * 100:.2f}%" if _s4_trades > 0 else "N/A"
+                _s4_netpnl_usd = _s4['net_pnl'].sum()
+                _s4_netpnl_inr = _s4['net_pnl_inr'].sum() if 'net_pnl_inr' in _s4.columns else _s4_netpnl_usd * 84
+                _s4_netpnl_inr_l = f"{_s4_netpnl_inr/100000:.2f}L INR"
+                _s4_cum = _s4['cumulative_pnl'].values
+                _s4_peak = _s4_cum[0]
+                _s4_dd = 0.0
+                for v in _s4_cum:
+                    if v > _s4_peak: _s4_peak = v
+                    dd = (_s4_peak - v) / abs(_s4_peak) * 100 if _s4_peak != 0 else 0
+                    if dd > _s4_dd: _s4_dd = dd
+                st.metric("Total Trades", str(_s4_trades))
+                st.metric("Win Rate", _s4_winrate)
+                st.metric("Net PnL", _s4_netpnl_inr_l)
+                st.metric("Max Drawdown", f"-{_s4_dd:.2f}%")
+                st.metric("Net PnL (USD)", f"${_s4_netpnl_usd:,.2f}")
+            except Exception as _e4:
+                st.warning(f"Could not load S4 CSV: {_e4}")
             st.caption("Params: renko_box_pct=0.001, st_atr=10, st_factor=2.0, smiio_short=20, smiio_sig=7")
             with open(s4_html, 'rb') as f:
                 st.download_button("DOWNLOAD S4 REPORT", f,
