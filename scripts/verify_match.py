@@ -40,18 +40,17 @@ VALID_FROM = get_valid_from()
 TODAY      = (datetime.now(timezone.utc) + __import__('datetime').timedelta(days=1)).strftime('%Y-%m-%d')
 
 def update_csv():
-    # Use download_market_data.py as single writer - never write CSV directly
-    import subprocess
-    result = subprocess.run(
-        ['.venv/bin/python3', 'data/download_market_data.py'],
-        capture_output=True, text=True,
-        cwd='/home/anildalabanjan933/crypto_trading_system'
-    )
-    # Print last line of output as status
-    lines = (result.stdout + result.stderr).strip().split('\n')
-    for l in lines:
-        if l.strip():
-            print(l.strip())
+    # Direct import - never fails silently unlike subprocess
+    import sys as _sys
+    _data_path = '/home/anildalabanjan933/crypto_trading_system/data'
+    if _data_path not in _sys.path:
+        _sys.path.insert(0, _data_path)
+    try:
+        from download_market_data import download_or_update
+        download_or_update('BTC')
+    except Exception as _e:
+        print(f"CSV update warning: {_e}")
+
 
 def get_backtest_signals(strategy_class, name, params):
     # Always use tomorrow as end_date to include all of today's candles
