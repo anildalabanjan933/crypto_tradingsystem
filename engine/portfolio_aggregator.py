@@ -47,6 +47,14 @@ class PortfolioAggregator:
         df_all['exit_datetime'] = pd.to_datetime(df_all['exit_datetime'], format='mixed')
         df_all = df_all.sort_values('exit_datetime')
 
+        # Renumber trades sequentially after merge
+        df_all = df_all.reset_index(drop=True)
+        df_all['trade_number'] = range(1, len(df_all) + 1)
+
+        # Recalculate cumulative PnL in chronological order
+        df_all['cumulative_pnl'] = df_all['net_pnl'].cumsum().round(4)
+        df_all['cumulative_pnl_inr'] = df_all['net_pnl_inr'].cumsum().round(4)
+
         self.all_trades = df_all.to_dict('records')
 
         print(f"✅ Aggregated {len(self.all_trades)} trades from multiple strategies")

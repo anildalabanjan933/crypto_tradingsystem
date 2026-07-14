@@ -45,6 +45,7 @@ for s in strategy_names:
 
 aggregator = PortfolioAggregator(initial_capital=100000)
 all_trades = []
+individual_capitals = []
 
 for strategy_name in strategy_names:
     print(f"[Strategy] {strategy_name}")
@@ -60,6 +61,8 @@ for strategy_name in strategy_names:
     )
     if result:
         all_trades.append(result['trades'])
+        ind_dd = result.get('metrics', {}).get('max_drawdown_inr', 0)
+        individual_capitals.append(abs(ind_dd) * 3)
     else:
         print(f"ERROR: Backtest failed for {strategy_name}")
         sys.exit(1)
@@ -68,6 +71,7 @@ combined_trades = aggregator.aggregate_trades(all_trades)
 portfolio_metrics = aggregator.calculate_portfolio_metrics()
 
 portfolio_name = "Portfolio_Dynamic"
+portfolio_capital = sum(individual_capitals) if individual_capitals else None
 generator = BacktestReportGenerator(
     trades=combined_trades,
     metrics=portfolio_metrics,
@@ -77,7 +81,8 @@ generator = BacktestReportGenerator(
     end_date=args.end,
     slippage=args.slippage,
     lot_size=args.lots,
-    include_charges=not args.no_charges
+    include_charges=not args.no_charges,
+    portfolio_capital=portfolio_capital
 )
 
 html_file = generator.generate_html_report()
