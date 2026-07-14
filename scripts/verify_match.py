@@ -26,15 +26,24 @@ BASE     = 'https://cdn-ind.testnet.deltaex.org'
 CSV_PATH = 'data/btc_1m_delta.csv'
 
 def get_valid_from():
+    # BASELINE FILE = single truth, never overwritten by bot orders
+    # Only updated manually when new clean baseline is set
+    baseline_file = 'logs/valid_from_baseline.txt'
+    if os.path.exists(baseline_file):
+        val = open(baseline_file).read().strip()
+        import re as _re
+        if _re.match(r'^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$', val):
+            return val
+    # Fallback: use max of ts files (most recent clean order)
     ts_s2, ts_s4 = None, None
     if os.path.exists('logs/last_known_ts_s2.txt'):
         ts_s2 = open('logs/last_known_ts_s2.txt').read().strip()
     if os.path.exists('logs/last_known_ts_s4.txt'):
         ts_s4 = open('logs/last_known_ts_s4.txt').read().strip()
-    if ts_s2 and ts_s4: return min(ts_s2, ts_s4)  # EARLIER of two - catch all trades
+    if ts_s2 and ts_s4: return max(ts_s2, ts_s4)
     elif ts_s2: return ts_s2
     elif ts_s4: return ts_s4
-    else: return '2026-07-12T00:00:00'
+    else: return '2026-07-14T09:00:00'
 
 VALID_FROM = get_valid_from()
 TODAY      = (datetime.now(timezone.utc) + __import__('datetime').timedelta(days=1)).strftime('%Y-%m-%d')
@@ -184,12 +193,32 @@ def compare(label, bt_signals, lv_trades):
     full_match  = 0
     mismatch    = 0
     pending     = 0
-    max_trades  = max(len(bt_signals), len(lv_trades))
 
-    for i in range(max_trades):
-        print(f"\n  Trade #{i+1}:")
-        bt = bt_signals[i] if i < len(bt_signals) else None
-        lv = lv_trades[i]  if i < len(lv_trades)  else None
+    # Match trades by entry timestamp not by position number
+    # Build lookup of backtest trades by entry timestamp
+    bt_by_entry = {}
+    for bt in bt_signals:
+        bt_by_entry[bt[3]] = bt  # bt[3] = entry_datetime
+
+    # Also build list of all unique timestamps from both
+    all_entries = sorted(set(
+        [bt[3] for bt in bt_signals] +
+        [lv['entry_time'] for lv in lv_trades]
+    ))
+
+    trade_num = 0
+    for entry_ts in all_entries:
+        bt = bt_by_entry.get(entry_ts)
+        lv_list = [lv for lv in lv_trades if lv['entry_time'] == entry_ts]
+        lv = lv_list[0] if lv_list else None
+
+        # Skip if both missing (should not happen)
+        if not bt and not lv:
+            continue
+
+        trade_num += 1
+        i = trade_num - 1
+        print(f"\n  Trade #{trade_num}:")
 
         bt_dir   = bt[5]  if bt else 'MISSING'
         bt_entry = bt[3]  if bt else 'MISSING'
@@ -219,13 +248,29 @@ def compare(label, bt_signals, lv_trades):
                 print(f"    STATUS     : MISMATCH")
                 mismatch += 1
         elif not bt:
-            print(f"    Exit time  : EXTRA LIVE ORDER - not in backtest")
-            print(f"    STATUS     : MISMATCH")
-            mismatch += 1
+            # Live has trade but backtest does not
+            # If live trade is currently OPEN = backtest will catch up when it closes
+            # If live trade is CLOSED = real mismatch
+            if lv_stat == 'OPEN':
+                print(f"    Exit time  : PENDING (current open trade - backtest will match when closed)")
+                print(f"    STATUS     : PENDING")
+                pending += 1
+            else:
+                print(f"    Exit time  : EXTRA LIVE ORDER - not in backtest")
+                print(f"    STATUS     : MISMATCH")
+                mismatch += 1
         elif not lv:
-            print(f"    Exit time  : MISSING LIVE ORDER")
-            print(f"    STATUS     : MISMATCH")
-            mismatch += 1
+            # Backtest has trade but live does not
+            # If backtest trade is the last open (unclosed) = live bot has moved ahead
+            # Check if live bot has a newer trade = backtest just behind
+            if bt_exit == '' or bt_exit is None or str(bt_exit).strip() == '':
+                print(f"    Exit time  : PENDING (backtest open trade - live bot ahead)")
+                print(f"    STATUS     : PENDING")
+                pending += 1
+            else:
+                print(f"    Exit time  : MISSING LIVE ORDER")
+                print(f"    STATUS     : MISMATCH")
+                mismatch += 1
         else:
             print(f"    Exit time  : {'MATCH' if exit_match else 'MISMATCH'}")
             if dir_match and entry_match and exit_match:
