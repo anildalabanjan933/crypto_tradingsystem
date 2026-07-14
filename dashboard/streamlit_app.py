@@ -1218,8 +1218,8 @@ with st.expander("MEMBER MANAGEMENT", expanded=st.session_state.get('exp_24', Fa
             if mc[4].button("▶", key=f"m_start_{idx}"):
                 try:
                     env = f"S2_API_KEY={m.get('s2_key','')} S2_API_SECRET={m.get('s2_secret','')} S4_API_KEY={m.get('s4_key','')} S4_API_SECRET={m.get('s4_secret','')}"
-                    subprocess.Popen(['bash','-c',f'screen -dmS {s2_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && export {env} && python3 run_live_trading_s2.py > logs/live_trading_{s2_screen}.log 2>&1"'])
-                    subprocess.Popen(['bash','-c',f'screen -dmS {s4_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && export {env} && python3 run_live_trading_s4.py > logs/live_trading_{s4_screen}.log 2>&1"'])
+                    subprocess.Popen(['bash','-c',f'screen -dmS {s2_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && export {env} && python3 scripts/signal_replay_s2.py >> logs/live_trading_s2.log 2>&1"'])
+                    subprocess.Popen(['bash','-c',f'screen -dmS {s4_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && export {env} && python3 scripts/signal_replay_s4.py >> logs/live_trading_s4.log 2>&1"'])
                     st.success(f"{m.get('name')} bots started")
                 except Exception as e:
                     st.error(str(e))
@@ -1364,7 +1364,7 @@ with b4:
     if st.button("RESTART S2", key="sec2_restart_s2"):
         try:
             import subprocess
-            subprocess.Popen(['bash','-c','screen -S live_s2 -X quit; sleep 2; screen -dmS live_s2 bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && python3 run_live_trading_s2.py > logs/live_trading_s2.log 2>&1"'])
+            subprocess.Popen(['bash','-c','screen -S live_s2 -X quit; sleep 2; screen -dmS live_s2 bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && python3 scripts/signal_replay_s2.py >> logs/live_trading_s2.log 2>&1"'])
             st.success("S2 restarting...")
         except Exception as e:
             st.error(str(e))
@@ -1372,7 +1372,7 @@ with b5:
     if st.button("RESTART S4", key="sec2_restart_s4"):
         try:
             import subprocess
-            subprocess.Popen(['bash','-c','screen -S live_s4 -X quit; sleep 2; screen -dmS live_s4 bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && python3 run_live_trading_s4.py > logs/live_trading_s4.log 2>&1"'])
+            subprocess.Popen(['bash','-c','screen -S live_s4 -X quit; sleep 2; screen -dmS live_s4 bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && python3 scripts/signal_replay_s4.py >> logs/live_trading_s4.log 2>&1"'])
             st.success("S4 restarting...")
         except Exception as e:
             st.error(str(e))
