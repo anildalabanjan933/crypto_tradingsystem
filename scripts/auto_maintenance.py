@@ -162,3 +162,15 @@ clean_output()
 clean_junk_files()
 check_disk()
 log(f"[MAINTENANCE] Auto maintenance complete")
+
+# ── REGENERATE SIGNAL CSVs ────────────────────────────────────
+log(f"[MAINTENANCE] Regenerating signal CSVs for S2 and S4...")
+import subprocess, sys
+result = subprocess.run(
+    [sys.executable, "scripts/generate_signals.py"],
+    timeout=300, capture_output=True, text=True
+)
+if result.returncode == 0:
+    log(f"[MAINTENANCE] Signal CSVs regenerated successfully")
+else:
+    log(f"[MAINTENANCE] Signal CSV regeneration failed: {result.stderr[-200:]}")
