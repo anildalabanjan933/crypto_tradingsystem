@@ -66,7 +66,7 @@ def fetch_latest_1m(since):
     rows = []
     for c in data["result"]:
         rows.append({
-            "timestamp": datetime.datetime.fromtimestamp(c["time"]),
+            "timestamp": datetime.datetime.utcfromtimestamp(c["time"]),
             "open": c["open"], "high": c["high"],
             "low": c["low"],   "close": c["close"], "volume": c["volume"]
         })
@@ -182,7 +182,7 @@ while True:
                 df_1m = pd.concat([df_1m, new_candles]).sort_index()
                 log.info(f"[DATA] Appended {len(new_candles)} candles. Total={len(df_1m)}")
 
-                # Sync new candles to CSV so backtest uses identical data
+
 
 
         df_1h = build_1h(df_1m)
