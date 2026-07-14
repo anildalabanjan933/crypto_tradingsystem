@@ -2329,7 +2329,7 @@ with st.expander("SECTION 5 - BACKTEST", expanded=True):
         # Always show latest report on page load
         st.session_state["sec6_html_select"] = html_files[0] if html_files else None
         st.session_state["sec6_force_latest"] = False
-        selected_html = st.selectbox("Select HTML Report", html_files, key="sec6_html_select")
+        selected_html = html_files[0] if html_files else None
         c1, c2, c3 = st.columns(3)
         with c1:
             view_html_s5 = st.button("VIEW HTML REPORT", key="sec6_view_html")
@@ -2572,7 +2572,7 @@ with st.expander("SECTION 5B - PORTFOLIO BACKTEST", expanded=True):
         # Always show latest report on page load
         st.session_state["port_html_sel"] = port_html[0] if port_html else None
         st.session_state["port_force_latest"] = False
-        sel_port_html = st.selectbox("Select Portfolio HTML", port_html, key="port_html_sel")
+        sel_port_html = port_html[0] if port_html else None
         c1, c2, c3 = st.columns(3)
         with c1:
             view_html_5b = st.button("VIEW HTML", key="port_view_html")
@@ -2596,7 +2596,7 @@ with st.expander("SECTION 5B - PORTFOLIO BACKTEST", expanded=True):
         st.info("No portfolio HTML reports found in output/ folder")
     st.markdown("**CSV Results**")
     if port_csv:
-        sel_port_csv = st.selectbox("Select Portfolio CSV", port_csv, key="port_csv_sel")
+        sel_port_csv = port_csv[0] if port_csv else None
         with open(sel_port_csv, 'rb') as f:
             st.download_button("DOWNLOAD CSV", f, file_name=os.path.basename(sel_port_csv), key="port_dl_csv")
     else:
@@ -2710,7 +2710,7 @@ with st.expander("SECTION 6 - OPTIMISATION", expanded=True):
         if "sec7_html_sel" not in st.session_state or st.session_state.get("sec7_force_latest"):
             st.session_state["sec7_html_sel"] = opt_html_files[0] if opt_html_files else None
             st.session_state["sec7_force_latest"] = False
-        sel_opt_html = st.selectbox("Select Optimisation HTML", opt_html_files, key="sec7_html_sel")
+        sel_opt_html = opt_html_files[0] if opt_html_files else None
         c1, c2 = st.columns(2)
         with c1:
             view_html_s6 = st.button("VIEW HTML", key="sec7_view_html")
@@ -2727,7 +2727,7 @@ with st.expander("SECTION 6 - OPTIMISATION", expanded=True):
         st.info("No optimisation HTML files found in output/ folder")
     st.markdown("**CSV Results**")
     if opt_csv_files:
-        sel_opt_csv = st.selectbox("Select Optimisation CSV", opt_csv_files, key="sec7_csv_sel")
+        sel_opt_csv = opt_csv_files[0] if opt_csv_files else None
         with open(sel_opt_csv, 'rb') as f:
             st.download_button("DOWNLOAD CSV", f, file_name=os.path.basename(sel_opt_csv), key="sec7_dl_csv")
     else:
