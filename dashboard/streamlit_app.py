@@ -2326,9 +2326,9 @@ with st.expander("SECTION 5 - BACKTEST", expanded=True):
 
     st.markdown("**HTML Reports**")
     if html_files:
-        if "sec6_html_select" not in st.session_state or st.session_state.get("sec6_force_latest"):
-            st.session_state["sec6_html_select"] = html_files[0] if html_files else None
-            st.session_state["sec6_force_latest"] = False
+        # Always show latest report on page load
+        st.session_state["sec6_html_select"] = html_files[0] if html_files else None
+        st.session_state["sec6_force_latest"] = False
         selected_html = st.selectbox("Select HTML Report", html_files, key="sec6_html_select")
         c1, c2, c3 = st.columns(3)
         with c1:
@@ -2569,9 +2569,9 @@ with st.expander("SECTION 5B - PORTFOLIO BACKTEST", expanded=True):
 
     st.markdown("**Select Report to View/Download**")
     if port_html:
-        if "port_html_sel" not in st.session_state or st.session_state.get("port_force_latest"):
-            st.session_state["port_html_sel"] = port_html[0] if port_html else None
-            st.session_state["port_force_latest"] = False
+        # Always show latest report on page load
+        st.session_state["port_html_sel"] = port_html[0] if port_html else None
+        st.session_state["port_force_latest"] = False
         sel_port_html = st.selectbox("Select Portfolio HTML", port_html, key="port_html_sel")
         c1, c2, c3 = st.columns(3)
         with c1:
