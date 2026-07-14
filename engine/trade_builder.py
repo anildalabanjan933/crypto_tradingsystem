@@ -28,6 +28,11 @@ class TradeBuilder:
     # Only _apply_charges updated below
 
     def build_trades(self, signals):
+        # Reset state for clean run - prevents accumulation across multiple calls
+        self.trades             = []
+        self.cumulative_pnl     = 0
+        self.cumulative_pnl_inr = 0
+        self.trade_number       = 0
         sorted_signals = sorted(signals, key=lambda x: x["timestamp"])
         print(f"Building trades from {len(sorted_signals)} total signals")
 
