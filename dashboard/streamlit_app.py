@@ -125,7 +125,7 @@ p  { font-size: 12px !important; margin: 0 !important; color: #131722 !important
 
 /* SECTION TITLES - TradingView dark navy, white text, blue accent */
 .section-title {
-    background-color: #E8ECF2 !important;
+    background: linear-gradient(135deg, #E8ECF2 0%, #F4F6FA 50%, #DDE2EC 100%) !important;
     color: #131722 !important;
     font-size: 11px !important;
     font-weight: 700 !important;
@@ -166,13 +166,13 @@ summary,
 .streamlit-expanderHeader,
 [data-testid="stExpander"] summary,
 div[data-testid="stExpander"] details summary {
-    background-color: #E8ECF2 !important;
+    background: linear-gradient(135deg, #CDD3E0 0%, #D4DAE8 50%, #C8CEE0 100%) !important;
     color: #131722 !important;
     font-weight: 700 !important;
-    font-size: 11px !important;
+    font-size: 9px !important;
     text-transform: uppercase !important;
     letter-spacing: 1px !important;
-    padding: 4px 10px !important;
+    padding: 2px 8px !important;
     border-left: 4px solid #2196F3 !important;
     border-radius: 2px !important;
     list-style: none !important;
@@ -202,24 +202,24 @@ summary p, summary span, summary div,
     color: #2196F3 !important;
 }
 div[data-testid="stExpander"] > div:first-child {
-    background-color: #E8ECF2 !important;
+    background: linear-gradient(135deg, #E8ECF2 0%, #F4F6FA 50%, #DDE2EC 100%) !important;
     border-left: 4px solid #2196F3 !important;
     border-radius: 3px !important;
     padding: 0 !important;
 }
 /* Nested expanders inside expanders */
 div[data-testid="stExpander"] div[data-testid="stExpander"] > div:first-child {
-    background-color: #E8ECF2 !important;
+    background: linear-gradient(135deg, #E8ECF2 0%, #F4F6FA 50%, #DDE2EC 100%) !important;
     border-left: 4px solid #2196F3 !important;
 }
 div[data-testid="stExpander"] div[data-testid="stExpander"] details summary {
-    background-color: #E8ECF2 !important;
+    background: linear-gradient(135deg, #E8ECF2 0%, #F4F6FA 50%, #DDE2EC 100%) !important;
     color: #131722 !important;
     border-left: 4px solid #2196F3 !important;
 }
 /* Force ALL summary elements site-wide */
 summary {
-    background-color: #E8ECF2 !important;
+    background: linear-gradient(135deg, #E8ECF2 0%, #F4F6FA 50%, #DDE2EC 100%) !important;
     color: #131722 !important;
     border-left: 4px solid #2196F3 !important;
     font-weight: 700 !important;
@@ -248,7 +248,7 @@ div[data-testid="stExpander"] {
     box-shadow: none !important;
 }
 div[data-testid="stExpander"] > div:first-child {
-    background-color: #E8ECF2 !important;
+    background: linear-gradient(135deg, #E8ECF2 0%, #F4F6FA 50%, #DDE2EC 100%) !important;
     border-left: 4px solid #2196F3 !important;
     border-radius: 3px !important;
     padding: 0 !important;
@@ -264,7 +264,7 @@ div[data-testid="stExpander"] details summary:focus {
 div[data-testid="stExpander"] details summary p {
     color: #131722 !important;
     font-weight: 700 !important;
-    font-size: 11px !important;
+    font-size: 9px !important;
 }
 div[data-testid="stExpander"] details summary span {
     color: #131722 !important;
@@ -313,7 +313,7 @@ div[data-testid="stExpander"] details[open] summary {
 
 /* BUTTONS */
 .stButton > button {
-    padding: 3px 12px !important; font-size: 11px !important;
+    padding: 1px 6px !important; font-size: 9px !important; height: 22px !important; line-height: 1.1 !important;
     height: 28px !important; border-radius: 3px !important;
     font-weight: 600 !important;
     border: 1px solid #C8D0DC !important;
@@ -502,7 +502,7 @@ st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e
 # ================================================================
 # SECTION 1 - SYSTEM STATUS CARDS
 # ================================================================
-st.markdown("<div class='section-title'>SECTION 1 - SYSTEM STATUS</div>", unsafe_allow_html=True)
+st.markdown("<div class='section-title'>SECTION 1 - SYSTEM STATUS & MAINTENANCE</div>", unsafe_allow_html=True)
 
 disk_pct, disk_free = _timed('disk_usage', 30, _fetch_disk)
 git_commit = _timed('git_commit', 60, _fetch_git)
@@ -650,6 +650,141 @@ else:
 
 
 # ================================================================
+
+# SECTION 1 - MAINTENANCE SUB-SECTIONS
+# SECTION 3B - AUTO MAINTENANCE STATUS
+# ================================================================
+if 'exp_maint' not in st.session_state: st.session_state['exp_maint'] = False
+with st.expander("AUTO DAILY 3AM UTC", expanded=False):
+    import glob as _glob
+    maint_log = 'logs/maintenance.log'
+    if os.path.exists(maint_log):
+        lines = open(maint_log).readlines()
+        # Get last run block
+        last_run_lines = []
+        for line in reversed(lines):
+            last_run_lines.insert(0, line.strip())
+            if 'Starting auto maintenance' in line:
+                break
+        if last_run_lines:
+            # Extract key metrics
+            last_run_time = next((l for l in last_run_lines if 'Starting' in l), '')
+            disk_line     = next((l for l in last_run_lines if 'Disk' in l), '')
+            pycache_line  = next((l for l in last_run_lines if 'Pycache' in l), '')
+            output_line   = next((l for l in last_run_lines if 'Output folder' in l), '')
+            log_lines     = [l for l in last_run_lines if 'Log' in l and 'maintenance' not in l.lower()]
+
+            c1, c2, c3, c4 = st.columns(4)
+            with c1:
+                disk_pct = ''
+                if 'Disk' in disk_line:
+                    import re as _re
+                    m = _re.search(r'([\d.]+)% used', disk_line)
+                    disk_pct = m.group(1) + '%' if m else 'OK'
+                    color = 'normal' if float(m.group(1)) < 70 else 'inverse' if m else 'normal'
+                st.metric("Disk Usage", disk_pct if disk_pct else "OK")
+            with c2:
+                files_del = ''
+                if 'deleted' in output_line:
+                    import re as _re
+                    m = _re.search(r'deleted (\d+) files', output_line)
+                    files_del = m.group(1) + ' files' if m else '0'
+                st.metric("Last Cleanup", files_del if files_del else "0 files")
+            with c3:
+                out_mb = ''
+                if 'Output folder' in output_line:
+                    import re as _re
+                    m = _re.search(r'([\d.]+)MB', output_line)
+                    out_mb = m.group(1) + ' MB' if m else 'OK'
+                st.metric("Output Size", out_mb if out_mb else "OK")
+            with c4:
+                st.metric("Next Run", "Daily 3AM UTC")
+
+            st.caption(f"Last maintenance: {last_run_time.split('[MAINTENANCE]')[-1].strip() if last_run_time else 'Never'}")
+            if disk_line:
+                if 'WARNING' in disk_line or 'ERROR' in disk_line:
+                    st.error(disk_line)
+                else:
+                    st.success(disk_line.split('[MAINTENANCE]')[-1].strip())
+    else:
+        st.info("No maintenance log yet. First run at 3AM UTC tonight.")
+        st.caption("Auto maintenance runs daily: pycache clean + log trim + output cleanup + disk check")
+
+# ================================================================
+
+# SECTION 11 - MAINTENANCE
+# ================================================================
+if 'exp_11' not in st.session_state: st.session_state['exp_11'] = False
+with st.expander("MAINTENANCE", expanded=st.session_state.get('exp_11', False)):
+
+
+    import shutil, os, subprocess
+
+    disk_pct2, disk_free2 = _timed('disk_usage', 30, _fetch_disk)
+    c1, c2, c3, c4, c5 = st.columns(5)
+    with c1:
+        if disk_pct2 > 80:
+            st.error(f"DISK: {disk_pct2}%")
+        elif disk_pct2 > 60:
+            st.warning(f"DISK: {disk_pct2}%")
+        else:
+            st.success(f"DISK: {disk_pct2}%")
+    with c2:
+        pycache_exists = any(True for _ in __import__('pathlib').Path('.').rglob('__pycache__'))
+        if pycache_exists:
+            st.warning("PYCACHE: EXISTS")
+        else:
+            st.success("PYCACHE: CLEAN")
+    with c3:
+        s2_size = round(os.path.getsize(s2_log)/1024/1024, 1) if os.path.exists(s2_log) else 0
+        s4_size = round(os.path.getsize(s4_log)/1024/1024, 1) if os.path.exists(s4_log) else 0
+        total_log = s2_size + s4_size
+        if total_log > 100:
+            st.warning(f"LOGS: {total_log}MB")
+        else:
+            st.success(f"LOGS: {total_log}MB")
+    with c4:
+        venv_ok = os.path.exists('.venv') or os.path.exists('venv')
+        if venv_ok:
+            st.success("VENV: OK")
+        else:
+            st.error("VENV: MISSING")
+    with c5:
+        st.info("SERVICE: CHECK VM")
+
+    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
+    b1, b2, b3 = st.columns(3)
+    with b1:
+        if st.button("CHECK DISK", key="sec12_disk"):
+            st.info(f"Disk: {disk_pct2}% used | {disk_free2} GB free")
+    with b2:
+        if st.button("CLEAN PYCACHE", key="sec12_pycache"):
+            try:
+                import pathlib
+                count = 0
+                for p in pathlib.Path('.').rglob('__pycache__'):
+                    __import__('shutil').rmtree(p, ignore_errors=True)
+                    count += 1
+                st.success(f"Cleaned {count} pycache folders")
+            except Exception as e:
+                st.error(f"Error: {e}")
+    with b3:
+        if st.button("TRIM LOGS", key="sec12_trim"):
+            try:
+                for log_path in [s2_log, s4_log]:
+                    if os.path.exists(log_path):
+                        lines = open(log_path, encoding='utf-8', errors='ignore').readlines()
+                        if len(lines) > 10000:
+                            open(log_path, 'w').writelines(lines[-10000:])
+                            st.success(f"Trimmed {log_path} to 10000 lines")
+                        else:
+                            st.info(f"{log_path}: {len(lines)} lines - no trim needed")
+            except Exception as e:
+                st.error(f"Error: {e}")
+
+
+# ================================================================
+
 # SECTION 1B - ERROR MONITOR (auto-checks all systems)
 # ================================================================
 st.markdown('<div style="margin-top:-8px;"></div>', unsafe_allow_html=True)
@@ -1043,8 +1178,111 @@ st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e
 
 # ================================================================
 # SECTION 2 - BOT CONTROL
-# ================================================================
 st.markdown("<div class='section-title'>SECTION 2 - BOT CONTROL</div>", unsafe_allow_html=True)
+# SECTION 2.4 - MEMBER MANAGEMENT
+# ================================================================
+if 'exp_24' not in st.session_state: st.session_state['exp_24'] = False
+with st.expander("MEMBER MANAGEMENT", expanded=st.session_state.get('exp_24', False)):
+
+    # Load members from config
+    members_config_file = 'dashboard/members_config.json'
+    if not os.path.exists(members_config_file):
+        json.dump({'members': []}, open(members_config_file, 'w'), indent=2)
+
+    members_cfg = json.load(open(members_config_file))
+    members = members_cfg.get('members', [])
+
+    # Member table
+    if members:
+        m_cols = st.columns([2,2,1,1,1,1,1])
+        m_cols[0].markdown("**Name**")
+        m_cols[1].markdown("**Account**")
+        m_cols[2].markdown("**S2**")
+        m_cols[3].markdown("**S4**")
+        m_cols[4].markdown("**Start**")
+        m_cols[5].markdown("**Stop**")
+        m_cols[6].markdown("**Remove**")
+        for idx, m in enumerate(members):
+            mc = st.columns([2,2,1,1,1,1,1])
+            mc[0].write(m.get('name',''))
+            mc[1].write(m.get('account','Testnet'))
+            # Check S2 status
+            s2_screen = f"m{idx}_s2"
+            s4_screen = f"m{idx}_s4"
+            import subprocess
+            _scr_out = _timed('screen_list', 30, _fetch_screen_list)
+            s2_running = s2_screen in _scr_out
+            s4_running = s4_screen in _scr_out
+            mc[2].markdown(f"<span style='color:{'green' if s2_running else 'red'}'>{'ON' if s2_running else 'OFF'}</span>", unsafe_allow_html=True)
+            mc[3].markdown(f"<span style='color:{'green' if s4_running else 'red'}'>{'ON' if s4_running else 'OFF'}</span>", unsafe_allow_html=True)
+            if mc[4].button("▶", key=f"m_start_{idx}"):
+                try:
+                    env = f"S2_API_KEY={m.get('s2_key','')} S2_API_SECRET={m.get('s2_secret','')} S4_API_KEY={m.get('s4_key','')} S4_API_SECRET={m.get('s4_secret','')}"
+                    subprocess.Popen(['bash','-c',f'screen -dmS {s2_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && export {env} && python3 run_live_trading_s2.py > logs/live_trading_{s2_screen}.log 2>&1"'])
+                    subprocess.Popen(['bash','-c',f'screen -dmS {s4_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && export {env} && python3 run_live_trading_s4.py > logs/live_trading_{s4_screen}.log 2>&1"'])
+                    st.success(f"{m.get('name')} bots started")
+                except Exception as e:
+                    st.error(str(e))
+            if mc[5].button("■", key=f"m_stop_{idx}"):
+                try:
+                    subprocess.Popen(['bash','-c',f'screen -S {s2_screen} -X quit; screen -S {s4_screen} -X quit'])
+                    st.warning(f"{m.get('name')} bots stopped")
+                except Exception as e:
+                    st.error(str(e))
+            if mc[6].button("✕", key=f"m_remove_{idx}"):
+                members.pop(idx)
+                members_cfg['members'] = members
+                json.dump(members_cfg, open(members_config_file,'w'), indent=2)
+                st.rerun()
+    else:
+        st.markdown("<div style='background:#f0f4ff;padding:6px 10px;border-radius:3px;font-size:11px;color:#555;'>No members added yet. Add members below.</div>", unsafe_allow_html=True)
+
+    # Add member form
+    with st.expander("+ ADD MEMBER"):
+        with st.form("add_member_form"):
+            m_name    = st.text_input("Member Name (e.g. Friend1)")
+            m_account = st.text_input("Account Label (e.g. Testnet)")
+            m_bots    = st.multiselect("Bots to enable", ["S2","S4"], default=["S2","S4"])
+            col1, col2 = st.columns(2)
+            with col1:
+                if "S2" in m_bots:
+                    m_s2_key  = st.text_input("S2 API Key")
+                    m_s2_sec  = st.text_input("S2 API Secret", type="password")
+                    m_lots_s2 = st.number_input("S2 Lots", min_value=1, value=100)
+                else:
+                    m_s2_key = m_s2_sec = ""; m_lots_s2 = 100
+            with col2:
+                if "S4" in m_bots:
+                    m_s4_key  = st.text_input("S4 API Key")
+                    m_s4_sec  = st.text_input("S4 API Secret", type="password")
+                    m_lots_s4 = st.number_input("S4 Lots", min_value=1, value=100)
+                else:
+                    m_s4_key = m_s4_sec = ""; m_lots_s4 = 100
+            if st.form_submit_button("ADD MEMBER"):
+                if m_name and m_bots:
+                    members.append({
+                        'name': m_name,
+                        'account': m_account,
+                        'bots': m_bots,
+                        's2_key': m_s2_key,
+                        's2_secret': m_s2_sec,
+                        's4_key': m_s4_key,
+                        's4_secret': m_s4_sec,
+                        'lots_s2': m_lots_s2,
+                        'lots_s4': m_lots_s4
+                    })
+                    members_cfg['members'] = members
+                    json.dump(members_cfg, open(members_config_file,'w'), indent=2)
+                    st.success(f"Member {m_name} added with bots: {m_bots}")
+                    st.rerun()
+                else:
+                    st.error("Name + at least one bot required")
+st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
+
+# ================================================================
+
+# ================================================================
+
 
 algos = config.get("algos", [])
 
@@ -1174,107 +1412,6 @@ if st.session_state.get('show_add_algo', False):
             st.session_state['show_add_algo'] = False
 
 
-
-# ================================================================
-# SECTION 2.4 - MEMBER MANAGEMENT
-# ================================================================
-if 'exp_24' not in st.session_state: st.session_state['exp_24'] = False
-with st.expander("SECTION 2.4 - MEMBER MANAGEMENT", expanded=st.session_state.get('exp_24', False)):
-
-    # Load members from config
-    members_config_file = 'dashboard/members_config.json'
-    if not os.path.exists(members_config_file):
-        json.dump({'members': []}, open(members_config_file, 'w'), indent=2)
-
-    members_cfg = json.load(open(members_config_file))
-    members = members_cfg.get('members', [])
-
-    # Member table
-    if members:
-        m_cols = st.columns([2,2,1,1,1,1,1])
-        m_cols[0].markdown("**Name**")
-        m_cols[1].markdown("**Account**")
-        m_cols[2].markdown("**S2**")
-        m_cols[3].markdown("**S4**")
-        m_cols[4].markdown("**Start**")
-        m_cols[5].markdown("**Stop**")
-        m_cols[6].markdown("**Remove**")
-        for idx, m in enumerate(members):
-            mc = st.columns([2,2,1,1,1,1,1])
-            mc[0].write(m.get('name',''))
-            mc[1].write(m.get('account','Testnet'))
-            # Check S2 status
-            s2_screen = f"m{idx}_s2"
-            s4_screen = f"m{idx}_s4"
-            import subprocess
-            _scr_out = _timed('screen_list', 30, _fetch_screen_list)
-            s2_running = s2_screen in _scr_out
-            s4_running = s4_screen in _scr_out
-            mc[2].markdown(f"<span style='color:{'green' if s2_running else 'red'}'>{'ON' if s2_running else 'OFF'}</span>", unsafe_allow_html=True)
-            mc[3].markdown(f"<span style='color:{'green' if s4_running else 'red'}'>{'ON' if s4_running else 'OFF'}</span>", unsafe_allow_html=True)
-            if mc[4].button("▶", key=f"m_start_{idx}"):
-                try:
-                    env = f"S2_API_KEY={m.get('s2_key','')} S2_API_SECRET={m.get('s2_secret','')} S4_API_KEY={m.get('s4_key','')} S4_API_SECRET={m.get('s4_secret','')}"
-                    subprocess.Popen(['bash','-c',f'screen -dmS {s2_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && export {env} && python3 run_live_trading_s2.py > logs/live_trading_{s2_screen}.log 2>&1"'])
-                    subprocess.Popen(['bash','-c',f'screen -dmS {s4_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && export {env} && python3 run_live_trading_s4.py > logs/live_trading_{s4_screen}.log 2>&1"'])
-                    st.success(f"{m.get('name')} bots started")
-                except Exception as e:
-                    st.error(str(e))
-            if mc[5].button("■", key=f"m_stop_{idx}"):
-                try:
-                    subprocess.Popen(['bash','-c',f'screen -S {s2_screen} -X quit; screen -S {s4_screen} -X quit'])
-                    st.warning(f"{m.get('name')} bots stopped")
-                except Exception as e:
-                    st.error(str(e))
-            if mc[6].button("✕", key=f"m_remove_{idx}"):
-                members.pop(idx)
-                members_cfg['members'] = members
-                json.dump(members_cfg, open(members_config_file,'w'), indent=2)
-                st.rerun()
-    else:
-        st.markdown("<div style='background:#f0f4ff;padding:6px 10px;border-radius:3px;font-size:11px;color:#555;'>No members added yet. Add members below.</div>", unsafe_allow_html=True)
-
-    # Add member form
-    with st.expander("+ ADD MEMBER"):
-        with st.form("add_member_form"):
-            m_name    = st.text_input("Member Name (e.g. Friend1)")
-            m_account = st.text_input("Account Label (e.g. Testnet)")
-            m_bots    = st.multiselect("Bots to enable", ["S2","S4"], default=["S2","S4"])
-            col1, col2 = st.columns(2)
-            with col1:
-                if "S2" in m_bots:
-                    m_s2_key  = st.text_input("S2 API Key")
-                    m_s2_sec  = st.text_input("S2 API Secret", type="password")
-                    m_lots_s2 = st.number_input("S2 Lots", min_value=1, value=100)
-                else:
-                    m_s2_key = m_s2_sec = ""; m_lots_s2 = 100
-            with col2:
-                if "S4" in m_bots:
-                    m_s4_key  = st.text_input("S4 API Key")
-                    m_s4_sec  = st.text_input("S4 API Secret", type="password")
-                    m_lots_s4 = st.number_input("S4 Lots", min_value=1, value=100)
-                else:
-                    m_s4_key = m_s4_sec = ""; m_lots_s4 = 100
-            if st.form_submit_button("ADD MEMBER"):
-                if m_name and m_bots:
-                    members.append({
-                        'name': m_name,
-                        'account': m_account,
-                        'bots': m_bots,
-                        's2_key': m_s2_key,
-                        's2_secret': m_s2_sec,
-                        's4_key': m_s4_key,
-                        's4_secret': m_s4_sec,
-                        'lots_s2': m_lots_s2,
-                        'lots_s4': m_lots_s4
-                    })
-                    members_cfg['members'] = members
-                    json.dump(members_cfg, open(members_config_file,'w'), indent=2)
-                    st.success(f"Member {m_name} added with bots: {m_bots}")
-                    st.rerun()
-                else:
-                    st.error("Name + at least one bot required")
-st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
 # ================================================================
 # SECTION 3 - PLATFORM MONITOR
@@ -1665,7 +1802,7 @@ with tab1:
                 _rows += "<td style='{}'>{}</td>".format(TD2, p['buy_time'])
                 _rows += "<td style='{}'>{}</td>".format(TD2, p['member'])
                 _rows += "<td style='{}'>{}</td>".format(TD2, p['strat'])
-                _rows += "<td style='{}'><span style='color:{};font-weight:700'>{}</span></td>".format(TD2, sc, side_label)
+                _rows += "<td style='{}'><span style='color:{};font-weight:700'>{}</span></td>".format(TD2, side_color, side_label)
                 _rows += "<td style='{}'>${:,.1f}</td>".format(TDR2, p['entry'])
                 _rows += "<td style='{}'>${:,.1f}</td>".format(TDR2, p['exit'])
                 _rows += "<td style='{}'>{}</td>".format(TDR2, int(p['size']))
@@ -1773,65 +1910,6 @@ with tab3:
         st.metric("Signals Sent", "N/A")
     st.info("Tradetron will be configured after July 24 forward test completes")
 
-
-# ================================================================
-# SECTION 3B - AUTO MAINTENANCE STATUS
-# ================================================================
-if 'exp_maint' not in st.session_state: st.session_state['exp_maint'] = False
-with st.expander("SYSTEM MAINTENANCE - Auto Daily 3AM UTC", expanded=False):
-    import glob as _glob
-    maint_log = 'logs/maintenance.log'
-    if os.path.exists(maint_log):
-        lines = open(maint_log).readlines()
-        # Get last run block
-        last_run_lines = []
-        for line in reversed(lines):
-            last_run_lines.insert(0, line.strip())
-            if 'Starting auto maintenance' in line:
-                break
-        if last_run_lines:
-            # Extract key metrics
-            last_run_time = next((l for l in last_run_lines if 'Starting' in l), '')
-            disk_line     = next((l for l in last_run_lines if 'Disk' in l), '')
-            pycache_line  = next((l for l in last_run_lines if 'Pycache' in l), '')
-            output_line   = next((l for l in last_run_lines if 'Output folder' in l), '')
-            log_lines     = [l for l in last_run_lines if 'Log' in l and 'maintenance' not in l.lower()]
-
-            c1, c2, c3, c4 = st.columns(4)
-            with c1:
-                disk_pct = ''
-                if 'Disk' in disk_line:
-                    import re as _re
-                    m = _re.search(r'([\d.]+)% used', disk_line)
-                    disk_pct = m.group(1) + '%' if m else 'OK'
-                    color = 'normal' if float(m.group(1)) < 70 else 'inverse' if m else 'normal'
-                st.metric("Disk Usage", disk_pct if disk_pct else "OK")
-            with c2:
-                files_del = ''
-                if 'deleted' in output_line:
-                    import re as _re
-                    m = _re.search(r'deleted (\d+) files', output_line)
-                    files_del = m.group(1) + ' files' if m else '0'
-                st.metric("Last Cleanup", files_del if files_del else "0 files")
-            with c3:
-                out_mb = ''
-                if 'Output folder' in output_line:
-                    import re as _re
-                    m = _re.search(r'([\d.]+)MB', output_line)
-                    out_mb = m.group(1) + ' MB' if m else 'OK'
-                st.metric("Output Size", out_mb if out_mb else "OK")
-            with c4:
-                st.metric("Next Run", "Daily 3AM UTC")
-
-            st.caption(f"Last maintenance: {last_run_time.split('[MAINTENANCE]')[-1].strip() if last_run_time else 'Never'}")
-            if disk_line:
-                if 'WARNING' in disk_line or 'ERROR' in disk_line:
-                    st.error(disk_line)
-                else:
-                    st.success(disk_line.split('[MAINTENANCE]')[-1].strip())
-    else:
-        st.info("No maintenance log yet. First run at 3AM UTC tonight.")
-        st.caption("Auto maintenance runs daily: pycache clean + log trim + output cleanup + disk check")
 
 # ================================================================
 # SECTION 4 - FORWARD TEST vs BACKTEST COMPARE
@@ -2790,160 +2868,88 @@ with st.expander("SECTION 10 - GITHUB SYNC", expanded=st.session_state.get('exp_
             st.error("Please enter a commit message")
 
 # ================================================================
-# SECTION 11 - MAINTENANCE
-# ================================================================
-if 'exp_11' not in st.session_state: st.session_state['exp_11'] = False
-with st.expander("SECTION 11 - MAINTENANCE", expanded=st.session_state.get('exp_11', False)):
-
-
-    import shutil, os, subprocess
-
-    disk_pct2, disk_free2 = _timed('disk_usage', 30, _fetch_disk)
-    c1, c2, c3, c4, c5 = st.columns(5)
-    with c1:
-        if disk_pct2 > 80:
-            st.error(f"DISK: {disk_pct2}%")
-        elif disk_pct2 > 60:
-            st.warning(f"DISK: {disk_pct2}%")
-        else:
-            st.success(f"DISK: {disk_pct2}%")
-    with c2:
-        pycache_exists = any(True for _ in __import__('pathlib').Path('.').rglob('__pycache__'))
-        if pycache_exists:
-            st.warning("PYCACHE: EXISTS")
-        else:
-            st.success("PYCACHE: CLEAN")
-    with c3:
-        s2_size = round(os.path.getsize(s2_log)/1024/1024, 1) if os.path.exists(s2_log) else 0
-        s4_size = round(os.path.getsize(s4_log)/1024/1024, 1) if os.path.exists(s4_log) else 0
-        total_log = s2_size + s4_size
-        if total_log > 100:
-            st.warning(f"LOGS: {total_log}MB")
-        else:
-            st.success(f"LOGS: {total_log}MB")
-    with c4:
-        venv_ok = os.path.exists('.venv') or os.path.exists('venv')
-        if venv_ok:
-            st.success("VENV: OK")
-        else:
-            st.error("VENV: MISSING")
-    with c5:
-        st.info("SERVICE: CHECK VM")
-
-    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
-    b1, b2, b3 = st.columns(3)
-    with b1:
-        if st.button("CHECK DISK", key="sec12_disk"):
-            st.info(f"Disk: {disk_pct2}% used | {disk_free2} GB free")
-    with b2:
-        if st.button("CLEAN PYCACHE", key="sec12_pycache"):
-            try:
-                import pathlib
-                count = 0
-                for p in pathlib.Path('.').rglob('__pycache__'):
-                    __import__('shutil').rmtree(p, ignore_errors=True)
-                    count += 1
-                st.success(f"Cleaned {count} pycache folders")
-            except Exception as e:
-                st.error(f"Error: {e}")
-    with b3:
-        if st.button("TRIM LOGS", key="sec12_trim"):
-            try:
-                for log_path in [s2_log, s4_log]:
-                    if os.path.exists(log_path):
-                        lines = open(log_path, encoding='utf-8', errors='ignore').readlines()
-                        if len(lines) > 10000:
-                            open(log_path, 'w').writelines(lines[-10000:])
-                            st.success(f"Trimmed {log_path} to 10000 lines")
-                        else:
-                            st.info(f"{log_path}: {len(lines)} lines - no trim needed")
-            except Exception as e:
-                st.error(f"Error: {e}")
-
-
-# ================================================================
 # SECTION 12 - LOG MONITOR
 # ================================================================
-st.markdown("<div class='section-title'>SECTION 12 - LOG MONITOR</div>", unsafe_allow_html=True)
+with st.expander("SECTION 12 - LOG MONITOR", expanded=st.session_state.get('exp_12', False)):
 
-col_sel, col_filter = st.columns([2,3])
-with col_sel:
-    log_choice = st.selectbox("Select Log", ["S2", "S4", "Both"], key="sec5_log")
-with col_filter:
-    custom_filter = st.text_input("Custom Filter (type keyword)", value="", key="sec5_custom")
+    col_sel, col_filter = st.columns([2,3])
+    with col_sel:
+        log_choice = st.selectbox("Select Log", ["S2", "S4", "Both"], key="sec5_log")
+    with col_filter:
+        custom_filter = st.text_input("Custom Filter (type keyword)", value="", key="sec5_custom")
 
-qf1, qf2, qf3, qf4 = st.columns(4)
-with qf1:
-    if st.button("ORDER", key="sec5_order"):
-        st.session_state['sec5_filter'] = "ORDER"
-with qf2:
-    if st.button("ERROR", key="sec5_error"):
-        st.session_state['sec5_filter'] = "ERROR"
-with qf3:
-    if st.button("ALGOTEST", key="sec5_algotest"):
-        st.session_state['sec5_filter'] = "ALGOTEST"
-with qf4:
-    if st.button("ALL", key="sec5_all"):
-        st.session_state['sec5_filter'] = ""
+    qf1, qf2, qf3, qf4 = st.columns(4)
+    with qf1:
+        if st.button("ORDER", key="sec5_order"):
+            st.session_state['sec5_filter'] = "ORDER"
+    with qf2:
+        if st.button("ERROR", key="sec5_error"):
+            st.session_state['sec5_filter'] = "ERROR"
+    with qf3:
+        if st.button("ALGOTEST", key="sec5_algotest"):
+            st.session_state['sec5_filter'] = "ALGOTEST"
+    with qf4:
+        if st.button("ALL", key="sec5_all"):
+            st.session_state['sec5_filter'] = ""
 
-active_filter = custom_filter if custom_filter else st.session_state.get('sec5_filter', '')
+    active_filter = custom_filter if custom_filter else st.session_state.get('sec5_filter', '')
 
-def read_log(path, keyword='', last_n=50):
-    try:
-        if os.path.exists(path):
-            lines = open(path, encoding='utf-8', errors='ignore').readlines()
+    def read_log(path, keyword='', last_n=50):
+        try:
+            if os.path.exists(path):
+                lines = open(path, encoding='utf-8', errors='ignore').readlines()
             if keyword:
                 lines = [l for l in lines if keyword.upper() in l.upper()]
-            return lines[-last_n:]
-        return [f"Log not found: {path}"]
-    except Exception as e:
-        return [f"Error reading log: {e}"]
+                return lines[-last_n:]
+            return [f"Log not found: {path}"]
+        except Exception as e:
+            return [f"Error reading log: {e}"]
 
-def format_log_line(line):
-    if 'ERROR' in line:
-        return f"🔴 {line.strip()}"
-    elif 'ORDER' in line:
-        return f"🟢 {line.strip()}"
-    elif 'ALGOTEST' in line:
-        return f"🔵 {line.strip()}"
-    else:
-        return line.strip()
+    def format_log_line(line):
+        if 'ERROR' in line:
+            return f"🔴 {line.strip()}"
+        elif 'ORDER' in line:
+            return f"🟢 {line.strip()}"
+        elif 'ALGOTEST' in line:
+            return f"🔵 {line.strip()}"
+        else:
+            return line.strip()
 
-s2_log_path = system.get('log_path_s2', 'logs/live_trading_s2.log')
-s4_log_path = system.get('log_path_s4', 'logs/live_trading_s4.log')
+    s2_log_path = system.get('log_path_s2', 'logs/live_trading_s2.log')
+    s4_log_path = system.get('log_path_s4', 'logs/live_trading_s4.log')
 
-if log_choice == "S2":
-    lines = read_log(s2_log_path, active_filter)
-    st.markdown(f"**S2 Log** - Filter: `{active_filter if active_filter else 'ALL'}`")
-    st.code('\n'.join([format_log_line(l) for l in lines]), language=None)
-elif log_choice == "S4":
-    lines = read_log(s4_log_path, active_filter)
-    st.markdown(f"**S4 Log** - Filter: `{active_filter if active_filter else 'ALL'}`")
-    st.code('\n'.join([format_log_line(l) for l in lines]), language=None)
-else:
-    col_s2, col_s4 = st.columns(2)
-    with col_s2:
+    if log_choice == "S2":
         lines = read_log(s2_log_path, active_filter)
         st.markdown(f"**S2 Log** - Filter: `{active_filter if active_filter else 'ALL'}`")
         st.code('\n'.join([format_log_line(l) for l in lines]), language=None)
-    with col_s4:
+    elif log_choice == "S4":
         lines = read_log(s4_log_path, active_filter)
         st.markdown(f"**S4 Log** - Filter: `{active_filter if active_filter else 'ALL'}`")
         st.code('\n'.join([format_log_line(l) for l in lines]), language=None)
+    else:
+        col_s2, col_s4 = st.columns(2)
+        with col_s2:
+            lines = read_log(s2_log_path, active_filter)
+            st.markdown(f"**S2 Log** - Filter: `{active_filter if active_filter else 'ALL'}`")
+            st.code('\n'.join([format_log_line(l) for l in lines]), language=None)
+        with col_s4:
+            lines = read_log(s4_log_path, active_filter)
+            st.markdown(f"**S4 Log** - Filter: `{active_filter if active_filter else 'ALL'}`")
+            st.code('\n'.join([format_log_line(l) for l in lines]), language=None)
 
-col_ref, col_auto = st.columns(2)
-with col_ref:
-    if st.button("REFRESH LOGS", key="sec5_refresh"):
-        st.rerun()
-with col_auto:
-    auto_refresh = st.checkbox("AUTO REFRESH 30s", key="sec5_autorefresh")
-    if auto_refresh:
-        import streamlit.components.v1 as _stc
-        _stc.html('<script>setTimeout(function(){window.location.reload();},30000);</script>', height=0)
+    col_ref, col_auto = st.columns(2)
+    with col_ref:
+        if st.button("REFRESH LOGS", key="sec5_refresh"):
+            st.rerun()
+    with col_auto:
+        auto_refresh = st.checkbox("AUTO REFRESH 30s", key="sec5_autorefresh")
+        if auto_refresh:
+            import streamlit.components.v1 as _stc
+            _stc.html('<script>setTimeout(function(){window.location.reload();},30000);</script>', height=0)
 
 
 
-# ================================================================
+    # ================================================================
 # SECTION 13 - STRATEGY PERFORMANCE SUMMARY
 # ================================================================
 if 'exp_13s' not in st.session_state: st.session_state['exp_13s'] = False
