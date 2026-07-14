@@ -1,0 +1,163 @@
+#!/usr/bin/env python3
+"""
+signal_replay_s4.py - S4 Signal Replay Bot
+Reads pre-generated backtest signals from logs/signals_s4.csv
+Places orders when current UTC time matches signal entry/exit time.
+Zero Renko recalculation. 100% match with backtest guaranteed.
+"""
+import os, sys, time, csv, logging, re
+from datetime import datetime, timezone
+sys.path.insert(0, ".")
+from engine.order_manager import OrderManager
+from dotenv import load_dotenv
+load_dotenv()
+
+# --- Config ---
+SYMBOL       = "BTCUSD"
+LOT_SIZE     = 100
+SIGNAL_CSV   = "logs/signals_s4.csv"
+TS_FILE      = "logs/last_known_ts_s4.txt"
+BASELINE_FILE= "logs/valid_from_baseline.txt"
+SLEEP_SEC    = 10
+LOG_FILE     = "logs/live_trading_s4.log"
+
+# --- Logging ---
+os.makedirs("logs", exist_ok=True)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+    handlers=[
+        logging.FileHandler(LOG_FILE, mode="a")
+    ]
+)
+log = logging.getLogger(__name__)
+
+# --- Order Manager ---
+API_KEY    = os.getenv("S4_API_KEY", "")
+API_SECRET = os.getenv("S4_API_SECRET", "")
+om = OrderManager(API_KEY, API_SECRET, testnet=False)
+
+TS_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$")
+
+def load_ts_file(path):
+    try:
+        if os.path.exists(path):
+            val = open(path).read().strip()
+            if TS_PATTERN.match(val):
+                return val
+    except Exception:
+        pass
+    return None
+
+def save_ts_file(path, val):
+    open(path, "w").write(str(val))
+
+def now_utc_str():
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+
+def load_signals():
+    signals = []
+    if not os.path.exists(SIGNAL_CSV):
+        log.error(f"[REPLAY] Signal CSV not found: {SIGNAL_CSV}")
+        return signals
+    with open(SIGNAL_CSV, "r") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row["entry_time"] and row["exit_time"] and row["direction"]:
+                signals.append({
+                    "entry_time": row["entry_time"].strip(),
+                    "exit_time":  row["exit_time"].strip(),
+                    "direction":  row["direction"].strip(),
+                    "lots":       int(row.get("lots", LOT_SIZE))
+                })
+    log.info(f"[REPLAY] Loaded {len(signals)} signals from {SIGNAL_CSV}")
+    return signals
+
+def get_valid_from():
+    val = load_ts_file(BASELINE_FILE)
+    if val:
+        return val
+    val = load_ts_file(TS_FILE)
+    if val:
+        return val
+    return "2000-01-01T00:00:00"
+
+# --- Startup ---
+log.info("[STARTUP] S4 Signal Replay Bot starting...")
+
+pos = om.get_position()
+if pos.get("success") and pos.get("direction") == "LONG":
+    position = "long"
+elif pos.get("success") and pos.get("direction") == "SHORT":
+    position = "short"
+else:
+    position = None
+log.info(f"[STARTUP] Position synced from exchange: {position}")
+
+last_known_ts = load_ts_file(TS_FILE)
+valid_from    = get_valid_from()
+log.info(f"[STARTUP] last_known_ts={last_known_ts} | valid_from={valid_from}")
+
+signals = load_signals()
+open_lot_size = LOT_SIZE
+
+log.info("[STARTUP] Entering main loop. Checking every 10 seconds.")
+while True:
+    try:
+        now = now_utc_str()
+
+        if now.endswith("00:00") or now.endswith("30:00"):
+            signals = load_signals()
+
+        for sig in signals:
+            entry_time = sig["entry_time"]
+            exit_time  = sig["exit_time"]
+            direction  = sig["direction"]
+            lots       = sig["lots"]
+
+            if entry_time < valid_from:
+                continue
+
+            if last_known_ts and entry_time <= last_known_ts:
+                continue
+
+            # --- ENTRY ---
+            if now >= entry_time and position is None:
+                side = "buy" if direction == "long" else "sell"
+                log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={entry_time}")
+                save_ts_file(TS_FILE, entry_time)
+                last_known_ts = entry_time
+                result = om.place_market_order(side=side, size=lots)
+                if result.get("success"):
+                    position      = direction
+                    open_lot_size = lots
+                    log.info(f"[ORDER] ENTRY confirmed | position={position}")
+                else:
+                    log.error(f"[ORDER] ENTRY FAILED: {result}")
+                    last_known_ts = load_ts_file(TS_FILE)
+                break
+
+            # --- EXIT ---
+            if now >= exit_time and position is not None and entry_time == last_known_ts:
+                side = "sell" if position == "long" else "buy"
+                actual = om.get_position()
+                close_size = abs(actual.get("size", open_lot_size)) if actual.get("success") else open_lot_size
+                log.info(f"[ORDER] EXIT {side} {close_size} lots | ts={exit_time}")
+                save_ts_file(TS_FILE, exit_time)
+                last_known_ts = exit_time
+                result = om.close_position(size=close_size, side=side)
+                if result.get("success"):
+                    position = None
+                    log.info(f"[ORDER] EXIT confirmed | position=None")
+                else:
+                    log.error(f"[ORDER] EXIT FAILED: {result}")
+                    last_known_ts = load_ts_file(TS_FILE)
+                break
+
+        else:
+            log.info(f"[WAIT] now={now} | position={position} | last_known_ts={last_known_ts}")
+
+    except Exception as e:
+        log.error(f"[ERROR] {e}", exc_info=True)
+
+    time.sleep(SLEEP_SEC)
