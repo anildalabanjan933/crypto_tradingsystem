@@ -62,41 +62,43 @@ def update_csv():
 
 
 def get_backtest_signals(strategy_class, name, params):
-    # Always use tomorrow as end_date to include all of today's candles
-    _end = (datetime.now(timezone.utc) + __import__('datetime').timedelta(days=1)).strftime('%Y-%m-%d')
-    engine = BacktestEngine(
-        strategy_class=strategy_class, symbol='BTCUSD',
-        lot_size=100, start_date='2024-01-10', end_date=_end,
-        csv_path=CSV_PATH, strategy_params=params, slippage=5.0
-    )
-    results = engine.run()
-    gen = BacktestReportGenerator(
-        trades=results['trades'], metrics=results['metrics'],
-        strategy_name=name, symbol='BTCUSD',
-        start_date='2024-01-10', end_date=_end,
-        slippage=5.0, lot_size=100, include_charges=True
-    )
-    csv_path = gen.generate_csv_trade_log()
-    rows = open(csv_path).readlines()
-    trades = [r.strip().split(',') for r in rows[1:] if r.strip()]
-    closed = [t for t in trades if t[3] >= VALID_FROM]
+    # Read directly from signal CSV - faster and guaranteed match
+    # S2 = logs/signals_s2.csv | S4 = logs/signals_s4.csv
+    if 'Reversal' in name or 's2' in name.lower():
+        sig_csv = 'logs/signals_s2.csv'
+    else:
+        sig_csv = 'logs/signals_s4.csv'
 
-    # Include currently open signal (unclosed trade skipped by engine)
-    signals = results.get('signals', [])
-    if signals:
-        last_sig  = signals[-1]
-        last_ts   = str(last_sig.get('timestamp', ''))
-        last_dir  = last_sig.get('direction', '')
-        last_type = last_sig.get('signal_type', '')
-        if last_type == 'ENTRY' and last_ts >= VALID_FROM:
-            already = any(t[3] == last_ts for t in closed)
-            if not already:
-                open_trade = [''] * 31
-                open_trade[3] = last_ts
-                open_trade[4] = ''
-                open_trade[5] = last_dir
-                closed.append(open_trade)
-    return closed
+    trades = []
+    if not os.path.exists(sig_csv):
+        print(f"  WARNING: Signal CSV not found: {sig_csv}")
+        return trades
+
+    import csv as _csv
+    with open(sig_csv) as fh:
+        reader = _csv.DictReader(fh)
+        for row in reader:
+            entry_time = row['entry_time'].strip()
+            exit_time  = row['exit_time'].strip()
+            direction  = row['direction'].strip()
+            if entry_time < VALID_FROM:
+                continue
+            # Build trade row compatible with existing comparison logic
+            # t[3]=entry_time t[4]=exit_time t[5]=direction
+            trade = [''] * 31
+            trade[3] = entry_time
+            trade[4] = exit_time
+            trade[5] = direction
+            trades.append(trade)
+
+    # Check if last signal is open (exit_time in future = still open)
+    from datetime import timezone
+    now_str = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S')
+    if trades and trades[-1][4] > now_str:
+        trades[-1][4] = ''  # mark as open - exit not yet reached
+
+    return trades
+
 
 def get_live_trades(log_file):
     # Parse ENTRY and EXIT pairs from log
@@ -122,7 +124,12 @@ def get_live_trades(log_file):
         if entry_match:
             side      = entry_match.group(1).lower()
             signal_ts = entry_match.group(2).rstrip('|').strip()
-            direction = 'long' if side == 'buy' else 'short'
+            # New Signal Replay format has dir= field explicitly
+            dir_match = re.search(r'dir=(long|short)', line, re.I)
+            if dir_match:
+                direction = dir_match.group(1).lower()
+            else:
+                direction = 'long' if side == 'buy' else 'short'
             entries[signal_ts] = {'direction': direction,
                                    'entry_time': signal_ts,
                                    'entry_price': '-'}
@@ -293,7 +300,7 @@ print("=" * 60)
 print("\nSTEP 1: Updating CSV...")
 update_csv()
 
-print("\nSTEP 2: Running backtests (silent)...")
+print("\nSTEP 2: Reading signal CSVs...")
 import io
 from contextlib import redirect_stdout, redirect_stderr
 with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
