@@ -154,7 +154,7 @@ while True:
                 continue
 
             # Skip already executed signals
-            if last_known_ts and entry_time <= last_known_ts:
+            if last_known_ts and entry_time < last_known_ts:
                 continue
 
             # --- ENTRY ---
