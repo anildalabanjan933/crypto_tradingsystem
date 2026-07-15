@@ -1118,6 +1118,160 @@ st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e
 
 
 # ================================================================
+# SECTION 1C - DEBUG TRACKER
+# ================================================================
+if 'exp_1c' not in st.session_state: st.session_state['exp_1c'] = False
+with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('exp_1c', False)):
+    import re as _re1c, datetime as _dt1c
+
+    _BASE_DIR = '/home/anildalabanjan933/crypto_trading_system'
+    _TH1C = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;"
+    _TD1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;"
+    _TDG1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;"
+    _TDR1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#F23645;font-weight:700;"
+    _TDO1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#e07000;font-weight:700;"
+
+    def _read_last_lines(path, n=200):
+        try:
+            lines = open(path, encoding='utf-8', errors='ignore').readlines()
+            return lines[-n:]
+        except:
+            return []
+
+    def _get_bot_debug(log_path, ts_path, sig_path, bot_name):
+        lines = _read_last_lines(log_path)
+        now_utc = _dt1c.datetime.utcnow()
+
+        # Last heartbeat
+        last_wait = "Never"
+        for l in reversed(lines):
+            if '[WAIT]' in l or '[ORDER]' in l:
+                last_wait = l.split(' INFO')[0].strip()
+                break
+
+        # Last reload
+        last_reload = "Never"
+        for l in reversed(lines):
+            if '[RELOAD]' in l:
+                last_reload = l.split(' INFO')[0].strip()
+                break
+
+        # API validation
+        api_status = "UNKNOWN"
+        api_color = _TDO1C
+        for l in reversed(lines):
+            if 'API key validated successfully' in l:
+                api_status = "VALID"
+                api_color = _TDG1C
+                break
+            if 'API key validation FAILED' in l or 'invalid_api_key' in l:
+                api_status = "INVALID"
+                api_color = _TDR1C
+                break
+
+        # Last error
+        last_error = "None"
+        last_error_color = _TDG1C
+        for l in reversed(lines):
+            if 'ERROR' in l or 'CRITICAL' in l:
+                last_error = l.strip()[-120:]
+                last_error_color = _TDR1C
+                break
+
+        # Last order
+        last_order = "None"
+        for l in reversed(lines):
+            if '[ORDER]' in l and ('ENTRY' in l or 'EXIT' in l):
+                last_order = l.strip()[-100:]
+                break
+
+        # Last known ts
+        try:
+            last_ts = open(ts_path).read().strip()
+        except:
+            last_ts = "Unknown"
+
+        # Next signal
+        next_signal = "None available"
+        next_color = _TDO1C
+        try:
+            import csv as _csv1c
+            now_str = now_utc.strftime('%Y-%m-%dT%H:%M:%S')
+            with open(sig_path) as fh:
+                reader = _csv1c.DictReader(fh)
+                for row in reader:
+                    if row['entry_time'].strip() > last_ts:
+                        next_signal = f"ENTRY={row['entry_time']} EXIT={row['exit_time']} DIR={row['direction']}"
+                        next_color = _TDG1C
+                        break
+        except:
+            pass
+
+        # Signal CSV last update
+        try:
+            import os as _os1c, time as _t1c
+            age = _t1c.time() - _os1c.path.getmtime(sig_path)
+            sig_age = f"{int(age/60)} min ago"
+            sig_color = _TDG1C if age < 900 else _TDR1C
+        except:
+            sig_age = "Unknown"
+            sig_color = _TDO1C
+
+        # Bot running check
+        bot_running = any('[WAIT]' in l or '[ORDER]' in l for l in lines[-20:])
+        bot_status = "RUNNING" if bot_running else "STOPPED"
+        bot_color = _TDG1C if bot_running else _TDR1C
+
+        return {
+            'bot_status': (bot_status, bot_color),
+            'api_status': (api_status, api_color),
+            'last_heartbeat': last_wait,
+            'last_reload': last_reload,
+            'last_order': last_order,
+            'last_error': (last_error, last_error_color),
+            'last_ts': last_ts,
+            'next_signal': (next_signal, next_color),
+            'sig_age': (sig_age, sig_color),
+        }
+
+    s2_dbg = _get_bot_debug(
+        f'{_BASE_DIR}/logs/live_trading_s2.log',
+        f'{_BASE_DIR}/logs/last_known_ts_s2.txt',
+        f'{_BASE_DIR}/logs/signals_s2.csv', 'S2')
+    s4_dbg = _get_bot_debug(
+        f'{_BASE_DIR}/logs/live_trading_s4.log',
+        f'{_BASE_DIR}/logs/last_known_ts_s4.txt',
+        f'{_BASE_DIR}/logs/signals_s4.csv', 'S4')
+
+    def _dbg_row(label, s2val, s4val, s2c=None, s4c=None):
+        return (f"<tr><td style='{_TD1C}'><b>{label}</b></td>"
+                f"<td style='{s2c or _TD1C}'>{s2val}</td>"
+                f"<td style='{s4c or _TD1C}'>{s4val}</td></tr>")
+
+    tbl1c = (
+        f"<div style='overflow-x:auto;margin:4px 0;'>"
+        f"<table style='width:100%;border-collapse:collapse;'>"
+        f"<thead><tr>"
+        f"<th style='{_TH1C}'>Check</th>"
+        f"<th style='{_TH1C}'>S2</th>"
+        f"<th style='{_TH1C}'>S4</th>"
+        f"</tr></thead><tbody>"
+        + _dbg_row("Bot Status", s2_dbg['bot_status'][0], s4_dbg['bot_status'][0], s2_dbg['bot_status'][1], s4_dbg['bot_status'][1])
+        + _dbg_row("API Key", s2_dbg['api_status'][0], s4_dbg['api_status'][0], s2_dbg['api_status'][1], s4_dbg['api_status'][1])
+        + _dbg_row("Last Heartbeat", s2_dbg['last_heartbeat'], s4_dbg['last_heartbeat'])
+        + _dbg_row("Last Reload", s2_dbg['last_reload'], s4_dbg['last_reload'])
+        + _dbg_row("Last Order", s2_dbg['last_order'], s4_dbg['last_order'])
+        + _dbg_row("Last Error", s2_dbg['last_error'][0], s4_dbg['last_error'][0], s2_dbg['last_error'][1], s4_dbg['last_error'][1])
+        + _dbg_row("Last Known TS", s2_dbg['last_ts'], s4_dbg['last_ts'])
+        + _dbg_row("Next Signal", s2_dbg['next_signal'][0], s4_dbg['next_signal'][0], s2_dbg['next_signal'][1], s4_dbg['next_signal'][1])
+        + _dbg_row("Signal CSV Age", s2_dbg['sig_age'][0], s4_dbg['sig_age'][0], s2_dbg['sig_age'][1], s4_dbg['sig_age'][1])
+        + "</tbody></table></div>"
+    )
+    st.caption("Auto updates on page load | Green=OK | Red=Issue | Orange=Warning")
+    st.markdown(tbl1c, unsafe_allow_html=True)
+
+
+# ================================================================
 # SECTION 1.3 - VM HEALTH (CPU + RAM + UPTIME)
 # ================================================================
 if 'exp_13' not in st.session_state: st.session_state['exp_13'] = False

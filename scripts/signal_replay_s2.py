@@ -106,6 +106,24 @@ open_lot_size = LOT_SIZE
 
 # --- Main Loop ---
 log.info("[STARTUP] Entering main loop. Checking every 10 seconds.")
+
+# Validate API key on startup
+try:
+    import requests as _rq_val, time as _t_val, hmac as _hm_val, hashlib as _hs_val
+    _base_val = "https://cdn-ind.testnet.deltaex.org" if om.testnet else "https://api.india.delta.exchange"
+    _ts_val = str(int(_t_val.time()))
+    _path_val = "/v2/profile"
+    _msg_val = f"GET{_ts_val}{_path_val}"
+    _sig_val = _hm_val.new(API_SECRET.encode(), _msg_val.encode(), _hs_val.sha256).hexdigest()
+    _hdrs_val = {"api-key": API_KEY, "timestamp": _ts_val, "signature": _sig_val}
+    _r_val = _rq_val.get(f"{_base_val}{_path_val}", headers=_hdrs_val, timeout=5)
+    _d_val = _r_val.json()
+    if _d_val.get("success"):
+        log.info("[STARTUP] API key validated successfully")
+    else:
+        log.error(f"[CRITICAL] API key validation FAILED: {_d_val.get('error')} - check API key and testnet setting")
+except Exception as _e_val:
+    log.error(f"[CRITICAL] API key validation error: {_e_val}")
 while True:
     try:
         now = now_utc_str()
