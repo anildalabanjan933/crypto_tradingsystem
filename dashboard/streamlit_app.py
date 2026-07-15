@@ -3182,7 +3182,16 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
             f"<th style='{_TH13}'>S4</th>"
             f"<th style='{_TH13}'>Combined</th>"
             f"</tr></thead><tbody>"
-            f"<tr><td colspan='4' style='{_SUB13}'>TRADE COUNT</td></tr>"
+            f"<tr><td colspan='4' style='{_SUB13}'>CAPITAL</td></tr>"
+            + _row("Total Capital Required", _v13(s2m,"cap"), _v13(s4m,"cap"), f"$1,816 / \u20b9{int(1816*_INR13):,}")
+            + f"<tr><td colspan='4' style='{_SUB13}'>CUMULATIVE PnL</td></tr>"
+            + _row("Today PnL",   _v13(s2m,"today"), _v13(s4m,"today"), _v13(cbm,"today"), _c13(s2m,True) if s2m and s2m.get("pnl_today",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_today",0)>=0 else _TDR13, _TDB13)
+            + _row("Weekly PnL",  _v13(s2m,"week"),  _v13(s4m,"week"),  _v13(cbm,"week"),  _c13(s2m,True) if s2m and s2m.get("pnl_week",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_week",0)>=0 else _TDR13,  _TDB13)
+            + _row("Monthly PnL", _v13(s2m,"month"), _v13(s4m,"month"), _v13(cbm,"month"), _c13(s2m,True) if s2m and s2m.get("pnl_month",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_month",0)>=0 else _TDR13, _TDB13)
+            + _row("Yearly PnL",  _v13(s2m,"year"),  _v13(s4m,"year"),  _v13(cbm,"year"),  _c13(s2m,True) if s2m and s2m.get("pnl_year",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_year",0)>=0 else _TDR13,  _TDB13)
+            + f"<tr><td colspan='4' style='{_SUB13}'>CHARGES</td></tr>"
+            + _row("Total Charges", _v13(s2m,"cm"),  _v13(s4m,"cm"),  _v13(cbm,"cm"),  _TDR13,_TDR13,_TDR13)
+            + f"<tr><td colspan='4' style='{_SUB13}'>TRADE COUNT</td></tr>"
             + _row("Total Trades",  _v13(s2m,"tot"), _v13(s4m,"tot"), _v13(cbm,"tot"))
             + _row("Wins",          _v13(s2m,"win"), _v13(s4m,"win"), _v13(cbm,"win"), _TDG13,_TDG13,_TDG13)
             + _row("Losses",        _v13(s2m,"los"), _v13(s4m,"los"), _v13(cbm,"los"), _TDR13,_TDR13,_TDR13)
@@ -3194,22 +3203,9 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
             + _row("Profit Factor", _v13(s2m,"pf"),  _v13(s4m,"pf"),  _v13(cbm,"pf"))
             + f"<tr><td colspan='4' style='{_SUB13}'>RISK</td></tr>"
             + _row("Max Drawdown",  _v13(s2m,"dd"),  _v13(s4m,"dd"),  _v13(cbm,"dd"),  _TDR13,_TDR13,_TDR13)
-            + f"<tr><td colspan='4' style='{_SUB13}'>CHARGES</td></tr>"
-            + _row("Total Charges", _v13(s2m,"cm"),  _v13(s4m,"cm"),  _v13(cbm,"cm"),  _TDR13,_TDR13,_TDR13)
-            + f"<tr><td colspan='4' style='{_SUB13}'>CAPITAL</td></tr>"
-            + _row("Total Capital Required", _v13(s2m,"cap"), _v13(s4m,"cap"), f"$1,816 / \u20b9{int(1816*_INR13):,}")
-            + f"<tr><td colspan='4' style='{_SUB13}'>CUMULATIVE PnL</td></tr>"
-            + _row("Today PnL",   _v13(s2m,"today"), _v13(s4m,"today"), _v13(cbm,"today"), _c13(s2m,True) if s2m and s2m.get("pnl_today",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_today",0)>=0 else _TDR13, _TDB13)
-            + _row("Weekly PnL",  _v13(s2m,"week"),  _v13(s4m,"week"),  _v13(cbm,"week"),  _c13(s2m,True) if s2m and s2m.get("pnl_week",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_week",0)>=0 else _TDR13,  _TDB13)
-            + _row("Monthly PnL", _v13(s2m,"month"), _v13(s4m,"month"), _v13(cbm,"month"), _c13(s2m,True) if s2m and s2m.get("pnl_month",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_month",0)>=0 else _TDR13, _TDB13)
-            + _row("Yearly PnL",  _v13(s2m,"year"),  _v13(s4m,"year"),  _v13(cbm,"year"),  _c13(s2m,True) if s2m and s2m.get("pnl_year",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_year",0)>=0 else _TDR13,  _TDB13)
             + f"<tr><td colspan='4' style='{_SUB13}'>SLIPPAGE</td></tr>"
             + _row("Avg Slippage/side", _v13(s2m,"slip"), _v13(s4m,"slip"), _v13(cbm,"slip"), _TDR13,_TDR13,_TDR13)
-            + _row("vs Backtest ($5/side)",
-                   _v13(s2m,"slipdiff"), _v13(s4m,"slipdiff"), _v13(cbm,"slipdiff"),
-                   _TDG13 if s2m and s2m.get("avg_slip",5)<=5 else _TDR13,
-                   _TDG13 if s4m and s4m.get("avg_slip",5)<=5 else _TDR13,
-                   _TDB13)
+            + _row("vs Backtest ($5/side)", _v13(s2m,"slipdiff"), _v13(s4m,"slipdiff"), _v13(cbm,"slipdiff"), _TDG13 if s2m and s2m.get("avg_slip",5)<=5 else _TDR13, _TDG13 if s4m and s4m.get("avg_slip",5)<=5 else _TDR13, _TDB13)
             + "</tbody></table></div>"
         )
 
