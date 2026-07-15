@@ -832,7 +832,15 @@ with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b',
         try:
             if os.path.exists(log):
                 lines = open(log).readlines()
-                recent = lines[-50:] if len(lines) > 50 else lines
+                import datetime as _dte
+                _cut = _dte.datetime.utcnow() - _dte.timedelta(minutes=30)
+                recent = []
+                for _l in (lines[-500:] if len(lines)>500 else lines):
+                    try:
+                        _lt = _dte.datetime.strptime(_l[:19], '%Y-%m-%d %H:%M:%S')
+                        if _lt >= _cut: recent.append(_l)
+                    except: pass
+                if not recent: recent = lines[-20:]
                 error_lines = [l.strip() for l in recent if 'ERROR' in l]
                 algotest_errors = [l.strip() for l in recent if 'ALGOTEST' in l and ('ERROR' in l or 'WARNING' in l)]
                 api_errors = [l.strip() for l in recent if any(x in l for x in ['InvalidApiKey','invalid_api_key','insufficient_margin','rate_limit','IP not whitelisted','ENTRY FAILED','EXIT FAILED','CRITICAL']) or ('ERROR' in l and any(x in l for x in ['401','403','429']))]
@@ -900,7 +908,15 @@ with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b',
         try:
             if os.path.exists(log):
                 lines = open(log).readlines()
-                recent = lines[-200:] if len(lines) > 200 else lines
+                import datetime as _dte2
+                _cut2 = _dte2.datetime.utcnow() - _dte2.timedelta(minutes=30)
+                recent = []
+                for _l in (lines[-500:] if len(lines)>500 else lines):
+                    try:
+                        _lt2 = _dte2.datetime.strptime(_l[:19], '%Y-%m-%d %H:%M:%S')
+                        if _lt2 >= _cut2: recent.append(_l)
+                    except: pass
+                if not recent: recent = lines[-20:]
                 algotest_ok = [l for l in recent if 'ALGOTEST' in l and 'Status: 200' in l]
                 algotest_fail = [l for l in recent if 'ALGOTEST' in l and 'Status: 200' not in l and 'WARNING' not in l and 'ERROR' in l]
                 if algotest_ok:
@@ -1169,13 +1185,20 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
                 api_color = _TDR1C
                 break
 
-        # Last error
+        # Last error - only last 30 minutes
         last_error = "None"
         last_error_color = _TDG1C
+        _now_err = _dt1c.datetime.utcnow()
+        _cut_err = _now_err - _dt1c.timedelta(minutes=30)
         for l in reversed(lines):
             if 'ERROR' in l or 'CRITICAL' in l:
-                last_error = l.strip()[-120:]
-                last_error_color = _TDR1C
+                try:
+                    _lt_err = _dt1c.datetime.strptime(l[:19], '%Y-%m-%d %H:%M:%S')
+                    if _lt_err >= _cut_err:
+                        last_error = l.strip()[-120:]
+                        last_error_color = _TDR1C
+                except:
+                    pass
                 break
 
         # Last order
@@ -1222,16 +1245,100 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
         bot_status = "RUNNING" if bot_running else "STOPPED"
         bot_color = _TDG1C if bot_running else _TDR1C
 
+        # Last heartbeat age check
+        heartbeat_color = _TDG1C
+        try:
+            _hb_ts = _dt1c.datetime.strptime(last_wait[:19], '%Y-%m-%d %H:%M:%S')
+            _hb_age = (now_utc - _hb_ts).total_seconds()
+            if _hb_age > 60: heartbeat_color = _TDR1C
+            elif _hb_age > 30: heartbeat_color = _TDO1C
+        except:
+            heartbeat_color = _TDO1C
+
+        # Signal CSV staleness
+        try:
+            import os as _os1c, time as _t1c
+            age = _t1c.time() - _os1c.path.getmtime(sig_path)
+            sig_age = f"{int(age/60)} min ago"
+            sig_color = _TDG1C if age < 900 else _TDR1C
+        except:
+            sig_age = "Unknown"
+            sig_color = _TDO1C
+
+        # Match status - check verify_match log
+        match_status = "NOT RUN"
+        match_color = _TDO1C
+        try:
+            _vm_log = '/home/anildalabanjan933/crypto_trading_system/logs/verify_match.log'
+            if _os1c.path.exists(_vm_log):
+                _vm_lines = open(_vm_log).readlines()[-20:]
+                for _vl in reversed(_vm_lines):
+                    if 'MATCH OK' in _vl or 'OVERALL: MATCH OK' in _vl:
+                        match_status = "MATCH OK"
+                        match_color = _TDG1C
+                        break
+                    if 'MISMATCH' in _vl:
+                        match_status = "MISMATCH DETECTED"
+                        match_color = _TDR1C
+                        break
+        except:
+            pass
+
+        # CSV data freshness
+        csv_status = "UNKNOWN"
+        csv_color = _TDO1C
+        try:
+            _csv_path = '/home/anildalabanjan933/crypto_trading_system/data/btc_1m_delta.csv'
+            _csv_age = _t1c.time() - _os1c.path.getmtime(_csv_path)
+            if _csv_age < 300:
+                csv_status = f"FRESH ({int(_csv_age/60)} min ago)"
+                csv_color = _TDG1C
+            elif _csv_age < 900:
+                csv_status = f"OK ({int(_csv_age/60)} min ago)"
+                csv_color = _TDO1C
+            else:
+                csv_status = f"STALE ({int(_csv_age/60)} min ago)"
+                csv_color = _TDR1C
+        except:
+            pass
+
+        # Position sync check
+        pos_status = "FLAT"
+        pos_color = _TDG1C
+        for l in reversed(lines):
+            if '[STARTUP] Position synced' in l:
+                if 'None' in l:
+                    pos_status = "FLAT"
+                    pos_color = _TDG1C
+                else:
+                    pos_status = "OPEN POSITION"
+                    pos_color = _TDO1C
+                break
+
+        # Order success rate last 10 orders
+        order_attempts = [l for l in lines if '[ORDER] ENTRY' in l or '[ORDER] EXIT' in l]
+        order_fails = [l for l in lines if 'ENTRY FAILED' in l or 'EXIT FAILED' in l]
+        if order_attempts:
+            success_rate = f"{(len(order_attempts)-len(order_fails))}/{len(order_attempts)} success"
+            order_color = _TDG1C if len(order_fails)==0 else _TDR1C
+        else:
+            success_rate = "No orders yet"
+            order_color = _TDO1C
+
         return {
             'bot_status': (bot_status, bot_color),
             'api_status': (api_status, api_color),
-            'last_heartbeat': last_wait,
+            'last_heartbeat': (last_wait, heartbeat_color),
             'last_reload': last_reload,
             'last_order': last_order,
             'last_error': (last_error, last_error_color),
             'last_ts': last_ts,
             'next_signal': (next_signal, next_color),
             'sig_age': (sig_age, sig_color),
+            'match_status': (match_status, match_color),
+            'csv_status': (csv_status, csv_color),
+            'pos_status': (pos_status, pos_color),
+            'order_success': (success_rate, order_color),
         }
 
     s2_dbg = _get_bot_debug(
@@ -1258,13 +1365,17 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
         f"</tr></thead><tbody>"
         + _dbg_row("Bot Status", s2_dbg['bot_status'][0], s4_dbg['bot_status'][0], s2_dbg['bot_status'][1], s4_dbg['bot_status'][1])
         + _dbg_row("API Key", s2_dbg['api_status'][0], s4_dbg['api_status'][0], s2_dbg['api_status'][1], s4_dbg['api_status'][1])
-        + _dbg_row("Last Heartbeat", s2_dbg['last_heartbeat'], s4_dbg['last_heartbeat'])
+        + _dbg_row("Last Heartbeat", s2_dbg['last_heartbeat'][0], s4_dbg['last_heartbeat'][0], s2_dbg['last_heartbeat'][1], s4_dbg['last_heartbeat'][1])
         + _dbg_row("Last Reload", s2_dbg['last_reload'], s4_dbg['last_reload'])
         + _dbg_row("Last Order", s2_dbg['last_order'], s4_dbg['last_order'])
         + _dbg_row("Last Error", s2_dbg['last_error'][0], s4_dbg['last_error'][0], s2_dbg['last_error'][1], s4_dbg['last_error'][1])
         + _dbg_row("Last Known TS", s2_dbg['last_ts'], s4_dbg['last_ts'])
         + _dbg_row("Next Signal", s2_dbg['next_signal'][0], s4_dbg['next_signal'][0], s2_dbg['next_signal'][1], s4_dbg['next_signal'][1])
-        + _dbg_row("Signal CSV Age", s2_dbg['sig_age'][0], s4_dbg['sig_age'][0], s2_dbg['sig_age'][1], s4_dbg['sig_age'][1])
+        + _dbg_row("Signal CSV Age",   s2_dbg['sig_age'][0],      s4_dbg['sig_age'][0],      s2_dbg['sig_age'][1],      s4_dbg['sig_age'][1])
+        + _dbg_row("Market CSV",        s2_dbg['csv_status'][0],   s4_dbg['csv_status'][0],   s2_dbg['csv_status'][1],   s4_dbg['csv_status'][1])
+        + _dbg_row("Position Sync",     s2_dbg['pos_status'][0],   s4_dbg['pos_status'][0],   s2_dbg['pos_status'][1],   s4_dbg['pos_status'][1])
+        + _dbg_row("Order Success",     s2_dbg['order_success'][0],s4_dbg['order_success'][0],s2_dbg['order_success'][1],s4_dbg['order_success'][1])
+        + _dbg_row("Match Status",      s2_dbg['match_status'][0], s4_dbg['match_status'][0], s2_dbg['match_status'][1], s4_dbg['match_status'][1])
         + "</tbody></table></div>"
     )
     st.caption("Auto updates on page load | Green=OK | Red=Issue | Orange=Warning")
