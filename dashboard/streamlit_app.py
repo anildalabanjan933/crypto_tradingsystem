@@ -2985,7 +2985,7 @@ with st.expander("SECTION 12 - LOG MONITOR", expanded=st.session_state.get('exp_
 # ================================================================
 if 'exp_13s' not in st.session_state: st.session_state['exp_13s'] = False
 with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.session_state.get('exp_13s', False)):
-    import time as _t13, hmac as _hm13, hashlib as _hs13, requests as _rq13, datetime as _dt13
+    import time as _t13, hmac as _hm13, hashlib as _hs13, requests as _rq13, datetime as _dt13, glob as _gl13, pandas as _pd13, re as _re13
 
     _VF13  = "2026-07-14T15:00:00"
     _INR13 = 84.0
@@ -2997,6 +2997,7 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
     _TDR13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#F23645;font-weight:700;text-align:center;"
     _TDB13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#2962FF;font-weight:700;text-align:center;"
     _SUB13 = "padding:4px 8px;border:1px solid #C8D0DC;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
+    _HDR13 = "padding:6px 12px;background:#1E3A5F;font-size:11px;font-weight:700;color:#ffffff;margin:8px 0 4px 0;border-left:4px solid #2962FF;"
 
     def _auth13(k, s, path, params={}):
         try:
@@ -3076,6 +3077,38 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
         pf = abs(sum(v for v in pls if v>0)/sum(v for v in pls if v<0)) if los>0 and sum(v for v in pls if v<0)!=0 else 0
         return {"tot":tot,"win":win,"los":los,"wr":wr,"nu":nu,"ni":ni,"cm":cm,"dd":dd,"aw":aw,"al":al,"pf":pf}
 
+    def _bt_calc13(csv_pattern, vf_str):
+        try:
+            files = sorted(_gl13.glob(csv_pattern), reverse=True)
+            if not files: return None
+            df = _pd13.read_csv(files[0])
+            if 'entry_datetime' not in df.columns: return None
+            df['entry_datetime'] = _pd13.to_datetime(df['entry_datetime'])
+            vf_dt = _pd13.to_datetime(vf_str)
+            df = df[df['entry_datetime'] >= vf_dt]
+            if df.empty: return None
+            tot = len(df)
+            win = (df['net_pnl'] > 0).sum()
+            los = tot - win
+            wr  = win/tot*100
+            nu  = df['net_pnl'].sum()
+            ni  = df['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else nu*_INR13
+            cm  = df['charges'].sum() if 'charges' in df.columns else 0
+            pls = df['net_pnl'].tolist()
+            cum,pk,dd = 0,0,0
+            for v in pls:
+                cum+=v
+                if cum>pk: pk=cum
+                if pk>0 and (pk-cum)/pk>dd: dd=(pk-cum)/pk
+            aw = df[df['net_pnl']>0]['net_pnl'].mean() if win>0 else 0
+            al = df[df['net_pnl']<0]['net_pnl'].mean() if los>0 else 0
+            pf_n = df[df['net_pnl']>0]['net_pnl'].sum()
+            pf_d = abs(df[df['net_pnl']<0]['net_pnl'].sum())
+            pf = pf_n/pf_d if pf_d>0 else 0
+            return {"tot":tot,"win":int(win),"los":int(los),"wr":wr,"nu":nu,"ni":ni,"cm":cm,"dd":dd,"aw":aw,"al":al,"pf":pf}
+        except:
+            return None
+
     def _v13(m, t):
         if m is None: return "N/A"
         if t=="tot":  return str(m["tot"])
@@ -3095,48 +3128,80 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
         if pos: return _TDG13 if m.get("nu",0)>=0 else _TDR13
         return _TDR13
 
+    def _build_tbl13(s2m, s4m, cbm):
+        def _row(lbl, v2, v4, vc, c2=None, c4=None, cc=None):
+            return (f"<tr><td style='{_TD13}'>{lbl}</td>"
+                    f"<td style='{c2 or _TDN13}'>{v2}</td>"
+                    f"<td style='{c4 or _TDN13}'>{v4}</td>"
+                    f"<td style='{cc or _TDB13}'>{vc}</td></tr>")
+        return (
+            f"<div style='overflow-x:auto;margin:4px 0;'>"
+            f"<table style='width:100%;border-collapse:collapse;'>"
+            f"<thead><tr>"
+            f"<th style='{_TH13}'>Metric</th>"
+            f"<th style='{_TH13}'>S2</th>"
+            f"<th style='{_TH13}'>S4</th>"
+            f"<th style='{_TH13}'>Combined</th>"
+            f"</tr></thead><tbody>"
+            f"<tr><td colspan='4' style='{_SUB13}'>TRADE COUNT</td></tr>"
+            + _row("Total Trades",  _v13(s2m,"tot"), _v13(s4m,"tot"), _v13(cbm,"tot"))
+            + _row("Wins",          _v13(s2m,"win"), _v13(s4m,"win"), _v13(cbm,"win"), _TDG13,_TDG13,_TDG13)
+            + _row("Losses",        _v13(s2m,"los"), _v13(s4m,"los"), _v13(cbm,"los"), _TDR13,_TDR13,_TDR13)
+            + f"<tr><td colspan='4' style='{_SUB13}'>PERFORMANCE</td></tr>"
+            + _row("Win Rate",      _v13(s2m,"wr"),  _v13(s4m,"wr"),  _v13(cbm,"wr"))
+            + _row("Net PnL",       _v13(s2m,"pnl"), _v13(s4m,"pnl"), _v13(cbm,"pnl"), _c13(s2m),_c13(s4m),_c13(cbm))
+            + _row("Avg Win",       _v13(s2m,"aw"),  _v13(s4m,"aw"),  _v13(cbm,"aw"),  _TDG13,_TDG13,_TDG13)
+            + _row("Avg Loss",      _v13(s2m,"al"),  _v13(s4m,"al"),  _v13(cbm,"al"),  _TDR13,_TDR13,_TDR13)
+            + _row("Profit Factor", _v13(s2m,"pf"),  _v13(s4m,"pf"),  _v13(cbm,"pf"))
+            + f"<tr><td colspan='4' style='{_SUB13}'>RISK</td></tr>"
+            + _row("Max Drawdown",  _v13(s2m,"dd"),  _v13(s4m,"dd"),  _v13(cbm,"dd"),  _TDR13,_TDR13,_TDR13)
+            + f"<tr><td colspan='4' style='{_SUB13}'>CHARGES</td></tr>"
+            + _row("Total Charges", _v13(s2m,"cm"),  _v13(s4m,"cm"),  _v13(cbm,"cm"),  _TDR13,_TDR13,_TDR13)
+            + "</tbody></table></div>"
+        )
+
+    # ── FETCH LIVE DATA ──────────────────────────────────────
     with st.spinner("Fetching live forward test data..."):
         s2o = _fetch13(os.environ.get("S2_API_KEY",""), os.environ.get("S2_API_SECRET",""))
         s4o = _fetch13(os.environ.get("S4_API_KEY",""), os.environ.get("S4_API_SECRET",""))
-    s2p = _pair13(s2o)
-    s4p = _pair13(s4o)
-    s2m = _calc13(s2p)
-    s4m = _calc13(s4p)
-    cbm = _calc13(s2p+s4p)
+    s2p  = _pair13(s2o)
+    s4p  = _pair13(s4o)
+    s2m  = _calc13(s2p)
+    s4m  = _calc13(s4p)
+    cbm  = _calc13(s2p+s4p)
 
-    def _row13(lbl, v2, v4, vc, c2=None, c4=None, cc=None):
-        return (f"<tr><td style='{_TD13}'>{lbl}</td>"
-                f"<td style='{c2 or _TDN13}'>{v2}</td>"
-                f"<td style='{c4 or _TDN13}'>{v4}</td>"
-                f"<td style='{cc or _TDB13}'>{vc}</td></tr>")
+    # ── FETCH BACKTEST DATA (same date range) ────────────────
+    s2_bt = _bt_calc13("output/trade_log_RenkoReversal*.csv",        _VF13)
+    s4_bt = _bt_calc13("output/trade_log_RenkoSMIIOSupertrend*.csv", _VF13)
+    cb_bt_pairs = []
+    if s2_bt: cb_bt_pairs.append(s2_bt)
+    if s4_bt: cb_bt_pairs.append(s4_bt)
+    cb_bt = None
+    if s2_bt and s4_bt:
+        merged = {"tot":s2_bt["tot"]+s4_bt["tot"],
+                  "win":s2_bt["win"]+s4_bt["win"],
+                  "los":s2_bt["los"]+s4_bt["los"],
+                  "wr":(s2_bt["win"]+s4_bt["win"])/(s2_bt["tot"]+s4_bt["tot"])*100,
+                  "nu":s2_bt["nu"]+s4_bt["nu"],
+                  "ni":s2_bt["ni"]+s4_bt["ni"],
+                  "cm":s2_bt["cm"]+s4_bt["cm"],
+                  "dd":max(s2_bt["dd"],s4_bt["dd"]),
+                  "aw":(s2_bt["aw"]+s4_bt["aw"])/2,
+                  "al":(s2_bt["al"]+s4_bt["al"])/2,
+                  "pf":(s2_bt["pf"]+s4_bt["pf"])/2}
+        cb_bt = merged
 
-    tbl = (
-        f"<div style='overflow-x:auto;margin:4px 0;'>"
-        f"<table style='width:100%;border-collapse:collapse;'>"
-        f"<thead><tr>"
-        f"<th style='{_TH13}'>Metric</th>"
-        f"<th style='{_TH13}'>S2 (Live)</th>"
-        f"<th style='{_TH13}'>S4 (Live)</th>"
-        f"<th style='{_TH13}'>Combined (Live)</th>"
-        f"</tr></thead><tbody>"
-        f"<tr><td colspan='4' style='{_SUB13}'>TRADE COUNT</td></tr>"
-        + _row13("Total Trades", _v13(s2m,"tot"), _v13(s4m,"tot"), _v13(cbm,"tot"))
-        + _row13("Wins",  _v13(s2m,"win"), _v13(s4m,"win"), _v13(cbm,"win"), _TDG13,_TDG13,_TDG13)
-        + _row13("Losses",_v13(s2m,"los"), _v13(s4m,"los"), _v13(cbm,"los"), _TDR13,_TDR13,_TDR13)
-        + f"<tr><td colspan='4' style='{_SUB13}'>PERFORMANCE</td></tr>"
-        + _row13("Win Rate",     _v13(s2m,"wr"),  _v13(s4m,"wr"),  _v13(cbm,"wr"))
-        + _row13("Net PnL",      _v13(s2m,"pnl"), _v13(s4m,"pnl"), _v13(cbm,"pnl"), _c13(s2m),_c13(s4m),_c13(cbm))
-        + _row13("Avg Win",      _v13(s2m,"aw"),  _v13(s4m,"aw"),  _v13(cbm,"aw"),  _TDG13,_TDG13,_TDG13)
-        + _row13("Avg Loss",     _v13(s2m,"al"),  _v13(s4m,"al"),  _v13(cbm,"al"),  _TDR13,_TDR13,_TDR13)
-        + _row13("Profit Factor",_v13(s2m,"pf"),  _v13(s4m,"pf"),  _v13(cbm,"pf"))
-        + f"<tr><td colspan='4' style='{_SUB13}'>RISK</td></tr>"
-        + _row13("Max Drawdown", _v13(s2m,"dd"),  _v13(s4m,"dd"),  _v13(cbm,"dd"),  _TDR13,_TDR13,_TDR13)
-        + f"<tr><td colspan='4' style='{_SUB13}'>CHARGES</td></tr>"
-        + _row13("Total Charges",_v13(s2m,"cm"),  _v13(s4m,"cm"),  _v13(cbm,"cm"),  _TDR13,_TDR13,_TDR13)
-        + "</tbody></table></div>"
-    )
     st.caption(f"Valid from: {_VF13} UTC | Auto updates on page load | Testnet")
-    st.markdown(tbl, unsafe_allow_html=True)
+
+    # ── TOP TABLE: FORWARD TEST / LIVE ───────────────────────
+    st.markdown(f"<div style='{_HDR13}'>FORWARD TEST / LIVE</div>", unsafe_allow_html=True)
+    st.markdown(_build_tbl13(s2m, s4m, cbm), unsafe_allow_html=True)
+
+    st.markdown("<div style='margin:12px 0 4px 0;'></div>", unsafe_allow_html=True)
+
+    # ── BOTTOM TABLE: BACKTEST (SAME DATE RANGE) ─────────────
+    st.markdown(f"<div style='{_HDR13}'>BACKTEST (SAME DATE RANGE: {_VF13[:10]} to TODAY)</div>", unsafe_allow_html=True)
+    st.markdown(_build_tbl13(s2_bt, s4_bt, cb_bt), unsafe_allow_html=True)
 
 # ================================================================
 # FOOTER
