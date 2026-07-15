@@ -3366,7 +3366,10 @@ if 'exp_13s' not in st.session_state: st.session_state['exp_13s'] = False
 with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.session_state.get('exp_13s', False)):
     import time as _t13, hmac as _hm13, hashlib as _hs13, requests as _rq13, datetime as _dt13, glob as _gl13, pandas as _pd13, re as _re13
 
-    _VF13  = "2026-07-14T15:00:00"
+    try:
+        _VF13 = open("logs/valid_from_baseline.txt").read().strip()
+    except:
+        _VF13 = "2026-07-14T15:00:00"
     _INR13 = 84.0
     _BASE13= "https://cdn-ind.testnet.deltaex.org"
     _TH13  = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;text-align:center;"

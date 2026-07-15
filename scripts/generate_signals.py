@@ -48,6 +48,23 @@ def run_backtest(strategy_class, params, label):
     log.info(f"[GENERATE] {label}: {len(trades)} trades generated")
     return trades
 
+def write_trade_log_csv(trades, label):
+    import glob as _gl
+    from datetime import datetime as _dt
+    os.makedirs("output", exist_ok=True)
+    ts = _dt.now().strftime("%Y%m%d_%H%M%S")
+    if label == "S2":
+        out = f"output/trade_log_RenkoReversalStrategy_BTCUSD_{ts}.csv"
+        pattern = "output/trade_log_RenkoReversalStrategy_BTCUSD_*.csv"
+    else:
+        out = f"output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_{ts}.csv"
+        pattern = "output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"
+    for old_f in _gl.glob(pattern):
+        os.remove(old_f)
+    df = pd.DataFrame(trades)
+    df.to_csv(out, index=False)
+    log.info(f"[GENERATE] Trade log saved: {out} ({len(trades)} rows)")
+
 def write_signal_csv(trades, out_path):
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with open(out_path, "w", newline="") as f:
@@ -67,11 +84,13 @@ if __name__ == "__main__":
     s2_params = dict(renko_box_pct=0.001, renko_timeframe="1h", st_atr_length=5, st_factor=1.5)
     s2_trades = run_backtest(RenkoReversalStrategy, s2_params, "S2")
     write_signal_csv(s2_trades, "logs/signals_s2.csv")
+    write_trade_log_csv(s2_trades, "S2")
 
     # S4
     s4_params = dict(renko_box_pct=0.001, renko_timeframe="2h", st_atr_length=10, st_factor=2.0,
                      smiio_shortlen=20, smiio_siglen=7)
     s4_trades = run_backtest(RenkoSMIIOSupertrendStrategy, s4_params, "S4")
     write_signal_csv(s4_trades, "logs/signals_s4.csv")
+    write_trade_log_csv(s4_trades, "S4")
 
     log.info("[GENERATE] All signal CSVs ready.")
