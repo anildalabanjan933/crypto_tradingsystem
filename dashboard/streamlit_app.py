@@ -2926,13 +2926,13 @@ with st.expander("SECTION 12 - LOG MONITOR", expanded=st.session_state.get('exp_
     active_filter = custom_filter if custom_filter else st.session_state.get('sec5_filter', '')
 
     def read_log(path, keyword='', last_n=50):
+        if not os.path.exists(path):
+            return [f"Log not found: {path}"]
         try:
-            if os.path.exists(path):
-                lines = open(path, encoding='utf-8', errors='ignore').readlines()
+            lines = open(path, encoding='utf-8', errors='ignore').readlines()
             if keyword:
                 lines = [l for l in lines if keyword.upper() in l.upper()]
-                return lines[-last_n:]
-            return [f"Log not found: {path}"]
+            return lines[-last_n:]
         except Exception as e:
             return [f"Error reading log: {e}"]
 
