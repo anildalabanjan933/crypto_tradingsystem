@@ -35,7 +35,7 @@ log = logging.getLogger(__name__)
 # --- Order Manager ---
 API_KEY    = os.getenv("S4_API_KEY", "")
 API_SECRET = os.getenv("S4_API_SECRET", "")
-om = OrderManager(API_KEY, API_SECRET, testnet=False)
+om = OrderManager(API_KEY, API_SECRET, testnet=True)
 
 TS_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$")
 
