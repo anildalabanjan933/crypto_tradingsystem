@@ -2984,114 +2984,159 @@ with st.expander("SECTION 12 - LOG MONITOR", expanded=st.session_state.get('exp_
 # SECTION 13 - STRATEGY PERFORMANCE SUMMARY
 # ================================================================
 if 'exp_13s' not in st.session_state: st.session_state['exp_13s'] = False
-with st.expander("SECTION 13 - STRATEGY PERFORMANCE SUMMARY", expanded=st.session_state.get('exp_13s', False)):
+with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.session_state.get('exp_13s', False)):
+    import time as _t13, hmac as _hm13, hashlib as _hs13, requests as _rq13, datetime as _dt13
 
+    _VF13  = "2026-07-14T15:00:00"
+    _INR13 = 84.0
+    _BASE13= "https://cdn-ind.testnet.deltaex.org"
+    _TH13  = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;text-align:center;"
+    _TD13  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;"
+    _TDN13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:center;"
+    _TDG13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
+    _TDR13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#F23645;font-weight:700;text-align:center;"
+    _TDB13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#2962FF;font-weight:700;text-align:center;"
+    _SUB13 = "padding:4px 8px;border:1px solid #C8D0DC;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
 
-    import glob, re as regex
-
-    def extract_metric_from_html(html_path, metric_name):
+    def _auth13(k, s, path, params={}):
         try:
-            content = open(html_path, encoding='utf-8', errors='ignore').read()
-            pattern = metric_name + r'.*?([0-9,.-]+%?)'
-            match = regex.search(pattern, content, regex.IGNORECASE)
-            if match:
-                return match.group(1).strip()
-            return 'N/A'
+            ts  = str(int(_t13.time()))
+            qs  = "&".join(f"{a}={b}" for a,b in sorted(params.items()))
+            qp  = f"?{qs}" if qs else ""
+            msg = f"GET{ts}{path}{qp}"
+            sig = _hm13.new(s.encode(), msg.encode(), _hs13.sha256).hexdigest()
+            return {"api-key":k,"timestamp":ts,"signature":sig,"Content-Type":"application/json"}
         except:
-            return 'N/A'
+            return {}
 
-    def get_latest_html(strategy_keyword):
-        files = sorted(glob.glob(f"output/backtest_report_{strategy_keyword}*.html"), reverse=True)
-        return files[0] if files else None
+    def _fetch13(k, s):
+        orders, after = [], None
+        try:
+            vf  = int(_dt13.datetime.strptime(_VF13,"%Y-%m-%dT%H:%M:%S").timestamp())
+            now = int(_t13.time())
+            path= "/v2/orders/history"
+            prm = {"product_id":84,"page_size":100,"start_time":int(vf*1e6),"end_time":int(now*1e6)}
+            for _ in range(50):
+                p = dict(prm)
+                if after: p["after"] = after
+                h = _auth13(k, s, path, p)
+                r = _rq13.get(f"{_BASE13}{path}", params=p, headers=h, timeout=10)
+                d = r.json()
+                if not d.get("success"): break
+                batch = d.get("result",[])
+                orders += batch
+                after  = d.get("meta",{}).get("after")
+                if not after or not batch: break
+        except:
+            pass
+        return orders
 
-    s2_html = get_latest_html("RenkoReversal")
-    s4_html = get_latest_html("RenkoSMIIO")
+    def _pair13(orders):
+        pairs, used = [], set()
+        srt = sorted(orders, key=lambda x: x.get("created_at",""))
+        for i, e in enumerate(srt):
+            if i in used or e.get("state")!="closed": continue
+            es = e.get("side")
+            if es not in ["buy","sell"]: continue
+            xs  = "sell" if es=="buy" else "buy"
+            dir = "LONG" if es=="buy" else "SHORT"
+            ets = int(e.get("created_at",0))//1000000
+            ep  = float(e.get("average_fill_price") or e.get("limit_price") or 0)
+            for j, x in enumerate(srt):
+                if j in used or j==i: continue
+                if x.get("side")!=xs or x.get("state")!="closed": continue
+                if str(x.get("reduce_only","")).lower() not in ["true","1"]: continue
+                xts = int(x.get("created_at",0))//1000000
+                xp  = float(x.get("average_fill_price") or x.get("limit_price") or 0)
+                if xts < ets: continue
+                sz  = int(e.get("size",0))
+                pnl = (xp-ep)*sz*0.001 if dir=="LONG" else (ep-xp)*sz*0.001
+                cm  = float(e.get("paid_commission") or 0)+float(x.get("paid_commission") or 0)
+                pairs.append({"dir":dir,"ep":ep,"xp":xp,"pnl":pnl-cm,"cm":cm,"ets":ets,"xts":xts,"sz":sz})
+                used.add(i); used.add(j); break
+        return pairs
 
-    col_s2, col_s4 = st.columns(2)
+    def _calc13(pairs):
+        if not pairs: return None
+        tot = len(pairs)
+        win = sum(1 for p in pairs if p["pnl"]>0)
+        los = tot-win
+        wr  = win/tot*100
+        nu  = sum(p["pnl"] for p in pairs)
+        ni  = nu*_INR13
+        cm  = sum(p["cm"] for p in pairs)
+        pls = [p["pnl"] for p in pairs]
+        cum,pk,dd = 0,0,0
+        for v in pls:
+            cum+=v
+            if cum>pk: pk=cum
+            if pk>0 and (pk-cum)/pk>dd: dd=(pk-cum)/pk
+        aw = sum(v for v in pls if v>0)/win if win>0 else 0
+        al = sum(v for v in pls if v<0)/los if los>0 else 0
+        pf = abs(sum(v for v in pls if v>0)/sum(v for v in pls if v<0)) if los>0 and sum(v for v in pls if v<0)!=0 else 0
+        return {"tot":tot,"win":win,"los":los,"wr":wr,"nu":nu,"ni":ni,"cm":cm,"dd":dd,"aw":aw,"al":al,"pf":pf}
 
-    with col_s2:
-        st.markdown("**S2 - RenkoReversalStrategy**")
-        if s2_html:
-            st.caption(f"Source: {os.path.basename(s2_html)}")
-            try:
-                import glob as _g2, pandas as _pd2, re as _re2, os as _os2
-                # Match CSV to same timestamp as HTML
-                _s2_ts = os.path.basename(s2_html).replace("backtest_report_RenkoReversalStrategy_BTCUSD_","").replace(".html","")
-                _s2_csv_match = f"output/trade_log_RenkoReversalStrategy_BTCUSD_{_s2_ts}.csv"
-                if _os2.path.exists(_s2_csv_match):
-                    _s2_csv = _s2_csv_match
-                else:
-                    _s2_csv = sorted(_g2.glob("output/trade_log_RenkoReversal*.csv"))[-1]
-                _s2 = _pd2.read_csv(_s2_csv)
-                _s2_trades = len(_s2)
-                _s2_wins = (_s2['net_pnl'] > 0).sum()
-                _s2_winrate = f"{_s2_wins / _s2_trades * 100:.2f}%" if _s2_trades > 0 else "N/A"
-                _s2_netpnl_usd = _s2['net_pnl'].sum()
-                _s2_netpnl_inr = _s2['net_pnl_inr'].sum() if 'net_pnl_inr' in _s2.columns else _s2_netpnl_usd * 84
-                _s2_netpnl_combined = f"{_s2_netpnl_inr/100000:.2f}L INR / ${_s2_netpnl_usd:,.2f}"
-                _s2_html_content = open(s2_html, encoding='utf-8').read()
-                _s2_html_lines = _s2_html_content.split('\n')
-                _s2_dd = "N/A"
-                for _idx, _ln in enumerate(_s2_html_lines):
-                    if '<label>Max Drawdown</label>' in _ln and _idx+1 < len(_s2_html_lines):
-                        _m = _re2.search(r'(-[\d\.]+%)', _s2_html_lines[_idx+1])
-                        if _m: _s2_dd = _m.group(1); break
-                st.metric("Total Trades", str(_s2_trades))
-                st.metric("Win Rate", _s2_winrate)
-                st.metric("Net PnL", _s2_netpnl_combined)
-                st.metric("Max Drawdown", _s2_dd)
-                st.metric("Net PnL (USD)", f"${_s2_netpnl_usd:,.2f}")
-            except Exception as _e2:
-                st.warning(f"Could not load S2 data: {_e2}")
-            st.caption("Params: renko_box_pct=0.001, st_atr=5, st_factor=1.5")
-            with open(s2_html, 'rb') as f:
-                st.download_button("DOWNLOAD S2 REPORT", f,
-                    file_name=os.path.basename(s2_html), key="sec13_dl_s2")
-        else:
-            st.warning("No S2 backtest HTML found in output/ folder")
-            st.info("Run backtest from Section 6 to generate report")
+    def _v13(m, t):
+        if m is None: return "N/A"
+        if t=="tot":  return str(m["tot"])
+        if t=="win":  return str(m["win"])
+        if t=="los":  return str(m["los"])
+        if t=="wr":   return f"{m['wr']:.2f}%"
+        if t=="pnl":  return f"${m['nu']:,.2f} / \u20b9{m['ni']:,.0f}"
+        if t=="aw":   return f"${m['aw']:,.2f}"
+        if t=="al":   return f"${m['al']:,.2f}"
+        if t=="pf":   return f"{m['pf']:.2f}"
+        if t=="dd":   return f"-{m['dd']*100:.2f}%"
+        if t=="cm":   return f"${m['cm']:,.2f} / \u20b9{m['cm']*_INR13:,.0f}"
+        return "N/A"
 
-    with col_s4:
-        st.markdown("**S4 - RenkoSMIIOSupertrendStrategy**")
-        if s4_html:
-            st.caption(f"Source: {os.path.basename(s4_html)}")
-            try:
-                import glob as _g4, pandas as _pd4, re as _re4, os as _os4
-                # Match CSV to same timestamp as HTML
-                _s4_ts = os.path.basename(s4_html).replace("backtest_report_RenkoSMIIOSupertrendStrategy_BTCUSD_","").replace(".html","")
-                _s4_csv_match = f"output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_{_s4_ts}.csv"
-                if _os4.path.exists(_s4_csv_match):
-                    _s4_csv = _s4_csv_match
-                else:
-                    _s4_csv = sorted(_g4.glob("output/trade_log_RenkoSMIIO*.csv"))[-1]
-                _s4 = _pd4.read_csv(_s4_csv)
-                _s4_trades = len(_s4)
-                _s4_wins = (_s4['net_pnl'] > 0).sum()
-                _s4_winrate = f"{_s4_wins / _s4_trades * 100:.2f}%" if _s4_trades > 0 else "N/A"
-                _s4_netpnl_usd = _s4['net_pnl'].sum()
-                _s4_netpnl_inr = _s4['net_pnl_inr'].sum() if 'net_pnl_inr' in _s4.columns else _s4_netpnl_usd * 84
-                _s4_netpnl_combined = f"{_s4_netpnl_inr/100000:.2f}L INR / ${_s4_netpnl_usd:,.2f}"
-                _s4_html_content = open(s4_html, encoding='utf-8').read()
-                _s4_html_lines = _s4_html_content.split('\n')
-                _s4_dd = "N/A"
-                for _idx, _ln in enumerate(_s4_html_lines):
-                    if '<label>Max Drawdown</label>' in _ln and _idx+1 < len(_s4_html_lines):
-                        _m = _re4.search(r'(-[\d\.]+%)', _s4_html_lines[_idx+1])
-                        if _m: _s4_dd = _m.group(1); break
-                st.metric("Total Trades", str(_s4_trades))
-                st.metric("Win Rate", _s4_winrate)
-                st.metric("Net PnL", _s4_netpnl_combined)
-                st.metric("Max Drawdown", _s4_dd)
-                st.metric("Net PnL (USD)", f"${_s4_netpnl_usd:,.2f}")
-            except Exception as _e4:
-                st.warning(f"Could not load S4 data: {_e4}")
-            st.caption("Params: renko_box_pct=0.001, st_atr=10, st_factor=2.0, smiio_short=20, smiio_sig=7")
-            with open(s4_html, 'rb') as f:
-                st.download_button("DOWNLOAD S4 REPORT", f,
-                    file_name=os.path.basename(s4_html), key="sec13_dl_s4")
-        else:
-            st.warning("No S4 backtest HTML found in output/ folder")
-            st.info("Run backtest from Section 6 to generate report")
+    def _c13(m, pos=True):
+        if m is None: return _TDN13
+        if pos: return _TDG13 if m.get("nu",0)>=0 else _TDR13
+        return _TDR13
+
+    with st.spinner("Fetching live forward test data..."):
+        s2o = _fetch13(os.environ.get("S2_API_KEY",""), os.environ.get("S2_API_SECRET",""))
+        s4o = _fetch13(os.environ.get("S4_API_KEY",""), os.environ.get("S4_API_SECRET",""))
+    s2p = _pair13(s2o)
+    s4p = _pair13(s4o)
+    s2m = _calc13(s2p)
+    s4m = _calc13(s4p)
+    cbm = _calc13(s2p+s4p)
+
+    def _row13(lbl, v2, v4, vc, c2=None, c4=None, cc=None):
+        return (f"<tr><td style='{_TD13}'>{lbl}</td>"
+                f"<td style='{c2 or _TDN13}'>{v2}</td>"
+                f"<td style='{c4 or _TDN13}'>{v4}</td>"
+                f"<td style='{cc or _TDB13}'>{vc}</td></tr>")
+
+    tbl = (
+        f"<div style='overflow-x:auto;margin:4px 0;'>"
+        f"<table style='width:100%;border-collapse:collapse;'>"
+        f"<thead><tr>"
+        f"<th style='{_TH13}'>Metric</th>"
+        f"<th style='{_TH13}'>S2 (Live)</th>"
+        f"<th style='{_TH13}'>S4 (Live)</th>"
+        f"<th style='{_TH13}'>Combined (Live)</th>"
+        f"</tr></thead><tbody>"
+        f"<tr><td colspan='4' style='{_SUB13}'>TRADE COUNT</td></tr>"
+        + _row13("Total Trades", _v13(s2m,"tot"), _v13(s4m,"tot"), _v13(cbm,"tot"))
+        + _row13("Wins",  _v13(s2m,"win"), _v13(s4m,"win"), _v13(cbm,"win"), _TDG13,_TDG13,_TDG13)
+        + _row13("Losses",_v13(s2m,"los"), _v13(s4m,"los"), _v13(cbm,"los"), _TDR13,_TDR13,_TDR13)
+        + f"<tr><td colspan='4' style='{_SUB13}'>PERFORMANCE</td></tr>"
+        + _row13("Win Rate",     _v13(s2m,"wr"),  _v13(s4m,"wr"),  _v13(cbm,"wr"))
+        + _row13("Net PnL",      _v13(s2m,"pnl"), _v13(s4m,"pnl"), _v13(cbm,"pnl"), _c13(s2m),_c13(s4m),_c13(cbm))
+        + _row13("Avg Win",      _v13(s2m,"aw"),  _v13(s4m,"aw"),  _v13(cbm,"aw"),  _TDG13,_TDG13,_TDG13)
+        + _row13("Avg Loss",     _v13(s2m,"al"),  _v13(s4m,"al"),  _v13(cbm,"al"),  _TDR13,_TDR13,_TDR13)
+        + _row13("Profit Factor",_v13(s2m,"pf"),  _v13(s4m,"pf"),  _v13(cbm,"pf"))
+        + f"<tr><td colspan='4' style='{_SUB13}'>RISK</td></tr>"
+        + _row13("Max Drawdown", _v13(s2m,"dd"),  _v13(s4m,"dd"),  _v13(cbm,"dd"),  _TDR13,_TDR13,_TDR13)
+        + f"<tr><td colspan='4' style='{_SUB13}'>CHARGES</td></tr>"
+        + _row13("Total Charges",_v13(s2m,"cm"),  _v13(s4m,"cm"),  _v13(cbm,"cm"),  _TDR13,_TDR13,_TDR13)
+        + "</tbody></table></div>"
+    )
+    st.caption(f"Valid from: {_VF13} UTC | Auto updates on page load | Testnet")
+    st.markdown(tbl, unsafe_allow_html=True)
 
 # ================================================================
 # FOOTER
@@ -3106,115 +3151,114 @@ st.caption(f"Version: {system.get('version', 'v3.9')} | Commit: {git_commit} | L
 # ============================================================
 # SECTION 14 - SLIPPAGE COMPARISON
 # ============================================================
-st.markdown("""
-<div style="background:#CDD3E0;padding:6px 12px;border-left:4px solid #2962FF;margin:18px 0 8px 0;">
-<span style="font-weight:700;font-size:12px;color:#131722;letter-spacing:1px;">
-SECTION 14 - SLIPPAGE COMPARISON ($5/side vs $10/side)</span></div>
-""", unsafe_allow_html=True)
+if 'exp_14s' not in st.session_state: st.session_state['exp_14s'] = False
+with st.expander('SECTION 14 - SLIPPAGE COMPARISON ($5/side vs $10/side)', expanded=st.session_state.get('exp_14s', False)):
 
-_TH14  = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;"
-_TD14  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;"
-_TDR   = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:center;"
-_TDG   = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
-_TDO   = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#e07000;font-weight:700;text-align:center;"
-_TDB   = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#2962FF;font-weight:700;text-align:center;"
-_THGR  = "padding:5px 8px;border:1px solid #C8D0DC;background:#089981;font-size:10px;font-weight:700;color:#fff;text-align:center;"
-_THOG  = "padding:5px 8px;border:1px solid #C8D0DC;background:#e07000;font-size:10px;font-weight:700;color:#fff;text-align:center;"
-_SUBHDR= "padding:4px 8px;border:1px solid #C8D0DC;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
-_DASH  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#aaa;text-align:center;"
+    
+    _TH14  = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;"
+    _TD14  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;"
+    _TDR   = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:center;"
+    _TDG   = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
+    _TDO   = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#e07000;font-weight:700;text-align:center;"
+    _TDB   = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#2962FF;font-weight:700;text-align:center;"
+    _THGR  = "padding:5px 8px;border:1px solid #C8D0DC;background:#089981;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+    _THOG  = "padding:5px 8px;border:1px solid #C8D0DC;background:#e07000;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+    _SUBHDR= "padding:4px 8px;border:1px solid #C8D0DC;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
+    _DASH  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#aaa;text-align:center;"
+    
+    st.markdown(f"""
+    <p style="font-size:11px;color:#555;margin:2px 0 8px 0;">
+    Period: 2024-01-01 to 2026-07-14 &nbsp;|&nbsp; 31 months &nbsp;|&nbsp; BTCUSD Perpetual &nbsp;|&nbsp; 100 lots/trade</p>
+    
+    <div style="overflow-x:auto;margin:4px 0;">
+    <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
+    <colgroup>
+      <col style="width:22%">
+      <col style="width:13%"><col style="width:13%">
+      <col style="width:13%"><col style="width:13%">
+      <col style="width:13%"><col style="width:13%">
+    </colgroup>
+    <thead>
+    <tr>
+      <th style="{_TH14}" rowspan="2">Metric</th>
+      <th style="{_THGR}" colspan="3">$5/side (Realistic)</th>
+      <th style="{_THOG}" colspan="3">$10/side (Conservative)</th>
+    </tr>
+    <tr>
+      <th style="{_THGR}">S2</th>
+      <th style="{_THGR}">S4</th>
+      <th style="{_THGR}">Portfolio</th>
+      <th style="{_THOG}">S2</th>
+      <th style="{_THOG}">S4</th>
+      <th style="{_THOG}">Portfolio</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr><td colspan="7" style="{_SUBHDR}">TRADE COUNT</td></tr>
+    <tr style="background:#ffffff;">
+      <td style="{_TD14}">Total Trades</td>
+      <td style="{_TDR}">7,556</td><td style="{_TDR}">3,898</td><td style="{_TDB}">11,454</td>
+      <td style="{_TDR}">7,556</td><td style="{_TDR}">3,898</td><td style="{_TDR}">11,454</td>
+    </tr>
+    
+    <tr><td colspan="7" style="{_SUBHDR}">GREEN MONTHS</td></tr>
+    <tr style="background:#fafafa;">
+      <td style="{_TD14}">Green Months</td>
+      <td style="{_TDG}">31/31</td><td style="{_TDG}">31/31</td><td style="{_TDG}">31/31</td>
+      <td style="{_TDO}">25/31</td><td style="{_TDG}">31/31</td><td style="{_TDG}">31/31</td>
+    </tr>
+    
+    <tr><td colspan="7" style="{_SUBHDR}">NET PnL (AFTER TAX)</td></tr>
+    <tr style="background:#ffffff;">
+      <td style="{_TD14}">Net PnL</td>
+      <td style="{_TDG}">₹1,43,86,981</td><td style="{_TDG}">₹1,55,60,542</td><td style="{_TDB}">₹2,99,47,523</td>
+      <td style="{_TDR}">₹83,37,327</td><td style="{_TDR}">₹1,24,90,523</td><td style="{_TDR}">₹2,08,27,850</td>
+    </tr>
+    
+    <tr><td colspan="7" style="{_SUBHDR}">RECOMMENDED CAPITAL (3 x MAX DD)</td></tr>
+    <tr style="background:#fafafa;">
+      <td style="{_TD14}">Rec Capital</td>
+      <td style="{_TDG}">₹1,11,354</td><td style="{_TDG}">₹41,247</td><td style="{_TDB}">₹1,52,601</td>
+      <td style="{_TDO}">₹5,08,896</td><td style="{_TDO}">₹69,194</td><td style="{_TDO}">₹5,78,090</td>
+    </tr>
+    
+    <tr><td colspan="7" style="{_SUBHDR}">RETURN ON CAPITAL</td></tr>
+    <tr style="background:#ffffff;">
+      <td style="{_TD14}">ROC (Total)</td>
+      <td style="{_TDG}">12,920%</td><td style="{_TDG}">37,724%</td><td style="{_TDB}">19,624%</td>
+      <td style="{_TDR}">1,638%</td><td style="{_TDG}">18,051%</td><td style="{_TDR}">3,602%</td>
+    </tr>
+    <tr style="background:#fafafa;">
+      <td style="{_TD14}">Monthly avg ROC</td>
+      <td style="{_TDG}">416%</td><td style="{_TDG}">1,216%</td><td style="{_TDB}">633%</td>
+      <td style="{_TDR}">53%</td><td style="{_TDG}">582%</td><td style="{_TDR}">116%</td>
+    </tr>
+    
+    <tr><td colspan="7" style="{_SUBHDR}">MAX DRAWDOWN ($5/side only)</td></tr>
+    <tr style="background:#ffffff;">
+      <td style="{_TD14}">Max DD</td>
+      <td style="{_TDR}">-0.48% (₹37,118)</td><td style="{_TDR}">-0.16% (₹13,749)</td><td style="{_DASH}">-</td>
+      <td style="{_DASH}">-</td><td style="{_DASH}">-</td><td style="{_DASH}">-</td>
+    </tr>
+    <tr style="background:#fafafa;">
+      <td style="{_TD14}">Avg Margin/trade</td>
+      <td style="{_TDR}">$41.89 = ₹3,519</td><td style="{_TDR}">$41.98 = ₹3,526</td><td style="{_DASH}">-</td>
+      <td style="{_DASH}">-</td><td style="{_DASH}">-</td><td style="{_DASH}">-</td>
+    </tr>
+    </tbody>
+    </table>
+    </div>
+    
+    <div style="background:#f0f4ff;border-left:3px solid #2962FF;padding:8px 12px;margin:10px 0 4px 0;font-size:11px;color:#131722;">
+    <b>Key Observations:</b>
+    <ul style="margin:4px 0;padding-left:16px;">
+    <li>Trade count identical at both slippages - strategy logic is unchanged</li>
+    <li style="color:#089981;font-weight:600;">$5/side: S2 improves from 25/31 to 31/31 green months - all months profitable</li>
+    <li style="color:#089981;font-weight:600;">$5/side: Portfolio Rec Capital 3.8x lower = ROC jumps from 3,602% to 19,624%</li>
+    <li>$10/side is conservative/safe assumption for live trading presentation</li>
+    <li>$5/side is realistic for actual Delta Exchange execution (taker ~$3-5/side)</li>
+    <li>Both are valid - use $10 for conservative view, $5 for realistic view</li>
+    </ul>
+    </div>
+    """, unsafe_allow_html=True)
 
-st.markdown(f"""
-<p style="font-size:11px;color:#555;margin:2px 0 8px 0;">
-Period: 2024-01-01 to 2026-07-14 &nbsp;|&nbsp; 31 months &nbsp;|&nbsp; BTCUSD Perpetual &nbsp;|&nbsp; 100 lots/trade</p>
-
-<div style="overflow-x:auto;margin:4px 0;">
-<table style="width:100%;border-collapse:collapse;table-layout:fixed;">
-<colgroup>
-  <col style="width:22%">
-  <col style="width:13%"><col style="width:13%">
-  <col style="width:13%"><col style="width:13%">
-  <col style="width:13%"><col style="width:13%">
-</colgroup>
-<thead>
-<tr>
-  <th style="{_TH14}" rowspan="2">Metric</th>
-  <th style="{_THGR}" colspan="3">$5/side (Realistic)</th>
-  <th style="{_THOG}" colspan="3">$10/side (Conservative)</th>
-</tr>
-<tr>
-  <th style="{_THGR}">S2</th>
-  <th style="{_THGR}">S4</th>
-  <th style="{_THGR}">Portfolio</th>
-  <th style="{_THOG}">S2</th>
-  <th style="{_THOG}">S4</th>
-  <th style="{_THOG}">Portfolio</th>
-</tr>
-</thead>
-<tbody>
-<tr><td colspan="7" style="{_SUBHDR}">TRADE COUNT</td></tr>
-<tr style="background:#ffffff;">
-  <td style="{_TD14}">Total Trades</td>
-  <td style="{_TDR}">7,556</td><td style="{_TDR}">3,898</td><td style="{_TDB}">11,454</td>
-  <td style="{_TDR}">7,556</td><td style="{_TDR}">3,898</td><td style="{_TDR}">11,454</td>
-</tr>
-
-<tr><td colspan="7" style="{_SUBHDR}">GREEN MONTHS</td></tr>
-<tr style="background:#fafafa;">
-  <td style="{_TD14}">Green Months</td>
-  <td style="{_TDG}">31/31</td><td style="{_TDG}">31/31</td><td style="{_TDG}">31/31</td>
-  <td style="{_TDO}">25/31</td><td style="{_TDG}">31/31</td><td style="{_TDG}">31/31</td>
-</tr>
-
-<tr><td colspan="7" style="{_SUBHDR}">NET PnL (AFTER TAX)</td></tr>
-<tr style="background:#ffffff;">
-  <td style="{_TD14}">Net PnL</td>
-  <td style="{_TDG}">₹1,43,86,981</td><td style="{_TDG}">₹1,55,60,542</td><td style="{_TDB}">₹2,99,47,523</td>
-  <td style="{_TDR}">₹83,37,327</td><td style="{_TDR}">₹1,24,90,523</td><td style="{_TDR}">₹2,08,27,850</td>
-</tr>
-
-<tr><td colspan="7" style="{_SUBHDR}">RECOMMENDED CAPITAL (3 x MAX DD)</td></tr>
-<tr style="background:#fafafa;">
-  <td style="{_TD14}">Rec Capital</td>
-  <td style="{_TDG}">₹1,11,354</td><td style="{_TDG}">₹41,247</td><td style="{_TDB}">₹1,52,601</td>
-  <td style="{_TDO}">₹5,08,896</td><td style="{_TDO}">₹69,194</td><td style="{_TDO}">₹5,78,090</td>
-</tr>
-
-<tr><td colspan="7" style="{_SUBHDR}">RETURN ON CAPITAL</td></tr>
-<tr style="background:#ffffff;">
-  <td style="{_TD14}">ROC (Total)</td>
-  <td style="{_TDG}">12,920%</td><td style="{_TDG}">37,724%</td><td style="{_TDB}">19,624%</td>
-  <td style="{_TDR}">1,638%</td><td style="{_TDG}">18,051%</td><td style="{_TDR}">3,602%</td>
-</tr>
-<tr style="background:#fafafa;">
-  <td style="{_TD14}">Monthly avg ROC</td>
-  <td style="{_TDG}">416%</td><td style="{_TDG}">1,216%</td><td style="{_TDB}">633%</td>
-  <td style="{_TDR}">53%</td><td style="{_TDG}">582%</td><td style="{_TDR}">116%</td>
-</tr>
-
-<tr><td colspan="7" style="{_SUBHDR}">MAX DRAWDOWN ($5/side only)</td></tr>
-<tr style="background:#ffffff;">
-  <td style="{_TD14}">Max DD</td>
-  <td style="{_TDR}">-0.48% (₹37,118)</td><td style="{_TDR}">-0.16% (₹13,749)</td><td style="{_DASH}">-</td>
-  <td style="{_DASH}">-</td><td style="{_DASH}">-</td><td style="{_DASH}">-</td>
-</tr>
-<tr style="background:#fafafa;">
-  <td style="{_TD14}">Avg Margin/trade</td>
-  <td style="{_TDR}">$41.89 = ₹3,519</td><td style="{_TDR}">$41.98 = ₹3,526</td><td style="{_DASH}">-</td>
-  <td style="{_DASH}">-</td><td style="{_DASH}">-</td><td style="{_DASH}">-</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-<div style="background:#f0f4ff;border-left:3px solid #2962FF;padding:8px 12px;margin:10px 0 4px 0;font-size:11px;color:#131722;">
-<b>Key Observations:</b>
-<ul style="margin:4px 0;padding-left:16px;">
-<li>Trade count identical at both slippages - strategy logic is unchanged</li>
-<li style="color:#089981;font-weight:600;">$5/side: S2 improves from 25/31 to 31/31 green months - all months profitable</li>
-<li style="color:#089981;font-weight:600;">$5/side: Portfolio Rec Capital 3.8x lower = ROC jumps from 3,602% to 19,624%</li>
-<li>$10/side is conservative/safe assumption for live trading presentation</li>
-<li>$5/side is realistic for actual Delta Exchange execution (taker ~$3-5/side)</li>
-<li>Both are valid - use $10 for conservative view, $5 for realistic view</li>
-</ul>
-</div>
-""", unsafe_allow_html=True)
