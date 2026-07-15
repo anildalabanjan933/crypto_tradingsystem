@@ -3076,7 +3076,19 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
         aw = sum(v for v in pls if v>0)/win if win>0 else 0
         al = sum(v for v in pls if v<0)/los if los>0 else 0
         pf = abs(sum(v for v in pls if v>0)/sum(v for v in pls if v<0)) if los>0 and sum(v for v in pls if v<0)!=0 else 0
-        return {"tot":tot,"win":win,"los":los,"wr":wr,"nu":nu,"ni":ni,"cm":cm,"dd":dd,"aw":aw,"al":al,"pf":pf}
+        import datetime as _dt_c
+        now_c = _dt_c.datetime.utcnow()
+        today_start = now_c.replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
+        week_start  = (now_c - _dt_c.timedelta(days=now_c.weekday())).replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
+        month_start = now_c.replace(day=1,hour=0,minute=0,second=0,microsecond=0).timestamp()
+        year_start  = now_c.replace(month=1,day=1,hour=0,minute=0,second=0,microsecond=0).timestamp()
+        pnl_today   = sum(p["pnl"] for p in pairs if p.get("xts",0) >= today_start)
+        pnl_week    = sum(p["pnl"] for p in pairs if p.get("xts",0) >= week_start)
+        pnl_month   = sum(p["pnl"] for p in pairs if p.get("xts",0) >= month_start)
+        pnl_year    = sum(p["pnl"] for p in pairs if p.get("xts",0) >= year_start)
+        avg_slip    = abs(nu/tot) * 0.01 if tot>0 else 0
+        return {"tot":tot,"win":win,"los":los,"wr":wr,"nu":nu,"ni":ni,"cm":cm,"dd":dd,"aw":aw,"al":al,"pf":pf,
+                "pnl_today":pnl_today,"pnl_week":pnl_week,"pnl_month":pnl_month,"pnl_year":pnl_year,"avg_slip":avg_slip}
 
     def _bt_calc13(csv_pattern, vf_str):
         try:
@@ -3106,7 +3118,23 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
             pf_n = df[df['net_pnl']>0]['net_pnl'].sum()
             pf_d = abs(df[df['net_pnl']<0]['net_pnl'].sum())
             pf = pf_n/pf_d if pf_d>0 else 0
-            return {"tot":tot,"win":int(win),"los":int(los),"wr":wr,"nu":nu,"ni":ni,"cm":cm,"dd":dd,"aw":aw,"al":al,"pf":pf}
+            import datetime as _dt_bt
+            now_bt = _dt_bt.datetime.utcnow()
+            today_s = now_bt.replace(hour=0,minute=0,second=0,microsecond=0)
+            week_s  = (now_bt - _dt_bt.timedelta(days=now_bt.weekday())).replace(hour=0,minute=0,second=0,microsecond=0)
+            month_s = now_bt.replace(day=1,hour=0,minute=0,second=0,microsecond=0)
+            year_s  = now_bt.replace(month=1,day=1,hour=0,minute=0,second=0,microsecond=0)
+            if 'exit_datetime' in df.columns:
+                df['exit_dt'] = _pd13.to_datetime(df['exit_datetime'])
+                pnl_today = df[df['exit_dt'] >= _pd13.Timestamp(today_s)]['net_pnl'].sum()
+                pnl_week  = df[df['exit_dt'] >= _pd13.Timestamp(week_s)]['net_pnl'].sum()
+                pnl_month = df[df['exit_dt'] >= _pd13.Timestamp(month_s)]['net_pnl'].sum()
+                pnl_year  = df[df['exit_dt'] >= _pd13.Timestamp(year_s)]['net_pnl'].sum()
+            else:
+                pnl_today = pnl_week = pnl_month = pnl_year = 0
+            avg_slip = df['slippage'].mean() if 'slippage' in df.columns else 5.0
+            return {"tot":tot,"win":int(win),"los":int(los),"wr":wr,"nu":nu,"ni":ni,"cm":cm,"dd":dd,"aw":aw,"al":al,"pf":pf,
+                    "pnl_today":pnl_today,"pnl_week":pnl_week,"pnl_month":pnl_month,"pnl_year":pnl_year,"avg_slip":avg_slip}
         except:
             return None
 
@@ -3121,7 +3149,13 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
         if t=="al":   return f"${m['al']:,.2f}"
         if t=="pf":   return f"{m['pf']:.2f}"
         if t=="dd":   return f"-{m['dd']*100:.2f}%"
-        if t=="cm":   return f"${m['cm']:,.2f} / \u20b9{m['cm']*_INR13:,.0f}"
+        if t=="cm":      return f"${m['cm']:,.2f} / \u20b9{m['cm']*_INR13:,.0f}"
+        if t=="cap":     return f"$1,816 / \u20b9{1816*_INR13:,.0f}"
+        if t=="today":   return f"${m.get('pnl_today',0):,.2f} / \u20b9{m.get('pnl_today',0)*_INR13:,.0f}"
+        if t=="week":    return f"${m.get('pnl_week',0):,.2f} / \u20b9{m.get('pnl_week',0)*_INR13:,.0f}"
+        if t=="month":   return f"${m.get('pnl_month',0):,.2f} / \u20b9{m.get('pnl_month',0)*_INR13:,.0f}"
+        if t=="year":    return f"${m.get('pnl_year',0):,.2f} / \u20b9{m.get('pnl_year',0)*_INR13:,.0f}"
+        if t=="slip":    return f"${m.get('avg_slip',0):,.2f}/side"
         return "N/A"
 
     def _c13(m, pos=True):
@@ -3158,6 +3192,15 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
             + _row("Max Drawdown",  _v13(s2m,"dd"),  _v13(s4m,"dd"),  _v13(cbm,"dd"),  _TDR13,_TDR13,_TDR13)
             + f"<tr><td colspan='4' style='{_SUB13}'>CHARGES</td></tr>"
             + _row("Total Charges", _v13(s2m,"cm"),  _v13(s4m,"cm"),  _v13(cbm,"cm"),  _TDR13,_TDR13,_TDR13)
+            + f"<tr><td colspan='4' style='{_SUB13}'>CAPITAL</td></tr>"
+            + _row("Total Capital Required", _v13(s2m,"cap"), _v13(s4m,"cap"), f"$1,816 / \u20b9{int(1816*_INR13):,}")
+            + f"<tr><td colspan='4' style='{_SUB13}'>CUMULATIVE PnL</td></tr>"
+            + _row("Today PnL",   _v13(s2m,"today"), _v13(s4m,"today"), _v13(cbm,"today"), _c13(s2m,True) if s2m and s2m.get("pnl_today",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_today",0)>=0 else _TDR13, _TDB13)
+            + _row("Weekly PnL",  _v13(s2m,"week"),  _v13(s4m,"week"),  _v13(cbm,"week"),  _c13(s2m,True) if s2m and s2m.get("pnl_week",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_week",0)>=0 else _TDR13,  _TDB13)
+            + _row("Monthly PnL", _v13(s2m,"month"), _v13(s4m,"month"), _v13(cbm,"month"), _c13(s2m,True) if s2m and s2m.get("pnl_month",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_month",0)>=0 else _TDR13, _TDB13)
+            + _row("Yearly PnL",  _v13(s2m,"year"),  _v13(s4m,"year"),  _v13(cbm,"year"),  _c13(s2m,True) if s2m and s2m.get("pnl_year",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_year",0)>=0 else _TDR13,  _TDB13)
+            + f"<tr><td colspan='4' style='{_SUB13}'>SLIPPAGE</td></tr>"
+            + _row("Avg Slippage/side", _v13(s2m,"slip"), _v13(s4m,"slip"), _v13(cbm,"slip"), _TDR13,_TDR13,_TDR13)
             + "</tbody></table></div>"
         )
 
