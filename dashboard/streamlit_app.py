@@ -1884,65 +1884,48 @@ with tab1:
     st.markdown("**Open Positions**")
     all_pos = [dict(p, account='S2') for p in s2_pos] + [dict(p, account='S4') for p in s4_pos]
     if all_pos:
-        TH = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;"
-        TD = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;"
-        h = "<div style='overflow-x:auto;margin:4px 0;'><table style='width:100%;border-collapse:collapse;'>"
-        h += "<thead><tr>"
-        for col in ['Account','Symbol','Side','Size','Entry $','Unreal PnL']:
-            h += "<th style='{}'>{}</th>".format(TH, col)
-        h += "<th style='{}'>Action</th>".format(TH)
-        h += "</tr></thead><tbody>"
-        for i, p in enumerate(all_pos):
-            bg = "#ffffff" if i % 2 == 0 else "#fafafa"
-            sc = "#089981" if p['side'] == 'LONG' else "#F23645"
-            pc = "#089981" if p['unreal_pnl'] >= 0 else "#F23645"
-            h += "<tr style='background:{};'>".format(bg)
-            h += "<td style='{}'>{}</td>".format(TD, p['account'])
-            h += "<td style='{}'>{}</td>".format(TD, p['symbol'])
-            h += "<td style='{}'><span style='color:{};font-weight:700'>{}</span></td>".format(TD, sc, p['side'])
-            h += "<td style='{}'>{}</td>".format(TD, int(p['size']))
-            h += "<td style='{}text-align:right'>${:,.1f}</td>".format(TD, p['entry'])
-            h += "<td style='{}'><span style='color:{};font-weight:600'>${:,.2f} | ₹{:,.0f}</span></td>".format(TD, pc, p['unreal_pnl'], p['unreal_pnl']*INR_RATE)
-            h += "<td style='{}text-align:center'>__CLOSE_{}__</td>".format(TD, p['account'])
-            h += "</tr>"
-        h += "</tbody></table></div>"
-        # Replace __CLOSE_X__ placeholders with empty (buttons rendered via st.columns below)
-        for p in all_pos:
-            acc = p['account']
-            side = p['side']
-            h = h.replace(f"__CLOSE_{acc}__", f"← btn_{acc}")
-        st.markdown(h, unsafe_allow_html=True)
+        # Header row
+        hc = st.columns([1,2,1,1,2,2,2])
+        for col, label in zip(hc, ['Account','Symbol','Side','Size','Entry $','Unreal PnL','Action']):
+            col.markdown(f"<div style='font-size:10px;font-weight:700;color:#555;padding:4px 0;border-bottom:2px solid #C8D0DC;'>{label}</div>", unsafe_allow_html=True)
 
-        # Inline close buttons - one per row using columns
         for p in all_pos:
-            acc = p['account']
-            sym = p['symbol']
+            acc  = p['account']
+            sym  = p['symbol']
             side = p['side']
             size = int(p['size'])
+            sc   = "#089981" if side == 'LONG' else "#F23645"
+            pc   = "#089981" if p['unreal_pnl'] >= 0 else "#F23645"
             close_side = 'buy' if side == 'SHORT' else 'sell'
-            c1, c2 = st.columns([6, 1])
-            with c2:
+            rc = st.columns([1,2,1,1,2,2,2])
+            rc[0].markdown(f"<div style='font-size:11px;padding:6px 0;'>{acc}</div>", unsafe_allow_html=True)
+            rc[1].markdown(f"<div style='font-size:11px;padding:6px 0;'>{sym}</div>", unsafe_allow_html=True)
+            rc[2].markdown(f"<div style='font-size:11px;padding:6px 0;color:{sc};font-weight:700;'>{side}</div>", unsafe_allow_html=True)
+            rc[3].markdown(f"<div style='font-size:11px;padding:6px 0;'>{size}</div>", unsafe_allow_html=True)
+            rc[4].markdown(f"<div style='font-size:11px;padding:6px 0;text-align:right;'>${p['entry']:,.1f}</div>", unsafe_allow_html=True)
+            rc[5].markdown(f"<div style='font-size:11px;padding:6px 0;color:{pc};font-weight:600;'>${p['unreal_pnl']:,.2f} | ₹{p['unreal_pnl']*INR_RATE:,.0f}</div>", unsafe_allow_html=True)
+            with rc[6]:
                 if st.button(f"Close {acc} {side}", key=f"close_{acc}_{sym}", type="primary"):
                     try:
-                    import requests, hashlib, hmac, time
-                    api_key    = os.environ.get(f'{acc}_API_KEY','')
-                    api_secret = os.environ.get(f'{acc}_API_SECRET','')
-                    base_url   = 'https://cdn-ind.testnet.deltaex.org'
-                    method     = 'POST'
-                    path       = '/v2/orders'
-                    timestamp  = str(int(time.time()))
-                    payload    = f'{{"product_symbol":"{sym}","order_type":"market_order","size":{size},"side":"{close_side}","reduce_only":"true"}}'
-                    sig_data   = method + timestamp + path + '' + payload
-                    signature  = hmac.new(bytes(api_secret,'utf-8'), bytes(sig_data,'utf-8'), hashlib.sha256).hexdigest()
-                    headers    = {'api-key': api_key, 'timestamp': timestamp, 'signature': signature, 'Content-Type': 'application/json'}
-                    resp = requests.post(f'{base_url}{path}', data=payload, headers=headers, timeout=10)
-                    result = resp.json()
-                    if result.get('success'):
-                        st.success(f"{acc} {side} position closed successfully")
-                    else:
-                        st.error(f"Close failed: {result.get('error','unknown')}")
-                except Exception as ex:
-                    st.error(f"Error: {ex}")
+                        import requests, hashlib, hmac, time
+                        api_key    = os.environ.get(f'{acc}_API_KEY','')
+                        api_secret = os.environ.get(f'{acc}_API_SECRET','')
+                        base_url   = 'https://cdn-ind.testnet.deltaex.org'
+                        method     = 'POST'
+                        path       = '/v2/orders'
+                        timestamp  = str(int(time.time()))
+                        payload    = f'{{"product_symbol":"{sym}","order_type":"market_order","size":{size},"side":"{close_side}","reduce_only":"true"}}'
+                        sig_data   = method + timestamp + path + '' + payload
+                        signature  = hmac.new(bytes(api_secret,'utf-8'), bytes(sig_data,'utf-8'), hashlib.sha256).hexdigest()
+                        headers    = {'api-key': api_key, 'timestamp': timestamp, 'signature': signature, 'Content-Type': 'application/json'}
+                        resp = requests.post(f'{base_url}{path}', data=payload, headers=headers, timeout=10)
+                        result = resp.json()
+                        if result.get('success'):
+                            st.success(f"{acc} {side} position closed successfully")
+                        else:
+                            st.error(f"Close failed: {result.get('error','unknown')}")
+                    except Exception as ex:
+                        st.error(f"Error: {ex}")
     else:
         st.info("No open positions")
 
