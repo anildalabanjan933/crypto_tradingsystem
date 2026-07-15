@@ -49,7 +49,7 @@ def run_backtest(strategy_class, params, label):
     return trades
 
 def write_trade_log_csv(trades, label):
-    import glob as _gl
+    import glob as _gl, pandas as _pd
     from datetime import datetime as _dt
     os.makedirs("output", exist_ok=True)
     ts = _dt.now().strftime("%Y%m%d_%H%M%S")
@@ -61,7 +61,7 @@ def write_trade_log_csv(trades, label):
         pattern = "output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"
     for old_f in _gl.glob(pattern):
         os.remove(old_f)
-    df = pd.DataFrame(trades)
+    df = _pd.DataFrame(trades)
     df.to_csv(out, index=False)
     log.info(f"[GENERATE] Trade log saved: {out} ({len(trades)} rows)")
 

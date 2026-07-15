@@ -3394,8 +3394,8 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
     def _fetch13(k, s):
         orders, after = [], None
         try:
-            vf  = int(_dt13.datetime.strptime(_VF13,"%Y-%m-%dT%H:%M:%S").timestamp())
-            now = int(_t13.time())
+            vf  = int(_dt13.datetime.strptime(_VF13,"%Y-%m-%dT%H:%M:%S").replace(tzinfo=_dt13.timezone.utc).timestamp())
+            now = int(_dt13.datetime.now(_dt13.timezone.utc).timestamp())
             path= "/v2/orders/history"
             prm = {"product_id":84,"page_size":100,"start_time":int(vf*1e6),"end_time":int(now*1e6)}
             for _ in range(50):
