@@ -1684,7 +1684,7 @@ for i, algo in enumerate(algos):
         st.caption(algo.get('symbol','BTCUSD'))
     with c4:
         new_lots = st.number_input(
-            "", min_value=1, max_value=10000,
+            "Lots", min_value=1, max_value=10000,
             value=algo.get('lots', 100),
             key=f"sec2_lots_{i}", label_visibility="collapsed"
         )
@@ -2643,7 +2643,7 @@ with st.expander("SECTION 5 - BACKTEST", expanded=True):
 
     st.markdown("**Date Range**")
     bt_range_options = ["1 Month", "6 Months", "1 Year", "1.5 Years", "2 Years", "Full CSV", "Custom"]
-    bt_range = st.radio("", bt_range_options, index=2, horizontal=True, key="sec6_range")
+    bt_range = st.radio("Date Range", bt_range_options, index=2, horizontal=True, key="sec6_range", label_visibility="collapsed")
     today = datetime.date.today()
     if bt_range == "1 Month":
         bt_start = today - datetime.timedelta(days=30)
@@ -2797,7 +2797,7 @@ with st.expander("SECTION 5B - PORTFOLIO BACKTEST", expanded=True):
             st.caption(f"{name}: {desc}")
 
         st.markdown("**Date Range**")
-        port_range = st.radio("", ["1 Month","6 Months","1 Year","1.5 Years","2 Years","Full CSV","Custom"], index=2, horizontal=True, key="port_range")
+        port_range = st.radio("Select", ["1 Month","6 Months","1 Year","1.5 Years","2 Years","Full CSV","Custom"], index=2, horizontal=True, key="port_range", label_visibility="collapsed")
         today = datetime.date.today()
         if port_range == "1 Month":
             port_start = today - datetime.timedelta(days=30); port_end = today
@@ -3378,10 +3378,9 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
     _SUB13 = "padding:4px 8px;border:1px solid #C8D0DC;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
     _HDR13 = "padding:6px 12px;background:#1E3A5F;font-size:11px;font-weight:700;color:#ffffff;margin:8px 0 4px 0;border-left:4px solid #2962FF;"
 
-    def _auth13(k, s, path, params={}):
+    def _auth13(k, s, path, qs=""):
         try:
             ts  = str(int(_t13.time()))
-            qs  = "&".join(f"{a}={b}" for a,b in sorted(params.items()))
             qp  = f"?{qs}" if qs else ""
             msg = f"GET{ts}{path}{qp}"
             sig = _hm13.new(s.encode(), msg.encode(), _hs13.sha256).hexdigest()
@@ -3399,8 +3398,9 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
             for _ in range(50):
                 p = dict(prm)
                 if after: p["after"] = after
-                h = _auth13(k, s, path, p)
-                r = _rq13.get(f"{_BASE13}{path}", params=p, headers=h, timeout=10)
+                qs = "&".join(f"{a}={b}" for a,b in sorted(p.items()))
+                h = _auth13(k, s, path, qs)
+                r = _rq13.get(f"{_BASE13}{path}?{qs}", headers=h, timeout=10)
                 d = r.json()
                 if not d.get("success"): break
                 batch = d.get("result",[])
@@ -3420,13 +3420,13 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
             if es not in ["buy","sell"]: continue
             xs  = "sell" if es=="buy" else "buy"
             dir = "LONG" if es=="buy" else "SHORT"
-            ets = int(e.get("created_at",0))//1000000
+            ets = int(_dt13.datetime.strptime(e.get("created_at","1970-01-01T00:00:00")[:19], "%Y-%m-%dT%H:%M:%S").timestamp())
             ep  = float(e.get("average_fill_price") or e.get("limit_price") or 0)
             for j, x in enumerate(srt):
                 if j in used or j==i: continue
                 if x.get("side")!=xs or x.get("state")!="closed": continue
                 if str(x.get("reduce_only","")).lower() not in ["true","1"]: continue
-                xts = int(x.get("created_at",0))//1000000
+                xts = int(_dt13.datetime.strptime(x.get("created_at","1970-01-01T00:00:00")[:19], "%Y-%m-%dT%H:%M:%S").timestamp())
                 xp  = float(x.get("average_fill_price") or x.get("limit_price") or 0)
                 if xts < ets: continue
                 sz  = int(e.get("size",0))
@@ -3484,7 +3484,7 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
             wr  = win/tot*100
             nu  = df['net_pnl'].sum()
             ni  = df['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else nu*_INR13
-            cm  = df['charges'].sum() if 'charges' in df.columns else 0
+            cm  = df['total_charges_usd'].sum() if 'total_charges_usd' in df.columns else (df['charges'].sum() if 'charges' in df.columns else 0)
             pls = df['net_pnl'].tolist()
             cum,pk,dd = 0,0,0
             for v in pls:
