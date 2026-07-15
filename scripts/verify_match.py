@@ -104,9 +104,11 @@ def get_live_trades(log_file):
     # Parse ENTRY and EXIT pairs from log
     entries = {}  # direction -> entry_time
     trades  = []
+    pending_entry = {}
     if not os.path.exists(log_file):
         return trades
-    for line in open(log_file):
+    lines_list = open(log_file).readlines()
+    for i, line in enumerate(lines_list):
         try:
             log_ts = pd.Timestamp(line.split(' INFO')[0].strip())
             if log_ts < pd.Timestamp(VALID_FROM):
@@ -117,22 +119,36 @@ def get_live_trades(log_file):
         if '[ORDER]' not in line:
             continue
 
-        # Parse ENTRY
-        # Actual log format: [ORDER] ENTRY buy 100 lots | type=BUY_A | ts=2026-07-12T14:00:00
-        entry_match = re.search(
+        # Parse ENTRY - only confirmed orders
+        if 'ENTRY' in line and 'FAILED' in line:
+            continue
+        entry_attempt = re.search(
             r'ENTRY\s+(buy|sell)\s+\d+\s+lots.*ts=(\S+)', line, re.I)
-        if entry_match:
-            side      = entry_match.group(1).lower()
-            signal_ts = entry_match.group(2).rstrip('|').strip()
-            # New Signal Replay format has dir= field explicitly
+        if entry_attempt:
+            side = entry_attempt.group(1).lower()
+            signal_ts = entry_attempt.group(2).rstrip('|').strip()
             dir_match = re.search(r'dir=(long|short)', line, re.I)
-            if dir_match:
-                direction = dir_match.group(1).lower()
-            else:
-                direction = 'long' if side == 'buy' else 'short'
-            entries[signal_ts] = {'direction': direction,
-                                   'entry_time': signal_ts,
+            direction = dir_match.group(1).lower() if dir_match else ('long' if side == 'buy' else 'short')
+            # Check next 5 lines for FAILED - if so skip this entry
+            failed = False
+            for j in range(1, 6):
+                next_line = lines_list[i+j] if i+j < len(lines_list) else ''
+                if 'ENTRY FAILED' in next_line or 'invalid_api_key' in next_line:
+                    failed = True
+                    break
+                if '[ORDER]' in next_line:
+                    break
+            if failed:
+                continue
+            pending_entry[signal_ts] = {'direction': direction, 'entry_time': signal_ts,
                                    'entry_price': '-'}
+            continue
+
+        # Confirm ENTRY - move pending to entries on confirmed line
+        if '[ORDER] ENTRY confirmed' in line:
+            for sig_ts, entry_data in list(pending_entry.items()):
+                entries[sig_ts] = entry_data
+                del pending_entry[sig_ts]
             continue
 
         # Parse EXIT

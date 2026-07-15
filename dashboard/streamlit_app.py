@@ -840,7 +840,7 @@ with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b',
                         _lt = _dte.datetime.strptime(_l[:19], '%Y-%m-%d %H:%M:%S')
                         if _lt >= _cut: recent.append(_l)
                     except: pass
-                if not recent: recent = lines[-20:]
+                # no fallback - if nothing in last 30 min, recent stays empty = no errors shown
                 error_lines = [l.strip() for l in recent if 'ERROR' in l]
                 algotest_errors = [l.strip() for l in recent if 'ALGOTEST' in l and ('ERROR' in l or 'WARNING' in l)]
                 api_errors = [l.strip() for l in recent if any(x in l for x in ['InvalidApiKey','invalid_api_key','insufficient_margin','rate_limit','IP not whitelisted','ENTRY FAILED','EXIT FAILED','CRITICAL']) or ('ERROR' in l and any(x in l for x in ['401','403','429']))]
