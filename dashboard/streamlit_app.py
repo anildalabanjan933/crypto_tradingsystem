@@ -1906,16 +1906,23 @@ with tab1:
             h += "<td style='{}text-align:center'>__CLOSE_{}__</td>".format(TD, p['account'])
             h += "</tr>"
         h += "</tbody></table></div>"
+        # Replace __CLOSE_X__ placeholders with empty (buttons rendered via st.columns below)
+        for p in all_pos:
+            acc = p['account']
+            side = p['side']
+            h = h.replace(f"__CLOSE_{acc}__", f"← btn_{acc}")
         st.markdown(h, unsafe_allow_html=True)
 
-        # Inline close buttons per position
+        # Inline close buttons - one per row using columns
         for p in all_pos:
             acc = p['account']
             sym = p['symbol']
             side = p['side']
             size = int(p['size'])
             close_side = 'buy' if side == 'SHORT' else 'sell'
-            if st.button(f"Close {acc} {side}", key=f"close_{acc}_{sym}", type="primary"):
+            c1, c2 = st.columns([6, 1])
+            with c2:
+                if st.button(f"Close {acc} {side}", key=f"close_{acc}_{sym}", type="primary"):
                 try:
                     import requests, hashlib, hmac, time
                     api_key    = os.environ.get(f'{acc}_API_KEY','')
