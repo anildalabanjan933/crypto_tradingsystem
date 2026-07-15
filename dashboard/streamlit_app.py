@@ -1923,7 +1923,7 @@ with tab1:
             c1, c2 = st.columns([6, 1])
             with c2:
                 if st.button(f"Close {acc} {side}", key=f"close_{acc}_{sym}", type="primary"):
-                try:
+                    try:
                     import requests, hashlib, hmac, time
                     api_key    = os.environ.get(f'{acc}_API_KEY','')
                     api_secret = os.environ.get(f'{acc}_API_SECRET','')
