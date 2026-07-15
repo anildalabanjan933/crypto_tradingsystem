@@ -2889,7 +2889,7 @@ with st.expander("SECTION 5B - PORTFOLIO BACKTEST", expanded=True):
             key="port_dyn_strategies"
         )
         st.markdown("**Date Range**")
-        port_dyn_range = st.radio("", ["1 Month","6 Months","1 Year","1.5 Years","2 Years","Full CSV","Custom"], index=2, horizontal=True, key="port_dyn_range")
+        port_dyn_range = st.radio("Date Range", ["1 Month","6 Months","1 Year","1.5 Years","2 Years","Full CSV","Custom"], index=2, horizontal=True, key="port_dyn_range", label_visibility="collapsed")
         today = datetime.date.today()
         if port_dyn_range == "1 Month":
             port_dyn_start = today - datetime.timedelta(days=30); port_dyn_end = today
