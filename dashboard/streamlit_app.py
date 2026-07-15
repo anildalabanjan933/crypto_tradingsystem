@@ -1273,7 +1273,121 @@ with st.expander("MEMBER MANAGEMENT", expanded=st.session_state.get('exp_24', Fa
                     })
                     members_cfg['members'] = members
                     json.dump(members_cfg, open(members_config_file,'w'), indent=2)
-                    st.success(f"Member {m_name} added with bots: {m_bots}")
+
+                    # ── AUTO SETUP: scripts, .env, start.sh, start bots ──
+                    _base = '/home/anildalabanjan933/crypto_trading_system'
+                    _mkey = m_name.lower().replace(' ','_')
+                    _errors = []
+
+                    # 1. Create signal replay scripts
+                    for _bot, _key, _sec, _lots in [
+                        ('s2', m_s2_key, m_s2_sec, m_lots_s2),
+                        ('s4', m_s4_key, m_s4_sec, m_lots_s4)
+                    ]:
+                        if _bot.upper() not in m_bots: continue
+                        _src = f"{_base}/scripts/signal_replay_{_bot}.py"
+                        _dst = f"{_base}/scripts/signal_replay_{_mkey}_{_bot}.py"
+                        try:
+                            _content = open(_src).read()
+                            _content = _content.replace(
+                                f'os.environ.get("{_bot.upper()}_API_KEY"',
+                                f'os.environ.get("{_mkey.upper()}_{_bot.upper()}_API_KEY"'
+                            )
+                            _content = _content.replace(
+                                f'os.environ.get("{_bot.upper()}_API_SECRET"',
+                                f'os.environ.get("{_mkey.upper()}_{_bot.upper()}_API_SECRET"'
+                            )
+                            _content = _content.replace(
+                                f'logs/last_known_ts_{_bot}.txt',
+                                f'logs/last_known_ts_{_mkey}_{_bot}.txt'
+                            )
+                            _content = _content.replace(
+                                f'logs/live_trading_{_bot}.log',
+                                f'logs/live_trading_{_mkey}_{_bot}.log'
+                            )
+                            _content = _content.replace(
+                                f'logs/signals_{_bot}.csv',
+                                f'logs/signals_{_bot}.csv'
+                            )
+                            open(_dst, 'w').write(_content)
+                        except Exception as _e:
+                            _errors.append(f"Script create failed: {_e}")
+
+                    # 2. Add API keys to .env
+                    try:
+                        _env_path = f"{_base}/.env"
+                        _env_content = open(_env_path).read()
+                        _new_keys = ""
+                        if m_s2_key and f"{_mkey.upper()}_S2_API_KEY" not in _env_content:
+                            _new_keys += "\n" + f"{_mkey.upper()}_S2_API_KEY={m_s2_key}"
+                            _new_keys += "\n" + f"{_mkey.upper()}_S2_API_SECRET={m_s2_sec}"
+                        if m_s4_key and f"{_mkey.upper()}_S4_API_KEY" not in _env_content:
+                            _new_keys += "\n" + f"{_mkey.upper()}_S4_API_KEY={m_s4_key}"
+                            _new_keys += "\n" + f"{_mkey.upper()}_S4_API_SECRET={m_s4_sec}"
+                        if _new_keys:
+                            open(_env_path, 'a').write(_new_keys)
+                    except Exception as _e:
+                        _errors.append(f".env update failed: {_e}")
+
+                    # 3. Add screens to start.sh
+                    try:
+                        _start_path = f"{_base}/start.sh"
+                        _start_content = open(_start_path).read()
+                        _new_screens = ""
+                        for _bot in m_bots:
+                            _b = _bot.lower()
+                            _screen_name = f"{_mkey}_{_b}"
+                            if _screen_name not in _start_content:
+                                _new_screens += (
+                                    f'\nscreen -dmS {_screen_name} bash -c '
+                                    f'"cd {_base} && source .venv/bin/activate && '
+                                    f"export $(grep -v '#' .env | xargs) && "
+                                    f'python3 scripts/signal_replay_{_mkey}_{_b}.py >> '
+                                    f'logs/live_trading_{_mkey}_{_b}.log 2>&1"'
+                                )
+                        if _new_screens:
+                            _start_content = _start_content.replace(
+                                'echo "S2 and S4 started"',
+                                f'echo "S2 and S4 started"{_new_screens}'
+                            )
+                            open(_start_path, 'w').write(_start_content)
+                    except Exception as _e:
+                        _errors.append(f"start.sh update failed: {_e}")
+
+                    # 4. Start bot screens immediately
+                    try:
+                        import subprocess as _sp2
+                        for _bot in m_bots:
+                            _b = _bot.lower()
+                            _screen_name = f"{_mkey}_{_b}"
+                            _api_k = m_s2_key if _b=='s2' else m_s4_key
+                            _api_s = m_s2_sec if _b=='s2' else m_s4_sec
+                            _cmd = (f'screen -S {_screen_name} -X quit 2>/dev/null; sleep 1; '
+                                   f'screen -dmS {_screen_name} bash -c "cd {_base} && '
+                                   f'source .venv/bin/activate && '
+                                   f'export $(grep -v '#' {_base}/.env | xargs) && '
+                                   f'python3 scripts/signal_replay_{_mkey}_{_b}.py >> '
+                                   f'logs/live_trading_{_mkey}_{_b}.log 2>&1"')
+                            _sp2.Popen(['bash', '-c', _cmd])
+                    except Exception as _e:
+                        _errors.append(f"Bot start failed: {_e}")
+
+                    # 5. Create last_known_ts files
+                    try:
+                        import datetime as _dt_m
+                        _vf = open(f'{_base}/logs/valid_from_baseline.txt').read().strip()
+                        for _bot in m_bots:
+                            _b = _bot.lower()
+                            _ts_file = f'{_base}/logs/last_known_ts_{_mkey}_{_b}.txt'
+                            if not os.path.exists(_ts_file):
+                                open(_ts_file, 'w').write(_vf)
+                    except Exception as _e:
+                        _errors.append(f"TS file create failed: {_e}")
+
+                    if _errors:
+                        st.warning(f"Member added but some setup steps failed: {'; '.join(_errors)}")
+                    else:
+                        st.success(f"Member {m_name} added and bots started automatically. Zero terminal needed.")
                     st.rerun()
                 else:
                     st.error("Name + at least one bot required")
