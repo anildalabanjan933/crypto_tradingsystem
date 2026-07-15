@@ -106,7 +106,18 @@ while True:
     try:
         now = now_utc_str()
 
+        # Reload signals every hour - regenerate first to pick up new candles
         if now.endswith("00:00") or now.endswith("30:00"):
+            try:
+                import subprocess, sys
+                subprocess.run(
+                    [sys.executable, "scripts/generate_signals.py"],
+                    timeout=300, capture_output=True, text=True,
+                    cwd='/home/anildalabanjan933/crypto_trading_system'
+                )
+                log.info("[RELOAD] Signal CSVs regenerated successfully")
+            except Exception as e:
+                log.error(f"[RELOAD] Signal regeneration failed: {e}")
             signals = load_signals()
 
         for sig in signals:

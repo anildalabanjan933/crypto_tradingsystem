@@ -1511,6 +1511,7 @@ with tab1:
         h += "<thead><tr>"
         for col in ['Account','Symbol','Side','Size','Entry $','Unreal PnL']:
             h += "<th style='{}'>{}</th>".format(TH, col)
+        h += "<th style='{}'>Action</th>".format(TH)
         h += "</tr></thead><tbody>"
         for i, p in enumerate(all_pos):
             bg = "#ffffff" if i % 2 == 0 else "#fafafa"
@@ -1523,9 +1524,39 @@ with tab1:
             h += "<td style='{}'>{}</td>".format(TD, int(p['size']))
             h += "<td style='{}text-align:right'>${:,.1f}</td>".format(TD, p['entry'])
             h += "<td style='{}'><span style='color:{};font-weight:600'>${:,.2f} | ₹{:,.0f}</span></td>".format(TD, pc, p['unreal_pnl'], p['unreal_pnl']*INR_RATE)
+            h += "<td style='{}text-align:center'>__CLOSE_{}__</td>".format(TD, p['account'])
             h += "</tr>"
         h += "</tbody></table></div>"
         st.markdown(h, unsafe_allow_html=True)
+
+        # Inline close buttons per position
+        for p in all_pos:
+            acc = p['account']
+            sym = p['symbol']
+            side = p['side']
+            size = int(p['size'])
+            close_side = 'buy' if side == 'SHORT' else 'sell'
+            if st.button(f"Close {acc} {side}", key=f"close_{acc}_{sym}", type="primary"):
+                try:
+                    import requests, hashlib, hmac, time
+                    api_key    = os.environ.get(f'{acc}_API_KEY','')
+                    api_secret = os.environ.get(f'{acc}_API_SECRET','')
+                    base_url   = 'https://cdn-ind.testnet.deltaex.org'
+                    method     = 'POST'
+                    path       = '/v2/orders'
+                    timestamp  = str(int(time.time()))
+                    payload    = f'{{"product_symbol":"{sym}","order_type":"market_order","size":{size},"side":"{close_side}","reduce_only":"true"}}'
+                    sig_data   = method + timestamp + path + '' + payload
+                    signature  = hmac.new(bytes(api_secret,'utf-8'), bytes(sig_data,'utf-8'), hashlib.sha256).hexdigest()
+                    headers    = {'api-key': api_key, 'timestamp': timestamp, 'signature': signature, 'Content-Type': 'application/json'}
+                    resp = requests.post(f'{base_url}{path}', data=payload, headers=headers, timeout=10)
+                    result = resp.json()
+                    if result.get('success'):
+                        st.success(f"{acc} {side} position closed successfully")
+                    else:
+                        st.error(f"Close failed: {result.get('error','unknown')}")
+                except Exception as ex:
+                    st.error(f"Error: {ex}")
     else:
         st.info("No open positions")
 
