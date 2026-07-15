@@ -3156,6 +3156,10 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
         if t=="month":   return f"${m.get('pnl_month',0):,.2f} / \u20b9{m.get('pnl_month',0)*_INR13:,.0f}"
         if t=="year":    return f"${m.get('pnl_year',0):,.2f} / \u20b9{m.get('pnl_year',0)*_INR13:,.0f}"
         if t=="slip":    return f"${m.get('avg_slip',0):,.2f}/side"
+        if t=="slipdiff":
+            diff = m.get("avg_slip", 5.0) - 5.0
+            sign = "+" if diff > 0 else ""
+            return f"{sign}${diff:,.2f} vs $5.00"
         return "N/A"
 
     def _c13(m, pos=True):
@@ -3201,6 +3205,11 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
             + _row("Yearly PnL",  _v13(s2m,"year"),  _v13(s4m,"year"),  _v13(cbm,"year"),  _c13(s2m,True) if s2m and s2m.get("pnl_year",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_year",0)>=0 else _TDR13,  _TDB13)
             + f"<tr><td colspan='4' style='{_SUB13}'>SLIPPAGE</td></tr>"
             + _row("Avg Slippage/side", _v13(s2m,"slip"), _v13(s4m,"slip"), _v13(cbm,"slip"), _TDR13,_TDR13,_TDR13)
+            + _row("vs Backtest ($5/side)",
+                   _v13(s2m,"slipdiff"), _v13(s4m,"slipdiff"), _v13(cbm,"slipdiff"),
+                   _TDG13 if s2m and s2m.get("avg_slip",5)<=5 else _TDR13,
+                   _TDG13 if s4m and s4m.get("avg_slip",5)<=5 else _TDR13,
+                   _TDB13)
             + "</tbody></table></div>"
         )
 
