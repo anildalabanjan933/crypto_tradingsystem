@@ -106,8 +106,7 @@ log.info("[STARTUP] Entering main loop. Checking every 10 seconds.")
 # Validate API key on startup
 try:
     import requests as _rq_val, time as _t_val, hmac as _hm_val, hashlib as _hs_val
-    _testnet_val = "testnet=True" in open(__file__).read()
-    _base_val = "https://cdn-ind.testnet.deltaex.org" if _testnet_val else "https://api.india.delta.exchange"
+    _base_val = "https://cdn-ind.testnet.deltaex.org"  # testnet - change to https://api.india.delta.exchange for live
     _ts_val = str(int(_t_val.time()))
     _path_val = "/v2/profile"
     _msg_val = f"GET{_ts_val}{_path_val}"
