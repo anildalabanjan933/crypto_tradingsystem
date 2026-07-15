@@ -835,7 +835,7 @@ with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b',
                 recent = lines[-50:] if len(lines) > 50 else lines
                 error_lines = [l.strip() for l in recent if 'ERROR' in l]
                 algotest_errors = [l.strip() for l in recent if 'ALGOTEST' in l and ('ERROR' in l or 'WARNING' in l)]
-                api_errors = [l.strip() for l in recent if any(x in l for x in ['InvalidApiKey','insufficient_margin','rate_limit','IP not whitelisted']) or ('ERROR' in l and any(x in l for x in ['401','403','429']))]
+                api_errors = [l.strip() for l in recent if any(x in l for x in ['InvalidApiKey','invalid_api_key','insufficient_margin','rate_limit','IP not whitelisted','ENTRY FAILED','EXIT FAILED','CRITICAL']) or ('ERROR' in l and any(x in l for x in ['401','403','429']))]
                 if error_lines:
                     for el in error_lines[-3:]:
                         errors.append(f"{bot} ERROR: {el[-100:]}")

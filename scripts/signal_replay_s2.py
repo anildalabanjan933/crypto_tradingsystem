@@ -110,8 +110,9 @@ while True:
     try:
         now = now_utc_str()
 
-        # Reload signals every hour - regenerate first to pick up new candles
-        if now.endswith("00:00") or now.endswith("30:00"):
+        # Reload signals every 10 minutes - regenerate first to pick up new candles
+        _now_min = now[14:16]
+        if _now_min in ["00","10","20","30","40","50"]:
             try:
                 import subprocess, sys
                 subprocess.run(
@@ -151,6 +152,8 @@ while True:
                     log.info(f"[ORDER] ENTRY confirmed | position={position}")
                 else:
                     log.error(f"[ORDER] ENTRY FAILED: {result}")
+                    if result.get('error',{}).get('code') == 'invalid_api_key':
+                        log.error("[CRITICAL] invalid_api_key - check API key and IP whitelist")
                     last_known_ts = load_ts_file(TS_FILE)
                 break  # process one signal per cycle
 
