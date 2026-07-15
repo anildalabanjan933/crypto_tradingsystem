@@ -2946,9 +2946,8 @@ with st.expander("SECTION 12 - LOG MONITOR", expanded=st.session_state.get('exp_
         else:
             return line.strip()
 
-    _base = '/home/anildalabanjan933/crypto_trading_system'
-    s2_log_path = os.path.join(_base, system.get('log_path_s2', 'logs/live_trading_s2.log'))
-    s4_log_path = os.path.join(_base, system.get('log_path_s4', 'logs/live_trading_s4.log'))
+    s2_log_path = '/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s2.log'
+    s4_log_path = '/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4.log'
 
     if log_choice == "S2":
         lines = read_log(s2_log_path, active_filter)
