@@ -16,10 +16,10 @@ load_dotenv()
 SYMBOL       = "BTCUSD"
 LOT_SIZE     = 100
 SIGNAL_CSV   = "logs/signals_s4.csv"
-TS_FILE      = "logs/last_known_ts_s4.txt"
+TS_FILE      = "logs/last_known_ts_testmember1_s4.txt"
 BASELINE_FILE= "logs/valid_from_baseline.txt"
 SLEEP_SEC    = 3
-LOG_FILE     = "logs/live_trading_s4.log"
+LOG_FILE     = "logs/live_trading_testmember1_s4.log"
 
 # --- Logging ---
 os.makedirs("logs", exist_ok=True)
@@ -96,11 +96,6 @@ log.info(f"[STARTUP] Position synced from exchange: {position}")
 
 last_known_ts = load_ts_file(TS_FILE)
 valid_from    = get_valid_from()
-# Auto-advance last_known_ts to valid_from if behind - zero manual intervention
-if last_known_ts and valid_from and last_known_ts < valid_from:
-    last_known_ts = valid_from
-    save_ts_file(TS_FILE, valid_from)
-    log.info(f"[STARTUP] last_known_ts advanced to valid_from={valid_from}")
 log.info(f"[STARTUP] last_known_ts={last_known_ts} | valid_from={valid_from}")
 
 signals = load_signals()
@@ -132,16 +127,7 @@ while True:
         # Reload signals every 10 minutes - regenerate first to pick up new candles
         _now_min = now[14:16]
         if _now_min in ["00","10","20","30","40","50"]:
-            try:
-                import subprocess, sys
-                subprocess.run(
-                    [sys.executable, "scripts/generate_signals.py"],
-                    timeout=300, capture_output=True, text=True,
-                    cwd='/home/anildalabanjan933/crypto_trading_system'
-                )
-                log.info("[RELOAD] Signal CSVs regenerated successfully")
-            except Exception as e:
-                log.error(f"[RELOAD] Signal regeneration failed: {e}")
+            log.info("[RELOAD] Reading latest signal CSV (regeneration handled by live bots)")
             signals = load_signals()
 
         for sig in signals:
