@@ -3549,18 +3549,23 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
 
     def _build_tbl13(s2m, s4m, cbm):
         def _row(lbl, v2, v4, vc, c2=None, c4=None, cc=None):
-            # Combined column: green if positive, red if negative, grey if neutral
+            # S2/S4 columns: grey if N/A
+            _c2 = _TDN13 if str(v2)=='N/A' else (c2 or _TDN13)
+            _c4 = _TDN13 if str(v4)=='N/A' else (c4 or _TDN13)
+            # Combined column: green/red/grey based on value
             if cc is None:
                 _vc = str(vc)
-                if _vc.startswith('-') or _vc.startswith('$-') or _vc.startswith('₹-'):
+                if _vc == 'N/A':
+                    cc = _TDN13
+                elif _vc.startswith('-') or _vc.startswith('$-') or _vc.startswith('₹-'):
                     cc = _TDR13
-                elif _vc in ['N/A','0','0.00%','$0.00','₹0','0.00']:
+                elif _vc in ['0','0.00%','$0.00','₹0','0.00','0.00%']:
                     cc = _TDN13
                 else:
                     cc = _TDG13
             return (f"<tr><td style='{_TD13}'>{lbl}</td>"
-                    f"<td style='{c2 or _TDN13}'>{v2}</td>"
-                    f"<td style='{c4 or _TDN13}'>{v4}</td>"
+                    f"<td style='{_c2}'>{v2}</td>"
+                    f"<td style='{_c4}'>{v4}</td>"
                     f"<td style='{cc}'>{vc}</td></tr>")
         return (
             f"<div style='overflow-x:auto;margin:4px 0;'>"
