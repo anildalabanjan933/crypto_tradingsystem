@@ -3366,9 +3366,9 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
         _VF13 = "2026-07-14T15:00:00"
     _INR13 = 84.0
     _BASE13= "https://cdn-ind.testnet.deltaex.org"
-    _TH13  = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;text-align:center;"
-    _TD13  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#131722;font-weight:500;"
-    _TDN13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#131722;text-align:center;font-weight:500;"
+    _TH13  = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:11px;font-weight:700;color:#333;text-align:center;"
+    _TD13  = "padding:6px 8px;border:1px solid #E0E3EB;font-size:13px;color:#131722;font-weight:600;"
+    _TDN13 = "padding:6px 8px;border:1px solid #E0E3EB;font-size:13px;color:#131722;text-align:center;font-weight:500;"
     _TDG13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#089981;font-weight:700;text-align:center;"
     _TDR13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#F23645;font-weight:700;text-align:center;"
     _TDB13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#2962FF;font-weight:700;text-align:center;"
@@ -3553,11 +3553,12 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
             _c2 = _TDN13 if str(v2)=='N/A' else (c2 or _TDN13)
             _c4 = _TDN13 if str(v4)=='N/A' else (c4 or _TDN13)
             # Combined column: green/red/grey based on value
-            if cc is None:
-                _vc = str(vc)
-                if _vc == 'N/A':
-                    cc = _TDN13
-                elif _vc.startswith('-') or _vc.startswith('$-') or _vc.startswith('₹-'):
+            # Always override color for N/A regardless of passed cc
+            _vc = str(vc)
+            if _vc == 'N/A':
+                cc = _TDN13
+            elif cc is None:
+                if _vc.startswith('-') or _vc.startswith('$-') or _vc.startswith('₹-'):
                     cc = _TDR13
                 elif _vc in ['0','0.00%','$0.00','₹0','0.00','0.00%']:
                     cc = _TDN13
