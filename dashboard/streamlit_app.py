@@ -3430,9 +3430,11 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 xp  = float(x.get("average_fill_price") or x.get("limit_price") or 0)
                 if xts < ets: continue
                 sz  = int(e.get("size",0))
-                pnl = (xp-ep)*sz*0.001 if dir=="LONG" else (ep-xp)*sz*0.001
+                # Use actual exchange PnL from exit order meta_data
+                raw_pnl = float(x.get("meta_data",{}).get("pnl") or 0)
                 cm  = float(e.get("paid_commission") or 0)+float(x.get("paid_commission") or 0)
-                pairs.append({"dir":dir,"ep":ep,"xp":xp,"pnl":pnl-cm,"cm":cm,"ets":ets,"xts":xts,"sz":sz})
+                pnl = raw_pnl - cm
+                pairs.append({"dir":dir,"ep":ep,"xp":xp,"pnl":pnl,"cm":cm,"ets":ets,"xts":xts,"sz":sz})
                 used.add(i); used.add(j); break
         return pairs
 
