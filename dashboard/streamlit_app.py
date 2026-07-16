@@ -3530,7 +3530,7 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
         if t=="pf":   return f"{m['pf']:.2f}"
         if t=="dd":   return f"-{m['dd']*100:.2f}%"
         if t=="cm":      return f"${m['cm']:,.2f} / \u20b9{m['cm']*_INR13:,.0f}"
-        if t=="cap":     return f"$1,816 / \u20b9{1816*_INR13:,.0f}"
+        if t=="cap":     return f"\u20b9{1816*_INR13:,.0f}"
         if t=="today":   return f"\u20b9{m.get('pnl_today',0)*_INR13:,.0f}"
         if t=="week":    return f"\u20b9{m.get('pnl_week',0)*_INR13:,.0f}"
         if t=="month":   return f"\u20b9{m.get('pnl_month',0)*_INR13:,.0f}"
@@ -3578,7 +3578,7 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
             f"<th style='{_TH13}'>Combined</th>"
             f"</tr></thead><tbody>"
             f"<tr><td colspan='4' style='{_SUB13}'>CAPITAL</td></tr>"
-            + _row("Total Capital Required", _v13(s2m,"cap"), _v13(s4m,"cap"), f"$1,816 / \u20b9{int(1816*_INR13):,}")
+            + _row("Total Capital Required", _v13(s2m,"cap"), _v13(s4m,"cap"), f"\u20b9{int(1816*_INR13):,}")
             + f"<tr><td colspan='4' style='{_SUB13}'>CUMULATIVE PnL</td></tr>"
             + _row("Today PnL",   _v13(s2m,"today"), _v13(s4m,"today"), _v13(cbm,"today"), _c13(s2m,True) if s2m and s2m.get("pnl_today",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_today",0)>=0 else _TDR13, _TDB13)
             + _row("Weekly PnL",  _v13(s2m,"week"),  _v13(s4m,"week"),  _v13(cbm,"week"),  _c13(s2m,True) if s2m and s2m.get("pnl_week",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_week",0)>=0 else _TDR13,  _TDB13)
