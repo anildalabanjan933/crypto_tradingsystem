@@ -3636,14 +3636,14 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
     st.caption(f"Valid from: {_VF13} UTC | Auto updates on page load | Testnet")
 
     # ── TOP TABLE: FORWARD TEST / LIVE ───────────────────────
-    st.markdown(f"<div style='{_HDR13}'>FORWARD TEST / LIVE</div>", unsafe_allow_html=True)
-    st.markdown(_build_tbl13(s2m, s4m, cbm), unsafe_allow_html=True)
-
-    st.markdown("<div style='margin:12px 0 4px 0;'></div>", unsafe_allow_html=True)
-
-    # ── BOTTOM TABLE: BACKTEST (SAME DATE RANGE) ─────────────
-    st.markdown(f"<div style='{_HDR13}'>BACKTEST (SAME DATE RANGE: {_VF13[:10]} to TODAY)</div>", unsafe_allow_html=True)
-    st.markdown(_build_tbl13(s2_bt, s4_bt, cb_bt), unsafe_allow_html=True)
+    # Side by side: Forward Test | Backtest
+    _col13a, _col13b = st.columns(2)
+    with _col13a:
+        st.markdown(f"<div style='{_HDR13}'>FORWARD TEST / LIVE</div>", unsafe_allow_html=True)
+        st.markdown(_build_tbl13(s2m, s4m, cbm), unsafe_allow_html=True)
+    with _col13b:
+        st.markdown(f"<div style='{_HDR13}'>BACKTEST (SAME DATE RANGE: {_VF13[:10]} to TODAY)</div>", unsafe_allow_html=True)
+        st.markdown(_build_tbl13(s2_bt, s4_bt, cb_bt), unsafe_allow_html=True)
 
 # ================================================================
 # FOOTER
