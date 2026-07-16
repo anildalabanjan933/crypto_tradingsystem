@@ -83,6 +83,10 @@ def get_valid_from():
     return "2000-01-01T00:00:00"
 
 # --- Startup ---
+# Auto-update VALID_FROM to current UTC time on every restart
+_now_str = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S')
+open(BASELINE_FILE, 'w').write(_now_str)
+log.info(f"[STARTUP] VALID_FROM auto-set to {_now_str} on restart")
 log.info("[STARTUP] S2 Signal Replay Bot starting...")
 
 # Sync position from exchange
