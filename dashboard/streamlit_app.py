@@ -3547,10 +3547,19 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
 
     def _build_tbl13(s2m, s4m, cbm):
         def _row(lbl, v2, v4, vc, c2=None, c4=None, cc=None):
+            # Combined column: green if positive, red if negative, grey if neutral
+            if cc is None:
+                _vc = str(vc)
+                if _vc.startswith('-') or _vc.startswith('$-') or _vc.startswith('₹-'):
+                    cc = _TDR13
+                elif _vc in ['N/A','0','0.00%','$0.00','₹0','0.00']:
+                    cc = _TDN13
+                else:
+                    cc = _TDG13
             return (f"<tr><td style='{_TD13}'>{lbl}</td>"
                     f"<td style='{c2 or _TDN13}'>{v2}</td>"
                     f"<td style='{c4 or _TDN13}'>{v4}</td>"
-                    f"<td style='{cc or _TDB13}'>{vc}</td></tr>")
+                    f"<td style='{cc}'>{vc}</td></tr>")
         return (
             f"<div style='overflow-x:auto;margin:4px 0;'>"
             f"<table style='width:100%;border-collapse:collapse;'>"
@@ -3615,7 +3624,11 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                   "dd":max(s2_bt["dd"],s4_bt["dd"]),
                   "aw":(s2_bt["aw"]+s4_bt["aw"])/2,
                   "al":(s2_bt["al"]+s4_bt["al"])/2,
-                  "pf":(s2_bt["pf"]+s4_bt["pf"])/2}
+                  "pf":(s2_bt["pf"]+s4_bt["pf"])/2,
+                  "pnl_today":s2_bt.get("pnl_today",0)+s4_bt.get("pnl_today",0),
+                  "pnl_week":s2_bt.get("pnl_week",0)+s4_bt.get("pnl_week",0),
+                  "pnl_month":s2_bt.get("pnl_month",0)+s4_bt.get("pnl_month",0),
+                  "pnl_year":s2_bt.get("pnl_year",0)+s4_bt.get("pnl_year",0)}
         cb_bt = merged
 
     st.caption(f"Valid from: {_VF13} UTC | Auto updates on page load | Testnet")
