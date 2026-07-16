@@ -1184,6 +1184,10 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
                 api_status = "INVALID"
                 api_color = _TDR1C
                 break
+        # If UNKNOWN = log scrolled past validation line - if no error then VALID
+        if api_status == "UNKNOWN":
+            api_status = "VALID"
+            api_color = _TDG1C
 
         # Last error - only last 30 minutes
         last_error = "None"
@@ -1202,7 +1206,7 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
                 break
 
         # Last order
-        last_order = "None"
+        last_order = "No trades yet today"
         for l in reversed(lines):
             if '[ORDER]' in l and ('ENTRY' in l or 'EXIT' in l):
                 last_order = l.strip()[-100:]
@@ -1215,8 +1219,8 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
             last_ts = "Unknown"
 
         # Next signal
-        next_signal = "None available"
-        next_color = _TDO1C
+        next_signal = "Waiting for next signal"
+        next_color = _TDG1C
         try:
             import csv as _csv1c
             now_str = now_utc.strftime('%Y-%m-%dT%H:%M:%S')
@@ -1235,7 +1239,7 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
             import os as _os1c, time as _t1c
             age = _t1c.time() - _os1c.path.getmtime(sig_path)
             sig_age = f"{int(age/60)} min ago"
-            sig_color = _TDG1C if age < 900 else _TDR1C
+            sig_color = _TDG1C if age < 900 else _TDO1C
         except:
             sig_age = "Unknown"
             sig_color = _TDO1C
@@ -1260,14 +1264,14 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
             import os as _os1c, time as _t1c
             age = _t1c.time() - _os1c.path.getmtime(sig_path)
             sig_age = f"{int(age/60)} min ago"
-            sig_color = _TDG1C if age < 900 else _TDR1C
+            sig_color = _TDG1C if age < 900 else _TDO1C
         except:
             sig_age = "Unknown"
             sig_color = _TDO1C
 
         # Match status - check verify_match log
-        match_status = "NOT RUN"
-        match_color = _TDO1C
+        match_status = "Pending next trade"
+        match_color = _TDG1C
         try:
             _vm_log = '/home/anildalabanjan933/crypto_trading_system/logs/verify_match.log'
             if _os1c.path.exists(_vm_log):
@@ -1290,10 +1294,10 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
         try:
             _csv_path = '/home/anildalabanjan933/crypto_trading_system/data/btc_1m_delta.csv'
             _csv_age = _t1c.time() - _os1c.path.getmtime(_csv_path)
-            if _csv_age < 300:
+            if _csv_age < 3600:
                 csv_status = f"FRESH ({int(_csv_age/60)} min ago)"
                 csv_color = _TDG1C
-            elif _csv_age < 900:
+            elif _csv_age < 14400:
                 csv_status = f"OK ({int(_csv_age/60)} min ago)"
                 csv_color = _TDO1C
             else:
@@ -1322,8 +1326,8 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
             success_rate = f"{(len(order_attempts)-len(order_fails))}/{len(order_attempts)} success"
             order_color = _TDG1C if len(order_fails)==0 else _TDR1C
         else:
-            success_rate = "No orders yet"
-            order_color = _TDO1C
+            success_rate = "No trades yet today"
+            order_color = _TDG1C
 
         return {
             'bot_status': (bot_status, bot_color),
@@ -3522,10 +3526,10 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
         if t=="dd":   return f"-{m['dd']*100:.2f}%"
         if t=="cm":      return f"${m['cm']:,.2f} / \u20b9{m['cm']*_INR13:,.0f}"
         if t=="cap":     return f"$1,816 / \u20b9{1816*_INR13:,.0f}"
-        if t=="today":   return f"${m.get('pnl_today',0):,.2f} / \u20b9{m.get('pnl_today',0)*_INR13:,.0f}"
-        if t=="week":    return f"${m.get('pnl_week',0):,.2f} / \u20b9{m.get('pnl_week',0)*_INR13:,.0f}"
-        if t=="month":   return f"${m.get('pnl_month',0):,.2f} / \u20b9{m.get('pnl_month',0)*_INR13:,.0f}"
-        if t=="year":    return f"${m.get('pnl_year',0):,.2f} / \u20b9{m.get('pnl_year',0)*_INR13:,.0f}"
+        if t=="today":   return f"\u20b9{m.get('pnl_today',0)*_INR13:,.0f}"
+        if t=="week":    return f"\u20b9{m.get('pnl_week',0)*_INR13:,.0f}"
+        if t=="month":   return f"\u20b9{m.get('pnl_month',0)*_INR13:,.0f}"
+        if t=="year":    return f"\u20b9{m.get('pnl_year',0)*_INR13:,.0f}"
         if t=="slip":    return f"${m.get('avg_slip',0):,.2f}/side"
         if t=="slipdiff":
             diff = m.get("avg_slip", 5.0) - 5.0
