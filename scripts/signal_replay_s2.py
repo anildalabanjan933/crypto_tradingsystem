@@ -183,11 +183,6 @@ while True:
                     if result.get('error',{}).get('code') == 'invalid_api_key':
                         log.error("[CRITICAL] invalid_api_key - check API key and IP whitelist")
                     last_known_ts = load_ts_file(TS_FILE)
-# Auto-advance last_known_ts to valid_from if behind
-if last_known_ts and valid_from and last_known_ts < valid_from:
-    last_known_ts = valid_from
-    save_ts_file(TS_FILE, valid_from)
-    log.info(f"[STARTUP] last_known_ts advanced to valid_from={valid_from}")
                 break  # process one signal per cycle
 
             # --- EXIT ---
