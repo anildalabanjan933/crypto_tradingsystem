@@ -181,7 +181,12 @@ while True:
                 break  # process one signal per cycle
 
             # --- EXIT ---
-            if now >= exit_time and position is not None:
+            # Skip stale exit - must be within 1 candle period (1H for S2)
+            from datetime import datetime, timezone
+            now_dt2 = datetime.strptime(now, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
+            exit_dt2 = datetime.strptime(exit_time, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
+            exit_age_hours = (now_dt2 - exit_dt2).total_seconds() / 3600
+            if now >= exit_time and position is not None and exit_age_hours <= 1.0:
                 side = "sell" if position == "long" else "buy"
                 actual = om.get_position()
                 close_size = abs(actual.get("size", open_lot_size)) if actual.get("success") else open_lot_size
