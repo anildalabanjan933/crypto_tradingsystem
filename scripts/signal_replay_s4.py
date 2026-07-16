@@ -152,7 +152,12 @@ while True:
                 continue
 
             # --- ENTRY ---
-            if now >= entry_time and position is None:
+            # Skip stale signals - entry must be within 1 candle period (2H for S4)
+            from datetime import datetime, timezone
+            now_dt = datetime.strptime(now, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
+            entry_dt = datetime.strptime(entry_time, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
+            signal_age_hours = (now_dt - entry_dt).total_seconds() / 3600
+            if now >= entry_time and position is None and signal_age_hours <= 2.0:
                 side = "buy" if direction == "long" else "sell"
                 log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={entry_time}")
                 save_ts_file(TS_FILE, entry_time)
