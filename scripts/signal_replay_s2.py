@@ -205,11 +205,6 @@ while True:
                 else:
                     log.error(f"[ORDER] EXIT FAILED: {result}")
                     last_known_ts = load_ts_file(TS_FILE)
-# Auto-advance last_known_ts to valid_from if behind
-if last_known_ts and valid_from and last_known_ts < valid_from:
-    last_known_ts = valid_from
-    save_ts_file(TS_FILE, valid_from)
-    log.info(f"[STARTUP] last_known_ts advanced to valid_from={valid_from}")
                 break
 
         else:
