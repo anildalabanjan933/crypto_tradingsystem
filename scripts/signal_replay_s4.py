@@ -131,7 +131,7 @@ while True:
 
         # Reload signals every 10 minutes - regenerate first to pick up new candles
         _now_min = now[14:16]
-        if _now_min in ["00","10","20","30","40","50"]:
+        if _now_min in ["05","15","25","35","45","55"]:
             try:
                 import subprocess, sys
                 subprocess.run(
