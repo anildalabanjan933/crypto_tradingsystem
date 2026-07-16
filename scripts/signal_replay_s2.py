@@ -18,7 +18,7 @@ LOT_SIZE     = 100
 SIGNAL_CSV   = "logs/signals_s2.csv"
 TS_FILE      = "logs/last_known_ts_s2.txt"
 BASELINE_FILE= "logs/valid_from_baseline.txt"
-SLEEP_SEC    = 3    # check every 3 seconds
+SLEEP_SEC    = 1    # check every 1 second
 LOG_FILE     = "logs/live_trading_s2.log"
 
 # --- Logging ---

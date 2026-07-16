@@ -18,7 +18,7 @@ LOT_SIZE     = 100
 SIGNAL_CSV   = "logs/signals_s4.csv"
 TS_FILE      = "logs/last_known_ts_testmember1_s4.txt"
 BASELINE_FILE= "logs/valid_from_baseline.txt"
-SLEEP_SEC    = 3
+SLEEP_SEC    = 1
 LOG_FILE     = "logs/live_trading_testmember1_s4.log"
 
 # --- Logging ---
