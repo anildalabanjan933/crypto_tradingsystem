@@ -3367,11 +3367,11 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
     _INR13 = 84.0
     _BASE13= "https://cdn-ind.testnet.deltaex.org"
     _TH13  = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;text-align:center;"
-    _TD13  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;"
-    _TDN13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:center;"
-    _TDG13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
-    _TDR13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#F23645;font-weight:700;text-align:center;"
-    _TDB13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#2962FF;font-weight:700;text-align:center;"
+    _TD13  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#131722;font-weight:500;"
+    _TDN13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#131722;text-align:center;font-weight:500;"
+    _TDG13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#089981;font-weight:700;text-align:center;"
+    _TDR13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#F23645;font-weight:700;text-align:center;"
+    _TDB13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#2962FF;font-weight:700;text-align:center;"
     _SUB13 = "padding:4px 8px;border:1px solid #C8D0DC;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
     _HDR13 = "padding:6px 12px;background:#1E3A5F;font-size:11px;font-weight:700;color:#ffffff;margin:8px 0 4px 0;border-left:4px solid #2962FF;"
 
@@ -3413,6 +3413,8 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
         srt = sorted(orders, key=lambda x: x.get("created_at",""))
         for i, e in enumerate(srt):
             if i in used or e.get("state")!="closed": continue
+            # Entry must be reduce_only=False
+            if str(e.get("reduce_only","")).lower() in ["true","1"]: continue
             es = e.get("side")
             if es not in ["buy","sell"]: continue
             xs  = "sell" if es=="buy" else "buy"
@@ -3422,6 +3424,7 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
             for j, x in enumerate(srt):
                 if j in used or j==i: continue
                 if x.get("side")!=xs or x.get("state")!="closed": continue
+                # Exit must be reduce_only=True
                 if str(x.get("reduce_only","")).lower() not in ["true","1"]: continue
                 xts = int(_dt13.datetime.strptime(x.get("created_at","1970-01-01T00:00:00")[:19], "%Y-%m-%dT%H:%M:%S").timestamp())
                 xp  = float(x.get("average_fill_price") or x.get("limit_price") or 0)
