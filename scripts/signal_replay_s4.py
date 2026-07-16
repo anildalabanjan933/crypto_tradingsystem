@@ -170,7 +170,7 @@ while True:
                 break
 
             # --- EXIT ---
-            if now >= exit_time and position is not None and entry_time == last_known_ts:
+            if now >= exit_time and position is not None:
                 side = "sell" if position == "long" else "buy"
                 actual = om.get_position()
                 close_size = abs(actual.get("size", open_lot_size)) if actual.get("success") else open_lot_size
