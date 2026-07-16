@@ -1219,20 +1219,31 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
             last_ts = "Unknown"
 
         # Next signal
-        next_signal = "Waiting for next signal"
-        next_color = _TDG1C
+        next_signal = "Waiting - next Renko brick forming"
+        next_color = _TDO1C
         try:
             import csv as _csv1c
             now_str = now_utc.strftime('%Y-%m-%dT%H:%M:%S')
+            all_rows = []
             with open(sig_path) as fh:
                 reader = _csv1c.DictReader(fh)
                 for row in reader:
-                    if row['entry_time'].strip() > last_ts:
-                        next_signal = f"ENTRY={row['entry_time']} EXIT={row['exit_time']} DIR={row['direction']}"
-                        next_color = _TDG1C
-                        break
-        except:
-            pass
+                    all_rows.append(row)
+            found = False
+            for row in all_rows:
+                if row['entry_time'].strip() > last_ts:
+                    next_signal = f"ENTRY={row['entry_time']} EXIT={row['exit_time']} DIR={row['direction']}"
+                    next_color = _TDG1C
+                    found = True
+                    break
+            if not found and all_rows:
+                last_exit = all_rows[-1]['exit_time'].strip()
+                if last_exit < now_str:
+                    next_signal = f"NO SIGNAL AFTER VALID_FROM - last exit={last_exit}"
+                    next_color = _TDR1C
+        except Exception as _e1c:
+            next_signal = f"Error reading signal CSV: {str(_e1c)[:50]}"
+            next_color = _TDR1C
 
         # Signal CSV last update
         try:
