@@ -1487,8 +1487,11 @@ with st.expander("MEMBER MANAGEMENT", expanded=st.session_state.get('exp_24', Fa
             mc[0].write(m.get('name',''))
             mc[1].write(m.get('account','Testnet'))
             # Check S2 status
-            s2_screen = f"m{idx}_s2"
-            s4_screen = f"m{idx}_s4"
+            _mname = m.get('name','').lower().replace(' ','_')
+            s2_screen = f"{_mname}_s2"
+            s4_screen = f"{_mname}_s4"
+            _s2_log = f"logs/live_trading_{_mname}_s2.log"
+            _s4_log = f"logs/live_trading_{_mname}_s4.log"
             import subprocess
             _scr_out = _timed('screen_list', 30, _fetch_screen_list)
             s2_running = s2_screen in _scr_out
@@ -1498,8 +1501,8 @@ with st.expander("MEMBER MANAGEMENT", expanded=st.session_state.get('exp_24', Fa
             if mc[4].button("▶", key=f"m_start_{idx}"):
                 try:
                     env = f"S2_API_KEY={m.get('s2_key','')} S2_API_SECRET={m.get('s2_secret','')} S4_API_KEY={m.get('s4_key','')} S4_API_SECRET={m.get('s4_secret','')}"
-                    subprocess.Popen(['bash','-c',f'screen -dmS {s2_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && export {env} && python3 scripts/signal_replay_s2.py >> logs/live_trading_s2.log 2>&1"'])
-                    subprocess.Popen(['bash','-c',f'screen -dmS {s4_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && export {env} && python3 scripts/signal_replay_s4.py >> logs/live_trading_s4.log 2>&1"'])
+                    subprocess.Popen(['bash','-c',f'screen -S {s2_screen} -X quit 2>/dev/null; sleep 1; screen -dmS {s2_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && export {env} && .venv/bin/python3 scripts/signal_replay_s2.py >> {_s2_log} 2>&1"'])
+                    subprocess.Popen(['bash','-c',f'screen -S {s4_screen} -X quit 2>/dev/null; sleep 1; screen -dmS {s4_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && export {env} && .venv/bin/python3 scripts/signal_replay_s4.py >> {_s4_log} 2>&1"'])
                     st.success(f"{m.get('name')} bots started")
                 except Exception as e:
                     st.error(str(e))
@@ -1620,9 +1623,9 @@ with st.expander("MEMBER MANAGEMENT", expanded=st.session_state.get('exp_24', Fa
                             if _screen_name not in _start_content:
                                 _new_screens += (
                                     f'\nscreen -dmS {_screen_name} bash -c '
-                                    f'"cd {_base} && source .venv/bin/activate && '
-                                    f"export $(grep -v '#' .env | xargs) && "
-                                    f'python3 scripts/signal_replay_{_mkey}_{_b}.py >> '
+                                    f'"cd {_base} && '
+                                    f"export $(grep -v '#' {_base}/.env | xargs) && "
+                                    f'.venv/bin/python3 scripts/signal_replay_{_mkey}_{_b}.py >> '
                                     f'logs/live_trading_{_mkey}_{_b}.log 2>&1"'
                                 )
                         if _new_screens:
@@ -1644,9 +1647,8 @@ with st.expander("MEMBER MANAGEMENT", expanded=st.session_state.get('exp_24', Fa
                             _api_s = m_s2_sec if _b=='s2' else m_s4_sec
                             _cmd = (f'screen -S {_screen_name} -X quit 2>/dev/null; sleep 1; '
                                    f'screen -dmS {_screen_name} bash -c "cd {_base} && '
-                                   f'source .venv/bin/activate && '
-                                   f'export $(grep -v '#' {_base}/.env | xargs) && '
-                                   f'python3 scripts/signal_replay_{_mkey}_{_b}.py >> '
+                                   f'export $(grep -v \'#\' {_base}/.env | xargs) && '
+                                   f'.venv/bin/python3 scripts/signal_replay_{_mkey}_{_b}.py >> '
                                    f'logs/live_trading_{_mkey}_{_b}.log 2>&1"')
                             _sp2.Popen(['bash', '-c', _cmd])
                     except Exception as _e:
@@ -1758,7 +1760,7 @@ with b4:
     if st.button("RESTART S2", key="sec2_restart_s2"):
         try:
             import subprocess
-            subprocess.Popen(['bash','-c','screen -S live_s2 -X quit; sleep 2; screen -dmS live_s2 bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && python3 scripts/signal_replay_s2.py >> logs/live_trading_s2.log 2>&1"'])
+            subprocess.Popen(['bash','-c','screen -S live_s2 -X quit; sleep 2; screen -dmS live_s2 bash -c "cd /home/anildalabanjan933/crypto_trading_system && .venv/bin/python3 scripts/signal_replay_s2.py >> logs/live_trading_s2.log 2>&1"'])
             st.success("S2 restarting...")
         except Exception as e:
             st.error(str(e))
@@ -1766,7 +1768,7 @@ with b5:
     if st.button("RESTART S4", key="sec2_restart_s4"):
         try:
             import subprocess
-            subprocess.Popen(['bash','-c','screen -S live_s4 -X quit; sleep 2; screen -dmS live_s4 bash -c "cd /home/anildalabanjan933/crypto_trading_system && source .venv/bin/activate && python3 scripts/signal_replay_s4.py >> logs/live_trading_s4.log 2>&1"'])
+            subprocess.Popen(['bash','-c','screen -S live_s4 -X quit; sleep 2; screen -dmS live_s4 bash -c "cd /home/anildalabanjan933/crypto_trading_system && .venv/bin/python3 scripts/signal_replay_s4.py >> logs/live_trading_s4.log 2>&1"'])
             st.success("S4 restarting...")
         except Exception as e:
             st.error(str(e))
