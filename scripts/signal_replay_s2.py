@@ -97,12 +97,12 @@ log.info(f"[STARTUP] Position synced from exchange: {position}")
 
 # Load last known ts
 last_known_ts = load_ts_file(TS_FILE)
-# Auto-advance last_known_ts to valid_from if behind
+valid_from    = get_valid_from()
+# Auto-advance last_known_ts to valid_from if behind - zero manual intervention
 if last_known_ts and valid_from and last_known_ts < valid_from:
     last_known_ts = valid_from
     save_ts_file(TS_FILE, valid_from)
     log.info(f"[STARTUP] last_known_ts advanced to valid_from={valid_from}")
-valid_from    = get_valid_from()
 log.info(f"[STARTUP] last_known_ts={last_known_ts} | valid_from={valid_from}")
 
 # Load signals
