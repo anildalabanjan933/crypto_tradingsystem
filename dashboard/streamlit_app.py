@@ -2990,11 +2990,121 @@ with st.expander("SECTION 5 - BACKTEST", expanded=True):
             "<th style='padding:6px 8px;border:1px solid #ddd;'>Scaled INR</th>"
             "<th style='padding:6px 8px;border:1px solid #ddd;'>Difference</th>"
             f"</tr></thead><tbody>{_yrows}</tbody></table></div>"), unsafe_allow_html=True)
-        _html_dl = (f"<html><head><title>Scaling Report</title></head><body>"
-            f"<h1>Scaling Optimiser - {st.session_state.get('sc_strategy_result','')}</h1>"
-            f"<h2>Best: {_best.get('scale_period','')} | {_best.get('increment_step','')} | Cap:{_best.get('max_lots_cap','-')}</h2>"
-            f"<h2>Net PnL INR: Rs{_best['net_pnl_inr']:,.0f}</h2>"
-            f"</body></html>")
+        _sc_strat = st.session_state.get('sc_strategy_result','')
+        _sc_best_period = _best.get('scale_period', _best.get('value',''))
+        _sc_best_step = _best.get('increment_step', _best.get('value','-'))
+        _sc_best_cap = _best.get('max_lots_cap','-')
+        _sc_best_pnl = _best['net_pnl_inr']
+        _sc_best_dd = _best['max_dd_inr']
+        _sc_best_pf = _best['profit_factor']
+        _sc_best_sr = _best['sharpe']
+        _sc_best_wr = _best['win_rate']
+        _sc_best_ml = _best.get('max_lots_reached','-')
+        _sc_norm_pnl = _base.get('net_pnl_inr',0)
+        _sc_norm_dd = _base.get('max_dd_inr',0)
+        _sc_norm_pf = _base.get('profit_factor',0)
+        _sc_norm_sr = _base.get('sharpe',0)
+        _sc_norm_wr = _base.get('win_rate',0)
+        _sc_norm_tr = _base.get('total_trades',0)
+        _m_rows_html = ""
+        for m in _all_months:
+            _bi = _bsm.get(m,{}).get('net_inr',0)
+            _si = _bm2.get(m,{}).get('net_inr',0)
+            _di = _si - _bi
+            _bc = "color:#27ae60;" if _bi>=0 else "color:#e74c3c;"
+            _sc2c = "color:#27ae60;" if _si>=0 else "color:#e74c3c;"
+            _dc = "color:#27ae60;" if _di>=0 else "color:#e74c3c;"
+            _m_rows_html += f"<tr><td>{m}</td><td style='{_bc}font-weight:bold;'>Rs{_bi:,.0f}</td><td style='{_sc2c}font-weight:bold;'>Rs{_si:,.0f}</td><td style='{_dc}font-weight:bold;'>Rs{_di:,.0f}</td></tr>"
+        _y_rows_html = ""
+        for y in _all_years:
+            _bi = _bsy.get(y,{}).get('net_inr',0)
+            _si = _by.get(y,{}).get('net_inr',0)
+            _di = _si - _bi
+            _bc = "color:#27ae60;" if _bi>=0 else "color:#e74c3c;"
+            _sc3c = "color:#27ae60;" if _si>=0 else "color:#e74c3c;"
+            _dc = "color:#27ae60;" if _di>=0 else "color:#e74c3c;"
+            _y_rows_html += f"<tr><td>{y}</td><td style='{_bc}font-weight:bold;'>Rs{_bi:,.0f}</td><td style='{_sc3c}font-weight:bold;'>Rs{_si:,.0f}</td><td style='{_dc}font-weight:bold;'>Rs{_di:,.0f}</td></tr>"
+        _html_dl = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scaling Optimiser Report - {_sc_strat}</title>
+<style>
+* {{ margin:0; padding:0; box-sizing:border-box; }}
+body {{ font-family:"Segoe UI",Tahoma,Geneva,Verdana,sans-serif; background:#f5f5f5; color:#333; line-height:1.6; }}
+.container {{ max-width:1400px; margin:0 auto; padding:20px; }}
+.header {{ background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); color:white; padding:30px; border-radius:8px; margin-bottom:30px; box-shadow:0 4px 6px rgba(0,0,0,0.1); }}
+.header h1 {{ font-size:28px; margin-bottom:10px; }}
+.header-info {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:20px; margin-top:20px; }}
+.header-item {{ background:rgba(255,255,255,0.1); padding:15px; border-radius:5px; }}
+.header-item label {{ font-size:12px; opacity:0.9; display:block; margin-bottom:5px; }}
+.header-item value {{ font-size:18px; font-weight:bold; }}
+.section {{ background:white; padding:25px; margin-bottom:20px; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1); }}
+.section h2 {{ font-size:20px; margin-bottom:20px; color:#667eea; border-bottom:2px solid #667eea; padding-bottom:10px; }}
+table {{ width:100%; border-collapse:collapse; margin-top:15px; }}
+th {{ background-color:#667eea; color:white; padding:12px; text-align:left; font-weight:600; }}
+td {{ padding:12px; border-bottom:1px solid #ddd; }}
+tr:hover {{ background-color:#f9f9f9; }}
+.positive {{ color:#27ae60; font-weight:bold; }}
+.negative {{ color:#e74c3c; font-weight:bold; }}
+.metric-grid {{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:15px; margin-top:15px; }}
+.metric-card {{ background:#f9f9f9; padding:15px; border-radius:5px; border-left:4px solid #667eea; }}
+.metric-card label {{ font-size:12px; color:#666; display:block; margin-bottom:5px; }}
+.metric-card value {{ font-size:18px; font-weight:bold; display:block; }}
+.footer {{ text-align:center; padding:20px; color:#999; font-size:12px; }}
+.best-badge {{ background:#27ae60; color:white; padding:4px 10px; border-radius:12px; font-size:12px; font-weight:bold; }}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>Scaling Optimiser Report</h1>
+<p>{_sc_strat} | Step Based Compounding | Best Config: {_sc_best_period} Period | {_sc_best_step} Step | Cap: {_sc_best_cap}</p>
+<div class="header-info">
+<div class="header-item"><label>Best Scaled Net PnL</label><value class="positive">Rs{_sc_best_pnl:,.0f}</value></div>
+<div class="header-item"><label>Normal Net PnL (100 lots)</label><value>Rs{_sc_norm_pnl:,.0f}</value></div>
+<div class="header-item"><label>Extra Profit from Scaling</label><value class="positive">Rs{_sc_best_pnl-_sc_norm_pnl:,.0f}</value></div>
+<div class="header-item"><label>Max Lots Reached</label><value>{_sc_best_ml}</value></div>
+<div class="header-item"><label>Best Profit Factor</label><value>{_sc_best_pf:.2f}</value></div>
+<div class="header-item"><label>Best Sharpe Ratio</label><value>{_sc_best_sr:.2f}</value></div>
+<div class="header-item"><label>Max DD (Scaled)</label><value class="negative">Rs{_sc_best_dd:,.0f}</value></div>
+<div class="header-item"><label>Win Rate</label><value>{_sc_best_wr:.1f}%</value></div>
+</div>
+</div>
+<div class="section">
+<h2>Side by Side Comparison</h2>
+<table>
+<thead><tr><th>Metric</th><th>Normal (100 lots fixed)</th><th>Best Scaled Config</th><th>Improvement</th></tr></thead>
+<tbody>
+<tr><td>Total Trades</td><td>{_sc_norm_tr}</td><td>{_best.get('metrics',{{}}).get('total_trades',0)}</td><td>-</td></tr>
+<tr><td>Win Rate</td><td>{_sc_norm_wr:.2f}%</td><td>{_sc_best_wr:.2f}%</td><td>-</td></tr>
+<tr><td>Net PnL INR</td><td class="positive">Rs{_sc_norm_pnl:,.0f}</td><td class="positive">Rs{_sc_best_pnl:,.0f}</td><td class="positive">+Rs{_sc_best_pnl-_sc_norm_pnl:,.0f}</td></tr>
+<tr><td>Profit Factor</td><td>{_sc_norm_pf:.2f}</td><td>{_sc_best_pf:.2f}</td><td>-</td></tr>
+<tr><td>Max DD INR</td><td class="negative">Rs{_sc_norm_dd:,.0f}</td><td class="negative">Rs{_sc_best_dd:,.0f}</td><td>-</td></tr>
+<tr><td>Sharpe Ratio</td><td>{_sc_norm_sr:.2f}</td><td>{_sc_best_sr:.2f}</td><td>-</td></tr>
+<tr><td>Max Lots</td><td>100</td><td>{_sc_best_ml}</td><td>-</td></tr>
+</tbody>
+</table>
+</div>
+<div class="section">
+<h2>Monthly Returns Comparison</h2>
+<table>
+<thead><tr><th>Month</th><th>Normal INR</th><th>Scaled INR</th><th>Difference</th></tr></thead>
+<tbody>{_m_rows_html}</tbody>
+</table>
+</div>
+<div class="section">
+<h2>Yearly Returns Comparison</h2>
+<table>
+<thead><tr><th>Year</th><th>Normal INR</th><th>Scaled INR</th><th>Difference</th></tr></thead>
+<tbody>{_y_rows_html}</tbody>
+</table>
+</div>
+<div class="footer">Generated by CTS Scaling Optimiser | {_sc_strat}</div>
+</div>
+</body>
+</html>"""
         st.download_button("DOWNLOAD SCALING REPORT HTML", _html_dl.encode('utf-8'),
             file_name=f"scaling_{st.session_state.get('sc_strategy_result','')}.html",
             mime="text/html", key="sc_dl_html")
