@@ -181,6 +181,11 @@ while True:
                 if result.get("success"):
                     position     = direction
                     open_lot_size = lots
+                    sl_result = om.place_bracket_sl(direction=direction, entry_price=float(result.get("filled_price", 0) or 0))
+                    if sl_result.get("success"):
+                        log.info(f"[SL] Bracket SL placed | sl_price={sl_result['sl_price']}")
+                    else:
+                        log.warning(f"[SL] Bracket SL FAILED: {sl_result}")
                     log.info(f"[ORDER] ENTRY confirmed | position={position}")
                 else:
                     log.error(f"[ORDER] ENTRY FAILED: {result}")
