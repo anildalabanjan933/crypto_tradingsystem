@@ -1305,10 +1305,10 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
         try:
             _csv_path = '/home/anildalabanjan933/crypto_trading_system/data/btc_1m_delta.csv'
             _csv_age = _t1c.time() - _os1c.path.getmtime(_csv_path)
-            if _csv_age < 3600:
+            if _csv_age < 7200:
                 csv_status = f"FRESH ({int(_csv_age/60)} min ago)"
                 csv_color = _TDG1C
-            elif _csv_age < 14400:
+            elif _csv_age < 43200:
                 csv_status = f"OK ({int(_csv_age/60)} min ago)"
                 csv_color = _TDO1C
             else:
