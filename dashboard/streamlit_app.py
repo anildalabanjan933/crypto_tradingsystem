@@ -2864,7 +2864,7 @@ with st.expander("SECTION 5 - BACKTEST", expanded=True):
                     _base_metrics = calculate_metrics(_base_trades, sc_starting_lots)
                     st.session_state['sc_results'] = _results
                     st.session_state['sc_base_metrics'] = _base_metrics
-                    st.session_state['sc_strategy'] = sc_strategy
+                    st.session_state['sc_strategy_result'] = sc_strategy
                     st.session_state['sc_starting_lots'] = sc_starting_lots
                     _sc_progress.progress(100)
                     _sc_status.success(f"Done! {len(_results)} combinations tested.")
@@ -2991,12 +2991,12 @@ with st.expander("SECTION 5 - BACKTEST", expanded=True):
             "<th style='padding:6px 8px;border:1px solid #ddd;'>Difference</th>"
             f"</tr></thead><tbody>{_yrows}</tbody></table></div>"), unsafe_allow_html=True)
         _html_dl = (f"<html><head><title>Scaling Report</title></head><body>"
-            f"<h1>Scaling Optimiser - {st.session_state.get('sc_strategy','')}</h1>"
+            f"<h1>Scaling Optimiser - {st.session_state.get('sc_strategy_result','')}</h1>"
             f"<h2>Best: {_best.get('scale_period','')} | {_best.get('increment_step','')} | Cap:{_best.get('max_lots_cap','-')}</h2>"
             f"<h2>Net PnL INR: Rs{_best['net_pnl_inr']:,.0f}</h2>"
             f"</body></html>")
         st.download_button("DOWNLOAD SCALING REPORT HTML", _html_dl.encode('utf-8'),
-            file_name=f"scaling_{st.session_state.get('sc_strategy','')}.html",
+            file_name=f"scaling_{st.session_state.get('sc_strategy_result','')}.html",
             mime="text/html", key="sc_dl_html")
 
 
