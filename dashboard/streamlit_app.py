@@ -2785,6 +2785,215 @@ with st.expander("SECTION 5 - BACKTEST", expanded=True):
 
     import subprocess, glob, os
 
+    # ================================================================
+    # SECTION 5 - TAB 2 - SCALE BACKTEST
+    # ================================================================
+    st.markdown('<hr style="margin:8px 0;border:none;border-top:2px solid #e0e0e0;">', unsafe_allow_html=True)
+    st.markdown("### Scale Backtest (Compounding Optimiser)")
+    import sys as _sys5s
+    _sys5s.path.insert(0, '/home/anildalabanjan933/crypto_trading_system')
+    from engine.scaling_engine import load_trades, run_full_mode, run_group_mode, apply_scaling, calculate_metrics
+    _sc1, _sc2, _sc3 = st.columns(3)
+    with _sc1:
+        sc_strategy = st.selectbox("Strategy", ["RenkoReversalStrategy","RenkoSMIIOSupertrendStrategy"], key="sc_strategy")
+    with _sc2:
+        sc_scale_type = st.selectbox("Scaling Type", ["Step Based (Preferred)","Formula Based"], key="sc_type")
+    with _sc3:
+        sc_mode = st.selectbox("Mode", ["Full Mode (All Combinations)","Group Mode - Period","Group Mode - Step","Group Mode - Cap"], key="sc_mode")
+    _sc4, _sc5 = st.columns(2)
+    with _sc4:
+        sc_starting_lots = st.number_input("Starting Lots", min_value=1, max_value=10000, value=100, key="sc_lots")
+    with _sc5:
+        sc_slippage = st.number_input("Slippage/side ($)", min_value=0.0, value=5.0, key="sc_slip")
+    sc_include_charges = st.checkbox("Include Tax & All Charges", value=True, key="sc_charges")
+    st.markdown("**Date Range**")
+    sc_range = st.radio("Scale Date Range", ["1 Month","6 Months","1 Year","1.5 Years","2 Years","Full CSV","Custom"], index=5, horizontal=True, key="sc_range", label_visibility="collapsed")
+    _today_sc = datetime.date.today()
+    if sc_range == "1 Month":
+        sc_start = _today_sc - datetime.timedelta(days=30); sc_end = _today_sc
+    elif sc_range == "6 Months":
+        sc_start = _today_sc - datetime.timedelta(days=180); sc_end = _today_sc
+    elif sc_range == "1 Year":
+        sc_start = _today_sc - datetime.timedelta(days=365); sc_end = _today_sc
+    elif sc_range == "1.5 Years":
+        sc_start = _today_sc - datetime.timedelta(days=548); sc_end = _today_sc
+    elif sc_range == "2 Years":
+        sc_start = _today_sc - datetime.timedelta(days=730); sc_end = _today_sc
+    elif sc_range == "Full CSV":
+        sc_start = datetime.date.fromisoformat("2024-01-01"); sc_end = _today_sc
+    else:
+        _scc1, _scc2 = st.columns(2)
+        with _scc1:
+            sc_start = st.date_input("Start Date", value=datetime.date(2025,1,1), key="sc_start")
+        with _scc2:
+            sc_end = st.date_input("End Date", value=_today_sc, key="sc_end")
+    if st.button("RUN SCALING OPTIMISER", key="sc_run"):
+        _sc_status = st.empty()
+        _sc_progress = st.progress(0)
+        try:
+            import glob as _scglob, os as _scos
+            _sc_pattern = f"output/trade_log_{sc_strategy}_BTCUSD_*.csv"
+            _sc_files = sorted([f for f in _scglob.glob(_sc_pattern)], reverse=True)
+            if not _sc_files:
+                _sc_status.error(f"No backtest CSV found for {sc_strategy}. Run backtest first.")
+            else:
+                _sc_csv = _sc_files[0]
+                _sc_status.info(f"Loading: {_scos.path.basename(_sc_csv)}")
+                _sc_progress.progress(20)
+                _all_trades = load_trades(_sc_csv)
+                _filtered = [t for t in _all_trades if str(sc_start) <= t['entry_datetime'][:10] <= str(sc_end)]
+                if not _filtered:
+                    _sc_status.error(f"No trades in range {sc_start} to {sc_end}")
+                else:
+                    _sc_status.info(f"Loaded {len(_filtered)} trades - running optimiser...")
+                    _sc_progress.progress(40)
+                    _scale_type = "step" if "Step" in sc_scale_type else "formula"
+                    if "Full Mode" in sc_mode:
+                        _results = run_full_mode(_filtered, sc_starting_lots, _scale_type)
+                    elif "Period" in sc_mode:
+                        _results = run_group_mode(_filtered, sc_starting_lots, "period", _scale_type)
+                    elif "Step" in sc_mode:
+                        _results = run_group_mode(_filtered, sc_starting_lots, "step", _scale_type)
+                    else:
+                        _results = run_group_mode(_filtered, sc_starting_lots, "cap", _scale_type)
+                    _sc_progress.progress(80)
+                    _base_trades, _ = apply_scaling(_filtered, sc_starting_lots, 0, 1, sc_starting_lots, "step")
+                    _base_metrics = calculate_metrics(_base_trades, sc_starting_lots)
+                    st.session_state['sc_results'] = _results
+                    st.session_state['sc_base_metrics'] = _base_metrics
+                    st.session_state['sc_strategy'] = sc_strategy
+                    st.session_state['sc_starting_lots'] = sc_starting_lots
+                    _sc_progress.progress(100)
+                    _sc_status.success(f"Done! {len(_results)} combinations tested.")
+                    import time as _sct; _sct.sleep(1); st.rerun()
+        except Exception as _sce:
+            _sc_status.error(f"Error: {_sce}")
+            import traceback; st.code(traceback.format_exc())
+    if 'sc_results' in st.session_state and st.session_state['sc_results']:
+        _res = st.session_state['sc_results']
+        _base = st.session_state.get('sc_base_metrics', {})
+        _best = _res[0]
+        st.markdown("---")
+        st.markdown("#### Results - Ranked Best to Worst (Net PnL INR)")
+        _tbl_rows = ""
+        for i, r in enumerate(_res):
+            _bg = "background:#e8f5e9;" if i == 0 else ""
+            _rank = "BEST" if i == 0 else str(i+1)
+            _tbl_rows += (f"<tr style='{_bg}'>"
+                f"<td style='padding:4px 8px;border:1px solid #ddd;font-weight:700;color:#089981;'>{_rank}</td>"
+                f"<td style='padding:4px 8px;border:1px solid #ddd;'>{r.get('scale_period',r.get('value',''))}</td>"
+                f"<td style='padding:4px 8px;border:1px solid #ddd;'>{r.get('increment_step',r.get('value','-'))}</td>"
+                f"<td style='padding:4px 8px;border:1px solid #ddd;'>{r.get('max_lots_cap','-')}</td>"
+                f"<td style='padding:4px 8px;border:1px solid #ddd;'>{r.get('max_lots_reached','-')}</td>"
+                f"<td style='padding:4px 8px;border:1px solid #ddd;color:#089981;font-weight:700;'>Rs{r['net_pnl_inr']:,.0f}</td>"
+                f"<td style='padding:4px 8px;border:1px solid #ddd;'>{r['win_rate']:.1f}%</td>"
+                f"<td style='padding:4px 8px;border:1px solid #ddd;'>{r['profit_factor']:.2f}</td>"
+                f"<td style='padding:4px 8px;border:1px solid #ddd;'>Rs{r['max_dd_inr']:,.0f}</td>"
+                f"<td style='padding:4px 8px;border:1px solid #ddd;'>{r['sharpe']:.2f}</td>"
+                f"<td style='padding:4px 8px;border:1px solid #ddd;'>{r['profitable_months']}/{r['profitable_months']+r['losing_months']}</td>"
+                "</tr>")
+        _tbl_html = ("<div style='overflow-x:auto;'><table style='width:100%;border-collapse:collapse;font-size:12px;'>"
+            "<thead><tr style='background:#f0f3fa;'>"
+            "<th style='padding:6px 8px;border:1px solid #ddd;'>Rank</th>"
+            "<th style='padding:6px 8px;border:1px solid #ddd;'>Period</th>"
+            "<th style='padding:6px 8px;border:1px solid #ddd;'>Step</th>"
+            "<th style='padding:6px 8px;border:1px solid #ddd;'>Cap</th>"
+            "<th style='padding:6px 8px;border:1px solid #ddd;'>Max Lots</th>"
+            "<th style='padding:6px 8px;border:1px solid #ddd;'>Net PnL INR</th>"
+            "<th style='padding:6px 8px;border:1px solid #ddd;'>Win Rate</th>"
+            "<th style='padding:6px 8px;border:1px solid #ddd;'>PF</th>"
+            "<th style='padding:6px 8px;border:1px solid #ddd;'>Max DD INR</th>"
+            "<th style='padding:6px 8px;border:1px solid #ddd;'>Sharpe</th>"
+            "<th style='padding:6px 8px;border:1px solid #ddd;'>Prof Months</th>"
+            f"</tr></thead><tbody>{_tbl_rows}</tbody></table></div>")
+        st.markdown(_tbl_html, unsafe_allow_html=True)
+        st.markdown("---")
+        st.markdown("#### Side by Side Comparison")
+        _col_l, _col_r = st.columns(2)
+        def _mrow(label, val):
+            return f"<tr><td style='padding:4px 8px;border:1px solid #ddd;font-weight:600;'>{label}</td><td style='padding:4px 8px;border:1px solid #ddd;'>{val}</td></tr>"
+        with _col_l:
+            st.markdown(f"**Normal ({sc_starting_lots} lots fixed)**")
+            st.markdown(f"<table style='width:100%;border-collapse:collapse;font-size:12px;'>"
+                f"{_mrow('Trades',_base.get('total_trades',0))}"
+                f"{_mrow('Win Rate',f\"{_base.get('win_rate',0):.2f}%\")}"
+                f"{_mrow('Net PnL INR',f\"Rs{_base.get('net_pnl_inr',0):,.0f}\")}"
+                f"{_mrow('Profit Factor',f\"{_base.get('profit_factor',0):.2f}\")}"
+                f"{_mrow('Max DD INR',f\"Rs{_base.get('max_dd_inr',0):,.0f}\")}"
+                f"{_mrow('Sharpe',f\"{_base.get('sharpe',0):.2f}\")}"
+                f"{_mrow('Prof Months',f\"{_base.get('profitable_months',0)}/{_base.get('profitable_months',0)+_base.get('losing_months',0)}\")}"
+                f"{_mrow('Max Lots',str(sc_starting_lots))}"
+                "</table>", unsafe_allow_html=True)
+        with _col_r:
+            _bm = _best.get('metrics',{})
+            st.markdown(f"**Best Scaled - {_best.get('scale_period',_best.get('value',''))} | {_best.get('increment_step',_best.get('value',''))} | Cap:{_best.get('max_lots_cap','-')}**")
+            st.markdown(f"<table style='width:100%;border-collapse:collapse;font-size:12px;'>"
+                f"{_mrow('Trades',_bm.get('total_trades',0))}"
+                f"{_mrow('Win Rate',f\"{_bm.get('win_rate',0):.2f}%\")}"
+                f"{_mrow('Net PnL INR',f\"Rs{_bm.get('net_pnl_inr',0):,.0f}\")}"
+                f"{_mrow('Profit Factor',f\"{_bm.get('profit_factor',0):.2f}\")}"
+                f"{_mrow('Max DD INR',f\"Rs{_bm.get('max_dd_inr',0):,.0f}\")}"
+                f"{_mrow('Sharpe',f\"{_bm.get('sharpe',0):.2f}\")}"
+                f"{_mrow('Prof Months',f\"{_bm.get('profitable_months',0)}/{_bm.get('profitable_months',0)+_bm.get('losing_months',0)}\")}"
+                f"{_mrow('Max Lots Reached',str(_best.get('max_lots_reached','-')))}"
+                "</table>", unsafe_allow_html=True)
+        st.markdown("---")
+        st.markdown("#### Monthly Returns Comparison")
+        _bm2 = _best.get('metrics',{}).get('monthly',{})
+        _bsm = _base.get('monthly',{})
+        _months = sorted(set(list(_bm2.keys())+list(_bsm.keys())))
+        _mrows = ""
+        for m in _months:
+            _bi = _bsm.get(m,{}).get('net_inr',0)
+            _si = _bm2.get(m,{}).get('net_inr',0)
+            _di = _si - _bi
+            _bc = "color:#089981;" if _bi>=0 else "color:#F23645;"
+            _sc2 = "color:#089981;" if _si>=0 else "color:#F23645;"
+            _dc = "color:#089981;" if _di>=0 else "color:#F23645;"
+            _mrows += (f"<tr><td style='padding:4px 8px;border:1px solid #ddd;'>{m}</td>"
+                f"<td style='padding:4px 8px;border:1px solid #ddd;{_bc}'>Rs{_bi:,.0f}</td>"
+                f"<td style='padding:4px 8px;border:1px solid #ddd;{_sc2}'>Rs{_si:,.0f}</td>"
+                f"<td style='padding:4px 8px;border:1px solid #ddd;{_dc}'>Rs{_di:,.0f}</td></tr>")
+        st.markdown(("<div style='overflow-x:auto;'><table style='width:100%;border-collapse:collapse;font-size:12px;'>"
+            "<thead><tr style='background:#f0f3fa;'>"
+            "<th style='padding:6px 8px;border:1px solid #ddd;'>Month</th>"
+            "<th style='padding:6px 8px;border:1px solid #ddd;'>Normal INR</th>"
+            "<th style='padding:6px 8px;border:1px solid #ddd;'>Scaled INR</th>"
+            "<th style='padding:6px 8px;border:1px solid #ddd;'>Difference</th>"
+            f"</tr></thead><tbody>{_mrows}</tbody></table></div>"), unsafe_allow_html=True)
+        st.markdown("---")
+        st.markdown("#### Yearly Returns Comparison")
+        _by = _best.get('metrics',{}).get('yearly',{})
+        _bsy = _base.get('yearly',{})
+        _years = sorted(set(list(_by.keys())+list(_bsy.keys())))
+        _yrows = ""
+        for y in _years:
+            _bi = _bsy.get(y,{}).get('net_inr',0)
+            _si = _by.get(y,{}).get('net_inr',0)
+            _di = _si - _bi
+            _bc = "color:#089981;" if _bi>=0 else "color:#F23645;"
+            _sc3 = "color:#089981;" if _si>=0 else "color:#F23645;"
+            _dc = "color:#089981;" if _di>=0 else "color:#F23645;"
+            _yrows += (f"<tr><td style='padding:4px 8px;border:1px solid #ddd;'>{y}</td>"
+                f"<td style='padding:4px 8px;border:1px solid #ddd;{_bc}'>Rs{_bi:,.0f}</td>"
+                f"<td style='padding:4px 8px;border:1px solid #ddd;{_sc3}'>Rs{_si:,.0f}</td>"
+                f"<td style='padding:4px 8px;border:1px solid #ddd;{_dc}'>Rs{_di:,.0f}</td></tr>")
+        st.markdown(("<div style='overflow-x:auto;'><table style='width:100%;border-collapse:collapse;font-size:12px;'>"
+            "<thead><tr style='background:#f0f3fa;'>"
+            "<th style='padding:6px 8px;border:1px solid #ddd;'>Year</th>"
+            "<th style='padding:6px 8px;border:1px solid #ddd;'>Normal INR</th>"
+            "<th style='padding:6px 8px;border:1px solid #ddd;'>Scaled INR</th>"
+            "<th style='padding:6px 8px;border:1px solid #ddd;'>Difference</th>"
+            f"</tr></thead><tbody>{_yrows}</tbody></table></div>"), unsafe_allow_html=True)
+        _html_dl = (f"<html><head><title>Scaling Report</title></head><body>"
+            f"<h1>Scaling Optimiser - {st.session_state.get('sc_strategy','')}</h1>"
+            f"<h2>Best: {_best.get('scale_period','')} | {_best.get('increment_step','')} | Cap:{_best.get('max_lots_cap','-')}</h2>"
+            f"<h2>Net PnL INR: Rs{_best['net_pnl_inr']:,.0f}</h2>"
+            f"</body></html>")
+        st.download_button("DOWNLOAD SCALING REPORT HTML", _html_dl.encode('utf-8'),
+            file_name=f"scaling_{st.session_state.get('sc_strategy','')}.html",
+            mime="text/html", key="sc_dl_html")
+
 
 # ================================================================
 # SECTION 5B - PORTFOLIO BACKTEST
