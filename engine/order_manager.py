@@ -230,3 +230,34 @@ class OrderManager:
                 "unfilled_size": result["unfilled_size"]
             }
         return {"success": False, "error": resp.get("error")}
+
+    def place_bracket_sl(self, direction: str, entry_price: float, sl_pct: float = 2.0) -> dict:
+        """
+        Place bracket SL on open position.
+        direction : "long" or "short"
+        entry_price: price at which position was entered
+        sl_pct    : stop loss percentage from entry (default 2%)
+        """
+        if direction == "long":
+            sl_price = round(entry_price * (1 - sl_pct / 100), 1)
+        else:
+            sl_price = round(entry_price * (1 + sl_pct / 100), 1)
+
+        payload = {
+            "product_symbol": self.PRODUCT_SYMBOL,
+            "product_id":     self.PRODUCT_ID,
+            "stop_loss_order": {
+                "order_type": "market_order",
+                "stop_price": str(sl_price)
+            }
+        }
+
+        logging.info(f"[OrderManager] Placing bracket SL | direction={direction} entry={entry_price} sl={sl_price} ({sl_pct}%)")
+        resp = self._post("/v2/orders/bracket", payload)
+
+        if resp.get("success"):
+            logging.info(f"[OrderManager] Bracket SL placed | sl_price={sl_price}")
+            return {"success": True, "sl_price": sl_price}
+        else:
+            logging.error(f"[OrderManager] Bracket SL FAILED: {resp.get('error')}")
+            return {"success": False, "error": resp.get("error")}
