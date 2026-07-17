@@ -2795,7 +2795,7 @@ with st.expander("SECTION 5 - BACKTEST", expanded=True):
     from engine.scaling_engine import load_trades, run_full_mode, run_group_mode, apply_scaling, calculate_metrics
     _sc1, _sc2, _sc3 = st.columns(3)
     with _sc1:
-        sc_strategy = st.selectbox("Strategy", ["RenkoReversalStrategy","RenkoSMIIOSupertrendStrategy"], key="sc_strategy")
+        sc_strategy = st.selectbox("Strategy", ["RenkoReversalStrategy","RenkoSMIIOSupertrendStrategy","Portfolio (S2+S4 Combined)"], key="sc_strategy")
     with _sc2:
         sc_scale_type = st.selectbox("Scaling Type", ["Step Based (Preferred)","Formula Based"], key="sc_type")
     with _sc3:
@@ -2832,10 +2832,13 @@ with st.expander("SECTION 5 - BACKTEST", expanded=True):
         _sc_progress = st.progress(0)
         try:
             import glob as _scglob, os as _scos
-            _sc_pattern = f"output/trade_log_{sc_strategy}_BTCUSD_*.csv"
+            if sc_strategy == "Portfolio (S2+S4 Combined)":
+                _sc_pattern = "output/portfolio_trade_log_*.csv"
+            else:
+                _sc_pattern = f"output/trade_log_{sc_strategy}_BTCUSD_*.csv"
             _sc_files = sorted([f for f in _scglob.glob(_sc_pattern)], reverse=True)
             if not _sc_files:
-                _sc_status.error(f"No backtest CSV found for {sc_strategy}. Run backtest first.")
+                _sc_status.error(f"No CSV found for {sc_strategy}. Run backtest first.")
             else:
                 _sc_csv = _sc_files[0]
                 _sc_status.info(f"Loading: {_scos.path.basename(_sc_csv)}")
