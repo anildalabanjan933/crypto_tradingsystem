@@ -1165,9 +1165,10 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
                 last_wait = l.split(' INFO')[0].strip()
                 break
 
-        # Last reload
+        # Last reload - read more lines to cover 10 min reload interval
         last_reload = "Never"
-        for l in reversed(lines):
+        _reload_lines = _read_last_lines(log_path, n=1200)
+        for l in reversed(_reload_lines):
             if '[RELOAD]' in l:
                 last_reload = l.split(' INFO')[0].strip()
                 break
