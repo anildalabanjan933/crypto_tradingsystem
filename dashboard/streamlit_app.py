@@ -3079,7 +3079,7 @@ tr:hover {{ background-color:#f9f9f9; }}
 <table>
 <thead><tr><th>Metric</th><th>Normal (100 lots fixed)</th><th>Best Scaled Config</th><th>Improvement</th></tr></thead>
 <tbody>
-<tr><td>Total Trades</td><td>{_sc_norm_tr}</td><td>{_best.get('metrics',{{}}).get('total_trades',0)}</td><td>-</td></tr>
+<tr><td>Total Trades</td><td>{_sc_norm_tr}</td><td>{_best.get('metrics',{}).get('total_trades',0)}</td><td>-</td></tr>
 <tr><td>Win Rate</td><td>{_sc_norm_wr:.2f}%</td><td>{_sc_best_wr:.2f}%</td><td>-</td></tr>
 <tr><td>Net PnL INR</td><td class="positive">Rs{_sc_norm_pnl:,.0f}</td><td class="positive">Rs{_sc_best_pnl:,.0f}</td><td class="positive">+Rs{_sc_best_pnl-_sc_norm_pnl:,.0f}</td></tr>
 <tr><td>Profit Factor</td><td>{_sc_norm_pf:.2f}</td><td>{_sc_best_pf:.2f}</td><td>-</td></tr>
