@@ -2914,29 +2914,31 @@ with st.expander("SECTION 5 - BACKTEST", expanded=True):
             return f"<tr><td style='padding:4px 8px;border:1px solid #ddd;font-weight:600;'>{label}</td><td style='padding:4px 8px;border:1px solid #ddd;'>{val}</td></tr>"
         with _col_l:
             st.markdown(f"**Normal ({sc_starting_lots} lots fixed)**")
-            st.markdown(f"<table style='width:100%;border-collapse:collapse;font-size:12px;'>"
-                f"{_mrow('Trades',_base.get('total_trades',0))}"
-                f"{_mrow('Win Rate',f\"{_base.get('win_rate',0):.2f}%\")}"
-                f"{_mrow('Net PnL INR',f\"Rs{_base.get('net_pnl_inr',0):,.0f}\")}"
-                f"{_mrow('Profit Factor',f\"{_base.get('profit_factor',0):.2f}\")}"
-                f"{_mrow('Max DD INR',f\"Rs{_base.get('max_dd_inr',0):,.0f}\")}"
-                f"{_mrow('Sharpe',f\"{_base.get('sharpe',0):.2f}\")}"
-                f"{_mrow('Prof Months',f\"{_base.get('profitable_months',0)}/{_base.get('profitable_months',0)+_base.get('losing_months',0)}\")}"
-                f"{_mrow('Max Lots',str(sc_starting_lots))}"
-                "</table>", unsafe_allow_html=True)
+            _left_rows = (
+                _mrow('Trades', str(_base.get('total_trades',0))) +
+                _mrow('Win Rate', str(round(_base.get('win_rate',0),2))+'%') +
+                _mrow('Net PnL INR', 'Rs'+f"{_base.get('net_pnl_inr',0):,.0f}") +
+                _mrow('Profit Factor', str(round(_base.get('profit_factor',0),2))) +
+                _mrow('Max DD INR', 'Rs'+f"{_base.get('max_dd_inr',0):,.0f}") +
+                _mrow('Sharpe', str(round(_base.get('sharpe',0),2))) +
+                _mrow('Prof Months', str(_base.get('profitable_months',0))+'/'+str(_base.get('profitable_months',0)+_base.get('losing_months',0))) +
+                _mrow('Max Lots', str(sc_starting_lots))
+            )
+            st.markdown("<table style='width:100%;border-collapse:collapse;font-size:12px;'>"+_left_rows+"</table>", unsafe_allow_html=True)
         with _col_r:
             _bm = _best.get('metrics',{})
             st.markdown(f"**Best Scaled - {_best.get('scale_period',_best.get('value',''))} | {_best.get('increment_step',_best.get('value',''))} | Cap:{_best.get('max_lots_cap','-')}**")
-            st.markdown(f"<table style='width:100%;border-collapse:collapse;font-size:12px;'>"
-                f"{_mrow('Trades',_bm.get('total_trades',0))}"
-                f"{_mrow('Win Rate',f\"{_bm.get('win_rate',0):.2f}%\")}"
-                f"{_mrow('Net PnL INR',f\"Rs{_bm.get('net_pnl_inr',0):,.0f}\")}"
-                f"{_mrow('Profit Factor',f\"{_bm.get('profit_factor',0):.2f}\")}"
-                f"{_mrow('Max DD INR',f\"Rs{_bm.get('max_dd_inr',0):,.0f}\")}"
-                f"{_mrow('Sharpe',f\"{_bm.get('sharpe',0):.2f}\")}"
-                f"{_mrow('Prof Months',f\"{_bm.get('profitable_months',0)}/{_bm.get('profitable_months',0)+_bm.get('losing_months',0)}\")}"
-                f"{_mrow('Max Lots Reached',str(_best.get('max_lots_reached','-')))}"
-                "</table>", unsafe_allow_html=True)
+            _right_rows = (
+                _mrow('Trades', str(_bm.get('total_trades',0))) +
+                _mrow('Win Rate', str(round(_bm.get('win_rate',0),2))+'%') +
+                _mrow('Net PnL INR', 'Rs'+f"{_bm.get('net_pnl_inr',0):,.0f}") +
+                _mrow('Profit Factor', str(round(_bm.get('profit_factor',0),2))) +
+                _mrow('Max DD INR', 'Rs'+f"{_bm.get('max_dd_inr',0):,.0f}") +
+                _mrow('Sharpe', str(round(_bm.get('sharpe',0),2))) +
+                _mrow('Prof Months', str(_bm.get('profitable_months',0))+'/'+str(_bm.get('profitable_months',0)+_bm.get('losing_months',0))) +
+                _mrow('Max Lots Reached', str(_best.get('max_lots_reached','-')))
+            )
+            st.markdown("<table style='width:100%;border-collapse:collapse;font-size:12px;'>"+_right_rows+"</table>", unsafe_allow_html=True)
         st.markdown("---")
         st.markdown("#### Monthly Returns Comparison")
         _bm2 = _best.get('metrics',{}).get('monthly',{})
