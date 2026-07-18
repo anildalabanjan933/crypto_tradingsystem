@@ -8,6 +8,7 @@ import time
 import requests
 import json
 import logging
+from engine.telegram_alert import send_alert
 from datetime import datetime
 
 
@@ -82,6 +83,7 @@ class OrderManager:
                 if attempt < retries:
                     time.sleep(2 * attempt)
         logging.error(f"[OrderManager] POST failed after {retries} attempts: {path}")
+        send_alert(f"CTS API FAIL\nPOST failed after {retries} attempts\nPath: {path}\nCheck Delta API status")
         return {"success": False, "error": "max_retries_exceeded"}
 
     def _delete(self, path: str, payload: dict) -> dict:
@@ -106,6 +108,7 @@ class OrderManager:
                 if attempt < retries:
                     time.sleep(2 * attempt)
         logging.error(f"[OrderManager] GET failed after {retries} attempts: {path}")
+        send_alert(f"CTS API FAIL\nGET failed after {retries} attempts\nPath: {path}\nCheck Delta API status")
         return {"success": False, "error": "max_retries_exceeded"}
 
     # ------------------------------------------------------------------
