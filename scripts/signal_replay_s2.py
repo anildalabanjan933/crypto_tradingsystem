@@ -9,6 +9,7 @@ import os, sys, time, csv, logging, re
 from datetime import datetime, timezone
 sys.path.insert(0, ".")
 from engine.order_manager import OrderManager
+from engine.telegram_alert import send_alert
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -187,10 +188,13 @@ while True:
                     else:
                         log.warning(f"[SL] Bracket SL FAILED: {sl_result}")
                     log.info(f"[ORDER] ENTRY confirmed | position={position}")
+                    send_alert(f"CTS S2 ENTRY\nDirection: {direction.upper()}\nLots: {lots}")
                 else:
                     log.error(f"[ORDER] ENTRY FAILED: {result}")
+                    send_alert(f"CTS S2 ENTRY FAILED\nError: {result}")
                     if result.get('error',{}).get('code') == 'invalid_api_key':
                         log.error("[CRITICAL] invalid_api_key - check API key and IP whitelist")
+                        send_alert("CTS S2 CRITICAL: invalid_api_key - check API key and IP whitelist")
                     last_known_ts = load_ts_file(TS_FILE)
                 break  # process one signal per cycle
 
@@ -211,6 +215,7 @@ while True:
                 if result.get("success"):
                     position = None
                     log.info(f"[ORDER] EXIT confirmed | position=None")
+                    send_alert(f"CTS S2 EXIT\nPosition closed\nLots: {close_size}")
                 else:
                     log.error(f"[ORDER] EXIT FAILED: {result}")
                     last_known_ts = load_ts_file(TS_FILE)
