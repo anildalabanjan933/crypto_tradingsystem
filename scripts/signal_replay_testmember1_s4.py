@@ -84,10 +84,13 @@ def get_valid_from():
     return "2000-01-01T00:00:00"
 
 # --- Startup ---
-# Auto-update VALID_FROM to current UTC time on every restart
-_now_str = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S')
-open(BASELINE_FILE, 'w').write(_now_str)
-log.info(f"[STARTUP] VALID_FROM auto-set to {_now_str} on restart")
+# PERMANENT: VALID_FROM never resets - only set once on first ever run
+if not os.path.exists(BASELINE_FILE) or not open(BASELINE_FILE).read().strip():
+    _now_str = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S')
+    open(BASELINE_FILE, 'w').write(_now_str)
+    log.info(f"[STARTUP] VALID_FROM first time set: {_now_str}")
+else:
+    log.info(f"[STARTUP] VALID_FROM kept: {open(BASELINE_FILE).read().strip()}")
 log.info("[STARTUP] S4 Signal Replay Bot starting...")
 
 pos = om.get_position()
@@ -153,7 +156,8 @@ while True:
             now_dt = datetime.strptime(now, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
             entry_dt = datetime.strptime(entry_time, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
             signal_age_hours = (now_dt - entry_dt).total_seconds() / 3600
-            if now >= entry_time and position is None and signal_age_hours <= 2.0:
+            exit_dt_chk = datetime.strptime(exit_time, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
+            if now >= entry_time and position is None and now_dt < exit_dt_chk:
                 side = "buy" if direction == "long" else "sell"
                 log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={entry_time}")
                 save_ts_file(TS_FILE, entry_time)
@@ -184,7 +188,7 @@ while True:
             now_dt2 = datetime.strptime(now, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
             exit_dt2 = datetime.strptime(exit_time, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
             exit_age_hours = (now_dt2 - exit_dt2).total_seconds() / 3600
-            if now >= exit_time and position is not None and exit_age_hours <= 2.0:
+            if now >= exit_time and position is not None:
                 side = "sell" if position == "long" else "buy"
                 actual = om.get_position()
                 close_size = abs(actual.get("size", open_lot_size)) if actual.get("success") else open_lot_size
