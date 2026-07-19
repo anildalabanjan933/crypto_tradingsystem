@@ -11,7 +11,7 @@ sys.path.insert(0, ".")
 from engine.order_manager import OrderManager
 from engine.telegram_alert import send_alert
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv(dotenv_path="/home/anildalabanjan933/crypto_trading_system/.env")
 
 # --- Config ---
 SYMBOL       = "BTCUSD"
