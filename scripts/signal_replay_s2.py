@@ -11,7 +11,7 @@ sys.path.insert(0, ".")
 from engine.order_manager import OrderManager
 from engine.telegram_alert import send_alert
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv(dotenv_path="/home/anildalabanjan933/crypto_trading_system/.env")
 
 # --- Config ---
 SYMBOL       = "BTCUSD"
@@ -177,7 +177,7 @@ while True:
             entry_dt = datetime.strptime(entry_time, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
             signal_age_hours = (now_dt - entry_dt).total_seconds() / 3600
             exit_dt_chk = datetime.strptime(exit_time, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
-            if now >= entry_time and position is None and now_dt < exit_dt_chk:
+            if now >= entry_time and position is None:
                 side = "buy" if direction == "long" else "sell"
                 log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={entry_time}")
                 save_ts_file(TS_FILE, entry_time)

@@ -561,6 +561,186 @@ with c5:
         st.caption("Check network")
 
 # ================================================================
+# SECTION 1 - NEW MONITORING CARDS ROW 2 + ROW 3
+# ================================================================
+import datetime as _dt_cards, time as _t_cards
+
+# ROW 2 - SYSTEM HEALTH
+_cr2a, _cr2b, _cr2c = st.columns(3)
+
+# CARD 1 - BOT RESTART STATUS
+with _cr2a:
+    try:
+        _s2_ts = open("logs/last_known_ts_s2.txt").read().strip()
+        _s4_ts = open("logs/last_known_ts_s4.txt").read().strip()
+        _s2_age = (_dt_cards.datetime.utcnow() - _dt_cards.datetime.strptime(_s2_ts, "%Y-%m-%dT%H:%M:%S")).total_seconds() / 60
+        _s4_age = (_dt_cards.datetime.utcnow() - _dt_cards.datetime.strptime(_s4_ts, "%Y-%m-%dT%H:%M:%S")).total_seconds() / 60
+        _s2_log_age = (_t_cards.time() - os.path.getmtime("logs/live_trading_s2.log")) / 60 if os.path.exists("logs/live_trading_s2.log") else 999
+        _s4_log_age = (_t_cards.time() - os.path.getmtime("logs/live_trading_s4.log")) / 60 if os.path.exists("logs/live_trading_s4.log") else 999
+        st.markdown("**BOT RESTART**")
+        if _s2_log_age < 5 or _s4_log_age < 5:
+            st.error("RESTARTED")
+            st.caption(f"S2: {int(_s2_log_age)}m ago | S4: {int(_s4_log_age)}m ago")
+        else:
+            st.success("STABLE")
+            st.caption(f"S2 log: {int(_s2_log_age)}m | S4 log: {int(_s4_log_age)}m")
+    except Exception as _e:
+        st.markdown("**BOT RESTART**")
+        st.warning("UNKNOWN")
+        st.caption(str(_e)[:40])
+
+# CARD 2 - DASHBOARD RESTART STATUS
+with _cr2b:
+    try:
+        try:
+            _dash_start_file = "logs/dashboard_start.txt"
+            if not __import__('os').path.exists(_dash_start_file):
+                open(_dash_start_file, 'w').write(_dt_cards.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S'))
+            _dash_start_str = open(_dash_start_file).read().strip()
+            _dash_start_dt  = _dt_cards.datetime.strptime(_dash_start_str, '%Y-%m-%dT%H:%M:%S')
+            _dash_uptime    = (_dt_cards.datetime.utcnow() - _dash_start_dt).total_seconds() / 60
+        except:
+            _dash_uptime = 999
+        st.markdown("**DASHBOARD RESTART**")
+        if _dash_uptime < 5:
+            st.error("RESTARTED")
+            st.caption(f"Up: {int(_dash_uptime)}m ago")
+        else:
+            st.success("STABLE")
+            st.caption(f"Uptime: {int(_dash_uptime)}m")
+    except Exception as _e:
+        st.markdown("**DASHBOARD RESTART**")
+        st.warning("UNKNOWN")
+        st.caption(str(_e)[:40])
+
+# CARD 3 - API KEY/SECRET STATUS
+with _cr2c:
+    try:
+        _s2k = os.environ.get("S2_API_KEY","")
+        _s2s = os.environ.get("S2_API_SECRET","")
+        _s4k = os.environ.get("S4_API_KEY","")
+        _s4s = os.environ.get("S4_API_SECRET","")
+        st.markdown("**API KEY/SECRET**")
+        if not _s2k:
+            st.error("S2 KEY MISSING")
+            st.caption("Check .env S2_API_KEY")
+        elif not _s2s:
+            st.error("S2 SECRET MISSING")
+            st.caption("Check .env S2_API_SECRET")
+        elif not _s4k:
+            st.error("S4 KEY MISSING")
+            st.caption("Check .env S4_API_KEY")
+        elif not _s4s:
+            st.error("S4 SECRET MISSING")
+            st.caption("Check .env S4_API_SECRET")
+        else:
+            st.success("ALL KEYS OK")
+            st.caption("S2 + S4 keys present")
+    except Exception as _e:
+        st.markdown("**API KEY/SECRET**")
+        st.warning("UNKNOWN")
+        st.caption(str(_e)[:40])
+
+# ROW 3 - TRADING HEALTH
+_cr3a, _cr3b, _cr3c = st.columns(3)
+
+# CARD 4 - SECTION 13 MATCH %
+with _cr3a:
+    try:
+        _match_pct = None
+        for _lp in ["logs/live_trading_s2.log", "logs/live_trading_s4.log"]:
+            if os.path.exists(_lp):
+                with open(_lp) as _lf:
+                    _lines = _lf.readlines()
+                _ml = [l for l in _lines if 'MATCH' in l or 'match' in l]
+                if _ml:
+                    import re as _re
+                    _m = _re.search(r'(\d+\.?\d*)%', _ml[-1])
+                    if _m:
+                        _match_pct = float(_m.group(1))
+                        break
+        st.markdown("**S13 MATCH %**")
+        if _match_pct is None:
+            st.info("WAITING")
+            st.caption("No trade yet")
+        elif _match_pct >= 95:
+            st.success(f"{_match_pct:.0f}%")
+            st.caption("GREEN - Full match")
+        elif _match_pct >= 80:
+            st.warning(f"{_match_pct:.0f}%")
+            st.caption("YELLOW - Partial match")
+        else:
+            st.error(f"{_match_pct:.0f}%")
+            st.caption("RED - Check system")
+    except Exception as _e:
+        st.markdown("**S13 MATCH %**")
+        st.warning("UNKNOWN")
+        st.caption(str(_e)[:40])
+
+# CARD 5 - FORWARD TEST COUNT X/5
+with _cr3b:
+    try:
+        _fwd_count = 0
+        for _lp in ["logs/live_trading_s2.log", "logs/live_trading_s4.log"]:
+            if os.path.exists(_lp):
+                with open(_lp) as _lf:
+                    _lines = _lf.readlines()
+                _cl = [l for l in _lines if 'consecutive' in l.lower() or 'match count' in l.lower()]
+                if _cl:
+                    import re as _re2
+                    _m2 = _re2.search(r'(\d+)/5', _cl[-1])
+                    if _m2:
+                        _fwd_count = int(_m2.group(1))
+                        break
+        st.markdown("**FWD TEST X/5**")
+        if _fwd_count == 0:
+            st.info("0/5")
+            st.caption("Waiting for trades")
+        elif _fwd_count >= 5:
+            st.success("5/5")
+            st.caption("GO LIVE READY")
+        else:
+            st.warning(f"{_fwd_count}/5")
+            st.caption(f"{5-_fwd_count} more needed")
+    except Exception as _e:
+        st.markdown("**FWD TEST X/5**")
+        st.warning("UNKNOWN")
+        st.caption(str(_e)[:40])
+
+# CARD 6 - MARKET ORDER PnL DIFF
+with _cr3c:
+    try:
+        _pnl_diff = None
+        for _lp in ["logs/live_trading_s2.log", "logs/live_trading_s4.log"]:
+            if os.path.exists(_lp):
+                with open(_lp) as _lf:
+                    _lines = _lf.readlines()
+                _pl = [l for l in _lines if 'pnl diff' in l.lower() or 'PNL_DIFF' in l]
+                if _pl:
+                    import re as _re3
+                    _m3 = _re3.search(r'[\$₹]?(\d+\.?\d*)', _pl[-1])
+                    if _m3:
+                        _pnl_diff = float(_m3.group(1))
+                        break
+        st.markdown("**MARKET ORDER DIFF**")
+        if _pnl_diff is None:
+            st.info("WAITING")
+            st.caption("No trade yet")
+        elif _pnl_diff <= 500:
+            st.success(f"₹{_pnl_diff:.0f}")
+            st.caption("GREEN - Acceptable")
+        elif _pnl_diff <= 1000:
+            st.warning(f"₹{_pnl_diff:.0f}")
+            st.caption("YELLOW - Monitor")
+        else:
+            st.error(f"₹{_pnl_diff:.0f}")
+            st.caption("RED - Review needed")
+    except Exception as _e:
+        st.markdown("**MARKET ORDER DIFF**")
+        st.warning("UNKNOWN")
+        st.caption(str(_e)[:40])
+
+# ================================================================
 # ALERT BANNER
 # ================================================================
 st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
