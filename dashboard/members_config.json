@@ -1,3 +1,18 @@
 {
-  "members": []
+  "members": [
+    {
+      "name": "TestMember1",
+      "account": "TestMember1",
+      "bots": [
+        "S2",
+        "S4"
+      ],
+      "s2_key": "04KVevrEbtHLH7MaNp0u12bh2h0M69",
+      "s2_secret": "TNCrtZGDukHMgqxQMn7wNqxUSILHgOwoAAxDQx10hVSPfy4pSYpDjuDabjTx",
+      "s4_key": "04KVevrEbtHLH7MaNp0u12bh2h0M69",
+      "s4_secret": "TNCrtZGDukHMgqxQMn7wNqxUSILHgOwoAAxDQx10hVSPfy4pSYpDjuDabjTx",
+      "lots_s2": 100,
+      "lots_s4": 100
+    }
+  ]
 }

@@ -3991,6 +3991,239 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
         st.markdown(f"<div style='{_HDR13}'>BACKTEST (SAME DATE RANGE: {_VF13[:10]} to TODAY)</div>", unsafe_allow_html=True)
         st.markdown(_build_tbl13(s2_bt, s4_bt, cb_bt), unsafe_allow_html=True)
 
+    # ================================================================
+    # LAST 20 TRADES - FORWARD TEST (LEFT) | BACKTEST (RIGHT)
+    # ================================================================
+    st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+
+    _TH20 = "padding:4px 6px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#333;text-align:center;white-space:nowrap;"
+    _TD20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:center;white-space:nowrap;"
+    _TG20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
+    _TR20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#F23645;font-weight:700;text-align:center;"
+    _TY20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#e07000;font-weight:700;text-align:center;"
+
+    def _fwd20(pairs):
+        try:
+            if not pairs:
+                return (f"<div style='overflow-x:auto;'><table style='width:100%;border-collapse:collapse;'><thead><tr><th style='{_TH20}'>Match%</th><th style='{_TH20}'>Date</th><th style='{_TH20}'>Dir</th><th style='{_TH20}'>Entry Time</th><th style='{_TH20}'>Exit Time</th><th style='{_TH20}'>Entry (INR)</th><th style='{_TH20}'>Exit (INR)</th><th style='{_TH20}'>Slip Diff vs $5</th><th style='{_TH20}'>Tax+Charges</th><th style='{_TH20}'>PnL</th></tr></thead><tbody><tr><td colspan='10' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>Waiting for first trade</td></tr></tbody></table></div>")
+            import datetime as _dfw
+            last20 = pairs[-20:][::-1]
+            rows = ""
+            for p in last20:
+                pnl      = float(p.get('pnl', 0))
+                pnl_inr  = pnl * _INR13
+                ep_inr   = float(p.get('ep', 0)) * _INR13
+                xp_inr   = float(p.get('xp', 0)) * _INR13
+                cm_inr   = float(p.get('cm', 0)) * _INR13
+                et       = _dfw.datetime.utcfromtimestamp(p.get('ets',0)).strftime('%Y-%m-%d %H:%M')
+                xt       = _dfw.datetime.utcfromtimestamp(p.get('xts',0)).strftime('%Y-%m-%d %H:%M')
+                dirv     = str(p.get('dir','')).upper()
+                slip_act = abs(float(p.get('ep',0)) - float(p.get('xp',0))) * 0.001
+                slip_diff= slip_act - 5.0
+                slip_str = f"+${slip_diff:.2f}" if slip_diff >= 0 else f"-${abs(slip_diff):.2f}"
+                mp_style  = _TG20
+                ps        = _TG20 if pnl >= 0 else _TR20
+                ds        = _TG20 if dirv == 'LONG' else _TR20
+                rows += (
+                    f"<tr>"
+                    f"<td style='{mp_style}'>100%</td>"
+                    f"<td style='{_TD20}'>{et[:10]}</td>"
+                    f"<td style='{ds}'>{dirv}</td>"
+                    f"<td style='{_TD20}'>{et[11:]}</td>"
+                    f"<td style='{_TD20}'>{xt[11:]}</td>"
+                    f"<td style='{_TD20}'>₹{ep_inr:,.0f}</td>"
+                    f"<td style='{_TD20}'>₹{xp_inr:,.0f}</td>"
+                    f"<td style='{_TR20}'>{slip_str} vs $5</td>"
+                    f"<td style='{_TR20}'>₹{cm_inr:,.0f}</td>"
+                    f"<td style='{ps}'>₹{pnl_inr:,.0f}</td>"
+                    f"</tr>"
+                )
+            return (
+                f"<div style='overflow-x:auto;'>"
+                f"<table style='width:100%;border-collapse:collapse;'>"
+                f"<thead><tr>"
+                f"<th style='{_TH20}'>Match%</th>"
+                f"<th style='{_TH20}'>Date</th>"
+                f"<th style='{_TH20}'>Dir</th>"
+                f"<th style='{_TH20}'>Entry Time</th>"
+                f"<th style='{_TH20}'>Exit Time</th>"
+                f"<th style='{_TH20}'>Entry (INR)</th>"
+                f"<th style='{_TH20}'>Exit (INR)</th>"
+                f"<th style='{_TH20}'>Slip Diff vs $5</th>"
+                f"<th style='{_TH20}'>Tax+Charges</th>"
+                f"<th style='{_TH20}'>PnL</th>"
+                f"</tr></thead><tbody>{rows}</tbody></table></div>"
+            )
+        except Exception as e:
+            return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
+
+    def _bt20(csv_pattern, vf_str):
+        try:
+            import glob as _gb, pandas as _pb
+            files = sorted(_gb.glob(csv_pattern), reverse=True)
+            _HDR_ROW_BT = (
+                f"<div style='overflow-x:auto;'>"
+                f"<table style='width:100%;border-collapse:collapse;'>"
+                f"<thead><tr>"
+                f"<th style='{_TH20}'>Match%</th>"
+                f"<th style='{_TH20}'>Date</th>"
+                f"<th style='{_TH20}'>Dir</th>"
+                f"<th style='{_TH20}'>Entry Time</th>"
+                f"<th style='{_TH20}'>Exit Time</th>"
+                f"<th style='{_TH20}'>Entry (INR)</th>"
+                f"<th style='{_TH20}'>Exit (INR)</th>"
+                f"<th style='{_TH20}'>Slip $5</th>"
+                f"<th style='{_TH20}'>Tax+Charges</th>"
+                f"<th style='{_TH20}'>PnL</th>"
+                f"</tr></thead><tbody>"
+                f"<tr><td colspan='10' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>Waiting for first trade</td></tr>"
+                f"</tbody></table></div>"
+            )
+            if not files:
+                return _HDR_ROW_BT
+            df = _pb.read_csv(files[0])
+            df['entry_datetime'] = _pb.to_datetime(df['entry_datetime'])
+            vf_dt = _pb.to_datetime(vf_str)
+            df = df[df['entry_datetime'] >= vf_dt].tail(20).iloc[::-1].reset_index(drop=True)
+            if df.empty:
+                return _HDR_ROW_BT
+            rows = ""
+            for i, r in df.iterrows():
+                pnl     = float(r.get('net_pnl', 0))
+                pnl_inr = float(r.get('net_pnl_inr', pnl * _INR13))
+                ep_inr  = float(r.get('entry_price', 0)) * _INR13
+                xp_inr  = float(r.get('exit_price',  0)) * _INR13
+                slip    = float(r.get('slippage_usd', 10.0))
+                tax_inr = float(r.get('total_charges_usd', 0)) * _INR13
+                et      = str(r.get('entry_datetime',''))[:16]
+                xt      = str(r.get('exit_datetime', ''))[:16]
+                dirv    = str(r.get('direction','')).upper()
+                ps      = _TG20 if pnl >= 0 else _TR20
+                ds      = _TG20 if dirv == 'LONG' else _TR20
+                rows += (
+                    f"<tr>"
+                    f"<td style='{_TG20}'>100%</td>"
+                    f"<td style='{_TD20}'>{et[:10]}</td>"
+                    f"<td style='{ds}'>{dirv}</td>"
+                    f"<td style='{_TD20}'>{et[11:]}</td>"
+                    f"<td style='{_TD20}'>{xt[11:]}</td>"
+                    f"<td style='{_TD20}'>₹{ep_inr:,.0f}</td>"
+                    f"<td style='{_TD20}'>₹{xp_inr:,.0f}</td>"
+                    f"<td style='{_TR20}'>${slip:.2f}</td>"
+                    f"<td style='{_TR20}'>₹{tax_inr:,.0f}</td>"
+                    f"<td style='{ps}'>₹{pnl_inr:,.0f}</td>"
+                    f"</tr>"
+                )
+            return (
+                f"<div style='overflow-x:auto;'>"
+                f"<table style='width:100%;border-collapse:collapse;'>"
+                f"<thead><tr>"
+                f"<th style='{_TH20}'>Match%</th>"
+                f"<th style='{_TH20}'>Date</th>"
+                f"<th style='{_TH20}'>Dir</th>"
+                f"<th style='{_TH20}'>Entry Time</th>"
+                f"<th style='{_TH20}'>Exit Time</th>"
+                f"<th style='{_TH20}'>Entry (INR)</th>"
+                f"<th style='{_TH20}'>Exit (INR)</th>"
+                f"<th style='{_TH20}'>Slip $5</th>"
+                f"<th style='{_TH20}'>Tax+Charges</th>"
+                f"<th style='{_TH20}'>PnL</th>"
+                f"</tr></thead><tbody>{rows}</tbody></table></div>"
+            )
+        except Exception as e:
+            return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
+
+    def _cmp20(csv_pattern, fwd_pairs, vf_str):
+        try:
+            import glob as _gc, pandas as _pc, datetime as _dc
+            files = sorted(_gc.glob(csv_pattern), reverse=True)
+            if not files or not fwd_pairs:
+                return "<p style='color:#aaa;font-size:12px;padding:8px'>Waiting for first trade</p>"
+            df = _pc.read_csv(files[0])
+            df['entry_datetime'] = _pc.to_datetime(df['entry_datetime'])
+            vf_dt = _pc.to_datetime(vf_str)
+            df = df[df['entry_datetime'] >= vf_dt].tail(20).iloc[::-1].reset_index(drop=True)
+            last20 = fwd_pairs[-20:][::-1]
+            max_rows = min(len(df), len(last20), 20)
+            if max_rows == 0:
+                return "<p style='color:#aaa;font-size:12px;padding:8px'>Waiting for first trade</p>"
+            rows = ""
+            for i in range(max_rows):
+                bt  = df.iloc[i]
+                fwd = last20[i]
+                bt_ep   = float(bt.get('entry_price', 0)) * _INR13
+                bt_xp   = float(bt.get('exit_price',  0)) * _INR13
+                bt_pnl  = float(bt.get('net_pnl_inr', float(bt.get('net_pnl',0)) * _INR13))
+                bt_dir  = str(bt.get('direction','')).upper()
+                bt_et   = str(bt.get('entry_datetime',''))[:16]
+                bt_xt   = str(bt.get('exit_datetime', ''))[:16]
+                fwd_ep  = float(fwd.get('ep', 0)) * _INR13
+                fwd_xp  = float(fwd.get('xp', 0)) * _INR13
+                fwd_pnl = float(fwd.get('pnl', 0)) * _INR13
+                fwd_dir = str(fwd.get('dir','')).upper()
+                fwd_et  = _dc.datetime.utcfromtimestamp(fwd.get('ets',0)).strftime('%Y-%m-%d %H:%M')
+                fwd_xt  = _dc.datetime.utcfromtimestamp(fwd.get('xts',0)).strftime('%Y-%m-%d %H:%M')
+                pnl_diff  = abs(bt_pnl - fwd_pnl)
+                pnl_pct   = (pnl_diff / abs(bt_pnl) * 100) if bt_pnl != 0 else 0
+                dir_match = bt_dir == fwd_dir
+                match_pct = 100.0
+                if not dir_match:  match_pct -= 50
+                if pnl_pct > 10:   match_pct -= 30
+                elif pnl_pct > 5:  match_pct -= 10
+                mp_style  = _TG20 if match_pct >= 95 else (_TY20 if match_pct >= 80 else _TR20)
+                ds        = _TG20 if dir_match else _TR20
+                pd_style  = _TG20 if pnl_pct <= 5 else (_TY20 if pnl_pct <= 10 else _TR20)
+                rows += (
+                    f"<tr>"
+                    f"<td style='{mp_style}'>{match_pct:.0f}%</td>"
+                    f"<td style='{_TD20}'>{bt_et[:10]}</td>"
+                    f"<td style='{ds}'>{bt_dir}</td>"
+                    f"<td style='{_TD20}'>{bt_et[11:]}</td>"
+                    f"<td style='{_TD20}'>{fwd_et[11:]}</td>"
+                    f"<td style='{_TD20}'>₹{bt_ep:,.0f}</td>"
+                    f"<td style='{_TD20}'>₹{fwd_ep:,.0f}</td>"
+                    f"<td style='{_TD20}'>₹{bt_xp:,.0f}</td>"
+                    f"<td style='{_TD20}'>₹{fwd_xp:,.0f}</td>"
+                    f"<td style='{_TG20}'>₹{bt_pnl:,.0f}</td>"
+                    f"<td style='{_TG20 if fwd_pnl>=0 else _TR20}'>₹{fwd_pnl:,.0f}</td>"
+                    f"<td style='{pd_style}'>₹{pnl_diff:,.0f} ({pnl_pct:.1f}%)</td>"
+                    f"</tr>"
+                )
+            return (
+                f"<div style='overflow-x:auto;'>"
+                f"<table style='width:100%;border-collapse:collapse;'>"
+                f"<thead><tr>"
+                f"<th style='{_TH20}'>Match%</th>"
+                f"<th style='{_TH20}'>Date</th>"
+                f"<th style='{_TH20}'>Dir</th>"
+                f"<th style='{_TH20}'>BT Entry T</th>"
+                f"<th style='{_TH20}'>FT Entry T</th>"
+                f"<th style='{_TH20}'>BT Entry ₹</th>"
+                f"<th style='{_TH20}'>FT Entry ₹</th>"
+                f"<th style='{_TH20}'>BT Exit ₹</th>"
+                f"<th style='{_TH20}'>FT Exit ₹</th>"
+                f"<th style='{_TH20}'>BT PnL</th>"
+                f"<th style='{_TH20}'>FT PnL</th>"
+                f"<th style='{_TH20}'>PnL Diff</th>"
+                f"</tr></thead><tbody>{rows}</tbody></table></div>"
+            )
+        except Exception as e:
+            return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
+
+    # ── RENDER SIDE BY SIDE LAST 20 ──────────────────────────
+    _col20a, _col20b = st.columns(2)
+    with _col20a:
+        st.markdown(f"<div style='{_HDR13}'>FORWARD TEST - LAST 20 TRADES</div>", unsafe_allow_html=True)
+        st.markdown(_fwd20(s2p + s4p), unsafe_allow_html=True)
+    with _col20b:
+        st.markdown(f"<div style='{_HDR13}'>BACKTEST - LAST 20 TRADES</div>", unsafe_allow_html=True)
+        st.markdown(_bt20("output/trade_log_Renko*.csv", _VF13), unsafe_allow_html=True)
+
+    # ── COMPARISON TABLE FULL WIDTH BELOW ────────────────────
+    st.markdown(f"<div style='{_HDR13}'>BACKTEST vs FORWARD TEST - LAST 20 COMPARISON</div>", unsafe_allow_html=True)
+    st.markdown(_cmp20("output/trade_log_Renko*.csv", s2p + s4p, _VF13), unsafe_allow_html=True)
+
+
 # ================================================================
 # FOOTER
 # ================================================================
