@@ -575,11 +575,18 @@ with _cr2a:
         _s4_ts = open("logs/last_known_ts_s4.txt").read().strip()
         _s2_age = (_dt_cards.datetime.utcnow() - _dt_cards.datetime.strptime(_s2_ts, "%Y-%m-%dT%H:%M:%S")).total_seconds() / 60
         _s4_age = (_dt_cards.datetime.utcnow() - _dt_cards.datetime.strptime(_s4_ts, "%Y-%m-%dT%H:%M:%S")).total_seconds() / 60
+        import subprocess as _sp_bot
+        _scr_out = _sp_bot.check_output(['screen','-list'], stderr=_sp_bot.STDOUT).decode()
+        _s2_running = 'live_s2' in _scr_out
+        _s4_running = 'live_s4' in _scr_out
         _s2_log_age = (_t_cards.time() - os.path.getmtime("logs/live_trading_s2.log")) / 60 if os.path.exists("logs/live_trading_s2.log") else 999
         _s4_log_age = (_t_cards.time() - os.path.getmtime("logs/live_trading_s4.log")) / 60 if os.path.exists("logs/live_trading_s4.log") else 999
         st.markdown("**BOT RESTART**")
-        if _s2_log_age < 5 or _s4_log_age < 5:
-            st.error("RESTARTED")
+        if not _s2_running or not _s4_running:
+            st.error("STOPPED")
+            st.caption(f"S2: {'RUNNING' if _s2_running else 'STOPPED'} | S4: {'RUNNING' if _s4_running else 'STOPPED'}")
+        elif _s2_log_age < 2 or _s4_log_age < 2:
+            st.warning("RESTARTING")
             st.caption(f"S2: {int(_s2_log_age)}m ago | S4: {int(_s4_log_age)}m ago")
         else:
             st.success("STABLE")
