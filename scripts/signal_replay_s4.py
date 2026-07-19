@@ -171,7 +171,7 @@ while True:
             entry_dt = datetime.strptime(entry_time, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
             signal_age_hours = (now_dt - entry_dt).total_seconds() / 3600
             exit_dt_chk = datetime.strptime(exit_time, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
-            if now >= entry_time and position is None:
+            if now >= entry_time and position is None and now < exit_time:
                 side = "buy" if direction == "long" else "sell"
                 log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={entry_time}")
                 save_ts_file(TS_FILE, entry_time)
