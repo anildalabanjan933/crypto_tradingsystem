@@ -5,7 +5,8 @@ Reads pre-generated backtest signals from logs/signals_s2.csv
 Places orders when current UTC time matches signal entry/exit time.
 Zero Renko recalculation. 100% match with backtest guaranteed.
 """
-import os, sys, time, csv, logging, re
+import os
+import time, sys, time, csv, logging, re
 from datetime import datetime, timezone
 sys.path.insert(0, ".")
 from engine.order_manager import OrderManager
@@ -172,11 +173,17 @@ while True:
                 if result.get("success"):
                     position     = direction
                     open_lot_size = lots
-                    sl_result = om.place_bracket_sl(direction=direction, entry_price=float(result.get("filled_price", 0) or 0))
-                    if sl_result.get("success"):
-                        log.info(f"[SL] Bracket SL placed | sl_price={sl_result['sl_price']}")
+                    time.sleep(1)
+                    pos_check = om.get_position()
+                    real_entry = pos_check.get("entry_price", 0.0) if pos_check.get("success") else 0.0
+                    if real_entry > 0:
+                        sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=5.0)
+                        if sl_result.get("success"):
+                            log.info(f"[SL] Stop SL placed | sl_price={sl_result['sl_price']}")
+                        else:
+                            log.warning(f"[SL] Stop SL FAILED: {sl_result}")
                     else:
-                        log.warning(f"[SL] Bracket SL FAILED: {sl_result}")
+                        log.warning(f"[SL] Skipped - could not get real entry price from position")
                     log.info(f"[ORDER] ENTRY confirmed | position={position}")
                     send_alert(f"CTS MEMBER_S2 ENTRY\nDirection: {direction.upper()}\nLots: {lots}")
                 else:
