@@ -2788,8 +2788,9 @@ with st.expander("SECTION 4 - FORWARD TEST vs BACKTEST COMPARE", expanded=st.ses
                         user_comp = open(sel_comp, encoding='utf-8').read()
                         for sname in ['RenkoReversalStrategy', 'RenkoSMIIOSupertrendStrategy']:
                             user_comp = user_comp.replace(sname, 'Alpha Strategy')
-                        _comp_dr = __import__("re").search(r'(\d{8})', __import__("os").path.basename(sel_comp)); _comp_ds = _comp_dr.group(1) if _comp_dr else "report"
-st.download_button("DOWNLOAD USER HTML", user_comp.encode('utf-8'), file_name=f"alpha_{algo_name}_comparison_{_comp_ds}.html", mime="text/html", key=f"dl_comp_user_{algo_key}")
+                        _comp_dr = __import__("re").search(r'(\d{8})', __import__("os").path.basename(sel_comp))
+                                        _comp_ds = _comp_dr.group(1) if _comp_dr else "report"
+                                        st.download_button("DOWNLOAD USER HTML", user_comp.encode('utf-8'), file_name=f"alpha_{algo_name}_comparison_{_comp_ds}.html", mime="text/html", key=f"dl_comp_user_{algo_key}")
                     except Exception as e:
                         st.error(f"Error: {e}")
                 if view_comp:
@@ -2931,9 +2932,11 @@ with st.expander("SECTION 5 - BACKTEST", expanded=True):
                     user_content = user_content.replace(f'<h1>{sname}</h1>', '<h1>Alpha Strategy</h1>')
                     user_content = user_content.replace(f'Strategy: {sname}', 'Strategy: Alpha Strategy')
                     user_content = user_content.replace(f'<title>Backtest Report - {sname}</title>', '<title>Backtest Report - Alpha Strategy</title>')
-                _bt_dr = __import__("re").search(r'(\d{8})', __import__("os").path.basename(selected_html)); _bt_ds = _bt_dr.group(1) if _bt_dr else "report"
-_bt_sn = __import__("re").search(r'backtest_report_([^_]+(?:_[^_]+)*?)_BTCUSD', __import__("os").path.basename(selected_html)); _bt_sl = _bt_sn.group(1) if _bt_sn else "strategy"
-st.download_button("DOWNLOAD USER HTML", user_content.encode('utf-8'), file_name=f"alpha_{_bt_sl}_{_bt_ds}_backtest.html", mime="text/html", key="sec6_dl_user_html")
+                _bt_dr = __import__("re").search(r'(\d{8})', __import__("os").path.basename(selected_html))
+                _bt_ds = _bt_dr.group(1) if _bt_dr else "report"
+                _bt_sn = __import__("re").search(r'backtest_report_([^_]+(?:_[^_]+)*?)_BTCUSD', __import__("os").path.basename(selected_html))
+                _bt_sl = _bt_sn.group(1) if _bt_sn else "strategy"
+                st.download_button("DOWNLOAD USER HTML", user_content.encode('utf-8'), file_name=f"alpha_{_bt_sl}_{_bt_ds}_backtest.html", mime="text/html", key="sec6_dl_user_html")
             except Exception as e:
                 st.error(f"Error: {e}")
         if view_html_s5:
@@ -3500,8 +3503,9 @@ with st.expander("SECTION 5B - PORTFOLIO BACKTEST", expanded=True):
                     user_content = user_content.replace(f'<h1>{sname}</h1>', '<h1>Alpha Strategy</h1>')
                     user_content = user_content.replace(f'Strategy: {sname}', 'Strategy: Alpha Strategy')
                     user_content = user_content.replace(f'<title>Backtest Report - {sname}</title>', '<title>Backtest Report - Alpha Strategy</title>')
-                _pt_dr = __import__("re").search(r'(\d{8})', __import__("os").path.basename(sel_port_html)); _pt_ds = _pt_dr.group(1) if _pt_dr else "report"
-st.download_button("DOWNLOAD USER HTML", user_content.encode('utf-8'), file_name=f"alpha_portfolio_{_pt_ds}.html", mime="text/html", key="port_dl_user_html")
+                _pt_dr = __import__("re").search(r'(\d{8})', __import__("os").path.basename(sel_port_html))
+        _pt_ds = _pt_dr.group(1) if _pt_dr else "report"
+        st.download_button("DOWNLOAD USER HTML", user_content.encode('utf-8'), file_name=f"alpha_portfolio_{_pt_ds}.html", mime="text/html", key="port_dl_user_html")
             except Exception as e:
                 st.error(f"Error: {e}")
         if view_html_5b:
