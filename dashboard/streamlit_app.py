@@ -4173,7 +4173,7 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
     def _fwd20(pairs):
         try:
             if not pairs:
-                return (f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'><table style='width:100%;border-collapse:collapse;'><thead><tr><th style='{_TH20}'>Match%</th><th style='{_TH20}'>Date</th><th style='{_TH20}'>Dir</th><th style='{_TH20}'>Entry Time</th><th style='{_TH20}'>Exit Time</th><th style='{_TH20}'>Entry (INR)</th><th style='{_TH20}'>Exit (INR)</th><th style='{_TH20}'>Slip Diff vs $5</th><th style='{_TH20}'>Tax+Charges</th><th style='{_TH20}'>PnL</th></tr></thead><tbody><tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>Waiting for first trade</td></tr></tbody></table></div>")
+                return (f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'><table style='width:100%;border-collapse:collapse;'><thead><tr><th style='{_TH20}'>Date</th><th style='{_TH20}'>Dir</th><th style='{_TH20}'>Entry Time</th><th style='{_TH20}'>Exit Time</th><th style='{_TH20}'>Entry (INR)</th><th style='{_TH20}'>Exit (INR)</th><th style='{_TH20}'>Slip Diff vs $5</th><th style='{_TH20}'>Tax+Charges</th><th style='{_TH20}'>PnL</th></tr></thead><tbody><tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>Waiting for first trade</td></tr></tbody></table></div>")
             import datetime as _dfw
             last20 = pairs[-20:][::-1]
             rows = ""
