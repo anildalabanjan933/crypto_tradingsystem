@@ -568,31 +568,20 @@ import datetime as _dt_cards, time as _t_cards
 # ROW 2 - SYSTEM HEALTH
 _cr2a, _cr2b, _cr2c = st.columns(3)
 
-# CARD 1 - BOT RESTART STATUS
+# CARD 1 - BOT LOG STATUS
 with _cr2a:
     try:
-        _s2_ts = open("logs/last_known_ts_s2.txt").read().strip()
-        _s4_ts = open("logs/last_known_ts_s4.txt").read().strip()
-        _s2_age = (_dt_cards.datetime.utcnow() - _dt_cards.datetime.strptime(_s2_ts, "%Y-%m-%dT%H:%M:%S")).total_seconds() / 60
-        _s4_age = (_dt_cards.datetime.utcnow() - _dt_cards.datetime.strptime(_s4_ts, "%Y-%m-%dT%H:%M:%S")).total_seconds() / 60
-        import subprocess as _sp_bot
-        _scr_out = _sp_bot.check_output(['screen','-list'], stderr=_sp_bot.STDOUT).decode()
-        _s2_running = 'live_s2' in _scr_out
-        _s4_running = 'live_s4' in _scr_out
-        _s2_log_age = (_t_cards.time() - os.path.getmtime("logs/live_trading_s2.log")) / 60 if os.path.exists("logs/live_trading_s2.log") else 999
-        _s4_log_age = (_t_cards.time() - os.path.getmtime("logs/live_trading_s4.log")) / 60 if os.path.exists("logs/live_trading_s4.log") else 999
-        st.markdown("**BOT RESTART**")
-        if not _s2_running or not _s4_running:
-            st.error("STOPPED")
-            st.caption(f"S2: {'RUNNING' if _s2_running else 'STOPPED'} | S4: {'RUNNING' if _s4_running else 'STOPPED'}")
-        elif _s2_log_age < 2 or _s4_log_age < 2:
-            st.warning("RESTARTING")
-            st.caption(f"S2: {int(_s2_log_age)}m ago | S4: {int(_s4_log_age)}m ago")
+        _s2_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s2.log")) / 60 if os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s2.log") else 999
+        _s4_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4.log")) / 60 if os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4.log") else 999
+        st.markdown("**BOT LOG**")
+        if _s2_log_age > 10 or _s4_log_age > 10:
+            st.error("INACTIVE")
+            st.caption(f"S2: {int(_s2_log_age)}m | S4: {int(_s4_log_age)}m no update")
         else:
-            st.success("STABLE")
-            st.caption(f"S2 log: {int(_s2_log_age)}m | S4 log: {int(_s4_log_age)}m")
+            st.success("ACTIVE")
+            st.caption(f"S2: {int(_s2_log_age)}m ago | S4: {int(_s4_log_age)}m ago")
     except Exception as _e:
-        st.markdown("**BOT RESTART**")
+        st.markdown("**BOT LOG**")
         st.warning("UNKNOWN")
         st.caption(str(_e)[:40])
 
@@ -1079,16 +1068,8 @@ with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b',
     except Exception as e:
         warnings.append(f"Disk check failed: {e}")
 
-    # 6. CHECK SYSTEMD SERVICE
-    try:
-        result = subprocess.run(['systemctl', 'is-active', 'tradingbot.service'], capture_output=True, text=True)
-        status = result.stdout.strip()
-        if status == 'active':
-            ok.append("systemd tradingbot.service: ACTIVE")
-        else:
-            warnings.append(f"systemd tradingbot.service: {status} - auto-restart may not work")
-    except Exception as e:
-        warnings.append(f"Service check failed: {e}")
+    # 6. CHECK SYSTEMD SERVICE (tradingbot.service removed - using cts-watchdog)
+    pass
 
     # 7. CHECK RECENT ALGOTEST SUCCESS
     for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
@@ -4192,7 +4173,7 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
     def _fwd20(pairs):
         try:
             if not pairs:
-                return (f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'><table style='width:100%;border-collapse:collapse;'><thead><tr><th style='{_TH20}'>Match%</th><th style='{_TH20}'>Date</th><th style='{_TH20}'>Dir</th><th style='{_TH20}'>Entry Time</th><th style='{_TH20}'>Exit Time</th><th style='{_TH20}'>Entry (INR)</th><th style='{_TH20}'>Exit (INR)</th><th style='{_TH20}'>Slip Diff vs $5</th><th style='{_TH20}'>Tax+Charges</th><th style='{_TH20}'>PnL</th></tr></thead><tbody><tr><td colspan='10' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>Waiting for first trade</td></tr></tbody></table></div>")
+                return (f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'><table style='width:100%;border-collapse:collapse;'><thead><tr><th style='{_TH20}'>Match%</th><th style='{_TH20}'>Date</th><th style='{_TH20}'>Dir</th><th style='{_TH20}'>Entry Time</th><th style='{_TH20}'>Exit Time</th><th style='{_TH20}'>Entry (INR)</th><th style='{_TH20}'>Exit (INR)</th><th style='{_TH20}'>Slip Diff vs $5</th><th style='{_TH20}'>Tax+Charges</th><th style='{_TH20}'>PnL</th></tr></thead><tbody><tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>Waiting for first trade</td></tr></tbody></table></div>")
             import datetime as _dfw
             last20 = pairs[-20:][::-1]
             rows = ""
@@ -4213,7 +4194,6 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 ds        = _TG20 if dirv == 'LONG' else _TR20
                 rows += (
                     f"<tr>"
-                    f"<td style='{mp_style}'>100%</td>"
                     f"<td style='{_TD20}'>{et[:10]}</td>"
                     f"<td style='{ds}'>{dirv}</td>"
                     f"<td style='{_TD20}'>{et[11:]}</td>"
@@ -4229,7 +4209,6 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
                 f"<table style='width:100%;border-collapse:collapse;'>"
                 f"<thead><tr>"
-                f"<th style='{_TH20}'>Match%</th>"
                 f"<th style='{_TH20}'>Date</th>"
                 f"<th style='{_TH20}'>Dir</th>"
                 f"<th style='{_TH20}'>Entry Time</th>"
@@ -4263,7 +4242,7 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 f"<th style='{_TH20}'>Tax+Charges</th>"
                 f"<th style='{_TH20}'>PnL</th>"
                 f"</tr></thead><tbody>"
-                f"<tr><td colspan='10' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>Waiting for first trade</td></tr>"
+                f"<tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>Waiting for first trade</td></tr>"
                 f"</tbody></table></div>"
             )
             if not files:
@@ -4289,7 +4268,6 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 ds      = _TG20 if dirv == 'LONG' else _TR20
                 rows += (
                     f"<tr>"
-                    f"<td style='{_TG20}'>100%</td>"
                     f"<td style='{_TD20}'>{et[:10]}</td>"
                     f"<td style='{ds}'>{dirv}</td>"
                     f"<td style='{_TD20}'>{et[11:]}</td>"
@@ -4305,7 +4283,6 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
                 f"<table style='width:100%;border-collapse:collapse;'>"
                 f"<thead><tr>"
-                f"<th style='{_TH20}'>Match%</th>"
                 f"<th style='{_TH20}'>Date</th>"
                 f"<th style='{_TH20}'>Dir</th>"
                 f"<th style='{_TH20}'>Entry Time</th>"
