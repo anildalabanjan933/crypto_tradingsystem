@@ -3,8 +3,8 @@ import streamlit as st
 
 # Strategy display name mapping
 _STRAT_DISPLAY = {
-    "renko_reversal_strategy":          "S2 - Renko Reversal",
-    "renko_smiio_supertrend_strategy":  "S4 - Renko SMIIO Supertrend",
+    "renko_reversal_strategy":          "S2 - Renko Reversal (Bot Running)",
+    "renko_smiio_supertrend_strategy":  "S4 - Renko SMIIO Supertrend (Bot Running)",
     "renko_breakout_strategy":          "Renko Breakout",
     "renko_options_strategy":           "Renko Options",
     "renko_pattern_breakout_strategy":  "Renko Pattern Breakout",
