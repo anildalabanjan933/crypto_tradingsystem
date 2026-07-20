@@ -3960,7 +3960,8 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
         for v in pls:
             cum+=v
             if cum>pk: pk=cum
-            if pk>0 and (pk-cum)/pk>dd: dd=(pk-cum)/pk
+            drop = pk - cum
+            if drop > dd: dd = drop
         aw = sum(v for v in pls if v>0)/win if win>0 else 0
         al = sum(v for v in pls if v<0)/los if los>0 else 0
         pf = abs(sum(v for v in pls if v>0)/sum(v for v in pls if v<0)) if los>0 and sum(v for v in pls if v<0)!=0 else 0
@@ -3974,7 +3975,7 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
         pnl_week    = sum(p["pnl"] for p in pairs if p.get("xts",0) >= week_start)
         pnl_month   = sum(p["pnl"] for p in pairs if p.get("xts",0) >= month_start)
         pnl_year    = sum(p["pnl"] for p in pairs if p.get("xts",0) >= year_start)
-        avg_slip    = abs(nu/tot) * 0.01 if tot>0 else 0
+        avg_slip    = sum(abs(p.get("ep",0)-p.get("xp",0))*0.001 for p in pairs)/tot if tot>0 else 5.0
         return {"tot":tot,"win":win,"los":los,"wr":wr,"nu":nu,"ni":ni,"cm":cm,"dd":dd,"aw":aw,"al":al,"pf":pf,
                 "pnl_today":pnl_today,"pnl_week":pnl_week,"pnl_month":pnl_month,"pnl_year":pnl_year,"avg_slip":avg_slip}
 
@@ -4036,7 +4037,7 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
         if t=="aw":   return f"${m['aw']:,.2f}"
         if t=="al":   return f"${m['al']:,.2f}"
         if t=="pf":   return f"{m['pf']:.2f}"
-        if t=="dd":   return f"-{m['dd']*100:.2f}%"
+        if t=="dd":   return f"-₹{m['dd']*84:,.0f}" if m['dd']>0 else "₹0"
         if t=="cm":      return f"${m['cm']:,.2f} / \u20b9{m['cm']*_INR13:,.0f}"
         if t=="cap":     return f"\u20b9{1816*_INR13:,.0f}"
         if t=="today":   return f"\u20b9{m.get('pnl_today',0)*_INR13:,.0f}"
@@ -4138,9 +4139,9 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                   "ni":s2_bt["ni"]+s4_bt["ni"],
                   "cm":s2_bt["cm"]+s4_bt["cm"],
                   "dd":max(s2_bt["dd"],s4_bt["dd"]),
-                  "aw":(s2_bt["aw"]+s4_bt["aw"])/2,
-                  "al":(s2_bt["al"]+s4_bt["al"])/2,
-                  "pf":(s2_bt["pf"]+s4_bt["pf"])/2,
+                  "aw":(s2_bt["aw"]*s2_bt["win"]+s4_bt["aw"]*s4_bt["win"])/(s2_bt["win"]+s4_bt["win"]) if (s2_bt["win"]+s4_bt["win"])>0 else 0,
+                  "al":(s2_bt["al"]*s2_bt["los"]+s4_bt["al"]*s4_bt["los"])/(s2_bt["los"]+s4_bt["los"]) if (s2_bt["los"]+s4_bt["los"])>0 else 0,
+                  "pf":abs((s2_bt["aw"]*s2_bt["win"]+s4_bt["aw"]*s4_bt["win"])/(s2_bt["al"]*s2_bt["los"]+s4_bt["al"]*s4_bt["los"])) if (s2_bt["los"]+s4_bt["los"])>0 and (s2_bt["al"]*s2_bt["los"]+s4_bt["al"]*s4_bt["los"])!=0 else 0,
                   "pnl_today":s2_bt.get("pnl_today",0)+s4_bt.get("pnl_today",0),
                   "pnl_week":s2_bt.get("pnl_week",0)+s4_bt.get("pnl_week",0),
                   "pnl_month":s2_bt.get("pnl_month",0)+s4_bt.get("pnl_month",0),
