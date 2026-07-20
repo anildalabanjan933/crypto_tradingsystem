@@ -2840,8 +2840,7 @@ with st.expander("SECTION 5 - BACKTEST", expanded=True):
     with col1:
         bt_strategy = st.selectbox("Select Strategy", [
             *_get_strat_list(),
-            "RenkoBreakoutStrategy",
-            "RenkoTrendlinePullbackStrategy"
+            *_get_strat_list()
         ], key="sec6_strategy")
     with col2:
         bt_lots = st.number_input("Lots", min_value=1, max_value=10000, value=100, key="sec6_lots")
@@ -3413,8 +3412,7 @@ with st.expander("SECTION 5B - PORTFOLIO BACKTEST", expanded=True):
         st.markdown("**Dynamic Portfolio - Select Strategies**")
         available_strategies = [
             *_get_strat_list(),
-            "RenkoBreakoutStrategy",
-            "RenkoTrendlinePullbackStrategy"
+            *_get_strat_list()
         ]
         selected_strategies = st.multiselect(
             "Select Strategies",
