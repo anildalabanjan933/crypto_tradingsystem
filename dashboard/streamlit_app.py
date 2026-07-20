@@ -2839,7 +2839,6 @@ with st.expander("SECTION 5 - BACKTEST", expanded=True):
     col1, col2 = st.columns(2)
     with col1:
         bt_strategy = st.selectbox("Select Strategy", [
-            *_get_strat_list(),
             *_get_strat_list()
         ], key="sec6_strategy")
     with col2:
@@ -3411,7 +3410,6 @@ with st.expander("SECTION 5B - PORTFOLIO BACKTEST", expanded=True):
     with port_tab2:
         st.markdown("**Dynamic Portfolio - Select Strategies**")
         available_strategies = [
-            *_get_strat_list(),
             *_get_strat_list()
         ]
         selected_strategies = st.multiselect(
