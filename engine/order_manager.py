@@ -265,7 +265,7 @@ class OrderManager:
             logging.error(f"[OrderManager] Bracket SL FAILED: {resp.get('error')}")
             return {"success": False, "error": resp.get("error")}
 
-    def place_stop_loss_order(self, direction: str, entry_price: float, sl_pct: float = 5.0) -> dict:
+    def place_stop_loss_order(self, direction: str, entry_price: float, sl_pct: float = 2.0) -> dict:
         """
         Place a stop market order as SL on an open position.
         Works AFTER position is open - no bracket_order_immediate_execution issue.

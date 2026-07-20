@@ -185,7 +185,7 @@ while True:
                     pos_check = om.get_position()
                     real_entry = pos_check.get("entry_price", 0.0) if pos_check.get("success") else 0.0
                     if real_entry > 0:
-                        sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=5.0)
+                        sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=2.0)
                         if sl_result.get("success"):
                             log.info(f"[SL] Stop SL placed | sl_price={sl_result['sl_price']}")
                         else:
