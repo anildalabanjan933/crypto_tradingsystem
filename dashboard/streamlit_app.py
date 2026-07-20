@@ -1,5 +1,33 @@
 
 import streamlit as st
+
+# Strategy display name mapping
+_STRAT_DISPLAY = {
+    "renko_reversal_strategy":          "S2 - Renko Reversal",
+    "renko_smiio_supertrend_strategy":  "S4 - Renko SMIIO Supertrend",
+    "renko_breakout_strategy":          "Renko Breakout",
+    "renko_options_strategy":           "Renko Options",
+    "renko_pattern_breakout_strategy":  "Renko Pattern Breakout",
+    "renko_trendline_pullback_strategy":"Renko Trendline Pullback",
+}
+_STRAT_REVERSE = {v: k for k, v in _STRAT_DISPLAY.items()}
+
+def _get_strat_list():
+    import glob as _g, os as _o
+    files = sorted([_o.path.splitext(_o.path.basename(p))[0]
+                    for p in _g.glob("strategies/backtest/*.py")
+                    if not _o.path.basename(p).startswith("_")
+                    and _o.path.basename(p).endswith("_strategy.py")
+                    and _o.path.basename(p) != "base_strategy.py"])
+    # S2 and S4 first, then rest alphabetically
+    priority = ["renko_reversal_strategy", "renko_smiio_supertrend_strategy"]
+    ordered = [f for f in priority if f in files] + [f for f in files if f not in priority]
+    return [_STRAT_DISPLAY.get(s, s) for s in ordered]
+
+def _display_to_class(display_name):
+    fname = _STRAT_REVERSE.get(display_name, display_name)
+    return "".join(w.capitalize() for w in fname.replace("_strategy","").split("_")) + "Strategy"
+
 import json, os, subprocess, datetime, shutil, glob
 
 # ================================================================
@@ -2811,7 +2839,7 @@ with st.expander("SECTION 5 - BACKTEST", expanded=True):
     col1, col2 = st.columns(2)
     with col1:
         bt_strategy = st.selectbox("Select Strategy", [
-            *[os.path.splitext(os.path.basename(p))[0] for p in sorted(__import__("glob").glob("strategies/backtest/*.py")) if not os.path.basename(p).startswith("_") and os.path.basename(p).endswith("_strategy.py") and os.path.basename(p) != "base_strategy.py"],
+            *_get_strat_list(),
             "RenkoBreakoutStrategy",
             "RenkoTrendlinePullbackStrategy"
         ], key="sec6_strategy")
@@ -2968,8 +2996,7 @@ with st.expander("SECTION 5 - BACKTEST", expanded=True):
     from engine.scaling_engine import load_trades, run_full_mode, run_group_mode, apply_scaling, calculate_metrics
     _sc1, _sc2, _sc3 = st.columns(3)
     with _sc1:
-        _sc_list = [os.path.splitext(os.path.basename(p))[0] for p in sorted(__import__("glob").glob("strategies/backtest/*.py")) if not os.path.basename(p).startswith("_") and os.path.basename(p).endswith("_strategy.py") and os.path.basename(p) != "base_strategy.py"]
-        sc_strategy = st.selectbox("Strategy", _sc_list + ["Portfolio (S2+S4 Combined)"], key="sc_strategy")
+        sc_strategy = st.selectbox("Strategy", _get_strat_list() + ["Portfolio (S2+S4 Combined)"], key="sc_strategy")
     with _sc2:
         sc_scale_type = st.selectbox("Scaling Type", ["Step Based (Preferred)","Formula Based"], key="sc_type")
     with _sc3:
@@ -3385,14 +3412,14 @@ with st.expander("SECTION 5B - PORTFOLIO BACKTEST", expanded=True):
     with port_tab2:
         st.markdown("**Dynamic Portfolio - Select Strategies**")
         available_strategies = [
-            *[os.path.splitext(os.path.basename(p))[0] for p in sorted(__import__("glob").glob("strategies/backtest/*.py")) if not os.path.basename(p).startswith("_") and os.path.basename(p).endswith("_strategy.py") and os.path.basename(p) != "base_strategy.py"],
+            *_get_strat_list(),
             "RenkoBreakoutStrategy",
             "RenkoTrendlinePullbackStrategy"
         ]
         selected_strategies = st.multiselect(
             "Select Strategies",
             available_strategies,
-            default=[os.path.splitext(os.path.basename(p))[0] for p in sorted(__import__("glob").glob("strategies/backtest/*.py")) if not os.path.basename(p).startswith("_") and os.path.basename(p).endswith("_strategy.py") and os.path.basename(p) != "base_strategy.py"][:2],
+            default=_get_strat_list()[:2],
             key="port_dyn_strategies"
         )
         st.markdown("**Date Range**")
@@ -3532,7 +3559,7 @@ with st.expander("SECTION 6 - OPTIMISATION", expanded=True):
     col1, col2, col3 = st.columns(3)
     with col1:
         opt_strategy = st.selectbox("Select Strategy", [
-            *[os.path.splitext(os.path.basename(p))[0] for p in sorted(__import__("glob").glob("strategies/backtest/*.py")) if not os.path.basename(p).startswith("_") and os.path.basename(p).endswith("_strategy.py") and os.path.basename(p) != "base_strategy.py"]
+            *_get_strat_list()
         ], key="sec7_strategy")
     with col2:
         opt_group = st.selectbox("Select Group", [
