@@ -1325,7 +1325,7 @@ with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b',
         for o in ok:
             st.markdown(f"OK: {o}")
 
-        st.caption(f"Last checked: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Auto-refreshes every 30s")
+        st.caption(f"Last checked: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5,minutes=30))).strftime('%d-%b-%Y %I:%M %p IST')} | Auto-refreshes every 30s")
 st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
 
@@ -2361,7 +2361,7 @@ with tab1:
             })
         for pos in open_pos_filtered:
             csv_rows.append({
-                'DateTime':    datetime.datetime.now().strftime('%Y-%m-%dT%H:%M'),
+                'DateTime':    datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5,minutes=30))).strftime('%d-%b-%Y %I:%M %p IST'),
                 'Member':      'My Account',
                 'Strat':       pos['account'],
                 'Side':        pos['side'],
@@ -2437,7 +2437,7 @@ with tab1:
                 pnl_i2 = "<span style='color:{}'>₹{:,.0f}</span>".format(pc, pos['unreal_pnl']*INR_OH) if curr_filter in ['BOTH','INR'] else "-"
                 _rows += "<tr style='background:{};'>".format(bg3)
                 _rows += "<td style='{}'>{}</td>".format(TD2, row_start+idx)
-                _rows += "<td style='{}'>{}</td>".format(TD2, datetime.datetime.now().strftime('%Y-%m-%dT%H:%M'))
+                _rows += "<td style='{}'>{}</td>".format(TD2, datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5,minutes=30))).strftime('%d-%b-%Y %I:%M %p IST'))
                 _rows += "<td style='{}'>My Account</td>".format(TD2)
                 _rows += "<td style='{}'>{}</td>".format(TD2, pos['account'])
                 _rows += "<td style='{}'><span style='color:{};font-weight:700'>{}</span></td>".format(TD2, sc, pos['side'])
@@ -2456,7 +2456,7 @@ with tab1:
         else:
             st.info("No orders found for selected period and filters")
 
-        st.caption(f"Charges = Commission + Funding + 30% Tax on profit | Funding: ${total_fund_all:,.4f} | Commission: ${total_comm_all:,.4f} | Updated: {datetime.datetime.now().strftime('%H:%M:%S')} | Testnet")
+        st.caption(f"Charges = Commission + Funding + 30% Tax on profit | Funding: ${total_fund_all:,.4f} | Commission: ${total_comm_all:,.4f} | Updated: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5,minutes=30))).strftime('%I:%M %p IST')} | Testnet")
 
 with tab2:
     st.markdown("**Algotest Forward Test Monitor**")
@@ -4431,7 +4431,7 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
 # FOOTER
 # ================================================================
 st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
-st.caption(f"Version: {system.get('version', 'v3.9')} | Commit: {git_commit} | Last refresh: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+st.caption(f"Version: {system.get('version', 'v3.9')} | Commit: {git_commit} | Last refresh: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5,minutes=30))).strftime('%d-%b-%Y %I:%M %p IST')}")
 # This line intentionally left blank
 
 
