@@ -4214,8 +4214,9 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 ep_inr   = float(p.get('ep', 0)) * _INR13
                 xp_inr   = float(p.get('xp', 0)) * _INR13
                 cm_inr   = float(p.get('cm', 0)) * _INR13
-                et       = _dfw.datetime.utcfromtimestamp(p.get('ets',0)).strftime('%Y-%m-%d %H:%M')
-                xt       = _dfw.datetime.utcfromtimestamp(p.get('xts',0)).strftime('%Y-%m-%d %H:%M')
+                _ist_off1 = _dfw.timedelta(hours=5, minutes=30)
+                et       = (_dfw.datetime.utcfromtimestamp(p.get('ets',0)) + _ist_off1).strftime('%d-%b-%Y %I:%M %p IST')
+                xt       = (_dfw.datetime.utcfromtimestamp(p.get('xts',0)) + _ist_off1).strftime('%d-%b-%Y %I:%M %p IST')
                 dirv     = str(p.get('dir','')).upper()
                 slip_act = abs(float(p.get('ep',0)) - float(p.get('xp',0))) * 0.001
                 slip_diff= slip_act - 5.0
@@ -4292,8 +4293,15 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 xp_inr  = float(r.get('exit_price',  0)) * _INR13
                 slip    = float(r.get('slippage_usd', 10.0))
                 tax_inr = float(r.get('total_charges_usd', 0)) * _INR13
-                et      = str(r.get('entry_datetime',''))[:16]
-                xt      = str(r.get('exit_datetime', ''))[:16]
+                _ist_off2 = _dfw.timedelta(hours=5, minutes=30)
+                _et_raw = str(r.get('entry_datetime',''))[:19]
+                _xt_raw = str(r.get('exit_datetime', ''))[:19]
+                try:
+                    et = (_dfw.datetime.strptime(_et_raw, '%Y-%m-%d %H:%M:%S') + _ist_off2).strftime('%d-%b-%Y %I:%M %p IST')
+                    xt = (_dfw.datetime.strptime(_xt_raw, '%Y-%m-%d %H:%M:%S') + _ist_off2).strftime('%d-%b-%Y %I:%M %p IST')
+                except:
+                    et = _et_raw
+                    xt = _xt_raw
                 dirv    = str(r.get('direction','')).upper()
                 ps      = _TG20 if pnl >= 0 else _TR20
                 ds      = _TG20 if dirv == 'LONG' else _TR20
