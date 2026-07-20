@@ -264,3 +264,44 @@ class OrderManager:
         else:
             logging.error(f"[OrderManager] Bracket SL FAILED: {resp.get('error')}")
             return {"success": False, "error": resp.get("error")}
+
+    def place_stop_loss_order(self, direction: str, entry_price: float, sl_pct: float = 5.0) -> dict:
+        """
+        Place a stop market order as SL on an open position.
+        Works AFTER position is open - no bracket_order_immediate_execution issue.
+        direction  : "long" or "short"
+        entry_price: actual fill price from get_position()
+        sl_pct     : stop loss % from entry (default 5% - wide safety net only)
+        """
+        if entry_price <= 0:
+            logging.error(f"[OrderManager] SL skipped - invalid entry_price={entry_price}")
+            return {"success": False, "error": "invalid_entry_price"}
+
+        if direction == "long":
+            sl_price = round(entry_price * (1 - sl_pct / 100), 1)
+            side = "sell"
+        else:
+            sl_price = round(entry_price * (1 + sl_pct / 100), 1)
+            side = "buy"
+
+        payload = {
+            "product_symbol": self.PRODUCT_SYMBOL,
+            "product_id":     self.PRODUCT_ID,
+            "side":           side,
+            "size":           0,
+            "order_type":     "market_order",
+            "stop_price":     str(sl_price),
+            "reduce_only":    True,
+            "close_on_trigger": True
+        }
+
+        logging.info(f"[OrderManager] Placing stop SL | direction={direction} entry={entry_price} sl={sl_price} ({sl_pct}%)")
+        resp = self._post("/v2/orders", payload)
+
+        if resp.get("success"):
+            result = resp["result"]
+            logging.info(f"[OrderManager] Stop SL placed | sl_price={sl_price} order_id={result.get('id')}")
+            return {"success": True, "sl_price": sl_price, "order_id": result.get("id")}
+        else:
+            logging.error(f"[OrderManager] Stop SL FAILED: {resp.get('error')}")
+            return {"success": False, "error": resp.get("error")}
