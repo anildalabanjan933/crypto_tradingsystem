@@ -4449,52 +4449,52 @@ with st.expander('SECTION 14 - SLIPPAGE COMPARISON ($5/side vs $10/side)', expan
     <tr><td colspan="7" style="{_SUBHDR}">TRADE COUNT</td></tr>
     <tr style="background:#ffffff;">
       <td style="{_TD14}">Total Trades</td>
-      <td style="{_TDR}">7,556</td><td style="{_TDR}">3,898</td><td style="{_TDB}">11,454</td>
-      <td style="{_TDR}">7,556</td><td style="{_TDR}">3,898</td><td style="{_TDR}">11,454</td>
+      <td style="{_TDR}">7,443</td><td style="{_TDR}">3,901</td><td style="{_TDB}">11,344</td>
+      <td style="{_TDR}">7,443</td><td style="{_TDR}">3,901</td><td style="{_TDR}">11,344</td>
     </tr>
     
     <tr><td colspan="7" style="{_SUBHDR}">GREEN MONTHS</td></tr>
     <tr style="background:#fafafa;">
       <td style="{_TD14}">Green Months</td>
-      <td style="{_TDG}">31/31</td><td style="{_TDG}">31/31</td><td style="{_TDG}">31/31</td>
-      <td style="{_TDO}">25/31</td><td style="{_TDG}">31/31</td><td style="{_TDG}">31/31</td>
+      <td style="{_TDG}">30/31</td><td style="{_TDG}">31/31</td><td style="{_TDG}">31/31</td>
+      <td style="{_TDO}">24/31</td><td style="{_TDG}">31/31</td><td style="{_TDG}">31/31</td>
     </tr>
     
     <tr><td colspan="7" style="{_SUBHDR}">NET PnL (AFTER TAX)</td></tr>
     <tr style="background:#ffffff;">
       <td style="{_TD14}">Net PnL</td>
-      <td style="{_TDG}">₹1,43,86,981</td><td style="{_TDG}">₹1,55,60,542</td><td style="{_TDB}">₹2,99,47,523</td>
-      <td style="{_TDR}">₹83,37,327</td><td style="{_TDR}">₹1,24,90,523</td><td style="{_TDR}">₹2,08,27,850</td>
+      <td style="{_TDG}">₹1,61,71,215</td><td style="{_TDG}">₹1,74,63,456</td><td style="{_TDB}">₹3,36,34,672</td>
+      <td style="{_TDR}">₹99,19,095</td><td style="{_TDR}">₹1,41,86,616</td><td style="{_TDR}">₹2,41,05,712</td>
     </tr>
     
     <tr><td colspan="7" style="{_SUBHDR}">RECOMMENDED CAPITAL (3 x MAX DD)</td></tr>
     <tr style="background:#fafafa;">
       <td style="{_TD14}">Rec Capital</td>
-      <td style="{_TDG}">₹1,11,354</td><td style="{_TDG}">₹41,247</td><td style="{_TDB}">₹1,52,601</td>
-      <td style="{_TDO}">₹5,08,896</td><td style="{_TDO}">₹69,194</td><td style="{_TDO}">₹5,78,090</td>
+      <td style="{_TDG}">₹1,08,688</td><td style="{_TDG}">₹41,247</td><td style="{_TDB}">₹1,49,935</td>
+      <td style="{_TDO}">₹4,44,049</td><td style="{_TDO}">₹69,194</td><td style="{_TDO}">₹5,13,243</td>
     </tr>
     
     <tr><td colspan="7" style="{_SUBHDR}">RETURN ON CAPITAL</td></tr>
     <tr style="background:#ffffff;">
       <td style="{_TD14}">ROC (Total)</td>
-      <td style="{_TDG}">12,920%</td><td style="{_TDG}">37,724%</td><td style="{_TDB}">19,624%</td>
-      <td style="{_TDR}">1,638%</td><td style="{_TDG}">18,051%</td><td style="{_TDR}">3,602%</td>
+      <td style="{_TDG}">14,879%</td><td style="{_TDG}">42,338%</td><td style="{_TDB}">22,433%</td>
+      <td style="{_TDR}">2,234%</td><td style="{_TDG}">20,503%</td><td style="{_TDR}">4,697%</td>
     </tr>
     <tr style="background:#fafafa;">
       <td style="{_TD14}">Monthly avg ROC</td>
-      <td style="{_TDG}">416%</td><td style="{_TDG}">1,216%</td><td style="{_TDB}">633%</td>
-      <td style="{_TDR}">53%</td><td style="{_TDG}">582%</td><td style="{_TDR}">116%</td>
+      <td style="{_TDG}">499%</td><td style="{_TDG}">1,396%</td><td style="{_TDB}">752%</td>
+      <td style="{_TDR}">75%</td><td style="{_TDG}">676%</td><td style="{_TDR}">157%</td>
     </tr>
     
     <tr><td colspan="7" style="{_SUBHDR}">MAX DRAWDOWN ($5/side only)</td></tr>
     <tr style="background:#ffffff;">
       <td style="{_TD14}">Max DD</td>
-      <td style="{_TDR}">-0.48% (₹37,118)</td><td style="{_TDR}">-0.16% (₹13,749)</td><td style="{_DASH}">-</td>
+      <td style="{_TDR}">-0.33% (₹36,229)</td><td style="{_TDR}">-0.16% (₹13,749)</td><td style="{_DASH}">-</td>
       <td style="{_DASH}">-</td><td style="{_DASH}">-</td><td style="{_DASH}">-</td>
     </tr>
     <tr style="background:#fafafa;">
       <td style="{_TD14}">Avg Margin/trade</td>
-      <td style="{_TDR}">$41.89 = ₹3,519</td><td style="{_TDR}">$41.98 = ₹3,526</td><td style="{_DASH}">-</td>
+      <td style="{_TDR}">$838.56 = ₹70,439</td><td style="{_TDR}">$839.44 = ₹70,513</td><td style="{_DASH}">-</td>
       <td style="{_DASH}">-</td><td style="{_DASH}">-</td><td style="{_DASH}">-</td>
     </tr>
     </tbody>
@@ -4506,7 +4506,7 @@ with st.expander('SECTION 14 - SLIPPAGE COMPARISON ($5/side vs $10/side)', expan
     <ul style="margin:4px 0;padding-left:16px;">
     <li>Trade count identical at both slippages - strategy logic is unchanged</li>
     <li style="color:#089981;font-weight:600;">$5/side: S2 improves from 25/31 to 31/31 green months - all months profitable</li>
-    <li style="color:#089981;font-weight:600;">$5/side: Portfolio Rec Capital 3.8x lower = ROC jumps from 3,602% to 19,624%</li>
+    <li style="color:#089981;font-weight:600;">$5/side: Portfolio Rec Capital 3.8x lower = ROC jumps from 4,697% to 22,433%</li>
     <li>$10/side is conservative/safe assumption for live trading presentation</li>
     <li>$5/side is realistic for actual Delta Exchange execution (taker ~$3-5/side)</li>
     <li>Both are valid - use $10 for conservative view, $5 for realistic view</li>
