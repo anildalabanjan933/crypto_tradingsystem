@@ -4293,6 +4293,7 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 xp_inr  = float(r.get('exit_price',  0)) * _INR13
                 slip    = float(r.get('slippage_usd', 10.0))
                 tax_inr = float(r.get('total_charges_usd', 0)) * _INR13
+                import datetime as _dfw
                 _ist_off2 = _dfw.timedelta(hours=5, minutes=30)
                 _et_raw = str(r.get('entry_datetime',''))[:19]
                 _xt_raw = str(r.get('exit_datetime', ''))[:19]
