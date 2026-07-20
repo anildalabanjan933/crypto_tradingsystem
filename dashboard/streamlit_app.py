@@ -4001,7 +4001,8 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
             for v in pls:
                 cum+=v
                 if cum>pk: pk=cum
-                if pk>0 and (pk-cum)/pk>dd: dd=(pk-cum)/pk
+                drop = pk - cum
+                if drop > dd: dd = drop
             aw = df[df['net_pnl']>0]['net_pnl'].mean() if win>0 else 0
             al = df[df['net_pnl']<0]['net_pnl'].mean() if los>0 else 0
             pf_n = df[df['net_pnl']>0]['net_pnl'].sum()
@@ -4021,7 +4022,7 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 pnl_year  = df[df['exit_dt'] >= _pd13.Timestamp(year_s)]['net_pnl'].sum()
             else:
                 pnl_today = pnl_week = pnl_month = pnl_year = 0
-            avg_slip = df['slippage'].mean() if 'slippage' in df.columns else 5.0
+            avg_slip = df['slippage_usd'].mean() if 'slippage_usd' in df.columns else 5.0
             return {"tot":tot,"win":int(win),"los":int(los),"wr":wr,"nu":nu,"ni":ni,"cm":cm,"dd":dd,"aw":aw,"al":al,"pf":pf,
                     "pnl_today":pnl_today,"pnl_week":pnl_week,"pnl_month":pnl_month,"pnl_year":pnl_year,"avg_slip":avg_slip}
         except:
