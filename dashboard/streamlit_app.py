@@ -2554,7 +2554,7 @@ with st.expander("SECTION 4 - FORWARD TEST vs BACKTEST COMPARE", expanded=st.ses
             run_match = st.button("RUN MATCH CHECK", key="run_match_btn")
         with col_info:
             if last_run > 0:
-                last_str  = datetime.datetime.fromtimestamp(last_run).strftime('%H:%M:%S')
+                last_str  = (datetime.datetime.fromtimestamp(last_run) + datetime.timedelta(hours=5,minutes=30)).strftime('%I:%M %p IST')
                 next_secs = max(0, int(AUTO_INTERVAL - (now_ts - last_run)))
                 st.caption(f"Last check: {last_str} | Next auto in {next_secs}s")
             else:
@@ -4359,14 +4359,23 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 bt_xp   = float(bt.get('exit_price',  0)) * _INR13
                 bt_pnl  = float(bt.get('net_pnl_inr', float(bt.get('net_pnl',0)) * _INR13))
                 bt_dir  = str(bt.get('direction','')).upper()
-                bt_et   = str(bt.get('entry_datetime',''))[:16]
-                bt_xt   = str(bt.get('exit_datetime', ''))[:16]
+                import datetime as _dbt
+                _ist_bt = _dbt.timedelta(hours=5, minutes=30)
+                _bt_et_raw = str(bt.get('entry_datetime',''))[:19]
+                _bt_xt_raw = str(bt.get('exit_datetime', ''))[:19]
+                try:
+                    bt_et = (_dbt.datetime.strptime(_bt_et_raw, '%Y-%m-%d %H:%M:%S') + _ist_bt).strftime('%d-%b-%Y %I:%M %p IST')
+                    bt_xt = (_dbt.datetime.strptime(_bt_xt_raw, '%Y-%m-%d %H:%M:%S') + _ist_bt).strftime('%d-%b-%Y %I:%M %p IST')
+                except:
+                    bt_et = _bt_et_raw
+                    bt_xt = _bt_xt_raw
                 fwd_ep  = float(fwd.get('ep', 0)) * _INR13
                 fwd_xp  = float(fwd.get('xp', 0)) * _INR13
                 fwd_pnl = float(fwd.get('pnl', 0)) * _INR13
                 fwd_dir = str(fwd.get('dir','')).upper()
-                fwd_et  = _dc.datetime.utcfromtimestamp(fwd.get('ets',0)).strftime('%Y-%m-%d %H:%M')
-                fwd_xt  = _dc.datetime.utcfromtimestamp(fwd.get('xts',0)).strftime('%Y-%m-%d %H:%M')
+                _ist_cmp = _dc.timedelta(hours=5, minutes=30)
+                fwd_et  = (_dc.datetime.utcfromtimestamp(fwd.get('ets',0)) + _ist_cmp).strftime('%d-%b-%Y %I:%M %p IST')
+                fwd_xt  = (_dc.datetime.utcfromtimestamp(fwd.get('xts',0)) + _ist_cmp).strftime('%d-%b-%Y %I:%M %p IST')
                 pnl_diff  = abs(bt_pnl - fwd_pnl)
                 pnl_pct   = (pnl_diff / abs(bt_pnl) * 100) if bt_pnl != 0 else 0
                 dir_match = bt_dir == fwd_dir
