@@ -251,31 +251,7 @@ while True:
                     last_known_ts = load_ts_file(TS_FILE)
                 break
 
-            # --- EXIT ---
-            # Skip stale exit - must be within 1 candle period (2H for S4)
-            from datetime import datetime, timezone
-            now_dt2 = datetime.strptime(now, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
-            exit_dt2 = datetime.strptime(exit_time, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
-            exit_age_hours = (now_dt2 - exit_dt2).total_seconds() / 3600
-            if now >= exit_time and position is not None:
-                side = "sell" if position == "long" else "buy"
-                actual = om.get_position()
-                close_size = abs(actual.get("size", open_lot_size)) if actual.get("success") else open_lot_size
-                log.info(f"[ORDER] EXIT {side} {close_size} lots | ts={exit_time}")
-                save_ts_file(TS_FILE, exit_time)
-                last_known_ts = exit_time
-                result = om.close_position(size=close_size, side=side)
-                if result.get("success"):
-                    position = None
-                    log.info(f"[ORDER] EXIT confirmed | position=None")
-                    send_alert(f"CTS S4 EXIT\nPosition closed\nLots: {close_size}")
-                else:
-                    log.error(f"[ORDER] EXIT FAILED: {result}")
-                    last_known_ts = load_ts_file(TS_FILE)
-                break
-
-        else:
-            log.info(f"[WAIT] now={now} | position={position} | last_known_ts={last_known_ts}")
+        log.info(f"[WAIT] now={now} | position={position} | last_known_ts={last_known_ts}")
 
     except Exception as e:
         log.error(f"[ERROR] {e}", exc_info=True)
