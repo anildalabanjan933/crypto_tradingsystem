@@ -4226,10 +4226,10 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 ds        = _TG20 if dirv == 'LONG' else _TR20
                 rows += (
                     f"<tr>"
-                    f"<td style='{_TD20}'>{et[:10]}</td>"
+                    f"<td style='{_TD20}'>{et.split(' ')[0]}</td>"
                     f"<td style='{ds}'>{dirv}</td>"
-                    f"<td style='{_TD20}'>{et[11:]}</td>"
-                    f"<td style='{_TD20}'>{xt[11:]}</td>"
+                    f"<td style='{_TD20}'>{' '.join(et.split(' ')[1:])}</td>"
+                    f"<td style='{_TD20}'>{' '.join(xt.split(' ')[1:])}</td>"
                     f"<td style='{_TD20}'>₹{ep_inr:,.0f}</td>"
                     f"<td style='{_TD20}'>₹{xp_inr:,.0f}</td>"
                     f"<td style='{_TR20}'>{slip_str} vs $5</td>"
@@ -4308,10 +4308,10 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 ds      = _TG20 if dirv == 'LONG' else _TR20
                 rows += (
                     f"<tr>"
-                    f"<td style='{_TD20}'>{et[:10]}</td>"
+                    f"<td style='{_TD20}'>{et.split(' ')[0]}</td>"
                     f"<td style='{ds}'>{dirv}</td>"
-                    f"<td style='{_TD20}'>{et[11:]}</td>"
-                    f"<td style='{_TD20}'>{xt[11:]}</td>"
+                    f"<td style='{_TD20}'>{' '.join(et.split(' ')[1:])}</td>"
+                    f"<td style='{_TD20}'>{' '.join(xt.split(' ')[1:])}</td>"
                     f"<td style='{_TD20}'>₹{ep_inr:,.0f}</td>"
                     f"<td style='{_TD20}'>₹{xp_inr:,.0f}</td>"
                     f"<td style='{_TR20}'>${slip:.2f}</td>"
@@ -4389,10 +4389,10 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 rows += (
                     f"<tr>"
                     f"<td style='{mp_style}'>{match_pct:.0f}%</td>"
-                    f"<td style='{_TD20}'>{bt_et[:10]}</td>"
+                    f"<td style='{_TD20}'>{bt_et.split(' ')[0]}</td>"
                     f"<td style='{ds}'>{bt_dir}</td>"
-                    f"<td style='{_TD20}'>{bt_et[11:]}</td>"
-                    f"<td style='{_TD20}'>{fwd_et[11:]}</td>"
+                    f"<td style='{_TD20}'>{' '.join(bt_et.split(' ')[1:])}</td>"
+                    f"<td style='{_TD20}'>{' '.join(fwd_et.split(' ')[1:])}</td>"
                     f"<td style='{_TD20}'>₹{bt_ep:,.0f}</td>"
                     f"<td style='{_TD20}'>₹{fwd_ep:,.0f}</td>"
                     f"<td style='{_TD20}'>₹{bt_xp:,.0f}</td>"
