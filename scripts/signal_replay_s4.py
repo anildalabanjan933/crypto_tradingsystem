@@ -76,22 +76,15 @@ def load_signals():
     return signals
 
 def get_valid_from():
-    val = load_ts_file(BASELINE_FILE)
-    if val:
-        return val
-    val = load_ts_file(TS_FILE)
-    if val:
-        return val
-    return "2000-01-01T00:00:00"
+    """VALID_FROM = today 00:00 UTC on every startup. Always fresh window."""
+    _today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    _now_str = _today.strftime('%Y-%m-%dT%H:%M:%S')
+    open(BASELINE_FILE, 'w').write(_now_str)
+    log.info(f"[STARTUP] VALID_FROM auto-set to today 00:00 UTC: {_now_str}")
+    return _now_str
 
 # --- Startup ---
-# PERMANENT: VALID_FROM never resets - only set once on first ever run
-if not os.path.exists(BASELINE_FILE) or not open(BASELINE_FILE).read().strip():
-    _now_str = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S')
-    open(BASELINE_FILE, 'w').write(_now_str)
-    log.info(f"[STARTUP] VALID_FROM first time set: {_now_str}")
-else:
-    log.info(f"[STARTUP] VALID_FROM kept: {open(BASELINE_FILE).read().strip()}")
+# VALID_FROM resets to today 00:00 UTC on every startup for fresh window
 log.info("[STARTUP] S4 Signal Replay Bot starting...")
 
 pos = om.get_position()
