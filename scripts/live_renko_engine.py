@@ -156,32 +156,43 @@ def on_open(ws):
     ws.send(json.dumps(payload))
     log.info(f"[ENGINE] Subscribed candlestick_1m {SYMBOL}")
 
+# Track last candle start time to detect completed candles
+last_candle_start = None
+
 def on_message(ws, message):
-    global candle_closes, candle_times
+    global candle_closes, candle_times, last_candle_start
     try:
         data = json.loads(message)
         if data.get("type") != "candlestick_1m":
             return
-        candle = data.get("candle", data)
-        close  = float(candle.get("close", 0))
-        ts_raw = candle.get("time", candle.get("timestamp", 0))
-        if close <= 0:
+        close       = float(data.get("close", 0))
+        candle_start = data.get("candle_start_time", 0)
+        if close <= 0 or candle_start == 0:
             return
-        if isinstance(ts_raw, (int, float)):
-            if ts_raw > 1e12:
-                ts_raw = ts_raw / 1e6
-            candle_dt = datetime.fromtimestamp(ts_raw, tz=timezone.utc)
-        else:
-            return
+        # Convert candle_start microseconds to datetime
+        candle_dt = datetime.fromtimestamp(candle_start / 1e6, tz=timezone.utc)
         with lock:
-            if candle_times and candle_dt <= candle_times[-1]:
+            # Only process when NEW candle starts = previous candle is now complete
+            if last_candle_start is None:
+                last_candle_start = candle_start
+                return
+            if candle_start <= last_candle_start:
+                # Same candle still forming - update close price only
+                if candle_times and candle_dt == candle_times[-1]:
+                    candle_closes[-1] = close
+                return
+            # New candle started = previous candle is complete
+            # Add the completed candle close price
+            prev_dt = datetime.fromtimestamp(last_candle_start / 1e6, tz=timezone.utc)
+            last_candle_start = candle_start
+            if candle_times and prev_dt <= candle_times[-1]:
                 return
             candle_closes.append(close)
-            candle_times.append(candle_dt)
+            candle_times.append(prev_dt)
             if len(candle_closes) > 10000:
                 candle_closes = candle_closes[-10000:]
                 candle_times  = candle_times[-10000:]
-            log.info(f"[ENGINE] Candle: {candle_dt.strftime('%Y-%m-%dT%H:%M')} close={close}")
+            log.info(f"[ENGINE] Completed candle: {prev_dt.strftime('%Y-%m-%dT%H:%M')} close={close}")
             run_s2_strategy()
             run_s4_strategy()
     except Exception as e:
