@@ -153,8 +153,8 @@ p  { font-size: 12px !important; margin: 0 !important; color: #131722 !important
 
 /* SECTION TITLES - TradingView dark navy, white text, blue accent */
 .section-title {
-    background: linear-gradient(135deg, #E8ECF2 0%, #F4F6FA 50%, #DDE2EC 100%) !important;
-    color: #131722 !important;
+    background: #42A5F5 !important;
+    color: #FFFFFF !important;
     font-size: 11px !important;
     font-weight: 700 !important;
     padding: 4px 10px !important;
@@ -163,10 +163,30 @@ p  { font-size: 12px !important; margin: 0 !important; color: #131722 !important
     text-transform: uppercase !important;
     letter-spacing: 1px !important;
     border-radius: 3px !important;
-    border-left: 4px solid #2196F3 !important;
-    display: block !important;
-    width: 100% !important;
+    border-left: 4px solid #1976D2 !important;
+    display: inline-block !important;
+    width: 25% !important;
     box-sizing: border-box !important;
+}
+
+/* EXPANDER - compact width, shrinks to text width */
+div[data-testid="stExpander"] > details > summary {
+    display: inline-flex !important;
+    width: 25% !important;
+    padding: 4px 10px !important;
+    border-radius: 3px !important;
+    background: #42A5F5 !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+}
+div[data-testid="stExpander"] > details {
+    border: none !important;
+    box-shadow: none !important;
+}
+div[data-testid="stExpander"] > details > summary p,
+div[data-testid="stExpander"] > details > summary span {
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
 }
 
 /* EXPANDER - same shade as section title, NO red border */
@@ -307,6 +327,31 @@ div[data-testid="stExpander"] details[open] summary {
     border-bottom: 1px solid #363A45 !important;
 }
 
+/* FORCE ALL EXPANDER SUMMARY BLUE - overrides all above */
+summary,
+details > summary,
+details[open] > summary,
+.streamlit-expanderHeader,
+div[data-testid="stExpander"] details summary,
+div[data-testid="stExpander"] details[open] summary,
+div[data-testid="stExpander"] > div:first-child,
+div[data-testid="stExpander"] div[data-testid="stExpander"] > div:first-child,
+div[data-testid="stExpander"] div[data-testid="stExpander"] details summary {
+    background: #42A5F5 !important;
+    color: #FFFFFF !important;
+    border-left: 4px solid #1976D2 !important;
+}
+summary p, summary span, summary div,
+details summary p, details summary span,
+div[data-testid="stExpander"] details summary p,
+div[data-testid="stExpander"] details summary span {
+    color: #FFFFFF !important;
+}
+summary:hover, details summary:hover,
+div[data-testid="stExpander"] details summary:hover {
+    background: #2196F3 !important;
+}
+
 /* METRICS - white card with visible border + shadow */
 [data-testid="stMetricValue"] { font-size: 13px !important; font-weight: 700 !important; color: #131722 !important; }
 [data-testid="stMetricLabel"] { font-size: 10px !important; color: #787B86 !important; font-weight: 600 !important; }
@@ -375,7 +420,7 @@ div[data-testid="stExpander"] details[open] summary {
 .stWarning { background: #FFFBF0 !important; color: #E65100 !important;
     border-left: 4px solid #FF9800 !important; padding: 4px 8px !important;
     font-size: 11px !important; margin: 2px 0 !important; border-radius: 3px !important; }
-.stInfo { background: #F0F8FF !important; color: #0D47A1 !important;
+.stInfo { background: #F0F8FF !important; color: #1976D2 !important;
     border-left: 4px solid #2196F3 !important; padding: 4px 8px !important;
     font-size: 11px !important; margin: 2px 0 !important; border-radius: 3px !important; }
 
