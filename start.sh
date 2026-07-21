@@ -15,6 +15,7 @@ mkdir -p logs
 set -a; source .env; set +a
 
 # Kill ALL existing screens
+screen -S renko_engine -X quit 2>/dev/null
 screen -S live_s2 -X quit 2>/dev/null
 screen -S live_s4 -X quit 2>/dev/null
 screen -S dashboard -X quit 2>/dev/null
@@ -23,6 +24,7 @@ screen -S testmember1_s4 -X quit 2>/dev/null
 sleep 2
 
 # Start fresh screens using venv python directly
+screen -dmS renko_engine bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/live_renko_engine.py >> logs/live_renko_engine.log 2>&1"
 screen -dmS live_s2 bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/signal_replay_s2.py >> logs/live_trading_s2.log 2>&1"
 screen -dmS live_s4 bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/signal_replay_s4.py >> logs/live_trading_s4.log 2>&1"
 
