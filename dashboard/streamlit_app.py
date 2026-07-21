@@ -4451,103 +4451,232 @@ st.caption(f"Version: {system.get('version', 'v3.9')} | Commit: {git_commit} | L
 # SECTION 14 - SLIPPAGE COMPARISON
 # ============================================================
 if 'exp_14s' not in st.session_state: st.session_state['exp_14s'] = False
-with st.expander('SECTION 14 - SLIPPAGE COMPARISON ($5/side vs $10/side)', expanded=st.session_state.get('exp_14s', False)):
+with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st.session_state.get('exp_14s', False)):
 
-    
+    import glob as _gl14, pandas as _pd14, datetime as _dt14
+
+    _INR14 = 84.0
     _TH14  = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;"
     _TD14  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;"
-    _TDR   = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:center;"
-    _TDG   = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
-    _TDO   = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#e07000;font-weight:700;text-align:center;"
-    _TDB   = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#2962FF;font-weight:700;text-align:center;"
-    _THGR  = "padding:5px 8px;border:1px solid #C8D0DC;background:#089981;font-size:10px;font-weight:700;color:#fff;text-align:center;"
-    _THOG  = "padding:5px 8px;border:1px solid #C8D0DC;background:#e07000;font-size:10px;font-weight:700;color:#fff;text-align:center;"
-    _SUBHDR= "padding:4px 8px;border:1px solid #C8D0DC;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
-    _DASH  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#aaa;text-align:center;"
-    
+    _TDR14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:center;"
+    _TDG14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
+    _TDO14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#e07000;font-weight:700;text-align:center;"
+    _TDB14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#2962FF;font-weight:700;text-align:center;"
+    _TDR14B= "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#F23645;font-weight:700;text-align:center;"
+    _THGR14= "padding:5px 8px;border:1px solid #C8D0DC;background:#089981;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+    _THOG14= "padding:5px 8px;border:1px solid #C8D0DC;background:#e07000;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+    _SUB14 = "padding:4px 8px;border:1px solid #C8D0DC;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
+    _DASH14= "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#aaa;text-align:center;"
+    _PLNH14= "padding:5px 8px;border:1px solid #C8D0DC;background:#2962FF;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+    _PLND14= "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:left;"
+    _PLNV14= "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#2962FF;font-weight:700;text-align:center;"
+
+    def _load14(csv_pattern, from_dt=None):
+        try:
+            files = sorted(_gl14.glob(csv_pattern), reverse=True)
+            if not files: return None
+            df = _pd14.read_csv(files[0])
+            if 'entry_datetime' not in df.columns: return None
+            df['entry_datetime'] = _pd14.to_datetime(df['entry_datetime'])
+            if from_dt:
+                df = df[df['entry_datetime'] >= _pd14.to_datetime(from_dt)]
+            if df.empty: return None
+            now14 = _dt14.datetime.utcnow()
+            today_s  = now14.replace(hour=0,minute=0,second=0,microsecond=0)
+            month_s  = now14.replace(day=1,hour=0,minute=0,second=0,microsecond=0)
+            tot  = len(df)
+            gross= df['gross_pnl'].sum() if 'gross_pnl' in df.columns else 0
+            net  = df['net_pnl'].sum() if 'net_pnl' in df.columns else 0
+            net_inr = df['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else net*_INR14
+            tax  = df['tax_usd'].sum() if 'tax_usd' in df.columns else 0
+            fees = df['taker_fees_usd'].sum() if 'taker_fees_usd' in df.columns else 0
+            slip = df['slippage_usd'].sum() if 'slippage_usd' in df.columns else 0
+            fund = df['funding_usd'].sum() if 'funding_usd' in df.columns else 0
+            total_charges = tax + fees + slip + fund
+            margin_avg = df['margin_required'].mean() if 'margin_required' in df.columns else 0
+            # Green months
+            if 'exit_datetime' in df.columns:
+                df['exit_dt'] = _pd14.to_datetime(df['exit_datetime'])
+                df['ym'] = df['exit_dt'].dt.to_period('M')
+                monthly = df.groupby('ym')['net_pnl'].sum()
+                green_m = (monthly > 0).sum()
+                total_m = len(monthly)
+                # Max DD
+                pls = df['net_pnl'].tolist()
+                cum,pk,dd = 0,0,0
+                for v in pls:
+                    cum+=v
+                    if cum>pk: pk=cum
+                    drop=pk-cum
+                    if drop>dd: dd=drop
+                # Today + Month PnL
+                pnl_today = df[df['exit_dt'] >= _pd14.Timestamp(today_s)]['net_pnl'].sum()
+                pnl_month = df[df['exit_dt'] >= _pd14.Timestamp(month_s)]['net_pnl'].sum()
+            else:
+                green_m=total_m=0; dd=0; pnl_today=pnl_month=0
+            rec_cap = dd * 3 * _INR14
+            roc = (net_inr / rec_cap * 100) if rec_cap > 0 else 0
+            months = max(total_m, 1)
+            roc_monthly = roc / months
+            return {
+                "tot":tot,"gross":gross,"net":net,"net_inr":net_inr,
+                "tax":tax,"fees":fees,"slip":slip,"fund":fund,"total_charges":total_charges,
+                "green_m":green_m,"total_m":total_m,"dd":dd,"rec_cap":rec_cap,
+                "roc":roc,"roc_monthly":roc_monthly,"margin_avg":margin_avg,
+                "pnl_today":pnl_today,"pnl_month":pnl_month
+            }
+        except Exception as _e14:
+            return None
+
+    def _tbl14(d2, d4, label, period_str):
+        if not d2 and not d4:
+            return f"<p style='color:#aaa;font-size:11px;'>No data available for {label}</p>"
+        def _g(d, k): return d[k] if d and k in d else 0
+        def _inr(v): return f"₹{v*_INR14:,.0f}"
+        def _pct(v): return f"{v:,.1f}%"
+        s2_net=_g(d2,"net_inr"); s4_net=_g(d4,"net_inr")
+        port_net=s2_net+s4_net
+        s2_gross=_g(d2,"gross")*_INR14; s4_gross=_g(d4,"gross")*_INR14
+        port_gross=s2_gross+s4_gross
+        s2_chg=_g(d2,"total_charges")*_INR14; s4_chg=_g(d4,"total_charges")*_INR14
+        port_chg=s2_chg+s4_chg
+        s2_dd=_g(d2,"dd")*_INR14; s4_dd=_g(d4,"dd")*_INR14
+        port_dd=max(s2_dd,s4_dd)
+        s2_rc=_g(d2,"rec_cap"); s4_rc=_g(d4,"rec_cap")
+        port_rc=s2_rc+s4_rc
+        s2_roc=_g(d2,"roc"); s4_roc=_g(d4,"roc")
+        port_roc=(port_net/port_rc*100) if port_rc>0 else 0
+        s2_rocm=_g(d2,"roc_monthly"); s4_rocm=_g(d4,"roc_monthly")
+        port_rocm=port_roc/max(_g(d2,"total_m"),1)
+        s2_gm=_g(d2,"green_m"); s2_tm=_g(d2,"total_m")
+        s4_gm=_g(d4,"green_m"); s4_tm=_g(d4,"total_m")
+        s2_td=_g(d2,"pnl_today")*_INR14; s4_td=_g(d4,"pnl_today")*_INR14
+        s2_mo=_g(d2,"pnl_month")*_INR14; s4_mo=_g(d4,"pnl_month")*_INR14
+        s2_mg=_g(d2,"margin_avg")*_INR14; s4_mg=_g(d4,"margin_avg")*_INR14
+
+        def _c(v): return _TDG14 if v>=0 else _TDR14B
+        def _row(label, s2v, s4v, portv, s2s=None, s4s=None, ps=None):
+            s2s=s2s or _TDR14; s4s=s4s or _TDR14; ps=ps or _TDB14
+            return (f"<tr><td style='{_TD14}'>{label}</td>"
+                    f"<td style='{s2s}'>{s2v}</td><td style='{s4s}'>{s4v}</td><td style='{ps}'>{portv}</td></tr>")
+
+        return f"""
+        <p style="font-size:11px;color:#555;margin:2px 0 6px 0;"><b>{label}</b> &nbsp;|&nbsp; {period_str} &nbsp;|&nbsp; BTCUSD Perpetual &nbsp;|&nbsp; 100 lots/trade &nbsp;|&nbsp; Dynamic update every page load</p>
+        <div style="overflow-x:auto;margin:4px 0;">
+        <table style="width:100%;border-collapse:collapse;">
+        <thead>
+        <tr>
+          <th style="{_TH14}" rowspan="2">Metric</th>
+          <th style="{_THGR14}" colspan="3">Backtest Results</th>
+        </tr>
+        <tr>
+          <th style="{_THGR14}">S2</th>
+          <th style="{_THGR14}">S4</th>
+          <th style="{_THGR14}">Portfolio</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr><td colspan="4" style="{_SUB14}">TRADE COUNT</td></tr>
+        {_row("Total Trades", f"{_g(d2,'tot'):,}", f"{_g(d4,'tot'):,}", f"{_g(d2,'tot')+_g(d4,'tot'):,}")}
+        <tr><td colspan="4" style="{_SUB14}">GREEN MONTHS</td></tr>
+        {_row("Green Months", f"{s2_gm}/{s2_tm}", f"{s4_gm}/{s4_tm}", f"{min(s2_gm,s4_gm)}/{s2_tm}", _TDG14, _TDG14, _TDG14)}
+        <tr><td colspan="4" style="{_SUB14}">PnL BREAKDOWN</td></tr>
+        {_row("Gross PnL", _inr(s2_gross/_INR14), _inr(s4_gross/_INR14), _inr(port_gross/_INR14), _c(s2_gross), _c(s4_gross), _c(port_gross))}
+        {_row("Tax + All Charges", f"-₹{s2_chg:,.0f}", f"-₹{s4_chg:,.0f}", f"-₹{port_chg:,.0f}", _TDR14B, _TDR14B, _TDR14B)}
+        {_row("Net PnL (After Tax)", _inr(s2_net/_INR14), _inr(s4_net/_INR14), _inr(port_net/_INR14), _c(s2_net), _c(s4_net), _c(port_net))}
+        <tr><td colspan="4" style="{_SUB14}">DYNAMIC PnL (SYNCED WITH SECTION 13)</td></tr>
+        {_row("Today PnL", f"₹{s2_td:,.0f}", f"₹{s4_td:,.0f}", f"₹{s2_td+s4_td:,.0f}", _c(s2_td), _c(s4_td), _c(s2_td+s4_td))}
+        {_row("This Month PnL", f"₹{s2_mo:,.0f}", f"₹{s4_mo:,.0f}", f"₹{s2_mo+s4_mo:,.0f}", _c(s2_mo), _c(s4_mo), _c(s2_mo+s4_mo))}
+        <tr><td colspan="4" style="{_SUB14}">CAPITAL & RETURNS</td></tr>
+        {_row("Rec Capital (3x Max DD)", f"₹{s2_rc:,.0f}", f"₹{s4_rc:,.0f}", f"₹{port_rc:,.0f}", _TDO14, _TDO14, _TDB14)}
+        {_row("ROC Total", _pct(s2_roc), _pct(s4_roc), _pct(port_roc), _TDG14, _TDG14, _TDB14)}
+        {_row("ROC Monthly Avg", _pct(s2_rocm), _pct(s4_rocm), _pct(port_rocm), _TDG14, _TDG14, _TDB14)}
+        <tr><td colspan="4" style="{_SUB14}">RISK</td></tr>
+        {_row("Max Drawdown", f"-₹{s2_dd:,.0f}", f"-₹{s4_dd:,.0f}", f"-₹{port_dd:,.0f}", _TDR14B, _TDR14B, _TDR14B)}
+        {_row("Avg Margin/trade", f"₹{s2_mg:,.0f}", f"₹{s4_mg:,.0f}", "-", _TDR14, _TDR14, _DASH14)}
+        </tbody>
+        </table>
+        </div>"""
+
+    # Load data
+    _now14 = _dt14.datetime.utcnow()
+    _1yr_from = (_now14 - _dt14.timedelta(days=365)).strftime("%Y-%m-%d")
+    _full_from = "2024-01-01"
+
+    _d2_1yr  = _load14("output/trade_log_RenkoReversal*.csv",       _1yr_from)
+    _d4_1yr  = _load14("output/trade_log_RenkoSMIIOSupertrend*.csv",_1yr_from)
+    _d2_full = _load14("output/trade_log_RenkoReversal*.csv",       _full_from)
+    _d4_full = _load14("output/trade_log_RenkoSMIIOSupertrend*.csv",_full_from)
+
+    _1yr_label = f"{(_now14-_dt14.timedelta(days=365)).strftime('%d-%b-%Y')} to {_now14.strftime('%d-%b-%Y')} (1 Year)"
+    _full_label= f"2024-01-01 to {_now14.strftime('%d-%b-%Y')} (Full CSV)"
+
+    st.markdown(_tbl14(_d2_1yr, _d4_1yr, "1-YEAR BACKTEST", _1yr_label), unsafe_allow_html=True)
+    st.markdown("---")
+    st.markdown(_tbl14(_d2_full, _d4_full, "FULL CSV BACKTEST", _full_label), unsafe_allow_html=True)
+    st.markdown("---")
+
+    # DEPLOYMENT PLAN SECTION
+    _d2f = _d2_full or {}
+    _d4f = _d4_full or {}
+    _port_dd_inr = ((_d2f.get("dd",0) + _d4f.get("dd",0)) * _INR14)
+    _rec_cap = max(_port_dd_inr * 3, 200000)
+
     st.markdown(f"""
-    <p style="font-size:11px;color:#555;margin:2px 0 8px 0;">
-    Period: 2024-01-01 to 2026-07-14 &nbsp;|&nbsp; 31 months &nbsp;|&nbsp; BTCUSD Perpetual &nbsp;|&nbsp; 100 lots/trade</p>
-    
     <div style="overflow-x:auto;margin:4px 0;">
-    <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
-    <colgroup>
-      <col style="width:22%">
-      <col style="width:13%"><col style="width:13%">
-      <col style="width:13%"><col style="width:13%">
-      <col style="width:13%"><col style="width:13%">
-    </colgroup>
+    <table style="width:100%;border-collapse:collapse;">
     <thead>
-    <tr>
-      <th style="{_TH14}" rowspan="2">Metric</th>
-      <th style="{_THGR}" colspan="3">$5/side (Realistic)</th>
-      <th style="{_THOG}" colspan="3">$10/side (Conservative)</th>
-    </tr>
-    <tr>
-      <th style="{_THGR}">S2</th>
-      <th style="{_THGR}">S4</th>
-      <th style="{_THGR}">Portfolio</th>
-      <th style="{_THOG}">S2</th>
-      <th style="{_THOG}">S4</th>
-      <th style="{_THOG}">Portfolio</th>
-    </tr>
+    <tr><th style="{_PLNH14}" colspan="2">DEPLOYMENT PLAN</th></tr>
     </thead>
     <tbody>
-    <tr><td colspan="7" style="{_SUBHDR}">TRADE COUNT</td></tr>
-    <tr style="background:#ffffff;">
-      <td style="{_TD14}">Total Trades</td>
-      <td style="{_TDR}">7,443</td><td style="{_TDR}">3,901</td><td style="{_TDB}">11,344</td>
-      <td style="{_TDR}">7,443</td><td style="{_TDR}">3,901</td><td style="{_TDR}">11,344</td>
-    </tr>
-    
-    <tr><td colspan="7" style="{_SUBHDR}">GREEN MONTHS</td></tr>
-    <tr style="background:#fafafa;">
-      <td style="{_TD14}">Green Months</td>
-      <td style="{_TDG}">30/31</td><td style="{_TDG}">31/31</td><td style="{_TDG}">31/31</td>
-      <td style="{_TDO}">24/31</td><td style="{_TDG}">31/31</td><td style="{_TDG}">31/31</td>
-    </tr>
-    
-    <tr><td colspan="7" style="{_SUBHDR}">NET PnL (AFTER TAX)</td></tr>
-    <tr style="background:#ffffff;">
-      <td style="{_TD14}">Net PnL</td>
-      <td style="{_TDG}">₹1,61,71,215</td><td style="{_TDG}">₹1,74,63,456</td><td style="{_TDB}">₹3,36,34,672</td>
-      <td style="{_TDR}">₹99,19,095</td><td style="{_TDR}">₹1,41,86,616</td><td style="{_TDR}">₹2,41,05,712</td>
-    </tr>
-    
-    <tr><td colspan="7" style="{_SUBHDR}">RECOMMENDED CAPITAL (3 x MAX DD)</td></tr>
-    <tr style="background:#fafafa;">
-      <td style="{_TD14}">Rec Capital</td>
-      <td style="{_TDG}">₹1,08,688</td><td style="{_TDG}">₹41,247</td><td style="{_TDB}">₹1,49,935</td>
-      <td style="{_TDO}">₹4,44,049</td><td style="{_TDO}">₹69,194</td><td style="{_TDO}">₹5,13,243</td>
-    </tr>
-    
-    <tr><td colspan="7" style="{_SUBHDR}">RETURN ON CAPITAL</td></tr>
-    <tr style="background:#ffffff;">
-      <td style="{_TD14}">ROC (Total)</td>
-      <td style="{_TDG}">14,879%</td><td style="{_TDG}">42,338%</td><td style="{_TDB}">22,433%</td>
-      <td style="{_TDR}">2,234%</td><td style="{_TDG}">20,503%</td><td style="{_TDR}">4,697%</td>
-    </tr>
-    <tr style="background:#fafafa;">
-      <td style="{_TD14}">Monthly avg ROC</td>
-      <td style="{_TDG}">499%</td><td style="{_TDG}">1,396%</td><td style="{_TDB}">752%</td>
-      <td style="{_TDR}">75%</td><td style="{_TDG}">676%</td><td style="{_TDR}">157%</td>
-    </tr>
-    
-    <tr><td colspan="7" style="{_SUBHDR}">MAX DRAWDOWN ($5/side only)</td></tr>
-    <tr style="background:#ffffff;">
-      <td style="{_TD14}">Max DD</td>
-      <td style="{_TDR}">-0.33% (₹36,229)</td><td style="{_TDR}">-0.16% (₹13,749)</td><td style="{_DASH}">-</td>
-      <td style="{_DASH}">-</td><td style="{_DASH}">-</td><td style="{_DASH}">-</td>
-    </tr>
-    <tr style="background:#fafafa;">
-      <td style="{_TD14}">Avg Margin/trade</td>
-      <td style="{_TDR}">$838.56 = ₹70,439</td><td style="{_TDR}">$839.44 = ₹70,513</td><td style="{_DASH}">-</td>
-      <td style="{_DASH}">-</td><td style="{_DASH}">-</td><td style="{_DASH}">-</td>
-    </tr>
+    <tr><td style="{_PLND14}">Margin Mode</td><td style="{_PLNV14}">Isolated</td></tr>
+    <tr><td style="{_PLND14}">Leverage</td><td style="{_PLNV14}">50x</td></tr>
+    <tr><td style="{_PLND14}">Subaccount</td><td style="{_PLNV14}">Single (S2 + S4 together)</td></tr>
+    <tr><td style="{_PLND14}">Starting Capital</td><td style="{_PLNV14}">₹2,00,000</td></tr>
+    <tr><td style="{_PLND14}">Starting Lots</td><td style="{_PLNV14}">100 lots (fixed)</td></tr>
+    <tr><td style="{_PLND14}">Go-Live Date</td><td style="{_PLNV14}">Aug 1, 2026</td></tr>
+    <tr><td style="{_PLND14}">First Withdrawal</td><td style="{_PLNV14}">Feb 2027 (after 6 months)</td></tr>
+    <tr><td style="{_PLND14}">Max Lots Cap</td><td style="{_PLNV14}">1000 lots (never exceed)</td></tr>
     </tbody>
     </table>
     </div>
-    
+
+    <div style="overflow-x:auto;margin:10px 0 4px 0;">
+    <table style="width:100%;border-collapse:collapse;">
+    <thead>
+    <tr>
+      <th style="{_PLNH14}">Lots</th>
+      <th style="{_PLNH14}">Safe Keep</th>
+      <th style="{_PLNH14}">Monthly Target</th>
+      <th style="{_PLNH14}">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr><td style="{_PLND14}">100</td><td style="{_PLNV14}">₹1,00,000</td><td style="{_TDG14}">₹1,11,328</td><td style="{_PLND14}">Start Aug 1</td></tr>
+    <tr><td style="{_PLND14}">300</td><td style="{_PLNV14}">₹2,00,000</td><td style="{_TDG14}">₹3,33,984</td><td style="{_PLND14}">Sep 1 if profit</td></tr>
+    <tr><td style="{_PLND14}">500</td><td style="{_PLNV14}">₹3,00,000</td><td style="{_TDG14}">₹5,56,640</td><td style="{_PLND14}">Oct 1 if profit</td></tr>
+    <tr><td style="{_PLND14}">700</td><td style="{_PLNV14}">₹4,00,000</td><td style="{_TDG14}">₹7,79,296</td><td style="{_PLND14}">Nov 1 if profit</td></tr>
+    <tr><td style="{_PLND14}">900</td><td style="{_PLNV14}">₹5,50,000</td><td style="{_TDG14}">₹10,01,952</td><td style="{_PLND14}">Dec 1 if profit</td></tr>
+    <tr><td style="{_PLND14}">1000</td><td style="{_PLNV14}">₹6,00,000</td><td style="{_TDG14}">₹10,65,265</td><td style="{_PLND14}">Jan 1 if profit — FINAL CAP</td></tr>
+    </tbody>
+    </table>
+    </div>
+
+    <div style="background:#fff8e1;border-left:3px solid #e07000;padding:8px 12px;margin:10px 0 4px 0;font-size:11px;color:#131722;">
+    <b>Golden Rules (Never Break):</b>
+    <ol style="margin:4px 0;padding-left:16px;">
+    <li>Start 100 lots — never skip levels</li>
+    <li>Increase +200 only after profitable month confirmed</li>
+    <li>Never decrease lots even in losing month — FREEZE ONLY</li>
+    <li>Cap = 1000 lots maximum — never exceed</li>
+    <li>Check Section 13 on 1st of every month — 30 seconds</li>
+    <li>Never change lots during open position — wait FLAT</li>
+    <li>If 2 consecutive losing months = pause and review</li>
+    <li>First 6 months = ZERO withdrawal — build buffer</li>
+    <li>Go live only after 5 consecutive MATCH trades confirmed</li>
+    </ol>
+    </div>
+
     <div style="background:#f0f4ff;border-left:3px solid #2962FF;padding:8px 12px;margin:10px 0 4px 0;font-size:11px;color:#131722;">
     <b>Key Observations:</b>
     <ul style="margin:4px 0;padding-left:16px;">
