@@ -119,6 +119,29 @@ log.info(f"[STARTUP] last_known_ts={last_known_ts} | valid_from={valid_from}")
 signals = load_signals()
 open_lot_size = LOT_SIZE
 
+
+def read_live_signal(signal_file):
+    """Read latest signal from live engine signal file."""
+    try:
+        if not os.path.exists(signal_file):
+            return None
+        line = open(signal_file).read().strip()
+        if not line:
+            return None
+        parts = line.split("|")
+        if len(parts) < 3:
+            return None
+        return {"type": parts[0], "timestamp": parts[1], "lots": int(parts[2])}
+    except Exception:
+        return None
+
+def clear_live_signal(signal_file):
+    """Clear signal file after processing."""
+    try:
+        open(signal_file, "w").write("")
+    except Exception:
+        pass
+
 # --- Main Loop ---
 log.info("[STARTUP] Entering main loop. Checking every 10 seconds.")
 
@@ -143,43 +166,64 @@ while True:
     try:
         now = now_utc_str()
 
-        # Reload signals every 10 minutes - regenerate first to pick up new candles
-        _now_min = now[14:16]
-        if _now_min in ["00","10","20","30","40","50"]:
-            try:
-                import subprocess, sys
-                subprocess.run(
-                    [sys.executable, "scripts/generate_signals.py"],
-                    timeout=300, capture_output=True, text=True,
-                    cwd='/home/anildalabanjan933/crypto_trading_system'
-                )
-                log.info("[RELOAD] Signal CSVs regenerated successfully")
-            except Exception as e:
-                log.error(f"[RELOAD] Signal regeneration failed: {e}")
-            signals = load_signals()
-
-        for sig in signals:
-            entry_time = sig["entry_time"]
-            exit_time  = sig["exit_time"]
-            direction  = sig["direction"]
-            lots       = sig["lots"]
+        # Read live signal from engine
+        live_sig = read_live_signal("logs/live_signal_s2.txt")
+        if live_sig:
+            sig_type  = live_sig["type"]   # ENTRY_LONG, ENTRY_SHORT, EXIT_LONG, EXIT_SHORT
+            sig_ts    = live_sig["timestamp"]
+            lots      = live_sig["lots"]
 
             # Skip signals before valid_from
-            if entry_time < valid_from:
-                continue
+            if sig_ts >= valid_from and sig_ts != last_known_ts:
 
-            # Skip already executed signals
-            if last_known_ts and entry_time < last_known_ts:
-                continue
+                # --- ENTRY ---
+                if "ENTRY" in sig_type and position is None:
+                    direction = "long" if "LONG" in sig_type else "short"
+                    side = "buy" if direction == "long" else "sell"
+                    log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
+                    save_ts_file(TS_FILE, sig_ts)
+                    last_known_ts = sig_ts
+                    clear_live_signal("logs/live_signal_s2.txt")
+                    result = om.place_market_order(side=side, size=lots)
+                    if result.get("success"):
+                        position = direction
+                        open_lot_size = lots
+                        time.sleep(1)
+                        pos_check = om.get_position()
+                        real_entry = pos_check.get("entry_price", 0.0) if pos_check.get("success") else 0.0
+                        if real_entry > 0:
+                            sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=2.0)
+                            if sl_result.get("success"):
+                                log.info(f"[SL] Stop SL placed | sl_price={sl_result['sl_price']}")
+                            else:
+                                log.warning(f"[SL] Stop SL FAILED: {sl_result}")
+                        log.info(f"[ORDER] ENTRY confirmed | position={position}")
+                        send_alert(f"CTS S2 ENTRY\nDirection: {direction.upper()}\nLots: {lots}")
+                    else:
+                        log.error(f"[ORDER] ENTRY FAILED: {result}")
+                        send_alert(f"CTS S2 ENTRY FAILED\nError: {result}")
+                        last_known_ts = load_ts_file(TS_FILE)
 
-            # --- ENTRY ---
-            # Skip stale signals - entry must be within 1 candle period (1H for S2)
-            from datetime import datetime, timezone
-            now_dt = datetime.strptime(now, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
-            entry_dt = datetime.strptime(entry_time, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
-            signal_age_hours = (now_dt - entry_dt).total_seconds() / 3600
-            exit_dt_chk = datetime.strptime(exit_time, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
-            if now >= entry_time and position is None and now < exit_time:
+                # --- EXIT ---
+                elif "EXIT" in sig_type and position is not None:
+                    side = "sell" if position == "long" else "buy"
+                    actual = om.get_position()
+                    close_size = abs(actual.get("size", open_lot_size)) if actual.get("success") else open_lot_size
+                    log.info(f"[ORDER] EXIT {side} {close_size} lots | ts={sig_ts}")
+                    save_ts_file(TS_FILE, sig_ts)
+                    last_known_ts = sig_ts
+                    clear_live_signal("logs/live_signal_s2.txt")
+                    result = om.close_position(size=close_size, side=side)
+                    if result.get("success"):
+                        position = None
+                        log.info(f"[ORDER] EXIT confirmed | position=None")
+                        send_alert(f"CTS S2 EXIT\nPosition closed\nLots: {close_size}")
+                    else:
+                        log.error(f"[ORDER] EXIT FAILED: {result}")
+                        last_known_ts = load_ts_file(TS_FILE)
+
+        if True:  # placeholder to maintain indentation
+            if False:
                 side = "buy" if direction == "long" else "sell"
                 log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={entry_time}")
                 save_ts_file(TS_FILE, entry_time)
