@@ -4440,7 +4440,27 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
             rows = ""
             for i in range(max_rows):
                 bt  = df.iloc[i]
-                fwd = last20[i] if i < len(last20) else None
+                # Match forward test trade by closest entry time not by position
+                fwd = None
+                bt_et_raw = str(bt.get('entry_datetime',''))[:19]
+                try:
+                    import datetime as _dmatch
+                    bt_et_dt = _dmatch.datetime.strptime(bt_et_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S')
+                    best_diff = None
+                    for _fp in last20:
+                        try:
+                            _fp_et = _dmatch.datetime.utcfromtimestamp(_fp.get('ets', 0))
+                            _diff = abs((_fp_et - bt_et_dt).total_seconds())
+                            if best_diff is None or _diff < best_diff:
+                                best_diff = _diff
+                                fwd = _fp
+                        except:
+                            pass
+                    # Only match if within 4 hours
+                    if best_diff is not None and best_diff > 14400:
+                        fwd = None
+                except:
+                    fwd = last20[i] if i < len(last20) else None
                 bt_ep   = float(bt.get('entry_price', 0))
                 bt_xp   = float(bt.get('exit_price',  0))
                 bt_pnl  = float(bt.get('net_pnl_inr', float(bt.get('net_pnl',0)) * _INR13))
