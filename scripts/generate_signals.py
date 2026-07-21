@@ -69,7 +69,7 @@ def write_signal_csv(trades, out_path):
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with open(out_path, "w", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow(["entry_time", "exit_time", "direction", "lots"])
+        # NO header row - signal_replay bots read as headerless CSV
         for t in trades:
             entry = str(t.get("entry_datetime", ""))
             exit_ = str(t.get("exit_datetime",  ""))
