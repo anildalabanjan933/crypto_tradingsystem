@@ -512,7 +512,7 @@ with col_title:
         f'''<div style="display:flex;align-items:center;gap:20px;padding:4px 0;">
         <span style="font-size:16px;font-weight:700;color:#131722;">CRYPTO TRADING SYSTEM</span>
         <span style="font-size:11px;color:#555;">BTC Algo Dashboard</span>
-        <span style="font-size:10px;color:#888;font-style:italic;font-family:Georgia,serif;">✦ Created by Anil Dalbanjan &nbsp;|&nbsp; Gandhinagar, Hubli - 580030</span>
+        <span style="font-size:11px;color:#131722;font-weight:700;font-family:Georgia,serif;">✦ Created by Anil Dalbanjan &nbsp;|&nbsp; Gandhinagar, Hubli - 580030</span>
         <span style="font-size:11px;color:#888;">BTC/USD:</span>
         {_btc_html}
         </div>''',
@@ -1351,6 +1351,21 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
         except:
             return []
 
+    def _utc_log_to_ist(raw):
+        import datetime as _dti
+        _ist = _dti.timedelta(hours=5, minutes=30)
+        try:
+            ts = raw.strip()[:19]
+            dt = _dti.datetime.strptime(ts, '%Y-%m-%d %H:%M:%S')
+            return (dt + _ist).strftime('%d-%b-%Y %I:%M %p IST')
+        except:
+            try:
+                ts = raw.strip()[:19].replace('T',' ')
+                dt = _dti.datetime.strptime(ts, '%Y-%m-%d %H:%M:%S')
+                return (dt + _ist).strftime('%d-%b-%Y %I:%M %p IST')
+            except:
+                return raw
+
     def _get_bot_debug(log_path, ts_path, sig_path, bot_name):
         lines = _read_last_lines(log_path)
         now_utc = _dt1c.datetime.utcnow()
@@ -1359,7 +1374,7 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
         last_wait = "Never"
         for l in reversed(lines):
             if '[WAIT]' in l or '[ORDER]' in l:
-                last_wait = l.split(' INFO')[0].strip()
+                last_wait = _utc_log_to_ist(l.split(' INFO')[0].strip())
                 break
 
         # Last reload - read more lines to cover 10 min reload interval
@@ -1367,7 +1382,7 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
         _reload_lines = _read_last_lines(log_path, n=1200)
         for l in reversed(_reload_lines):
             if '[RELOAD]' in l:
-                last_reload = l.split(' INFO')[0].strip()
+                last_reload = _utc_log_to_ist(l.split(' INFO')[0].strip())
                 break
 
         # API validation
@@ -1407,12 +1422,14 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
         last_order = "No trades yet today"
         for l in reversed(lines):
             if '[ORDER]' in l and ('ENTRY' in l or 'EXIT' in l):
-                last_order = l.strip()[-100:]
+                _lo_ts = _utc_log_to_ist(l.split(' INFO')[0].strip())
+                last_order = _lo_ts + ' ' + ' '.join(l.strip().split()[3:])
                 break
 
         # Last known ts
         try:
-            last_ts = open(ts_path).read().strip()
+            _raw_ts = open(ts_path).read().strip()
+            last_ts = _utc_log_to_ist(_raw_ts)
         except:
             last_ts = "Unknown"
 
@@ -1430,14 +1447,16 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
             found = False
             for row in all_rows:
                 if row['entry_time'].strip() > last_ts:
-                    next_signal = f"ENTRY={row['entry_time']} EXIT={row['exit_time']} DIR={row['direction']}"
+                    _ns_et = _utc_log_to_ist(row['entry_time'].strip())
+                    _ns_xt = _utc_log_to_ist(row['exit_time'].strip())
+                    next_signal = f"ENTRY={_ns_et} EXIT={_ns_xt} DIR={row['direction']}"
                     next_color = _TDG1C
                     found = True
                     break
             if not found and all_rows:
                 last_exit = all_rows[-1]['exit_time'].strip()
                 if last_exit < now_str:
-                    next_signal = f"NO SIGNAL AFTER VALID_FROM - last exit={last_exit}"
+                    next_signal = f"NO SIGNAL AFTER VALID_FROM - last exit={_utc_log_to_ist(last_exit)}"
                     next_color = _TDR1C
         except Exception as _e1c:
             next_signal = f"Error reading signal CSV: {str(_e1c)[:50]}"
@@ -2555,7 +2574,7 @@ with st.expander("SECTION 4 - FORWARD TEST vs BACKTEST COMPARE", expanded=st.ses
             run_match = st.button("RUN MATCH CHECK", key="run_match_btn")
         with col_info:
             if last_run > 0:
-                last_str  = (datetime.datetime.fromtimestamp(last_run) + datetime.timedelta(hours=5,minutes=30)).strftime('%I:%M %p IST')
+                last_str  = (datetime.datetime.utcfromtimestamp(last_run) + datetime.timedelta(hours=5,minutes=30)).strftime('%d-%b-%Y %I:%M %p IST')
                 next_secs = max(0, int(AUTO_INTERVAL - (now_ts - last_run)))
                 st.caption(f"Last check: {last_str} | Next auto in {next_secs}s")
             else:
