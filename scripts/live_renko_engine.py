@@ -30,8 +30,12 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
+candle_opens   = []
+candle_highs   = []
+candle_lows    = []
 candle_closes  = []
 candle_times   = []
+candle_volumes = []
 last_s2_bricks = 0
 last_s4_bricks = 0
 last_s2_signal = None
@@ -39,13 +43,17 @@ last_s4_signal = None
 lock = threading.Lock()
 
 def load_historical_candles():
-    global candle_closes, candle_times
+    global candle_opens, candle_highs, candle_lows, candle_closes, candle_times, candle_volumes
     try:
         df = pd.read_csv(CANDLE_CSV)
         df["dt"] = pd.to_datetime(df["Date"] + " " + df["Time"], utc=True)
         df = df.sort_values("dt").reset_index(drop=True)
-        candle_closes = df["Close"].astype(float).tolist()
-        candle_times  = df["dt"].tolist()
+        candle_opens   = df["Open"].astype(float).tolist()
+        candle_highs   = df["High"].astype(float).tolist()
+        candle_lows    = df["Low"].astype(float).tolist()
+        candle_closes  = df["Close"].astype(float).tolist()
+        candle_times   = df["dt"].tolist()
+        candle_volumes = df["Volume"].astype(float).tolist()
         log.info(f"[ENGINE] Loaded {len(candle_closes)} historical candles")
     except Exception as e:
         log.error(f"[ENGINE] Failed to load historical candles: {e}")
@@ -65,13 +73,11 @@ def run_s2_strategy():
     try:
         if len(candle_closes) < 100:
             return
-        closes = np.array(candle_closes)
-        times  = pd.DatetimeIndex(candle_times)
-        df_1m  = pd.DataFrame({"close": closes, "open": closes, "high": closes, "low": closes,
-                                "volume": np.ones(len(closes))}, index=times)
-        df_1h  = df_1m["close"].resample("1h").ohlc()
-        df_1h.columns = ["open","high","low","close"]
-        df_1h  = df_1h.dropna()
+        closes  = np.array(candle_closes)
+        times   = pd.DatetimeIndex(candle_times)
+        df_1m   = pd.DataFrame({"open": np.array(candle_opens), "high": np.array(candle_highs), "low": np.array(candle_lows), "close": closes, "volume": np.array(candle_volumes)}, index=times)
+        df_1h   = df_1m.resample("1h").agg({"open":"first","high":"max","low":"min","close":"last","volume":"sum"})
+        df_1h   = df_1h.dropna()
         if len(df_1h) < 10:
             return
         current_price = float(closes[-1])
@@ -110,13 +116,11 @@ def run_s4_strategy():
     try:
         if len(candle_closes) < 200:
             return
-        closes = np.array(candle_closes)
-        times  = pd.DatetimeIndex(candle_times)
-        df_1m  = pd.DataFrame({"close": closes, "open": closes, "high": closes, "low": closes,
-                                "volume": np.ones(len(closes))}, index=times)
-        df_2h  = df_1m["close"].resample("2h").ohlc()
-        df_2h.columns = ["open","high","low","close"]
-        df_2h  = df_2h.dropna()
+        closes  = np.array(candle_closes)
+        times   = pd.DatetimeIndex(candle_times)
+        df_1m   = pd.DataFrame({"open": np.array(candle_opens), "high": np.array(candle_highs), "low": np.array(candle_lows), "close": closes, "volume": np.array(candle_volumes)}, index=times)
+        df_2h   = df_1m.resample("2h").agg({"open":"first","high":"max","low":"min","close":"last","volume":"sum"})
+        df_2h   = df_2h.dropna()
         if len(df_2h) < 10:
             return
         current_price = float(closes[-1])
@@ -160,12 +164,16 @@ def on_open(ws):
 last_candle_start = None
 
 def on_message(ws, message):
-    global candle_closes, candle_times, last_candle_start
+    global candle_opens, candle_highs, candle_lows, candle_closes, candle_times, candle_volumes, last_candle_start
     try:
         data = json.loads(message)
         if data.get("type") != "candlestick_1m":
             return
         close       = float(data.get("close", 0))
+        open_       = float(data.get("open", close))
+        high_       = float(data.get("high", close))
+        low_        = float(data.get("low", close))
+        vol_        = float(data.get("volume", 0))
         candle_start = data.get("candle_start_time", 0)
         if close <= 0 or candle_start == 0:
             return
@@ -177,9 +185,11 @@ def on_message(ws, message):
                 last_candle_start = candle_start
                 return
             if candle_start <= last_candle_start:
-                # Same candle still forming - update close price only
+                # Same candle still forming - update OHLCV
                 if candle_times and candle_dt == candle_times[-1]:
                     candle_closes[-1] = close
+                    candle_highs[-1]  = max(candle_highs[-1], high_)
+                    candle_lows[-1]   = min(candle_lows[-1], low_)
                 return
             # New candle started = previous candle is complete
             # Add the completed candle close price
@@ -187,11 +197,19 @@ def on_message(ws, message):
             last_candle_start = candle_start
             if candle_times and prev_dt <= candle_times[-1]:
                 return
+            candle_opens.append(open_)
+            candle_highs.append(high_)
+            candle_lows.append(low_)
             candle_closes.append(close)
             candle_times.append(prev_dt)
+            candle_volumes.append(vol_)
             if len(candle_closes) > 10000:
-                candle_closes = candle_closes[-10000:]
-                candle_times  = candle_times[-10000:]
+                candle_opens   = candle_opens[-10000:]
+                candle_highs   = candle_highs[-10000:]
+                candle_lows    = candle_lows[-10000:]
+                candle_closes  = candle_closes[-10000:]
+                candle_times   = candle_times[-10000:]
+                candle_volumes = candle_volumes[-10000:]
             log.info(f"[ENGINE] Completed candle: {prev_dt.strftime('%Y-%m-%dT%H:%M')} close={close}")
             run_s2_strategy()
             run_s4_strategy()
