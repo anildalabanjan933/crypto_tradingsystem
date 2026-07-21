@@ -4580,14 +4580,16 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
             roc = (net_inr / rec_cap * 100) if rec_cap > 0 else 0
             months = max(total_m, 1)
             roc_monthly = roc / months
-            # Today trade count
+            # Today + month trade count
             today_count = len(df[df['exit_dt'] >= _pd14.Timestamp(today_s)]) if 'exit_dt' in df.columns else 0
+            month_count = len(df[df['exit_dt'] >= _pd14.Timestamp(month_s)]) if 'exit_dt' in df.columns else 0
             return {
                 "tot":tot,"gross":gross,"net":net,"net_inr":net_inr,
                 "tax":tax,"fees":fees,"slip":slip,"fund":fund,"total_charges":total_charges,
                 "green_m":green_m,"total_m":total_m,"dd":dd,"rec_cap":rec_cap,
                 "roc":roc,"roc_monthly":roc_monthly,"margin_avg":margin_avg,
-                "pnl_today":pnl_today,"pnl_month":pnl_month,"today_count":today_count
+                "pnl_today":pnl_today,"pnl_month":pnl_month,
+                "today_count":today_count,"month_count":month_count
             }
         except Exception as _e14:
             return None
@@ -4632,6 +4634,7 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
         s2_td=_g(d2,"pnl_today")*_INR14; s4_td=_g(d4,"pnl_today")*_INR14
         s2_tod_cnt=int(_g(d2,"today_count")); s4_tod_cnt=int(_g(d4,"today_count")); port_tod_cnt=s2_tod_cnt+s4_tod_cnt
         s2_mo=_g(d2,"pnl_month")*_INR14; s4_mo=_g(d4,"pnl_month")*_INR14
+        s2_mo_cnt=int(_g(d2,"month_count")); s4_mo_cnt=int(_g(d4,"month_count")); port_mo_cnt=s2_mo_cnt+s4_mo_cnt
         s2_mg=_g(d2,"margin_avg")*_INR14; s4_mg=_g(d4,"margin_avg")*_INR14
 
         def _row7(lbl,v5s2,v5s4,v5p,v10s2,v10s4,v10p,c5s2=None,c5s4=None,c5p=None,c10s2=None,c10s4=None,c10p=None):
@@ -4674,6 +4677,7 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
         <tr><td colspan="7" style="{_SUB14}">DYNAMIC PnL (SYNCED WITH SECTION 13)</td></tr>
         {_row7("Today PnL",f"₹{s2_td:,.0f}",f"₹{s4_td:,.0f}",f"₹{s2_td+s4_td:,.0f}",f"₹{s2_td:,.0f}",f"₹{s4_td:,.0f}",f"₹{s2_td+s4_td:,.0f}",_c(s2_td),_c(s4_td),_c(s2_td+s4_td),_c(s2_td),_c(s4_td),_c(s2_td+s4_td))}
         {_row7("This Month PnL",f"₹{s2_mo:,.0f}",f"₹{s4_mo:,.0f}",f"₹{s2_mo+s4_mo:,.0f}",f"₹{s2_mo:,.0f}",f"₹{s4_mo:,.0f}",f"₹{s2_mo+s4_mo:,.0f}",_c(s2_mo),_c(s4_mo),_c(s2_mo+s4_mo),_c(s2_mo),_c(s4_mo),_c(s2_mo+s4_mo))}
+        {_row7("This Month Trades",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14)}
         <tr><td colspan="7" style="{_SUB14}">RECOMMENDED CAPITAL (3x MAX DD)</td></tr>
         {_row7("Rec Capital",f"₹{s2_rc5:,.0f}",f"₹{s4_rc5:,.0f}",f"₹{port_rc5:,.0f}",f"₹{s2_rc10:,.0f}",f"₹{s4_rc10:,.0f}",f"₹{port_rc10:,.0f}",_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14)}
         <tr><td colspan="7" style="{_SUB14}">RETURN ON CAPITAL</td></tr>
