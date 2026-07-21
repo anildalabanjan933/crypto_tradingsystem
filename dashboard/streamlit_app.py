@@ -4298,8 +4298,8 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 _et_raw = str(r.get('entry_datetime',''))[:19]
                 _xt_raw = str(r.get('exit_datetime', ''))[:19]
                 try:
-                    et = (_dfw.datetime.strptime(_et_raw, '%Y-%m-%d %H:%M:%S') + _ist_off2).strftime('%d-%b-%Y %I:%M %p IST')
-                    xt = (_dfw.datetime.strptime(_xt_raw, '%Y-%m-%d %H:%M:%S') + _ist_off2).strftime('%d-%b-%Y %I:%M %p IST')
+                    et = (_dfw.datetime.strptime(_et_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_off2).strftime('%d-%b-%Y %I:%M %p IST')
+                    xt = (_dfw.datetime.strptime(_xt_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_off2).strftime('%d-%b-%Y %I:%M %p IST')
                 except:
                     et = _et_raw
                     xt = _xt_raw
@@ -4364,8 +4364,8 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 _bt_et_raw = str(bt.get('entry_datetime',''))[:19]
                 _bt_xt_raw = str(bt.get('exit_datetime', ''))[:19]
                 try:
-                    bt_et = (_dbt.datetime.strptime(_bt_et_raw, '%Y-%m-%d %H:%M:%S') + _ist_bt).strftime('%d-%b-%Y %I:%M %p IST')
-                    bt_xt = (_dbt.datetime.strptime(_bt_xt_raw, '%Y-%m-%d %H:%M:%S') + _ist_bt).strftime('%d-%b-%Y %I:%M %p IST')
+                    bt_et = (_dbt.datetime.strptime(_bt_et_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_bt).strftime('%d-%b-%Y %I:%M %p IST')
+                    bt_xt = (_dbt.datetime.strptime(_bt_xt_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_bt).strftime('%d-%b-%Y %I:%M %p IST')
                 except:
                     bt_et = _bt_et_raw
                     bt_xt = _bt_xt_raw
