@@ -4589,7 +4589,8 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
                 "green_m":green_m,"total_m":total_m,"dd":dd,"rec_cap":rec_cap,
                 "roc":roc,"roc_monthly":roc_monthly,"margin_avg":margin_avg,
                 "pnl_today":pnl_today,"pnl_month":pnl_month,
-                "today_count":today_count,"month_count":month_count
+                "today_count":today_count,"month_count":month_count,
+                "gross_win":df[df['gross_pnl']>0]['gross_pnl'].sum() if 'gross_pnl' in df.columns else 0
             }
         except Exception as _e14:
             return None
@@ -4635,6 +4636,11 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
         s2_tod_cnt=int(_g(d2,"today_count")); s4_tod_cnt=int(_g(d4,"today_count")); port_tod_cnt=s2_tod_cnt+s4_tod_cnt
         s2_mo=_g(d2,"pnl_month")*_INR14; s4_mo=_g(d4,"pnl_month")*_INR14
         s2_mo_cnt=int(_g(d2,"month_count")); s4_mo_cnt=int(_g(d4,"month_count")); port_mo_cnt=s2_mo_cnt+s4_mo_cnt
+        # ITR Tax 30% on gross wins (Indian Income Tax - pay to govt via ITR filing)
+        s2_gross_win=_g(d2,"gross_win")*_INR14; s4_gross_win=_g(d4,"gross_win")*_INR14; port_gross_win=s2_gross_win+s4_gross_win
+        s2_itr5=s2_gross_win*0.30; s4_itr5=s4_gross_win*0.30; port_itr5=port_gross_win*0.30
+        s2_net_itr5=s2_net5-s2_itr5; s4_net_itr5=s4_net5-s4_itr5; port_net_itr5=port_net5-port_itr5
+        s2_net_itr10=s2_net10-s2_itr5; s4_net_itr10=s4_net10-s4_itr5; port_net_itr10=port_net10-port_itr5
         s2_mg=_g(d2,"margin_avg")*_INR14; s4_mg=_g(d4,"margin_avg")*_INR14
 
         def _row7(lbl,v5s2,v5s4,v5p,v10s2,v10s4,v10p,c5s2=None,c5s4=None,c5p=None,c10s2=None,c10s4=None,c10p=None):
@@ -4682,6 +4688,11 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
         {_row7("Today PnL",f"₹{s2_td:,.0f}",f"₹{s4_td:,.0f}",f"₹{s2_td+s4_td:,.0f}",f"₹{s2_td:,.0f}",f"₹{s4_td:,.0f}",f"₹{s2_td+s4_td:,.0f}",_c(s2_td),_c(s4_td),_c(s2_td+s4_td),_c(s2_td),_c(s4_td),_c(s2_td+s4_td))}
         {_row7("This Month PnL",f"₹{s2_mo:,.0f}",f"₹{s4_mo:,.0f}",f"₹{s2_mo+s4_mo:,.0f}",f"₹{s2_mo:,.0f}",f"₹{s4_mo:,.0f}",f"₹{s2_mo+s4_mo:,.0f}",_c(s2_mo),_c(s4_mo),_c(s2_mo+s4_mo),_c(s2_mo),_c(s4_mo),_c(s2_mo+s4_mo))}
         {_row7("This Month Trades",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14)}
+        <tr><td colspan="7" style="{_SUB14}">INDIAN ITR TAX (30% on Gross Wins - Pay via ITR Filing)</td></tr>
+        {_row7("Gross Wins",f"₹{s2_gross_win:,.0f}",f"₹{s4_gross_win:,.0f}",f"₹{port_gross_win:,.0f}",f"₹{s2_gross_win:,.0f}",f"₹{s4_gross_win:,.0f}",f"₹{port_gross_win:,.0f}",_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14)}
+        {_row7("ITR Tax 30%",f"-₹{s2_itr5:,.0f}",f"-₹{s4_itr5:,.0f}",f"-₹{port_itr5:,.0f}",f"-₹{s2_itr5:,.0f}",f"-₹{s4_itr5:,.0f}",f"-₹{port_itr5:,.0f}",_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B)}
+        {_row7("Keep Aside (ITR)",f"₹{s2_itr5:,.0f}",f"₹{s4_itr5:,.0f}",f"₹{port_itr5:,.0f}",f"₹{s2_itr5:,.0f}",f"₹{s4_itr5:,.0f}",f"₹{port_itr5:,.0f}",_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14)}
+        {_row7("Net After ITR Tax",f"₹{s2_net_itr5:,.0f}",f"₹{s4_net_itr5:,.0f}",f"₹{port_net_itr5:,.0f}",f"₹{s2_net_itr10:,.0f}",f"₹{s4_net_itr10:,.0f}",f"₹{port_net_itr10:,.0f}",_c(s2_net_itr5),_c(s4_net_itr5),_c(port_net_itr5),_c(s2_net_itr10),_c(s4_net_itr10),_c(port_net_itr10))}
         <tr><td colspan="7" style="{_SUB14}">RECOMMENDED CAPITAL (3x MAX DD)</td></tr>
         {_row7("Rec Capital",f"₹{s2_rc5:,.0f}",f"₹{s4_rc5:,.0f}",f"₹{port_rc5:,.0f}",f"₹{s2_rc10:,.0f}",f"₹{s4_rc10:,.0f}",f"₹{port_rc10:,.0f}",_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14)}
         <tr><td colspan="7" style="{_SUB14}">RETURN ON CAPITAL</td></tr>
