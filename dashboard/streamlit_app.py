@@ -1186,7 +1186,7 @@ with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b',
                         entry_time = datetime.datetime.strptime(entry_match.group(1), '%Y-%m-%d %H:%M:%S')
                         if last_exit is None or (exit_match and entry_time > datetime.datetime.strptime(exit_match.group(1), '%Y-%m-%d %H:%M:%S')):
                             age_hours = (datetime.datetime.now() - entry_time).total_seconds() / 3600
-                            if age_hours > 48:
+                            if age_hours > 168:
                                 errors.append(f"{bot} ORPHAN POSITION: Entry {int(age_hours)}h ago with no exit - check Delta account immediately")
                             elif age_hours > 24:
                                 warnings.append(f"{bot} OPEN POSITION: {int(age_hours)}h since entry - no exit yet - monitor closely")
@@ -1210,7 +1210,7 @@ with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b',
                     if match:
                         last_time = datetime.datetime.strptime(match.group(1), '%Y-%m-%d %H:%M:%S')
                         age_hours = (datetime.datetime.now() - last_time).total_seconds() / 3600
-                        if age_hours > 48:
+                        if age_hours > 168:
                             warnings.append(f"{bot} last order: {int(age_hours)}h ago - strategy may be in low signal period")
                         else:
                             ok.append(f"{bot} last order: {int(age_hours)}h ago - normal")
@@ -4193,10 +4193,10 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
             f"<tr><td colspan='4' style='{_SUB13}'>CAPITAL</td></tr>"
             + _row("Total Capital Required", _v13(s2m,"cap"), _v13(s4m,"cap"), f"\u20b9{int(1816*_INR13):,}")
             + f"<tr><td colspan='4' style='{_SUB13}'>CUMULATIVE PnL</td></tr>"
-            + _row("Today PnL",   _v13(s2m,"today"), _v13(s4m,"today"), _v13(cbm,"today"), _c13(s2m,True) if s2m and s2m.get("pnl_today",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_today",0)>=0 else _TDR13, _TDB13)
-            + _row("Weekly PnL",  _v13(s2m,"week"),  _v13(s4m,"week"),  _v13(cbm,"week"),  _c13(s2m,True) if s2m and s2m.get("pnl_week",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_week",0)>=0 else _TDR13,  _TDB13)
-            + _row("Monthly PnL", _v13(s2m,"month"), _v13(s4m,"month"), _v13(cbm,"month"), _c13(s2m,True) if s2m and s2m.get("pnl_month",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_month",0)>=0 else _TDR13, _TDB13)
-            + _row("Yearly PnL",  _v13(s2m,"year"),  _v13(s4m,"year"),  _v13(cbm,"year"),  _c13(s2m,True) if s2m and s2m.get("pnl_year",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_year",0)>=0 else _TDR13,  _TDB13)
+            + _row("Today PnL",   _v13(s2m,"today"), _v13(s4m,"today"), _v13(cbm,"today"), _c13(s2m,True) if s2m and s2m.get("pnl_today",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_today",0)>=0 else _TDR13, _c13(cbm,True) if cbm and cbm.get("pnl_today",0)>=0 else _TDR13)
+            + _row("Weekly PnL",  _v13(s2m,"week"),  _v13(s4m,"week"),  _v13(cbm,"week"),  _c13(s2m,True) if s2m and s2m.get("pnl_week",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_week",0)>=0 else _TDR13,  _c13(cbm,True) if cbm and cbm.get("pnl_week",0)>=0 else _TDR13)
+            + _row("Monthly PnL", _v13(s2m,"month"), _v13(s4m,"month"), _v13(cbm,"month"), _c13(s2m,True) if s2m and s2m.get("pnl_month",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_month",0)>=0 else _TDR13, _c13(cbm,True) if cbm and cbm.get("pnl_month",0)>=0 else _TDR13)
+            + _row("Yearly PnL",  _v13(s2m,"year"),  _v13(s4m,"year"),  _v13(cbm,"year"),  _c13(s2m,True) if s2m and s2m.get("pnl_year",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_year",0)>=0 else _TDR13,  _c13(cbm,True) if cbm and cbm.get("pnl_year",0)>=0 else _TDR13)
             + f"<tr><td colspan='4' style='{_SUB13}'>CHARGES</td></tr>"
             + _row("Total Charges", _v13(s2m,"cm"),  _v13(s4m,"cm"),  _v13(cbm,"cm"),  _TDR13,_TDR13,_TDR13)
             + f"<tr><td colspan='4' style='{_SUB13}'>TRADE COUNT</td></tr>"
@@ -4729,10 +4729,6 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
         {_row7("Gross PnL",_inr(s2_gross/_INR14),_inr(s4_gross/_INR14),_inr(port_gross/_INR14),_inr(s2_gross/_INR14),_inr(s4_gross/_INR14),_inr(port_gross/_INR14),_c(s2_gross),_c(s4_gross),_c(port_gross),_c(s2_gross),_c(s4_gross),_c(port_gross))}
         {_row7("Tax + All Charges",f"-₹{s2_chg5:,.0f}",f"-₹{s4_chg5:,.0f}",f"-₹{port_chg5:,.0f}",f"-₹{s2_chg10:,.0f}",f"-₹{s4_chg10:,.0f}",f"-₹{port_chg10:,.0f}",_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B)}
         {_row7("Net PnL (After Tax)",_inr(s2_net5/_INR14),_inr(s4_net5/_INR14),_inr(port_net5/_INR14),_inr(s2_net10/_INR14),_inr(s4_net10/_INR14),_inr(port_net10/_INR14),_c(s2_net5),_c(s4_net5),_c(port_net5),_c(s2_net10),_c(s4_net10),_c(port_net10))}
-        <tr><td colspan="7" style="{_SUB14}">DYNAMIC PnL (SYNCED WITH SECTION 13)</td></tr>
-        {_row7("Today PnL",f"₹{s2_td:,.0f}",f"₹{s4_td:,.0f}",f"₹{s2_td+s4_td:,.0f}",f"₹{s2_td:,.0f}",f"₹{s4_td:,.0f}",f"₹{s2_td+s4_td:,.0f}",_c(s2_td),_c(s4_td),_c(s2_td+s4_td),_c(s2_td),_c(s4_td),_c(s2_td+s4_td))}
-        {_row7("This Month PnL",f"₹{s2_mo:,.0f}",f"₹{s4_mo:,.0f}",f"₹{s2_mo+s4_mo:,.0f}",f"₹{s2_mo:,.0f}",f"₹{s4_mo:,.0f}",f"₹{s2_mo+s4_mo:,.0f}",_c(s2_mo),_c(s4_mo),_c(s2_mo+s4_mo),_c(s2_mo),_c(s4_mo),_c(s2_mo+s4_mo))}
-        {_row7("This Month Trades",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14)}
         <tr><td colspan="7" style="{_SUB14}">INDIAN ITR TAX (30% on Gross Wins - Pay via ITR Filing)</td></tr>
         {_row7("Gross Wins",f"₹{s2_gross_win:,.0f}",f"₹{s4_gross_win:,.0f}",f"₹{port_gross_win:,.0f}",f"₹{s2_gross_win:,.0f}",f"₹{s4_gross_win:,.0f}",f"₹{port_gross_win:,.0f}",_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14)}
         {_row7("ITR Tax 30%",f"-₹{s2_itr5:,.0f}",f"-₹{s4_itr5:,.0f}",f"-₹{port_itr5:,.0f}",f"-₹{s2_itr5:,.0f}",f"-₹{s4_itr5:,.0f}",f"-₹{port_itr5:,.0f}",_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B)}
