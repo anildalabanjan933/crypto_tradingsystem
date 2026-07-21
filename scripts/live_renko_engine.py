@@ -40,6 +40,40 @@ last_s2_bricks = 0
 last_s4_bricks = 0
 last_s2_signal = None
 last_s4_signal = None
+S2_BRICKS_FILE = "logs/last_s2_bricks.txt"
+S4_BRICKS_FILE = "logs/last_s4_bricks.txt"
+S2_SIGNAL_FILE_TRACK = "logs/last_s2_signal.txt"
+S4_SIGNAL_FILE_TRACK = "logs/last_s4_signal.txt"
+
+def load_last_state():
+    global last_s2_bricks, last_s4_bricks, last_s2_signal, last_s4_signal
+    try:
+        if os.path.exists(S2_BRICKS_FILE):
+            last_s2_bricks = int(open(S2_BRICKS_FILE).read().strip())
+    except: pass
+    try:
+        if os.path.exists(S4_BRICKS_FILE):
+            last_s4_bricks = int(open(S4_BRICKS_FILE).read().strip())
+    except: pass
+    try:
+        if os.path.exists(S2_SIGNAL_FILE_TRACK):
+            last_s2_signal = open(S2_SIGNAL_FILE_TRACK).read().strip()
+    except: pass
+    try:
+        if os.path.exists(S4_SIGNAL_FILE_TRACK):
+            last_s4_signal = open(S4_SIGNAL_FILE_TRACK).read().strip()
+    except: pass
+    log.info(f"[ENGINE] State loaded: s2_bricks={last_s2_bricks} s4_bricks={last_s4_bricks}")
+
+def save_s2_state():
+    open(S2_BRICKS_FILE, "w").write(str(last_s2_bricks))
+    if last_s2_signal:
+        open(S2_SIGNAL_FILE_TRACK, "w").write(last_s2_signal)
+
+def save_s4_state():
+    open(S4_BRICKS_FILE, "w").write(str(last_s4_bricks))
+    if last_s4_signal:
+        open(S4_SIGNAL_FILE_TRACK, "w").write(last_s4_signal)
 lock = threading.Lock()
 
 def load_historical_candles():
@@ -80,7 +114,7 @@ def run_s2_strategy():
         df_1h   = df_1h.dropna()
         if len(df_1h) < 10:
             return
-        current_price = float(closes[-1])
+        current_price = float(closes[0])
         box_size = max(1, round(current_price * S2_PARAMS["renko_box_pct"]))
         builder  = RenkoBuilder(box_size=box_size)
         renko_raw = builder.build(df_1h["close"].values)
@@ -91,6 +125,7 @@ def run_s2_strategy():
             return
         log.info(f"[S2] New brick! Total={n_bricks} was={last_s2_bricks}")
         last_s2_bricks = n_bricks
+        save_s2_state()
         renko_raw["timestamp"] = renko_raw["bar_index"].apply(
             lambda idx: df_1h.index[idx] if idx < len(df_1h) else df_1h.index[-1]
         )
@@ -106,6 +141,7 @@ def run_s2_strategy():
         if sig_key == last_s2_signal:
             return
         last_s2_signal = sig_key
+        save_s2_state()
         log.info(f"[S2] Signal: {sig_type} {dirn.upper()} at {ts_str}")
         write_signal(SIGNAL_S2, f"{sig_type}_{dirn.upper()}", ts_str, LOT_SIZE)
     except Exception as e:
@@ -123,7 +159,7 @@ def run_s4_strategy():
         df_2h   = df_2h.dropna()
         if len(df_2h) < 10:
             return
-        current_price = float(closes[-1])
+        current_price = float(closes[0])
         box_size = max(1, round(current_price * S4_PARAMS["renko_box_pct"]))
         builder  = RenkoBuilder(box_size=box_size)
         renko_raw = builder.build(df_2h["close"].values)
@@ -134,6 +170,7 @@ def run_s4_strategy():
             return
         log.info(f"[S4] New brick! Total={n_bricks} was={last_s4_bricks}")
         last_s4_bricks = n_bricks
+        save_s4_state()
         renko_raw["timestamp"] = renko_raw["bar_index"].apply(
             lambda idx: df_2h.index[idx] if idx < len(df_2h) else df_2h.index[-1]
         )
@@ -149,6 +186,7 @@ def run_s4_strategy():
         if sig_key == last_s4_signal:
             return
         last_s4_signal = sig_key
+        save_s4_state()
         log.info(f"[S4] Signal: {sig_type} {dirn.upper()} at {ts_str}")
         write_signal(SIGNAL_S4, f"{sig_type}_{dirn.upper()}", ts_str, LOT_SIZE)
     except Exception as e:
@@ -224,6 +262,7 @@ def on_close(ws, close_status_code, close_msg):
 
 def main():
     log.info("[ENGINE] Live Renko Engine starting...")
+    load_last_state()
     load_historical_candles()
     log.info(f"[ENGINE] Ready. Candles: {len(candle_closes)}")
     while True:
