@@ -1,0 +1,216 @@
+#!/usr/bin/env python3
+import os, sys, json, time, logging, threading
+import numpy as np
+import pandas as pd
+from datetime import datetime, timezone
+sys.path.insert(0, "/home/anildalabanjan933/crypto_trading_system")
+os.chdir("/home/anildalabanjan933/crypto_trading_system")
+from indicators.renko import RenkoBuilder, SupertrendIndicator, SwingDetector, _trendline_value_at
+from strategies.backtest.renko_reversal_strategy import RenkoReversalStrategy
+from strategies.backtest.renko_smiio_supertrend_strategy import RenkoSMIIOSupertrendStrategy
+from dotenv import load_dotenv
+load_dotenv(dotenv_path="/home/anildalabanjan933/crypto_trading_system/.env")
+import websocket
+
+WEBSOCKET_URL = "wss://socket.india.delta.exchange"
+SYMBOL        = "BTCUSD"
+LOT_SIZE      = 100
+SIGNAL_S2     = "logs/live_signal_s2.txt"
+SIGNAL_S4     = "logs/live_signal_s4.txt"
+ENGINE_LOG    = "logs/live_renko_engine.log"
+CANDLE_CSV    = "data/btc_1m_delta.csv"
+S2_PARAMS     = dict(renko_box_pct=0.001, renko_timeframe="1h", st_atr_length=5, st_factor=1.5)
+S4_PARAMS     = dict(renko_box_pct=0.001, renko_timeframe="2h", st_atr_length=10, st_factor=2.0, smiio_shortlen=20, smiio_siglen=7)
+
+os.makedirs("logs", exist_ok=True)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+    handlers=[logging.FileHandler(ENGINE_LOG, mode="a"), logging.StreamHandler()]
+)
+log = logging.getLogger(__name__)
+
+candle_closes  = []
+candle_times   = []
+last_s2_bricks = 0
+last_s4_bricks = 0
+last_s2_signal = None
+last_s4_signal = None
+lock = threading.Lock()
+
+def load_historical_candles():
+    global candle_closes, candle_times
+    try:
+        df = pd.read_csv(CANDLE_CSV)
+        df["dt"] = pd.to_datetime(df["Date"] + " " + df["Time"], utc=True)
+        df = df.sort_values("dt").reset_index(drop=True)
+        candle_closes = df["Close"].astype(float).tolist()
+        candle_times  = df["dt"].tolist()
+        log.info(f"[ENGINE] Loaded {len(candle_closes)} historical candles")
+    except Exception as e:
+        log.error(f"[ENGINE] Failed to load historical candles: {e}")
+        candle_closes = []
+        candle_times  = []
+
+def write_signal(signal_file, direction, timestamp_str, lots):
+    signal_line = f"{direction.upper()}|{timestamp_str}|{lots}"
+    tmp = signal_file + ".tmp"
+    with open(tmp, "w") as f:
+        f.write(signal_line)
+    os.replace(tmp, signal_file)
+    log.info(f"[ENGINE] Signal written: {signal_file} -> {signal_line}")
+
+def run_s2_strategy():
+    global last_s2_bricks, last_s2_signal
+    try:
+        if len(candle_closes) < 100:
+            return
+        closes = np.array(candle_closes)
+        times  = pd.DatetimeIndex(candle_times)
+        df_1m  = pd.DataFrame({"close": closes, "open": closes, "high": closes, "low": closes,
+                                "volume": np.ones(len(closes))}, index=times)
+        df_1h  = df_1m["close"].resample("1h").ohlc()
+        df_1h.columns = ["open","high","low","close"]
+        df_1h  = df_1h.dropna()
+        if len(df_1h) < 10:
+            return
+        current_price = float(closes[-1])
+        box_size = max(1, round(current_price * S2_PARAMS["renko_box_pct"]))
+        builder  = RenkoBuilder(box_size=box_size)
+        renko_raw = builder.build(df_1h["close"].values)
+        if renko_raw is None or len(renko_raw) == 0:
+            return
+        n_bricks = len(renko_raw)
+        if n_bricks <= last_s2_bricks:
+            return
+        log.info(f"[S2] New brick! Total={n_bricks} was={last_s2_bricks}")
+        last_s2_bricks = n_bricks
+        renko_raw["timestamp"] = renko_raw["bar_index"].apply(
+            lambda idx: df_1h.index[idx] if idx < len(df_1h) else df_1h.index[-1]
+        )
+        strategy = RenkoReversalStrategy(data_dict={"1h": df_1h}, lot_size=LOT_SIZE, **S2_PARAMS)
+        signals  = strategy.generate_signals()
+        if not signals:
+            return
+        last_sig = signals[-1]
+        ts_str   = last_sig["timestamp"]
+        dirn     = last_sig["direction"]
+        sig_type = last_sig["signal_type"]
+        sig_key  = f"{sig_type}|{dirn}|{ts_str}"
+        if sig_key == last_s2_signal:
+            return
+        last_s2_signal = sig_key
+        log.info(f"[S2] Signal: {sig_type} {dirn.upper()} at {ts_str}")
+        write_signal(SIGNAL_S2, f"{sig_type}_{dirn.upper()}", ts_str, LOT_SIZE)
+    except Exception as e:
+        log.error(f"[S2] Error: {e}", exc_info=True)
+
+def run_s4_strategy():
+    global last_s4_bricks, last_s4_signal
+    try:
+        if len(candle_closes) < 200:
+            return
+        closes = np.array(candle_closes)
+        times  = pd.DatetimeIndex(candle_times)
+        df_1m  = pd.DataFrame({"close": closes, "open": closes, "high": closes, "low": closes,
+                                "volume": np.ones(len(closes))}, index=times)
+        df_2h  = df_1m["close"].resample("2h").ohlc()
+        df_2h.columns = ["open","high","low","close"]
+        df_2h  = df_2h.dropna()
+        if len(df_2h) < 10:
+            return
+        current_price = float(closes[-1])
+        box_size = max(1, round(current_price * S4_PARAMS["renko_box_pct"]))
+        builder  = RenkoBuilder(box_size=box_size)
+        renko_raw = builder.build(df_2h["close"].values)
+        if renko_raw is None or len(renko_raw) == 0:
+            return
+        n_bricks = len(renko_raw)
+        if n_bricks <= last_s4_bricks:
+            return
+        log.info(f"[S4] New brick! Total={n_bricks} was={last_s4_bricks}")
+        last_s4_bricks = n_bricks
+        renko_raw["timestamp"] = renko_raw["bar_index"].apply(
+            lambda idx: df_2h.index[idx] if idx < len(df_2h) else df_2h.index[-1]
+        )
+        strategy = RenkoSMIIOSupertrendStrategy(data_dict={"2h": df_2h}, lot_size=LOT_SIZE, **S4_PARAMS)
+        signals  = strategy.generate_signals()
+        if not signals:
+            return
+        last_sig = signals[-1]
+        ts_str   = last_sig["timestamp"]
+        dirn     = last_sig["direction"]
+        sig_type = last_sig["signal_type"]
+        sig_key  = f"{sig_type}|{dirn}|{ts_str}"
+        if sig_key == last_s4_signal:
+            return
+        last_s4_signal = sig_key
+        log.info(f"[S4] Signal: {sig_type} {dirn.upper()} at {ts_str}")
+        write_signal(SIGNAL_S4, f"{sig_type}_{dirn.upper()}", ts_str, LOT_SIZE)
+    except Exception as e:
+        log.error(f"[S4] Error: {e}", exc_info=True)
+
+def on_open(ws):
+    log.info("[ENGINE] WebSocket connected")
+    payload = {"type": "subscribe", "payload": {"channels": [{"name": "candlestick_1m", "symbols": [SYMBOL]}]}}
+    ws.send(json.dumps(payload))
+    log.info(f"[ENGINE] Subscribed candlestick_1m {SYMBOL}")
+
+def on_message(ws, message):
+    global candle_closes, candle_times
+    try:
+        data = json.loads(message)
+        if data.get("type") != "candlestick_1m":
+            return
+        candle = data.get("candle", data)
+        close  = float(candle.get("close", 0))
+        ts_raw = candle.get("time", candle.get("timestamp", 0))
+        if close <= 0:
+            return
+        if isinstance(ts_raw, (int, float)):
+            if ts_raw > 1e12:
+                ts_raw = ts_raw / 1e6
+            candle_dt = datetime.fromtimestamp(ts_raw, tz=timezone.utc)
+        else:
+            return
+        with lock:
+            if candle_times and candle_dt <= candle_times[-1]:
+                return
+            candle_closes.append(close)
+            candle_times.append(candle_dt)
+            if len(candle_closes) > 10000:
+                candle_closes = candle_closes[-10000:]
+                candle_times  = candle_times[-10000:]
+            log.info(f"[ENGINE] Candle: {candle_dt.strftime('%Y-%m-%dT%H:%M')} close={close}")
+            run_s2_strategy()
+            run_s4_strategy()
+    except Exception as e:
+        log.error(f"[ENGINE] Message error: {e}", exc_info=True)
+
+def on_error(ws, error):
+    log.error(f"[ENGINE] WebSocket error: {error}")
+
+def on_close(ws, close_status_code, close_msg):
+    log.warning(f"[ENGINE] WebSocket closed: {close_status_code} {close_msg}")
+
+def main():
+    log.info("[ENGINE] Live Renko Engine starting...")
+    load_historical_candles()
+    log.info(f"[ENGINE] Ready. Candles: {len(candle_closes)}")
+    while True:
+        try:
+            ws = websocket.WebSocketApp(
+                WEBSOCKET_URL,
+                on_open=on_open,
+                on_message=on_message,
+                on_error=on_error,
+                on_close=on_close
+            )
+            ws.run_forever(ping_interval=30, ping_timeout=10)
+        except Exception as e:
+            log.error(f"[ENGINE] Connection failed: {e}")
+        log.warning("[ENGINE] Reconnecting in 5 seconds...")
+        time.sleep(5)
+
+if __name__ == "__main__":
+    main()
