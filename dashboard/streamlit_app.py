@@ -512,6 +512,7 @@ with col_title:
         f'''<div style="display:flex;align-items:center;gap:20px;padding:4px 0;">
         <span style="font-size:16px;font-weight:700;color:#131722;">CRYPTO TRADING SYSTEM</span>
         <span style="font-size:11px;color:#555;">BTC Algo Dashboard</span>
+        <span style="font-size:10px;color:#888;font-style:italic;font-family:Georgia,serif;">✦ Created by Anil Dalbanjan &nbsp;|&nbsp; Gandhinagar, Hubli - 580030</span>
         <span style="font-size:11px;color:#888;">BTC/USD:</span>
         {_btc_html}
         </div>''',
