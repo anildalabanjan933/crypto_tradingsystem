@@ -1441,9 +1441,15 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
             now_str = now_utc.strftime('%Y-%m-%dT%H:%M:%S')
             all_rows = []
             with open(sig_path) as fh:
-                reader = _csv1c.DictReader(fh)
+                reader = _csv1c.reader(fh)
                 for row in reader:
-                    all_rows.append(row)
+                    if len(row) < 3: continue
+                    if row[0].strip() == "entry_time": continue
+                    all_rows.append({
+                        "entry_time": row[0].strip(),
+                        "exit_time":  row[1].strip(),
+                        "direction":  row[2].strip()
+                    })
             found = False
             for row in all_rows:
                 if row['entry_time'].strip() > last_ts:
