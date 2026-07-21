@@ -4279,32 +4279,31 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
         try:
             import glob as _gb, pandas as _pb
             files = sorted(_gb.glob(csv_pattern), reverse=True)
-            _HDR_ROW_BT = (
+            _WAIT_BT = (
                 f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
                 f"<table style='width:100%;border-collapse:collapse;'>"
                 f"<thead><tr>"
-                f"<th style='{_TH20}'>Match%</th>"
                 f"<th style='{_TH20}'>Date</th>"
                 f"<th style='{_TH20}'>Dir</th>"
-                f"<th style='{_TH20}'>Entry Time</th>"
-                f"<th style='{_TH20}'>Exit Time</th>"
+                f"<th style='{_TH20}'>Entry Time (IST)</th>"
+                f"<th style='{_TH20}'>Exit Time (IST)</th>"
                 f"<th style='{_TH20}'>Entry (INR)</th>"
                 f"<th style='{_TH20}'>Exit (INR)</th>"
                 f"<th style='{_TH20}'>Slip $5</th>"
                 f"<th style='{_TH20}'>Tax+Charges</th>"
                 f"<th style='{_TH20}'>PnL</th>"
                 f"</tr></thead><tbody>"
-                f"<tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>Waiting for first trade</td></tr>"
+                f"<tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>No backtest trades in this window</td></tr>"
                 f"</tbody></table></div>"
             )
             if not files:
-                return _HDR_ROW_BT
+                return _WAIT_BT
             df = _pb.read_csv(files[0])
             df['entry_datetime'] = _pb.to_datetime(df['entry_datetime'])
             vf_dt = _pb.to_datetime(vf_str)
             df = df[df['entry_datetime'] >= vf_dt].tail(20).iloc[::-1].reset_index(drop=True)
             if df.empty:
-                return _HDR_ROW_BT
+                return _WAIT_BT
             rows = ""
             for i, r in df.iterrows():
                 pnl     = float(r.get('net_pnl', 0))
@@ -4345,8 +4344,8 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 f"<thead><tr>"
                 f"<th style='{_TH20}'>Date</th>"
                 f"<th style='{_TH20}'>Dir</th>"
-                f"<th style='{_TH20}'>Entry Time</th>"
-                f"<th style='{_TH20}'>Exit Time</th>"
+                f"<th style='{_TH20}'>Entry Time (IST)</th>"
+                f"<th style='{_TH20}'>Exit Time (IST)</th>"
                 f"<th style='{_TH20}'>Entry (INR)</th>"
                 f"<th style='{_TH20}'>Exit (INR)</th>"
                 f"<th style='{_TH20}'>Slip $5</th>"
@@ -4361,20 +4360,20 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
         try:
             import glob as _gc, pandas as _pc, datetime as _dc
             files = sorted(_gc.glob(csv_pattern), reverse=True)
-            if not files or not fwd_pairs:
-                return "<p style='color:#aaa;font-size:12px;padding:8px'>Waiting for first trade</p>"
+            if not files:
+                return "<p style='color:#aaa;font-size:12px;padding:8px'>No backtest CSV found</p>"
             df = _pc.read_csv(files[0])
             df['entry_datetime'] = _pc.to_datetime(df['entry_datetime'])
             vf_dt = _pc.to_datetime(vf_str)
             df = df[df['entry_datetime'] >= vf_dt].tail(20).iloc[::-1].reset_index(drop=True)
-            last20 = fwd_pairs[-20:][::-1]
-            max_rows = min(len(df), len(last20), 20)
-            if max_rows == 0:
-                return "<p style='color:#aaa;font-size:12px;padding:8px'>Waiting for first trade</p>"
+            if df.empty:
+                return "<p style='color:#aaa;font-size:12px;padding:8px'>No backtest trades in this window yet</p>"
+            last20 = (fwd_pairs or [])[-20:][::-1]
+            max_rows = len(df)
             rows = ""
             for i in range(max_rows):
                 bt  = df.iloc[i]
-                fwd = last20[i]
+                fwd = last20[i] if i < len(last20) else None
                 bt_ep   = float(bt.get('entry_price', 0)) * _INR13
                 bt_xp   = float(bt.get('exit_price',  0)) * _INR13
                 bt_pnl  = float(bt.get('net_pnl_inr', float(bt.get('net_pnl',0)) * _INR13))
@@ -4389,6 +4388,27 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 except:
                     bt_et = _bt_et_raw
                     bt_xt = _bt_xt_raw
+                if fwd is None:
+                    # No live trade yet - show PENDING
+                    _pnd = "background:#fff8e1;color:#b8860b;font-weight:bold;padding:4px 6px;font-size:11px;"
+                    _ds2 = _TG20 if bt_dir == "LONG" else _TR20
+                    rows += (
+                        f"<tr>"
+                        f"<td style='{_pnd}'>PENDING</td>"
+                        f"<td style='{_TD20}'>{bt_et[:11].strip()}</td>"
+                        f"<td style='{_ds2}'>{bt_dir}</td>"
+                        f"<td style='{_TD20}'>{bt_et[12:] if len(bt_et)>12 else bt_et}</td>"
+                        f"<td style='{_TD20}'>-</td>"
+                        f"<td style='{_TD20}'>₹{bt_ep:,.0f}</td>"
+                        f"<td style='{_TD20}'>-</td>"
+                        f"<td style='{_TD20}'>₹{bt_xp:,.0f}</td>"
+                        f"<td style='{_TD20}'>-</td>"
+                        f"<td style='{_TG20 if bt_pnl>=0 else _TR20}'>₹{bt_pnl:,.0f}</td>"
+                        f"<td style='{_TD20}'>-</td>"
+                        f"<td style='{_pnd}'>Waiting live</td>"
+                        f"</tr>"
+                    )
+                    continue
                 fwd_ep  = float(fwd.get('ep', 0)) * _INR13
                 fwd_xp  = float(fwd.get('xp', 0)) * _INR13
                 fwd_pnl = float(fwd.get('pnl', 0)) * _INR13
