@@ -3927,6 +3927,9 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
         _VF13 = open("logs/valid_from_baseline.txt").read().strip()
     except:
         _VF13 = "2026-07-14T15:00:00"
+    # Section 13 display window = last 7 days rolling (not VALID_FROM)
+    import datetime as _dt13_7
+    _VF13_7D = (_dt13_7.datetime.utcnow() - _dt13_7.timedelta(days=7)).strftime('%Y-%m-%dT%H:%M:%S')
     _INR13 = 84.0
     _BASE13= "https://cdn-ind.testnet.deltaex.org"
     _TH13  = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:11px;font-weight:700;color:#333;text-align:center;"
@@ -4180,8 +4183,8 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
     cbm  = _calc13(s2p+s4p)
 
     # ── FETCH BACKTEST DATA (same date range) ────────────────
-    s2_bt = _bt_calc13("output/trade_log_RenkoReversal*.csv",        _VF13)
-    s4_bt = _bt_calc13("output/trade_log_RenkoSMIIOSupertrend*.csv", _VF13)
+    s2_bt = _bt_calc13("output/trade_log_RenkoReversal*.csv",        _VF13_7D)
+    s4_bt = _bt_calc13("output/trade_log_RenkoSMIIOSupertrend*.csv", _VF13_7D)
     cb_bt_pairs = []
     if s2_bt: cb_bt_pairs.append(s2_bt)
     if s4_bt: cb_bt_pairs.append(s4_bt)
@@ -4204,7 +4207,7 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                   "pnl_year":s2_bt.get("pnl_year",0)+s4_bt.get("pnl_year",0)}
         cb_bt = merged
 
-    st.caption(f"Valid from: {_VF13} UTC | Auto updates on page load | Testnet")
+    st.caption(f"Showing last 7 days | Valid from: {_VF13_7D[:10]} UTC | Auto updates on page load | Testnet")
 
     # ── TOP TABLE: FORWARD TEST / LIVE ───────────────────────
     # Side by side: Forward Test | Backtest
@@ -4213,7 +4216,7 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
         st.markdown(f"<div style='{_HDR13}'>FORWARD TEST / LIVE</div>", unsafe_allow_html=True)
         st.markdown(_build_tbl13(s2m, s4m, cbm), unsafe_allow_html=True)
     with _col13b:
-        st.markdown(f"<div style='{_HDR13}'>BACKTEST (SAME DATE RANGE: {_VF13[:10]} to TODAY)</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='{_HDR13}'>BACKTEST (LAST 7 DAYS: {_VF13_7D[:10]} to TODAY)</div>", unsafe_allow_html=True)
         st.markdown(_build_tbl13(s2_bt, s4_bt, cb_bt), unsafe_allow_html=True)
 
     # ================================================================
@@ -4489,11 +4492,11 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
         st.markdown(_fwd20(s2p + s4p), unsafe_allow_html=True)
     with _col20b:
         st.markdown(f"<div style='{_HDR13}'>BACKTEST - LAST 20 TRADES</div>", unsafe_allow_html=True)
-        st.markdown(_bt20("output/trade_log_Renko*.csv", _VF13), unsafe_allow_html=True)
+        st.markdown(_bt20("output/trade_log_Renko*.csv", _VF13_7D), unsafe_allow_html=True)
 
     # ── COMPARISON TABLE FULL WIDTH BELOW ────────────────────
     st.markdown(f"<div style='{_HDR13}'>BACKTEST vs FORWARD TEST - LAST 20 COMPARISON</div>", unsafe_allow_html=True)
-    st.markdown(_cmp20("output/trade_log_Renko*.csv", s2p + s4p, _VF13), unsafe_allow_html=True)
+    st.markdown(_cmp20("output/trade_log_Renko*.csv", s2p + s4p, _VF13_7D), unsafe_allow_html=True)
 
 
 # ================================================================
@@ -4577,12 +4580,14 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
             roc = (net_inr / rec_cap * 100) if rec_cap > 0 else 0
             months = max(total_m, 1)
             roc_monthly = roc / months
+            # Today trade count
+            today_count = len(df[df['exit_dt'] >= _pd14.Timestamp(today_s)]) if 'exit_dt' in df.columns else 0
             return {
                 "tot":tot,"gross":gross,"net":net,"net_inr":net_inr,
                 "tax":tax,"fees":fees,"slip":slip,"fund":fund,"total_charges":total_charges,
                 "green_m":green_m,"total_m":total_m,"dd":dd,"rec_cap":rec_cap,
                 "roc":roc,"roc_monthly":roc_monthly,"margin_avg":margin_avg,
-                "pnl_today":pnl_today,"pnl_month":pnl_month
+                "pnl_today":pnl_today,"pnl_month":pnl_month,"today_count":today_count
             }
         except Exception as _e14:
             return None
@@ -4594,6 +4599,10 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
         def _inr(v): return f"₹{v*_INR14:,.0f}"
         def _pct(v): return f"{v:,.1f}%"
         def _c(v): return _TDG14 if v>=0 else _TDR14B
+
+        # Today trade count
+        s2_tot=_g(d2,"tot"); s4_tot=_g(d4,"tot"); port_tot=s2_tot+s4_tot
+        s2_tod_cnt=_g(d2,"today_count"); s4_tod_cnt=_g(d4,"today_count"); port_tod_cnt=s2_tod_cnt+s4_tod_cnt
 
         # $5/side (CSV as-is, slippage $10/trade already deducted)
         s2_net5=_g(d2,"net_inr"); s4_net5=_g(d4,"net_inr"); port_net5=s2_net5+s4_net5
@@ -4621,6 +4630,7 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
         s2_gm=_g(d2,"green_m"); s2_tm=_g(d2,"total_m")
         s4_gm=_g(d4,"green_m"); s4_tm=_g(d4,"total_m")
         s2_td=_g(d2,"pnl_today")*_INR14; s4_td=_g(d4,"pnl_today")*_INR14
+        s2_tod_cnt=int(_g(d2,"today_count")); s4_tod_cnt=int(_g(d4,"today_count")); port_tod_cnt=s2_tod_cnt+s4_tod_cnt
         s2_mo=_g(d2,"pnl_month")*_INR14; s4_mo=_g(d4,"pnl_month")*_INR14
         s2_mg=_g(d2,"margin_avg")*_INR14; s4_mg=_g(d4,"margin_avg")*_INR14
 
@@ -4654,6 +4664,7 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
         <tbody>
         <tr><td colspan="7" style="{_SUB14}">TRADE COUNT</td></tr>
         {_row7("Total Trades",f"{tot2:,}",f"{tot4:,}",f"{tot2+tot4:,}",f"{tot2:,}",f"{tot4:,}",f"{tot2+tot4:,}")}
+        {_row7("Today Trades",f"{s2_tod_cnt:,}",f"{s4_tod_cnt:,}",f"{port_tod_cnt:,}",f"{s2_tod_cnt:,}",f"{s4_tod_cnt:,}",f"{port_tod_cnt:,}",_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14)}
         <tr><td colspan="7" style="{_SUB14}">GREEN MONTHS</td></tr>
         {_row7("Green Months",f"{s2_gm}/{s2_tm}",f"{s4_gm}/{s4_tm}",f"{min(s2_gm,s4_gm)}/{s2_tm}",f"{s2_gm}/{s2_tm}",f"{s4_gm}/{s4_tm}",f"{min(s2_gm,s4_gm)}/{s2_tm}",_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14)}
         <tr><td colspan="7" style="{_SUB14}">PnL BREAKDOWN</td></tr>
