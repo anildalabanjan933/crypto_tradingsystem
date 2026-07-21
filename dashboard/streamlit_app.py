@@ -4584,8 +4584,8 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
         <thead>
         <tr>
           <th style="{_TH14}" rowspan="2">Metric</th>
-          <th style="{_THGR14}" colspan="3">$5/side (Realistic)</th>
-          <th style="{_THOG14}" colspan="3">$10/side (Conservative)</th>
+          <th style="{_THGR14}" colspan="3">$5/side Realistic | 100 lots</th>
+          <th style="{_THOG14}" colspan="3">$10/side Conservative | 100 lots</th>
         </tr>
         <tr>
           <th style="{_THGR14}">S2</th><th style="{_THGR14}">S4</th><th style="{_THGR14}">Portfolio</th>
