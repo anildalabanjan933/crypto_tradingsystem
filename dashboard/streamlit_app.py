@@ -4534,66 +4534,84 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
         def _g(d, k): return d[k] if d and k in d else 0
         def _inr(v): return f"₹{v*_INR14:,.0f}"
         def _pct(v): return f"{v:,.1f}%"
-        s2_net=_g(d2,"net_inr"); s4_net=_g(d4,"net_inr")
-        port_net=s2_net+s4_net
-        s2_gross=_g(d2,"gross")*_INR14; s4_gross=_g(d4,"gross")*_INR14
-        port_gross=s2_gross+s4_gross
-        s2_chg=_g(d2,"total_charges")*_INR14; s4_chg=_g(d4,"total_charges")*_INR14
-        port_chg=s2_chg+s4_chg
-        s2_dd=_g(d2,"dd")*_INR14; s4_dd=_g(d4,"dd")*_INR14
-        port_dd=max(s2_dd,s4_dd)
-        s2_rc=_g(d2,"rec_cap"); s4_rc=_g(d4,"rec_cap")
-        port_rc=s2_rc+s4_rc
-        s2_roc=_g(d2,"roc"); s4_roc=_g(d4,"roc")
-        port_roc=(port_net/port_rc*100) if port_rc>0 else 0
-        s2_rocm=_g(d2,"roc_monthly"); s4_rocm=_g(d4,"roc_monthly")
-        port_rocm=port_roc/max(_g(d2,"total_m"),1)
+        def _c(v): return _TDG14 if v>=0 else _TDR14B
+
+        # $5/side (CSV as-is, slippage $10/trade already deducted)
+        s2_net5=_g(d2,"net_inr"); s4_net5=_g(d4,"net_inr"); port_net5=s2_net5+s4_net5
+        s2_gross=_g(d2,"gross")*_INR14; s4_gross=_g(d4,"gross")*_INR14; port_gross=s2_gross+s4_gross
+        s2_chg5=_g(d2,"total_charges")*_INR14; s4_chg5=_g(d4,"total_charges")*_INR14; port_chg5=s2_chg5+s4_chg5
+        s2_dd=_g(d2,"dd")*_INR14; s4_dd=_g(d4,"dd")*_INR14; port_dd=max(s2_dd,s4_dd)
+        s2_rc5=_g(d2,"rec_cap"); s4_rc5=_g(d4,"rec_cap"); port_rc5=s2_rc5+s4_rc5
+        s2_roc5=_g(d2,"roc"); s4_roc5=_g(d4,"roc")
+        port_roc5=(port_net5/port_rc5*100) if port_rc5>0 else 0
+        s2_rocm5=_g(d2,"roc_monthly"); s4_rocm5=_g(d4,"roc_monthly")
+        port_rocm5=port_roc5/max(_g(d2,"total_m"),1)
+
+        # $10/side (extra $5/side = $10/trade extra deducted)
+        tot2=_g(d2,"tot"); tot4=_g(d4,"tot")
+        s2_net10=s2_net5-tot2*10*_INR14; s4_net10=s4_net5-tot4*10*_INR14; port_net10=s2_net10+s4_net10
+        s2_chg10=s2_chg5+tot2*10*_INR14; s4_chg10=s4_chg5+tot4*10*_INR14; port_chg10=s2_chg10+s4_chg10
+        s2_rc10=s2_rc5; s4_rc10=s4_rc5; port_rc10=port_rc5
+        s2_roc10=(s2_net10/s2_rc10*100) if s2_rc10>0 else 0
+        s4_roc10=(s4_net10/s4_rc10*100) if s4_rc10>0 else 0
+        port_roc10=(port_net10/port_rc10*100) if port_rc10>0 else 0
+        s2_rocm10=s2_roc10/max(_g(d2,"total_m"),1)
+        s4_rocm10=s4_roc10/max(_g(d4,"total_m"),1)
+        port_rocm10=port_roc10/max(_g(d2,"total_m"),1)
+
         s2_gm=_g(d2,"green_m"); s2_tm=_g(d2,"total_m")
         s4_gm=_g(d4,"green_m"); s4_tm=_g(d4,"total_m")
         s2_td=_g(d2,"pnl_today")*_INR14; s4_td=_g(d4,"pnl_today")*_INR14
         s2_mo=_g(d2,"pnl_month")*_INR14; s4_mo=_g(d4,"pnl_month")*_INR14
         s2_mg=_g(d2,"margin_avg")*_INR14; s4_mg=_g(d4,"margin_avg")*_INR14
 
-        def _c(v): return _TDG14 if v>=0 else _TDR14B
-        def _row(label, s2v, s4v, portv, s2s=None, s4s=None, ps=None):
-            s2s=s2s or _TDR14; s4s=s4s or _TDR14; ps=ps or _TDB14
-            return (f"<tr><td style='{_TD14}'>{label}</td>"
-                    f"<td style='{s2s}'>{s2v}</td><td style='{s4s}'>{s4v}</td><td style='{ps}'>{portv}</td></tr>")
+        def _row7(lbl,v5s2,v5s4,v5p,v10s2,v10s4,v10p,c5s2=None,c5s4=None,c5p=None,c10s2=None,c10s4=None,c10p=None):
+            c5s2=c5s2 or _TDR14; c5s4=c5s4 or _TDR14; c5p=c5p or _TDR14
+            c10s2=c10s2 or _TDR14; c10s4=c10s4 or _TDR14; c10p=c10p or _TDR14
+            return (f"<tr><td style='{_TD14}'>{lbl}</td>"
+                    f"<td style='{c5s2}'>{v5s2}</td><td style='{c5s4}'>{v5s4}</td><td style='{c5p}'>{v5p}</td>"
+                    f"<td style='{c10s2}'>{v10s2}</td><td style='{c10s4}'>{v10s4}</td><td style='{c10p}'>{v10p}</td></tr>")
 
         return f"""
         <p style="font-size:11px;color:#555;margin:2px 0 6px 0;"><b>{label}</b> &nbsp;|&nbsp; {period_str} &nbsp;|&nbsp; BTCUSD Perpetual &nbsp;|&nbsp; 100 lots/trade &nbsp;|&nbsp; Dynamic update every page load</p>
         <div style="overflow-x:auto;margin:4px 0;">
-        <table style="width:100%;border-collapse:collapse;">
+        <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
+        <colgroup>
+          <col style="width:22%">
+          <col style="width:13%"><col style="width:13%"><col style="width:13%">
+          <col style="width:13%"><col style="width:13%"><col style="width:13%">
+        </colgroup>
         <thead>
         <tr>
           <th style="{_TH14}" rowspan="2">Metric</th>
-          <th style="{_THGR14}" colspan="3">Backtest Results</th>
+          <th style="{_THGR14}" colspan="3">$5/side (Realistic)</th>
+          <th style="{_THOG14}" colspan="3">$10/side (Conservative)</th>
         </tr>
         <tr>
-          <th style="{_THGR14}">S2</th>
-          <th style="{_THGR14}">S4</th>
-          <th style="{_THGR14}">Portfolio</th>
+          <th style="{_THGR14}">S2</th><th style="{_THGR14}">S4</th><th style="{_THGR14}">Portfolio</th>
+          <th style="{_THOG14}">S2</th><th style="{_THOG14}">S4</th><th style="{_THOG14}">Portfolio</th>
         </tr>
         </thead>
         <tbody>
-        <tr><td colspan="4" style="{_SUB14}">TRADE COUNT</td></tr>
-        {_row("Total Trades", f"{_g(d2,'tot'):,}", f"{_g(d4,'tot'):,}", f"{_g(d2,'tot')+_g(d4,'tot'):,}")}
-        <tr><td colspan="4" style="{_SUB14}">GREEN MONTHS</td></tr>
-        {_row("Green Months", f"{s2_gm}/{s2_tm}", f"{s4_gm}/{s4_tm}", f"{min(s2_gm,s4_gm)}/{s2_tm}", _TDG14, _TDG14, _TDG14)}
-        <tr><td colspan="4" style="{_SUB14}">PnL BREAKDOWN</td></tr>
-        {_row("Gross PnL", _inr(s2_gross/_INR14), _inr(s4_gross/_INR14), _inr(port_gross/_INR14), _c(s2_gross), _c(s4_gross), _c(port_gross))}
-        {_row("Tax + All Charges", f"-₹{s2_chg:,.0f}", f"-₹{s4_chg:,.0f}", f"-₹{port_chg:,.0f}", _TDR14B, _TDR14B, _TDR14B)}
-        {_row("Net PnL (After Tax)", _inr(s2_net/_INR14), _inr(s4_net/_INR14), _inr(port_net/_INR14), _c(s2_net), _c(s4_net), _c(port_net))}
-        <tr><td colspan="4" style="{_SUB14}">DYNAMIC PnL (SYNCED WITH SECTION 13)</td></tr>
-        {_row("Today PnL", f"₹{s2_td:,.0f}", f"₹{s4_td:,.0f}", f"₹{s2_td+s4_td:,.0f}", _c(s2_td), _c(s4_td), _c(s2_td+s4_td))}
-        {_row("This Month PnL", f"₹{s2_mo:,.0f}", f"₹{s4_mo:,.0f}", f"₹{s2_mo+s4_mo:,.0f}", _c(s2_mo), _c(s4_mo), _c(s2_mo+s4_mo))}
-        <tr><td colspan="4" style="{_SUB14}">CAPITAL & RETURNS</td></tr>
-        {_row("Rec Capital (3x Max DD)", f"₹{s2_rc:,.0f}", f"₹{s4_rc:,.0f}", f"₹{port_rc:,.0f}", _TDO14, _TDO14, _TDB14)}
-        {_row("ROC Total", _pct(s2_roc), _pct(s4_roc), _pct(port_roc), _TDG14, _TDG14, _TDB14)}
-        {_row("ROC Monthly Avg", _pct(s2_rocm), _pct(s4_rocm), _pct(port_rocm), _TDG14, _TDG14, _TDB14)}
-        <tr><td colspan="4" style="{_SUB14}">RISK</td></tr>
-        {_row("Max Drawdown", f"-₹{s2_dd:,.0f}", f"-₹{s4_dd:,.0f}", f"-₹{port_dd:,.0f}", _TDR14B, _TDR14B, _TDR14B)}
-        {_row("Avg Margin/trade", f"₹{s2_mg:,.0f}", f"₹{s4_mg:,.0f}", "-", _TDR14, _TDR14, _DASH14)}
+        <tr><td colspan="7" style="{_SUB14}">TRADE COUNT</td></tr>
+        {_row7("Total Trades",f"{tot2:,}",f"{tot4:,}",f"{tot2+tot4:,}",f"{tot2:,}",f"{tot4:,}",f"{tot2+tot4:,}")}
+        <tr><td colspan="7" style="{_SUB14}">GREEN MONTHS</td></tr>
+        {_row7("Green Months",f"{s2_gm}/{s2_tm}",f"{s4_gm}/{s4_tm}",f"{min(s2_gm,s4_gm)}/{s2_tm}",f"{s2_gm}/{s2_tm}",f"{s4_gm}/{s4_tm}",f"{min(s2_gm,s4_gm)}/{s2_tm}",_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14)}
+        <tr><td colspan="7" style="{_SUB14}">PnL BREAKDOWN</td></tr>
+        {_row7("Gross PnL",_inr(s2_gross/_INR14),_inr(s4_gross/_INR14),_inr(port_gross/_INR14),_inr(s2_gross/_INR14),_inr(s4_gross/_INR14),_inr(port_gross/_INR14),_c(s2_gross),_c(s4_gross),_c(port_gross),_c(s2_gross),_c(s4_gross),_c(port_gross))}
+        {_row7("Tax + All Charges",f"-₹{s2_chg5:,.0f}",f"-₹{s4_chg5:,.0f}",f"-₹{port_chg5:,.0f}",f"-₹{s2_chg10:,.0f}",f"-₹{s4_chg10:,.0f}",f"-₹{port_chg10:,.0f}",_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B)}
+        {_row7("Net PnL (After Tax)",_inr(s2_net5/_INR14),_inr(s4_net5/_INR14),_inr(port_net5/_INR14),_inr(s2_net10/_INR14),_inr(s4_net10/_INR14),_inr(port_net10/_INR14),_c(s2_net5),_c(s4_net5),_c(port_net5),_c(s2_net10),_c(s4_net10),_c(port_net10))}
+        <tr><td colspan="7" style="{_SUB14}">DYNAMIC PnL (SYNCED WITH SECTION 13)</td></tr>
+        {_row7("Today PnL",f"₹{s2_td:,.0f}",f"₹{s4_td:,.0f}",f"₹{s2_td+s4_td:,.0f}",f"₹{s2_td:,.0f}",f"₹{s4_td:,.0f}",f"₹{s2_td+s4_td:,.0f}",_c(s2_td),_c(s4_td),_c(s2_td+s4_td),_c(s2_td),_c(s4_td),_c(s2_td+s4_td))}
+        {_row7("This Month PnL",f"₹{s2_mo:,.0f}",f"₹{s4_mo:,.0f}",f"₹{s2_mo+s4_mo:,.0f}",f"₹{s2_mo:,.0f}",f"₹{s4_mo:,.0f}",f"₹{s2_mo+s4_mo:,.0f}",_c(s2_mo),_c(s4_mo),_c(s2_mo+s4_mo),_c(s2_mo),_c(s4_mo),_c(s2_mo+s4_mo))}
+        <tr><td colspan="7" style="{_SUB14}">RECOMMENDED CAPITAL (3x MAX DD)</td></tr>
+        {_row7("Rec Capital",f"₹{s2_rc5:,.0f}",f"₹{s4_rc5:,.0f}",f"₹{port_rc5:,.0f}",f"₹{s2_rc10:,.0f}",f"₹{s4_rc10:,.0f}",f"₹{port_rc10:,.0f}",_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14)}
+        <tr><td colspan="7" style="{_SUB14}">RETURN ON CAPITAL</td></tr>
+        {_row7("ROC Total",_pct(s2_roc5),_pct(s4_roc5),_pct(port_roc5),_pct(s2_roc10),_pct(s4_roc10),_pct(port_roc10),_TDG14,_TDG14,_TDG14,_c(s2_roc10),_c(s4_roc10),_c(port_roc10))}
+        {_row7("ROC Monthly Avg",_pct(s2_rocm5),_pct(s4_rocm5),_pct(port_rocm5),_pct(s2_rocm10),_pct(s4_rocm10),_pct(port_rocm10),_TDG14,_TDG14,_TDG14,_c(s2_rocm10),_c(s4_rocm10),_c(port_rocm10))}
+        <tr><td colspan="7" style="{_SUB14}">MAX DRAWDOWN</td></tr>
+        {_row7("Max Drawdown",f"-₹{s2_dd:,.0f}",f"-₹{s4_dd:,.0f}",f"-₹{port_dd:,.0f}",f"-₹{s2_dd:,.0f}",f"-₹{s4_dd:,.0f}",f"-₹{port_dd:,.0f}",_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B)}
+        {_row7("Avg Margin/trade",f"₹{s2_mg:,.0f}",f"₹{s4_mg:,.0f}","-",f"₹{s2_mg:,.0f}",f"₹{s4_mg:,.0f}","-",_TDR14,_TDR14,_DASH14,_TDR14,_TDR14,_DASH14)}
         </tbody>
         </table>
         </div>"""
