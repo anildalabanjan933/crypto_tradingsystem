@@ -63,14 +63,22 @@ def load_signals():
         log.error(f"[REPLAY] Signal CSV not found: {SIGNAL_CSV}")
         return signals
     with open(SIGNAL_CSV, "r") as f:
-        reader = csv.DictReader(f)
+        reader = csv.reader(f)
         for row in reader:
-            if row["entry_time"] and row["exit_time"] and row["direction"]:
+            if len(row) < 3:
+                continue
+            if row[0].strip() == "entry_time":
+                continue  # skip header if present
+            entry = row[0].strip()
+            exit_ = row[1].strip()
+            dirn  = row[2].strip()
+            lots  = int(row[3].strip()) if len(row) > 3 else LOT_SIZE
+            if entry and exit_ and dirn:
                 signals.append({
-                    "entry_time": row["entry_time"].strip(),
-                    "exit_time":  row["exit_time"].strip(),
-                    "direction":  row["direction"].strip(),
-                    "lots":       int(row.get("lots", LOT_SIZE))
+                    "entry_time": entry,
+                    "exit_time":  exit_,
+                    "direction":  dirn,
+                    "lots":       lots
                 })
     log.info(f"[REPLAY] Loaded {len(signals)} signals from {SIGNAL_CSV}")
     return signals
