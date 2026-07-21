@@ -4278,7 +4278,6 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
     def _bt20(csv_pattern, vf_str):
         try:
             import glob as _gb, pandas as _pb
-            files = sorted(_gb.glob(csv_pattern), reverse=True)
             _WAIT_BT = (
                 f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
                 f"<table style='width:100%;border-collapse:collapse;'>"
@@ -4296,12 +4295,19 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 f"<tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>No backtest trades in this window</td></tr>"
                 f"</tbody></table></div>"
             )
-            if not files:
-                return _WAIT_BT
-            df = _pb.read_csv(files[0])
-            df['entry_datetime'] = _pb.to_datetime(df['entry_datetime'])
+            s2_files = sorted(_gb.glob("output/trade_log_RenkoReversal*.csv"), reverse=True)
+            s4_files = sorted(_gb.glob("output/trade_log_RenkoSMIIO*.csv"), reverse=True)
+            frames = []
             vf_dt = _pb.to_datetime(vf_str)
-            df = df[df['entry_datetime'] >= vf_dt].tail(20).iloc[::-1].reset_index(drop=True)
+            for ff in (s2_files[:1] + s4_files[:1]):
+                _df = _pb.read_csv(ff)
+                _df['entry_datetime'] = _pb.to_datetime(_df['entry_datetime'])
+                _df_vf = _df[_df['entry_datetime'] >= vf_dt]
+                if not _df_vf.empty:
+                    frames.append(_df_vf)
+            if not frames:
+                return _WAIT_BT
+            df = _pb.concat(frames).sort_values('entry_datetime').tail(20).iloc[::-1].reset_index(drop=True)
             if df.empty:
                 return _WAIT_BT
             rows = ""
@@ -4360,12 +4366,19 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
         try:
             import glob as _gc, pandas as _pc, datetime as _dc
             files = sorted(_gc.glob(csv_pattern), reverse=True)
-            if not files:
-                return "<p style='color:#aaa;font-size:12px;padding:8px'>No backtest CSV found</p>"
-            df = _pc.read_csv(files[0])
-            df['entry_datetime'] = _pc.to_datetime(df['entry_datetime'])
+            s2_ff = sorted(_gc.glob("output/trade_log_RenkoReversal*.csv"), reverse=True)
+            s4_ff = sorted(_gc.glob("output/trade_log_RenkoSMIIO*.csv"), reverse=True)
+            _frames = []
             vf_dt = _pc.to_datetime(vf_str)
-            df = df[df['entry_datetime'] >= vf_dt].tail(20).iloc[::-1].reset_index(drop=True)
+            for _ff in (s2_ff[:1] + s4_ff[:1]):
+                _dff = _pc.read_csv(_ff)
+                _dff['entry_datetime'] = _pc.to_datetime(_dff['entry_datetime'])
+                _dff_vf = _dff[_dff['entry_datetime'] >= vf_dt]
+                if not _dff_vf.empty:
+                    _frames.append(_dff_vf)
+            if not _frames:
+                return "<p style='color:#aaa;font-size:12px;padding:8px'>No backtest trades in this window yet</p>"
+            df = _pc.concat(_frames).sort_values('entry_datetime').tail(20).iloc[::-1].reset_index(drop=True)
             if df.empty:
                 return "<p style='color:#aaa;font-size:12px;padding:8px'>No backtest trades in this window yet</p>"
             last20 = (fwd_pairs or [])[-20:][::-1]
