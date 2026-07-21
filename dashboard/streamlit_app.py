@@ -4665,9 +4665,13 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
         </tr>
         </thead>
         <tbody>
+        <tr><td colspan="7" style="{_SUB14}">DYNAMIC PnL (SYNCED WITH SECTION 13)</td></tr>
+        {_row7("Today PnL",f"₹{s2_td:,.0f}",f"₹{s4_td:,.0f}",f"₹{s2_td+s4_td:,.0f}",f"₹{s2_td:,.0f}",f"₹{s4_td:,.0f}",f"₹{s2_td+s4_td:,.0f}",_c(s2_td),_c(s4_td),_c(s2_td+s4_td),_c(s2_td),_c(s4_td),_c(s2_td+s4_td))}
+        {_row7("Today Trades",f"{s2_tod_cnt:,}",f"{s4_tod_cnt:,}",f"{port_tod_cnt:,}",f"{s2_tod_cnt:,}",f"{s4_tod_cnt:,}",f"{port_tod_cnt:,}",_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14)}
+        {_row7("This Month PnL",f"₹{s2_mo:,.0f}",f"₹{s4_mo:,.0f}",f"₹{s2_mo+s4_mo:,.0f}",f"₹{s2_mo:,.0f}",f"₹{s4_mo:,.0f}",f"₹{s2_mo+s4_mo:,.0f}",_c(s2_mo),_c(s4_mo),_c(s2_mo+s4_mo),_c(s2_mo),_c(s4_mo),_c(s2_mo+s4_mo))}
+        {_row7("This Month Trades",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14)}
         <tr><td colspan="7" style="{_SUB14}">TRADE COUNT</td></tr>
         {_row7("Total Trades",f"{tot2:,}",f"{tot4:,}",f"{tot2+tot4:,}",f"{tot2:,}",f"{tot4:,}",f"{tot2+tot4:,}")}
-        {_row7("Today Trades",f"{s2_tod_cnt:,}",f"{s4_tod_cnt:,}",f"{port_tod_cnt:,}",f"{s2_tod_cnt:,}",f"{s4_tod_cnt:,}",f"{port_tod_cnt:,}",_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14)}
         <tr><td colspan="7" style="{_SUB14}">GREEN MONTHS</td></tr>
         {_row7("Green Months",f"{s2_gm}/{s2_tm}",f"{s4_gm}/{s4_tm}",f"{min(s2_gm,s4_gm)}/{s2_tm}",f"{s2_gm}/{s2_tm}",f"{s4_gm}/{s4_tm}",f"{min(s2_gm,s4_gm)}/{s2_tm}",_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14)}
         <tr><td colspan="7" style="{_SUB14}">PnL BREAKDOWN</td></tr>
