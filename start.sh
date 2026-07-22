@@ -25,7 +25,7 @@ screen -S testmember1_s4 -X quit 2>/dev/null
 sleep 2
 
 # Start fresh screens using venv python directly
-screen -dmS signal_generator bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/csv_append_engine.py >> logs/csv_append_engine.log 2>&1"
+screen -dmS signal_generator bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/renko_chart_engine.py >> logs/renko_chart_engine.log 2>&1"
 screen -dmS live_s2 bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/signal_replay_s2.py >> logs/live_trading_s2.log 2>&1"
 screen -dmS live_s4 bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/signal_replay_s4.py >> logs/live_trading_s4.log 2>&1"
 
