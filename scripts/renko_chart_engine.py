@@ -37,7 +37,7 @@ log = logging.getLogger(__name__)
 
 CSV_PATH  = "data/btc_1m_delta.csv"
 LOT_SIZE  = 100
-SLEEP_SEC = 60
+SLEEP_SEC = 1
 
 S2_PARAMS = dict(renko_box_pct=0.001, renko_timeframe="1h", st_atr_length=5, st_factor=1.5)
 S4_PARAMS = dict(renko_box_pct=0.001, renko_timeframe="2h", st_atr_length=10, st_factor=2.0,
