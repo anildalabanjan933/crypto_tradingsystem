@@ -249,13 +249,24 @@ if __name__ == "__main__":
                 update_market_data()
                 _last_download_ts = time.time()
 
-            # Read CSV into memory - cheap operation every 1 second
-            fetch_new_candles()
+            # Check only last line of CSV - ultra cheap every 1 second
+            try:
+                with open(CSV_PATH, 'rb') as _f:
+                    _f.seek(-300, 2)
+                    _ll = _f.read().decode('utf-8', errors='ignore').strip().split('\n')[-1]
+                _pts = _ll.split(',')
+                _csv_last = pd.to_datetime(_pts[0].strip()+' '+_pts[1].strip()) if len(_pts)>=2 else None
+            except: _csv_last = None
+            # Drop incomplete candle
+            _now_m = datetime.now(timezone.utc).replace(second=0,microsecond=0,tzinfo=None)
+            if _csv_last is not None and _csv_last.to_pydatetime().replace(tzinfo=None) >= _now_m:
+                _csv_last = None
 
             # Only run backtest when NEW candle detected
-            if _last_candle_ts != _last_processed_ts:
-                _last_processed_ts = _last_candle_ts
-                log.info(f"[CHART] New candle: {_last_candle_ts} - running backtest")
+            if _csv_last is not None and _csv_last != _last_processed_ts:
+                _last_processed_ts = _csv_last
+                log.info(f"[CHART] New candle: {_csv_last} - fetching + running backtest")
+                fetch_new_candles()
 
                 log.info("[CHART] Running S2 backtest...")
                 s2_trades = run_backtest_on_memory(RenkoReversalStrategy, S2_PARAMS, "S2")
