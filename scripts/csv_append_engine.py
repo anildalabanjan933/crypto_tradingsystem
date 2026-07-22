@@ -164,6 +164,12 @@ def check_and_append(trades, label):
                 log.info(f"[{label}] No new signal - position still open")
         except Exception as e:
             log.error(f"[{label}] check exit error: {e}")
+        # Touch signal file every cycle so dashboard shows FRESH age
+        try:
+            sig_file = f"logs/live_signal_s{label[-1]}.txt"
+            if os.path.exists(sig_file):
+                os.utime(sig_file, None)
+        except: pass
 
 if __name__ == "__main__":
     log.info("[ENGINE] CSV Append Engine starting...")
