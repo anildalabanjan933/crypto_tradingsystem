@@ -210,10 +210,6 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc):
            "exit_datetime":ts,"direction":direction,"entry_price":cl,"exit_price":cl,
            "net_pnl":0.0,"net_pnl_inr":0.0,"gross_pnl":0.0,"slippage_usd":5.0,
            "taker_fees_usd":0.0,"funding_usd":0.0,"tax_usd":0.0,"margin_required":0.0,"lot_size":100}
-    last=get_last_csv_row(state.label)
-    last_e=str(last.get("entry_datetime",""))[:19] if last else ""
-    if trade["entry_datetime"][:19]!=last_e:
-        append_trade_to_csv(trade,state.label)
     write_signal_file(state.label,sig_type,direction,ts)
     state.last_signal_ts=ts
     if sig_type=="EXIT": state.last_exit_ts=ts
