@@ -1627,11 +1627,11 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
     s2_dbg = _get_bot_debug(
         f'{_BASE_DIR}/logs/live_trading_s2.log',
         f'{_BASE_DIR}/logs/last_known_ts_s2.txt',
-        f'{_BASE_DIR}/logs/signals_s2.csv', 'S2')
+        f'{_BASE_DIR}/logs/live_signal_s2.txt', 'S2')
     s4_dbg = _get_bot_debug(
         f'{_BASE_DIR}/logs/live_trading_s4.log',
         f'{_BASE_DIR}/logs/last_known_ts_s4.txt',
-        f'{_BASE_DIR}/logs/signals_s4.csv', 'S4')
+        f'{_BASE_DIR}/logs/live_signal_s4.txt', 'S4')
 
     def _dbg_row(label, s2val, s4val, s2c=None, s4c=None):
         return (f"<tr><td style='{_TD1C}'><b>{label}</b></td>"
