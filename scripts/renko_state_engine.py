@@ -11,7 +11,7 @@ from indicators.renko import RenkoBuilder,SupertrendIndicator
 from data.download_market_data import download_or_update
 
 logging.basicConfig(level=logging.INFO,format="%(asctime)s %(levelname)s %(message)s",
-    handlers=[logging.FileHandler("logs/renko_state_engine.log",mode="a"),logging.StreamHandler()])
+    handlers=[logging.FileHandler("logs/renko_state_engine.log",mode="a")])
 log=logging.getLogger(__name__)
 
 CSV_PATH="data/btc_1m_delta.csv"
