@@ -37,6 +37,7 @@ class StrategyState:
         self.label=label; self.params=params
         self.candles_1m=None; self.last_1m_ts=None
         self.current_direction=None; self.last_signal_ts=None; self.last_exit_ts=None
+        self.box_size=None
 
 
 
@@ -113,6 +114,18 @@ def load_history(state):
     df=df[df["timestamp"].astype(str)<cur]
     state.candles_1m=df
     state.last_1m_ts=df["timestamp"].iloc[-1] if not df.empty else None
+    # Calculate box_size matching exact backtest formula
+    tf=state.params["renko_timeframe"]
+    _df_tf=resample_to_tf(df,tf)
+    if _df_tf is not None and len(_df_tf)>0:
+        _closes=_df_tf["close"].values
+        if state.label=="S2":
+            # S2 backtest uses iloc[-1] = last close of full history
+            state.box_size=max(1,round(_closes[-1]*state.params["renko_box_pct"]))
+        else:
+            # S4 backtest uses closes[0] = first close of full history
+            state.box_size=max(1,round(_closes[0]*state.params["renko_box_pct"]))
+        log.info(f"[{state.label}] box_size={state.box_size} (matches backtest exactly)")
     log.info(f"[{state.label}] Loaded {len(df):,} candles | last={state.last_1m_ts}")
 
 def append_new_candles(state):
@@ -163,7 +176,7 @@ def check_and_fire(state,is_s4=False):
         df_tf=resample_to_tf(tail_1m,tf)
         if df_tf is None or len(df_tf)<10: return
         closes=df_tf["close"].values
-        box=max(1,round(closes[0]*p["renko_box_pct"]))
+        box=state.box_size if state.box_size else max(1,round(closes[0]*p["renko_box_pct"]))
         renko_df=RenkoBuilder(box_size=box).build(closes)
         if renko_df is None or len(renko_df)<5: return
         st_df=SupertrendIndicator(atr_period=p["st_atr_length"],factor=p["st_factor"]).calculate(renko_df)
