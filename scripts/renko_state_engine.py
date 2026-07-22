@@ -104,7 +104,7 @@ def load_history(state):
     import pandas as pd
     from datetime import datetime,timezone
     log_msg=f"[{state.label}] Loading full history..."
-    print(log_msg)
+    log.info(log_msg)
     df=pd.read_csv("data/btc_1m_delta.csv")
     df["timestamp"]=pd.to_datetime(df["Date"]+" "+df["Time"])
     df=df.sort_values("timestamp").reset_index(drop=True)
@@ -113,7 +113,7 @@ def load_history(state):
     df=df[df["timestamp"].astype(str)<cur]
     state.candles_1m=df
     state.last_1m_ts=df["timestamp"].iloc[-1] if not df.empty else None
-    print(f"[{state.label}] Loaded {len(df):,} candles | last={state.last_1m_ts}")
+    log.info(f"[{state.label}] Loaded {len(df):,} candles | last={state.last_1m_ts}")
 
 def append_new_candles(state):
     import pandas as pd
@@ -129,10 +129,10 @@ def append_new_candles(state):
         if new_rows.empty: return False
         state.candles_1m=pd.concat([state.candles_1m,new_rows],ignore_index=True)
         state.last_1m_ts=state.candles_1m["timestamp"].iloc[-1]
-        print(f"[{state.label}] +{len(new_rows)} candles | last={state.last_1m_ts}")
+        log.info(f"[{state.label}] +{len(new_rows)} candles | last={state.last_1m_ts}")
         return True
     except Exception as e:
-        print(f"[{state.label}] append error: {e}")
+        log.error(f"[{state.label}] append error: {e}",exc_info=True)
         return False
 
 
@@ -185,7 +185,7 @@ def check_and_fire(state,is_s4=False):
                     elif (sd and st_i==1 and rd==-1) or (flip_r and sb and rd==-1):
                         _fire(state,ts,cl,"short","ENTRY",box,now_utc); return
     except Exception as e:
-        print(f"[{state.label}] check error: {e}")
+        log.error(f"[{state.label}] check error: {e}",exc_info=True)
 
 def _fire(state,ts,cl,direction,sig_type,box,now_utc):
     from datetime import datetime,timezone
@@ -200,7 +200,7 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc):
     write_signal_file(state.label,sig_type,direction,ts)
     state.last_signal_ts=ts
     state.current_direction=direction if sig_type=="ENTRY" else None
-    print(f"[{state.label}] {sig_type} {direction} at {ts}")
+    log.info(f"[{state.label}] {sig_type} {direction} at {ts}")
 
 
 
