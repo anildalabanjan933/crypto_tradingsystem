@@ -119,9 +119,23 @@ def append_new_candles(state):
     import pandas as pd
     from datetime import datetime,timezone
     try:
-        df_new=pd.read_csv("data/btc_1m_delta.csv")
-        df_new["timestamp"]=pd.to_datetime(df_new["Date"]+" "+df_new["Time"])
-        df_new=df_new.sort_values("timestamp").reset_index(drop=True)
+        # Read only last 200 lines - cheap operation
+        with open("data/btc_1m_delta.csv","rb") as f:
+            f.seek(0,2); fsize=f.tell()
+            f.seek(max(0,fsize-20000),0)
+            tail=f.read().decode("utf-8",errors="ignore")
+        lines=[l for l in tail.split("\n") if l.strip() and not l.startswith("Date")]
+        if not lines: return False
+        rows=[]
+        for l in lines:
+            pts=l.split(",")
+            if len(pts)>=6:
+                try:
+                    ts=pd.to_datetime(pts[0].strip()+" "+pts[1].strip())
+                    rows.append({"timestamp":ts,"Open":float(pts[2]),"High":float(pts[3]),"Low":float(pts[4]),"Close":float(pts[5])})
+                except: pass
+        if not rows: return False
+        df_new=pd.DataFrame(rows)
         now_utc=datetime.now(timezone.utc).replace(second=0,microsecond=0)
         cur=now_utc.strftime("%Y-%m-%d %H:%M:%S")
         df_new=df_new[df_new["timestamp"].astype(str)<cur]
