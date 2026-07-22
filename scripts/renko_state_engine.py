@@ -243,15 +243,15 @@ if __name__=="__main__":
     s4=StrategyState("S4",S4_PARAMS)
     load_history(s2)
     load_history(s4)
-    check_and_fire(s2,is_s4=False)
-    check_and_fire(s4,is_s4=True)
-    # Lock last_signal_ts to latest brick after startup - prevent re-fire on restart
+    # Lock last_signal_ts BEFORE startup check - block all historical signals
     _lock_ts=get_csv_last_ts()
     if _lock_ts is not None:
         _lock_str=str(pd.Timestamp(_lock_ts).strftime("%Y-%m-%dT%H:%M:%S"))
         s2.last_signal_ts=_lock_str
         s4.last_signal_ts=_lock_str
         log.info(f"[ENGINE] Startup lock ts: {_lock_str}")
+    check_and_fire(s2,is_s4=False)
+    check_and_fire(s4,is_s4=True)
 
     _last_dl=time.time()
     _last_ts=get_csv_last_ts()
