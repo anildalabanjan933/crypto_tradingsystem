@@ -180,7 +180,7 @@ def check_and_fire(state,is_s4=False):
         now_utc=datetime.now(timezone.utc)
         for i in range(max(1,n-5),n):
             ts=str(pd.Timestamp(ts_r[i]).strftime("%Y-%m-%dT%H:%M:%S"))
-            if ts<=state.last_signal_ts: continue
+            if state.last_signal_ts and ts<=state.last_signal_ts: continue
             if ts==state.last_exit_ts: continue
             cl=closes_r[i]; rd=rdir[i]; st_i=st[i]; st_p=st[i-1]
             flip_g=st_p==1 and st_i==-1
