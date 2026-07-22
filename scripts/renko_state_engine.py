@@ -245,6 +245,13 @@ if __name__=="__main__":
     load_history(s4)
     check_and_fire(s2,is_s4=False)
     check_and_fire(s4,is_s4=True)
+    # Lock last_signal_ts to latest brick after startup - prevent re-fire on restart
+    _lock_ts=get_csv_last_ts()
+    if _lock_ts is not None:
+        _lock_str=str(pd.Timestamp(_lock_ts).strftime("%Y-%m-%dT%H:%M:%S"))
+        if s2.last_signal_ts is None: s2.last_signal_ts=_lock_str
+        if s4.last_signal_ts is None: s4.last_signal_ts=_lock_str
+        log.info(f"[ENGINE] Startup lock ts: {_lock_str}")
 
     _last_dl=time.time()
     _last_ts=get_csv_last_ts()
