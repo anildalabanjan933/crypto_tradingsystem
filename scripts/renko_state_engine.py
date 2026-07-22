@@ -249,8 +249,8 @@ if __name__=="__main__":
     _lock_ts=get_csv_last_ts()
     if _lock_ts is not None:
         _lock_str=str(pd.Timestamp(_lock_ts).strftime("%Y-%m-%dT%H:%M:%S"))
-        if s2.last_signal_ts is None: s2.last_signal_ts=_lock_str
-        if s4.last_signal_ts is None: s4.last_signal_ts=_lock_str
+        s2.last_signal_ts=_lock_str
+        s4.last_signal_ts=_lock_str
         log.info(f"[ENGINE] Startup lock ts: {_lock_str}")
 
     _last_dl=time.time()
