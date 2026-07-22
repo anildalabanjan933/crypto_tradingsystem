@@ -37,7 +37,7 @@ log = logging.getLogger(__name__)
 
 CSV_PATH  = "data/btc_1m_delta.csv"
 LOT_SIZE  = 100
-SLEEP_SEC = 1
+SLEEP_SEC = 60
 
 S2_PARAMS = dict(renko_box_pct=0.001, renko_timeframe="1h", st_atr_length=5, st_factor=1.5)
 S4_PARAMS = dict(renko_box_pct=0.001, renko_timeframe="2h", st_atr_length=10, st_factor=2.0,
@@ -112,14 +112,19 @@ def load_full_history():
         log.error(f"[CHART] load_full_history error: {e}")
         return False
 
-def fetch_new_candles():
-    """Download only new closed candles since last known timestamp."""
-    global _candles_df, _last_candle_ts
+def update_market_data():
+    """Download fresh candles from API - called once per minute only."""
     try:
-        # Update market data file
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
             download_or_update("BTC")
+        log.info("[CHART] Market data updated")
+    except Exception as e:
+        log.error(f"[CHART] Market data update failed: {e}")
 
+def fetch_new_candles():
+    """Read only new closed candles from CSV into memory - cheap operation."""
+    global _candles_df, _last_candle_ts
+    try:
         # Read full CSV
         df_new = pd.read_csv(CSV_PATH)
         df_new['timestamp'] = pd.to_datetime(df_new['Date'] + ' ' + df_new['Time'])
@@ -235,16 +240,22 @@ if __name__ == "__main__":
         sys.exit(1)
 
     _last_processed_ts = _last_candle_ts
+    _last_download_ts = time.time()
 
     while True:
         try:
-            # Fetch only new closed candles (cheap - every 1 second)
+            # Download market data once per minute only
+            if time.time() - _last_download_ts >= 60:
+                update_market_data()
+                _last_download_ts = time.time()
+
+            # Read CSV into memory - cheap operation every 1 second
             fetch_new_candles()
 
-            # Only run backtest when NEW candle detected (not every second)
+            # Only run backtest when NEW candle detected
             if _last_candle_ts != _last_processed_ts:
                 _last_processed_ts = _last_candle_ts
-                log.info(f"[CHART] New candle detected: {_last_candle_ts} - running backtest")
+                log.info(f"[CHART] New candle: {_last_candle_ts} - running backtest")
 
                 log.info("[CHART] Running S2 backtest...")
                 s2_trades = run_backtest_on_memory(RenkoReversalStrategy, S2_PARAMS, "S2")
