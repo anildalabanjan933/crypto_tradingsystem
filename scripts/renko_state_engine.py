@@ -36,7 +36,7 @@ class StrategyState:
     def __init__(self,label,params):
         self.label=label; self.params=params
         self.candles_1m=None; self.last_1m_ts=None
-        self.current_direction=None; self.last_signal_ts=None
+        self.current_direction=None; self.last_signal_ts=None; self.last_exit_ts=None
 
 
 
@@ -181,6 +181,7 @@ def check_and_fire(state,is_s4=False):
         for i in range(max(1,n-5),n):
             ts=str(pd.Timestamp(ts_r[i]).strftime("%Y-%m-%dT%H:%M:%S"))
             if ts==state.last_signal_ts: continue
+            if ts==state.last_exit_ts: continue
             cl=closes_r[i]; rd=rdir[i]; st_i=st[i]; st_p=st[i-1]
             flip_g=st_p==1 and st_i==-1
             flip_r=st_p==-1 and st_i==1
@@ -215,6 +216,7 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc):
         append_trade_to_csv(trade,state.label)
     write_signal_file(state.label,sig_type,direction,ts)
     state.last_signal_ts=ts
+    if sig_type=="EXIT": state.last_exit_ts=ts
     state.current_direction=direction if sig_type=="ENTRY" else None
     log.info(f"[{state.label}] {sig_type} {direction} at {ts}")
 
