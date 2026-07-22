@@ -174,3 +174,8 @@ if result.returncode == 0:
     log(f"[MAINTENANCE] Signal CSVs regenerated successfully")
 else:
     log(f"[MAINTENANCE] Signal CSV regeneration failed: {result.stderr[-200:]}")
+
+# Auto restart bots after maintenance
+import subprocess
+subprocess.run(["/bin/bash", "/home/anildalabanjan933/crypto_trading_system/bot_watchdog.sh"])
+
