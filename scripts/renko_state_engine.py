@@ -158,7 +158,9 @@ def check_and_fire(state,is_s4=False):
     try:
         p=state.params
         tf=p["renko_timeframe"]
-        df_tf=resample_to_tf(state.candles_1m,tf)
+        # Use only last 5000 source bars - enough for 500+ bricks - zero full recalculation
+        tail_1m=state.candles_1m.iloc[-5000:].reset_index(drop=True)
+        df_tf=resample_to_tf(tail_1m,tf)
         if df_tf is None or len(df_tf)<10: return
         closes=df_tf["close"].values
         box=max(1,round(closes[0]*p["renko_box_pct"]))
