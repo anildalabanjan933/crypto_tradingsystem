@@ -234,23 +234,34 @@ if __name__ == "__main__":
         log.error("[CHART] Failed to load history - exiting")
         sys.exit(1)
 
+    _last_processed_ts = _last_candle_ts
+
     while True:
         try:
-            # Fetch only new closed candles (incremental)
-            log.info("[CHART] Fetching new closed candles...")
+            # Fetch only new closed candles (cheap - every 1 second)
             fetch_new_candles()
 
-            # Run backtest on memory (same code as manual backtest)
-            log.info("[CHART] Running S2 backtest...")
-            s2_trades = run_backtest_on_memory(RenkoReversalStrategy, S2_PARAMS, "S2")
-            check_and_append(s2_trades, "S2")
+            # Only run backtest when NEW candle detected (not every second)
+            if _last_candle_ts != _last_processed_ts:
+                _last_processed_ts = _last_candle_ts
+                log.info(f"[CHART] New candle detected: {_last_candle_ts} - running backtest")
 
-            log.info("[CHART] Running S4 backtest...")
-            s4_trades = run_backtest_on_memory(RenkoSMIIOSupertrendStrategy, S4_PARAMS, "S4")
-            check_and_append(s4_trades, "S4")
+                log.info("[CHART] Running S2 backtest...")
+                s2_trades = run_backtest_on_memory(RenkoReversalStrategy, S2_PARAMS, "S2")
+                check_and_append(s2_trades, "S2")
+
+                log.info("[CHART] Running S4 backtest...")
+                s4_trades = run_backtest_on_memory(RenkoSMIIOSupertrendStrategy, S4_PARAMS, "S4")
+                check_and_append(s4_trades, "S4")
+            else:
+                # Touch signal files to keep dashboard FRESH
+                for lbl in ["S2","S4"]:
+                    try:
+                        sf = f"logs/live_signal_s{lbl[-1]}.txt"
+                        if os.path.exists(sf): os.utime(sf, None)
+                    except: pass
 
         except Exception as e:
             log.error(f"[CHART] Error: {e}", exc_info=True)
 
-        log.info(f"[CHART] Sleeping {SLEEP_SEC} seconds...")
         time.sleep(SLEEP_SEC)
