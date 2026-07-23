@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-import os,sys,time,logging,glob
+import os,sys,time,logging,glob,threading,json
+try:
+    import websocket
+    WS_AVAILABLE=True
+except ImportError:
+    WS_AVAILABLE=False
 sys.path.insert(0,"/home/anildalabanjan933/crypto_trading_system")
 os.chdir("/home/anildalabanjan933/crypto_trading_system")
 from datetime import datetime,timezone,timedelta
@@ -265,6 +270,70 @@ if __name__=="__main__":
     _last_dl=time.time()
     _last_ts=get_csv_last_ts()
 
+    # WebSocket for instant candle close detection
+    _ws_last_candle_start=None
+    _ws_lock=threading.Lock()
+
+    def _ws_on_message(ws,message):
+        global _ws_last_candle_start
+        try:
+            data=json.loads(message)
+            if data.get("type")!="candlestick_1m": return
+            candle_start=data.get("candle_start_time",0)
+            if candle_start==0: return
+            with _ws_lock:
+                if _ws_last_candle_start is None:
+                    _ws_last_candle_start=candle_start
+                    return
+                if candle_start<=_ws_last_candle_start: return
+                _ws_last_candle_start=candle_start
+            # Completed candle detected instantly via WebSocket
+            log.info(f"[WS] Completed candle detected - updating data")
+            update_market_data()
+            _ws_state["last_dl"]=time.time()
+            _new_ts=get_csv_last_ts()
+            if _new_ts is None: return
+            append_new_candles(s2)
+            append_new_candles(s4)
+            _cur_s2=_last_closed_tf(60)
+            if _cur_s2>_ws_state["last_s2_tf"]:
+                _ws_state["last_s2_tf"]=_cur_s2
+                log.info(f"[WS] New 1H candle closed: {_cur_s2} - checking S2")
+                check_and_fire(s2,is_s4=False)
+            _cur_s4=_last_closed_tf(120)
+            if _cur_s4>_ws_state["last_s4_tf"]:
+                _ws_state["last_s4_tf"]=_cur_s4
+                log.info(f"[WS] New 2H candle closed: {_cur_s4} - checking S4")
+                check_and_fire(s4,is_s4=True)
+        except Exception as e:
+            log.error(f"[WS] Message error: {e}")
+
+    def _ws_on_error(ws,error): log.error(f"[WS] Error: {error}")
+    def _ws_on_close(ws,*a): log.warning("[WS] Closed - polling fallback active")
+    def _ws_on_open(ws):
+        log.info("[WS] Connected - instant candle detection active")
+        ws.send(json.dumps({"type":"subscribe","payload":{"channels":[{"name":"candlestick_1m","symbols":["BTCUSD"]}]}}))
+
+    def _ws_thread():
+        while True:
+            try:
+                if WS_AVAILABLE:
+                    ws=websocket.WebSocketApp("wss://socket.india.delta.exchange",
+                        on_open=_ws_on_open,on_message=_ws_on_message,
+                        on_error=_ws_on_error,on_close=_ws_on_close)
+                    ws.run_forever(ping_interval=30,ping_timeout=10)
+            except Exception as e:
+                log.error(f"[WS] Thread error: {e}")
+            log.warning("[WS] Reconnecting in 5s...")
+            time.sleep(5)
+
+    if WS_AVAILABLE:
+        _t=threading.Thread(target=_ws_thread,daemon=True)
+        _t.start()
+        log.info("[ENGINE] WebSocket thread started - instant candle detection")
+    else:
+        log.warning("[ENGINE] websocket-client not installed - polling only")
+
     import pandas as _pd2
     from datetime import datetime as _dt2,timezone as _tz2
 
@@ -280,10 +349,12 @@ if __name__=="__main__":
 
     _last_s2_tf=_last_closed_tf(60)
     _last_s4_tf=_last_closed_tf(120)
+    # State dict for ws thread - defined after tf vars
+    _ws_state={"last_s2_tf":_last_s2_tf,"last_s4_tf":_last_s4_tf,"last_dl":0.0}
 
     while True:
         try:
-            if time.time()-_last_dl>=60:
+            if time.time()-_last_dl>=60 and time.time()-_ws_state.get("last_dl",0)>=30:
                 update_market_data()
                 _last_dl=time.time()
 
