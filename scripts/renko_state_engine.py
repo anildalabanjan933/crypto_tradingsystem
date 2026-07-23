@@ -371,17 +371,17 @@ if __name__=="__main__":
                 append_new_candles(s2)
                 append_new_candles(s4)
 
-                # S2: fire only on new closed 1H candle
+                # S2: fire only on new closed 1H candle (shared state with WS)
                 cur_s2_tf=_last_closed_tf(60)
-                if cur_s2_tf>_last_s2_tf:
-                    _last_s2_tf=cur_s2_tf
+                if cur_s2_tf>_ws_state["last_s2_tf"]:
+                    _ws_state["last_s2_tf"]=cur_s2_tf
                     log.info(f"[ENGINE] New 1H candle closed: {cur_s2_tf} - checking S2")
                     check_and_fire(s2,is_s4=False)
 
-                # S4: fire only on new closed 2H candle
+                # S4: fire only on new closed 2H candle (shared state with WS)
                 cur_s4_tf=_last_closed_tf(120)
-                if cur_s4_tf>_last_s4_tf:
-                    _last_s4_tf=cur_s4_tf
+                if cur_s4_tf>_ws_state["last_s4_tf"]:
+                    _ws_state["last_s4_tf"]=cur_s4_tf
                     log.info(f"[ENGINE] New 2H candle closed: {cur_s4_tf} - checking S4")
                     check_and_fire(s4,is_s4=True)
 
