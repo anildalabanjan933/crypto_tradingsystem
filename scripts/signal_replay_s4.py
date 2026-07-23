@@ -203,7 +203,8 @@ while True:
                 elif "EXIT" in sig_type and position is not None:
                     side = "sell" if position == "long" else "buy"
                     actual = om.get_position()
-                    close_size = abs(actual.get("size", open_lot_size)) if actual.get("success") else open_lot_size
+                    _ex_size = abs(actual.get("size", 0)) if actual.get("success") else 0
+                    close_size = _ex_size if _ex_size > 0 else open_lot_size
                     log.info(f"[ORDER] EXIT {side} {close_size} lots | ts={sig_ts}")
                     save_ts_file(TS_FILE, sig_ts)
                     last_known_ts = sig_ts

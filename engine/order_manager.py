@@ -258,7 +258,7 @@ class OrderManager:
             "product_symbol": self.PRODUCT_SYMBOL,
             "product_id":     self.PRODUCT_ID,
             "side":           side,
-            "size":           0,
+            "size":           100,
             "order_type":     "market_order",
             "stop_price":     str(sl_price),
             "reduce_only":    True,

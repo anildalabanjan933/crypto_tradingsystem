@@ -205,7 +205,8 @@ while True:
             if now >= exit_time and position is not None:
                 side = "sell" if position == "long" else "buy"
                 actual = om.get_position()
-                close_size = abs(actual.get("size", open_lot_size)) if actual.get("success") else open_lot_size
+                _ex_size = abs(actual.get("size", 0)) if actual.get("success") else 0
+                close_size = _ex_size if _ex_size > 0 else open_lot_size
                 log.info(f"[ORDER] EXIT {side} {close_size} lots | ts={exit_time}")
                 save_ts_file(TS_FILE, exit_time)
                 last_known_ts = exit_time
