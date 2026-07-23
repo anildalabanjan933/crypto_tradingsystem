@@ -209,7 +209,7 @@ while True:
                     side = "sell" if position == "long" else "buy"
                     actual = om.get_position()
                     _ex_size = abs(actual.get("size", 0)) if actual.get("success") else 0
-                    close_size = _ex_size if _ex_size > 0 else open_lot_size
+                    close_size = _ex_size if _ex_size > 0 else (open_lot_size if open_lot_size > 0 else LOT_SIZE)
                     log.info(f"[ORDER] EXIT {side} {close_size} lots | ts={sig_ts}")
                     save_ts_file(TS_FILE, sig_ts)
                     last_known_ts = sig_ts
