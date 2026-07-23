@@ -1535,7 +1535,7 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
             _hb_ts = _dt1c.datetime.strptime(last_wait[:19], '%Y-%m-%d %H:%M:%S')
             _hb_age = (now_utc - _hb_ts).total_seconds()
             if _hb_age > 60: heartbeat_color = _TDR1C
-            elif _hb_age > 30: heartbeat_color = _TDO1C
+            elif _hb_age > 55: heartbeat_color = _TDO1C
         except:
             heartbeat_color = _TDO1C
 
