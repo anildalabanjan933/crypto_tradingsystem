@@ -15,8 +15,14 @@ warnings.filterwarnings("ignore")
 from indicators.renko import RenkoBuilder,SupertrendIndicator
 from data.download_market_data import download_or_update
 
-logging.basicConfig(level=logging.INFO,format="%(asctime)s %(levelname)s %(message)s",
-    handlers=[logging.FileHandler("logs/renko_state_engine.log",mode="a")])
+import datetime as _logdt
+class _ISTFormatter(logging.Formatter):
+    def formatTime(self,record,datefmt=None):
+        ist=_logdt.datetime.utcfromtimestamp(record.created)+_logdt.timedelta(hours=5,minutes=30)
+        return ist.strftime("%d-%b-%Y %I:%M:%S %p IST")
+_handler=logging.FileHandler("logs/renko_state_engine.log",mode="a")
+_handler.setFormatter(_ISTFormatter("%(asctime)s %(levelname)s %(message)s"))
+logging.basicConfig(level=logging.INFO,handlers=[_handler])
 log=logging.getLogger(__name__)
 
 CSV_PATH="data/btc_1m_delta.csv"
