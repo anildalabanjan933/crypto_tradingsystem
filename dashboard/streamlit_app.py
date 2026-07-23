@@ -1422,11 +1422,12 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
                 last_wait = _utc_log_to_ist(l.split(' INFO')[0].strip())
                 break
 
-        # Last reload - read more lines to cover 10 min reload interval
+        # Last signal check - read from renko_state_engine.log
         last_reload = "Never"
-        _reload_lines = _read_last_lines(log_path, n=1200)
+        _engine_log = os.path.join(os.path.dirname(log_path), "renko_state_engine.log")
+        _reload_lines = _read_last_lines(_engine_log, n=200)
         for l in reversed(_reload_lines):
-            if '[RELOAD]' in l:
+            if '[ENGINE] New candle' in l:
                 last_reload = _utc_log_to_ist(l.split(' INFO')[0].strip())
                 break
 
@@ -1649,7 +1650,7 @@ with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('ex
         + _dbg_row("Bot Status", s2_dbg['bot_status'][0], s4_dbg['bot_status'][0], s2_dbg['bot_status'][1], s4_dbg['bot_status'][1])
         + _dbg_row("API Key", s2_dbg['api_status'][0], s4_dbg['api_status'][0], s2_dbg['api_status'][1], s4_dbg['api_status'][1])
         + _dbg_row("Last Heartbeat", s2_dbg['last_heartbeat'][0], s4_dbg['last_heartbeat'][0], s2_dbg['last_heartbeat'][1], s4_dbg['last_heartbeat'][1])
-        + _dbg_row("Last Reload", s2_dbg['last_reload'], s4_dbg['last_reload'])
+        + _dbg_row("Signal Engine", s2_dbg['last_reload'], s4_dbg['last_reload'])
         + _dbg_row("Last Order", s2_dbg['last_order'], s4_dbg['last_order'])
         + _dbg_row("Last Error", s2_dbg['last_error'][0], s4_dbg['last_error'][0], s2_dbg['last_error'][1], s4_dbg['last_error'][1])
         + _dbg_row("Last Known TS", s2_dbg['last_ts'], s4_dbg['last_ts'])
