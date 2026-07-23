@@ -4840,6 +4840,8 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
         s2_tod_cnt=int(_g(d2,"today_count")); s4_tod_cnt=int(_g(d4,"today_count")); port_tod_cnt=s2_tod_cnt+s4_tod_cnt
         s2_mo=_g(d2,"pnl_month")*_INR14; s4_mo=_g(d4,"pnl_month")*_INR14
         s2_mo_cnt=int(_g(d2,"month_count")); s4_mo_cnt=int(_g(d4,"month_count")); port_mo_cnt=s2_mo_cnt+s4_mo_cnt
+        s2_td10=s2_td-s2_tod_cnt*10*_INR14; s4_td10=s4_td-s4_tod_cnt*10*_INR14; port_td10=s2_td10+s4_td10
+        s2_mo10=s2_mo-s2_mo_cnt*10*_INR14; s4_mo10=s4_mo-s4_mo_cnt*10*_INR14; port_mo10=s2_mo10+s4_mo10
         # ITR Tax 30% on gross wins (Indian Income Tax - pay to govt via ITR filing)
         s2_gross_win=_g(d2,"gross_win")*_INR14; s4_gross_win=_g(d4,"gross_win")*_INR14; port_gross_win=s2_gross_win+s4_gross_win
         s2_itr5=s2_gross_win*0.30; s4_itr5=s4_gross_win*0.30; port_itr5=port_gross_win*0.30
@@ -4923,9 +4925,9 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
         </thead>
         <tbody>
         <tr><td colspan="10" style="{_SUB14}">DYNAMIC PnL (SYNCED WITH SECTION 13)</td></tr>
-        {_row9("Today PnL",f"₹{s2_td:,.0f}",f"₹{s4_td:,.0f}",f"₹{s2_td+s4_td:,.0f}",f"₹{s2_td:,.0f}",f"₹{s4_td:,.0f}",f"₹{s2_td+s4_td:,.0f}",_fna(fw2_td),_fna(fw4_td),_fna(fw2_td+fw4_td),_c(s2_td),_c(s4_td),_c(s2_td+s4_td),_c(s2_td),_c(s4_td),_c(s2_td+s4_td),_cf(fw2_td),_cf(fw4_td),_cf(fw2_td+fw4_td))}
+        {_row9("Today PnL",f"₹{s2_td:,.0f}",f"₹{s4_td:,.0f}",f"₹{s2_td+s4_td:,.0f}",f"₹{s2_td10:,.0f}",f"₹{s4_td10:,.0f}",f"₹{port_td10:,.0f}",_fna(fw2_td),_fna(fw4_td),_fna(fw2_td+fw4_td),_c(s2_td),_c(s4_td),_c(s2_td+s4_td),_c(s2_td10),_c(s4_td10),_c(port_td10),_cf(fw2_td),_cf(fw4_td),_cf(fw2_td+fw4_td))}
         {_row9("Today Trades",f"{s2_tod_cnt:,}",f"{s4_tod_cnt:,}",f"{port_tod_cnt:,}",f"{s2_tod_cnt:,}",f"{s4_tod_cnt:,}",f"{port_tod_cnt:,}",_fna(fw2_tc,"int"),_fna(fw4_tc,"int"),_fna(fwp_tc,"int"),_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDB14,_TDB14,_TDB14)}
-        {_row9("This Month PnL",f"₹{s2_mo:,.0f}",f"₹{s4_mo:,.0f}",f"₹{s2_mo+s4_mo:,.0f}",f"₹{s2_mo:,.0f}",f"₹{s4_mo:,.0f}",f"₹{s2_mo+s4_mo:,.0f}",_fna(fw2_mo),_fna(fw4_mo),_fna(fw2_mo+fw4_mo),_c(s2_mo),_c(s4_mo),_c(s2_mo+s4_mo),_c(s2_mo),_c(s4_mo),_c(s2_mo+s4_mo),_cf(fw2_mo),_cf(fw4_mo),_cf(fw2_mo+fw4_mo))}
+        {_row9("This Month PnL",f"₹{s2_mo:,.0f}",f"₹{s4_mo:,.0f}",f"₹{s2_mo+s4_mo:,.0f}",f"₹{s2_mo10:,.0f}",f"₹{s4_mo10:,.0f}",f"₹{port_mo10:,.0f}",_fna(fw2_mo),_fna(fw4_mo),_fna(fw2_mo+fw4_mo),_c(s2_mo),_c(s4_mo),_c(s2_mo+s4_mo),_c(s2_mo10),_c(s4_mo10),_c(port_mo10),_cf(fw2_mo),_cf(fw4_mo),_cf(fw2_mo+fw4_mo))}
         {_row9("This Month Trades",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",_fna(fw2_mc,"int"),_fna(fw4_mc,"int"),_fna(fwp_mc,"int"),_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDB14,_TDB14,_TDB14)}
         <tr><td colspan="10" style="{_SUB14}">TRADE COUNT</td></tr>
         {_row9("Total Trades",f"{tot2:,}",f"{tot4:,}",f"{tot2+tot4:,}",f"{tot2:,}",f"{tot4:,}",f"{tot2+tot4:,}",_fna(fw2_tot,"int"),_fna(fw4_tot,"int"),_fna(fwp_tot,"int"))}
