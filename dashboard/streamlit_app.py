@@ -4285,8 +4285,8 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
             for p in last20:
                 pnl      = float(p.get('pnl', 0))
                 pnl_inr  = pnl * _INR13
-                ep_inr   = float(p.get('ep', 0)) * _INR13
-                xp_inr   = float(p.get('xp', 0)) * _INR13
+                ep_inr   = float(p.get('ep', 0))
+                xp_inr   = float(p.get('xp', 0))
                 cm_inr   = float(p.get('cm', 0)) * _INR13
                 _ist_off1 = _dfw.timedelta(hours=5, minutes=30)
                 et       = (_dfw.datetime.utcfromtimestamp(p.get('ets',0)) + _ist_off1).strftime('%d-%b-%Y %I:%M %p IST')
@@ -4319,8 +4319,8 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 f"<th style='{_TH20}'>Dir</th>"
                 f"<th style='{_TH20}'>Entry Time</th>"
                 f"<th style='{_TH20}'>Exit Time</th>"
-                f"<th style='{_TH20}'>Entry (INR)</th>"
-                f"<th style='{_TH20}'>Exit (INR)</th>"
+                f"<th style='{_TH20}'>Entry $</th>"
+                f"<th style='{_TH20}'>Exit $</th>"
                 f"<th style='{_TH20}'>Slip Diff vs $5</th>"
                 f"<th style='{_TH20}'>Tax+Charges</th>"
                 f"<th style='{_TH20}'>PnL</th>"
@@ -4436,6 +4436,7 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
             if df.empty:
                 return "<p style='color:#aaa;font-size:12px;padding:8px'>No backtest trades in this window yet</p>"
             last20 = (fwd_pairs or [])[-20:][::-1]
+            used_fwd = set()
             max_rows = len(df)
             rows = ""
             for i in range(max_rows):
@@ -4459,6 +4460,13 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                     # Only match if within 4 hours
                     if best_diff is not None and best_diff > 14400:
                         fwd = None
+                    # Skip already matched fwd trades
+                    if fwd is not None:
+                        fwd_key = fwd.get('ets', 0)
+                        if fwd_key in used_fwd:
+                            fwd = None
+                        else:
+                            used_fwd.add(fwd_key)
                 except:
                     fwd = last20[i] if i < len(last20) else None
                 bt_ep   = float(bt.get('entry_price', 0))
@@ -4496,8 +4504,8 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                         f"</tr>"
                     )
                     continue
-                fwd_ep  = float(fwd.get('ep', 0)) * _INR13
-                fwd_xp  = float(fwd.get('xp', 0)) * _INR13
+                fwd_ep  = float(fwd.get('ep', 0))
+                fwd_xp  = float(fwd.get('xp', 0))
                 fwd_pnl = float(fwd.get('pnl', 0)) * _INR13
                 fwd_dir = str(fwd.get('dir','')).upper()
                 _ist_cmp = _dc.timedelta(hours=5, minutes=30)
