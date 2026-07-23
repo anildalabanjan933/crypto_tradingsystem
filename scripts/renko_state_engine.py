@@ -265,6 +265,22 @@ if __name__=="__main__":
     _last_dl=time.time()
     _last_ts=get_csv_last_ts()
 
+    import pandas as _pd2
+    from datetime import datetime as _dt2,timezone as _tz2
+
+    def _last_closed_tf(tf_minutes):
+        now=_dt2.now(_tz2.utc).replace(second=0,microsecond=0,tzinfo=None)
+        import math
+        floored=_dt2(now.year,now.month,now.day,
+                     (now.hour*60+now.minute)//tf_minutes*tf_minutes//60,
+                     (now.hour*60+now.minute)//tf_minutes*tf_minutes%60)
+        # last CLOSED candle = one tf before current open
+        import datetime as _dtt
+        return floored - _dtt.timedelta(minutes=tf_minutes)
+
+    _last_s2_tf=_last_closed_tf(60)
+    _last_s4_tf=_last_closed_tf(120)
+
     while True:
         try:
             if time.time()-_last_dl>=60:
@@ -283,11 +299,23 @@ if __name__=="__main__":
                 log.info(f"[ENGINE] New candle: {csv_last}")
                 append_new_candles(s2)
                 append_new_candles(s4)
-                check_and_fire(s2,is_s4=False)
-                check_and_fire(s4,is_s4=True)
-            else:
-                touch_signal_file("S2")
-                touch_signal_file("S4")
+
+                # S2: fire only on new closed 1H candle
+                cur_s2_tf=_last_closed_tf(60)
+                if cur_s2_tf>_last_s2_tf:
+                    _last_s2_tf=cur_s2_tf
+                    log.info(f"[ENGINE] New 1H candle closed: {cur_s2_tf} - checking S2")
+                    check_and_fire(s2,is_s4=False)
+
+                # S4: fire only on new closed 2H candle
+                cur_s4_tf=_last_closed_tf(120)
+                if cur_s4_tf>_last_s4_tf:
+                    _last_s4_tf=cur_s4_tf
+                    log.info(f"[ENGINE] New 2H candle closed: {cur_s4_tf} - checking S4")
+                    check_and_fire(s4,is_s4=True)
+
+            touch_signal_file("S2")
+            touch_signal_file("S4")
 
         except Exception as e:
             log.error(f"[ENGINE] Error: {e}",exc_info=True)
