@@ -1282,18 +1282,18 @@ with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b',
 
     # 12. FORWARD TEST END DATE REMINDER
     try:
-        forward_end = datetime.datetime(2026, 7, 24)
+        forward_end = datetime.datetime(2026, 8, 1)
         days_left = (forward_end - datetime.datetime.now()).days
         if days_left < 0:
-            errors.append("FORWARD TEST ENDED - review Algotest MTM results and decide go-live")
+            ok.append("Forward test complete - go-live on Aug 1 2026")
         elif days_left == 0:
-            errors.append("FORWARD TEST ENDS TODAY - review Algotest MTM results now")
+            warnings.append("GO-LIVE DAY - Aug 1 2026 - switch testnet=False and update API keys")
         elif days_left <= 3:
-            warnings.append(f"FORWARD TEST ENDS IN {days_left} DAYS - prepare go-live review")
+            warnings.append(f"GO-LIVE IN {days_left} DAYS - prepare Aug 1 checklist")
         elif days_left <= 7:
-            warnings.append(f"Forward test ends in {days_left} days (July 24)")
+            warnings.append(f"Go-live in {days_left} days (Aug 1 2026)")
         else:
-            ok.append(f"Forward test: {days_left} days remaining (ends July 24)")
+            ok.append(f"Forward test: {days_left} days remaining (go-live Aug 1 2026)")
     except Exception as e:
         warnings.append(f"Forward test date check failed: {e}")
 
@@ -4528,6 +4528,8 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                     f"<td style='{ds}'>{bt_dir}</td>"
                     f"<td style='{_TD20}'>{bt_et[12:] if len(bt_et)>12 else bt_et}</td>"
                     f"<td style='{_TD20}'>{fwd_et[12:] if len(fwd_et)>12 else fwd_et}</td>"
+                    f"<td style='{_TD20}'>{bt_xt[12:] if len(bt_xt)>12 else bt_xt}</td>"
+                    f"<td style='{_TD20}'>{fwd_xt[12:] if len(fwd_xt)>12 else fwd_xt}</td>"
                     f"<td style='{_TD20}'>${bt_ep:,.0f}</td>"
                     f"<td style='{_TD20}'>${fwd_ep:,.0f}</td>"
                     f"<td style='{_TD20}'>${bt_xp:,.0f}</td>"
@@ -4546,6 +4548,8 @@ with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.sessi
                 f"<th style='{_TH20}'>Dir</th>"
                 f"<th style='{_TH20}'>BT Entry T</th>"
                 f"<th style='{_TH20}'>FT Entry T</th>"
+                f"<th style='{_TH20}'>BT Exit T</th>"
+                f"<th style='{_TH20}'>FT Exit T</th>"
                 f"<th style='{_TH20}'>BT Entry ₹</th>"
                 f"<th style='{_TH20}'>FT Entry ₹</th>"
                 f"<th style='{_TH20}'>BT Exit ₹</th>"
