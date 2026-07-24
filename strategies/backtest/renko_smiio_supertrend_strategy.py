@@ -78,11 +78,11 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
         # --- Core strategy parameters ---
         self.renko_box_pct = kwargs.get('renko_box_pct', 0.001)
         self.renko_timeframe = kwargs.get('renko_timeframe', '2h')
-        self.st_atr_length = kwargs.get('st_atr_length', 10)
+        self.st_atr_length = kwargs.get('st_atr_length', 5)
         self.st_factor      = kwargs.get('st_factor',      2.0)
-        self.smiio_shortlen = kwargs.get('smiio_shortlen', 20)
+        self.smiio_shortlen = kwargs.get('smiio_shortlen', 10)
         self.smiio_longlen  = kwargs.get('smiio_longlen',  20)
-        self.smiio_siglen   = kwargs.get('smiio_siglen',   7)
+        self.smiio_siglen   = kwargs.get('smiio_siglen',   3)
         self.slippage_usd   = kwargs.get('slippage_usd',   0.0)
         self.commission_pct = kwargs.get('commission_pct', 0.0)
 
