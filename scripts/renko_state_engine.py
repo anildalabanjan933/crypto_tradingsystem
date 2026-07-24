@@ -183,8 +183,8 @@ def check_and_fire(state,is_s4=False):
     try:
         p=state.params
         tf=p["renko_timeframe"]
-        # Use last 5000 bars - enough for SwingDetector trendlines
-        tail_1m=state.candles_1m.iloc[-5000:].reset_index(drop=True)
+        # Use full history - required for SwingDetector trendlines to match backtest exactly
+        tail_1m=state.candles_1m.reset_index(drop=True)
         df_tf=resample_to_tf(tail_1m,tf)
         if df_tf is None or len(df_tf)<10: return
         # Build data_dict exactly like backtest engine
