@@ -4661,8 +4661,17 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
                     if cum_mo>pk_mo: pk_mo=cum_mo
                     drop_mo=pk_mo-cum_mo
                     if drop_mo>dd_mo: dd_mo=drop_mo
+                # $10/side this month max DD
+                mo_cnt_tmp=len(df_mo)
+                pls_mo10=[v-10 for v in pls_mo]
+                cum_mo10,pk_mo10,dd_mo10=0,0,0
+                for v in pls_mo10:
+                    cum_mo10+=v
+                    if cum_mo10>pk_mo10: pk_mo10=cum_mo10
+                    drop_mo10=pk_mo10-cum_mo10
+                    if drop_mo10>dd_mo10: dd_mo10=drop_mo10
             else:
-                green_m=total_m=0; dd=0; pnl_today=pnl_month=0; dd_mo=0
+                green_m=total_m=0; dd=0; pnl_today=pnl_month=0; dd_mo=0; dd_mo10=0
             rec_cap = dd * 3 * _INR14
             roc = (net_inr / rec_cap * 100) if rec_cap > 0 else 0
             months = max(total_m, 1)
@@ -4715,7 +4724,7 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
                 "tax":tax,"fees":fees,"slip":slip,"fund":fund,"total_charges":total_charges,
                 "green_m":green_m,"total_m":total_m,"dd":dd,"rec_cap":rec_cap,
                 "roc":roc,"roc_monthly":roc_monthly,"margin_avg":margin_avg,
-                "pnl_today":pnl_today,"pnl_month":pnl_month,"dd_month":dd_mo,
+                "pnl_today":pnl_today,"pnl_month":pnl_month,"dd_month":dd_mo,"dd_month10":dd_mo10,
                 "today_count":today_count,"month_count":month_count,
                 "gross_win":df[df['gross_pnl']>0]['gross_pnl'].sum() if 'gross_pnl' in df.columns else 0,
                 "win_rate":win_rate,"max_profit":max_profit,"max_loss":max_loss,
@@ -4850,6 +4859,7 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
         s2_mo=_g(d2,"pnl_month")*_INR14; s4_mo=_g(d4,"pnl_month")*_INR14
         s2_mo_cnt=int(_g(d2,"month_count")); s4_mo_cnt=int(_g(d4,"month_count")); port_mo_cnt=s2_mo_cnt+s4_mo_cnt
         s2_dd_mo=_g(d2,"dd_month")*_INR14; s4_dd_mo=_g(d4,"dd_month")*_INR14; port_dd_mo=max(s2_dd_mo,s4_dd_mo)
+        s2_dd_mo10=_g(d2,"dd_month10")*_INR14; s4_dd_mo10=_g(d4,"dd_month10")*_INR14; port_dd_mo10=max(s2_dd_mo10,s4_dd_mo10)
         s2_td10=s2_td-s2_tod_cnt*10*_INR14; s4_td10=s4_td-s4_tod_cnt*10*_INR14; port_td10=s2_td10+s4_td10
         s2_mo10=s2_mo-s2_mo_cnt*10*_INR14; s4_mo10=s4_mo-s4_mo_cnt*10*_INR14; port_mo10=s2_mo10+s4_mo10
         # ITR Tax 30% on gross wins (Indian Income Tax - pay to govt via ITR filing)
@@ -4859,7 +4869,7 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
         s2_net_itr10=s2_net10-s2_itr5; s4_net_itr10=s4_net10-s4_itr5; port_net_itr10=port_net10-port_itr5
         s2_mg=_g(d2,"margin_avg")*_INR14; s4_mg=_g(d4,"margin_avg")*_INR14
         _THFW14="padding:5px 8px;border:1px solid #C8D0DC;background:#2962FF;font-size:10px;font-weight:700;color:#fff;text-align:center;"
-        _na14="<span style='color:#aaa'>N/A</span>"
+        _na14='<span style="color:#aaa">N/A</span>'
         def _fna(v,fmt="inr"):
             if not v: return _na14
             if fmt=="inr": return f"₹{v:,.0f}"
@@ -4939,7 +4949,7 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
         {_row9("Today Trades",f"{s2_tod_cnt:,}",f"{s4_tod_cnt:,}",f"{port_tod_cnt:,}",f"{s2_tod_cnt:,}",f"{s4_tod_cnt:,}",f"{port_tod_cnt:,}",_fna(fw2_tc,"int"),_fna(fw4_tc,"int"),_fna(fwp_tc,"int"),_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDB14,_TDB14,_TDB14)}
         {_row9("This Month PnL",f"₹{s2_mo:,.0f}",f"₹{s4_mo:,.0f}",f"₹{s2_mo+s4_mo:,.0f}",f"₹{s2_mo10:,.0f}",f"₹{s4_mo10:,.0f}",f"₹{port_mo10:,.0f}",_fna(fw2_mo),_fna(fw4_mo),_fna(fw2_mo+fw4_mo),_c(s2_mo),_c(s4_mo),_c(s2_mo+s4_mo),_c(s2_mo10),_c(s4_mo10),_c(port_mo10),_cf(fw2_mo),_cf(fw4_mo),_cf(fw2_mo+fw4_mo))}
         {_row9("This Month Trades",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",_fna(fw2_mc,"int"),_fna(fw4_mc,"int"),_fna(fwp_mc,"int"),_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDB14,_TDB14,_TDB14)}
-        {_row9("This Month Max DD",f"₹{s2_dd_mo:,.0f}",f"₹{s4_dd_mo:,.0f}",f"₹{port_dd_mo:,.0f}",f"₹{s2_dd_mo:,.0f}",f"₹{s4_dd_mo:,.0f}",f"₹{port_dd_mo:,.0f}",_na14,_na14,_na14,_TDR14B if s2_dd_mo>0 else _TDB14,_TDR14B if s4_dd_mo>0 else _TDB14,_TDR14B if port_dd_mo>0 else _TDB14,_TDR14B if s2_dd_mo>0 else _TDB14,_TDR14B if s4_dd_mo>0 else _TDB14,_TDR14B if port_dd_mo>0 else _TDB14,_na14,_na14,_na14)}
+        {_row9("This Month Max DD",f"₹{s2_dd_mo:,.0f}",f"₹{s4_dd_mo:,.0f}",f"₹{port_dd_mo:,.0f}",f"₹{s2_dd_mo10:,.0f}",f"₹{s4_dd_mo10:,.0f}",f"₹{port_dd_mo10:,.0f}",_na14,_na14,_na14,_TDR14B if s2_dd_mo>0 else _TDB14,_TDR14B if s4_dd_mo>0 else _TDB14,_TDR14B if port_dd_mo>0 else _TDB14,_TDR14B if s2_dd_mo10>0 else _TDB14,_TDR14B if s4_dd_mo10>0 else _TDB14,_TDR14B if port_dd_mo10>0 else _TDB14,_na14,_na14,_na14)}
         <tr><td colspan="10" style="{_SUB14}">TRADE COUNT</td></tr>
         {_row9("Total Trades",f"{tot2:,}",f"{tot4:,}",f"{tot2+tot4:,}",f"{tot2:,}",f"{tot4:,}",f"{tot2+tot4:,}",_fna(fw2_tot,"int"),_fna(fw4_tot,"int"),_fna(fwp_tot,"int"))}
         <tr><td colspan="10" style="{_SUB14}">GREEN MONTHS</td></tr>
