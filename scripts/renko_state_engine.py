@@ -14,6 +14,8 @@ import numpy as np
 warnings.filterwarnings("ignore")
 from indicators.renko import RenkoBuilder,SupertrendIndicator
 from data.download_market_data import download_or_update
+from strategies.backtest.renko_reversal_strategy import RenkoReversalStrategy
+from strategies.backtest.renko_smiio_supertrend_strategy import RenkoSMIIOSupertrendStrategy
 
 import datetime as _logdt
 class _ISTFormatter(logging.Formatter):
@@ -178,53 +180,43 @@ def append_new_candles(state):
 def check_and_fire(state,is_s4=False):
     import pandas as pd
     from datetime import datetime,timezone
-    from indicators.renko import RenkoBuilder,SupertrendIndicator
     try:
         p=state.params
         tf=p["renko_timeframe"]
-        # Use only last 5000 source bars - enough for 500+ bricks - zero full recalculation
+        # Use last 5000 bars - enough for SwingDetector trendlines
         tail_1m=state.candles_1m.iloc[-5000:].reset_index(drop=True)
         df_tf=resample_to_tf(tail_1m,tf)
         if df_tf is None or len(df_tf)<10: return
-        closes=df_tf["close"].values
-        box=state.box_size if state.box_size else max(1,round(closes[0]*p["renko_box_pct"]))
-        renko_df=RenkoBuilder(box_size=box).build(closes)
-        if renko_df is None or len(renko_df)<5: return
-        st_df=SupertrendIndicator(atr_period=p["st_atr_length"],factor=p["st_factor"]).calculate(renko_df)
-        ts_arr=df_tf["timestamp"].values
-        renko_df["timestamp"]=renko_df["bar_index"].apply(lambda i:ts_arr[i] if i<len(ts_arr) else ts_arr[-1])
-        n=len(st_df)
-        closes_r=st_df["renko_close"].values
-        rdir=st_df["renko_dir"].values
-        st=st_df["st_dir"].values
-        ts_r=renko_df["timestamp"].values
-        smi=sig=None
-        if is_s4:
-            smi,sig=compute_smiio(closes_r,p["smiio_shortlen"],p["smiio_longlen"],p["smiio_siglen"])
+        # Build data_dict exactly like backtest engine
+        df_tf_indexed=df_tf.copy()
+        if "timestamp" in df_tf_indexed.columns:
+            df_tf_indexed=df_tf_indexed.set_index("timestamp")
+        data_dict={tf:df_tf_indexed}
+        # Call EXACT same strategy class as backtest - single source of truth
+        if not is_s4:
+            strategy=RenkoReversalStrategy(data_dict,LOT_SIZE,**p)
+        else:
+            strategy=RenkoSMIIOSupertrendStrategy(data_dict,LOT_SIZE,**p)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            with contextlib.redirect_stdout(io.StringIO()):
+                signals=strategy.generate_signals()
+        if not signals: return
         now_utc=datetime.now(timezone.utc)
-        for i in range(max(1,n-5),n):
-            ts=str(pd.Timestamp(ts_r[i]).strftime("%Y-%m-%dT%H:%M:%S"))
-            if state.last_signal_ts and ts<=state.last_signal_ts: continue
+        # Find last new signal after last_signal_ts
+        for sig in reversed(signals):
+            ts=sig.get("timestamp","")
+            if not ts: continue
+            if state.last_signal_ts and ts<=state.last_signal_ts: break
             if ts==state.last_exit_ts: continue
-            cl=closes_r[i]; rd=rdir[i]; st_i=st[i]; st_p=st[i-1]
-            flip_g=st_p==1 and st_i==-1
-            flip_r=st_p==-1 and st_i==1
-            if state.current_direction=="long" and flip_r and rd==-1:
-                _fire(state,ts,cl,"long","EXIT",box,now_utc); return
-            elif state.current_direction=="short" and flip_g and rd==1:
-                _fire(state,ts,cl,"short","EXIT",box,now_utc); return
-            if state.current_direction is None:
-                if not is_s4:
-                    if st_i==-1 and rd==1: _fire(state,ts,cl,"long","ENTRY",box,now_utc); return
-                    elif st_i==1 and rd==-1: _fire(state,ts,cl,"short","ENTRY",box,now_utc); return
-                else:
-                    su=smi[i]>sig[i] and smi[i-1]<=sig[i-1]
-                    sd=smi[i]<sig[i] and smi[i-1]>=sig[i-1]
-                    sa=smi[i]>sig[i]; sb=smi[i]<sig[i]
-                    if (su and st_i==-1 and rd==1) or (flip_g and sa and rd==1):
-                        _fire(state,ts,cl,"long","ENTRY",box,now_utc); return
-                    elif (sd and st_i==1 and rd==-1) or (flip_r and sb and rd==-1):
-                        _fire(state,ts,cl,"short","ENTRY",box,now_utc); return
+            sig_type=sig.get("signal_type","")
+            direction=sig.get("direction","")
+            price=float(sig.get("price",0))
+            box=state.box_size if state.box_size else 100
+            if sig_type=="EXIT" and state.current_direction==direction:
+                _fire(state,ts,price,direction,"EXIT",box,now_utc); return
+            elif sig_type in ("BUY_A","BUY_B","SELL_A","SELL_B","ENTRY") and state.current_direction is None:
+                _fire(state,ts,price,direction,"ENTRY",box,now_utc); return
     except Exception as e:
         log.error(f"[{state.label}] check error: {e}",exc_info=True)
 
