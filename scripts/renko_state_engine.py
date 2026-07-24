@@ -270,9 +270,6 @@ if __name__=="__main__":
         s2.last_signal_ts=_lock_str
         s4.last_signal_ts=_lock_str
         log.info(f"[ENGINE] Startup lock ts: {_lock_str}")
-    check_and_fire(s2,is_s4=False)
-    check_and_fire(s4,is_s4=True)
-
     _last_dl=time.time()
     _last_ts=get_csv_last_ts()
 
@@ -357,6 +354,9 @@ if __name__=="__main__":
     _last_s4_tf=_last_closed_tf(120)
     # State dict for ws thread - defined after tf vars
     _ws_state={"last_s2_tf":_last_s2_tf,"last_s4_tf":_last_s4_tf,"last_dl":0.0}
+    # Startup check - fires only if current time is at 1H/2H boundary
+    check_and_fire(s2,is_s4=False)
+    check_and_fire(s4,is_s4=True)
 
     while True:
         try:
