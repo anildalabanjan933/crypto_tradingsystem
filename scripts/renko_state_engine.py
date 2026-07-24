@@ -304,14 +304,16 @@ if __name__=="__main__":
     if not _ts_s4:
         _ts_s4=_get_csv_last_exit_ts("output/trade_log_RenkoSMIIO*.csv")
         if _ts_s4: log.info(f"[ENGINE] S4 signal file empty - using CSV fallback lock: {_ts_s4}")
-    _candidates=[t for t in [_ts_s2,_ts_s4] if t]
-    if _candidates:
-        _lock_str=min(_candidates)
-        s2.last_signal_ts=_lock_str
-        s4.last_signal_ts=_lock_str
-        log.info(f"[ENGINE] Startup lock ts: {_lock_str}")
+    if _ts_s2:
+        s2.last_signal_ts=_ts_s2
+        log.info(f"[ENGINE] S2 startup lock ts: {_ts_s2}")
     else:
-        log.info("[ENGINE] No signal file or CSV found - no startup lock applied")
+        log.info("[ENGINE] S2 no lock source found - no startup lock applied")
+    if _ts_s4:
+        s4.last_signal_ts=_ts_s4
+        log.info(f"[ENGINE] S4 startup lock ts: {_ts_s4}")
+    else:
+        log.info("[ENGINE] S4 no lock source found - no startup lock applied")
     _last_dl=time.time()
     _last_ts=get_csv_last_ts()
 
