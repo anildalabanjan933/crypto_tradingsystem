@@ -42,13 +42,13 @@ class RenkoReversalStrategy(BaseStrategy):
 
         # Renko settings
         self.renko_box_pct = kwargs.get('renko_box_pct', 0.0010)
-        self.renko_timeframe = kwargs.get('renko_timeframe', '1h')
+        self.renko_timeframe = kwargs.get('renko_timeframe', '30m')
         self.last_exit_ts = None
         self.sr_tolerance = kwargs.get('sr_tolerance', 1.5)   # multiplier of box_size - auto-scales per symbol
         self.sr_lookback  = kwargs.get('sr_lookback', 5)       # bricks to look back for S/R touch before flip
         self.max_tl_bars  = kwargs.get('max_tl_bars', 50)
-        self.st_atr_length = kwargs.get('st_atr_length', 5)
-        self.st_factor     = kwargs.get('st_factor', 1.5)
+        self.st_atr_length = kwargs.get('st_atr_length', 10)
+        self.st_factor     = kwargs.get('st_factor', 2.0)
 
         # Slippage (USD per side)
         self.slippage_usd = kwargs.get('slippage_usd', 0.0)

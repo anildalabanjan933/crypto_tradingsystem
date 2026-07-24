@@ -30,8 +30,8 @@ log=logging.getLogger(__name__)
 CSV_PATH="data/btc_1m_delta.csv"
 LOT_SIZE=100
 SLEEP_SEC=1
-S2_PARAMS=dict(renko_box_pct=0.001,renko_timeframe="1h",st_atr_length=5,st_factor=1.5)
-S4_PARAMS=dict(renko_box_pct=0.001,renko_timeframe="2h",st_atr_length=10,st_factor=2.0,smiio_shortlen=20,smiio_longlen=20,smiio_siglen=7)
+S2_PARAMS=dict(renko_box_pct=0.001,renko_timeframe="30m",st_atr_length=10,st_factor=2.0)
+S4_PARAMS=dict(renko_box_pct=0.001,renko_timeframe="2h",st_atr_length=5,st_factor=2.0,smiio_shortlen=10,smiio_longlen=10,smiio_siglen=3)
 
 def compute_smiio(closes,short_len=5,long_len=20,signal_len=5):
     n=len(closes); mom=np.zeros(n); abs_mom=np.zeros(n)
