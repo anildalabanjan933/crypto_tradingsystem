@@ -241,6 +241,16 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc):
     if sig_type=="EXIT": state.last_exit_ts=ts
     state.current_direction=direction if sig_type=="ENTRY" else None
     log.info(f"[{state.label}] {sig_type} {direction} at {ts}")
+    # Regenerate trade log CSV after every signal so Section 13+14 stay in sync
+    try:
+        import subprocess as _sp, io as _io, contextlib as _ctx
+        with _ctx.redirect_stdout(_io.StringIO()), _ctx.redirect_stderr(_io.StringIO()):
+            _sp.run([".venv/bin/python","scripts/generate_signals.py"],
+                    capture_output=True, timeout=120,
+                    cwd="/home/anildalabanjan933/crypto_trading_system")
+        log.info(f"[{state.label}] Trade log CSV regenerated after {sig_type}")
+    except Exception as _e:
+        log.error(f"[{state.label}] CSV regen failed: {_e}")
 
 
 
@@ -265,13 +275,25 @@ if __name__=="__main__":
     s4=StrategyState("S4",S4_PARAMS)
     load_history(s2)
     load_history(s4)
-    # Lock last_signal_ts BEFORE startup check - block all historical signals
-    _lock_ts=get_csv_last_ts()
-    if _lock_ts is not None:
-        _lock_str=str(pd.Timestamp(_lock_ts).strftime("%Y-%m-%dT%H:%M:%S"))
+    # Lock last_signal_ts BEFORE startup check - use last SIGNAL ts not market CSV ts
+    def _get_signal_ts(path):
+        try:
+            line=open(path).read().strip()
+            if line:
+                return line.split("|")[1]
+        except:
+            pass
+        return None
+    _ts_s2=_get_signal_ts("logs/live_signal_s2.txt")
+    _ts_s4=_get_signal_ts("logs/live_signal_s4.txt")
+    _candidates=[t for t in [_ts_s2,_ts_s4] if t]
+    if _candidates:
+        _lock_str=min(_candidates)
         s2.last_signal_ts=_lock_str
         s4.last_signal_ts=_lock_str
-        log.info(f"[ENGINE] Startup lock ts: {_lock_str}")
+        log.info(f"[ENGINE] Startup lock ts (from signal file): {_lock_str}")
+    else:
+        log.info("[ENGINE] No signal file found - no startup lock applied")
     _last_dl=time.time()
     _last_ts=get_csv_last_ts()
 
