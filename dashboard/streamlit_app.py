@@ -4601,7 +4601,7 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
     _TDR14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:center;"
     _TDG14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
     _TDO14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#e07000;font-weight:700;text-align:center;"
-    _TDB14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#2962FF;font-weight:700;text-align:center;"
+    _TDB14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
     _TDR14B= "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#F23645;font-weight:700;text-align:center;"
     _THGR14= "padding:5px 8px;border:1px solid #C8D0DC;background:#089981;font-size:10px;font-weight:700;color:#fff;text-align:center;"
     _THOG14= "padding:5px 8px;border:1px solid #C8D0DC;background:#e07000;font-size:10px;font-weight:700;color:#fff;text-align:center;"
@@ -4868,7 +4868,7 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
         s2_net_itr5=s2_net5-s2_itr5; s4_net_itr5=s4_net5-s4_itr5; port_net_itr5=port_net5-port_itr5
         s2_net_itr10=s2_net10-s2_itr5; s4_net_itr10=s4_net10-s4_itr5; port_net_itr10=port_net10-port_itr5
         s2_mg=_g(d2,"margin_avg")*_INR14; s4_mg=_g(d4,"margin_avg")*_INR14
-        _THFW14="padding:5px 8px;border:1px solid #C8D0DC;background:#2962FF;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+        _THFW14="padding:5px 8px;border:1px solid #C8D0DC;background:#089981;font-size:10px;font-weight:700;color:#fff;text-align:center;"
         _na14='<span style="color:#aaa">N/A</span>'
         def _fna(v,fmt="inr"):
             if not v: return _na14
@@ -4877,7 +4877,7 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
             if fmt=="num": return f"{v:,.2f}"
             if fmt=="int": return f"{int(v):,}"
             return str(v)
-        def _cf(v): return _TDB14 if v>=0 else _TDR14B
+        def _cf(v): return _TDG14 if v>=0 else _TDR14B
         s2_wr=_g(d2,"win_rate"); s4_wr=_g(d4,"win_rate"); port_wr=(s2_wr*tot2+s4_wr*tot4)/(tot2+tot4) if (tot2+tot4)>0 else 0
         s2_mp=_g(d2,"max_profit"); s4_mp=_g(d4,"max_profit"); port_mp=max(s2_mp,s4_mp)
         s2_ml=_g(d2,"max_loss"); s4_ml=_g(d4,"max_loss"); port_ml=min(s2_ml,s4_ml) if s2_ml and s4_ml else 0
