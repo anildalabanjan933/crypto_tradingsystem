@@ -341,10 +341,10 @@ if __name__=="__main__":
             if _new_ts is None: return
             append_new_candles(s2)
             append_new_candles(s4)
-            _cur_s2=_last_closed_tf(60)
+            _cur_s2=_last_closed_tf(30)
             if _cur_s2>_ws_state["last_s2_tf"]:
                 _ws_state["last_s2_tf"]=_cur_s2
-                log.info(f"[WS] New 1H candle closed: {_cur_s2} - checking S2")
+                log.info(f"[WS] New 30m candle closed: {_cur_s2} - checking S2")
                 check_and_fire(s2,is_s4=False)
             _cur_s4=_last_closed_tf(120)
             if _cur_s4>_ws_state["last_s4_tf"]:
@@ -393,7 +393,7 @@ if __name__=="__main__":
         import datetime as _dtt
         return floored - _dtt.timedelta(minutes=tf_minutes)
 
-    _last_s2_tf=_last_closed_tf(60)
+    _last_s2_tf=_last_closed_tf(30)
     _last_s4_tf=_last_closed_tf(120)
     # State dict for ws thread - defined after tf vars
     _ws_state={"last_s2_tf":_last_s2_tf,"last_s4_tf":_last_s4_tf,"last_dl":0.0}
@@ -420,11 +420,11 @@ if __name__=="__main__":
                 append_new_candles(s2)
                 append_new_candles(s4)
 
-                # S2: fire only on new closed 1H candle (shared state with WS)
-                cur_s2_tf=_last_closed_tf(60)
+                # S2: fire only on new closed 30m candle (shared state with WS)
+                cur_s2_tf=_last_closed_tf(30)
                 if cur_s2_tf>_ws_state["last_s2_tf"]:
                     _ws_state["last_s2_tf"]=cur_s2_tf
-                    log.info(f"[ENGINE] New 1H candle closed: {cur_s2_tf} - checking S2")
+                    log.info(f"[ENGINE] New 30m candle closed: {cur_s2_tf} - checking S2")
                     check_and_fire(s2,is_s4=False)
 
                 # S4: fire only on new closed 2H candle (shared state with WS)
