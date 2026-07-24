@@ -213,12 +213,18 @@ def check_and_fire(state,is_s4=False):
                 signals=strategy.generate_signals()
         if not signals: return
         now_utc=datetime.now(timezone.utc)
-        # Find last new signal after last_signal_ts
-        for sig in reversed(signals):
+        # Collect ALL new signals after last_signal_ts - oldest first
+        new_sigs=[]
+        for sig in signals:
             ts=sig.get("timestamp","")
             if not ts: continue
-            if state.last_signal_ts and ts<=state.last_signal_ts: break
+            if state.last_signal_ts and ts<=state.last_signal_ts: continue
             if ts==state.last_exit_ts: continue
+            new_sigs.append(sig)
+        if not new_sigs: return
+        # Fire ONE signal at a time - EXIT before ENTRY - oldest first
+        for sig in new_sigs:
+            ts=sig.get("timestamp","")
             sig_type=sig.get("signal_type","")
             direction=sig.get("direction","")
             price=float(sig.get("price",0))
