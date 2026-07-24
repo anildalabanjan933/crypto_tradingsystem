@@ -49,6 +49,7 @@ class StrategyState:
     def __init__(self,label,params):
         self.label=label; self.params=params
         self.candles_1m=None; self.last_1m_ts=None
+        self.candles_tf=None  # pre-built 1H or 2H dataframe - built once on startup
         self.current_direction=None; self.last_signal_ts=None; self.last_exit_ts=None
         self.box_size=None
 
@@ -140,6 +141,10 @@ def load_history(state):
             state.box_size=max(1,round(_closes[0]*state.params["renko_box_pct"]))
         log.info(f"[{state.label}] box_size={state.box_size} (matches backtest exactly)")
     log.info(f"[{state.label}] Loaded {len(df):,} candles | last={state.last_1m_ts}")
+    # Pre-build 1H/2H dataframe ONCE - no resample on every signal check
+    tf=state.params["renko_timeframe"]
+    state.candles_tf=resample_to_tf(df,tf)
+    log.info(f"[{state.label}] Pre-built {tf} dataframe: {len(state.candles_tf)} candles")
 
 def append_new_candles(state):
     import pandas as pd
@@ -170,6 +175,12 @@ def append_new_candles(state):
         state.candles_1m=pd.concat([state.candles_1m,new_rows],ignore_index=True)
         state.last_1m_ts=state.candles_1m["timestamp"].iloc[-1]
         log.info(f"[{state.label}] +{len(new_rows)} candles | last={state.last_1m_ts}")
+        # Update pre-built tf dataframe incrementally - append only new rows
+        tf=state.params["renko_timeframe"]
+        new_tf=resample_to_tf(new_rows,tf)
+        if new_tf is not None and not new_tf.empty:
+            state.candles_tf=pd.concat([state.candles_tf,new_tf],ignore_index=True)
+            state.candles_tf=state.candles_tf.drop_duplicates(subset=["timestamp"],keep="last").reset_index(drop=True)
         return True
     except Exception as e:
         log.error(f"[{state.label}] append error: {e}",exc_info=True)
@@ -183,9 +194,8 @@ def check_and_fire(state,is_s4=False):
     try:
         p=state.params
         tf=p["renko_timeframe"]
-        # Use full history - required for SwingDetector trendlines to match backtest exactly
-        tail_1m=state.candles_1m.reset_index(drop=True)
-        df_tf=resample_to_tf(tail_1m,tf)
+        # Use pre-built tf dataframe - built once on startup - zero resample cost
+        df_tf=state.candles_tf
         if df_tf is None or len(df_tf)<10: return
         # Build data_dict exactly like backtest engine
         df_tf_indexed=df_tf.copy()
@@ -284,7 +294,6 @@ if __name__=="__main__":
                 _ws_last_candle_start=candle_start
             # Completed candle detected instantly via WebSocket
             log.info(f"[WS] Completed candle detected - updating data")
-            update_market_data()
             _ws_state["last_dl"]=time.time()
             _new_ts=get_csv_last_ts()
             if _new_ts is None: return
@@ -352,7 +361,7 @@ if __name__=="__main__":
 
     while True:
         try:
-            if time.time()-_last_dl>=60 and time.time()-_ws_state.get("last_dl",0)>=30:
+            if time.time()-_last_dl>=300 and time.time()-_ws_state.get("last_dl",0)>=30:
                 update_market_data()
                 _last_dl=time.time()
 
