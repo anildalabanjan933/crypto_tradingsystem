@@ -11,6 +11,127 @@ from datetime import datetime, timezone
 sys.path.insert(0, ".")
 from engine.order_manager import OrderManager
 from engine.telegram_alert import send_alert
+
+def _utc_to_ist(ts_str):
+    """Convert UTC timestamp string to IST display format."""
+    try:
+        from datetime import datetime, timezone, timedelta
+        dt = datetime.strptime(ts_str[:16], "%Y-%m-%dT%H:%M")
+        ist = dt + timedelta(hours=5, minutes=30)
+        return ist.strftime("%d-%b %I:%M %p IST")
+    except:
+        return ts_str
+
+def _get_bt_trade(sig_ts, strategy_name):
+    """Get matching backtest signal by calling strategy directly - same source as engine."""
+    try:
+        import sys, warnings, pandas as pd
+        sys.path.insert(0,".")
+        if strategy_name == "S2":
+            from strategies.backtest.renko_reversal_strategy import RenkoReversalStrategy as _Strat
+            _tf = "30m"
+            _p  = dict(renko_box_pct=0.001,renko_timeframe="30m",st_atr_length=10,st_factor=2.0)
+        else:
+            from strategies.backtest.renko_smiio_supertrend_strategy import RenkoSMIIOSupertrendStrategy as _Strat
+            _tf = "2h"
+            _p  = dict(renko_box_pct=0.001,renko_timeframe="2h",st_atr_length=5,st_factor=2.0,smiio_shortlen=10,smiio_longlen=10,smiio_siglen=3)
+        _df = pd.read_csv("data/btc_1m_delta.csv")
+        _df["timestamp"] = pd.to_datetime(_df["Date"]+" "+_df["Time"],format="mixed")
+        _df.set_index("timestamp",inplace=True)
+        _df.columns = [c.lower() for c in _df.columns]
+        _tf_r = "30min" if _tf=="30m" else ("2h" if _tf=="2h" else _tf)
+        _dft = _df.resample(_tf_r).agg({"open":"first","high":"max","low":"min","close":"last","volume":"sum"}).dropna()
+        _dft.index.name = "timestamp"
+        _s = _Strat({_tf:_dft},100,**_p)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            _sigs = _s.generate_signals()
+        # Exact match
+        for _sig in reversed(_sigs):
+            if _sig.get("timestamp","")[:16] == sig_ts[:16]:
+                return _sig
+        # No exact match - return next signal after sig_ts
+        for _sig in _sigs:
+            if _sig.get("timestamp","") > sig_ts:
+                return _sig
+        # Fallback - return last signal
+        for _sig in reversed(_sigs):
+            if _sig.get("timestamp","") != "":
+                return _sig
+    except Exception as _e:
+        pass
+    return None
+
+def _build_alert(sig_type, label, direction, live_entry_ts, live_entry_price,
+                 live_exit_ts, live_exit_price, live_pnl, bt_row):
+    """Build formatted Telegram alert message."""
+    ist_entry = _utc_to_ist(live_entry_ts) if live_entry_ts else "-"
+    ist_exit  = _utc_to_ist(live_exit_ts)  if live_exit_ts  else "-"
+
+    if sig_type == "ENTRY":
+        live_block = (
+            f"Dir   : {direction.upper()}\n"
+            f"Entry : {ist_entry} | ${live_entry_price:,.0f}"
+        )
+    else:
+        pnl_sign = "+" if live_pnl >= 0 else ""
+        live_block = (
+            f"Dir   : {direction.upper()}\n"
+            f"Entry : {ist_entry} | ${live_entry_price:,.0f}\n"
+            f"Exit  : {ist_exit} | ${live_exit_price:,.0f}\n"
+            f"PnL   : {pnl_sign}${live_pnl:,.2f}"
+        )
+
+    if bt_row:
+        # bt_row is now a signal dict from strategy.generate_signals()
+        bt_entry_ts  = bt_row.get("timestamp","")
+        bt_exit_ts   = bt_row.get("timestamp","")
+        bt_dir       = bt_row.get("direction","")
+        bt_entry_p   = float(bt_row.get("price",0))
+        bt_exit_p    = float(bt_row.get("price",0))
+        bt_pnl       = 0.0
+        bt_slip      = 5.0
+        bt_ist_entry = _utc_to_ist(bt_entry_ts)
+        bt_ist_exit  = _utc_to_ist(bt_exit_ts)
+        pnl_sign     = "+" if bt_pnl >= 0 else ""
+
+        if sig_type == "ENTRY":
+            bt_block = (
+                f"Dir   : {bt_dir.upper()}\n"
+                f"Entry : {bt_ist_entry} | ${bt_entry_p:,.0f}"
+            )
+        else:
+            bt_block = (
+                f"Dir   : {bt_dir.upper()}\n"
+                f"Entry : {bt_ist_entry} | ${bt_entry_p:,.0f}\n"
+                f"Exit  : {bt_ist_exit} | ${bt_exit_p:,.0f}\n"
+                f"PnL   : {pnl_sign}${bt_pnl:,.2f} (slip ${bt_slip:.0f}/side)"
+            )
+
+        # Match check
+        dir_match   = "✅" if direction.lower() == bt_dir.lower() else "❌"
+        entry_match = "✅" if live_entry_ts[:16] == bt_entry_ts[:16] else "❌"
+        if sig_type == "EXIT":
+            exit_match = "✅" if live_exit_ts[:16] == bt_exit_ts[:16] else "❌"
+            match_line = f"MATCH : Dir {dir_match} | Entry {entry_match} | Exit {exit_match}"
+        else:
+            match_line = f"MATCH : Dir {dir_match} | Entry {entry_match}"
+    else:
+        bt_block   = "No matching trade found in CSV"
+        match_line = "MATCH : ⚠️ No backtest data"
+
+    icon = "🟢" if sig_type == "ENTRY" else "🔴"
+    msg = (
+        f"{icon} CTS {label} {sig_type}\n"
+        f"━━━━━━━━━━━━━━━━━━\n"
+        f"LIVE:\n{live_block}\n\n"
+        f"BACKTEST:\n{bt_block}\n\n"
+        f"{match_line}\n"
+        f"━━━━━━━━━━━━━━━━━━"
+    )
+    return msg
+
+
 from dotenv import load_dotenv
 load_dotenv(dotenv_path="/home/anildalabanjan933/crypto_trading_system/.env")
 
@@ -106,6 +227,15 @@ log.info(f"[STARTUP] Position synced from exchange: {position}")
 
 last_known_ts = load_ts_file(TS_FILE)
 valid_from    = get_valid_from()
+# If last_known_ts empty - use signal file as fallback lock
+if not last_known_ts:
+    _sig_file = "logs/live_signal_s2.txt" if "s2" in fname else "logs/live_signal_s4.txt"
+    try:
+        _line = open(_sig_file).read().strip()
+        if _line and "|" in _line:
+            last_known_ts = _line.split("|")[1]
+            log.info(f"[STARTUP] last_known_ts loaded from signal file: {last_known_ts}")
+    except: pass
 # Auto-advance last_known_ts to valid_from if behind - zero manual intervention
 if last_known_ts and valid_from and last_known_ts < valid_from:
     last_known_ts = valid_from
@@ -193,7 +323,9 @@ while True:
                             else:
                                 log.warning(f"[SL] Stop SL FAILED: {sl_result}")
                         log.info(f"[ORDER] ENTRY confirmed | position={position}")
-                        send_alert(f"CTS S4 ENTRY\nDirection: {direction.upper()}\nLots: {lots}")
+                        bt_row = _get_bt_trade(sig_ts, "S4")
+                        _msg = _build_alert("ENTRY","S4",direction,sig_ts,real_entry,None,0,0,bt_row)
+                        send_alert(_msg)
                     else:
                         log.error(f"[ORDER] ENTRY FAILED: {result}")
                         send_alert(f"CTS S4 ENTRY FAILED\nError: {result}")
@@ -213,7 +345,10 @@ while True:
                     if result.get("success"):
                         position = None
                         log.info(f"[ORDER] EXIT confirmed | position=None")
-                        send_alert(f"CTS S4 EXIT\nPosition closed\nLots: {close_size}")
+                        bt_row = _get_bt_trade(sig_ts, "S4")
+                        _entry_ts = load_ts_file(TS_FILE) or sig_ts
+                        _msg = _build_alert("EXIT","S4",position or direction,_entry_ts,0,sig_ts,0,0,bt_row)
+                        send_alert(_msg)
                     else:
                         log.error(f"[ORDER] EXIT FAILED: {result}")
                         last_known_ts = load_ts_file(TS_FILE)
