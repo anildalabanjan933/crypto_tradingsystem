@@ -284,16 +284,34 @@ if __name__=="__main__":
         except:
             pass
         return None
+    def _get_csv_last_exit_ts(pattern):
+        import glob, csv as _csv
+        files=sorted(glob.glob(pattern))
+        if not files: return None
+        try:
+            rows=list(_csv.reader(open(files[-1])))
+            for row in reversed(rows):
+                if len(row)>4 and row[4] and row[4]!="exit_datetime":
+                    return row[4]
+        except:
+            pass
+        return None
     _ts_s2=_get_signal_ts("logs/live_signal_s2.txt")
     _ts_s4=_get_signal_ts("logs/live_signal_s4.txt")
+    if not _ts_s2:
+        _ts_s2=_get_csv_last_exit_ts("output/trade_log_RenkoReversal*.csv")
+        if _ts_s2: log.info(f"[ENGINE] S2 signal file empty - using CSV fallback lock: {_ts_s2}")
+    if not _ts_s4:
+        _ts_s4=_get_csv_last_exit_ts("output/trade_log_RenkoSMIIO*.csv")
+        if _ts_s4: log.info(f"[ENGINE] S4 signal file empty - using CSV fallback lock: {_ts_s4}")
     _candidates=[t for t in [_ts_s2,_ts_s4] if t]
     if _candidates:
         _lock_str=min(_candidates)
         s2.last_signal_ts=_lock_str
         s4.last_signal_ts=_lock_str
-        log.info(f"[ENGINE] Startup lock ts (from signal file): {_lock_str}")
+        log.info(f"[ENGINE] Startup lock ts: {_lock_str}")
     else:
-        log.info("[ENGINE] No signal file found - no startup lock applied")
+        log.info("[ENGINE] No signal file or CSV found - no startup lock applied")
     _last_dl=time.time()
     _last_ts=get_csv_last_ts()
 
