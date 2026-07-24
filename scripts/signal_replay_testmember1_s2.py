@@ -58,29 +58,36 @@ def now_utc_str():
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
 
 def load_signals():
+    """Read latest signal from live_signal file written by renko_state_engine."""
     signals = []
-    if not os.path.exists(SIGNAL_CSV):
-        log.error(f"[REPLAY] Signal CSV not found: {SIGNAL_CSV}")
+    sf = "logs/live_signal_s2.txt"
+    if not os.path.exists(sf):
+        log.warning(f"[REPLAY] Signal file not found: {sf}")
         return signals
-    with open(SIGNAL_CSV, "r") as f:
-        reader = csv.reader(f)
-        for row in reader:
-            if len(row) < 3:
-                continue
-            if row[0].strip() == "entry_time":
-                continue  # skip header if present
-            entry = row[0].strip()
-            exit_ = row[1].strip()
-            dirn  = row[2].strip()
-            lots  = int(row[3].strip()) if len(row) > 3 else LOT_SIZE
-            if entry and exit_ and dirn:
-                signals.append({
-                    "entry_time": entry,
-                    "exit_time":  exit_,
-                    "direction":  dirn,
-                    "lots":       lots
-                })
-    log.info(f"[REPLAY] Loaded {len(signals)} signals from {SIGNAL_CSV}")
+    try:
+        line = open(sf).read().strip()
+        if not line:
+            return signals
+        parts = line.split("|")
+        if len(parts) < 3:
+            return signals
+        sig_type = parts[0].strip()   # ENTRY_LONG / ENTRY_SHORT / EXIT_LONG / EXIT_SHORT
+        ts       = parts[1].strip()
+        lots     = int(parts[2].strip()) if parts[2].strip().isdigit() else LOT_SIZE
+        if "LONG" in sig_type:
+            dirn = "long"
+        else:
+            dirn = "short"
+        signals.append({
+            "entry_time": ts,
+            "exit_time":  ts,
+            "direction":  dirn,
+            "lots":       lots,
+            "sig_type":   sig_type
+        })
+        log.info(f"[REPLAY] Signal from file: {sig_type} | {ts} | {lots} lots")
+    except Exception as e:
+        log.error(f"[REPLAY] Error reading signal file: {e}")
     return signals
 
 def get_valid_from():
@@ -165,7 +172,7 @@ while True:
             entry_dt = datetime.strptime(entry_time, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
             signal_age_hours = (now_dt - entry_dt).total_seconds() / 3600
             exit_dt_chk = datetime.strptime(exit_time, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
-            if now >= entry_time and position is None and now < exit_time:
+            if now >= entry_time and position is None:
                 side = "buy" if direction == "long" else "sell"
                 log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={entry_time}")
                 save_ts_file(TS_FILE, entry_time)
