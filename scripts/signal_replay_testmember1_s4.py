@@ -203,11 +203,17 @@ while True:
             now_dt2 = datetime.strptime(now, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
             exit_dt2 = datetime.strptime(exit_time, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
             exit_age_hours = (now_dt2 - exit_dt2).total_seconds() / 3600
-            if now >= exit_time and position is not None:
-                side = "sell" if position == "long" else "buy"
+            if now >= exit_time:
                 actual = om.get_position()
                 _ex_size = abs(actual.get("size", 0)) if actual.get("success") else 0
-                close_size = _ex_size if _ex_size > 0 else (open_lot_size if open_lot_size > 0 else LOT_SIZE)
+                if _ex_size == 0:
+                    log.info(f"[ORDER] EXIT skipped - exchange already FLAT | ts={exit_time}")
+                    position = None
+                    save_ts_file(TS_FILE, exit_time)
+                    last_known_ts = exit_time
+                    break
+                side = "sell" if position == "long" else "buy"
+                close_size = _ex_size
                 log.info(f"[ORDER] EXIT {side} {close_size} lots | ts={exit_time}")
                 save_ts_file(TS_FILE, exit_time)
                 last_known_ts = exit_time

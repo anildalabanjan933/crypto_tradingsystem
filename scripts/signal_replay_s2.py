@@ -337,11 +337,18 @@ while True:
                         last_known_ts = load_ts_file(TS_FILE)
 
                 # --- EXIT ---
-                elif "EXIT" in sig_type and position is not None:
-                    side = "sell" if position == "long" else "buy"
+                elif "EXIT" in sig_type:
                     actual = om.get_position()
                     _ex_size = abs(actual.get("size", 0)) if actual.get("success") else 0
-                    close_size = _ex_size if _ex_size > 0 else (open_lot_size if open_lot_size > 0 else LOT_SIZE)
+                    if _ex_size == 0:
+                        log.info(f"[ORDER] EXIT skipped - exchange already FLAT | ts={sig_ts}")
+                        position = None
+                        save_ts_file(TS_FILE, sig_ts)
+                        last_known_ts = sig_ts
+                        clear_live_signal("logs/live_signal_s2.txt")
+                    else:
+                        side = "sell" if position == "long" else "buy"
+                        close_size = _ex_size
                     log.info(f"[ORDER] EXIT {side} {close_size} lots | ts={sig_ts}")
                     save_ts_file(TS_FILE, sig_ts)
                     last_known_ts = sig_ts
