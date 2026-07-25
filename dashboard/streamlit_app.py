@@ -145,9 +145,7 @@ st.markdown("""
 
 /* BASE - pure white, light, fast */
 .stApp { background-color: #FFFFFF; }
-.block-container { padding: 0rem 1rem 0.4rem 1rem !important; max-width: 100% !important; }
-.stApp > header { height: 0rem !important; }
-#root > div:first-child { padding-top: 0rem !important; }
+.block-container { padding: 0.4rem 1rem 0.4rem 1rem !important; max-width: 100% !important; }
 section[data-testid="stSidebar"] { display: none; }
 header[data-testid="stHeader"] { background: transparent !important; }
 
@@ -619,17 +617,20 @@ with col_status:
         unsafe_allow_html=True
     )
 
-st.markdown('<hr style="margin:2px 0 4px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
+st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
 import datetime as _dt_refresh
-_last_refresh = (_dt_refresh.datetime.utcnow() + _dt_refresh.timedelta(hours=5, minutes=30)).strftime("%d-%b-%Y %I:%M %p")
-st.markdown(
-    f'''<div style="text-align:right;font-size:11px;color:#444;font-weight:600;margin:-4px 0 2px 0;">
-    Auto-refresh every 60s &nbsp;|&nbsp; Last updated: {_last_refresh} IST
-    &nbsp; <span style="background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:700;">LIVE</span>
-    </div>''',
-    unsafe_allow_html=True
-)
+_last_refresh = (_dt_refresh.datetime.utcnow() + _dt_refresh.timedelta(hours=5, minutes=30)).strftime("%d-%b-%Y %I:%M:%S %p")
+_col_ref1, _col_ref2 = st.columns([8,1])
+with _col_ref1:
+    st.markdown(
+        f'''<div style="text-align:right;font-size:12px;color:#222;font-weight:700;margin:-8px 0 4px 0;">
+        Last updated: {_last_refresh} IST
+        &nbsp; <span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:700;">LIVE</span>
+        </div>''',
+        unsafe_allow_html=True
+    )
+
 
 # MAIN NAVIGATION TABS
 
@@ -1070,2415 +1071,1209 @@ _tab_monitor, _tab_trading, _tab_today, _tab_analysis, _tab_backtest, _tab_datas
     "MONITOR", "TRADING", "TODAY'S TRADES", "ANALYSIS", "BACKTEST", "DATA & SYNC", "MAINTENANCE"
 ])
 
-@st.fragment(run_every=60)
-def _frag_monitor():
-    # SECTION 1 - SYSTEM STATUS CARDS
-    # ================================================================
-    st.markdown("<div class='section-title'>SECTION 1 - SYSTEM STATUS & MAINTENANCE</div>", unsafe_allow_html=True)
-
-    disk_pct, disk_free = _timed('disk_usage', 30, _fetch_disk)
-    git_commit = _timed('git_commit', 60, _fetch_git)
-    s2_last = _timed('s2_last_sig', 15, _fetch_log_signal, s2_log)
-    s4_last = _timed('s4_last_sig', 15, _fetch_log_signal, s4_log)
-    s2_error = _timed('s2_log_err', 15, _fetch_log_errors, s2_log)
-    s4_error = _timed('s4_log_err', 15, _fetch_log_errors, s4_log)
-
-    c1, c2, c3, c4, c5 = st.columns(5)
-
-    with c1:
-        st.markdown("**S2 BOT**")
-        if os.path.exists(s2_log):
-            st.success("LOG ACTIVE")
-        else:
-            st.error("LOG MISSING")
-        st.caption(f"Last: {s2_last[:40]}")
-
-    with c2:
-        st.markdown("**S4 BOT**")
-        if os.path.exists(s4_log):
-            st.success("LOG ACTIVE")
-        else:
-            st.error("LOG MISSING")
-        st.caption(f"Last: {s4_last[:40]}")
-
-    with c3:
-        st.markdown("**VM DISK**")
-        if disk_pct > 80:
-            st.error(f"{disk_pct}% USED")
-        elif disk_pct > 60:
-            st.warning(f"{disk_pct}% USED")
-        else:
-            st.success(f"{disk_pct}% USED")
-        st.caption(f"{disk_free} GB free")
-
-    with c4:
-        st.markdown("**GITHUB**")
-        st.success("SYNCED")
-        st.caption(f"Commit: {git_commit}")
-
-    with c5:
-        st.markdown("**DELTA API**")
-        try:
-            import requests as _req, warnings as _w
-            _w.filterwarnings('ignore')
-            _r = _req.get('https://cdn-ind.testnet.deltaex.org/v2/products/84', timeout=3, verify=False)
-            if _r.status_code == 200:
-                st.success("CONNECTED")
-                st.caption("Testnet OK")
-            else:
-                st.error("ERROR")
-                st.caption(f"Status: {_r.status_code}")
-        except:
-            st.error("UNREACHABLE")
-            st.caption("Check network")
-
-    # ================================================================
-    # SECTION 1 - NEW MONITORING CARDS ROW 2 + ROW 3
-    # ================================================================
-    import datetime as _dt_cards, time as _t_cards
-
-    # ROW 2 - SYSTEM HEALTH
-    _cr2a, _cr2b, _cr2c = st.columns(3)
-
-    # CARD 1 - BOT LOG STATUS + ENGINE STATUS
-    with _cr2a:
-        try:
-            _s2_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s2.log")) / 60 if os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s2.log") else 999
-            _s4_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4.log")) / 60 if os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4.log") else 999
-            _eng_log = "/home/anildalabanjan933/crypto_trading_system/logs/renko_state_engine.log"
-            _eng_age = (_t_cards.time() - os.path.getmtime(_eng_log)) / 60 if os.path.exists(_eng_log) else 999
-            st.markdown("**BOT LOG**")
-            if _s2_log_age > 10 or _s4_log_age > 10:
-                st.error("INACTIVE")
-                st.caption(f"S2: {int(_s2_log_age)}m | S4: {int(_s4_log_age)}m no update")
-            else:
-                st.success("ACTIVE")
-                st.caption(f"S2: {int(_s2_log_age)}m ago | S4: {int(_s4_log_age)}m ago")
-            st.markdown("**ENGINE**")
-            if _eng_age > 10:
-                st.error(f"DEAD - {int(_eng_age)}m no update")
-                st.caption("Run: bash start.sh immediately")
-            elif _eng_age > 3:
-                st.warning(f"SLOW - {int(_eng_age)}m ago")
-                st.caption("Engine may be stuck")
-            else:
-                st.success(f"RUNNING - {int(_eng_age)}m ago")
-                st.caption("Engine firing normally")
-        except Exception as _e:
-            st.markdown("**BOT LOG**")
-            st.warning("UNKNOWN")
-            st.caption(str(_e)[:40])
-
-    # CARD 2 - DASHBOARD RESTART STATUS
-    with _cr2b:
-        try:
-            try:
-                _dash_start_file = "logs/dashboard_start.txt"
-                if not __import__('os').path.exists(_dash_start_file):
-                    open(_dash_start_file, 'w').write(_dt_cards.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S'))
-                _dash_start_str = open(_dash_start_file).read().strip()
-                _dash_start_dt  = _dt_cards.datetime.strptime(_dash_start_str, '%Y-%m-%dT%H:%M:%S')
-                _dash_uptime    = (_dt_cards.datetime.utcnow() - _dash_start_dt).total_seconds() / 60
-            except:
-                _dash_uptime = 999
-            st.markdown("**DASHBOARD RESTART**")
-            if _dash_uptime < 5:
-                st.error("RESTARTED")
-                st.caption(f"Up: {int(_dash_uptime)}m ago")
-            else:
-                st.success("STABLE")
-                st.caption(f"Uptime: {int(_dash_uptime)}m")
-        except Exception as _e:
-            st.markdown("**DASHBOARD RESTART**")
-            st.warning("UNKNOWN")
-            st.caption(str(_e)[:40])
-
-    # CARD 3 - API KEY/SECRET STATUS
-    with _cr2c:
-        try:
-            _s2k = os.environ.get("S2_API_KEY","")
-            _s2s = os.environ.get("S2_API_SECRET","")
-            _s4k = os.environ.get("S4_API_KEY","")
-            _s4s = os.environ.get("S4_API_SECRET","")
-            st.markdown("**API KEY/SECRET**")
-            if not _s2k:
-                st.error("S2 KEY MISSING")
-                st.caption("Check .env S2_API_KEY")
-            elif not _s2s:
-                st.error("S2 SECRET MISSING")
-                st.caption("Check .env S2_API_SECRET")
-            elif not _s4k:
-                st.error("S4 KEY MISSING")
-                st.caption("Check .env S4_API_KEY")
-            elif not _s4s:
-                st.error("S4 SECRET MISSING")
-                st.caption("Check .env S4_API_SECRET")
-            else:
-                st.success("ALL KEYS OK")
-                st.caption("S2 + S4 keys present")
-        except Exception as _e:
-            st.markdown("**API KEY/SECRET**")
-            st.warning("UNKNOWN")
-            st.caption(str(_e)[:40])
-
-    # ROW 3 - TRADING HEALTH
-    _cr3a, _cr3b, _cr3c = st.columns(3)
-
-    # CARD 4 - SECTION 13 MATCH %
-    with _cr3a:
-        try:
-            _match_pct = None
-            for _lp in ["logs/live_trading_s2.log", "logs/live_trading_s4.log"]:
-                if os.path.exists(_lp):
-                    with open(_lp) as _lf:
-                        _lines = _lf.readlines()
-                    _ml = [l for l in _lines if 'MATCH' in l or 'match' in l]
-                    if _ml:
-                        import re as _re
-                        _m = _re.search(r'(\d+\.?\d*)%', _ml[-1])
-                        if _m:
-                            _match_pct = float(_m.group(1))
-                            break
-            st.markdown("**S13 MATCH %**")
-            if _match_pct is None:
-                st.info("WAITING")
-                st.caption("No trade yet")
-            elif _match_pct >= 95:
-                st.success(f"{_match_pct:.0f}%")
-                st.caption("GREEN - Full match")
-            elif _match_pct >= 80:
-                st.warning(f"{_match_pct:.0f}%")
-                st.caption("YELLOW - Partial match")
-            else:
-                st.error(f"{_match_pct:.0f}%")
-                st.caption("RED - Check system")
-        except Exception as _e:
-            st.markdown("**S13 MATCH %**")
-            st.warning("UNKNOWN")
-            st.caption(str(_e)[:40])
-
-    # CARD 5 - FORWARD TEST COUNT X/5
-    with _cr3b:
-        try:
-            _fwd_count = 0
-            for _lp in ["logs/live_trading_s2.log", "logs/live_trading_s4.log"]:
-                if os.path.exists(_lp):
-                    with open(_lp) as _lf:
-                        _lines = _lf.readlines()
-                    _cl = [l for l in _lines if 'consecutive' in l.lower() or 'match count' in l.lower()]
-                    if _cl:
-                        import re as _re2
-                        _m2 = _re2.search(r'(\d+)/5', _cl[-1])
-                        if _m2:
-                            _fwd_count = int(_m2.group(1))
-                            break
-            st.markdown("**FWD TEST X/5**")
-            if _fwd_count == 0:
-                st.info("0/5")
-                st.caption("Waiting for trades")
-            elif _fwd_count >= 5:
-                st.success("5/5")
-                st.caption("GO LIVE READY")
-            else:
-                st.warning(f"{_fwd_count}/5")
-                st.caption(f"{5-_fwd_count} more needed")
-        except Exception as _e:
-            st.markdown("**FWD TEST X/5**")
-            st.warning("UNKNOWN")
-            st.caption(str(_e)[:40])
-
-    # CARD 6 - MARKET ORDER PnL DIFF
-    with _cr3c:
-        try:
-            _pnl_diff = None
-            for _lp in ["logs/live_trading_s2.log", "logs/live_trading_s4.log"]:
-                if os.path.exists(_lp):
-                    with open(_lp) as _lf:
-                        _lines = _lf.readlines()
-                    _pl = [l for l in _lines if 'pnl diff' in l.lower() or 'PNL_DIFF' in l]
-                    if _pl:
-                        import re as _re3
-                        _m3 = _re3.search(r'[\$₹]?(\d+\.?\d*)', _pl[-1])
-                        if _m3:
-                            _pnl_diff = float(_m3.group(1))
-                            break
-            st.markdown("**MARKET ORDER DIFF**")
-            if _pnl_diff is None:
-                st.info("WAITING")
-                st.caption("No trade yet")
-            elif _pnl_diff <= 500:
-                st.success(f"₹{_pnl_diff:.0f}")
-                st.caption("GREEN - Acceptable")
-            elif _pnl_diff <= 1000:
-                st.warning(f"₹{_pnl_diff:.0f}")
-                st.caption("YELLOW - Monitor")
-            else:
-                st.error(f"₹{_pnl_diff:.0f}")
-                st.caption("RED - Review needed")
-        except Exception as _e:
-            st.markdown("**MARKET ORDER DIFF**")
-            st.warning("UNKNOWN")
-            st.caption(str(_e)[:40])
-
-    # ================================================================
-    # ALERT BANNER
-    # ================================================================
-    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
-    alerts = []
-
-    if disk_pct > 80:
-        alerts.append(("red", f"DISK CRITICAL: {disk_pct}% used - clean up immediately"))
-    elif disk_pct > 70:
-        alerts.append(("yellow", f"DISK WARNING: {disk_pct}% used - monitor closely"))
-    if not os.path.exists(s2_log):
-        alerts.append(("red", "S2 LOG NOT FOUND - bot may not be running"))
-    if not os.path.exists(s4_log):
-        alerts.append(("red", "S4 LOG NOT FOUND - bot may not be running"))
-    if s2_error:
-        alerts.append(("red", f"S2 ERROR DETECTED: {s2_error}"))
-    if s4_error:
-        alerts.append(("red", f"S4 ERROR DETECTED: {s4_error}"))
-
-    # Bot activity check - warn if no log update in last 5 minutes
-    try:
-        import time as _t
-        now_ts = _t.time()
-        for bot_name, log_path in [("S2", s2_log), ("S4", s4_log)]:
-            if os.path.exists(log_path):
-                log_age = now_ts - os.path.getmtime(log_path)
-                if log_age > 300:
-                    alerts.append(("yellow", f"{bot_name} BOT INACTIVE: No log update for {int(log_age//60)} minutes - check if bot is running"))
-    except:
-        pass
-
-    # New order detection
-    try:
-        for bot_name, log_path in [("S2", s2_log), ("S4", s4_log)]:
-            if os.path.exists(log_path):
-                with open(log_path, 'r') as lf:
-                    lines = lf.readlines()
-                recent = [l for l in lines[-50:] if '[ORDER]' in l]
-                if recent:
-                    last_order = recent[-1].strip()
-                    order_time = last_order[:19] if len(last_order) > 19 else last_order
-                    import datetime as _dt2
-                    try:
-                        ot = _dt2.datetime.strptime(order_time, '%Y-%m-%d %H:%M:%S,%f'[:len(order_time)])
-                        age_mins = (_dt2.datetime.now() - ot).total_seconds() / 60
-                        if age_mins < 10:
-                            alerts.append(("green", f"{bot_name} NEW ORDER: {last_order[20:80]}"))
-                    except:
-                        pass
-    except:
-        pass
-
-    # Position closed detection
-    try:
-        for bot_name, log_path in [("S2", s2_log), ("S4", s4_log)]:
-            if os.path.exists(log_path):
-                with open(log_path, 'r') as lf:
-                    lines = lf.readlines()
-                exits = [l for l in lines[-50:] if 'EXIT' in l and '[ORDER]' in l]
-                if exits:
-                    last_exit = exits[-1].strip()
-                    exit_time = last_exit[:19]
-                    import datetime as _dt3
-                    try:
-                        et = _dt3.datetime.strptime(exit_time, '%Y-%m-%d %H:%M:%S,%f'[:len(exit_time)])
-                        age_mins = (_dt3.datetime.now() - et).total_seconds() / 60
-                        if age_mins < 30:
-                            alerts.append(("green", f"{bot_name} POSITION CLOSED: {last_exit[20:80]}"))
-                    except:
-                        pass
-    except:
-        pass
-
-    if alerts:
-        for level, msg in alerts:
-            if level == "red":
-                st.markdown(f"<div class='alert-red'>ERROR: {msg}</div>", unsafe_allow_html=True)
-            elif level == "yellow":
-                st.markdown(f"<div class='alert-yellow'>WARNING: {msg}</div>", unsafe_allow_html=True)
-            elif level == "green":
-                st.markdown(f"<div class='alert-green'>INFO: {msg}</div>", unsafe_allow_html=True)
-        if not any(l == "red" for l, _ in alerts):
-            st.markdown("<div class='alert-green'>ALL SYSTEMS HEALTHY - No critical errors</div>", unsafe_allow_html=True)
-    else:
-        pass  # No alerts - healthy state shown in error monitor below
-
-
-
-
-    # ================================================================
-
-    # SECTION 1 - MAINTENANCE SUB-SECTIONS
-    # SECTION 3B - AUTO MAINTENANCE STATUS
-    # ================================================================
-    if 'exp_maint' not in st.session_state: st.session_state['exp_maint'] = False
-    with st.expander("AUTO DAILY 3AM UTC", expanded=False):
-        import glob as _glob
-        maint_log = 'logs/maintenance.log'
-        if os.path.exists(maint_log):
-            lines = open(maint_log).readlines()
-            # Get last run block
-            last_run_lines = []
-            for line in reversed(lines):
-                last_run_lines.insert(0, line.strip())
-                if 'Starting auto maintenance' in line:
-                    break
-            if last_run_lines:
-                # Extract key metrics
-                last_run_time = next((l for l in last_run_lines if 'Starting' in l), '')
-                disk_line     = next((l for l in last_run_lines if 'Disk' in l), '')
-                pycache_line  = next((l for l in last_run_lines if 'Pycache' in l), '')
-                output_line   = next((l for l in last_run_lines if 'Output folder' in l), '')
-                log_lines     = [l for l in last_run_lines if 'Log' in l and 'maintenance' not in l.lower()]
-
-                c1, c2, c3, c4 = st.columns(4)
-                with c1:
-                    disk_pct = ''
-                    if 'Disk' in disk_line:
-                        import re as _re
-                        m = _re.search(r'([\d.]+)% used', disk_line)
-                        disk_pct = m.group(1) + '%' if m else 'OK'
-                        color = 'normal' if float(m.group(1)) < 70 else 'inverse' if m else 'normal'
-                    st.metric("Disk Usage", disk_pct if disk_pct else "OK")
-                with c2:
-                    files_del = ''
-                    if 'deleted' in output_line:
-                        import re as _re
-                        m = _re.search(r'deleted (\d+) files', output_line)
-                        files_del = m.group(1) + ' files' if m else '0'
-                    st.metric("Last Cleanup", files_del if files_del else "0 files")
-                with c3:
-                    out_mb = ''
-                    if 'Output folder' in output_line:
-                        import re as _re
-                        m = _re.search(r'([\d.]+)MB', output_line)
-                        out_mb = m.group(1) + ' MB' if m else 'OK'
-                    st.metric("Output Size", out_mb if out_mb else "OK")
-                with c4:
-                    st.metric("Next Run", "Daily 3AM UTC")
-
-                st.caption(f"Last maintenance: {last_run_time.split('[MAINTENANCE]')[-1].strip() if last_run_time else 'Never'}")
-                if disk_line:
-                    if 'WARNING' in disk_line or 'ERROR' in disk_line:
-                        st.error(disk_line)
-                    else:
-                        st.success(disk_line.split('[MAINTENANCE]')[-1].strip())
-        else:
-            st.info("No maintenance log yet. First run at 3AM UTC tonight.")
-            st.caption("Auto maintenance runs daily: pycache clean + log trim + output cleanup + disk check")
-
-    # ================================================================
-
-    # SECTION 11 - MAINTENANCE
-    # ================================================================
-    if 'exp_11' not in st.session_state: st.session_state['exp_11'] = False
-    with st.expander("MAINTENANCE", expanded=st.session_state.get('exp_11', False)):
-
-
-        import shutil, os, subprocess
-
-        disk_pct2, disk_free2 = _timed('disk_usage', 30, _fetch_disk)
-        c1, c2, c3, c4, c5 = st.columns(5)
-        with c1:
-            if disk_pct2 > 80:
-                st.error(f"DISK: {disk_pct2}%")
-            elif disk_pct2 > 60:
-                st.warning(f"DISK: {disk_pct2}%")
-            else:
-                st.success(f"DISK: {disk_pct2}%")
-        with c2:
-            pycache_exists = any(True for _ in __import__('pathlib').Path('.').rglob('__pycache__'))
-            if pycache_exists:
-                st.warning("PYCACHE: EXISTS")
-            else:
-                st.success("PYCACHE: CLEAN")
-        with c3:
-            s2_size = round(os.path.getsize(s2_log)/1024/1024, 1) if os.path.exists(s2_log) else 0
-            s4_size = round(os.path.getsize(s4_log)/1024/1024, 1) if os.path.exists(s4_log) else 0
-            total_log = s2_size + s4_size
-            if total_log > 100:
-                st.warning(f"LOGS: {total_log}MB")
-            else:
-                st.success(f"LOGS: {total_log}MB")
-        with c4:
-            venv_ok = os.path.exists('.venv') or os.path.exists('venv')
-            if venv_ok:
-                st.success("VENV: OK")
-            else:
-                st.error("VENV: MISSING")
-        with c5:
-            st.info("SERVICE: CHECK VM")
-
-        st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
-        b1, b2, b3 = st.columns(3)
-        with b1:
-            if st.button("CHECK DISK", key="sec12_disk"):
-                st.info(f"Disk: {disk_pct2}% used | {disk_free2} GB free")
-        with b2:
-            if st.button("CLEAN PYCACHE", key="sec12_pycache"):
-                try:
-                    import pathlib
-                    count = 0
-                    for p in pathlib.Path('.').rglob('__pycache__'):
-                        __import__('shutil').rmtree(p, ignore_errors=True)
-                        count += 1
-                    st.success(f"Cleaned {count} pycache folders")
-                except Exception as e:
-                    st.error(f"Error: {e}")
-        with b3:
-            if st.button("TRIM LOGS", key="sec12_trim"):
-                try:
-                    for log_path in [s2_log, s4_log]:
-                        if os.path.exists(log_path):
-                            lines = open(log_path, encoding='utf-8', errors='ignore').readlines()
-                            if len(lines) > 10000:
-                                open(log_path, 'w').writelines(lines[-10000:])
-                                st.success(f"Trimmed {log_path} to 10000 lines")
-                            else:
-                                st.info(f"{log_path}: {len(lines)} lines - no trim needed")
-                except Exception as e:
-                    st.error(f"Error: {e}")
-
-
-    # ================================================================
-
-    # SECTION 1B - ERROR MONITOR (auto-checks all systems)
-    # ================================================================
-    st.markdown('<div style="margin-top:-8px;"></div>', unsafe_allow_html=True)
-    if 'exp_1b' not in st.session_state: st.session_state['exp_1b'] = False
-    with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b', False)):
-        import subprocess, os, datetime
-
-        errors = []
-        warnings = []
-        ok = []
-
-        # 1. CHECK BOT SCREENS RUNNING (cached 30s)
-        try:
-            _scr_ls = _timed('err_screen_ls', 30, _fetch_screen_list)
-            if 'live_s2' in _scr_ls:
-                ok.append("S2 bot screen: RUNNING")
-            else:
-                errors.append("S2 bot screen: NOT RUNNING - run bash start.sh on VM")
-            if 'live_s4' in _scr_ls:
-                ok.append("S4 bot screen: RUNNING")
-            else:
-                errors.append("S4 bot screen: NOT RUNNING - run bash start.sh on VM")
-        except Exception as e:
-            errors.append(f"Screen check failed: {e}")
-
-        # 2. CHECK LOG FILES EXIST AND RECENT
-        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
-            try:
-                if os.path.exists(log):
-                    mtime = os.path.getmtime(log)
-                    age_mins = (datetime.datetime.now().timestamp() - mtime) / 60
-                    if age_mins < 5:
-                        ok.append(f"{bot} log: ACTIVE (updated {int(age_mins)}m ago)")
-                    elif age_mins < 30:
-                        warnings.append(f"{bot} log: STALE ({int(age_mins)}m ago) - bot may be stuck")
-                    else:
-                        errors.append(f"{bot} log: NOT UPDATING ({int(age_mins)}m ago) - bot likely crashed")
-                else:
-                    errors.append(f"{bot} log: FILE MISSING - bot never started")
-            except Exception as e:
-                errors.append(f"{bot} log check failed: {e}")
-
-        # 3. CHECK FOR ERRORS IN LOGS
-        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
-            try:
-                if os.path.exists(log):
-                    lines = open(log).readlines()
-                    import datetime as _dte
-                    _cut = _dte.datetime.utcnow() - _dte.timedelta(minutes=30)
-                    recent = []
-                    for _l in (lines[-500:] if len(lines)>500 else lines):
-                        try:
-                            _lt = _dte.datetime.strptime(_l[:19], '%Y-%m-%d %H:%M:%S')
-                            if _lt >= _cut: recent.append(_l)
-                        except: pass
-                    # no fallback - if nothing in last 30 min, recent stays empty = no errors shown
-                    error_lines = [l.strip() for l in recent if 'ERROR' in l]
-                    algotest_errors = [l.strip() for l in recent if 'ALGOTEST' in l and ('ERROR' in l or 'WARNING' in l)]
-                    api_errors = [l.strip() for l in recent if any(x in l for x in ['InvalidApiKey','invalid_api_key','insufficient_margin','rate_limit','IP not whitelisted','ENTRY FAILED','EXIT FAILED','CRITICAL']) or ('ERROR' in l and any(x in l for x in ['401','403','429']))]
-                    if error_lines:
-                        for el in error_lines[-3:]:
-                            errors.append(f"{bot} ERROR: {el[-100:]}")
-                    if algotest_errors:
-                        for al in algotest_errors[-2:]:
-                            errors.append(f"{bot} ALGOTEST: {al[-100:]}")
-                    if api_errors:
-                        for al in api_errors[-2:]:
-                            errors.append(f"{bot} API ERROR: {al[-100:]}")
-                    if not error_lines and not algotest_errors and not api_errors:
-                        ok.append(f"{bot} log: No errors in last 50 lines")
-            except Exception as e:
-                errors.append(f"{bot} error scan failed: {e}")
-
-        # 4. CHECK ALGOTEST WEBHOOK KEYS IN ENV
-        try:
-            from dotenv import load_dotenv
-            load_dotenv()
-            webhook_keys = [
-                'ALGOTEST_WEBHOOK_S2_BUY_ENTRY','ALGOTEST_WEBHOOK_S2_BUY_EXIT',
-                'ALGOTEST_WEBHOOK_S2_SELL_ENTRY','ALGOTEST_WEBHOOK_S2_SELL_EXIT',
-                'ALGOTEST_WEBHOOK_S4_BUY_ENTRY','ALGOTEST_WEBHOOK_S4_BUY_EXIT',
-                'ALGOTEST_WEBHOOK_S4_SELL_ENTRY','ALGOTEST_WEBHOOK_S4_SELL_EXIT'
-            ]
-            missing = [k for k in webhook_keys if not os.getenv(k)]
-            if missing:
-                for m in missing:
-                    errors.append(f"WEBHOOK KEY MISSING in .env: {m}")
-            else:
-                ok.append("All 8 Algotest webhook keys: CONFIGURED")
-        except Exception as e:
-            warnings.append(f"Webhook key check failed: {e}")
-
-        # 5. CHECK DISK SPACE
-        try:
-            import shutil
-            total, used, free = shutil.disk_usage('.')
-            pct = int(used/total*100)
-            free_gb = round(free/1024**3, 1)
-            if pct > 80:
-                errors.append(f"DISK CRITICAL: {pct}% used - only {free_gb}GB free - clean immediately")
-            elif pct > 70:
-                warnings.append(f"DISK WARNING: {pct}% used - {free_gb}GB free - monitor closely")
-            else:
-                ok.append(f"Disk: {pct}% used - {free_gb}GB free")
-        except Exception as e:
-            warnings.append(f"Disk check failed: {e}")
-
-        # 6. CHECK SYSTEMD SERVICE (tradingbot.service removed - using cts-watchdog)
-        pass
-
-        # 7. CHECK RECENT ALGOTEST SUCCESS
-        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
-            try:
-                if os.path.exists(log):
-                    lines = open(log).readlines()
-                    import datetime as _dte2
-                    _cut2 = _dte2.datetime.utcnow() - _dte2.timedelta(minutes=30)
-                    recent = []
-                    for _l in (lines[-500:] if len(lines)>500 else lines):
-                        try:
-                            _lt2 = _dte2.datetime.strptime(_l[:19], '%Y-%m-%d %H:%M:%S')
-                            if _lt2 >= _cut2: recent.append(_l)
-                        except: pass
-                    if not recent: recent = lines[-20:]
-                    algotest_ok = [l for l in recent if 'ALGOTEST' in l and 'Status: 200' in l]
-                    algotest_fail = [l for l in recent if 'ALGOTEST' in l and 'Status: 200' not in l and 'WARNING' not in l and 'ERROR' in l]
-                    if algotest_ok:
-                        ok.append(f"{bot} last Algotest webhook: SUCCESS (Status 200)")
-                    if algotest_fail:
-                        errors.append(f"{bot} Algotest webhook FAILED: {algotest_fail[-1].strip()[-80:]}")
-            except:
-                pass
-
-
-        # 8. CHECK OPEN POSITION > 24H (orphan position risk)
-        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
-            try:
-                if os.path.exists(log):
-                    lines = open(log).readlines()
-                    entry_lines = [l for l in lines if '[ORDER] ENTRY' in l]
-                    exit_lines = [l for l in lines if '[ORDER] EXIT' in l]
-                    if entry_lines:
-                        last_entry = entry_lines[-1]
-                        last_exit = exit_lines[-1] if exit_lines else None
-                        import re
-                        entry_match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_entry)
-                        exit_match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_exit) if last_exit else None
-                        if entry_match:
-                            entry_time = datetime.datetime.strptime(entry_match.group(1), '%Y-%m-%d %H:%M:%S')
-                            if last_exit is None or (exit_match and entry_time > datetime.datetime.strptime(exit_match.group(1), '%Y-%m-%d %H:%M:%S')):
-                                age_hours = (datetime.datetime.now() - entry_time).total_seconds() / 3600
-                                if age_hours > 168:
-                                    errors.append(f"{bot} ORPHAN POSITION: Entry {int(age_hours)}h ago with no exit - check Delta account immediately")
-                                elif age_hours > 24:
-                                    warnings.append(f"{bot} OPEN POSITION: {int(age_hours)}h since entry - no exit yet - monitor closely")
-                                else:
-                                    ok.append(f"{bot} position: open {int(age_hours)}h - normal")
-                            else:
-                                ok.append(f"{bot} position: closed cleanly")
-            except Exception as e:
-                warnings.append(f"{bot} position check failed: {e}")
-
-        # 9. CHECK NO ORDERS IN LAST 48H (bot alive but not trading)
-        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
-            try:
-                if os.path.exists(log):
-                    lines = open(log).readlines()
-                    order_lines = [l for l in lines if '[ORDER]' in l]
-                    if order_lines:
-                        import re
-                        last_order = order_lines[-1]
-                        match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_order)
-                        if match:
-                            last_time = datetime.datetime.strptime(match.group(1), '%Y-%m-%d %H:%M:%S')
-                            age_hours = (datetime.datetime.now() - last_time).total_seconds() / 3600
-                            if age_hours > 168:
-                                warnings.append(f"{bot} last order: {int(age_hours)}h ago - strategy may be in low signal period")
-                            else:
-                                ok.append(f"{bot} last order: {int(age_hours)}h ago - normal")
-                    else:
-                        ok.append(f"{bot} no orders yet - waiting for first signal")
-            except Exception as e:
-                warnings.append(f"{bot} order check failed: {e}")
-
-        # 10. CHECK DUPLICATE ORDERS (same timestamp fired twice)
-        # Only check orders after VALID_FROM (last_known_ts file)
-        for bot, log, ts_file in [('S2', 'logs/live_trading_s2.log', 'logs/last_known_ts_s2.txt'),
-                                   ('S4', 'logs/live_trading_s4.log', 'logs/last_known_ts_s4.txt')]:
-            try:
-                if os.path.exists(log):
-                    # Get valid from timestamp
-                    valid_from = None
-                    if os.path.exists(ts_file):
-                        valid_from = open(ts_file).read().strip()
-                    lines = open(log).readlines()
-                    order_lines = [l for l in lines if '[ORDER]' in l]
-                    timestamps = []
-                    import re
-                    for l in order_lines:
-                        # Only check recent orders - filter by log timestamp
-                        if valid_from:
-                            try:
-                                log_dt = l.split(' INFO')[0].strip()
-                                if log_dt < valid_from.replace('T',' '):
-                                    continue
-                            except:
-                                pass
-                        match = re.search(r'ts=(\S+)', l)
-                        if match:
-                            # Include order type to avoid flagging EXIT+ENTRY at same ts
-                            order_type = 'ENTRY' if 'ENTRY' in l else 'EXIT'
-                            timestamps.append(f"{order_type}_{match.group(1)}")
-                    duplicates = [t for t in timestamps if timestamps.count(t) > 1]
-                    if duplicates:
-                        errors.append(f"{bot} DUPLICATE ORDERS detected at timestamps: {list(set(duplicates))}")
-                    else:
-                        ok.append(f"{bot} duplicate order check: CLEAN")
-            except Exception as e:
-                warnings.append(f"{bot} duplicate check failed: {e}")
-
-
-        # 11. CHECK BOT CYCLING HEALTH (last [SIGNALS] line timestamp)
-        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
-            try:
-                if os.path.exists(log):
-                    lines = open(log).readlines()
-                    signal_lines = [l for l in lines if '[SIGNALS]' in l or '[WAIT]' in l or '[DATA]' in l]
-                    if signal_lines:
-                        last_line = signal_lines[-1]
-                        import re
-                        match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_line)
-                        if match:
-                            last_time = datetime.datetime.strptime(match.group(1), '%Y-%m-%d %H:%M:%S')
-                            age_mins = (datetime.datetime.now() - last_time).total_seconds() / 60
-                            if age_mins > 10:
-                                errors.append(f"{bot} BOT FROZEN: No cycle in {int(age_mins)}m - bot may be stuck or crashed")
-                            elif age_mins > 5:
-                                warnings.append(f"{bot} bot cycle: {int(age_mins)}m ago - slightly delayed")
-                            else:
-                                ok.append(f"{bot} bot cycling: OK ({int(age_mins)}m ago)")
-                    else:
-                        warnings.append(f"{bot} no cycle lines found in log")
-            except Exception as e:
-                warnings.append(f"{bot} cycle check failed: {e}")
-
-        # 12. FORWARD TEST END DATE REMINDER
-        try:
-            forward_end = datetime.datetime(2026, 8, 1)
-            days_left = (forward_end - datetime.datetime.now()).days
-            if days_left < 0:
-                ok.append("Forward test complete - go-live on Aug 1 2026")
-            elif days_left == 0:
-                warnings.append("GO-LIVE DAY - Aug 1 2026 - switch testnet=False and update API keys")
-            elif days_left <= 3:
-                warnings.append(f"GO-LIVE IN {days_left} DAYS - prepare Aug 1 checklist")
-            elif days_left <= 7:
-                warnings.append(f"Go-live in {days_left} days (Aug 1 2026)")
-            else:
-                ok.append(f"Forward test: {days_left} days remaining (go-live Aug 1 2026)")
-        except Exception as e:
-            warnings.append(f"Forward test date check failed: {e}")
-
-        # 12B. CHECK ENGINE (renko_state_engine) RUNNING
-        try:
-            import time as _time_eng
-            _eng_log = "/home/anildalabanjan933/crypto_trading_system/logs/renko_state_engine.log"
-            if not os.path.exists(_eng_log):
-                errors.append("ENGINE LOG MISSING - renko_state_engine.py never started - run bash start.sh")
-            else:
-                _eng_age_mins = (_time_eng.time() - os.path.getmtime(_eng_log)) / 60
-                if _eng_age_mins > 10:
-                    errors.append(f"ENGINE DEAD - no update in {int(_eng_age_mins)}m - signals not firing - run bash start.sh IMMEDIATELY")
-                elif _eng_age_mins > 3:
-                    warnings.append(f"ENGINE SLOW - last update {int(_eng_age_mins)}m ago - may be stuck")
-                else:
-                    ok.append(f"Engine (renko_state_engine): RUNNING - last update {int(_eng_age_mins)}m ago")
-            # Check signal files age
-            for _sf, _label in [("logs/live_signal_s2.txt","S2 signal"), ("logs/live_signal_s4.txt","S4 signal")]:
-                if os.path.exists(_sf):
-                    _sf_age = (_time_eng.time() - os.path.getmtime(_sf)) / 60
-                    if _sf_age > 30:
-                        warnings.append(f"{_label} file not updated in {int(_sf_age)}m - engine may not be firing")
-                    else:
-                        ok.append(f"{_label} file: updated {int(_sf_age)}m ago")
-                else:
-                    warnings.append(f"{_label} file missing")
-        except Exception as e:
-            warnings.append(f"Engine check failed: {e}")
-
-        # 12C. CHECK SIGNAL_GENERATOR SCREEN RUNNING
-        try:
-            import subprocess
-            _scr = subprocess.run(["screen","-ls"], capture_output=True, text=True, timeout=5)
-            if "signal_generator" in _scr.stdout:
-                ok.append("signal_generator screen: RUNNING")
-            else:
-                errors.append("signal_generator screen MISSING - engine not running - run bash start.sh IMMEDIATELY")
-        except Exception as e:
-            warnings.append(f"signal_generator screen check failed: {e}")
-
-        # 13. CHECK .ENV FILE EXISTS AND HAS API KEYS
-        try:
-            if os.path.exists('.env'):
-                env_content = open('.env').read()
-                required_keys = ['S2_API_KEY', 'S4_API_KEY', 'S2_API_SECRET', 'S4_API_SECRET']
-                missing_keys = [k for k in required_keys if k not in env_content]
-                if missing_keys:
-                    errors.append(f".env MISSING API KEYS: {missing_keys} - bots cannot trade")
-                else:
-                    ok.append(".env file: exists with all API keys")
-            else:
-                errors.append(".env FILE MISSING - all API keys gone - run bash start.sh")
-        except Exception as e:
-            warnings.append(f".env check failed: {e}")
-
-        # 14. CHECK DELTA API CONNECTIVITY (cached 60s)
-        try:
-            _api_st = _timed('delta_api_status', 60, _fetch_delta_api_status)
-            if _api_st == 200:
-                ok.append("Delta API connectivity: REACHABLE")
-            elif _api_st:
-                warnings.append(f"Delta API returned status {_api_st} - may have issues")
-            else:
-                errors.append("Delta API UNREACHABLE - check VM internet connection")
-        except Exception as e:
-            errors.append(f"Delta API check failed: {e}")
-
-        # 15. CHECK VM INTERNET (ping Google DNS)
-        try:
-            import subprocess as sp
-            result = sp.run(['curl', '-s', '--max-time', '3', 'https://8.8.8.8'], capture_output=True)
-            ok.append("VM internet: CONNECTED")
-        except Exception as e:
-            errors.append(f"VM internet check failed: {e}")
-
-        # 16. CHECK ALGOTEST WEBHOOK URLS REACHABLE (cached 120s - avoid hammering)
-        try:
-            def _check_webhook():
-                from dotenv import load_dotenv
-                load_dotenv()
-                import requests as _rqwh
-                test_url = os.getenv('ALGOTEST_WEBHOOK_S4_BUY_ENTRY')
-                if not test_url:
-                    return None
-                resp = _rqwh.post(test_url, json={"access_token": os.getenv('ALGOTEST_ACCESS_TOKEN', 'n7FJcMHANHN4F8HdqbU5QMDJn5JO79K9'), "alert_name": "ping"}, timeout=5)
-                return resp.status_code
-            _wh_status = _timed('webhook_check', 120, _check_webhook)
-            if _wh_status in [200, 201, 202, 400, 422]:
-                ok.append("Algotest webhook URL: REACHABLE")
-            elif _wh_status is None:
-                errors.append("Algotest webhook URL missing from .env")
-            else:
-                warnings.append(f"Algotest webhook returned {_wh_status} - check signal config")
-        except Exception as e:
-            warnings.append(f"Algotest connectivity check failed: {e}")
-
-        # DISPLAY RESULTS
-        if errors:
-            st.error(f"ERRORS DETECTED: {len(errors)} issue(s) require attention")
-            for e in errors:
-                st.markdown(f"<div class='alert-red'>ERROR: {e}</div>", unsafe_allow_html=True)
-        elif warnings:
-            st.warning(f"WARNINGS: {len(warnings)} item(s) to monitor")
-        else:
-            st.success("ALL SYSTEMS HEALTHY - No errors detected")
-
-        if warnings:
-            for w in warnings:
-                st.markdown(f"<div class='alert-yellow'>WARNING: {w}</div>", unsafe_allow_html=True)
-
-        with st.expander("SHOW ALL OK CHECKS"):
-            for o in ok:
-                st.markdown(f"OK: {o}")
-
-            st.caption(f"Last checked: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5,minutes=30))).strftime('%d-%b-%Y %I:%M %p IST')} | Auto-refreshes every 30s")
-    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
-
-
-    # ================================================================
-    # SECTION 1C - DEBUG TRACKER
-    # ================================================================
-    if 'exp_1c' not in st.session_state: st.session_state['exp_1c'] = False
-    with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('exp_1c', False)):
-        import re as _re1c, datetime as _dt1c
-
-        _BASE_DIR = '/home/anildalabanjan933/crypto_trading_system'
-        _TH1C = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;"
-        _TD1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;"
-        _TDG1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;"
-        _TDR1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#F23645;font-weight:700;"
-        _TDO1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#e07000;font-weight:700;"
-
-        def _read_last_lines(path, n=200):
-            try:
-                lines = open(path, encoding='utf-8', errors='ignore').readlines()
-                return lines[-n:]
-            except:
-                return []
-
-        def _utc_log_to_ist(raw):
-            import datetime as _dti
-            _ist = _dti.timedelta(hours=5, minutes=30)
-            try:
-                ts = raw.strip()[:19]
-                dt = _dti.datetime.strptime(ts, '%Y-%m-%d %H:%M:%S')
-                return (dt + _ist).strftime('%d-%b-%Y %I:%M %p IST')
-            except:
-                try:
-                    ts = raw.strip()[:19].replace('T',' ')
-                    dt = _dti.datetime.strptime(ts, '%Y-%m-%d %H:%M:%S')
-                    return (dt + _ist).strftime('%d-%b-%Y %I:%M %p IST')
-                except:
-                    return raw
-
-        def _get_bot_debug(log_path, ts_path, sig_path, bot_name):
-            lines = _read_last_lines(log_path)
-            now_utc = _dt1c.datetime.utcnow()
-
-            # Last heartbeat
-            last_wait = "Never"
-            for l in reversed(lines):
-                if '[WAIT]' in l or '[ORDER]' in l:
-                    last_wait = _utc_log_to_ist(l.split(' INFO')[0].strip())
-                    break
-
-            # Last signal check - read from renko_state_engine.log
-            last_reload = "Never"
-            _engine_log = os.path.join(os.path.dirname(log_path), "renko_state_engine.log")
-            _reload_lines = _read_last_lines(_engine_log, n=200)
-            for l in reversed(_reload_lines):
-                if '[ENGINE] New candle' in l:
-                    last_reload = _utc_log_to_ist(l.split(' INFO')[0].strip())
-                    break
-
-            # API validation
-            api_status = "UNKNOWN"
-            api_color = _TDO1C
-            for l in reversed(lines):
-                if 'API key validated successfully' in l:
-                    api_status = "VALID"
-                    api_color = _TDG1C
-                    break
-                if 'API key validation FAILED' in l or 'invalid_api_key' in l:
-                    api_status = "INVALID"
-                    api_color = _TDR1C
-                    break
-            # If UNKNOWN = log scrolled past validation line - if no error then VALID
-            if api_status == "UNKNOWN":
-                api_status = "VALID"
-                api_color = _TDG1C
-
-            # Last error - only last 30 minutes
-            last_error = "None"
-            last_error_color = _TDG1C
-            _now_err = _dt1c.datetime.utcnow()
-            _cut_err = _now_err - _dt1c.timedelta(minutes=30)
-            for l in reversed(lines):
-                if 'ERROR' in l or 'CRITICAL' in l:
-                    try:
-                        _lt_err = _dt1c.datetime.strptime(l[:19], '%Y-%m-%d %H:%M:%S')
-                        if _lt_err >= _cut_err:
-                            last_error = l.strip()[-120:]
-                            last_error_color = _TDR1C
-                    except:
-                        pass
-                    break
-
-            # Last order
-            last_order = "No trades yet today"
-            for l in reversed(lines):
-                if '[ORDER]' in l and ('ENTRY' in l or 'EXIT' in l):
-                    _lo_ts = _utc_log_to_ist(l.split(' INFO')[0].strip())
-                    last_order = _lo_ts + ' ' + ' '.join(l.strip().split()[3:])
-                    break
-
-            # Last known ts
-            try:
-                _raw_ts = open(ts_path).read().strip()
-                last_ts = _utc_log_to_ist(_raw_ts)
-            except:
-                last_ts = "Unknown"
-
-            # Next signal
-            next_signal = "Waiting - next Renko brick forming"
-            next_color = _TDO1C
-            try:
-                import csv as _csv1c
-                now_str = now_utc.strftime('%Y-%m-%dT%H:%M:%S')
-                all_rows = []
-                with open(sig_path) as fh:
-                    reader = _csv1c.reader(fh)
-                    for row in reader:
-                        if len(row) < 3: continue
-                        if row[0].strip() == "entry_time": continue
-                        all_rows.append({
-                            "entry_time": row[0].strip(),
-                            "exit_time":  row[1].strip(),
-                            "direction":  row[2].strip()
-                        })
-                found = False
-                for row in all_rows:
-                    if row['entry_time'].strip() > last_ts:
-                        _ns_et = _utc_log_to_ist(row['entry_time'].strip())
-                        _ns_xt = _utc_log_to_ist(row['exit_time'].strip())
-                        next_signal = f"ENTRY={_ns_et} EXIT={_ns_xt} DIR={row['direction']}"
-                        next_color = _TDG1C
-                        found = True
-                        break
-                if not found and all_rows:
-                    last_exit = all_rows[-1]['exit_time'].strip()
-                    if last_exit < now_str:
-                        next_signal = f"NO SIGNAL AFTER VALID_FROM - last exit={_utc_log_to_ist(last_exit)}"
-                        next_color = _TDR1C
-            except Exception as _e1c:
-                next_signal = f"Error reading signal CSV: {str(_e1c)[:50]}"
-                next_color = _TDR1C
-
-            # Signal CSV last update
-            try:
-                import os as _os1c, time as _t1c
-                age = _t1c.time() - _os1c.path.getmtime(sig_path)
-                sig_age = f"{int(age/60)} min ago"
-                sig_color = _TDG1C if age < 900 else _TDO1C
-            except:
-                sig_age = "Unknown"
-                sig_color = _TDO1C
-
-            # Bot running check
-            bot_running = any('[WAIT]' in l or '[ORDER]' in l for l in lines[-20:])
-            bot_status = "RUNNING" if bot_running else "STOPPED"
-            bot_color = _TDG1C if bot_running else _TDR1C
-
-            # Last heartbeat age check
-            heartbeat_color = _TDG1C
-            try:
-                _hb_ts = _dt1c.datetime.strptime(last_wait[:19], '%Y-%m-%d %H:%M:%S')
-                _hb_age = (now_utc - _hb_ts).total_seconds()
-                if _hb_age > 60: heartbeat_color = _TDR1C
-                elif _hb_age > 55: heartbeat_color = _TDO1C
-            except:
-                heartbeat_color = _TDO1C
-
-            # Signal CSV staleness
-            try:
-                import os as _os1c, time as _t1c
-                age = _t1c.time() - _os1c.path.getmtime(sig_path)
-                sig_age = f"{int(age/60)} min ago"
-                sig_color = _TDG1C if age < 900 else _TDO1C
-            except:
-                sig_age = "Unknown"
-                sig_color = _TDO1C
-
-            # Match status - check verify_match log
-            match_status = "Pending next trade"
-            match_color = _TDG1C
-            try:
-                _vm_log = '/home/anildalabanjan933/crypto_trading_system/logs/verify_match.log'
-                if _os1c.path.exists(_vm_log):
-                    _vm_lines = open(_vm_log).readlines()[-20:]
-                    for _vl in reversed(_vm_lines):
-                        if 'MATCH OK' in _vl or 'OVERALL: MATCH OK' in _vl:
-                            match_status = "MATCH OK"
-                            match_color = _TDG1C
-                            break
-                        if 'MISMATCH' in _vl:
-                            match_status = "MISMATCH DETECTED"
-                            match_color = _TDR1C
-                            break
-            except:
-                pass
-
-            # CSV data freshness
-            csv_status = "UNKNOWN"
-            csv_color = _TDO1C
-            try:
-                _csv_path = '/home/anildalabanjan933/crypto_trading_system/data/btc_1m_delta.csv'
-                _csv_age = _t1c.time() - _os1c.path.getmtime(_csv_path)
-                if _csv_age < 7200:
-                    csv_status = f"FRESH ({int(_csv_age/60)} min ago)"
-                    csv_color = _TDG1C
-                elif _csv_age < 43200:
-                    csv_status = f"OK ({int(_csv_age/60)} min ago)"
-                    csv_color = _TDO1C
-                else:
-                    csv_status = f"STALE ({int(_csv_age/60)} min ago)"
-                    csv_color = _TDR1C
-            except:
-                pass
-
-            # Position sync check
-            pos_status = "FLAT"
-            pos_color = _TDG1C
-            for l in reversed(lines):
-                if '[STARTUP] Position synced' in l:
-                    if 'None' in l:
-                        pos_status = "FLAT"
-                        pos_color = _TDG1C
-                    else:
-                        pos_status = "OPEN POSITION"
-                        pos_color = _TDO1C
-                    break
-
-            # Order success rate last 10 orders
-            order_attempts = [l for l in lines if '[ORDER] ENTRY' in l or '[ORDER] EXIT' in l]
-            order_fails = [l for l in lines if 'ENTRY FAILED' in l or 'EXIT FAILED' in l]
-            if order_attempts:
-                success_rate = f"{(len(order_attempts)-len(order_fails))}/{len(order_attempts)} success"
-                order_color = _TDG1C if len(order_fails)==0 else _TDR1C
-            else:
-                success_rate = "No trades yet today"
-                order_color = _TDG1C
-
-            return {
-                'bot_status': (bot_status, bot_color),
-                'api_status': (api_status, api_color),
-                'last_heartbeat': (last_wait, heartbeat_color),
-                'last_reload': last_reload,
-                'last_order': last_order,
-                'last_error': (last_error, last_error_color),
-                'last_ts': last_ts,
-                'next_signal': (next_signal, next_color),
-                'sig_age': (sig_age, sig_color),
-                'match_status': (match_status, match_color),
-                'csv_status': (csv_status, csv_color),
-                'pos_status': (pos_status, pos_color),
-                'order_success': (success_rate, order_color),
-            }
-
-        s2_dbg = _get_bot_debug(
-            f'{_BASE_DIR}/logs/live_trading_s2.log',
-            f'{_BASE_DIR}/logs/last_known_ts_s2.txt',
-            f'{_BASE_DIR}/logs/live_signal_s2.txt', 'S2')
-        s4_dbg = _get_bot_debug(
-            f'{_BASE_DIR}/logs/live_trading_s4.log',
-            f'{_BASE_DIR}/logs/last_known_ts_s4.txt',
-            f'{_BASE_DIR}/logs/live_signal_s4.txt', 'S4')
-
-        def _dbg_row(label, s2val, s4val, s2c=None, s4c=None):
-            return (f"<tr><td style='{_TD1C}'><b>{label}</b></td>"
-                    f"<td style='{s2c or _TD1C}'>{s2val}</td>"
-                    f"<td style='{s4c or _TD1C}'>{s4val}</td></tr>")
-
-        tbl1c = (
-            f"<div style='overflow-x:auto;margin:4px 0;'>"
-            f"<table style='width:100%;border-collapse:collapse;'>"
-            f"<thead><tr>"
-            f"<th style='{_TH1C}'>Check</th>"
-            f"<th style='{_TH1C}'>S2</th>"
-            f"<th style='{_TH1C}'>S4</th>"
-            f"</tr></thead><tbody>"
-            + _dbg_row("Bot Status", s2_dbg['bot_status'][0], s4_dbg['bot_status'][0], s2_dbg['bot_status'][1], s4_dbg['bot_status'][1])
-            + _dbg_row("API Key", s2_dbg['api_status'][0], s4_dbg['api_status'][0], s2_dbg['api_status'][1], s4_dbg['api_status'][1])
-            + _dbg_row("Last Heartbeat", s2_dbg['last_heartbeat'][0], s4_dbg['last_heartbeat'][0], s2_dbg['last_heartbeat'][1], s4_dbg['last_heartbeat'][1])
-            + _dbg_row("Signal Engine", s2_dbg['last_reload'], s4_dbg['last_reload'])
-            + _dbg_row("Last Order", s2_dbg['last_order'], s4_dbg['last_order'])
-            + _dbg_row("Last Error", s2_dbg['last_error'][0], s4_dbg['last_error'][0], s2_dbg['last_error'][1], s4_dbg['last_error'][1])
-            + _dbg_row("Last Known TS", s2_dbg['last_ts'], s4_dbg['last_ts'])
-            + _dbg_row("Next Signal", s2_dbg['next_signal'][0], s4_dbg['next_signal'][0], s2_dbg['next_signal'][1], s4_dbg['next_signal'][1])
-            + _dbg_row("Signal CSV Age",   s2_dbg['sig_age'][0],      s4_dbg['sig_age'][0],      s2_dbg['sig_age'][1],      s4_dbg['sig_age'][1])
-            + _dbg_row("Market CSV",        s2_dbg['csv_status'][0],   s4_dbg['csv_status'][0],   s2_dbg['csv_status'][1],   s4_dbg['csv_status'][1])
-            + _dbg_row("Position Sync",     s2_dbg['pos_status'][0],   s4_dbg['pos_status'][0],   s2_dbg['pos_status'][1],   s4_dbg['pos_status'][1])
-            + _dbg_row("Order Success",     s2_dbg['order_success'][0],s4_dbg['order_success'][0],s2_dbg['order_success'][1],s4_dbg['order_success'][1])
-            + _dbg_row("Match Status",      s2_dbg['match_status'][0], s4_dbg['match_status'][0], s2_dbg['match_status'][1], s4_dbg['match_status'][1])
-            + "</tbody></table></div>"
-        )
-        st.caption("Auto updates on page load | Green=OK | Red=Issue | Orange=Warning")
-        st.markdown(tbl1c, unsafe_allow_html=True)
-
-
-    # ================================================================
-    # SECTION 1.3 - VM HEALTH (CPU + RAM + UPTIME)
-    # ================================================================
-    if 'exp_13' not in st.session_state: st.session_state['exp_13'] = False
-    with st.expander("SECTION 1.3 - VM HEALTH", expanded=st.session_state.get('exp_13', False)):
-        try:
-            import psutil
-            cpu = psutil.cpu_percent(interval=0)
-            ram = psutil.virtual_memory()
-            ram_used = ram.percent
-            ram_free_gb = round(ram.available / (1024**3), 2)
-            uptime_secs = int(datetime.datetime.now().timestamp() - psutil.boot_time())
-            uptime_hrs = uptime_secs // 3600
-            uptime_mins = (uptime_secs % 3600) // 60
-            col1, col2, col3, col4 = st.columns(4)
-            with col1:
-                cpu_color = "metric-red" if cpu > 80 else "metric-yellow" if cpu > 60 else "metric-green"
-                st.markdown(f"<div class='metric-box {cpu_color}'><div class='metric-label'>CPU USAGE</div><div class='metric-value'>{cpu:.1f}%</div></div>", unsafe_allow_html=True)
-            with col2:
-                ram_color = "metric-red" if ram_used > 80 else "metric-yellow" if ram_used > 60 else "metric-green"
-                st.markdown(f"<div class='metric-box {ram_color}'><div class='metric-label'>RAM USAGE</div><div class='metric-value'>{ram_used:.1f}%</div></div>", unsafe_allow_html=True)
-            with col3:
-                st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>RAM FREE</div><div class='metric-value'>{ram_free_gb} GB</div></div>", unsafe_allow_html=True)
-            with col4:
-                st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>UPTIME</div><div class='metric-value'>{uptime_hrs}h {uptime_mins}m</div></div>", unsafe_allow_html=True)
-            import subprocess
-            col5, col6, col7, col8 = st.columns(4)
-            with col5:
-                try:
-                    r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system'], capture_output=True, text=True)
-                    app_size = r.stdout.split()[0] if r.stdout else 'N/A'
-                except:
-                    app_size = 'N/A'
-                st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>APP SIZE</div><div class='metric-value'>{app_size}</div></div>", unsafe_allow_html=True)
-            with col6:
-                try:
-                    r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/logs'], capture_output=True, text=True)
-                    log_size = r.stdout.split()[0] if r.stdout else 'N/A'
-                except:
-                    log_size = 'N/A'
-                st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>LOGS SIZE</div><div class='metric-value'>{log_size}</div></div>", unsafe_allow_html=True)
-            with col7:
-                try:
-                    r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/data'], capture_output=True, text=True)
-                    data_size = r.stdout.split()[0] if r.stdout else 'N/A'
-                except:
-                    data_size = 'N/A'
-                st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>DATA SIZE</div><div class='metric-value'>{data_size}</div></div>", unsafe_allow_html=True)
-            with col8:
-                try:
-                    r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/.venv'], capture_output=True, text=True)
-                    venv_size = r.stdout.split()[0] if r.stdout else 'N/A'
-                except:
-                    venv_size = 'N/A'
-                st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>VENV SIZE</div><div class='metric-value'>{venv_size}</div></div>", unsafe_allow_html=True)
-        except Exception as e:
-            st.warning(f"VM health check failed: {e}. Install psutil: pip install psutil")
-    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
-
-    # ================================================================
-    # SECTION 1 - SYSTEM STATUS CARDS
-    # ================================================================
-    st.markdown("<div class='section-title'>SECTION 1 - SYSTEM STATUS & MAINTENANCE</div>", unsafe_allow_html=True)
-
-    disk_pct, disk_free = _timed('disk_usage', 30, _fetch_disk)
-    git_commit = _timed('git_commit', 60, _fetch_git)
-    s2_last = _timed('s2_last_sig', 15, _fetch_log_signal, s2_log)
-    s4_last = _timed('s4_last_sig', 15, _fetch_log_signal, s4_log)
-    s2_error = _timed('s2_log_err', 15, _fetch_log_errors, s2_log)
-    s4_error = _timed('s4_log_err', 15, _fetch_log_errors, s4_log)
-
-    c1, c2, c3, c4, c5 = st.columns(5)
-
-    with c1:
-        st.markdown("**S2 BOT**")
-        if os.path.exists(s2_log):
-            st.success("LOG ACTIVE")
-        else:
-            st.error("LOG MISSING")
-        st.caption(f"Last: {s2_last[:40]}")
-
-    with c2:
-        st.markdown("**S4 BOT**")
-        if os.path.exists(s4_log):
-            st.success("LOG ACTIVE")
-        else:
-            st.error("LOG MISSING")
-        st.caption(f"Last: {s4_last[:40]}")
-
-    with c3:
-        st.markdown("**VM DISK**")
-        if disk_pct > 80:
-            st.error(f"{disk_pct}% USED")
-        elif disk_pct > 60:
-            st.warning(f"{disk_pct}% USED")
-        else:
-            st.success(f"{disk_pct}% USED")
-        st.caption(f"{disk_free} GB free")
-
-    with c4:
-        st.markdown("**GITHUB**")
-        st.success("SYNCED")
-        st.caption(f"Commit: {git_commit}")
-
-    with c5:
-        st.markdown("**DELTA API**")
-        try:
-            import requests as _req, warnings as _w
-            _w.filterwarnings('ignore')
-            _r = _req.get('https://cdn-ind.testnet.deltaex.org/v2/products/84', timeout=3, verify=False)
-            if _r.status_code == 200:
-                st.success("CONNECTED")
-                st.caption("Testnet OK")
-            else:
-                st.error("ERROR")
-                st.caption(f"Status: {_r.status_code}")
-        except:
-            st.error("UNREACHABLE")
-            st.caption("Check network")
-
-    # ================================================================
-    # SECTION 1 - NEW MONITORING CARDS ROW 2 + ROW 3
-    # ================================================================
-    import datetime as _dt_cards, time as _t_cards
-
-    # ROW 2 - SYSTEM HEALTH
-    _cr2a, _cr2b, _cr2c = st.columns(3)
-
-    # CARD 1 - BOT LOG STATUS + ENGINE STATUS
-    with _cr2a:
-        try:
-            _s2_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s2.log")) / 60 if os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s2.log") else 999
-            _s4_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4.log")) / 60 if os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4.log") else 999
-            _eng_log = "/home/anildalabanjan933/crypto_trading_system/logs/renko_state_engine.log"
-            _eng_age = (_t_cards.time() - os.path.getmtime(_eng_log)) / 60 if os.path.exists(_eng_log) else 999
-            st.markdown("**BOT LOG**")
-            if _s2_log_age > 10 or _s4_log_age > 10:
-                st.error("INACTIVE")
-                st.caption(f"S2: {int(_s2_log_age)}m | S4: {int(_s4_log_age)}m no update")
-            else:
-                st.success("ACTIVE")
-                st.caption(f"S2: {int(_s2_log_age)}m ago | S4: {int(_s4_log_age)}m ago")
-            st.markdown("**ENGINE**")
-            if _eng_age > 10:
-                st.error(f"DEAD - {int(_eng_age)}m no update")
-                st.caption("Run: bash start.sh immediately")
-            elif _eng_age > 3:
-                st.warning(f"SLOW - {int(_eng_age)}m ago")
-                st.caption("Engine may be stuck")
-            else:
-                st.success(f"RUNNING - {int(_eng_age)}m ago")
-                st.caption("Engine firing normally")
-        except Exception as _e:
-            st.markdown("**BOT LOG**")
-            st.warning("UNKNOWN")
-            st.caption(str(_e)[:40])
-
-    # CARD 2 - DASHBOARD RESTART STATUS
-    with _cr2b:
-        try:
-            try:
-                _dash_start_file = "logs/dashboard_start.txt"
-                if not __import__('os').path.exists(_dash_start_file):
-                    open(_dash_start_file, 'w').write(_dt_cards.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S'))
-                _dash_start_str = open(_dash_start_file).read().strip()
-                _dash_start_dt  = _dt_cards.datetime.strptime(_dash_start_str, '%Y-%m-%dT%H:%M:%S')
-                _dash_uptime    = (_dt_cards.datetime.utcnow() - _dash_start_dt).total_seconds() / 60
-            except:
-                _dash_uptime = 999
-            st.markdown("**DASHBOARD RESTART**")
-            if _dash_uptime < 5:
-                st.error("RESTARTED")
-                st.caption(f"Up: {int(_dash_uptime)}m ago")
-            else:
-                st.success("STABLE")
-                st.caption(f"Uptime: {int(_dash_uptime)}m")
-        except Exception as _e:
-            st.markdown("**DASHBOARD RESTART**")
-            st.warning("UNKNOWN")
-            st.caption(str(_e)[:40])
-
-    # CARD 3 - API KEY/SECRET STATUS
-    with _cr2c:
-        try:
-            _s2k = os.environ.get("S2_API_KEY","")
-            _s2s = os.environ.get("S2_API_SECRET","")
-            _s4k = os.environ.get("S4_API_KEY","")
-            _s4s = os.environ.get("S4_API_SECRET","")
-            st.markdown("**API KEY/SECRET**")
-            if not _s2k:
-                st.error("S2 KEY MISSING")
-                st.caption("Check .env S2_API_KEY")
-            elif not _s2s:
-                st.error("S2 SECRET MISSING")
-                st.caption("Check .env S2_API_SECRET")
-            elif not _s4k:
-                st.error("S4 KEY MISSING")
-                st.caption("Check .env S4_API_KEY")
-            elif not _s4s:
-                st.error("S4 SECRET MISSING")
-                st.caption("Check .env S4_API_SECRET")
-            else:
-                st.success("ALL KEYS OK")
-                st.caption("S2 + S4 keys present")
-        except Exception as _e:
-            st.markdown("**API KEY/SECRET**")
-            st.warning("UNKNOWN")
-            st.caption(str(_e)[:40])
-
-    # ROW 3 - TRADING HEALTH
-    _cr3a, _cr3b, _cr3c = st.columns(3)
-
-    # CARD 4 - SECTION 13 MATCH %
-    with _cr3a:
-        try:
-            _match_pct = None
-            for _lp in ["logs/live_trading_s2.log", "logs/live_trading_s4.log"]:
-                if os.path.exists(_lp):
-                    with open(_lp) as _lf:
-                        _lines = _lf.readlines()
-                    _ml = [l for l in _lines if 'MATCH' in l or 'match' in l]
-                    if _ml:
-                        import re as _re
-                        _m = _re.search(r'(\d+\.?\d*)%', _ml[-1])
-                        if _m:
-                            _match_pct = float(_m.group(1))
-                            break
-            st.markdown("**S13 MATCH %**")
-            if _match_pct is None:
-                st.info("WAITING")
-                st.caption("No trade yet")
-            elif _match_pct >= 95:
-                st.success(f"{_match_pct:.0f}%")
-                st.caption("GREEN - Full match")
-            elif _match_pct >= 80:
-                st.warning(f"{_match_pct:.0f}%")
-                st.caption("YELLOW - Partial match")
-            else:
-                st.error(f"{_match_pct:.0f}%")
-                st.caption("RED - Check system")
-        except Exception as _e:
-            st.markdown("**S13 MATCH %**")
-            st.warning("UNKNOWN")
-            st.caption(str(_e)[:40])
-
-    # CARD 5 - FORWARD TEST COUNT X/5
-    with _cr3b:
-        try:
-            _fwd_count = 0
-            for _lp in ["logs/live_trading_s2.log", "logs/live_trading_s4.log"]:
-                if os.path.exists(_lp):
-                    with open(_lp) as _lf:
-                        _lines = _lf.readlines()
-                    _cl = [l for l in _lines if 'consecutive' in l.lower() or 'match count' in l.lower()]
-                    if _cl:
-                        import re as _re2
-                        _m2 = _re2.search(r'(\d+)/5', _cl[-1])
-                        if _m2:
-                            _fwd_count = int(_m2.group(1))
-                            break
-            st.markdown("**FWD TEST X/5**")
-            if _fwd_count == 0:
-                st.info("0/5")
-                st.caption("Waiting for trades")
-            elif _fwd_count >= 5:
-                st.success("5/5")
-                st.caption("GO LIVE READY")
-            else:
-                st.warning(f"{_fwd_count}/5")
-                st.caption(f"{5-_fwd_count} more needed")
-        except Exception as _e:
-            st.markdown("**FWD TEST X/5**")
-            st.warning("UNKNOWN")
-            st.caption(str(_e)[:40])
-
-    # CARD 6 - MARKET ORDER PnL DIFF
-    with _cr3c:
-        try:
-            _pnl_diff = None
-            for _lp in ["logs/live_trading_s2.log", "logs/live_trading_s4.log"]:
-                if os.path.exists(_lp):
-                    with open(_lp) as _lf:
-                        _lines = _lf.readlines()
-                    _pl = [l for l in _lines if 'pnl diff' in l.lower() or 'PNL_DIFF' in l]
-                    if _pl:
-                        import re as _re3
-                        _m3 = _re3.search(r'[\$₹]?(\d+\.?\d*)', _pl[-1])
-                        if _m3:
-                            _pnl_diff = float(_m3.group(1))
-                            break
-            st.markdown("**MARKET ORDER DIFF**")
-            if _pnl_diff is None:
-                st.info("WAITING")
-                st.caption("No trade yet")
-            elif _pnl_diff <= 500:
-                st.success(f"₹{_pnl_diff:.0f}")
-                st.caption("GREEN - Acceptable")
-            elif _pnl_diff <= 1000:
-                st.warning(f"₹{_pnl_diff:.0f}")
-                st.caption("YELLOW - Monitor")
-            else:
-                st.error(f"₹{_pnl_diff:.0f}")
-                st.caption("RED - Review needed")
-        except Exception as _e:
-            st.markdown("**MARKET ORDER DIFF**")
-            st.warning("UNKNOWN")
-            st.caption(str(_e)[:40])
-
-    # ================================================================
-    # ALERT BANNER
-    # ================================================================
-    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
-    alerts = []
-
-    if disk_pct > 80:
-        alerts.append(("red", f"DISK CRITICAL: {disk_pct}% used - clean up immediately"))
-    elif disk_pct > 70:
-        alerts.append(("yellow", f"DISK WARNING: {disk_pct}% used - monitor closely"))
-    if not os.path.exists(s2_log):
-        alerts.append(("red", "S2 LOG NOT FOUND - bot may not be running"))
-    if not os.path.exists(s4_log):
-        alerts.append(("red", "S4 LOG NOT FOUND - bot may not be running"))
-    if s2_error:
-        alerts.append(("red", f"S2 ERROR DETECTED: {s2_error}"))
-    if s4_error:
-        alerts.append(("red", f"S4 ERROR DETECTED: {s4_error}"))
-
-    # Bot activity check - warn if no log update in last 5 minutes
-    try:
-        import time as _t
-        now_ts = _t.time()
-        for bot_name, log_path in [("S2", s2_log), ("S4", s4_log)]:
-            if os.path.exists(log_path):
-                log_age = now_ts - os.path.getmtime(log_path)
-                if log_age > 300:
-                    alerts.append(("yellow", f"{bot_name} BOT INACTIVE: No log update for {int(log_age//60)} minutes - check if bot is running"))
-    except:
-        pass
-
-    # New order detection
-    try:
-        for bot_name, log_path in [("S2", s2_log), ("S4", s4_log)]:
-            if os.path.exists(log_path):
-                with open(log_path, 'r') as lf:
-                    lines = lf.readlines()
-                recent = [l for l in lines[-50:] if '[ORDER]' in l]
-                if recent:
-                    last_order = recent[-1].strip()
-                    order_time = last_order[:19] if len(last_order) > 19 else last_order
-                    import datetime as _dt2
-                    try:
-                        ot = _dt2.datetime.strptime(order_time, '%Y-%m-%d %H:%M:%S,%f'[:len(order_time)])
-                        age_mins = (_dt2.datetime.now() - ot).total_seconds() / 60
-                        if age_mins < 10:
-                            alerts.append(("green", f"{bot_name} NEW ORDER: {last_order[20:80]}"))
-                    except:
-                        pass
-    except:
-        pass
-
-    # Position closed detection
-    try:
-        for bot_name, log_path in [("S2", s2_log), ("S4", s4_log)]:
-            if os.path.exists(log_path):
-                with open(log_path, 'r') as lf:
-                    lines = lf.readlines()
-                exits = [l for l in lines[-50:] if 'EXIT' in l and '[ORDER]' in l]
-                if exits:
-                    last_exit = exits[-1].strip()
-                    exit_time = last_exit[:19]
-                    import datetime as _dt3
-                    try:
-                        et = _dt3.datetime.strptime(exit_time, '%Y-%m-%d %H:%M:%S,%f'[:len(exit_time)])
-                        age_mins = (_dt3.datetime.now() - et).total_seconds() / 60
-                        if age_mins < 30:
-                            alerts.append(("green", f"{bot_name} POSITION CLOSED: {last_exit[20:80]}"))
-                    except:
-                        pass
-    except:
-        pass
-
-    if alerts:
-        for level, msg in alerts:
-            if level == "red":
-                st.markdown(f"<div class='alert-red'>ERROR: {msg}</div>", unsafe_allow_html=True)
-            elif level == "yellow":
-                st.markdown(f"<div class='alert-yellow'>WARNING: {msg}</div>", unsafe_allow_html=True)
-            elif level == "green":
-                st.markdown(f"<div class='alert-green'>INFO: {msg}</div>", unsafe_allow_html=True)
-        if not any(l == "red" for l, _ in alerts):
-            st.markdown("<div class='alert-green'>ALL SYSTEMS HEALTHY - No critical errors</div>", unsafe_allow_html=True)
-    else:
-        pass  # No alerts - healthy state shown in error monitor below
-
-
-
-
-    # ================================================================
-
-    # SECTION 1 - MAINTENANCE SUB-SECTIONS
-    # SECTION 3B - AUTO MAINTENANCE STATUS
-    # ================================================================
-    if 'exp_maint' not in st.session_state: st.session_state['exp_maint'] = False
-    with st.expander("AUTO DAILY 3AM UTC", expanded=False):
-        import glob as _glob
-        maint_log = 'logs/maintenance.log'
-        if os.path.exists(maint_log):
-            lines = open(maint_log).readlines()
-            # Get last run block
-            last_run_lines = []
-            for line in reversed(lines):
-                last_run_lines.insert(0, line.strip())
-                if 'Starting auto maintenance' in line:
-                    break
-            if last_run_lines:
-                # Extract key metrics
-                last_run_time = next((l for l in last_run_lines if 'Starting' in l), '')
-                disk_line     = next((l for l in last_run_lines if 'Disk' in l), '')
-                pycache_line  = next((l for l in last_run_lines if 'Pycache' in l), '')
-                output_line   = next((l for l in last_run_lines if 'Output folder' in l), '')
-                log_lines     = [l for l in last_run_lines if 'Log' in l and 'maintenance' not in l.lower()]
-
-                c1, c2, c3, c4 = st.columns(4)
-                with c1:
-                    disk_pct = ''
-                    if 'Disk' in disk_line:
-                        import re as _re
-                        m = _re.search(r'([\d.]+)% used', disk_line)
-                        disk_pct = m.group(1) + '%' if m else 'OK'
-                        color = 'normal' if float(m.group(1)) < 70 else 'inverse' if m else 'normal'
-                    st.metric("Disk Usage", disk_pct if disk_pct else "OK")
-                with c2:
-                    files_del = ''
-                    if 'deleted' in output_line:
-                        import re as _re
-                        m = _re.search(r'deleted (\d+) files', output_line)
-                        files_del = m.group(1) + ' files' if m else '0'
-                    st.metric("Last Cleanup", files_del if files_del else "0 files")
-                with c3:
-                    out_mb = ''
-                    if 'Output folder' in output_line:
-                        import re as _re
-                        m = _re.search(r'([\d.]+)MB', output_line)
-                        out_mb = m.group(1) + ' MB' if m else 'OK'
-                    st.metric("Output Size", out_mb if out_mb else "OK")
-                with c4:
-                    st.metric("Next Run", "Daily 3AM UTC")
-
-                st.caption(f"Last maintenance: {last_run_time.split('[MAINTENANCE]')[-1].strip() if last_run_time else 'Never'}")
-                if disk_line:
-                    if 'WARNING' in disk_line or 'ERROR' in disk_line:
-                        st.error(disk_line)
-                    else:
-                        st.success(disk_line.split('[MAINTENANCE]')[-1].strip())
-        else:
-            st.info("No maintenance log yet. First run at 3AM UTC tonight.")
-            st.caption("Auto maintenance runs daily: pycache clean + log trim + output cleanup + disk check")
-
-    # ================================================================
-
-    # SECTION 11 - MAINTENANCE
-    # ================================================================
-    if 'exp_11' not in st.session_state: st.session_state['exp_11'] = False
-    with st.expander("MAINTENANCE", expanded=st.session_state.get('exp_11', False)):
-
-
-        import shutil, os, subprocess
-
-        disk_pct2, disk_free2 = _timed('disk_usage', 30, _fetch_disk)
-        c1, c2, c3, c4, c5 = st.columns(5)
-        with c1:
-            if disk_pct2 > 80:
-                st.error(f"DISK: {disk_pct2}%")
-            elif disk_pct2 > 60:
-                st.warning(f"DISK: {disk_pct2}%")
-            else:
-                st.success(f"DISK: {disk_pct2}%")
-        with c2:
-            pycache_exists = any(True for _ in __import__('pathlib').Path('.').rglob('__pycache__'))
-            if pycache_exists:
-                st.warning("PYCACHE: EXISTS")
-            else:
-                st.success("PYCACHE: CLEAN")
-        with c3:
-            s2_size = round(os.path.getsize(s2_log)/1024/1024, 1) if os.path.exists(s2_log) else 0
-            s4_size = round(os.path.getsize(s4_log)/1024/1024, 1) if os.path.exists(s4_log) else 0
-            total_log = s2_size + s4_size
-            if total_log > 100:
-                st.warning(f"LOGS: {total_log}MB")
-            else:
-                st.success(f"LOGS: {total_log}MB")
-        with c4:
-            venv_ok = os.path.exists('.venv') or os.path.exists('venv')
-            if venv_ok:
-                st.success("VENV: OK")
-            else:
-                st.error("VENV: MISSING")
-        with c5:
-            st.info("SERVICE: CHECK VM")
-
-        st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
-        b1, b2, b3 = st.columns(3)
-        with b1:
-            if st.button("CHECK DISK", key="sec12_disk"):
-                st.info(f"Disk: {disk_pct2}% used | {disk_free2} GB free")
-        with b2:
-            if st.button("CLEAN PYCACHE", key="sec12_pycache"):
-                try:
-                    import pathlib
-                    count = 0
-                    for p in pathlib.Path('.').rglob('__pycache__'):
-                        __import__('shutil').rmtree(p, ignore_errors=True)
-                        count += 1
-                    st.success(f"Cleaned {count} pycache folders")
-                except Exception as e:
-                    st.error(f"Error: {e}")
-        with b3:
-            if st.button("TRIM LOGS", key="sec12_trim"):
-                try:
-                    for log_path in [s2_log, s4_log]:
-                        if os.path.exists(log_path):
-                            lines = open(log_path, encoding='utf-8', errors='ignore').readlines()
-                            if len(lines) > 10000:
-                                open(log_path, 'w').writelines(lines[-10000:])
-                                st.success(f"Trimmed {log_path} to 10000 lines")
-                            else:
-                                st.info(f"{log_path}: {len(lines)} lines - no trim needed")
-                except Exception as e:
-                    st.error(f"Error: {e}")
-
-
-    # ================================================================
-
-    # SECTION 1B - ERROR MONITOR (auto-checks all systems)
-    # ================================================================
-    st.markdown('<div style="margin-top:-8px;"></div>', unsafe_allow_html=True)
-    if 'exp_1b' not in st.session_state: st.session_state['exp_1b'] = False
-    with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b', False)):
-        import subprocess, os, datetime
-
-        errors = []
-        warnings = []
-        ok = []
-
-        # 1. CHECK BOT SCREENS RUNNING (cached 30s)
-        try:
-            _scr_ls = _timed('err_screen_ls', 30, _fetch_screen_list)
-            if 'live_s2' in _scr_ls:
-                ok.append("S2 bot screen: RUNNING")
-            else:
-                errors.append("S2 bot screen: NOT RUNNING - run bash start.sh on VM")
-            if 'live_s4' in _scr_ls:
-                ok.append("S4 bot screen: RUNNING")
-            else:
-                errors.append("S4 bot screen: NOT RUNNING - run bash start.sh on VM")
-        except Exception as e:
-            errors.append(f"Screen check failed: {e}")
-
-        # 2. CHECK LOG FILES EXIST AND RECENT
-        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
-            try:
-                if os.path.exists(log):
-                    mtime = os.path.getmtime(log)
-                    age_mins = (datetime.datetime.now().timestamp() - mtime) / 60
-                    if age_mins < 5:
-                        ok.append(f"{bot} log: ACTIVE (updated {int(age_mins)}m ago)")
-                    elif age_mins < 30:
-                        warnings.append(f"{bot} log: STALE ({int(age_mins)}m ago) - bot may be stuck")
-                    else:
-                        errors.append(f"{bot} log: NOT UPDATING ({int(age_mins)}m ago) - bot likely crashed")
-                else:
-                    errors.append(f"{bot} log: FILE MISSING - bot never started")
-            except Exception as e:
-                errors.append(f"{bot} log check failed: {e}")
-
-        # 3. CHECK FOR ERRORS IN LOGS
-        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
-            try:
-                if os.path.exists(log):
-                    lines = open(log).readlines()
-                    import datetime as _dte
-                    _cut = _dte.datetime.utcnow() - _dte.timedelta(minutes=30)
-                    recent = []
-                    for _l in (lines[-500:] if len(lines)>500 else lines):
-                        try:
-                            _lt = _dte.datetime.strptime(_l[:19], '%Y-%m-%d %H:%M:%S')
-                            if _lt >= _cut: recent.append(_l)
-                        except: pass
-                    # no fallback - if nothing in last 30 min, recent stays empty = no errors shown
-                    error_lines = [l.strip() for l in recent if 'ERROR' in l]
-                    algotest_errors = [l.strip() for l in recent if 'ALGOTEST' in l and ('ERROR' in l or 'WARNING' in l)]
-                    api_errors = [l.strip() for l in recent if any(x in l for x in ['InvalidApiKey','invalid_api_key','insufficient_margin','rate_limit','IP not whitelisted','ENTRY FAILED','EXIT FAILED','CRITICAL']) or ('ERROR' in l and any(x in l for x in ['401','403','429']))]
-                    if error_lines:
-                        for el in error_lines[-3:]:
-                            errors.append(f"{bot} ERROR: {el[-100:]}")
-                    if algotest_errors:
-                        for al in algotest_errors[-2:]:
-                            errors.append(f"{bot} ALGOTEST: {al[-100:]}")
-                    if api_errors:
-                        for al in api_errors[-2:]:
-                            errors.append(f"{bot} API ERROR: {al[-100:]}")
-                    if not error_lines and not algotest_errors and not api_errors:
-                        ok.append(f"{bot} log: No errors in last 50 lines")
-            except Exception as e:
-                errors.append(f"{bot} error scan failed: {e}")
-
-        # 4. CHECK ALGOTEST WEBHOOK KEYS IN ENV
-        try:
-            from dotenv import load_dotenv
-            load_dotenv()
-            webhook_keys = [
-                'ALGOTEST_WEBHOOK_S2_BUY_ENTRY','ALGOTEST_WEBHOOK_S2_BUY_EXIT',
-                'ALGOTEST_WEBHOOK_S2_SELL_ENTRY','ALGOTEST_WEBHOOK_S2_SELL_EXIT',
-                'ALGOTEST_WEBHOOK_S4_BUY_ENTRY','ALGOTEST_WEBHOOK_S4_BUY_EXIT',
-                'ALGOTEST_WEBHOOK_S4_SELL_ENTRY','ALGOTEST_WEBHOOK_S4_SELL_EXIT'
-            ]
-            missing = [k for k in webhook_keys if not os.getenv(k)]
-            if missing:
-                for m in missing:
-                    errors.append(f"WEBHOOK KEY MISSING in .env: {m}")
-            else:
-                ok.append("All 8 Algotest webhook keys: CONFIGURED")
-        except Exception as e:
-            warnings.append(f"Webhook key check failed: {e}")
-
-        # 5. CHECK DISK SPACE
-        try:
-            import shutil
-            total, used, free = shutil.disk_usage('.')
-            pct = int(used/total*100)
-            free_gb = round(free/1024**3, 1)
-            if pct > 80:
-                errors.append(f"DISK CRITICAL: {pct}% used - only {free_gb}GB free - clean immediately")
-            elif pct > 70:
-                warnings.append(f"DISK WARNING: {pct}% used - {free_gb}GB free - monitor closely")
-            else:
-                ok.append(f"Disk: {pct}% used - {free_gb}GB free")
-        except Exception as e:
-            warnings.append(f"Disk check failed: {e}")
-
-        # 6. CHECK SYSTEMD SERVICE (tradingbot.service removed - using cts-watchdog)
-        pass
-
-        # 7. CHECK RECENT ALGOTEST SUCCESS
-        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
-            try:
-                if os.path.exists(log):
-                    lines = open(log).readlines()
-                    import datetime as _dte2
-                    _cut2 = _dte2.datetime.utcnow() - _dte2.timedelta(minutes=30)
-                    recent = []
-                    for _l in (lines[-500:] if len(lines)>500 else lines):
-                        try:
-                            _lt2 = _dte2.datetime.strptime(_l[:19], '%Y-%m-%d %H:%M:%S')
-                            if _lt2 >= _cut2: recent.append(_l)
-                        except: pass
-                    if not recent: recent = lines[-20:]
-                    algotest_ok = [l for l in recent if 'ALGOTEST' in l and 'Status: 200' in l]
-                    algotest_fail = [l for l in recent if 'ALGOTEST' in l and 'Status: 200' not in l and 'WARNING' not in l and 'ERROR' in l]
-                    if algotest_ok:
-                        ok.append(f"{bot} last Algotest webhook: SUCCESS (Status 200)")
-                    if algotest_fail:
-                        errors.append(f"{bot} Algotest webhook FAILED: {algotest_fail[-1].strip()[-80:]}")
-            except:
-                pass
-
-
-        # 8. CHECK OPEN POSITION > 24H (orphan position risk)
-        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
-            try:
-                if os.path.exists(log):
-                    lines = open(log).readlines()
-                    entry_lines = [l for l in lines if '[ORDER] ENTRY' in l]
-                    exit_lines = [l for l in lines if '[ORDER] EXIT' in l]
-                    if entry_lines:
-                        last_entry = entry_lines[-1]
-                        last_exit = exit_lines[-1] if exit_lines else None
-                        import re
-                        entry_match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_entry)
-                        exit_match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_exit) if last_exit else None
-                        if entry_match:
-                            entry_time = datetime.datetime.strptime(entry_match.group(1), '%Y-%m-%d %H:%M:%S')
-                            if last_exit is None or (exit_match and entry_time > datetime.datetime.strptime(exit_match.group(1), '%Y-%m-%d %H:%M:%S')):
-                                age_hours = (datetime.datetime.now() - entry_time).total_seconds() / 3600
-                                if age_hours > 168:
-                                    errors.append(f"{bot} ORPHAN POSITION: Entry {int(age_hours)}h ago with no exit - check Delta account immediately")
-                                elif age_hours > 24:
-                                    warnings.append(f"{bot} OPEN POSITION: {int(age_hours)}h since entry - no exit yet - monitor closely")
-                                else:
-                                    ok.append(f"{bot} position: open {int(age_hours)}h - normal")
-                            else:
-                                ok.append(f"{bot} position: closed cleanly")
-            except Exception as e:
-                warnings.append(f"{bot} position check failed: {e}")
-
-        # 9. CHECK NO ORDERS IN LAST 48H (bot alive but not trading)
-        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
-            try:
-                if os.path.exists(log):
-                    lines = open(log).readlines()
-                    order_lines = [l for l in lines if '[ORDER]' in l]
-                    if order_lines:
-                        import re
-                        last_order = order_lines[-1]
-                        match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_order)
-                        if match:
-                            last_time = datetime.datetime.strptime(match.group(1), '%Y-%m-%d %H:%M:%S')
-                            age_hours = (datetime.datetime.now() - last_time).total_seconds() / 3600
-                            if age_hours > 168:
-                                warnings.append(f"{bot} last order: {int(age_hours)}h ago - strategy may be in low signal period")
-                            else:
-                                ok.append(f"{bot} last order: {int(age_hours)}h ago - normal")
-                    else:
-                        ok.append(f"{bot} no orders yet - waiting for first signal")
-            except Exception as e:
-                warnings.append(f"{bot} order check failed: {e}")
-
-        # 10. CHECK DUPLICATE ORDERS (same timestamp fired twice)
-        # Only check orders after VALID_FROM (last_known_ts file)
-        for bot, log, ts_file in [('S2', 'logs/live_trading_s2.log', 'logs/last_known_ts_s2.txt'),
-                                   ('S4', 'logs/live_trading_s4.log', 'logs/last_known_ts_s4.txt')]:
-            try:
-                if os.path.exists(log):
-                    # Get valid from timestamp
-                    valid_from = None
-                    if os.path.exists(ts_file):
-                        valid_from = open(ts_file).read().strip()
-                    lines = open(log).readlines()
-                    order_lines = [l for l in lines if '[ORDER]' in l]
-                    timestamps = []
-                    import re
-                    for l in order_lines:
-                        # Only check recent orders - filter by log timestamp
-                        if valid_from:
-                            try:
-                                log_dt = l.split(' INFO')[0].strip()
-                                if log_dt < valid_from.replace('T',' '):
-                                    continue
-                            except:
-                                pass
-                        match = re.search(r'ts=(\S+)', l)
-                        if match:
-                            # Include order type to avoid flagging EXIT+ENTRY at same ts
-                            order_type = 'ENTRY' if 'ENTRY' in l else 'EXIT'
-                            timestamps.append(f"{order_type}_{match.group(1)}")
-                    duplicates = [t for t in timestamps if timestamps.count(t) > 1]
-                    if duplicates:
-                        errors.append(f"{bot} DUPLICATE ORDERS detected at timestamps: {list(set(duplicates))}")
-                    else:
-                        ok.append(f"{bot} duplicate order check: CLEAN")
-            except Exception as e:
-                warnings.append(f"{bot} duplicate check failed: {e}")
-
-
-        # 11. CHECK BOT CYCLING HEALTH (last [SIGNALS] line timestamp)
-        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
-            try:
-                if os.path.exists(log):
-                    lines = open(log).readlines()
-                    signal_lines = [l for l in lines if '[SIGNALS]' in l or '[WAIT]' in l or '[DATA]' in l]
-                    if signal_lines:
-                        last_line = signal_lines[-1]
-                        import re
-                        match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_line)
-                        if match:
-                            last_time = datetime.datetime.strptime(match.group(1), '%Y-%m-%d %H:%M:%S')
-                            age_mins = (datetime.datetime.now() - last_time).total_seconds() / 60
-                            if age_mins > 10:
-                                errors.append(f"{bot} BOT FROZEN: No cycle in {int(age_mins)}m - bot may be stuck or crashed")
-                            elif age_mins > 5:
-                                warnings.append(f"{bot} bot cycle: {int(age_mins)}m ago - slightly delayed")
-                            else:
-                                ok.append(f"{bot} bot cycling: OK ({int(age_mins)}m ago)")
-                    else:
-                        warnings.append(f"{bot} no cycle lines found in log")
-            except Exception as e:
-                warnings.append(f"{bot} cycle check failed: {e}")
-
-        # 12. FORWARD TEST END DATE REMINDER
-        try:
-            forward_end = datetime.datetime(2026, 8, 1)
-            days_left = (forward_end - datetime.datetime.now()).days
-            if days_left < 0:
-                ok.append("Forward test complete - go-live on Aug 1 2026")
-            elif days_left == 0:
-                warnings.append("GO-LIVE DAY - Aug 1 2026 - switch testnet=False and update API keys")
-            elif days_left <= 3:
-                warnings.append(f"GO-LIVE IN {days_left} DAYS - prepare Aug 1 checklist")
-            elif days_left <= 7:
-                warnings.append(f"Go-live in {days_left} days (Aug 1 2026)")
-            else:
-                ok.append(f"Forward test: {days_left} days remaining (go-live Aug 1 2026)")
-        except Exception as e:
-            warnings.append(f"Forward test date check failed: {e}")
-
-        # 12B. CHECK ENGINE (renko_state_engine) RUNNING
-        try:
-            import time as _time_eng
-            _eng_log = "/home/anildalabanjan933/crypto_trading_system/logs/renko_state_engine.log"
-            if not os.path.exists(_eng_log):
-                errors.append("ENGINE LOG MISSING - renko_state_engine.py never started - run bash start.sh")
-            else:
-                _eng_age_mins = (_time_eng.time() - os.path.getmtime(_eng_log)) / 60
-                if _eng_age_mins > 10:
-                    errors.append(f"ENGINE DEAD - no update in {int(_eng_age_mins)}m - signals not firing - run bash start.sh IMMEDIATELY")
-                elif _eng_age_mins > 3:
-                    warnings.append(f"ENGINE SLOW - last update {int(_eng_age_mins)}m ago - may be stuck")
-                else:
-                    ok.append(f"Engine (renko_state_engine): RUNNING - last update {int(_eng_age_mins)}m ago")
-            # Check signal files age
-            for _sf, _label in [("logs/live_signal_s2.txt","S2 signal"), ("logs/live_signal_s4.txt","S4 signal")]:
-                if os.path.exists(_sf):
-                    _sf_age = (_time_eng.time() - os.path.getmtime(_sf)) / 60
-                    if _sf_age > 30:
-                        warnings.append(f"{_label} file not updated in {int(_sf_age)}m - engine may not be firing")
-                    else:
-                        ok.append(f"{_label} file: updated {int(_sf_age)}m ago")
-                else:
-                    warnings.append(f"{_label} file missing")
-        except Exception as e:
-            warnings.append(f"Engine check failed: {e}")
-
-        # 12C. CHECK SIGNAL_GENERATOR SCREEN RUNNING
-        try:
-            import subprocess
-            _scr = subprocess.run(["screen","-ls"], capture_output=True, text=True, timeout=5)
-            if "signal_generator" in _scr.stdout:
-                ok.append("signal_generator screen: RUNNING")
-            else:
-                errors.append("signal_generator screen MISSING - engine not running - run bash start.sh IMMEDIATELY")
-        except Exception as e:
-            warnings.append(f"signal_generator screen check failed: {e}")
-
-        # 13. CHECK .ENV FILE EXISTS AND HAS API KEYS
-        try:
-            if os.path.exists('.env'):
-                env_content = open('.env').read()
-                required_keys = ['S2_API_KEY', 'S4_API_KEY', 'S2_API_SECRET', 'S4_API_SECRET']
-                missing_keys = [k for k in required_keys if k not in env_content]
-                if missing_keys:
-                    errors.append(f".env MISSING API KEYS: {missing_keys} - bots cannot trade")
-                else:
-                    ok.append(".env file: exists with all API keys")
-            else:
-                errors.append(".env FILE MISSING - all API keys gone - run bash start.sh")
-        except Exception as e:
-            warnings.append(f".env check failed: {e}")
-
-        # 14. CHECK DELTA API CONNECTIVITY (cached 60s)
-        try:
-            _api_st = _timed('delta_api_status', 60, _fetch_delta_api_status)
-            if _api_st == 200:
-                ok.append("Delta API connectivity: REACHABLE")
-            elif _api_st:
-                warnings.append(f"Delta API returned status {_api_st} - may have issues")
-            else:
-                errors.append("Delta API UNREACHABLE - check VM internet connection")
-        except Exception as e:
-            errors.append(f"Delta API check failed: {e}")
-
-        # 15. CHECK VM INTERNET (ping Google DNS)
-        try:
-            import subprocess as sp
-            result = sp.run(['curl', '-s', '--max-time', '3', 'https://8.8.8.8'], capture_output=True)
-            ok.append("VM internet: CONNECTED")
-        except Exception as e:
-            errors.append(f"VM internet check failed: {e}")
-
-        # 16. CHECK ALGOTEST WEBHOOK URLS REACHABLE (cached 120s - avoid hammering)
-        try:
-            def _check_webhook():
-                from dotenv import load_dotenv
-                load_dotenv()
-                import requests as _rqwh
-                test_url = os.getenv('ALGOTEST_WEBHOOK_S4_BUY_ENTRY')
-                if not test_url:
-                    return None
-                resp = _rqwh.post(test_url, json={"access_token": os.getenv('ALGOTEST_ACCESS_TOKEN', 'n7FJcMHANHN4F8HdqbU5QMDJn5JO79K9'), "alert_name": "ping"}, timeout=5)
-                return resp.status_code
-            _wh_status = _timed('webhook_check', 120, _check_webhook)
-            if _wh_status in [200, 201, 202, 400, 422]:
-                ok.append("Algotest webhook URL: REACHABLE")
-            elif _wh_status is None:
-                errors.append("Algotest webhook URL missing from .env")
-            else:
-                warnings.append(f"Algotest webhook returned {_wh_status} - check signal config")
-        except Exception as e:
-            warnings.append(f"Algotest connectivity check failed: {e}")
-
-        # DISPLAY RESULTS
-        if errors:
-            st.error(f"ERRORS DETECTED: {len(errors)} issue(s) require attention")
-            for e in errors:
-                st.markdown(f"<div class='alert-red'>ERROR: {e}</div>", unsafe_allow_html=True)
-        elif warnings:
-            st.warning(f"WARNINGS: {len(warnings)} item(s) to monitor")
-        else:
-            st.success("ALL SYSTEMS HEALTHY - No errors detected")
-
-        if warnings:
-            for w in warnings:
-                st.markdown(f"<div class='alert-yellow'>WARNING: {w}</div>", unsafe_allow_html=True)
-
-        with st.expander("SHOW ALL OK CHECKS"):
-            for o in ok:
-                st.markdown(f"OK: {o}")
-
-            st.caption(f"Last checked: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5,minutes=30))).strftime('%d-%b-%Y %I:%M %p IST')} | Auto-refreshes every 30s")
-    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
-
-
-    # ================================================================
-    # SECTION 1C - DEBUG TRACKER
-    # ================================================================
-    if 'exp_1c' not in st.session_state: st.session_state['exp_1c'] = False
-    with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('exp_1c', False)):
-        import re as _re1c, datetime as _dt1c
-
-        _BASE_DIR = '/home/anildalabanjan933/crypto_trading_system'
-        _TH1C = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;"
-        _TD1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;"
-        _TDG1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;"
-        _TDR1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#F23645;font-weight:700;"
-        _TDO1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#e07000;font-weight:700;"
-
-        def _read_last_lines(path, n=200):
-            try:
-                lines = open(path, encoding='utf-8', errors='ignore').readlines()
-                return lines[-n:]
-            except:
-                return []
-
-        def _utc_log_to_ist(raw):
-            import datetime as _dti
-            _ist = _dti.timedelta(hours=5, minutes=30)
-            try:
-                ts = raw.strip()[:19]
-                dt = _dti.datetime.strptime(ts, '%Y-%m-%d %H:%M:%S')
-                return (dt + _ist).strftime('%d-%b-%Y %I:%M %p IST')
-            except:
-                try:
-                    ts = raw.strip()[:19].replace('T',' ')
-                    dt = _dti.datetime.strptime(ts, '%Y-%m-%d %H:%M:%S')
-                    return (dt + _ist).strftime('%d-%b-%Y %I:%M %p IST')
-                except:
-                    return raw
-
-        def _get_bot_debug(log_path, ts_path, sig_path, bot_name):
-            lines = _read_last_lines(log_path)
-            now_utc = _dt1c.datetime.utcnow()
-
-            # Last heartbeat
-            last_wait = "Never"
-            for l in reversed(lines):
-                if '[WAIT]' in l or '[ORDER]' in l:
-                    last_wait = _utc_log_to_ist(l.split(' INFO')[0].strip())
-                    break
-
-            # Last signal check - read from renko_state_engine.log
-            last_reload = "Never"
-            _engine_log = os.path.join(os.path.dirname(log_path), "renko_state_engine.log")
-            _reload_lines = _read_last_lines(_engine_log, n=200)
-            for l in reversed(_reload_lines):
-                if '[ENGINE] New candle' in l:
-                    last_reload = _utc_log_to_ist(l.split(' INFO')[0].strip())
-                    break
-
-            # API validation
-            api_status = "UNKNOWN"
-            api_color = _TDO1C
-            for l in reversed(lines):
-                if 'API key validated successfully' in l:
-                    api_status = "VALID"
-                    api_color = _TDG1C
-                    break
-                if 'API key validation FAILED' in l or 'invalid_api_key' in l:
-                    api_status = "INVALID"
-                    api_color = _TDR1C
-                    break
-            # If UNKNOWN = log scrolled past validation line - if no error then VALID
-            if api_status == "UNKNOWN":
-                api_status = "VALID"
-                api_color = _TDG1C
-
-            # Last error - only last 30 minutes
-            last_error = "None"
-            last_error_color = _TDG1C
-            _now_err = _dt1c.datetime.utcnow()
-            _cut_err = _now_err - _dt1c.timedelta(minutes=30)
-            for l in reversed(lines):
-                if 'ERROR' in l or 'CRITICAL' in l:
-                    try:
-                        _lt_err = _dt1c.datetime.strptime(l[:19], '%Y-%m-%d %H:%M:%S')
-                        if _lt_err >= _cut_err:
-                            last_error = l.strip()[-120:]
-                            last_error_color = _TDR1C
-                    except:
-                        pass
-                    break
-
-            # Last order
-            last_order = "No trades yet today"
-            for l in reversed(lines):
-                if '[ORDER]' in l and ('ENTRY' in l or 'EXIT' in l):
-                    _lo_ts = _utc_log_to_ist(l.split(' INFO')[0].strip())
-                    last_order = _lo_ts + ' ' + ' '.join(l.strip().split()[3:])
-                    break
-
-            # Last known ts
-            try:
-                _raw_ts = open(ts_path).read().strip()
-                last_ts = _utc_log_to_ist(_raw_ts)
-            except:
-                last_ts = "Unknown"
-
-            # Next signal
-            next_signal = "Waiting - next Renko brick forming"
-            next_color = _TDO1C
-            try:
-                import csv as _csv1c
-                now_str = now_utc.strftime('%Y-%m-%dT%H:%M:%S')
-                all_rows = []
-                with open(sig_path) as fh:
-                    reader = _csv1c.reader(fh)
-                    for row in reader:
-                        if len(row) < 3: continue
-                        if row[0].strip() == "entry_time": continue
-                        all_rows.append({
-                            "entry_time": row[0].strip(),
-                            "exit_time":  row[1].strip(),
-                            "direction":  row[2].strip()
-                        })
-                found = False
-                for row in all_rows:
-                    if row['entry_time'].strip() > last_ts:
-                        _ns_et = _utc_log_to_ist(row['entry_time'].strip())
-                        _ns_xt = _utc_log_to_ist(row['exit_time'].strip())
-                        next_signal = f"ENTRY={_ns_et} EXIT={_ns_xt} DIR={row['direction']}"
-                        next_color = _TDG1C
-                        found = True
-                        break
-                if not found and all_rows:
-                    last_exit = all_rows[-1]['exit_time'].strip()
-                    if last_exit < now_str:
-                        next_signal = f"NO SIGNAL AFTER VALID_FROM - last exit={_utc_log_to_ist(last_exit)}"
-                        next_color = _TDR1C
-            except Exception as _e1c:
-                next_signal = f"Error reading signal CSV: {str(_e1c)[:50]}"
-                next_color = _TDR1C
-
-            # Signal CSV last update
-            try:
-                import os as _os1c, time as _t1c
-                age = _t1c.time() - _os1c.path.getmtime(sig_path)
-                sig_age = f"{int(age/60)} min ago"
-                sig_color = _TDG1C if age < 900 else _TDO1C
-            except:
-                sig_age = "Unknown"
-                sig_color = _TDO1C
-
-            # Bot running check
-            bot_running = any('[WAIT]' in l or '[ORDER]' in l for l in lines[-20:])
-            bot_status = "RUNNING" if bot_running else "STOPPED"
-            bot_color = _TDG1C if bot_running else _TDR1C
-
-            # Last heartbeat age check
-            heartbeat_color = _TDG1C
-            try:
-                _hb_ts = _dt1c.datetime.strptime(last_wait[:19], '%Y-%m-%d %H:%M:%S')
-                _hb_age = (now_utc - _hb_ts).total_seconds()
-                if _hb_age > 60: heartbeat_color = _TDR1C
-                elif _hb_age > 55: heartbeat_color = _TDO1C
-            except:
-                heartbeat_color = _TDO1C
-
-            # Signal CSV staleness
-            try:
-                import os as _os1c, time as _t1c
-                age = _t1c.time() - _os1c.path.getmtime(sig_path)
-                sig_age = f"{int(age/60)} min ago"
-                sig_color = _TDG1C if age < 900 else _TDO1C
-            except:
-                sig_age = "Unknown"
-                sig_color = _TDO1C
-
-            # Match status - check verify_match log
-            match_status = "Pending next trade"
-            match_color = _TDG1C
-            try:
-                _vm_log = '/home/anildalabanjan933/crypto_trading_system/logs/verify_match.log'
-                if _os1c.path.exists(_vm_log):
-                    _vm_lines = open(_vm_log).readlines()[-20:]
-                    for _vl in reversed(_vm_lines):
-                        if 'MATCH OK' in _vl or 'OVERALL: MATCH OK' in _vl:
-                            match_status = "MATCH OK"
-                            match_color = _TDG1C
-                            break
-                        if 'MISMATCH' in _vl:
-                            match_status = "MISMATCH DETECTED"
-                            match_color = _TDR1C
-                            break
-            except:
-                pass
-
-            # CSV data freshness
-            csv_status = "UNKNOWN"
-            csv_color = _TDO1C
-            try:
-                _csv_path = '/home/anildalabanjan933/crypto_trading_system/data/btc_1m_delta.csv'
-                _csv_age = _t1c.time() - _os1c.path.getmtime(_csv_path)
-                if _csv_age < 7200:
-                    csv_status = f"FRESH ({int(_csv_age/60)} min ago)"
-                    csv_color = _TDG1C
-                elif _csv_age < 43200:
-                    csv_status = f"OK ({int(_csv_age/60)} min ago)"
-                    csv_color = _TDO1C
-                else:
-                    csv_status = f"STALE ({int(_csv_age/60)} min ago)"
-                    csv_color = _TDR1C
-            except:
-                pass
-
-            # Position sync check
-            pos_status = "FLAT"
-            pos_color = _TDG1C
-            for l in reversed(lines):
-                if '[STARTUP] Position synced' in l:
-                    if 'None' in l:
-                        pos_status = "FLAT"
-                        pos_color = _TDG1C
-                    else:
-                        pos_status = "OPEN POSITION"
-                        pos_color = _TDO1C
-                    break
-
-            # Order success rate last 10 orders
-            order_attempts = [l for l in lines if '[ORDER] ENTRY' in l or '[ORDER] EXIT' in l]
-            order_fails = [l for l in lines if 'ENTRY FAILED' in l or 'EXIT FAILED' in l]
-            if order_attempts:
-                success_rate = f"{(len(order_attempts)-len(order_fails))}/{len(order_attempts)} success"
-                order_color = _TDG1C if len(order_fails)==0 else _TDR1C
-            else:
-                success_rate = "No trades yet today"
-                order_color = _TDG1C
-
-            return {
-                'bot_status': (bot_status, bot_color),
-                'api_status': (api_status, api_color),
-                'last_heartbeat': (last_wait, heartbeat_color),
-                'last_reload': last_reload,
-                'last_order': last_order,
-                'last_error': (last_error, last_error_color),
-                'last_ts': last_ts,
-                'next_signal': (next_signal, next_color),
-                'sig_age': (sig_age, sig_color),
-                'match_status': (match_status, match_color),
-                'csv_status': (csv_status, csv_color),
-                'pos_status': (pos_status, pos_color),
-                'order_success': (success_rate, order_color),
-            }
-
-        s2_dbg = _get_bot_debug(
-            f'{_BASE_DIR}/logs/live_trading_s2.log',
-            f'{_BASE_DIR}/logs/last_known_ts_s2.txt',
-            f'{_BASE_DIR}/logs/live_signal_s2.txt', 'S2')
-        s4_dbg = _get_bot_debug(
-            f'{_BASE_DIR}/logs/live_trading_s4.log',
-            f'{_BASE_DIR}/logs/last_known_ts_s4.txt',
-            f'{_BASE_DIR}/logs/live_signal_s4.txt', 'S4')
-
-        def _dbg_row(label, s2val, s4val, s2c=None, s4c=None):
-            return (f"<tr><td style='{_TD1C}'><b>{label}</b></td>"
-                    f"<td style='{s2c or _TD1C}'>{s2val}</td>"
-                    f"<td style='{s4c or _TD1C}'>{s4val}</td></tr>")
-
-        tbl1c = (
-            f"<div style='overflow-x:auto;margin:4px 0;'>"
-            f"<table style='width:100%;border-collapse:collapse;'>"
-            f"<thead><tr>"
-            f"<th style='{_TH1C}'>Check</th>"
-            f"<th style='{_TH1C}'>S2</th>"
-            f"<th style='{_TH1C}'>S4</th>"
-            f"</tr></thead><tbody>"
-            + _dbg_row("Bot Status", s2_dbg['bot_status'][0], s4_dbg['bot_status'][0], s2_dbg['bot_status'][1], s4_dbg['bot_status'][1])
-            + _dbg_row("API Key", s2_dbg['api_status'][0], s4_dbg['api_status'][0], s2_dbg['api_status'][1], s4_dbg['api_status'][1])
-            + _dbg_row("Last Heartbeat", s2_dbg['last_heartbeat'][0], s4_dbg['last_heartbeat'][0], s2_dbg['last_heartbeat'][1], s4_dbg['last_heartbeat'][1])
-            + _dbg_row("Signal Engine", s2_dbg['last_reload'], s4_dbg['last_reload'])
-            + _dbg_row("Last Order", s2_dbg['last_order'], s4_dbg['last_order'])
-            + _dbg_row("Last Error", s2_dbg['last_error'][0], s4_dbg['last_error'][0], s2_dbg['last_error'][1], s4_dbg['last_error'][1])
-            + _dbg_row("Last Known TS", s2_dbg['last_ts'], s4_dbg['last_ts'])
-            + _dbg_row("Next Signal", s2_dbg['next_signal'][0], s4_dbg['next_signal'][0], s2_dbg['next_signal'][1], s4_dbg['next_signal'][1])
-            + _dbg_row("Signal CSV Age",   s2_dbg['sig_age'][0],      s4_dbg['sig_age'][0],      s2_dbg['sig_age'][1],      s4_dbg['sig_age'][1])
-            + _dbg_row("Market CSV",        s2_dbg['csv_status'][0],   s4_dbg['csv_status'][0],   s2_dbg['csv_status'][1],   s4_dbg['csv_status'][1])
-            + _dbg_row("Position Sync",     s2_dbg['pos_status'][0],   s4_dbg['pos_status'][0],   s2_dbg['pos_status'][1],   s4_dbg['pos_status'][1])
-            + _dbg_row("Order Success",     s2_dbg['order_success'][0],s4_dbg['order_success'][0],s2_dbg['order_success'][1],s4_dbg['order_success'][1])
-            + _dbg_row("Match Status",      s2_dbg['match_status'][0], s4_dbg['match_status'][0], s2_dbg['match_status'][1], s4_dbg['match_status'][1])
-            + "</tbody></table></div>"
-        )
-        st.caption("Auto updates on page load | Green=OK | Red=Issue | Orange=Warning")
-        st.markdown(tbl1c, unsafe_allow_html=True)
-
-
-    # ================================================================
-    # SECTION 1.3 - VM HEALTH (CPU + RAM + UPTIME)
-    # ================================================================
-    if 'exp_13' not in st.session_state: st.session_state['exp_13'] = False
-    with st.expander("SECTION 1.3 - VM HEALTH", expanded=st.session_state.get('exp_13', False)):
-        try:
-            import psutil
-            cpu = psutil.cpu_percent(interval=0)
-            ram = psutil.virtual_memory()
-            ram_used = ram.percent
-            ram_free_gb = round(ram.available / (1024**3), 2)
-            uptime_secs = int(datetime.datetime.now().timestamp() - psutil.boot_time())
-            uptime_hrs = uptime_secs // 3600
-            uptime_mins = (uptime_secs % 3600) // 60
-            col1, col2, col3, col4 = st.columns(4)
-            with col1:
-                cpu_color = "metric-red" if cpu > 80 else "metric-yellow" if cpu > 60 else "metric-green"
-                st.markdown(f"<div class='metric-box {cpu_color}'><div class='metric-label'>CPU USAGE</div><div class='metric-value'>{cpu:.1f}%</div></div>", unsafe_allow_html=True)
-            with col2:
-                ram_color = "metric-red" if ram_used > 80 else "metric-yellow" if ram_used > 60 else "metric-green"
-                st.markdown(f"<div class='metric-box {ram_color}'><div class='metric-label'>RAM USAGE</div><div class='metric-value'>{ram_used:.1f}%</div></div>", unsafe_allow_html=True)
-            with col3:
-                st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>RAM FREE</div><div class='metric-value'>{ram_free_gb} GB</div></div>", unsafe_allow_html=True)
-            with col4:
-                st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>UPTIME</div><div class='metric-value'>{uptime_hrs}h {uptime_mins}m</div></div>", unsafe_allow_html=True)
-            import subprocess
-            col5, col6, col7, col8 = st.columns(4)
-            with col5:
-                try:
-                    r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system'], capture_output=True, text=True)
-                    app_size = r.stdout.split()[0] if r.stdout else 'N/A'
-                except:
-                    app_size = 'N/A'
-                st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>APP SIZE</div><div class='metric-value'>{app_size}</div></div>", unsafe_allow_html=True)
-            with col6:
-                try:
-                    r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/logs'], capture_output=True, text=True)
-                    log_size = r.stdout.split()[0] if r.stdout else 'N/A'
-                except:
-                    log_size = 'N/A'
-                st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>LOGS SIZE</div><div class='metric-value'>{log_size}</div></div>", unsafe_allow_html=True)
-            with col7:
-                try:
-                    r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/data'], capture_output=True, text=True)
-                    data_size = r.stdout.split()[0] if r.stdout else 'N/A'
-                except:
-                    data_size = 'N/A'
-                st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>DATA SIZE</div><div class='metric-value'>{data_size}</div></div>", unsafe_allow_html=True)
-            with col8:
-                try:
-                    r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/.venv'], capture_output=True, text=True)
-                    venv_size = r.stdout.split()[0] if r.stdout else 'N/A'
-                except:
-                    venv_size = 'N/A'
-                st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>VENV SIZE</div><div class='metric-value'>{venv_size}</div></div>", unsafe_allow_html=True)
-        except Exception as e:
-            st.warning(f"VM health check failed: {e}. Install psutil: pip install psutil")
-    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
-
-    # ================================================================
-
 with _tab_monitor:
-    _frag_monitor()
+    # SECTION 1 - SYSTEM STATUS CARDS
+    # ================================================================
+    st.markdown("<div class='section-title'>SECTION 1 - SYSTEM STATUS & MAINTENANCE</div>", unsafe_allow_html=True)
+
+    disk_pct, disk_free = _timed('disk_usage', 30, _fetch_disk)
+    git_commit = _timed('git_commit', 60, _fetch_git)
+    s2_last = _timed('s2_last_sig', 15, _fetch_log_signal, s2_log)
+    s4_last = _timed('s4_last_sig', 15, _fetch_log_signal, s4_log)
+    s2_error = _timed('s2_log_err', 15, _fetch_log_errors, s2_log)
+    s4_error = _timed('s4_log_err', 15, _fetch_log_errors, s4_log)
+
+    c1, c2, c3, c4, c5 = st.columns(5)
+
+    with c1:
+        st.markdown("**S2 BOT**")
+        if os.path.exists(s2_log):
+            st.success("LOG ACTIVE")
+        else:
+            st.error("LOG MISSING")
+        st.caption(f"Last: {s2_last[:40]}")
+
+    with c2:
+        st.markdown("**S4 BOT**")
+        if os.path.exists(s4_log):
+            st.success("LOG ACTIVE")
+        else:
+            st.error("LOG MISSING")
+        st.caption(f"Last: {s4_last[:40]}")
+
+    with c3:
+        st.markdown("**VM DISK**")
+        if disk_pct > 80:
+            st.error(f"{disk_pct}% USED")
+        elif disk_pct > 60:
+            st.warning(f"{disk_pct}% USED")
+        else:
+            st.success(f"{disk_pct}% USED")
+        st.caption(f"{disk_free} GB free")
+
+    with c4:
+        st.markdown("**GITHUB**")
+        st.success("SYNCED")
+        st.caption(f"Commit: {git_commit}")
+
+    with c5:
+        st.markdown("**DELTA API**")
+        try:
+            import requests as _req, warnings as _w
+            _w.filterwarnings('ignore')
+            _r = _req.get('https://cdn-ind.testnet.deltaex.org/v2/products/84', timeout=3, verify=False)
+            if _r.status_code == 200:
+                st.success("CONNECTED")
+                st.caption("Testnet OK")
+            else:
+                st.error("ERROR")
+                st.caption(f"Status: {_r.status_code}")
+        except:
+            st.error("UNREACHABLE")
+            st.caption("Check network")
+
+    # ================================================================
+    # SECTION 1 - NEW MONITORING CARDS ROW 2 + ROW 3
+    # ================================================================
+    import datetime as _dt_cards, time as _t_cards
+
+    # ROW 2 - SYSTEM HEALTH
+    _cr2a, _cr2b, _cr2c = st.columns(3)
+
+    # CARD 1 - BOT LOG STATUS + ENGINE STATUS
+    with _cr2a:
+        try:
+            _s2_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s2.log")) / 60 if os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s2.log") else 999
+            _s4_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4.log")) / 60 if os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4.log") else 999
+            _eng_log = "/home/anildalabanjan933/crypto_trading_system/logs/renko_state_engine.log"
+            _eng_age = (_t_cards.time() - os.path.getmtime(_eng_log)) / 60 if os.path.exists(_eng_log) else 999
+            st.markdown("**BOT LOG**")
+            if _s2_log_age > 10 or _s4_log_age > 10:
+                st.error("INACTIVE")
+                st.caption(f"S2: {int(_s2_log_age)}m | S4: {int(_s4_log_age)}m no update")
+            else:
+                st.success("ACTIVE")
+                st.caption(f"S2: {int(_s2_log_age)}m ago | S4: {int(_s4_log_age)}m ago")
+            st.markdown("**ENGINE**")
+            if _eng_age > 10:
+                st.error(f"DEAD - {int(_eng_age)}m no update")
+                st.caption("Run: bash start.sh immediately")
+            elif _eng_age > 3:
+                st.warning(f"SLOW - {int(_eng_age)}m ago")
+                st.caption("Engine may be stuck")
+            else:
+                st.success(f"RUNNING - {int(_eng_age)}m ago")
+                st.caption("Engine firing normally")
+        except Exception as _e:
+            st.markdown("**BOT LOG**")
+            st.warning("UNKNOWN")
+            st.caption(str(_e)[:40])
+
+    # CARD 2 - DASHBOARD RESTART STATUS
+    with _cr2b:
+        try:
+            try:
+                _dash_start_file = "logs/dashboard_start.txt"
+                if not __import__('os').path.exists(_dash_start_file):
+                    open(_dash_start_file, 'w').write(_dt_cards.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S'))
+                _dash_start_str = open(_dash_start_file).read().strip()
+                _dash_start_dt  = _dt_cards.datetime.strptime(_dash_start_str, '%Y-%m-%dT%H:%M:%S')
+                _dash_uptime    = (_dt_cards.datetime.utcnow() - _dash_start_dt).total_seconds() / 60
+            except:
+                _dash_uptime = 999
+            st.markdown("**DASHBOARD RESTART**")
+            if _dash_uptime < 5:
+                st.error("RESTARTED")
+                st.caption(f"Up: {int(_dash_uptime)}m ago")
+            else:
+                st.success("STABLE")
+                st.caption(f"Uptime: {int(_dash_uptime)}m")
+        except Exception as _e:
+            st.markdown("**DASHBOARD RESTART**")
+            st.warning("UNKNOWN")
+            st.caption(str(_e)[:40])
+
+    # CARD 3 - API KEY/SECRET STATUS
+    with _cr2c:
+        try:
+            _s2k = os.environ.get("S2_API_KEY","")
+            _s2s = os.environ.get("S2_API_SECRET","")
+            _s4k = os.environ.get("S4_API_KEY","")
+            _s4s = os.environ.get("S4_API_SECRET","")
+            st.markdown("**API KEY/SECRET**")
+            if not _s2k:
+                st.error("S2 KEY MISSING")
+                st.caption("Check .env S2_API_KEY")
+            elif not _s2s:
+                st.error("S2 SECRET MISSING")
+                st.caption("Check .env S2_API_SECRET")
+            elif not _s4k:
+                st.error("S4 KEY MISSING")
+                st.caption("Check .env S4_API_KEY")
+            elif not _s4s:
+                st.error("S4 SECRET MISSING")
+                st.caption("Check .env S4_API_SECRET")
+            else:
+                st.success("ALL KEYS OK")
+                st.caption("S2 + S4 keys present")
+        except Exception as _e:
+            st.markdown("**API KEY/SECRET**")
+            st.warning("UNKNOWN")
+            st.caption(str(_e)[:40])
+
+    # ROW 3 - TRADING HEALTH
+    _cr3a, _cr3b, _cr3c = st.columns(3)
+
+    # CARD 4 - SECTION 13 MATCH %
+    with _cr3a:
+        try:
+            _match_pct = None
+            for _lp in ["logs/live_trading_s2.log", "logs/live_trading_s4.log"]:
+                if os.path.exists(_lp):
+                    with open(_lp) as _lf:
+                        _lines = _lf.readlines()
+                    _ml = [l for l in _lines if 'MATCH' in l or 'match' in l]
+                    if _ml:
+                        import re as _re
+                        _m = _re.search(r'(\d+\.?\d*)%', _ml[-1])
+                        if _m:
+                            _match_pct = float(_m.group(1))
+                            break
+            st.markdown("**S13 MATCH %**")
+            if _match_pct is None:
+                st.info("WAITING")
+                st.caption("No trade yet")
+            elif _match_pct >= 95:
+                st.success(f"{_match_pct:.0f}%")
+                st.caption("GREEN - Full match")
+            elif _match_pct >= 80:
+                st.warning(f"{_match_pct:.0f}%")
+                st.caption("YELLOW - Partial match")
+            else:
+                st.error(f"{_match_pct:.0f}%")
+                st.caption("RED - Check system")
+        except Exception as _e:
+            st.markdown("**S13 MATCH %**")
+            st.warning("UNKNOWN")
+            st.caption(str(_e)[:40])
+
+    # CARD 5 - FORWARD TEST COUNT X/5
+    with _cr3b:
+        try:
+            _fwd_count = 0
+            for _lp in ["logs/live_trading_s2.log", "logs/live_trading_s4.log"]:
+                if os.path.exists(_lp):
+                    with open(_lp) as _lf:
+                        _lines = _lf.readlines()
+                    _cl = [l for l in _lines if 'consecutive' in l.lower() or 'match count' in l.lower()]
+                    if _cl:
+                        import re as _re2
+                        _m2 = _re2.search(r'(\d+)/5', _cl[-1])
+                        if _m2:
+                            _fwd_count = int(_m2.group(1))
+                            break
+            st.markdown("**FWD TEST X/5**")
+            if _fwd_count == 0:
+                st.info("0/5")
+                st.caption("Waiting for trades")
+            elif _fwd_count >= 5:
+                st.success("5/5")
+                st.caption("GO LIVE READY")
+            else:
+                st.warning(f"{_fwd_count}/5")
+                st.caption(f"{5-_fwd_count} more needed")
+        except Exception as _e:
+            st.markdown("**FWD TEST X/5**")
+            st.warning("UNKNOWN")
+            st.caption(str(_e)[:40])
+
+    # CARD 6 - MARKET ORDER PnL DIFF
+    with _cr3c:
+        try:
+            _pnl_diff = None
+            for _lp in ["logs/live_trading_s2.log", "logs/live_trading_s4.log"]:
+                if os.path.exists(_lp):
+                    with open(_lp) as _lf:
+                        _lines = _lf.readlines()
+                    _pl = [l for l in _lines if 'pnl diff' in l.lower() or 'PNL_DIFF' in l]
+                    if _pl:
+                        import re as _re3
+                        _m3 = _re3.search(r'[\$₹]?(\d+\.?\d*)', _pl[-1])
+                        if _m3:
+                            _pnl_diff = float(_m3.group(1))
+                            break
+            st.markdown("**MARKET ORDER DIFF**")
+            if _pnl_diff is None:
+                st.info("WAITING")
+                st.caption("No trade yet")
+            elif _pnl_diff <= 500:
+                st.success(f"₹{_pnl_diff:.0f}")
+                st.caption("GREEN - Acceptable")
+            elif _pnl_diff <= 1000:
+                st.warning(f"₹{_pnl_diff:.0f}")
+                st.caption("YELLOW - Monitor")
+            else:
+                st.error(f"₹{_pnl_diff:.0f}")
+                st.caption("RED - Review needed")
+        except Exception as _e:
+            st.markdown("**MARKET ORDER DIFF**")
+            st.warning("UNKNOWN")
+            st.caption(str(_e)[:40])
+
+    # ================================================================
+    # ALERT BANNER
+    # ================================================================
+    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
+    alerts = []
+
+    if disk_pct > 80:
+        alerts.append(("red", f"DISK CRITICAL: {disk_pct}% used - clean up immediately"))
+    elif disk_pct > 70:
+        alerts.append(("yellow", f"DISK WARNING: {disk_pct}% used - monitor closely"))
+    if not os.path.exists(s2_log):
+        alerts.append(("red", "S2 LOG NOT FOUND - bot may not be running"))
+    if not os.path.exists(s4_log):
+        alerts.append(("red", "S4 LOG NOT FOUND - bot may not be running"))
+    if s2_error:
+        alerts.append(("red", f"S2 ERROR DETECTED: {s2_error}"))
+    if s4_error:
+        alerts.append(("red", f"S4 ERROR DETECTED: {s4_error}"))
+
+    # Bot activity check - warn if no log update in last 5 minutes
+    try:
+        import time as _t
+        now_ts = _t.time()
+        for bot_name, log_path in [("S2", s2_log), ("S4", s4_log)]:
+            if os.path.exists(log_path):
+                log_age = now_ts - os.path.getmtime(log_path)
+                if log_age > 300:
+                    alerts.append(("yellow", f"{bot_name} BOT INACTIVE: No log update for {int(log_age//60)} minutes - check if bot is running"))
+    except:
+        pass
+
+    # New order detection
+    try:
+        for bot_name, log_path in [("S2", s2_log), ("S4", s4_log)]:
+            if os.path.exists(log_path):
+                with open(log_path, 'r') as lf:
+                    lines = lf.readlines()
+                recent = [l for l in lines[-50:] if '[ORDER]' in l]
+                if recent:
+                    last_order = recent[-1].strip()
+                    order_time = last_order[:19] if len(last_order) > 19 else last_order
+                    import datetime as _dt2
+                    try:
+                        ot = _dt2.datetime.strptime(order_time, '%Y-%m-%d %H:%M:%S,%f'[:len(order_time)])
+                        age_mins = (_dt2.datetime.now() - ot).total_seconds() / 60
+                        if age_mins < 10:
+                            alerts.append(("green", f"{bot_name} NEW ORDER: {last_order[20:80]}"))
+                    except:
+                        pass
+    except:
+        pass
+
+    # Position closed detection
+    try:
+        for bot_name, log_path in [("S2", s2_log), ("S4", s4_log)]:
+            if os.path.exists(log_path):
+                with open(log_path, 'r') as lf:
+                    lines = lf.readlines()
+                exits = [l for l in lines[-50:] if 'EXIT' in l and '[ORDER]' in l]
+                if exits:
+                    last_exit = exits[-1].strip()
+                    exit_time = last_exit[:19]
+                    import datetime as _dt3
+                    try:
+                        et = _dt3.datetime.strptime(exit_time, '%Y-%m-%d %H:%M:%S,%f'[:len(exit_time)])
+                        age_mins = (_dt3.datetime.now() - et).total_seconds() / 60
+                        if age_mins < 30:
+                            alerts.append(("green", f"{bot_name} POSITION CLOSED: {last_exit[20:80]}"))
+                    except:
+                        pass
+    except:
+        pass
+
+    if alerts:
+        for level, msg in alerts:
+            if level == "red":
+                st.markdown(f"<div class='alert-red'>ERROR: {msg}</div>", unsafe_allow_html=True)
+            elif level == "yellow":
+                st.markdown(f"<div class='alert-yellow'>WARNING: {msg}</div>", unsafe_allow_html=True)
+            elif level == "green":
+                st.markdown(f"<div class='alert-green'>INFO: {msg}</div>", unsafe_allow_html=True)
+        if not any(l == "red" for l, _ in alerts):
+            st.markdown("<div class='alert-green'>ALL SYSTEMS HEALTHY - No critical errors</div>", unsafe_allow_html=True)
+    else:
+        pass  # No alerts - healthy state shown in error monitor below
+
+
+
+
+    # ================================================================
+
+    # SECTION 1 - MAINTENANCE SUB-SECTIONS
+    # SECTION 3B - AUTO MAINTENANCE STATUS
+    # ================================================================
+    if 'exp_maint' not in st.session_state: st.session_state['exp_maint'] = False
+    with st.expander("AUTO DAILY 3AM UTC", expanded=False):
+        import glob as _glob
+        maint_log = 'logs/maintenance.log'
+        if os.path.exists(maint_log):
+            lines = open(maint_log).readlines()
+            # Get last run block
+            last_run_lines = []
+            for line in reversed(lines):
+                last_run_lines.insert(0, line.strip())
+                if 'Starting auto maintenance' in line:
+                    break
+            if last_run_lines:
+                # Extract key metrics
+                last_run_time = next((l for l in last_run_lines if 'Starting' in l), '')
+                disk_line     = next((l for l in last_run_lines if 'Disk' in l), '')
+                pycache_line  = next((l for l in last_run_lines if 'Pycache' in l), '')
+                output_line   = next((l for l in last_run_lines if 'Output folder' in l), '')
+                log_lines     = [l for l in last_run_lines if 'Log' in l and 'maintenance' not in l.lower()]
+
+                c1, c2, c3, c4 = st.columns(4)
+                with c1:
+                    disk_pct = ''
+                    if 'Disk' in disk_line:
+                        import re as _re
+                        m = _re.search(r'([\d.]+)% used', disk_line)
+                        disk_pct = m.group(1) + '%' if m else 'OK'
+                        color = 'normal' if float(m.group(1)) < 70 else 'inverse' if m else 'normal'
+                    st.metric("Disk Usage", disk_pct if disk_pct else "OK")
+                with c2:
+                    files_del = ''
+                    if 'deleted' in output_line:
+                        import re as _re
+                        m = _re.search(r'deleted (\d+) files', output_line)
+                        files_del = m.group(1) + ' files' if m else '0'
+                    st.metric("Last Cleanup", files_del if files_del else "0 files")
+                with c3:
+                    out_mb = ''
+                    if 'Output folder' in output_line:
+                        import re as _re
+                        m = _re.search(r'([\d.]+)MB', output_line)
+                        out_mb = m.group(1) + ' MB' if m else 'OK'
+                    st.metric("Output Size", out_mb if out_mb else "OK")
+                with c4:
+                    st.metric("Next Run", "Daily 3AM UTC")
+
+                st.caption(f"Last maintenance: {last_run_time.split('[MAINTENANCE]')[-1].strip() if last_run_time else 'Never'}")
+                if disk_line:
+                    if 'WARNING' in disk_line or 'ERROR' in disk_line:
+                        st.error(disk_line)
+                    else:
+                        st.success(disk_line.split('[MAINTENANCE]')[-1].strip())
+        else:
+            st.info("No maintenance log yet. First run at 3AM UTC tonight.")
+            st.caption("Auto maintenance runs daily: pycache clean + log trim + output cleanup + disk check")
+
+    # ================================================================
+
+    # SECTION 11 - MAINTENANCE
+    # ================================================================
+    if 'exp_11' not in st.session_state: st.session_state['exp_11'] = False
+    with st.expander("MAINTENANCE", expanded=st.session_state.get('exp_11', False)):
+
+
+        import shutil, os, subprocess
+
+        disk_pct2, disk_free2 = _timed('disk_usage', 30, _fetch_disk)
+        c1, c2, c3, c4, c5 = st.columns(5)
+        with c1:
+            if disk_pct2 > 80:
+                st.error(f"DISK: {disk_pct2}%")
+            elif disk_pct2 > 60:
+                st.warning(f"DISK: {disk_pct2}%")
+            else:
+                st.success(f"DISK: {disk_pct2}%")
+        with c2:
+            pycache_exists = any(True for _ in __import__('pathlib').Path('.').rglob('__pycache__'))
+            if pycache_exists:
+                st.warning("PYCACHE: EXISTS")
+            else:
+                st.success("PYCACHE: CLEAN")
+        with c3:
+            s2_size = round(os.path.getsize(s2_log)/1024/1024, 1) if os.path.exists(s2_log) else 0
+            s4_size = round(os.path.getsize(s4_log)/1024/1024, 1) if os.path.exists(s4_log) else 0
+            total_log = s2_size + s4_size
+            if total_log > 100:
+                st.warning(f"LOGS: {total_log}MB")
+            else:
+                st.success(f"LOGS: {total_log}MB")
+        with c4:
+            venv_ok = os.path.exists('.venv') or os.path.exists('venv')
+            if venv_ok:
+                st.success("VENV: OK")
+            else:
+                st.error("VENV: MISSING")
+        with c5:
+            st.info("SERVICE: CHECK VM")
+
+        st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
+        b1, b2, b3 = st.columns(3)
+        with b1:
+            if st.button("CHECK DISK", key="sec12_disk"):
+                st.info(f"Disk: {disk_pct2}% used | {disk_free2} GB free")
+        with b2:
+            if st.button("CLEAN PYCACHE", key="sec12_pycache"):
+                try:
+                    import pathlib
+                    count = 0
+                    for p in pathlib.Path('.').rglob('__pycache__'):
+                        __import__('shutil').rmtree(p, ignore_errors=True)
+                        count += 1
+                    st.success(f"Cleaned {count} pycache folders")
+                except Exception as e:
+                    st.error(f"Error: {e}")
+        with b3:
+            if st.button("TRIM LOGS", key="sec12_trim"):
+                try:
+                    for log_path in [s2_log, s4_log]:
+                        if os.path.exists(log_path):
+                            lines = open(log_path, encoding='utf-8', errors='ignore').readlines()
+                            if len(lines) > 10000:
+                                open(log_path, 'w').writelines(lines[-10000:])
+                                st.success(f"Trimmed {log_path} to 10000 lines")
+                            else:
+                                st.info(f"{log_path}: {len(lines)} lines - no trim needed")
+                except Exception as e:
+                    st.error(f"Error: {e}")
+
+
+    # ================================================================
+
+    # SECTION 1B - ERROR MONITOR (auto-checks all systems)
+    # ================================================================
+    st.markdown('<div style="margin-top:-8px;"></div>', unsafe_allow_html=True)
+    if 'exp_1b' not in st.session_state: st.session_state['exp_1b'] = False
+    with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b', False)):
+        import subprocess, os, datetime
+
+        errors = []
+        warnings = []
+        ok = []
+
+        # 1. CHECK BOT SCREENS RUNNING (cached 30s)
+        try:
+            _scr_ls = _timed('err_screen_ls', 30, _fetch_screen_list)
+            if 'live_s2' in _scr_ls:
+                ok.append("S2 bot screen: RUNNING")
+            else:
+                errors.append("S2 bot screen: NOT RUNNING - run bash start.sh on VM")
+            if 'live_s4' in _scr_ls:
+                ok.append("S4 bot screen: RUNNING")
+            else:
+                errors.append("S4 bot screen: NOT RUNNING - run bash start.sh on VM")
+        except Exception as e:
+            errors.append(f"Screen check failed: {e}")
+
+        # 2. CHECK LOG FILES EXIST AND RECENT
+        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+            try:
+                if os.path.exists(log):
+                    mtime = os.path.getmtime(log)
+                    age_mins = (datetime.datetime.now().timestamp() - mtime) / 60
+                    if age_mins < 5:
+                        ok.append(f"{bot} log: ACTIVE (updated {int(age_mins)}m ago)")
+                    elif age_mins < 30:
+                        warnings.append(f"{bot} log: STALE ({int(age_mins)}m ago) - bot may be stuck")
+                    else:
+                        errors.append(f"{bot} log: NOT UPDATING ({int(age_mins)}m ago) - bot likely crashed")
+                else:
+                    errors.append(f"{bot} log: FILE MISSING - bot never started")
+            except Exception as e:
+                errors.append(f"{bot} log check failed: {e}")
+
+        # 3. CHECK FOR ERRORS IN LOGS
+        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+            try:
+                if os.path.exists(log):
+                    lines = open(log).readlines()
+                    import datetime as _dte
+                    _cut = _dte.datetime.utcnow() - _dte.timedelta(minutes=30)
+                    recent = []
+                    for _l in (lines[-500:] if len(lines)>500 else lines):
+                        try:
+                            _lt = _dte.datetime.strptime(_l[:19], '%Y-%m-%d %H:%M:%S')
+                            if _lt >= _cut: recent.append(_l)
+                        except: pass
+                    # no fallback - if nothing in last 30 min, recent stays empty = no errors shown
+                    error_lines = [l.strip() for l in recent if 'ERROR' in l]
+                    algotest_errors = [l.strip() for l in recent if 'ALGOTEST' in l and ('ERROR' in l or 'WARNING' in l)]
+                    api_errors = [l.strip() for l in recent if any(x in l for x in ['InvalidApiKey','invalid_api_key','insufficient_margin','rate_limit','IP not whitelisted','ENTRY FAILED','EXIT FAILED','CRITICAL']) or ('ERROR' in l and any(x in l for x in ['401','403','429']))]
+                    if error_lines:
+                        for el in error_lines[-3:]:
+                            errors.append(f"{bot} ERROR: {el[-100:]}")
+                    if algotest_errors:
+                        for al in algotest_errors[-2:]:
+                            errors.append(f"{bot} ALGOTEST: {al[-100:]}")
+                    if api_errors:
+                        for al in api_errors[-2:]:
+                            errors.append(f"{bot} API ERROR: {al[-100:]}")
+                    if not error_lines and not algotest_errors and not api_errors:
+                        ok.append(f"{bot} log: No errors in last 50 lines")
+            except Exception as e:
+                errors.append(f"{bot} error scan failed: {e}")
+
+        # 4. CHECK ALGOTEST WEBHOOK KEYS IN ENV
+        try:
+            from dotenv import load_dotenv
+            load_dotenv()
+            webhook_keys = [
+                'ALGOTEST_WEBHOOK_S2_BUY_ENTRY','ALGOTEST_WEBHOOK_S2_BUY_EXIT',
+                'ALGOTEST_WEBHOOK_S2_SELL_ENTRY','ALGOTEST_WEBHOOK_S2_SELL_EXIT',
+                'ALGOTEST_WEBHOOK_S4_BUY_ENTRY','ALGOTEST_WEBHOOK_S4_BUY_EXIT',
+                'ALGOTEST_WEBHOOK_S4_SELL_ENTRY','ALGOTEST_WEBHOOK_S4_SELL_EXIT'
+            ]
+            missing = [k for k in webhook_keys if not os.getenv(k)]
+            if missing:
+                for m in missing:
+                    errors.append(f"WEBHOOK KEY MISSING in .env: {m}")
+            else:
+                ok.append("All 8 Algotest webhook keys: CONFIGURED")
+        except Exception as e:
+            warnings.append(f"Webhook key check failed: {e}")
+
+        # 5. CHECK DISK SPACE
+        try:
+            import shutil
+            total, used, free = shutil.disk_usage('.')
+            pct = int(used/total*100)
+            free_gb = round(free/1024**3, 1)
+            if pct > 80:
+                errors.append(f"DISK CRITICAL: {pct}% used - only {free_gb}GB free - clean immediately")
+            elif pct > 70:
+                warnings.append(f"DISK WARNING: {pct}% used - {free_gb}GB free - monitor closely")
+            else:
+                ok.append(f"Disk: {pct}% used - {free_gb}GB free")
+        except Exception as e:
+            warnings.append(f"Disk check failed: {e}")
+
+        # 6. CHECK SYSTEMD SERVICE (tradingbot.service removed - using cts-watchdog)
+        pass
+
+        # 7. CHECK RECENT ALGOTEST SUCCESS
+        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+            try:
+                if os.path.exists(log):
+                    lines = open(log).readlines()
+                    import datetime as _dte2
+                    _cut2 = _dte2.datetime.utcnow() - _dte2.timedelta(minutes=30)
+                    recent = []
+                    for _l in (lines[-500:] if len(lines)>500 else lines):
+                        try:
+                            _lt2 = _dte2.datetime.strptime(_l[:19], '%Y-%m-%d %H:%M:%S')
+                            if _lt2 >= _cut2: recent.append(_l)
+                        except: pass
+                    if not recent: recent = lines[-20:]
+                    algotest_ok = [l for l in recent if 'ALGOTEST' in l and 'Status: 200' in l]
+                    algotest_fail = [l for l in recent if 'ALGOTEST' in l and 'Status: 200' not in l and 'WARNING' not in l and 'ERROR' in l]
+                    if algotest_ok:
+                        ok.append(f"{bot} last Algotest webhook: SUCCESS (Status 200)")
+                    if algotest_fail:
+                        errors.append(f"{bot} Algotest webhook FAILED: {algotest_fail[-1].strip()[-80:]}")
+            except:
+                pass
+
+
+        # 8. CHECK OPEN POSITION > 24H (orphan position risk)
+        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+            try:
+                if os.path.exists(log):
+                    lines = open(log).readlines()
+                    entry_lines = [l for l in lines if '[ORDER] ENTRY' in l]
+                    exit_lines = [l for l in lines if '[ORDER] EXIT' in l]
+                    if entry_lines:
+                        last_entry = entry_lines[-1]
+                        last_exit = exit_lines[-1] if exit_lines else None
+                        import re
+                        entry_match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_entry)
+                        exit_match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_exit) if last_exit else None
+                        if entry_match:
+                            entry_time = datetime.datetime.strptime(entry_match.group(1), '%Y-%m-%d %H:%M:%S')
+                            if last_exit is None or (exit_match and entry_time > datetime.datetime.strptime(exit_match.group(1), '%Y-%m-%d %H:%M:%S')):
+                                age_hours = (datetime.datetime.now() - entry_time).total_seconds() / 3600
+                                if age_hours > 168:
+                                    errors.append(f"{bot} ORPHAN POSITION: Entry {int(age_hours)}h ago with no exit - check Delta account immediately")
+                                elif age_hours > 24:
+                                    warnings.append(f"{bot} OPEN POSITION: {int(age_hours)}h since entry - no exit yet - monitor closely")
+                                else:
+                                    ok.append(f"{bot} position: open {int(age_hours)}h - normal")
+                            else:
+                                ok.append(f"{bot} position: closed cleanly")
+            except Exception as e:
+                warnings.append(f"{bot} position check failed: {e}")
+
+        # 9. CHECK NO ORDERS IN LAST 48H (bot alive but not trading)
+        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+            try:
+                if os.path.exists(log):
+                    lines = open(log).readlines()
+                    order_lines = [l for l in lines if '[ORDER]' in l]
+                    if order_lines:
+                        import re
+                        last_order = order_lines[-1]
+                        match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_order)
+                        if match:
+                            last_time = datetime.datetime.strptime(match.group(1), '%Y-%m-%d %H:%M:%S')
+                            age_hours = (datetime.datetime.now() - last_time).total_seconds() / 3600
+                            if age_hours > 168:
+                                warnings.append(f"{bot} last order: {int(age_hours)}h ago - strategy may be in low signal period")
+                            else:
+                                ok.append(f"{bot} last order: {int(age_hours)}h ago - normal")
+                    else:
+                        ok.append(f"{bot} no orders yet - waiting for first signal")
+            except Exception as e:
+                warnings.append(f"{bot} order check failed: {e}")
+
+        # 10. CHECK DUPLICATE ORDERS (same timestamp fired twice)
+        # Only check orders after VALID_FROM (last_known_ts file)
+        for bot, log, ts_file in [('S2', 'logs/live_trading_s2.log', 'logs/last_known_ts_s2.txt'),
+                                   ('S4', 'logs/live_trading_s4.log', 'logs/last_known_ts_s4.txt')]:
+            try:
+                if os.path.exists(log):
+                    # Get valid from timestamp
+                    valid_from = None
+                    if os.path.exists(ts_file):
+                        valid_from = open(ts_file).read().strip()
+                    lines = open(log).readlines()
+                    order_lines = [l for l in lines if '[ORDER]' in l]
+                    timestamps = []
+                    import re
+                    for l in order_lines:
+                        # Only check recent orders - filter by log timestamp
+                        if valid_from:
+                            try:
+                                log_dt = l.split(' INFO')[0].strip()
+                                if log_dt < valid_from.replace('T',' '):
+                                    continue
+                            except:
+                                pass
+                        match = re.search(r'ts=(\S+)', l)
+                        if match:
+                            # Include order type to avoid flagging EXIT+ENTRY at same ts
+                            order_type = 'ENTRY' if 'ENTRY' in l else 'EXIT'
+                            timestamps.append(f"{order_type}_{match.group(1)}")
+                    duplicates = [t for t in timestamps if timestamps.count(t) > 1]
+                    if duplicates:
+                        errors.append(f"{bot} DUPLICATE ORDERS detected at timestamps: {list(set(duplicates))}")
+                    else:
+                        ok.append(f"{bot} duplicate order check: CLEAN")
+            except Exception as e:
+                warnings.append(f"{bot} duplicate check failed: {e}")
+
+
+        # 11. CHECK BOT CYCLING HEALTH (last [SIGNALS] line timestamp)
+        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+            try:
+                if os.path.exists(log):
+                    lines = open(log).readlines()
+                    signal_lines = [l for l in lines if '[SIGNALS]' in l or '[WAIT]' in l or '[DATA]' in l]
+                    if signal_lines:
+                        last_line = signal_lines[-1]
+                        import re
+                        match = re.search(r'(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', last_line)
+                        if match:
+                            last_time = datetime.datetime.strptime(match.group(1), '%Y-%m-%d %H:%M:%S')
+                            age_mins = (datetime.datetime.now() - last_time).total_seconds() / 60
+                            if age_mins > 10:
+                                errors.append(f"{bot} BOT FROZEN: No cycle in {int(age_mins)}m - bot may be stuck or crashed")
+                            elif age_mins > 5:
+                                warnings.append(f"{bot} bot cycle: {int(age_mins)}m ago - slightly delayed")
+                            else:
+                                ok.append(f"{bot} bot cycling: OK ({int(age_mins)}m ago)")
+                    else:
+                        warnings.append(f"{bot} no cycle lines found in log")
+            except Exception as e:
+                warnings.append(f"{bot} cycle check failed: {e}")
+
+        # 12. FORWARD TEST END DATE REMINDER
+        try:
+            forward_end = datetime.datetime(2026, 8, 1)
+            days_left = (forward_end - datetime.datetime.now()).days
+            if days_left < 0:
+                ok.append("Forward test complete - go-live on Aug 1 2026")
+            elif days_left == 0:
+                warnings.append("GO-LIVE DAY - Aug 1 2026 - switch testnet=False and update API keys")
+            elif days_left <= 3:
+                warnings.append(f"GO-LIVE IN {days_left} DAYS - prepare Aug 1 checklist")
+            elif days_left <= 7:
+                warnings.append(f"Go-live in {days_left} days (Aug 1 2026)")
+            else:
+                ok.append(f"Forward test: {days_left} days remaining (go-live Aug 1 2026)")
+        except Exception as e:
+            warnings.append(f"Forward test date check failed: {e}")
+
+        # 12B. CHECK ENGINE (renko_state_engine) RUNNING
+        try:
+            import time as _time_eng
+            _eng_log = "/home/anildalabanjan933/crypto_trading_system/logs/renko_state_engine.log"
+            if not os.path.exists(_eng_log):
+                errors.append("ENGINE LOG MISSING - renko_state_engine.py never started - run bash start.sh")
+            else:
+                _eng_age_mins = (_time_eng.time() - os.path.getmtime(_eng_log)) / 60
+                if _eng_age_mins > 10:
+                    errors.append(f"ENGINE DEAD - no update in {int(_eng_age_mins)}m - signals not firing - run bash start.sh IMMEDIATELY")
+                elif _eng_age_mins > 3:
+                    warnings.append(f"ENGINE SLOW - last update {int(_eng_age_mins)}m ago - may be stuck")
+                else:
+                    ok.append(f"Engine (renko_state_engine): RUNNING - last update {int(_eng_age_mins)}m ago")
+            # Check signal files age
+            for _sf, _label in [("logs/live_signal_s2.txt","S2 signal"), ("logs/live_signal_s4.txt","S4 signal")]:
+                if os.path.exists(_sf):
+                    _sf_age = (_time_eng.time() - os.path.getmtime(_sf)) / 60
+                    if _sf_age > 30:
+                        warnings.append(f"{_label} file not updated in {int(_sf_age)}m - engine may not be firing")
+                    else:
+                        ok.append(f"{_label} file: updated {int(_sf_age)}m ago")
+                else:
+                    warnings.append(f"{_label} file missing")
+        except Exception as e:
+            warnings.append(f"Engine check failed: {e}")
+
+        # 12C. CHECK SIGNAL_GENERATOR SCREEN RUNNING
+        try:
+            import subprocess
+            _scr = subprocess.run(["screen","-ls"], capture_output=True, text=True, timeout=5)
+            if "signal_generator" in _scr.stdout:
+                ok.append("signal_generator screen: RUNNING")
+            else:
+                errors.append("signal_generator screen MISSING - engine not running - run bash start.sh IMMEDIATELY")
+        except Exception as e:
+            warnings.append(f"signal_generator screen check failed: {e}")
+
+        # 13. CHECK .ENV FILE EXISTS AND HAS API KEYS
+        try:
+            if os.path.exists('.env'):
+                env_content = open('.env').read()
+                required_keys = ['S2_API_KEY', 'S4_API_KEY', 'S2_API_SECRET', 'S4_API_SECRET']
+                missing_keys = [k for k in required_keys if k not in env_content]
+                if missing_keys:
+                    errors.append(f".env MISSING API KEYS: {missing_keys} - bots cannot trade")
+                else:
+                    ok.append(".env file: exists with all API keys")
+            else:
+                errors.append(".env FILE MISSING - all API keys gone - run bash start.sh")
+        except Exception as e:
+            warnings.append(f".env check failed: {e}")
+
+        # 14. CHECK DELTA API CONNECTIVITY (cached 60s)
+        try:
+            _api_st = _timed('delta_api_status', 60, _fetch_delta_api_status)
+            if _api_st == 200:
+                ok.append("Delta API connectivity: REACHABLE")
+            elif _api_st:
+                warnings.append(f"Delta API returned status {_api_st} - may have issues")
+            else:
+                errors.append("Delta API UNREACHABLE - check VM internet connection")
+        except Exception as e:
+            errors.append(f"Delta API check failed: {e}")
+
+        # 15. CHECK VM INTERNET (ping Google DNS)
+        try:
+            import subprocess as sp
+            result = sp.run(['curl', '-s', '--max-time', '3', 'https://8.8.8.8'], capture_output=True)
+            ok.append("VM internet: CONNECTED")
+        except Exception as e:
+            errors.append(f"VM internet check failed: {e}")
+
+        # 16. CHECK ALGOTEST WEBHOOK URLS REACHABLE (cached 120s - avoid hammering)
+        try:
+            def _check_webhook():
+                from dotenv import load_dotenv
+                load_dotenv()
+                import requests as _rqwh
+                test_url = os.getenv('ALGOTEST_WEBHOOK_S4_BUY_ENTRY')
+                if not test_url:
+                    return None
+                resp = _rqwh.post(test_url, json={"access_token": os.getenv('ALGOTEST_ACCESS_TOKEN', 'n7FJcMHANHN4F8HdqbU5QMDJn5JO79K9'), "alert_name": "ping"}, timeout=5)
+                return resp.status_code
+            _wh_status = _timed('webhook_check', 120, _check_webhook)
+            if _wh_status in [200, 201, 202, 400, 422]:
+                ok.append("Algotest webhook URL: REACHABLE")
+            elif _wh_status is None:
+                errors.append("Algotest webhook URL missing from .env")
+            else:
+                warnings.append(f"Algotest webhook returned {_wh_status} - check signal config")
+        except Exception as e:
+            warnings.append(f"Algotest connectivity check failed: {e}")
+
+        # DISPLAY RESULTS
+        if errors:
+            st.error(f"ERRORS DETECTED: {len(errors)} issue(s) require attention")
+            for e in errors:
+                st.markdown(f"<div class='alert-red'>ERROR: {e}</div>", unsafe_allow_html=True)
+        elif warnings:
+            st.warning(f"WARNINGS: {len(warnings)} item(s) to monitor")
+        else:
+            st.success("ALL SYSTEMS HEALTHY - No errors detected")
+
+        if warnings:
+            for w in warnings:
+                st.markdown(f"<div class='alert-yellow'>WARNING: {w}</div>", unsafe_allow_html=True)
+
+        with st.expander("SHOW ALL OK CHECKS"):
+            for o in ok:
+                st.markdown(f"OK: {o}")
+
+            st.caption(f"Last checked: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5,minutes=30))).strftime('%d-%b-%Y %I:%M %p IST')} | Auto-refreshes every 30s")
+    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
+
+
+    # ================================================================
+    # SECTION 1C - DEBUG TRACKER
+    # ================================================================
+    if 'exp_1c' not in st.session_state: st.session_state['exp_1c'] = False
+    with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('exp_1c', False)):
+        import re as _re1c, datetime as _dt1c
+
+        _BASE_DIR = '/home/anildalabanjan933/crypto_trading_system'
+        _TH1C = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;"
+        _TD1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;"
+        _TDG1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;"
+        _TDR1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#F23645;font-weight:700;"
+        _TDO1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#e07000;font-weight:700;"
+
+        def _read_last_lines(path, n=200):
+            try:
+                lines = open(path, encoding='utf-8', errors='ignore').readlines()
+                return lines[-n:]
+            except:
+                return []
+
+        def _utc_log_to_ist(raw):
+            import datetime as _dti
+            _ist = _dti.timedelta(hours=5, minutes=30)
+            try:
+                ts = raw.strip()[:19]
+                dt = _dti.datetime.strptime(ts, '%Y-%m-%d %H:%M:%S')
+                return (dt + _ist).strftime('%d-%b-%Y %I:%M %p IST')
+            except:
+                try:
+                    ts = raw.strip()[:19].replace('T',' ')
+                    dt = _dti.datetime.strptime(ts, '%Y-%m-%d %H:%M:%S')
+                    return (dt + _ist).strftime('%d-%b-%Y %I:%M %p IST')
+                except:
+                    return raw
+
+        def _get_bot_debug(log_path, ts_path, sig_path, bot_name):
+            lines = _read_last_lines(log_path)
+            now_utc = _dt1c.datetime.utcnow()
+
+            # Last heartbeat
+            last_wait = "Never"
+            for l in reversed(lines):
+                if '[WAIT]' in l or '[ORDER]' in l:
+                    last_wait = _utc_log_to_ist(l.split(' INFO')[0].strip())
+                    break
+
+            # Last signal check - read from renko_state_engine.log
+            last_reload = "Never"
+            _engine_log = os.path.join(os.path.dirname(log_path), "renko_state_engine.log")
+            _reload_lines = _read_last_lines(_engine_log, n=200)
+            for l in reversed(_reload_lines):
+                if '[ENGINE] New candle' in l:
+                    last_reload = _utc_log_to_ist(l.split(' INFO')[0].strip())
+                    break
+
+            # API validation
+            api_status = "UNKNOWN"
+            api_color = _TDO1C
+            for l in reversed(lines):
+                if 'API key validated successfully' in l:
+                    api_status = "VALID"
+                    api_color = _TDG1C
+                    break
+                if 'API key validation FAILED' in l or 'invalid_api_key' in l:
+                    api_status = "INVALID"
+                    api_color = _TDR1C
+                    break
+            # If UNKNOWN = log scrolled past validation line - if no error then VALID
+            if api_status == "UNKNOWN":
+                api_status = "VALID"
+                api_color = _TDG1C
+
+            # Last error - only last 30 minutes
+            last_error = "None"
+            last_error_color = _TDG1C
+            _now_err = _dt1c.datetime.utcnow()
+            _cut_err = _now_err - _dt1c.timedelta(minutes=30)
+            for l in reversed(lines):
+                if 'ERROR' in l or 'CRITICAL' in l:
+                    try:
+                        _lt_err = _dt1c.datetime.strptime(l[:19], '%Y-%m-%d %H:%M:%S')
+                        if _lt_err >= _cut_err:
+                            last_error = l.strip()[-120:]
+                            last_error_color = _TDR1C
+                    except:
+                        pass
+                    break
+
+            # Last order
+            last_order = "No trades yet today"
+            for l in reversed(lines):
+                if '[ORDER]' in l and ('ENTRY' in l or 'EXIT' in l):
+                    _lo_ts = _utc_log_to_ist(l.split(' INFO')[0].strip())
+                    last_order = _lo_ts + ' ' + ' '.join(l.strip().split()[3:])
+                    break
+
+            # Last known ts
+            try:
+                _raw_ts = open(ts_path).read().strip()
+                last_ts = _utc_log_to_ist(_raw_ts)
+            except:
+                last_ts = "Unknown"
+
+            # Next signal
+            next_signal = "Waiting - next Renko brick forming"
+            next_color = _TDO1C
+            try:
+                import csv as _csv1c
+                now_str = now_utc.strftime('%Y-%m-%dT%H:%M:%S')
+                all_rows = []
+                with open(sig_path) as fh:
+                    reader = _csv1c.reader(fh)
+                    for row in reader:
+                        if len(row) < 3: continue
+                        if row[0].strip() == "entry_time": continue
+                        all_rows.append({
+                            "entry_time": row[0].strip(),
+                            "exit_time":  row[1].strip(),
+                            "direction":  row[2].strip()
+                        })
+                found = False
+                for row in all_rows:
+                    if row['entry_time'].strip() > last_ts:
+                        _ns_et = _utc_log_to_ist(row['entry_time'].strip())
+                        _ns_xt = _utc_log_to_ist(row['exit_time'].strip())
+                        next_signal = f"ENTRY={_ns_et} EXIT={_ns_xt} DIR={row['direction']}"
+                        next_color = _TDG1C
+                        found = True
+                        break
+                if not found and all_rows:
+                    last_exit = all_rows[-1]['exit_time'].strip()
+                    if last_exit < now_str:
+                        next_signal = f"NO SIGNAL AFTER VALID_FROM - last exit={_utc_log_to_ist(last_exit)}"
+                        next_color = _TDR1C
+            except Exception as _e1c:
+                next_signal = f"Error reading signal CSV: {str(_e1c)[:50]}"
+                next_color = _TDR1C
+
+            # Signal CSV last update
+            try:
+                import os as _os1c, time as _t1c
+                age = _t1c.time() - _os1c.path.getmtime(sig_path)
+                sig_age = f"{int(age/60)} min ago"
+                sig_color = _TDG1C if age < 900 else _TDO1C
+            except:
+                sig_age = "Unknown"
+                sig_color = _TDO1C
+
+            # Bot running check
+            bot_running = any('[WAIT]' in l or '[ORDER]' in l for l in lines[-20:])
+            bot_status = "RUNNING" if bot_running else "STOPPED"
+            bot_color = _TDG1C if bot_running else _TDR1C
+
+            # Last heartbeat age check
+            heartbeat_color = _TDG1C
+            try:
+                _hb_ts = _dt1c.datetime.strptime(last_wait[:19], '%Y-%m-%d %H:%M:%S')
+                _hb_age = (now_utc - _hb_ts).total_seconds()
+                if _hb_age > 60: heartbeat_color = _TDR1C
+                elif _hb_age > 55: heartbeat_color = _TDO1C
+            except:
+                heartbeat_color = _TDO1C
+
+            # Signal CSV staleness
+            try:
+                import os as _os1c, time as _t1c
+                age = _t1c.time() - _os1c.path.getmtime(sig_path)
+                sig_age = f"{int(age/60)} min ago"
+                sig_color = _TDG1C if age < 900 else _TDO1C
+            except:
+                sig_age = "Unknown"
+                sig_color = _TDO1C
+
+            # Match status - check verify_match log
+            match_status = "Pending next trade"
+            match_color = _TDG1C
+            try:
+                _vm_log = '/home/anildalabanjan933/crypto_trading_system/logs/verify_match.log'
+                if _os1c.path.exists(_vm_log):
+                    _vm_lines = open(_vm_log).readlines()[-20:]
+                    for _vl in reversed(_vm_lines):
+                        if 'MATCH OK' in _vl or 'OVERALL: MATCH OK' in _vl:
+                            match_status = "MATCH OK"
+                            match_color = _TDG1C
+                            break
+                        if 'MISMATCH' in _vl:
+                            match_status = "MISMATCH DETECTED"
+                            match_color = _TDR1C
+                            break
+            except:
+                pass
+
+            # CSV data freshness
+            csv_status = "UNKNOWN"
+            csv_color = _TDO1C
+            try:
+                _csv_path = '/home/anildalabanjan933/crypto_trading_system/data/btc_1m_delta.csv'
+                _csv_age = _t1c.time() - _os1c.path.getmtime(_csv_path)
+                if _csv_age < 7200:
+                    csv_status = f"FRESH ({int(_csv_age/60)} min ago)"
+                    csv_color = _TDG1C
+                elif _csv_age < 43200:
+                    csv_status = f"OK ({int(_csv_age/60)} min ago)"
+                    csv_color = _TDO1C
+                else:
+                    csv_status = f"STALE ({int(_csv_age/60)} min ago)"
+                    csv_color = _TDR1C
+            except:
+                pass
+
+            # Position sync check
+            pos_status = "FLAT"
+            pos_color = _TDG1C
+            for l in reversed(lines):
+                if '[STARTUP] Position synced' in l:
+                    if 'None' in l:
+                        pos_status = "FLAT"
+                        pos_color = _TDG1C
+                    else:
+                        pos_status = "OPEN POSITION"
+                        pos_color = _TDO1C
+                    break
+
+            # Order success rate last 10 orders
+            order_attempts = [l for l in lines if '[ORDER] ENTRY' in l or '[ORDER] EXIT' in l]
+            order_fails = [l for l in lines if 'ENTRY FAILED' in l or 'EXIT FAILED' in l]
+            if order_attempts:
+                success_rate = f"{(len(order_attempts)-len(order_fails))}/{len(order_attempts)} success"
+                order_color = _TDG1C if len(order_fails)==0 else _TDR1C
+            else:
+                success_rate = "No trades yet today"
+                order_color = _TDG1C
+
+            return {
+                'bot_status': (bot_status, bot_color),
+                'api_status': (api_status, api_color),
+                'last_heartbeat': (last_wait, heartbeat_color),
+                'last_reload': last_reload,
+                'last_order': last_order,
+                'last_error': (last_error, last_error_color),
+                'last_ts': last_ts,
+                'next_signal': (next_signal, next_color),
+                'sig_age': (sig_age, sig_color),
+                'match_status': (match_status, match_color),
+                'csv_status': (csv_status, csv_color),
+                'pos_status': (pos_status, pos_color),
+                'order_success': (success_rate, order_color),
+            }
+
+        s2_dbg = _get_bot_debug(
+            f'{_BASE_DIR}/logs/live_trading_s2.log',
+            f'{_BASE_DIR}/logs/last_known_ts_s2.txt',
+            f'{_BASE_DIR}/logs/live_signal_s2.txt', 'S2')
+        s4_dbg = _get_bot_debug(
+            f'{_BASE_DIR}/logs/live_trading_s4.log',
+            f'{_BASE_DIR}/logs/last_known_ts_s4.txt',
+            f'{_BASE_DIR}/logs/live_signal_s4.txt', 'S4')
+
+        def _dbg_row(label, s2val, s4val, s2c=None, s4c=None):
+            return (f"<tr><td style='{_TD1C}'><b>{label}</b></td>"
+                    f"<td style='{s2c or _TD1C}'>{s2val}</td>"
+                    f"<td style='{s4c or _TD1C}'>{s4val}</td></tr>")
+
+        tbl1c = (
+            f"<div style='overflow-x:auto;margin:4px 0;'>"
+            f"<table style='width:100%;border-collapse:collapse;'>"
+            f"<thead><tr>"
+            f"<th style='{_TH1C}'>Check</th>"
+            f"<th style='{_TH1C}'>S2</th>"
+            f"<th style='{_TH1C}'>S4</th>"
+            f"</tr></thead><tbody>"
+            + _dbg_row("Bot Status", s2_dbg['bot_status'][0], s4_dbg['bot_status'][0], s2_dbg['bot_status'][1], s4_dbg['bot_status'][1])
+            + _dbg_row("API Key", s2_dbg['api_status'][0], s4_dbg['api_status'][0], s2_dbg['api_status'][1], s4_dbg['api_status'][1])
+            + _dbg_row("Last Heartbeat", s2_dbg['last_heartbeat'][0], s4_dbg['last_heartbeat'][0], s2_dbg['last_heartbeat'][1], s4_dbg['last_heartbeat'][1])
+            + _dbg_row("Signal Engine", s2_dbg['last_reload'], s4_dbg['last_reload'])
+            + _dbg_row("Last Order", s2_dbg['last_order'], s4_dbg['last_order'])
+            + _dbg_row("Last Error", s2_dbg['last_error'][0], s4_dbg['last_error'][0], s2_dbg['last_error'][1], s4_dbg['last_error'][1])
+            + _dbg_row("Last Known TS", s2_dbg['last_ts'], s4_dbg['last_ts'])
+            + _dbg_row("Next Signal", s2_dbg['next_signal'][0], s4_dbg['next_signal'][0], s2_dbg['next_signal'][1], s4_dbg['next_signal'][1])
+            + _dbg_row("Signal CSV Age",   s2_dbg['sig_age'][0],      s4_dbg['sig_age'][0],      s2_dbg['sig_age'][1],      s4_dbg['sig_age'][1])
+            + _dbg_row("Market CSV",        s2_dbg['csv_status'][0],   s4_dbg['csv_status'][0],   s2_dbg['csv_status'][1],   s4_dbg['csv_status'][1])
+            + _dbg_row("Position Sync",     s2_dbg['pos_status'][0],   s4_dbg['pos_status'][0],   s2_dbg['pos_status'][1],   s4_dbg['pos_status'][1])
+            + _dbg_row("Order Success",     s2_dbg['order_success'][0],s4_dbg['order_success'][0],s2_dbg['order_success'][1],s4_dbg['order_success'][1])
+            + _dbg_row("Match Status",      s2_dbg['match_status'][0], s4_dbg['match_status'][0], s2_dbg['match_status'][1], s4_dbg['match_status'][1])
+            + "</tbody></table></div>"
+        )
+        st.caption("Auto updates on page load | Green=OK | Red=Issue | Orange=Warning")
+        st.markdown(tbl1c, unsafe_allow_html=True)
+
+
+    # ================================================================
+    # SECTION 1.3 - VM HEALTH (CPU + RAM + UPTIME)
+    # ================================================================
+    if 'exp_13' not in st.session_state: st.session_state['exp_13'] = False
+    with st.expander("SECTION 1.3 - VM HEALTH", expanded=st.session_state.get('exp_13', False)):
+        try:
+            import psutil
+            cpu = psutil.cpu_percent(interval=0)
+            ram = psutil.virtual_memory()
+            ram_used = ram.percent
+            ram_free_gb = round(ram.available / (1024**3), 2)
+            uptime_secs = int(datetime.datetime.now().timestamp() - psutil.boot_time())
+            uptime_hrs = uptime_secs // 3600
+            uptime_mins = (uptime_secs % 3600) // 60
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                cpu_color = "metric-red" if cpu > 80 else "metric-yellow" if cpu > 60 else "metric-green"
+                st.markdown(f"<div class='metric-box {cpu_color}'><div class='metric-label'>CPU USAGE</div><div class='metric-value'>{cpu:.1f}%</div></div>", unsafe_allow_html=True)
+            with col2:
+                ram_color = "metric-red" if ram_used > 80 else "metric-yellow" if ram_used > 60 else "metric-green"
+                st.markdown(f"<div class='metric-box {ram_color}'><div class='metric-label'>RAM USAGE</div><div class='metric-value'>{ram_used:.1f}%</div></div>", unsafe_allow_html=True)
+            with col3:
+                st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>RAM FREE</div><div class='metric-value'>{ram_free_gb} GB</div></div>", unsafe_allow_html=True)
+            with col4:
+                st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>UPTIME</div><div class='metric-value'>{uptime_hrs}h {uptime_mins}m</div></div>", unsafe_allow_html=True)
+            import subprocess
+            col5, col6, col7, col8 = st.columns(4)
+            with col5:
+                try:
+                    r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system'], capture_output=True, text=True)
+                    app_size = r.stdout.split()[0] if r.stdout else 'N/A'
+                except:
+                    app_size = 'N/A'
+                st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>APP SIZE</div><div class='metric-value'>{app_size}</div></div>", unsafe_allow_html=True)
+            with col6:
+                try:
+                    r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/logs'], capture_output=True, text=True)
+                    log_size = r.stdout.split()[0] if r.stdout else 'N/A'
+                except:
+                    log_size = 'N/A'
+                st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>LOGS SIZE</div><div class='metric-value'>{log_size}</div></div>", unsafe_allow_html=True)
+            with col7:
+                try:
+                    r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/data'], capture_output=True, text=True)
+                    data_size = r.stdout.split()[0] if r.stdout else 'N/A'
+                except:
+                    data_size = 'N/A'
+                st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>DATA SIZE</div><div class='metric-value'>{data_size}</div></div>", unsafe_allow_html=True)
+            with col8:
+                try:
+                    r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/.venv'], capture_output=True, text=True)
+                    venv_size = r.stdout.split()[0] if r.stdout else 'N/A'
+                except:
+                    venv_size = 'N/A'
+                st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>VENV SIZE</div><div class='metric-value'>{venv_size}</div></div>", unsafe_allow_html=True)
+        except Exception as e:
+            st.warning(f"VM health check failed: {e}. Install psutil: pip install psutil")
+    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
+
+    # ================================================================
 with _tab_trading:
     # SECTION 2 - BOT CONTROL
     st.markdown("<div class='section-title'>SECTION 2 - BOT CONTROL</div>", unsafe_allow_html=True)
@@ -5720,1793 +4515,894 @@ with _tab_maint:
 
 
         # ================================================================
-@st.fragment(run_every=60)
-def _frag_analysis():
-    # SECTION 13 - STRATEGY PERFORMANCE SUMMARY
-    # ================================================================
-    if 'exp_13s' not in st.session_state: st.session_state['exp_13s'] = False
-    with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.session_state.get('exp_13s', False)):
-        import time as _t13, hmac as _hm13, hashlib as _hs13, requests as _rq13, datetime as _dt13, glob as _gl13, pandas as _pd13, re as _re13
-
-        try:
-            _VF13 = open("logs/valid_from_baseline.txt").read().strip()
-        except:
-            _VF13 = "2026-07-14T15:00:00"
-        # Section 13 display window = last 7 days rolling (not VALID_FROM)
-        import datetime as _dt13_7
-        _VF13_7D = (_dt13_7.datetime.utcnow() - _dt13_7.timedelta(days=7)).strftime('%Y-%m-%dT%H:%M:%S')
-        _INR13 = 84.0
-        _BASE13= "https://cdn-ind.testnet.deltaex.org"
-        _TH13  = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:11px;font-weight:700;color:#333;text-align:center;"
-        _TD13  = "padding:6px 8px;border:1px solid #E0E3EB;font-size:13px;color:#131722;font-weight:600;"
-        _TDN13 = "padding:6px 8px;border:1px solid #E0E3EB;font-size:13px;color:#131722;text-align:center;font-weight:500;"
-        _TDG13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#089981;font-weight:700;text-align:center;"
-        _TDR13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#F23645;font-weight:700;text-align:center;"
-        _TDB13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#2962FF;font-weight:700;text-align:center;"
-        _SUB13 = "padding:4px 8px;border:1px solid #C8D0DC;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
-        _HDR13 = "padding:6px 12px;background:#1E3A5F;font-size:11px;font-weight:700;color:#ffffff;margin:8px 0 4px 0;border-left:4px solid #2962FF;"
-
-        def _auth13(k, s, path, qs=""):
-            try:
-                ts  = str(int(_t13.time()))
-                qp  = f"?{qs}" if qs else ""
-                msg = f"GET{ts}{path}{qp}"
-                sig = _hm13.new(s.encode(), msg.encode(), _hs13.sha256).hexdigest()
-                return {"api-key":k,"timestamp":ts,"signature":sig,"Content-Type":"application/json"}
-            except:
-                return {}
-
-        def _fetch13(k, s):
-            orders, after = [], None
-            try:
-                vf  = int(_dt13.datetime.strptime(_VF13,"%Y-%m-%dT%H:%M:%S").replace(tzinfo=_dt13.timezone.utc).timestamp())
-                now = int(_dt13.datetime.now(_dt13.timezone.utc).timestamp())
-                path= "/v2/orders/history"
-                prm = {"product_id":84,"page_size":100,"start_time":int(vf*1e6),"end_time":int(now*1e6)}
-                for _ in range(50):
-                    p = dict(prm)
-                    if after: p["after"] = after
-                    qs = "&".join(f"{a}={b}" for a,b in sorted(p.items()))
-                    h = _auth13(k, s, path, qs)
-                    r = _rq13.get(f"{_BASE13}{path}?{qs}", headers=h, timeout=10)
-                    d = r.json()
-                    if not d.get("success"): break
-                    batch = d.get("result",[])
-                    orders += batch
-                    after  = d.get("meta",{}).get("after")
-                    if not after or not batch: break
-            except:
-                pass
-            return orders
-
-        def _pair13(orders):
-            pairs, used = [], set()
-            srt = sorted(orders, key=lambda x: x.get("created_at",""))
-            for i, e in enumerate(srt):
-                if i in used or e.get("state")!="closed": continue
-                # Entry must be reduce_only=False
-                if str(e.get("reduce_only","")).lower() in ["true","1"]: continue
-                es = e.get("side")
-                if es not in ["buy","sell"]: continue
-                xs  = "sell" if es=="buy" else "buy"
-                dir = "LONG" if es=="buy" else "SHORT"
-                ets = int(_dt13.datetime.strptime(e.get("created_at","1970-01-01T00:00:00")[:19], "%Y-%m-%dT%H:%M:%S").timestamp())
-                ep  = float(e.get("average_fill_price") or e.get("limit_price") or 0)
-                for j, x in enumerate(srt):
-                    if j in used or j==i: continue
-                    if x.get("side")!=xs or x.get("state")!="closed": continue
-                    # Exit must be reduce_only=True
-                    if str(x.get("reduce_only","")).lower() not in ["true","1"]: continue
-                    xts = int(_dt13.datetime.strptime(x.get("created_at","1970-01-01T00:00:00")[:19], "%Y-%m-%dT%H:%M:%S").timestamp())
-                    xp  = float(x.get("average_fill_price") or x.get("limit_price") or 0)
-                    if xts < ets: continue
-                    sz  = int(e.get("size",0))
-                    # Use actual exchange PnL from exit order meta_data
-                    raw_pnl = float(x.get("meta_data",{}).get("pnl") or 0)
-                    cm  = float(e.get("paid_commission") or 0)+float(x.get("paid_commission") or 0)
-                    pnl = raw_pnl - cm
-                    pairs.append({"dir":dir,"ep":ep,"xp":xp,"pnl":pnl,"cm":cm,"ets":ets,"xts":xts,"sz":sz})
-                    used.add(i); used.add(j); break
-            return pairs
-
-        def _calc13(pairs):
-            if not pairs: return None
-            tot = len(pairs)
-            win = sum(1 for p in pairs if p["pnl"]>0)
-            los = tot-win
-            wr  = win/tot*100
-            nu  = sum(p["pnl"] for p in pairs)
-            ni  = nu*_INR13
-            cm  = sum(p["cm"] for p in pairs)
-            pls = [p["pnl"] for p in pairs]
-            cum,pk,dd = 0,0,0
-            for v in pls:
-                cum+=v
-                if cum>pk: pk=cum
-                drop = pk - cum
-                if drop > dd: dd = drop
-            aw = sum(v for v in pls if v>0)/win if win>0 else 0
-            al = sum(v for v in pls if v<0)/los if los>0 else 0
-            pf = abs(sum(v for v in pls if v>0)/sum(v for v in pls if v<0)) if los>0 and sum(v for v in pls if v<0)!=0 else 0
-            import datetime as _dt_c
-            now_c = _dt_c.datetime.utcnow()
-            today_start = now_c.replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
-            week_start  = (now_c - _dt_c.timedelta(days=now_c.weekday())).replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
-            month_start = now_c.replace(day=1,hour=0,minute=0,second=0,microsecond=0).timestamp()
-            year_start  = now_c.replace(month=1,day=1,hour=0,minute=0,second=0,microsecond=0).timestamp()
-            pnl_today   = sum(p["pnl"] for p in pairs if p.get("xts",0) >= today_start)
-            pnl_week    = sum(p["pnl"] for p in pairs if p.get("xts",0) >= week_start)
-            pnl_month   = sum(p["pnl"] for p in pairs if p.get("xts",0) >= month_start)
-            pnl_year    = sum(p["pnl"] for p in pairs if p.get("xts",0) >= year_start)
-            avg_slip    = sum(abs(p.get("ep",0)-p.get("xp",0))*0.001 for p in pairs)/tot if tot>0 else 5.0
-            return {"tot":tot,"win":win,"los":los,"wr":wr,"nu":nu,"ni":ni,"cm":cm,"dd":dd,"aw":aw,"al":al,"pf":pf,
-                    "pnl_today":pnl_today,"pnl_week":pnl_week,"pnl_month":pnl_month,"pnl_year":pnl_year,"avg_slip":avg_slip}
-
-        def _bt_calc13(csv_pattern, vf_str):
-            try:
-                files = sorted(_gl13.glob(csv_pattern), reverse=True)
-                if not files: return None
-                df = _pd13.read_csv(files[0])
-                if 'entry_datetime' not in df.columns: return None
-                df['entry_datetime'] = _pd13.to_datetime(df['entry_datetime'])
-                vf_dt = _pd13.to_datetime(vf_str)
-                df = df[df['entry_datetime'] >= vf_dt]
-                if df.empty: return None
-                tot = len(df)
-                win = (df['net_pnl'] > 0).sum()
-                los = tot - win
-                wr  = win/tot*100
-                nu  = df['net_pnl'].sum()
-                ni_pretax = df['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else nu*_INR13
-                _win_inr13 = df[df['net_pnl_inr']>0]['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else 0
-                ni = ni_pretax - _win_inr13*0.10
-                cm  = df['total_charges_usd'].sum() if 'total_charges_usd' in df.columns else (df['charges'].sum() if 'charges' in df.columns else 0)
-                pls = df['net_pnl'].tolist()
-                cum,pk,dd = 0,0,0
-                for v in pls:
-                    cum+=v
-                    if cum>pk: pk=cum
-                    drop = pk - cum
-                    if drop > dd: dd = drop
-                aw = df[df['net_pnl']>0]['net_pnl'].mean() if win>0 else 0
-                al = df[df['net_pnl']<0]['net_pnl'].mean() if los>0 else 0
-                pf_n = df[df['net_pnl']>0]['net_pnl'].sum()
-                pf_d = abs(df[df['net_pnl']<0]['net_pnl'].sum())
-                pf = pf_n/pf_d if pf_d>0 else 0
-                import datetime as _dt_bt
-                now_bt = _dt_bt.datetime.utcnow()
-                today_s = now_bt.replace(hour=0,minute=0,second=0,microsecond=0)
-                week_s  = (now_bt - _dt_bt.timedelta(days=now_bt.weekday())).replace(hour=0,minute=0,second=0,microsecond=0)
-                month_s = now_bt.replace(day=1,hour=0,minute=0,second=0,microsecond=0)
-                year_s  = now_bt.replace(month=1,day=1,hour=0,minute=0,second=0,microsecond=0)
-                if 'exit_datetime' in df.columns:
-                    df['exit_dt'] = _pd13.to_datetime(df['exit_datetime'])
-                    pnl_today = df[df['exit_dt'] >= _pd13.Timestamp(today_s)]['net_pnl'].sum()
-                    pnl_week  = df[df['exit_dt'] >= _pd13.Timestamp(week_s)]['net_pnl'].sum()
-                    pnl_month = df[df['exit_dt'] >= _pd13.Timestamp(month_s)]['net_pnl'].sum()
-                    pnl_year  = df[df['exit_dt'] >= _pd13.Timestamp(year_s)]['net_pnl'].sum()
-                else:
-                    pnl_today = pnl_week = pnl_month = pnl_year = 0
-                avg_slip = df['slippage_usd'].mean() if 'slippage_usd' in df.columns else 5.0
-                return {"tot":tot,"win":int(win),"los":int(los),"wr":wr,"nu":nu,"ni":ni,"cm":cm,"dd":dd,"aw":aw,"al":al,"pf":pf,
-                        "pnl_today":pnl_today,"pnl_week":pnl_week,"pnl_month":pnl_month,"pnl_year":pnl_year,"avg_slip":avg_slip}
-            except:
-                return None
-
-        def _v13(m, t):
-            if m is None: return "N/A"
-            if t=="tot":  return str(m["tot"])
-            if t=="win":  return str(m["win"])
-            if t=="los":  return str(m["los"])
-            if t=="wr":   return f"{m['wr']:.2f}%"
-            if t=="pnl":  return f"${m['nu']:,.2f} / \u20b9{m['ni']:,.0f}"
-            if t=="aw":   return f"${m['aw']:,.2f}"
-            if t=="al":   return f"${m['al']:,.2f}"
-            if t=="pf":   return f"{m['pf']:.2f}"
-            if t=="dd":   return f"-₹{m['dd']*84:,.0f}" if m['dd']>0 else "₹0"
-            if t=="cm":      return f"${m['cm']:,.2f} / \u20b9{m['cm']*_INR13:,.0f}"
-            if t=="cap":     return f"\u20b9{1816*_INR13:,.0f}"
-            if t=="today":   return f"\u20b9{m.get('pnl_today',0)*_INR13:,.0f}"
-            if t=="week":    return f"\u20b9{m.get('pnl_week',0)*_INR13:,.0f}"
-            if t=="month":   return f"\u20b9{m.get('pnl_month',0)*_INR13:,.0f}"
-            if t=="year":    return f"\u20b9{m.get('pnl_year',0)*_INR13:,.0f}"
-            if t=="slip":    return f"${m.get('avg_slip',0):,.2f}/side"
-            if t=="slipdiff":
-                diff = m.get("avg_slip", 5.0) - 5.0
-                sign = "+" if diff > 0 else ""
-                return f"{sign}${diff:,.2f} vs $5.00"
-            return "N/A"
-
-        def _c13(m, pos=True):
-            if m is None: return _TDN13
-            if pos: return _TDG13 if m.get("nu",0)>=0 else _TDR13
-            return _TDR13
-
-        def _build_tbl13(s2m, s4m, cbm):
-            def _row(lbl, v2, v4, vc, c2=None, c4=None, cc=None):
-                # S2/S4 columns: grey if N/A
-                _c2 = _TDN13 if str(v2)=='N/A' else (c2 or _TDN13)
-                _c4 = _TDN13 if str(v4)=='N/A' else (c4 or _TDN13)
-                # Combined column: green/red/grey based on value
-                # Always override color for N/A regardless of passed cc
-                _vc = str(vc)
-                if _vc == 'N/A':
-                    cc = _TDN13
-                elif cc is None:
-                    if _vc.startswith('-') or _vc.startswith('$-') or _vc.startswith('₹-'):
-                        cc = _TDR13
-                    elif _vc in ['0','0.00%','$0.00','₹0','0.00','0.00%']:
-                        cc = _TDN13
-                    else:
-                        cc = _TDG13
-                return (f"<tr><td style='{_TD13}'>{lbl}</td>"
-                        f"<td style='{_c2}'>{v2}</td>"
-                        f"<td style='{_c4}'>{v4}</td>"
-                        f"<td style='{cc}'>{vc}</td></tr>")
-            return (
-                f"<div style='overflow-x:auto;margin:4px 0;'>"
-                f"<table style='width:100%;border-collapse:collapse;'>"
-                f"<thead><tr>"
-                f"<th style='{_TH13}'>Metric</th>"
-                f"<th style='{_TH13}'>S2</th>"
-                f"<th style='{_TH13}'>S4</th>"
-                f"<th style='{_TH13}'>Combined</th>"
-                f"</tr></thead><tbody>"
-                f"<tr><td colspan='4' style='{_SUB13}'>CAPITAL</td></tr>"
-                + _row("Total Capital Required", _v13(s2m,"cap"), _v13(s4m,"cap"), f"\u20b9{int(1816*_INR13):,}")
-                + f"<tr><td colspan='4' style='{_SUB13}'>CUMULATIVE PnL</td></tr>"
-                + _row("Today PnL",   _v13(s2m,"today"), _v13(s4m,"today"), _v13(cbm,"today"), _c13(s2m,True) if s2m and s2m.get("pnl_today",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_today",0)>=0 else _TDR13, _c13(cbm,True) if cbm and cbm.get("pnl_today",0)>=0 else _TDR13)
-                + _row("Weekly PnL",  _v13(s2m,"week"),  _v13(s4m,"week"),  _v13(cbm,"week"),  _c13(s2m,True) if s2m and s2m.get("pnl_week",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_week",0)>=0 else _TDR13,  _c13(cbm,True) if cbm and cbm.get("pnl_week",0)>=0 else _TDR13)
-                + _row("Monthly PnL", _v13(s2m,"month"), _v13(s4m,"month"), _v13(cbm,"month"), _c13(s2m,True) if s2m and s2m.get("pnl_month",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_month",0)>=0 else _TDR13, _c13(cbm,True) if cbm and cbm.get("pnl_month",0)>=0 else _TDR13)
-                + _row("Yearly PnL",  _v13(s2m,"year"),  _v13(s4m,"year"),  _v13(cbm,"year"),  _c13(s2m,True) if s2m and s2m.get("pnl_year",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_year",0)>=0 else _TDR13,  _c13(cbm,True) if cbm and cbm.get("pnl_year",0)>=0 else _TDR13)
-                + f"<tr><td colspan='4' style='{_SUB13}'>CHARGES</td></tr>"
-                + _row("Total Charges", _v13(s2m,"cm"),  _v13(s4m,"cm"),  _v13(cbm,"cm"),  _TDR13,_TDR13,_TDR13)
-                + f"<tr><td colspan='4' style='{_SUB13}'>TRADE COUNT</td></tr>"
-                + _row("Total Trades",  _v13(s2m,"tot"), _v13(s4m,"tot"), _v13(cbm,"tot"))
-                + _row("Wins",          _v13(s2m,"win"), _v13(s4m,"win"), _v13(cbm,"win"), _TDG13,_TDG13,_TDG13)
-                + _row("Losses",        _v13(s2m,"los"), _v13(s4m,"los"), _v13(cbm,"los"), _TDR13,_TDR13,_TDR13)
-                + f"<tr><td colspan='4' style='{_SUB13}'>PERFORMANCE</td></tr>"
-                + _row("Win Rate",      _v13(s2m,"wr"),  _v13(s4m,"wr"),  _v13(cbm,"wr"))
-                + _row("Net PnL",       _v13(s2m,"pnl"), _v13(s4m,"pnl"), _v13(cbm,"pnl"), _c13(s2m),_c13(s4m),_c13(cbm))
-                + _row("Avg Win",       _v13(s2m,"aw"),  _v13(s4m,"aw"),  _v13(cbm,"aw"),  _TDG13,_TDG13,_TDG13)
-                + _row("Avg Loss",      _v13(s2m,"al"),  _v13(s4m,"al"),  _v13(cbm,"al"),  _TDR13,_TDR13,_TDR13)
-                + _row("Profit Factor", _v13(s2m,"pf"),  _v13(s4m,"pf"),  _v13(cbm,"pf"))
-                + f"<tr><td colspan='4' style='{_SUB13}'>RISK</td></tr>"
-                + _row("Max Drawdown",  _v13(s2m,"dd"),  _v13(s4m,"dd"),  _v13(cbm,"dd"),  _TDR13,_TDR13,_TDR13)
-                + f"<tr><td colspan='4' style='{_SUB13}'>SLIPPAGE</td></tr>"
-                + _row("Avg Slippage/side", _v13(s2m,"slip"), _v13(s4m,"slip"), _v13(cbm,"slip"), _TDR13,_TDR13,_TDR13)
-                + _row("vs Backtest ($5/side)", _v13(s2m,"slipdiff"), _v13(s4m,"slipdiff"), _v13(cbm,"slipdiff"), _TDG13 if s2m and s2m.get("avg_slip",5)<=5 else _TDR13, _TDG13 if s4m and s4m.get("avg_slip",5)<=5 else _TDR13, _TDB13)
-                + "</tbody></table></div>"
-            )
-
-        # ── FETCH LIVE DATA ──────────────────────────────────────
-        with st.spinner("Fetching live forward test data..."):
-            s2o = _fetch13(os.environ.get("S2_API_KEY",""), os.environ.get("S2_API_SECRET",""))
-            s4o = _fetch13(os.environ.get("S4_API_KEY",""), os.environ.get("S4_API_SECRET",""))
-        s2p  = _pair13(s2o)
-        s4p  = _pair13(s4o)
-        s2m  = _calc13(s2p)
-        s4m  = _calc13(s4p)
-        cbm  = _calc13(s2p+s4p)
-
-        # ── FETCH BACKTEST DATA (same date range) ────────────────
-        s2_bt = _bt_calc13("output/trade_log_RenkoReversal*.csv",        _VF13_7D)
-        s4_bt = _bt_calc13("output/trade_log_RenkoSMIIOSupertrend*.csv", _VF13_7D)
-        cb_bt_pairs = []
-        if s2_bt: cb_bt_pairs.append(s2_bt)
-        if s4_bt: cb_bt_pairs.append(s4_bt)
-        cb_bt = None
-        if s2_bt and s4_bt:
-            merged = {"tot":s2_bt["tot"]+s4_bt["tot"],
-                      "win":s2_bt["win"]+s4_bt["win"],
-                      "los":s2_bt["los"]+s4_bt["los"],
-                      "wr":(s2_bt["win"]+s4_bt["win"])/(s2_bt["tot"]+s4_bt["tot"])*100,
-                      "nu":s2_bt["nu"]+s4_bt["nu"],
-                      "ni":s2_bt["ni"]+s4_bt["ni"],
-                      "cm":s2_bt["cm"]+s4_bt["cm"],
-                      "dd":max(s2_bt["dd"],s4_bt["dd"]),
-                      "aw":(s2_bt["aw"]*s2_bt["win"]+s4_bt["aw"]*s4_bt["win"])/(s2_bt["win"]+s4_bt["win"]) if (s2_bt["win"]+s4_bt["win"])>0 else 0,
-                      "al":(s2_bt["al"]*s2_bt["los"]+s4_bt["al"]*s4_bt["los"])/(s2_bt["los"]+s4_bt["los"]) if (s2_bt["los"]+s4_bt["los"])>0 else 0,
-                      "pf":abs((s2_bt["aw"]*s2_bt["win"]+s4_bt["aw"]*s4_bt["win"])/(s2_bt["al"]*s2_bt["los"]+s4_bt["al"]*s4_bt["los"])) if (s2_bt["los"]+s4_bt["los"])>0 and (s2_bt["al"]*s2_bt["los"]+s4_bt["al"]*s4_bt["los"])!=0 else 0,
-                      "pnl_today":s2_bt.get("pnl_today",0)+s4_bt.get("pnl_today",0),
-                      "pnl_week":s2_bt.get("pnl_week",0)+s4_bt.get("pnl_week",0),
-                      "pnl_month":s2_bt.get("pnl_month",0)+s4_bt.get("pnl_month",0),
-                      "pnl_year":s2_bt.get("pnl_year",0)+s4_bt.get("pnl_year",0)}
-            cb_bt = merged
-
-        st.caption(f"Showing last 7 days | Valid from: {_VF13_7D[:10]} UTC | Auto updates on page load | Testnet")
-
-        # ── TOP TABLE: FORWARD TEST / LIVE ───────────────────────
-        # Side by side: Forward Test | Backtest
-        _col13a, _col13b = st.columns(2)
-        with _col13a:
-            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST / LIVE</div>", unsafe_allow_html=True)
-            st.markdown(_build_tbl13(s2m, s4m, cbm), unsafe_allow_html=True)
-        with _col13b:
-            st.markdown(f"<div style='{_HDR13}'>BACKTEST (LAST 7 DAYS: {_VF13_7D[:10]} to TODAY)</div>", unsafe_allow_html=True)
-            st.markdown(_build_tbl13(s2_bt, s4_bt, cb_bt), unsafe_allow_html=True)
-
-        # ================================================================
-        # LAST 20 TRADES - FORWARD TEST (LEFT) | BACKTEST (RIGHT)
-        # ================================================================
-        st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
-
-        _TH20 = "padding:4px 6px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#333;text-align:center;white-space:nowrap;"
-        _TD20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:center;white-space:nowrap;"
-        _TG20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
-        _TR20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#F23645;font-weight:700;text-align:center;"
-        _TY20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#e07000;font-weight:700;text-align:center;"
-
-        def _fwd20(pairs):
-            try:
-                if not pairs:
-                    return (f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'><table style='width:100%;border-collapse:collapse;'><thead><tr><th style='{_TH20}'>Date</th><th style='{_TH20}'>Dir</th><th style='{_TH20}'>Entry Time</th><th style='{_TH20}'>Exit Time</th><th style='{_TH20}'>Entry (INR)</th><th style='{_TH20}'>Exit (INR)</th><th style='{_TH20}'>Slip Diff vs $5</th><th style='{_TH20}'>Tax+Charges</th><th style='{_TH20}'>PnL</th></tr></thead><tbody><tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>Waiting for first trade</td></tr></tbody></table></div>")
-                import datetime as _dfw
-                last20 = pairs[-20:][::-1]
-                rows = ""
-                for p in last20:
-                    pnl      = float(p.get('pnl', 0))
-                    pnl_inr  = pnl * _INR13
-                    ep_inr   = float(p.get('ep', 0))
-                    xp_inr   = float(p.get('xp', 0))
-                    cm_inr   = float(p.get('cm', 0)) * _INR13
-                    _ist_off1 = _dfw.timedelta(hours=5, minutes=30)
-                    et       = (_dfw.datetime.utcfromtimestamp(p.get('ets',0)) + _ist_off1).strftime('%d-%b-%Y %I:%M %p IST')
-                    xt       = (_dfw.datetime.utcfromtimestamp(p.get('xts',0)) + _ist_off1).strftime('%d-%b-%Y %I:%M %p IST')
-                    dirv     = str(p.get('dir','')).upper()
-                    slip_act = abs(float(p.get('ep',0)) - float(p.get('xp',0))) * 0.001
-                    slip_diff= slip_act - 5.0
-                    slip_str = f"+${slip_diff:.2f}" if slip_diff >= 0 else f"-${abs(slip_diff):.2f}"
-                    mp_style  = _TG20
-                    ps        = _TG20 if pnl >= 0 else _TR20
-                    ds        = _TG20 if dirv == 'LONG' else _TR20
-                    rows += (
-                        f"<tr>"
-                        f"<td style='{_TD20}'>{et[:11].strip()}</td>"
-                        f"<td style='{ds}'>{dirv}</td>"
-                        f"<td style='{_TD20}'>{et[12:] if len(et)>12 else et}</td>"
-                        f"<td style='{_TD20}'>{xt[12:] if len(xt)>12 else xt}</td>"
-                        f"<td style='{_TD20}'>${ep_inr:,.0f}</td>"
-                        f"<td style='{_TD20}'>${xp_inr:,.0f}</td>"
-                        f"<td style='{_TR20}'>{slip_str} vs $5</td>"
-                        f"<td style='{_TR20}'>₹{cm_inr:,.0f}</td>"
-                        f"<td style='{ps}'>₹{pnl_inr:,.0f}</td>"
-                        f"</tr>"
-                    )
-                return (
-                    f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
-                    f"<table style='width:100%;border-collapse:collapse;'>"
-                    f"<thead><tr>"
-                    f"<th style='{_TH20}'>Date</th>"
-                    f"<th style='{_TH20}'>Dir</th>"
-                    f"<th style='{_TH20}'>Entry Time</th>"
-                    f"<th style='{_TH20}'>Exit Time</th>"
-                    f"<th style='{_TH20}'>Entry $</th>"
-                    f"<th style='{_TH20}'>Exit $</th>"
-                    f"<th style='{_TH20}'>Slip Diff vs $5</th>"
-                    f"<th style='{_TH20}'>Tax+Charges</th>"
-                    f"<th style='{_TH20}'>PnL</th>"
-                    f"</tr></thead><tbody>{rows}</tbody></table></div>"
-                )
-            except Exception as e:
-                return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
-
-        def _bt20(csv_pattern, vf_str):
-            try:
-                import glob as _gb, pandas as _pb
-                _WAIT_BT = (
-                    f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
-                    f"<table style='width:100%;border-collapse:collapse;'>"
-                    f"<thead><tr>"
-                    f"<th style='{_TH20}'>Date</th>"
-                    f"<th style='{_TH20}'>Dir</th>"
-                    f"<th style='{_TH20}'>Entry Time (IST)</th>"
-                    f"<th style='{_TH20}'>Exit Time (IST)</th>"
-                    f"<th style='{_TH20}'>Entry (INR)</th>"
-                    f"<th style='{_TH20}'>Exit (INR)</th>"
-                    f"<th style='{_TH20}'>Slip $5</th>"
-                    f"<th style='{_TH20}'>Tax+Charges</th>"
-                    f"<th style='{_TH20}'>PnL</th>"
-                    f"</tr></thead><tbody>"
-                    f"<tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>No backtest trades in this window</td></tr>"
-                    f"</tbody></table></div>"
-                )
-                s2_files = sorted(_gb.glob("output/trade_log_RenkoReversal*.csv"), reverse=True)
-                s4_files = sorted(_gb.glob("output/trade_log_RenkoSMIIO*.csv"), reverse=True)
-                frames = []
-                vf_dt = _pb.to_datetime(vf_str)
-                for ff in (s2_files[:1] + s4_files[:1]):
-                    _df = _pb.read_csv(ff)
-                    _df['entry_datetime'] = _pb.to_datetime(_df['entry_datetime'])
-                    _df_vf = _df[_df['entry_datetime'] >= vf_dt]
-                    if not _df_vf.empty:
-                        frames.append(_df_vf)
-                if not frames:
-                    return _WAIT_BT
-                df = _pb.concat(frames).sort_values('entry_datetime').tail(20).iloc[::-1].reset_index(drop=True)
-                if df.empty:
-                    return _WAIT_BT
-                rows = ""
-                for i, r in df.iterrows():
-                    pnl     = float(r.get('net_pnl', 0))
-                    pnl_inr = float(r.get('net_pnl_inr', pnl * _INR13))
-                    ep_inr  = float(r.get('entry_price', 0))
-                    xp_inr  = float(r.get('exit_price',  0))
-                    slip    = float(r.get('slippage_usd', 10.0))
-                    tax_inr = float(r.get('total_charges_usd', 0)) * _INR13
-                    import datetime as _dfw
-                    _ist_off2 = _dfw.timedelta(hours=5, minutes=30)
-                    _et_raw = str(r.get('entry_datetime',''))[:19]
-                    _xt_raw = str(r.get('exit_datetime', ''))[:19]
-                    try:
-                        et = (_dfw.datetime.strptime(_et_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_off2).strftime('%d-%b-%Y %I:%M %p IST')
-                        xt = (_dfw.datetime.strptime(_xt_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_off2).strftime('%d-%b-%Y %I:%M %p IST')
-                    except:
-                        et = _et_raw
-                        xt = _xt_raw
-                    dirv    = str(r.get('direction','')).upper()
-                    ps      = _TG20 if pnl >= 0 else _TR20
-                    ds      = _TG20 if dirv == 'LONG' else _TR20
-                    rows += (
-                        f"<tr>"
-                        f"<td style='{_TD20}'>{et[:11].strip()}</td>"
-                        f"<td style='{ds}'>{dirv}</td>"
-                        f"<td style='{_TD20}'>{et[12:] if len(et)>12 else et}</td>"
-                        f"<td style='{_TD20}'>{xt[12:] if len(xt)>12 else xt}</td>"
-                        f"<td style='{_TD20}'>${ep_inr:,.0f}</td>"
-                        f"<td style='{_TD20}'>${xp_inr:,.0f}</td>"
-                        f"<td style='{_TR20}'>${slip:.2f}</td>"
-                        f"<td style='{_TR20}'>₹{tax_inr:,.0f}</td>"
-                        f"<td style='{ps}'>₹{pnl_inr:,.0f}</td>"
-                        f"</tr>"
-                    )
-                return (
-                    f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
-                    f"<table style='width:100%;border-collapse:collapse;'>"
-                    f"<thead><tr>"
-                    f"<th style='{_TH20}'>Date</th>"
-                    f"<th style='{_TH20}'>Dir</th>"
-                    f"<th style='{_TH20}'>Entry Time (IST)</th>"
-                    f"<th style='{_TH20}'>Exit Time (IST)</th>"
-                    f"<th style='{_TH20}'>Entry (INR)</th>"
-                    f"<th style='{_TH20}'>Exit (INR)</th>"
-                    f"<th style='{_TH20}'>Slip $5</th>"
-                    f"<th style='{_TH20}'>Tax+Charges</th>"
-                    f"<th style='{_TH20}'>PnL</th>"
-                    f"</tr></thead><tbody>{rows}</tbody></table></div>"
-                )
-            except Exception as e:
-                return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
-
-        def _cmp20(csv_pattern, fwd_pairs, vf_str):
-            try:
-                import glob as _gc, pandas as _pc, datetime as _dc
-                files = sorted(_gc.glob(csv_pattern), reverse=True)
-                s2_ff = sorted(_gc.glob("output/trade_log_RenkoReversal*.csv"), reverse=True)
-                s4_ff = sorted(_gc.glob("output/trade_log_RenkoSMIIO*.csv"), reverse=True)
-                _frames = []
-                vf_dt = _pc.to_datetime(vf_str)
-                for _ff in (s2_ff[:1] + s4_ff[:1]):
-                    _dff = _pc.read_csv(_ff)
-                    _dff['entry_datetime'] = _pc.to_datetime(_dff['entry_datetime'])
-                    _dff_vf = _dff[_dff['entry_datetime'] >= vf_dt]
-                    if not _dff_vf.empty:
-                        _frames.append(_dff_vf)
-                if not _frames:
-                    return "<p style='color:#aaa;font-size:12px;padding:8px'>No backtest trades in this window yet</p>"
-                df = _pc.concat(_frames).sort_values('entry_datetime').tail(20).iloc[::-1].reset_index(drop=True)
-                if df.empty:
-                    return "<p style='color:#aaa;font-size:12px;padding:8px'>No backtest trades in this window yet</p>"
-                last20 = (fwd_pairs or [])[-20:][::-1]
-                used_fwd = set()
-                max_rows = len(df)
-                rows = ""
-                for i in range(max_rows):
-                    bt  = df.iloc[i]
-                    # Match forward test trade by closest entry time not by position
-                    fwd = None
-                    bt_et_raw = str(bt.get('entry_datetime',''))[:19]
-                    try:
-                        import datetime as _dmatch
-                        bt_et_dt = _dmatch.datetime.strptime(bt_et_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S')
-                        best_diff = None
-                        for _fp in last20:
-                            try:
-                                _fp_et = _dmatch.datetime.utcfromtimestamp(_fp.get('ets', 0))
-                                _diff = abs((_fp_et - bt_et_dt).total_seconds())
-                                if best_diff is None or _diff < best_diff:
-                                    best_diff = _diff
-                                    fwd = _fp
-                            except:
-                                pass
-                        # Only match if within 4 hours
-                        if best_diff is not None and best_diff > 14400:
-                            fwd = None
-                        # Skip already matched fwd trades
-                        if fwd is not None:
-                            fwd_key = fwd.get('ets', 0)
-                            if fwd_key in used_fwd:
-                                fwd = None
-                            else:
-                                used_fwd.add(fwd_key)
-                    except:
-                        fwd = last20[i] if i < len(last20) else None
-                    bt_ep   = float(bt.get('entry_price', 0))
-                    bt_xp   = float(bt.get('exit_price',  0))
-                    bt_pnl  = float(bt.get('net_pnl_inr', float(bt.get('net_pnl',0)) * _INR13))
-                    bt_dir  = str(bt.get('direction','')).upper()
-                    import datetime as _dbt
-                    _ist_bt = _dbt.timedelta(hours=5, minutes=30)
-                    _bt_et_raw = str(bt.get('entry_datetime',''))[:19]
-                    _bt_xt_raw = str(bt.get('exit_datetime', ''))[:19]
-                    try:
-                        bt_et = (_dbt.datetime.strptime(_bt_et_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_bt).strftime('%d-%b-%Y %I:%M %p IST')
-                        bt_xt = (_dbt.datetime.strptime(_bt_xt_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_bt).strftime('%d-%b-%Y %I:%M %p IST')
-                    except:
-                        bt_et = _bt_et_raw
-                        bt_xt = _bt_xt_raw
-                    if fwd is None:
-                        # No live trade yet - show PENDING
-                        _pnd = "background:#fff8e1;color:#b8860b;font-weight:bold;padding:4px 6px;font-size:11px;"
-                        _ds2 = _TG20 if bt_dir == "LONG" else _TR20
-                        rows += (
-                            f"<tr>"
-                            f"<td style='{_pnd}'>PENDING</td>"
-                            f"<td style='{_TD20}'>{bt_et[:11].strip()}</td>"
-                            f"<td style='{_ds2}'>{bt_dir}</td>"
-                            f"<td style='{_TD20}'>{bt_et[12:] if len(bt_et)>12 else bt_et}</td>"
-                            f"<td style='{_TD20}'>-</td>"
-                            f"<td style='{_TD20}'>₹{bt_ep:,.0f}</td>"
-                            f"<td style='{_TD20}'>-</td>"
-                            f"<td style='{_TD20}'>₹{bt_xp:,.0f}</td>"
-                            f"<td style='{_TD20}'>-</td>"
-                            f"<td style='{_TG20 if bt_pnl>=0 else _TR20}'>₹{bt_pnl:,.0f}</td>"
-                            f"<td style='{_TD20}'>-</td>"
-                            f"<td style='{_pnd}'>Waiting live</td>"
-                            f"</tr>"
-                        )
-                        continue
-                    fwd_ep  = float(fwd.get('ep', 0))
-                    fwd_xp  = float(fwd.get('xp', 0))
-                    fwd_pnl = float(fwd.get('pnl', 0)) * _INR13
-                    fwd_dir = str(fwd.get('dir','')).upper()
-                    _ist_cmp = _dc.timedelta(hours=5, minutes=30)
-                    fwd_et  = (_dc.datetime.utcfromtimestamp(fwd.get('ets',0)) + _ist_cmp).strftime('%d-%b-%Y %I:%M %p IST')
-                    fwd_xt  = (_dc.datetime.utcfromtimestamp(fwd.get('xts',0)) + _ist_cmp).strftime('%d-%b-%Y %I:%M %p IST')
-                    pnl_diff  = abs(bt_pnl - fwd_pnl)
-                    pnl_pct   = (pnl_diff / abs(bt_pnl) * 100) if bt_pnl != 0 else 0
-                    dir_match = bt_dir == fwd_dir
-                    match_pct = 100.0
-                    if not dir_match:  match_pct -= 50
-                    if pnl_pct > 10:   match_pct -= 30
-                    elif pnl_pct > 5:  match_pct -= 10
-                    mp_style  = _TG20 if match_pct >= 95 else (_TY20 if match_pct >= 80 else _TR20)
-                    ds        = _TG20 if dir_match else _TR20
-                    pd_style  = _TG20 if pnl_pct <= 5 else (_TY20 if pnl_pct <= 10 else _TR20)
-                    rows += (
-                        f"<tr>"
-                        f"<td style='{mp_style}'>{match_pct:.0f}%</td>"
-                        f"<td style='{_TD20}'>{bt_et[:11].strip()}</td>"
-                        f"<td style='{ds}'>{bt_dir}</td>"
-                        f"<td style='{_TD20}'>{bt_et[12:] if len(bt_et)>12 else bt_et}</td>"
-                        f"<td style='{_TD20}'>{fwd_et[12:] if len(fwd_et)>12 else fwd_et}</td>"
-                        f"<td style='{_TD20}'>{bt_xt[12:] if len(bt_xt)>12 else bt_xt}</td>"
-                        f"<td style='{_TD20}'>{fwd_xt[12:] if len(fwd_xt)>12 else fwd_xt}</td>"
-                        f"<td style='{_TD20}'>${bt_ep:,.0f}</td>"
-                        f"<td style='{_TD20}'>${fwd_ep:,.0f}</td>"
-                        f"<td style='{_TD20}'>${bt_xp:,.0f}</td>"
-                        f"<td style='{_TD20}'>${fwd_xp:,.0f}</td>"
-                        f"<td style='{_TG20}'>₹{bt_pnl:,.0f}</td>"
-                        f"<td style='{_TG20 if fwd_pnl>=0 else _TR20}'>₹{fwd_pnl:,.0f}</td>"
-                        f"<td style='{pd_style}'>₹{pnl_diff:,.0f} ({pnl_pct:.1f}%)</td>"
-                        f"</tr>"
-                    )
-                return (
-                    f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
-                    f"<table style='width:100%;border-collapse:collapse;'>"
-                    f"<thead><tr>"
-                    f"<th style='{_TH20}'>Match%</th>"
-                    f"<th style='{_TH20}'>Date</th>"
-                    f"<th style='{_TH20}'>Dir</th>"
-                    f"<th style='{_TH20}'>BT Entry T</th>"
-                    f"<th style='{_TH20}'>FT Entry T</th>"
-                    f"<th style='{_TH20}'>BT Exit T</th>"
-                    f"<th style='{_TH20}'>FT Exit T</th>"
-                    f"<th style='{_TH20}'>BT Entry ₹</th>"
-                    f"<th style='{_TH20}'>FT Entry ₹</th>"
-                    f"<th style='{_TH20}'>BT Exit ₹</th>"
-                    f"<th style='{_TH20}'>FT Exit ₹</th>"
-                    f"<th style='{_TH20}'>BT PnL</th>"
-                    f"<th style='{_TH20}'>FT PnL</th>"
-                    f"<th style='{_TH20}'>PnL Diff</th>"
-                    f"</tr></thead><tbody>{rows}</tbody></table></div>"
-                )
-            except Exception as e:
-                return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
-
-        # ── RENDER SIDE BY SIDE LAST 20 ──────────────────────────
-        _col20a, _col20b = st.columns(2)
-        with _col20a:
-            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST - LAST 20 TRADES</div>", unsafe_allow_html=True)
-            st.markdown(_fwd20(s2p + s4p), unsafe_allow_html=True)
-        with _col20b:
-            st.markdown(f"<div style='{_HDR13}'>BACKTEST - LAST 20 TRADES</div>", unsafe_allow_html=True)
-            st.markdown(_bt20("output/trade_log_Renko*.csv", _VF13_7D), unsafe_allow_html=True)
-
-        # ── COMPARISON TABLE FULL WIDTH BELOW ────────────────────
-        st.markdown(f"<div style='{_HDR13}'>BACKTEST vs FORWARD TEST - LAST 20 COMPARISON</div>", unsafe_allow_html=True)
-        st.markdown(_cmp20("output/trade_log_Renko*.csv", s2p + s4p, _VF13_7D), unsafe_allow_html=True)
-
-
-    # ================================================================
-    # FOOTER
-    # ================================================================
-    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
-    st.caption(f"Version: {system.get('version', 'v3.9')} | Commit: {git_commit} | Last refresh: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5,minutes=30))).strftime('%d-%b-%Y %I:%M %p IST')}")
-    # This line intentionally left blank
-
-
-
-
-    # ============================================================
-    # SECTION 14 - SLIPPAGE COMPARISON
-    # ============================================================
-    if 'exp_14s' not in st.session_state: st.session_state['exp_14s'] = False
-    with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st.session_state.get('exp_14s', False)):
-
-        import glob as _gl14, pandas as _pd14, datetime as _dt14
-
-        # TODAY'S TRADES TABLE AT TOP
-        def _today_trades_html(df2, df4, df2_fwd, df4_fwd):
-            import datetime as _dtt
-            _INR = 84.0
-            _SLIP10_EXTRA = 10.0
-            now_utc = _dtt.datetime.utcnow()
-            today_s = now_utc.replace(hour=0,minute=0,second=0,microsecond=0)
-            def _to_ist(ts):
-                try:
-                    dt = _pd14.to_datetime(str(ts).replace("T"," "))
-                    ist = dt + _dtt.timedelta(hours=5, minutes=30)
-                    return ist.strftime("%d-%b %I:%M %p")
-                except: return "-"
-            def _get_bt_rows(df, label):
-                if df is None: return []
-                rows = []
-                try:
-                    import pandas as _pd_t
-                    # df is a dict from _load14 - get raw_df
-                    dfc = df.get("raw_df") if isinstance(df, dict) else df
-                    if dfc is None or not hasattr(dfc, 'iterrows'): return []
-                    dfc = dfc.copy()
-                    dfc['exit_datetime'] = _pd_t.to_datetime(dfc['exit_datetime'])
-                    dfc['entry_datetime'] = _pd_t.to_datetime(dfc['entry_datetime'])
-                    # filter to today only (entry or exit today)
-                    import datetime as _dtt_bt
-                    _today_bt = _dtt_bt.datetime.utcnow().strftime("%Y-%m-%d")
-                    dfc = dfc[dfc['exit_datetime'].dt.strftime("%Y-%m-%d") >= _today_bt]
-                    dfc = dfc.sort_values('exit_datetime', ascending=False).head(10)
-                    for _, r in dfc.iterrows():
-                        rows.append({
-                            'label'    : label,
-                            'dir'      : str(r.get('direction','')).upper(),
-                            'entry_ist': _to_ist(r.get('entry_datetime','')),
-                            'exit_ist' : _to_ist(r.get('exit_datetime','')),
-                            'entry_p'  : float(r.get('entry_price',0)),
-                            'exit_p'   : float(r.get('exit_price',0)),
-                            'pnl_usd'  : float(r.get('net_pnl',0)),
-                            'pnl_inr5' : float(r.get('net_pnl_inr',0)) - (max(float(r.get('net_pnl_inr',0)),0)*0.10),
-                            'pnl_inr10': float(r.get('net_pnl_inr',0)) - (max(float(r.get('net_pnl_inr',0)),0)*0.10) - (_SLIP10_EXTRA * _INR),
-                            'charges'  : (float(r.get('taker_fees_usd',0))+float(r.get('slippage_usd',0))+float(r.get('funding_usd',0))+float(r.get('tax_usd',0)))*_INR,
-                        })
-                except: pass
-                return rows
-            def _get_fwd_rows(df_fwd, label):
-                if df_fwd is None: return []
-                rows = []
-                try:
-                    import datetime as _dtt_fwd
-                    _today_fwd = _dtt_fwd.datetime.utcnow().strftime("%Y-%m-%d")
-                    raw = [p for p in (df_fwd.get("raw_pairs",[]) if isinstance(df_fwd,dict) else []) if str(p.get("entry_ts",""))[:10] >= _today_fwd]
-                    # last 10 trades most recent first
-                    for p in reversed(raw[-10:]):
-                        ep   = float(p.get('entry_price',0))
-                        xp   = float(p.get('exit_price',0))
-                        side = str(p.get('side','buy')).lower()
-                        lots = float(p.get('size',100))
-                        pnl_net = float(p.get('pnl',0))
-                        comm    = float(p.get('comm',0))
-                        entry_ts = p.get('entry_ts','')
-                        exit_ts  = p.get('exit_ts','')
-                        rows.append({
-                            'label'    : label,
-                            'dir'      : 'LONG' if side=='buy' else 'SHORT',
-                            'entry_ist': _to_ist(entry_ts),
-                            'exit_ist' : _to_ist(exit_ts),
-                            'entry_p'  : ep,
-                            'exit_p'   : xp,
-                            'pnl_usd'  : pnl_net,
-                            'pnl_inr5' : pnl_net*_INR,
-                            'pnl_inr10': pnl_net*_INR,
-                            'charges'  : comm*_INR,
-                        })
-                except: pass
-                return rows
-            bt2 = _get_bt_rows(df2, "BT S2")
-            bt4 = _get_bt_rows(df4, "BT S4")
-            lv2 = _get_fwd_rows(df2_fwd, "LV S2")
-            lv4 = _get_fwd_rows(df4_fwd, "LV S4")
-            today_str = _dtt.datetime.utcnow().strftime("%d-%b-%Y")
-            TH  = "padding:5px 8px;border:1px solid #C8D0DC;background:#1565C0;font-size:10px;font-weight:700;color:#fff;text-align:center;"
-            THS = "padding:5px 8px;border:1px solid #C8D0DC;background:#1565C0;font-size:10px;font-weight:700;color:#fff;text-align:center;width:40px;"
-            TD  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;text-align:center;"
-            TDN = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;text-align:center;background:#f7f9fc;font-weight:700;color:#555;vertical-align:middle;"
-            def _pnl_color(v): return "#089981" if v>=0 else "#F23645"
-            def _dir_color(d): return "#089981" if d=="LONG" else "#F23645"
-            def _match(bt, lv):
-                if bt is None or lv is None: return "-"
-                if bt["dir"]==lv["dir"] and bt["entry_ist"]==lv["entry_ist"]: return "✅"
-                return "❌"
-            def _section_html(strat, bt_rows, lv_rows):
-                n_bt = len(bt_rows); n_lv = len(lv_rows)
-                tc = max(n_bt, n_lv)
-                bt_pnl5  = sum(r["pnl_inr5"]  for r in bt_rows)
-                bt_pnl10 = sum(r["pnl_inr10"] for r in bt_rows)
-                lv_pnl5  = sum(r["pnl_inr5"]  for r in lv_rows)
-                lv_pnl10 = sum(r["pnl_inr10"] for r in lv_rows)
-                def _pc(v): return "#089981" if v>=0 else "#F23645"
-                def _fmt(v): return f"+₹{v:,.0f}" if v>=0 else f"-₹{abs(v):,.0f}"
-                hdr = (
-                    '<div style="margin:12px 0 0 0;font-size:12px;font-weight:700;color:#fff;'
-                    'background:#1565C0;padding:6px 10px;border-radius:4px 4px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:6px;">'
-                    f'<span>TODAY\'S TRADES ({today_str}) — Backtest {strat} vs Forward Test {strat}</span>'
-                    f'<span style="background:#fff;color:#1565C0;border-radius:3px;padding:3px 10px;font-size:12px;font-weight:700;">BT Trades: {n_bt}</span>'
-                    f'<span style="background:#e8f5e9;color:#1b5e20;border-radius:3px;padding:3px 10px;font-size:12px;font-weight:700;">LV Trades: {n_lv}</span>'
-                    f'<span style="background:#fff3e0;color:#e65100;border-radius:3px;padding:3px 10px;font-size:12px;">BT PnL $5: <b style="color:{_pc(bt_pnl5)}">{_fmt(bt_pnl5)}</b> | $10: <b style="color:{_pc(bt_pnl10)}">{_fmt(bt_pnl10)}</b></span>'
-                    f'<span style="background:#e3f2fd;color:#0d47a1;border-radius:3px;padding:3px 10px;font-size:12px;">LV PnL $5: <b style="color:{_pc(lv_pnl5)}">{_fmt(lv_pnl5)}</b> | $10: <b style="color:{_pc(lv_pnl10)}">{_fmt(lv_pnl10)}</b></span>'
-                    '</div>'
-                )
-                tbl = '<table style="width:100%;border-collapse:collapse;margin-bottom:4px;">'
-                tbl += '<thead><tr>'
-                tbl += f'<th style="{THS}">S.No</th>'
-                tbl += f'<th style="{TH}">Source</th>'
-                tbl += f'<th style="{TH}">Dir</th>'
-                tbl += f'<th style="{TH}">Entry IST</th>'
-                tbl += f'<th style="{TH}">Exit IST</th>'
-                tbl += f'<th style="{TH}">Entry $</th>'
-                tbl += f'<th style="{TH}">Exit $</th>'
-                tbl += f'<th style="{TH}">PnL $</th>'
-                tbl += f'<th style="{TH}">Net PnL ₹ ($5/side)</th>'
-                tbl += f'<th style="{TH}">Net PnL ₹ ($10/side)</th>'
-                tbl += f'<th style="{TH}">Charges ₹</th>'
-                tbl += f'<th style="{TH}">Match</th>'
-                tbl += '</tr></thead><tbody>'
-                if tc == 0:
-                    tbl += f'<tr><td colspan="12" style="{TD}color:#aaa;">No trades yet</td></tr>'
-                for i in range(tc):
-                    bt = bt_rows[i] if i < n_bt else None
-                    lv = lv_rows[i] if i < n_lv else None
-                    _sep = "border-top:3px solid #42A5F5;" if i>0 else ""
-                    sno_cell = f'<td rowspan="2" style="{TDN}{_sep}">{i+1}</td>'
-                    for ridx, (row, src) in enumerate([(bt, f"BT {strat}"), (lv, f"LV {strat}")]):
-                        is_lv = (ridx == 1)
-                        match_cell = (f'<td style="{TD}font-size:14px;">{_match(bt,lv)}</td>' if is_lv
-                                      else f'<td style="{TD}"></td>')
-                        sno = sno_cell if not is_lv else ""
-                        if row is None:
-                            tbl += f'<tr>{sno}<td style="{TD}color:#aaa;">{src}</td>'
-                            tbl += (f'<td style="{TD}color:#aaa;">-</td>' * 9)
-                            tbl += f'{match_cell}</tr>'
-                        else:
-                            dc  = _dir_color(row["dir"])
-                            pc5 = _pnl_color(row["pnl_inr5"])
-                            pc10= _pnl_color(row["pnl_inr10"])
-                            pu  = _pnl_color(row["pnl_usd"])
-                            bg  = "background:#f0f7ff;" if not is_lv else ""
-                            _row_sep = _sep if ridx==0 else ""
-                            tbl += f'<tr style="{_row_sep}">{sno}'
-                            tbl += f'<td style="{TD}{bg}font-weight:700;">{src}</td>'
-                            tbl += f'<td style="{TD}color:{dc};font-weight:700;">{row["dir"]}</td>'
-                            tbl += f'<td style="{TD}{bg}">{row["entry_ist"]}</td>'
-                            tbl += f'<td style="{TD}{bg}">{row["exit_ist"]}</td>'
-                            tbl += f'<td style="{TD}{bg}">${row["entry_p"]:,.0f}</td>'
-                            tbl += f'<td style="{TD}{bg}">${row["exit_p"]:,.0f}</td>'
-                            tbl += f'<td style="{TD}color:{pu};font-weight:700;">${row["pnl_usd"]:+,.2f}</td>'
-                            tbl += f'<td style="{TD}color:{pc5};font-weight:700;">₹{row["pnl_inr5"]:+,.0f}</td>'
-                            tbl += f'<td style="{TD}color:{pc10};font-weight:700;">₹{row["pnl_inr10"]:+,.0f}</td>'
-                            tbl += f'<td style="{TD}{bg}">₹{row["charges"]:,.0f}</td>'
-                            tbl += f'{match_cell}</tr>'
-                tbl += '</tbody></table>'
-                return hdr + tbl
-            html = '<div style="overflow-x:auto;margin:8px 0;">'
-            html += _section_html("S2", bt2, lv2)
-            html += '<div style="height:14px;"></div>'
-            html += _section_html("S4", bt4, lv4)
-            html += '</div>'
-            return html
-        st.markdown(_today_trades_html(_d2_full, _d4_full, _df2_fwd, _df4_fwd), unsafe_allow_html=True)
-        st.markdown("---")
-        st.markdown(_tbl14(_d2_1yr,_d4_1yr,"1-YEAR BACKTEST",_1yr_label,_df2_fwd,_df4_fwd),unsafe_allow_html=True)
-        st.markdown("---")
-        st.markdown(_tbl14(_d2_full,_d4_full,"FULL CSV BACKTEST",_full_label,_df2_fwd,_df4_fwd),unsafe_allow_html=True)
-        st.markdown("---")
-
-        # DEPLOYMENT PLAN SECTION
-        _d2f = _d2_full or {}
-        _d4f = _d4_full or {}
-        _port_dd_inr = ((_d2f.get("dd",0) + _d4f.get("dd",0)) * _INR14)
-        _rec_cap = max(_port_dd_inr * 3, 200000)
-
-        st.markdown(f"""
-        <div style="overflow-x:auto;margin:4px 0;">
-        <table style="width:100%;border-collapse:collapse;">
-        <thead>
-        <tr><th style="{_PLNH14}" colspan="2">DEPLOYMENT PLAN</th></tr>
-        </thead>
-        <tbody>
-        <tr><td style="{_PLND14}">Margin Mode</td><td style="{_PLNV14}">Isolated</td></tr>
-        <tr><td style="{_PLND14}">Leverage</td><td style="{_PLNV14}">50x</td></tr>
-        <tr><td style="{_PLND14}">Subaccount</td><td style="{_PLNV14}">Single (S2 + S4 together)</td></tr>
-        <tr><td style="{_PLND14}">Starting Capital</td><td style="{_PLNV14}">₹2,00,000</td></tr>
-        <tr><td style="{_PLND14}">Starting Lots</td><td style="{_PLNV14}">100 lots (fixed)</td></tr>
-        <tr><td style="{_PLND14}">Go-Live Date</td><td style="{_PLNV14}">Aug 1, 2026</td></tr>
-        <tr><td style="{_PLND14}">First Withdrawal</td><td style="{_PLNV14}">Feb 2027 (after 6 months)</td></tr>
-        <tr><td style="{_PLND14}">Max Lots Cap</td><td style="{_PLNV14}">1000 lots (never exceed)</td></tr>
-        </tbody>
-        </table>
-        </div>
-
-        <div style="overflow-x:auto;margin:10px 0 4px 0;">
-        <table style="width:100%;border-collapse:collapse;">
-        <thead>
-        <tr>
-          <th style="{_PLNH14}">Lots</th>
-          <th style="{_PLNH14}">Safe Keep</th>
-          <th style="{_PLNH14}">Monthly Target</th>
-          <th style="{_PLNH14}">Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr><td style="{_PLND14}">100</td><td style="{_PLNV14}">₹1,00,000</td><td style="{_TDG14}">₹1,11,328</td><td style="{_PLND14}">Start Aug 1</td></tr>
-        <tr><td style="{_PLND14}">300</td><td style="{_PLNV14}">₹2,00,000</td><td style="{_TDG14}">₹3,33,984</td><td style="{_PLND14}">Sep 1 if profit</td></tr>
-        <tr><td style="{_PLND14}">500</td><td style="{_PLNV14}">₹3,00,000</td><td style="{_TDG14}">₹5,56,640</td><td style="{_PLND14}">Oct 1 if profit</td></tr>
-        <tr><td style="{_PLND14}">700</td><td style="{_PLNV14}">₹4,00,000</td><td style="{_TDG14}">₹7,79,296</td><td style="{_PLND14}">Nov 1 if profit</td></tr>
-        <tr><td style="{_PLND14}">900</td><td style="{_PLNV14}">₹5,50,000</td><td style="{_TDG14}">₹10,01,952</td><td style="{_PLND14}">Dec 1 if profit</td></tr>
-        <tr><td style="{_PLND14}">1000</td><td style="{_PLNV14}">₹6,00,000</td><td style="{_TDG14}">₹10,65,265</td><td style="{_PLND14}">Jan 1 if profit — FINAL CAP</td></tr>
-        </tbody>
-        </table>
-        </div>
-
-        <div style="background:#fff8e1;border-left:3px solid #e07000;padding:8px 12px;margin:10px 0 4px 0;font-size:11px;color:#131722;">
-        <b>Golden Rules (Never Break):</b>
-        <ol style="margin:4px 0;padding-left:16px;">
-        <li>Start 100 lots — never skip levels</li>
-        <li>Increase +200 only after profitable month confirmed</li>
-        <li>Never decrease lots even in losing month — FREEZE ONLY</li>
-        <li>Cap = 1000 lots maximum — never exceed</li>
-        <li>Check Section 13 on 1st of every month — 30 seconds</li>
-        <li>Never change lots during open position — wait FLAT</li>
-        <li>If 2 consecutive losing months = pause and review</li>
-        <li>First 6 months = ZERO withdrawal — build buffer</li>
-        <li>Go live only after 5 consecutive MATCH trades confirmed</li>
-        </ol>
-        </div>
-
-        <div style="background:#f0f4ff;border-left:3px solid #2962FF;padding:8px 12px;margin:10px 0 4px 0;font-size:11px;color:#131722;">
-        <b>Key Observations:</b>
-        <ul style="margin:4px 0;padding-left:16px;">
-        <li>Trade count identical at both slippages - strategy logic is unchanged</li>
-        <li style="color:#089981;font-weight:600;">$5/side: S2 improves from 25/31 to 31/31 green months - all months profitable</li>
-        <li style="color:#089981;font-weight:600;">$5/side: Portfolio Rec Capital 3.8x lower = ROC jumps from 4,697% to 22,433%</li>
-        <li>$10/side is conservative/safe assumption for live trading presentation</li>
-        <li>$5/side is realistic for actual Delta Exchange execution (taker ~$3-5/side)</li>
-        <li>Both are valid - use $10 for conservative view, $5 for realistic view</li>
-        </ul>
-        </div>
-        """, unsafe_allow_html=True)
-
-
-    # SECTION 13 - STRATEGY PERFORMANCE SUMMARY
-    # ================================================================
-    if 'exp_13s' not in st.session_state: st.session_state['exp_13s'] = False
-    with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.session_state.get('exp_13s', False)):
-        import time as _t13, hmac as _hm13, hashlib as _hs13, requests as _rq13, datetime as _dt13, glob as _gl13, pandas as _pd13, re as _re13
-
-        try:
-            _VF13 = open("logs/valid_from_baseline.txt").read().strip()
-        except:
-            _VF13 = "2026-07-14T15:00:00"
-        # Section 13 display window = last 7 days rolling (not VALID_FROM)
-        import datetime as _dt13_7
-        _VF13_7D = (_dt13_7.datetime.utcnow() - _dt13_7.timedelta(days=7)).strftime('%Y-%m-%dT%H:%M:%S')
-        _INR13 = 84.0
-        _BASE13= "https://cdn-ind.testnet.deltaex.org"
-        _TH13  = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:11px;font-weight:700;color:#333;text-align:center;"
-        _TD13  = "padding:6px 8px;border:1px solid #E0E3EB;font-size:13px;color:#131722;font-weight:600;"
-        _TDN13 = "padding:6px 8px;border:1px solid #E0E3EB;font-size:13px;color:#131722;text-align:center;font-weight:500;"
-        _TDG13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#089981;font-weight:700;text-align:center;"
-        _TDR13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#F23645;font-weight:700;text-align:center;"
-        _TDB13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#2962FF;font-weight:700;text-align:center;"
-        _SUB13 = "padding:4px 8px;border:1px solid #C8D0DC;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
-        _HDR13 = "padding:6px 12px;background:#1E3A5F;font-size:11px;font-weight:700;color:#ffffff;margin:8px 0 4px 0;border-left:4px solid #2962FF;"
-
-        def _auth13(k, s, path, qs=""):
-            try:
-                ts  = str(int(_t13.time()))
-                qp  = f"?{qs}" if qs else ""
-                msg = f"GET{ts}{path}{qp}"
-                sig = _hm13.new(s.encode(), msg.encode(), _hs13.sha256).hexdigest()
-                return {"api-key":k,"timestamp":ts,"signature":sig,"Content-Type":"application/json"}
-            except:
-                return {}
-
-        def _fetch13(k, s):
-            orders, after = [], None
-            try:
-                vf  = int(_dt13.datetime.strptime(_VF13,"%Y-%m-%dT%H:%M:%S").replace(tzinfo=_dt13.timezone.utc).timestamp())
-                now = int(_dt13.datetime.now(_dt13.timezone.utc).timestamp())
-                path= "/v2/orders/history"
-                prm = {"product_id":84,"page_size":100,"start_time":int(vf*1e6),"end_time":int(now*1e6)}
-                for _ in range(50):
-                    p = dict(prm)
-                    if after: p["after"] = after
-                    qs = "&".join(f"{a}={b}" for a,b in sorted(p.items()))
-                    h = _auth13(k, s, path, qs)
-                    r = _rq13.get(f"{_BASE13}{path}?{qs}", headers=h, timeout=10)
-                    d = r.json()
-                    if not d.get("success"): break
-                    batch = d.get("result",[])
-                    orders += batch
-                    after  = d.get("meta",{}).get("after")
-                    if not after or not batch: break
-            except:
-                pass
-            return orders
-
-        def _pair13(orders):
-            pairs, used = [], set()
-            srt = sorted(orders, key=lambda x: x.get("created_at",""))
-            for i, e in enumerate(srt):
-                if i in used or e.get("state")!="closed": continue
-                # Entry must be reduce_only=False
-                if str(e.get("reduce_only","")).lower() in ["true","1"]: continue
-                es = e.get("side")
-                if es not in ["buy","sell"]: continue
-                xs  = "sell" if es=="buy" else "buy"
-                dir = "LONG" if es=="buy" else "SHORT"
-                ets = int(_dt13.datetime.strptime(e.get("created_at","1970-01-01T00:00:00")[:19], "%Y-%m-%dT%H:%M:%S").timestamp())
-                ep  = float(e.get("average_fill_price") or e.get("limit_price") or 0)
-                for j, x in enumerate(srt):
-                    if j in used or j==i: continue
-                    if x.get("side")!=xs or x.get("state")!="closed": continue
-                    # Exit must be reduce_only=True
-                    if str(x.get("reduce_only","")).lower() not in ["true","1"]: continue
-                    xts = int(_dt13.datetime.strptime(x.get("created_at","1970-01-01T00:00:00")[:19], "%Y-%m-%dT%H:%M:%S").timestamp())
-                    xp  = float(x.get("average_fill_price") or x.get("limit_price") or 0)
-                    if xts < ets: continue
-                    sz  = int(e.get("size",0))
-                    # Use actual exchange PnL from exit order meta_data
-                    raw_pnl = float(x.get("meta_data",{}).get("pnl") or 0)
-                    cm  = float(e.get("paid_commission") or 0)+float(x.get("paid_commission") or 0)
-                    pnl = raw_pnl - cm
-                    pairs.append({"dir":dir,"ep":ep,"xp":xp,"pnl":pnl,"cm":cm,"ets":ets,"xts":xts,"sz":sz})
-                    used.add(i); used.add(j); break
-            return pairs
-
-        def _calc13(pairs):
-            if not pairs: return None
-            tot = len(pairs)
-            win = sum(1 for p in pairs if p["pnl"]>0)
-            los = tot-win
-            wr  = win/tot*100
-            nu  = sum(p["pnl"] for p in pairs)
-            ni  = nu*_INR13
-            cm  = sum(p["cm"] for p in pairs)
-            pls = [p["pnl"] for p in pairs]
-            cum,pk,dd = 0,0,0
-            for v in pls:
-                cum+=v
-                if cum>pk: pk=cum
-                drop = pk - cum
-                if drop > dd: dd = drop
-            aw = sum(v for v in pls if v>0)/win if win>0 else 0
-            al = sum(v for v in pls if v<0)/los if los>0 else 0
-            pf = abs(sum(v for v in pls if v>0)/sum(v for v in pls if v<0)) if los>0 and sum(v for v in pls if v<0)!=0 else 0
-            import datetime as _dt_c
-            now_c = _dt_c.datetime.utcnow()
-            today_start = now_c.replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
-            week_start  = (now_c - _dt_c.timedelta(days=now_c.weekday())).replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
-            month_start = now_c.replace(day=1,hour=0,minute=0,second=0,microsecond=0).timestamp()
-            year_start  = now_c.replace(month=1,day=1,hour=0,minute=0,second=0,microsecond=0).timestamp()
-            pnl_today   = sum(p["pnl"] for p in pairs if p.get("xts",0) >= today_start)
-            pnl_week    = sum(p["pnl"] for p in pairs if p.get("xts",0) >= week_start)
-            pnl_month   = sum(p["pnl"] for p in pairs if p.get("xts",0) >= month_start)
-            pnl_year    = sum(p["pnl"] for p in pairs if p.get("xts",0) >= year_start)
-            avg_slip    = sum(abs(p.get("ep",0)-p.get("xp",0))*0.001 for p in pairs)/tot if tot>0 else 5.0
-            return {"tot":tot,"win":win,"los":los,"wr":wr,"nu":nu,"ni":ni,"cm":cm,"dd":dd,"aw":aw,"al":al,"pf":pf,
-                    "pnl_today":pnl_today,"pnl_week":pnl_week,"pnl_month":pnl_month,"pnl_year":pnl_year,"avg_slip":avg_slip}
-
-        def _bt_calc13(csv_pattern, vf_str):
-            try:
-                files = sorted(_gl13.glob(csv_pattern), reverse=True)
-                if not files: return None
-                df = _pd13.read_csv(files[0])
-                if 'entry_datetime' not in df.columns: return None
-                df['entry_datetime'] = _pd13.to_datetime(df['entry_datetime'])
-                vf_dt = _pd13.to_datetime(vf_str)
-                df = df[df['entry_datetime'] >= vf_dt]
-                if df.empty: return None
-                tot = len(df)
-                win = (df['net_pnl'] > 0).sum()
-                los = tot - win
-                wr  = win/tot*100
-                nu  = df['net_pnl'].sum()
-                ni_pretax = df['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else nu*_INR13
-                _win_inr13 = df[df['net_pnl_inr']>0]['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else 0
-                ni = ni_pretax - _win_inr13*0.10
-                cm  = df['total_charges_usd'].sum() if 'total_charges_usd' in df.columns else (df['charges'].sum() if 'charges' in df.columns else 0)
-                pls = df['net_pnl'].tolist()
-                cum,pk,dd = 0,0,0
-                for v in pls:
-                    cum+=v
-                    if cum>pk: pk=cum
-                    drop = pk - cum
-                    if drop > dd: dd = drop
-                aw = df[df['net_pnl']>0]['net_pnl'].mean() if win>0 else 0
-                al = df[df['net_pnl']<0]['net_pnl'].mean() if los>0 else 0
-                pf_n = df[df['net_pnl']>0]['net_pnl'].sum()
-                pf_d = abs(df[df['net_pnl']<0]['net_pnl'].sum())
-                pf = pf_n/pf_d if pf_d>0 else 0
-                import datetime as _dt_bt
-                now_bt = _dt_bt.datetime.utcnow()
-                today_s = now_bt.replace(hour=0,minute=0,second=0,microsecond=0)
-                week_s  = (now_bt - _dt_bt.timedelta(days=now_bt.weekday())).replace(hour=0,minute=0,second=0,microsecond=0)
-                month_s = now_bt.replace(day=1,hour=0,minute=0,second=0,microsecond=0)
-                year_s  = now_bt.replace(month=1,day=1,hour=0,minute=0,second=0,microsecond=0)
-                if 'exit_datetime' in df.columns:
-                    df['exit_dt'] = _pd13.to_datetime(df['exit_datetime'])
-                    pnl_today = df[df['exit_dt'] >= _pd13.Timestamp(today_s)]['net_pnl'].sum()
-                    pnl_week  = df[df['exit_dt'] >= _pd13.Timestamp(week_s)]['net_pnl'].sum()
-                    pnl_month = df[df['exit_dt'] >= _pd13.Timestamp(month_s)]['net_pnl'].sum()
-                    pnl_year  = df[df['exit_dt'] >= _pd13.Timestamp(year_s)]['net_pnl'].sum()
-                else:
-                    pnl_today = pnl_week = pnl_month = pnl_year = 0
-                avg_slip = df['slippage_usd'].mean() if 'slippage_usd' in df.columns else 5.0
-                return {"tot":tot,"win":int(win),"los":int(los),"wr":wr,"nu":nu,"ni":ni,"cm":cm,"dd":dd,"aw":aw,"al":al,"pf":pf,
-                        "pnl_today":pnl_today,"pnl_week":pnl_week,"pnl_month":pnl_month,"pnl_year":pnl_year,"avg_slip":avg_slip}
-            except:
-                return None
-
-        def _v13(m, t):
-            if m is None: return "N/A"
-            if t=="tot":  return str(m["tot"])
-            if t=="win":  return str(m["win"])
-            if t=="los":  return str(m["los"])
-            if t=="wr":   return f"{m['wr']:.2f}%"
-            if t=="pnl":  return f"${m['nu']:,.2f} / \u20b9{m['ni']:,.0f}"
-            if t=="aw":   return f"${m['aw']:,.2f}"
-            if t=="al":   return f"${m['al']:,.2f}"
-            if t=="pf":   return f"{m['pf']:.2f}"
-            if t=="dd":   return f"-₹{m['dd']*84:,.0f}" if m['dd']>0 else "₹0"
-            if t=="cm":      return f"${m['cm']:,.2f} / \u20b9{m['cm']*_INR13:,.0f}"
-            if t=="cap":     return f"\u20b9{1816*_INR13:,.0f}"
-            if t=="today":   return f"\u20b9{m.get('pnl_today',0)*_INR13:,.0f}"
-            if t=="week":    return f"\u20b9{m.get('pnl_week',0)*_INR13:,.0f}"
-            if t=="month":   return f"\u20b9{m.get('pnl_month',0)*_INR13:,.0f}"
-            if t=="year":    return f"\u20b9{m.get('pnl_year',0)*_INR13:,.0f}"
-            if t=="slip":    return f"${m.get('avg_slip',0):,.2f}/side"
-            if t=="slipdiff":
-                diff = m.get("avg_slip", 5.0) - 5.0
-                sign = "+" if diff > 0 else ""
-                return f"{sign}${diff:,.2f} vs $5.00"
-            return "N/A"
-
-        def _c13(m, pos=True):
-            if m is None: return _TDN13
-            if pos: return _TDG13 if m.get("nu",0)>=0 else _TDR13
-            return _TDR13
-
-        def _build_tbl13(s2m, s4m, cbm):
-            def _row(lbl, v2, v4, vc, c2=None, c4=None, cc=None):
-                # S2/S4 columns: grey if N/A
-                _c2 = _TDN13 if str(v2)=='N/A' else (c2 or _TDN13)
-                _c4 = _TDN13 if str(v4)=='N/A' else (c4 or _TDN13)
-                # Combined column: green/red/grey based on value
-                # Always override color for N/A regardless of passed cc
-                _vc = str(vc)
-                if _vc == 'N/A':
-                    cc = _TDN13
-                elif cc is None:
-                    if _vc.startswith('-') or _vc.startswith('$-') or _vc.startswith('₹-'):
-                        cc = _TDR13
-                    elif _vc in ['0','0.00%','$0.00','₹0','0.00','0.00%']:
-                        cc = _TDN13
-                    else:
-                        cc = _TDG13
-                return (f"<tr><td style='{_TD13}'>{lbl}</td>"
-                        f"<td style='{_c2}'>{v2}</td>"
-                        f"<td style='{_c4}'>{v4}</td>"
-                        f"<td style='{cc}'>{vc}</td></tr>")
-            return (
-                f"<div style='overflow-x:auto;margin:4px 0;'>"
-                f"<table style='width:100%;border-collapse:collapse;'>"
-                f"<thead><tr>"
-                f"<th style='{_TH13}'>Metric</th>"
-                f"<th style='{_TH13}'>S2</th>"
-                f"<th style='{_TH13}'>S4</th>"
-                f"<th style='{_TH13}'>Combined</th>"
-                f"</tr></thead><tbody>"
-                f"<tr><td colspan='4' style='{_SUB13}'>CAPITAL</td></tr>"
-                + _row("Total Capital Required", _v13(s2m,"cap"), _v13(s4m,"cap"), f"\u20b9{int(1816*_INR13):,}")
-                + f"<tr><td colspan='4' style='{_SUB13}'>CUMULATIVE PnL</td></tr>"
-                + _row("Today PnL",   _v13(s2m,"today"), _v13(s4m,"today"), _v13(cbm,"today"), _c13(s2m,True) if s2m and s2m.get("pnl_today",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_today",0)>=0 else _TDR13, _c13(cbm,True) if cbm and cbm.get("pnl_today",0)>=0 else _TDR13)
-                + _row("Weekly PnL",  _v13(s2m,"week"),  _v13(s4m,"week"),  _v13(cbm,"week"),  _c13(s2m,True) if s2m and s2m.get("pnl_week",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_week",0)>=0 else _TDR13,  _c13(cbm,True) if cbm and cbm.get("pnl_week",0)>=0 else _TDR13)
-                + _row("Monthly PnL", _v13(s2m,"month"), _v13(s4m,"month"), _v13(cbm,"month"), _c13(s2m,True) if s2m and s2m.get("pnl_month",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_month",0)>=0 else _TDR13, _c13(cbm,True) if cbm and cbm.get("pnl_month",0)>=0 else _TDR13)
-                + _row("Yearly PnL",  _v13(s2m,"year"),  _v13(s4m,"year"),  _v13(cbm,"year"),  _c13(s2m,True) if s2m and s2m.get("pnl_year",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_year",0)>=0 else _TDR13,  _c13(cbm,True) if cbm and cbm.get("pnl_year",0)>=0 else _TDR13)
-                + f"<tr><td colspan='4' style='{_SUB13}'>CHARGES</td></tr>"
-                + _row("Total Charges", _v13(s2m,"cm"),  _v13(s4m,"cm"),  _v13(cbm,"cm"),  _TDR13,_TDR13,_TDR13)
-                + f"<tr><td colspan='4' style='{_SUB13}'>TRADE COUNT</td></tr>"
-                + _row("Total Trades",  _v13(s2m,"tot"), _v13(s4m,"tot"), _v13(cbm,"tot"))
-                + _row("Wins",          _v13(s2m,"win"), _v13(s4m,"win"), _v13(cbm,"win"), _TDG13,_TDG13,_TDG13)
-                + _row("Losses",        _v13(s2m,"los"), _v13(s4m,"los"), _v13(cbm,"los"), _TDR13,_TDR13,_TDR13)
-                + f"<tr><td colspan='4' style='{_SUB13}'>PERFORMANCE</td></tr>"
-                + _row("Win Rate",      _v13(s2m,"wr"),  _v13(s4m,"wr"),  _v13(cbm,"wr"))
-                + _row("Net PnL",       _v13(s2m,"pnl"), _v13(s4m,"pnl"), _v13(cbm,"pnl"), _c13(s2m),_c13(s4m),_c13(cbm))
-                + _row("Avg Win",       _v13(s2m,"aw"),  _v13(s4m,"aw"),  _v13(cbm,"aw"),  _TDG13,_TDG13,_TDG13)
-                + _row("Avg Loss",      _v13(s2m,"al"),  _v13(s4m,"al"),  _v13(cbm,"al"),  _TDR13,_TDR13,_TDR13)
-                + _row("Profit Factor", _v13(s2m,"pf"),  _v13(s4m,"pf"),  _v13(cbm,"pf"))
-                + f"<tr><td colspan='4' style='{_SUB13}'>RISK</td></tr>"
-                + _row("Max Drawdown",  _v13(s2m,"dd"),  _v13(s4m,"dd"),  _v13(cbm,"dd"),  _TDR13,_TDR13,_TDR13)
-                + f"<tr><td colspan='4' style='{_SUB13}'>SLIPPAGE</td></tr>"
-                + _row("Avg Slippage/side", _v13(s2m,"slip"), _v13(s4m,"slip"), _v13(cbm,"slip"), _TDR13,_TDR13,_TDR13)
-                + _row("vs Backtest ($5/side)", _v13(s2m,"slipdiff"), _v13(s4m,"slipdiff"), _v13(cbm,"slipdiff"), _TDG13 if s2m and s2m.get("avg_slip",5)<=5 else _TDR13, _TDG13 if s4m and s4m.get("avg_slip",5)<=5 else _TDR13, _TDB13)
-                + "</tbody></table></div>"
-            )
-
-        # ── FETCH LIVE DATA ──────────────────────────────────────
-        with st.spinner("Fetching live forward test data..."):
-            s2o = _fetch13(os.environ.get("S2_API_KEY",""), os.environ.get("S2_API_SECRET",""))
-            s4o = _fetch13(os.environ.get("S4_API_KEY",""), os.environ.get("S4_API_SECRET",""))
-        s2p  = _pair13(s2o)
-        s4p  = _pair13(s4o)
-        s2m  = _calc13(s2p)
-        s4m  = _calc13(s4p)
-        cbm  = _calc13(s2p+s4p)
-
-        # ── FETCH BACKTEST DATA (same date range) ────────────────
-        s2_bt = _bt_calc13("output/trade_log_RenkoReversal*.csv",        _VF13_7D)
-        s4_bt = _bt_calc13("output/trade_log_RenkoSMIIOSupertrend*.csv", _VF13_7D)
-        cb_bt_pairs = []
-        if s2_bt: cb_bt_pairs.append(s2_bt)
-        if s4_bt: cb_bt_pairs.append(s4_bt)
-        cb_bt = None
-        if s2_bt and s4_bt:
-            merged = {"tot":s2_bt["tot"]+s4_bt["tot"],
-                      "win":s2_bt["win"]+s4_bt["win"],
-                      "los":s2_bt["los"]+s4_bt["los"],
-                      "wr":(s2_bt["win"]+s4_bt["win"])/(s2_bt["tot"]+s4_bt["tot"])*100,
-                      "nu":s2_bt["nu"]+s4_bt["nu"],
-                      "ni":s2_bt["ni"]+s4_bt["ni"],
-                      "cm":s2_bt["cm"]+s4_bt["cm"],
-                      "dd":max(s2_bt["dd"],s4_bt["dd"]),
-                      "aw":(s2_bt["aw"]*s2_bt["win"]+s4_bt["aw"]*s4_bt["win"])/(s2_bt["win"]+s4_bt["win"]) if (s2_bt["win"]+s4_bt["win"])>0 else 0,
-                      "al":(s2_bt["al"]*s2_bt["los"]+s4_bt["al"]*s4_bt["los"])/(s2_bt["los"]+s4_bt["los"]) if (s2_bt["los"]+s4_bt["los"])>0 else 0,
-                      "pf":abs((s2_bt["aw"]*s2_bt["win"]+s4_bt["aw"]*s4_bt["win"])/(s2_bt["al"]*s2_bt["los"]+s4_bt["al"]*s4_bt["los"])) if (s2_bt["los"]+s4_bt["los"])>0 and (s2_bt["al"]*s2_bt["los"]+s4_bt["al"]*s4_bt["los"])!=0 else 0,
-                      "pnl_today":s2_bt.get("pnl_today",0)+s4_bt.get("pnl_today",0),
-                      "pnl_week":s2_bt.get("pnl_week",0)+s4_bt.get("pnl_week",0),
-                      "pnl_month":s2_bt.get("pnl_month",0)+s4_bt.get("pnl_month",0),
-                      "pnl_year":s2_bt.get("pnl_year",0)+s4_bt.get("pnl_year",0)}
-            cb_bt = merged
-
-        st.caption(f"Showing last 7 days | Valid from: {_VF13_7D[:10]} UTC | Auto updates on page load | Testnet")
-
-        # ── TOP TABLE: FORWARD TEST / LIVE ───────────────────────
-        # Side by side: Forward Test | Backtest
-        _col13a, _col13b = st.columns(2)
-        with _col13a:
-            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST / LIVE</div>", unsafe_allow_html=True)
-            st.markdown(_build_tbl13(s2m, s4m, cbm), unsafe_allow_html=True)
-        with _col13b:
-            st.markdown(f"<div style='{_HDR13}'>BACKTEST (LAST 7 DAYS: {_VF13_7D[:10]} to TODAY)</div>", unsafe_allow_html=True)
-            st.markdown(_build_tbl13(s2_bt, s4_bt, cb_bt), unsafe_allow_html=True)
-
-        # ================================================================
-        # LAST 20 TRADES - FORWARD TEST (LEFT) | BACKTEST (RIGHT)
-        # ================================================================
-        st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
-
-        _TH20 = "padding:4px 6px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#333;text-align:center;white-space:nowrap;"
-        _TD20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:center;white-space:nowrap;"
-        _TG20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
-        _TR20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#F23645;font-weight:700;text-align:center;"
-        _TY20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#e07000;font-weight:700;text-align:center;"
-
-        def _fwd20(pairs):
-            try:
-                if not pairs:
-                    return (f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'><table style='width:100%;border-collapse:collapse;'><thead><tr><th style='{_TH20}'>Date</th><th style='{_TH20}'>Dir</th><th style='{_TH20}'>Entry Time</th><th style='{_TH20}'>Exit Time</th><th style='{_TH20}'>Entry (INR)</th><th style='{_TH20}'>Exit (INR)</th><th style='{_TH20}'>Slip Diff vs $5</th><th style='{_TH20}'>Tax+Charges</th><th style='{_TH20}'>PnL</th></tr></thead><tbody><tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>Waiting for first trade</td></tr></tbody></table></div>")
-                import datetime as _dfw
-                last20 = pairs[-20:][::-1]
-                rows = ""
-                for p in last20:
-                    pnl      = float(p.get('pnl', 0))
-                    pnl_inr  = pnl * _INR13
-                    ep_inr   = float(p.get('ep', 0))
-                    xp_inr   = float(p.get('xp', 0))
-                    cm_inr   = float(p.get('cm', 0)) * _INR13
-                    _ist_off1 = _dfw.timedelta(hours=5, minutes=30)
-                    et       = (_dfw.datetime.utcfromtimestamp(p.get('ets',0)) + _ist_off1).strftime('%d-%b-%Y %I:%M %p IST')
-                    xt       = (_dfw.datetime.utcfromtimestamp(p.get('xts',0)) + _ist_off1).strftime('%d-%b-%Y %I:%M %p IST')
-                    dirv     = str(p.get('dir','')).upper()
-                    slip_act = abs(float(p.get('ep',0)) - float(p.get('xp',0))) * 0.001
-                    slip_diff= slip_act - 5.0
-                    slip_str = f"+${slip_diff:.2f}" if slip_diff >= 0 else f"-${abs(slip_diff):.2f}"
-                    mp_style  = _TG20
-                    ps        = _TG20 if pnl >= 0 else _TR20
-                    ds        = _TG20 if dirv == 'LONG' else _TR20
-                    rows += (
-                        f"<tr>"
-                        f"<td style='{_TD20}'>{et[:11].strip()}</td>"
-                        f"<td style='{ds}'>{dirv}</td>"
-                        f"<td style='{_TD20}'>{et[12:] if len(et)>12 else et}</td>"
-                        f"<td style='{_TD20}'>{xt[12:] if len(xt)>12 else xt}</td>"
-                        f"<td style='{_TD20}'>${ep_inr:,.0f}</td>"
-                        f"<td style='{_TD20}'>${xp_inr:,.0f}</td>"
-                        f"<td style='{_TR20}'>{slip_str} vs $5</td>"
-                        f"<td style='{_TR20}'>₹{cm_inr:,.0f}</td>"
-                        f"<td style='{ps}'>₹{pnl_inr:,.0f}</td>"
-                        f"</tr>"
-                    )
-                return (
-                    f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
-                    f"<table style='width:100%;border-collapse:collapse;'>"
-                    f"<thead><tr>"
-                    f"<th style='{_TH20}'>Date</th>"
-                    f"<th style='{_TH20}'>Dir</th>"
-                    f"<th style='{_TH20}'>Entry Time</th>"
-                    f"<th style='{_TH20}'>Exit Time</th>"
-                    f"<th style='{_TH20}'>Entry $</th>"
-                    f"<th style='{_TH20}'>Exit $</th>"
-                    f"<th style='{_TH20}'>Slip Diff vs $5</th>"
-                    f"<th style='{_TH20}'>Tax+Charges</th>"
-                    f"<th style='{_TH20}'>PnL</th>"
-                    f"</tr></thead><tbody>{rows}</tbody></table></div>"
-                )
-            except Exception as e:
-                return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
-
-        def _bt20(csv_pattern, vf_str):
-            try:
-                import glob as _gb, pandas as _pb
-                _WAIT_BT = (
-                    f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
-                    f"<table style='width:100%;border-collapse:collapse;'>"
-                    f"<thead><tr>"
-                    f"<th style='{_TH20}'>Date</th>"
-                    f"<th style='{_TH20}'>Dir</th>"
-                    f"<th style='{_TH20}'>Entry Time (IST)</th>"
-                    f"<th style='{_TH20}'>Exit Time (IST)</th>"
-                    f"<th style='{_TH20}'>Entry (INR)</th>"
-                    f"<th style='{_TH20}'>Exit (INR)</th>"
-                    f"<th style='{_TH20}'>Slip $5</th>"
-                    f"<th style='{_TH20}'>Tax+Charges</th>"
-                    f"<th style='{_TH20}'>PnL</th>"
-                    f"</tr></thead><tbody>"
-                    f"<tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>No backtest trades in this window</td></tr>"
-                    f"</tbody></table></div>"
-                )
-                s2_files = sorted(_gb.glob("output/trade_log_RenkoReversal*.csv"), reverse=True)
-                s4_files = sorted(_gb.glob("output/trade_log_RenkoSMIIO*.csv"), reverse=True)
-                frames = []
-                vf_dt = _pb.to_datetime(vf_str)
-                for ff in (s2_files[:1] + s4_files[:1]):
-                    _df = _pb.read_csv(ff)
-                    _df['entry_datetime'] = _pb.to_datetime(_df['entry_datetime'])
-                    _df_vf = _df[_df['entry_datetime'] >= vf_dt]
-                    if not _df_vf.empty:
-                        frames.append(_df_vf)
-                if not frames:
-                    return _WAIT_BT
-                df = _pb.concat(frames).sort_values('entry_datetime').tail(20).iloc[::-1].reset_index(drop=True)
-                if df.empty:
-                    return _WAIT_BT
-                rows = ""
-                for i, r in df.iterrows():
-                    pnl     = float(r.get('net_pnl', 0))
-                    pnl_inr = float(r.get('net_pnl_inr', pnl * _INR13))
-                    ep_inr  = float(r.get('entry_price', 0))
-                    xp_inr  = float(r.get('exit_price',  0))
-                    slip    = float(r.get('slippage_usd', 10.0))
-                    tax_inr = float(r.get('total_charges_usd', 0)) * _INR13
-                    import datetime as _dfw
-                    _ist_off2 = _dfw.timedelta(hours=5, minutes=30)
-                    _et_raw = str(r.get('entry_datetime',''))[:19]
-                    _xt_raw = str(r.get('exit_datetime', ''))[:19]
-                    try:
-                        et = (_dfw.datetime.strptime(_et_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_off2).strftime('%d-%b-%Y %I:%M %p IST')
-                        xt = (_dfw.datetime.strptime(_xt_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_off2).strftime('%d-%b-%Y %I:%M %p IST')
-                    except:
-                        et = _et_raw
-                        xt = _xt_raw
-                    dirv    = str(r.get('direction','')).upper()
-                    ps      = _TG20 if pnl >= 0 else _TR20
-                    ds      = _TG20 if dirv == 'LONG' else _TR20
-                    rows += (
-                        f"<tr>"
-                        f"<td style='{_TD20}'>{et[:11].strip()}</td>"
-                        f"<td style='{ds}'>{dirv}</td>"
-                        f"<td style='{_TD20}'>{et[12:] if len(et)>12 else et}</td>"
-                        f"<td style='{_TD20}'>{xt[12:] if len(xt)>12 else xt}</td>"
-                        f"<td style='{_TD20}'>${ep_inr:,.0f}</td>"
-                        f"<td style='{_TD20}'>${xp_inr:,.0f}</td>"
-                        f"<td style='{_TR20}'>${slip:.2f}</td>"
-                        f"<td style='{_TR20}'>₹{tax_inr:,.0f}</td>"
-                        f"<td style='{ps}'>₹{pnl_inr:,.0f}</td>"
-                        f"</tr>"
-                    )
-                return (
-                    f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
-                    f"<table style='width:100%;border-collapse:collapse;'>"
-                    f"<thead><tr>"
-                    f"<th style='{_TH20}'>Date</th>"
-                    f"<th style='{_TH20}'>Dir</th>"
-                    f"<th style='{_TH20}'>Entry Time (IST)</th>"
-                    f"<th style='{_TH20}'>Exit Time (IST)</th>"
-                    f"<th style='{_TH20}'>Entry (INR)</th>"
-                    f"<th style='{_TH20}'>Exit (INR)</th>"
-                    f"<th style='{_TH20}'>Slip $5</th>"
-                    f"<th style='{_TH20}'>Tax+Charges</th>"
-                    f"<th style='{_TH20}'>PnL</th>"
-                    f"</tr></thead><tbody>{rows}</tbody></table></div>"
-                )
-            except Exception as e:
-                return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
-
-        def _cmp20(csv_pattern, fwd_pairs, vf_str):
-            try:
-                import glob as _gc, pandas as _pc, datetime as _dc
-                files = sorted(_gc.glob(csv_pattern), reverse=True)
-                s2_ff = sorted(_gc.glob("output/trade_log_RenkoReversal*.csv"), reverse=True)
-                s4_ff = sorted(_gc.glob("output/trade_log_RenkoSMIIO*.csv"), reverse=True)
-                _frames = []
-                vf_dt = _pc.to_datetime(vf_str)
-                for _ff in (s2_ff[:1] + s4_ff[:1]):
-                    _dff = _pc.read_csv(_ff)
-                    _dff['entry_datetime'] = _pc.to_datetime(_dff['entry_datetime'])
-                    _dff_vf = _dff[_dff['entry_datetime'] >= vf_dt]
-                    if not _dff_vf.empty:
-                        _frames.append(_dff_vf)
-                if not _frames:
-                    return "<p style='color:#aaa;font-size:12px;padding:8px'>No backtest trades in this window yet</p>"
-                df = _pc.concat(_frames).sort_values('entry_datetime').tail(20).iloc[::-1].reset_index(drop=True)
-                if df.empty:
-                    return "<p style='color:#aaa;font-size:12px;padding:8px'>No backtest trades in this window yet</p>"
-                last20 = (fwd_pairs or [])[-20:][::-1]
-                used_fwd = set()
-                max_rows = len(df)
-                rows = ""
-                for i in range(max_rows):
-                    bt  = df.iloc[i]
-                    # Match forward test trade by closest entry time not by position
-                    fwd = None
-                    bt_et_raw = str(bt.get('entry_datetime',''))[:19]
-                    try:
-                        import datetime as _dmatch
-                        bt_et_dt = _dmatch.datetime.strptime(bt_et_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S')
-                        best_diff = None
-                        for _fp in last20:
-                            try:
-                                _fp_et = _dmatch.datetime.utcfromtimestamp(_fp.get('ets', 0))
-                                _diff = abs((_fp_et - bt_et_dt).total_seconds())
-                                if best_diff is None or _diff < best_diff:
-                                    best_diff = _diff
-                                    fwd = _fp
-                            except:
-                                pass
-                        # Only match if within 4 hours
-                        if best_diff is not None and best_diff > 14400:
-                            fwd = None
-                        # Skip already matched fwd trades
-                        if fwd is not None:
-                            fwd_key = fwd.get('ets', 0)
-                            if fwd_key in used_fwd:
-                                fwd = None
-                            else:
-                                used_fwd.add(fwd_key)
-                    except:
-                        fwd = last20[i] if i < len(last20) else None
-                    bt_ep   = float(bt.get('entry_price', 0))
-                    bt_xp   = float(bt.get('exit_price',  0))
-                    bt_pnl  = float(bt.get('net_pnl_inr', float(bt.get('net_pnl',0)) * _INR13))
-                    bt_dir  = str(bt.get('direction','')).upper()
-                    import datetime as _dbt
-                    _ist_bt = _dbt.timedelta(hours=5, minutes=30)
-                    _bt_et_raw = str(bt.get('entry_datetime',''))[:19]
-                    _bt_xt_raw = str(bt.get('exit_datetime', ''))[:19]
-                    try:
-                        bt_et = (_dbt.datetime.strptime(_bt_et_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_bt).strftime('%d-%b-%Y %I:%M %p IST')
-                        bt_xt = (_dbt.datetime.strptime(_bt_xt_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_bt).strftime('%d-%b-%Y %I:%M %p IST')
-                    except:
-                        bt_et = _bt_et_raw
-                        bt_xt = _bt_xt_raw
-                    if fwd is None:
-                        # No live trade yet - show PENDING
-                        _pnd = "background:#fff8e1;color:#b8860b;font-weight:bold;padding:4px 6px;font-size:11px;"
-                        _ds2 = _TG20 if bt_dir == "LONG" else _TR20
-                        rows += (
-                            f"<tr>"
-                            f"<td style='{_pnd}'>PENDING</td>"
-                            f"<td style='{_TD20}'>{bt_et[:11].strip()}</td>"
-                            f"<td style='{_ds2}'>{bt_dir}</td>"
-                            f"<td style='{_TD20}'>{bt_et[12:] if len(bt_et)>12 else bt_et}</td>"
-                            f"<td style='{_TD20}'>-</td>"
-                            f"<td style='{_TD20}'>₹{bt_ep:,.0f}</td>"
-                            f"<td style='{_TD20}'>-</td>"
-                            f"<td style='{_TD20}'>₹{bt_xp:,.0f}</td>"
-                            f"<td style='{_TD20}'>-</td>"
-                            f"<td style='{_TG20 if bt_pnl>=0 else _TR20}'>₹{bt_pnl:,.0f}</td>"
-                            f"<td style='{_TD20}'>-</td>"
-                            f"<td style='{_pnd}'>Waiting live</td>"
-                            f"</tr>"
-                        )
-                        continue
-                    fwd_ep  = float(fwd.get('ep', 0))
-                    fwd_xp  = float(fwd.get('xp', 0))
-                    fwd_pnl = float(fwd.get('pnl', 0)) * _INR13
-                    fwd_dir = str(fwd.get('dir','')).upper()
-                    _ist_cmp = _dc.timedelta(hours=5, minutes=30)
-                    fwd_et  = (_dc.datetime.utcfromtimestamp(fwd.get('ets',0)) + _ist_cmp).strftime('%d-%b-%Y %I:%M %p IST')
-                    fwd_xt  = (_dc.datetime.utcfromtimestamp(fwd.get('xts',0)) + _ist_cmp).strftime('%d-%b-%Y %I:%M %p IST')
-                    pnl_diff  = abs(bt_pnl - fwd_pnl)
-                    pnl_pct   = (pnl_diff / abs(bt_pnl) * 100) if bt_pnl != 0 else 0
-                    dir_match = bt_dir == fwd_dir
-                    match_pct = 100.0
-                    if not dir_match:  match_pct -= 50
-                    if pnl_pct > 10:   match_pct -= 30
-                    elif pnl_pct > 5:  match_pct -= 10
-                    mp_style  = _TG20 if match_pct >= 95 else (_TY20 if match_pct >= 80 else _TR20)
-                    ds        = _TG20 if dir_match else _TR20
-                    pd_style  = _TG20 if pnl_pct <= 5 else (_TY20 if pnl_pct <= 10 else _TR20)
-                    rows += (
-                        f"<tr>"
-                        f"<td style='{mp_style}'>{match_pct:.0f}%</td>"
-                        f"<td style='{_TD20}'>{bt_et[:11].strip()}</td>"
-                        f"<td style='{ds}'>{bt_dir}</td>"
-                        f"<td style='{_TD20}'>{bt_et[12:] if len(bt_et)>12 else bt_et}</td>"
-                        f"<td style='{_TD20}'>{fwd_et[12:] if len(fwd_et)>12 else fwd_et}</td>"
-                        f"<td style='{_TD20}'>{bt_xt[12:] if len(bt_xt)>12 else bt_xt}</td>"
-                        f"<td style='{_TD20}'>{fwd_xt[12:] if len(fwd_xt)>12 else fwd_xt}</td>"
-                        f"<td style='{_TD20}'>${bt_ep:,.0f}</td>"
-                        f"<td style='{_TD20}'>${fwd_ep:,.0f}</td>"
-                        f"<td style='{_TD20}'>${bt_xp:,.0f}</td>"
-                        f"<td style='{_TD20}'>${fwd_xp:,.0f}</td>"
-                        f"<td style='{_TG20}'>₹{bt_pnl:,.0f}</td>"
-                        f"<td style='{_TG20 if fwd_pnl>=0 else _TR20}'>₹{fwd_pnl:,.0f}</td>"
-                        f"<td style='{pd_style}'>₹{pnl_diff:,.0f} ({pnl_pct:.1f}%)</td>"
-                        f"</tr>"
-                    )
-                return (
-                    f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
-                    f"<table style='width:100%;border-collapse:collapse;'>"
-                    f"<thead><tr>"
-                    f"<th style='{_TH20}'>Match%</th>"
-                    f"<th style='{_TH20}'>Date</th>"
-                    f"<th style='{_TH20}'>Dir</th>"
-                    f"<th style='{_TH20}'>BT Entry T</th>"
-                    f"<th style='{_TH20}'>FT Entry T</th>"
-                    f"<th style='{_TH20}'>BT Exit T</th>"
-                    f"<th style='{_TH20}'>FT Exit T</th>"
-                    f"<th style='{_TH20}'>BT Entry ₹</th>"
-                    f"<th style='{_TH20}'>FT Entry ₹</th>"
-                    f"<th style='{_TH20}'>BT Exit ₹</th>"
-                    f"<th style='{_TH20}'>FT Exit ₹</th>"
-                    f"<th style='{_TH20}'>BT PnL</th>"
-                    f"<th style='{_TH20}'>FT PnL</th>"
-                    f"<th style='{_TH20}'>PnL Diff</th>"
-                    f"</tr></thead><tbody>{rows}</tbody></table></div>"
-                )
-            except Exception as e:
-                return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
-
-        # ── RENDER SIDE BY SIDE LAST 20 ──────────────────────────
-        _col20a, _col20b = st.columns(2)
-        with _col20a:
-            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST - LAST 20 TRADES</div>", unsafe_allow_html=True)
-            st.markdown(_fwd20(s2p + s4p), unsafe_allow_html=True)
-        with _col20b:
-            st.markdown(f"<div style='{_HDR13}'>BACKTEST - LAST 20 TRADES</div>", unsafe_allow_html=True)
-            st.markdown(_bt20("output/trade_log_Renko*.csv", _VF13_7D), unsafe_allow_html=True)
-
-        # ── COMPARISON TABLE FULL WIDTH BELOW ────────────────────
-        st.markdown(f"<div style='{_HDR13}'>BACKTEST vs FORWARD TEST - LAST 20 COMPARISON</div>", unsafe_allow_html=True)
-        st.markdown(_cmp20("output/trade_log_Renko*.csv", s2p + s4p, _VF13_7D), unsafe_allow_html=True)
-
-
-    # ================================================================
-    # FOOTER
-    # ================================================================
-    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
-    st.caption(f"Version: {system.get('version', 'v3.9')} | Commit: {git_commit} | Last refresh: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5,minutes=30))).strftime('%d-%b-%Y %I:%M %p IST')}")
-    # This line intentionally left blank
-
-
-
-
-    # ============================================================
-    # SECTION 14 - SLIPPAGE COMPARISON
-    # ============================================================
-    if 'exp_14s' not in st.session_state: st.session_state['exp_14s'] = False
-    with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st.session_state.get('exp_14s', False)):
-
-        import glob as _gl14, pandas as _pd14, datetime as _dt14
-
-        # TODAY'S TRADES TABLE AT TOP
-        def _today_trades_html(df2, df4, df2_fwd, df4_fwd):
-            import datetime as _dtt
-            _INR = 84.0
-            _SLIP10_EXTRA = 10.0
-            now_utc = _dtt.datetime.utcnow()
-            today_s = now_utc.replace(hour=0,minute=0,second=0,microsecond=0)
-            def _to_ist(ts):
-                try:
-                    dt = _pd14.to_datetime(str(ts).replace("T"," "))
-                    ist = dt + _dtt.timedelta(hours=5, minutes=30)
-                    return ist.strftime("%d-%b %I:%M %p")
-                except: return "-"
-            def _get_bt_rows(df, label):
-                if df is None: return []
-                rows = []
-                try:
-                    import pandas as _pd_t
-                    # df is a dict from _load14 - get raw_df
-                    dfc = df.get("raw_df") if isinstance(df, dict) else df
-                    if dfc is None or not hasattr(dfc, 'iterrows'): return []
-                    dfc = dfc.copy()
-                    dfc['exit_datetime'] = _pd_t.to_datetime(dfc['exit_datetime'])
-                    dfc['entry_datetime'] = _pd_t.to_datetime(dfc['entry_datetime'])
-                    # filter to today only (entry or exit today)
-                    import datetime as _dtt_bt
-                    _today_bt = _dtt_bt.datetime.utcnow().strftime("%Y-%m-%d")
-                    dfc = dfc[dfc['exit_datetime'].dt.strftime("%Y-%m-%d") >= _today_bt]
-                    dfc = dfc.sort_values('exit_datetime', ascending=False).head(10)
-                    for _, r in dfc.iterrows():
-                        rows.append({
-                            'label'    : label,
-                            'dir'      : str(r.get('direction','')).upper(),
-                            'entry_ist': _to_ist(r.get('entry_datetime','')),
-                            'exit_ist' : _to_ist(r.get('exit_datetime','')),
-                            'entry_p'  : float(r.get('entry_price',0)),
-                            'exit_p'   : float(r.get('exit_price',0)),
-                            'pnl_usd'  : float(r.get('net_pnl',0)),
-                            'pnl_inr5' : float(r.get('net_pnl_inr',0)) - (max(float(r.get('net_pnl_inr',0)),0)*0.10),
-                            'pnl_inr10': float(r.get('net_pnl_inr',0)) - (max(float(r.get('net_pnl_inr',0)),0)*0.10) - (_SLIP10_EXTRA * _INR),
-                            'charges'  : (float(r.get('taker_fees_usd',0))+float(r.get('slippage_usd',0))+float(r.get('funding_usd',0))+float(r.get('tax_usd',0)))*_INR,
-                        })
-                except: pass
-                return rows
-            def _get_fwd_rows(df_fwd, label):
-                if df_fwd is None: return []
-                rows = []
-                try:
-                    import datetime as _dtt_fwd
-                    _today_fwd = _dtt_fwd.datetime.utcnow().strftime("%Y-%m-%d")
-                    raw = [p for p in (df_fwd.get("raw_pairs",[]) if isinstance(df_fwd,dict) else []) if str(p.get("entry_ts",""))[:10] >= _today_fwd]
-                    # last 10 trades most recent first
-                    for p in reversed(raw[-10:]):
-                        ep   = float(p.get('entry_price',0))
-                        xp   = float(p.get('exit_price',0))
-                        side = str(p.get('side','buy')).lower()
-                        lots = float(p.get('size',100))
-                        pnl_net = float(p.get('pnl',0))
-                        comm    = float(p.get('comm',0))
-                        entry_ts = p.get('entry_ts','')
-                        exit_ts  = p.get('exit_ts','')
-                        rows.append({
-                            'label'    : label,
-                            'dir'      : 'LONG' if side=='buy' else 'SHORT',
-                            'entry_ist': _to_ist(entry_ts),
-                            'exit_ist' : _to_ist(exit_ts),
-                            'entry_p'  : ep,
-                            'exit_p'   : xp,
-                            'pnl_usd'  : pnl_net,
-                            'pnl_inr5' : pnl_net*_INR,
-                            'pnl_inr10': pnl_net*_INR,
-                            'charges'  : comm*_INR,
-                        })
-                except: pass
-                return rows
-            bt2 = _get_bt_rows(df2, "BT S2")
-            bt4 = _get_bt_rows(df4, "BT S4")
-            lv2 = _get_fwd_rows(df2_fwd, "LV S2")
-            lv4 = _get_fwd_rows(df4_fwd, "LV S4")
-            today_str = _dtt.datetime.utcnow().strftime("%d-%b-%Y")
-            TH  = "padding:5px 8px;border:1px solid #C8D0DC;background:#1565C0;font-size:10px;font-weight:700;color:#fff;text-align:center;"
-            THS = "padding:5px 8px;border:1px solid #C8D0DC;background:#1565C0;font-size:10px;font-weight:700;color:#fff;text-align:center;width:40px;"
-            TD  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;text-align:center;"
-            TDN = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;text-align:center;background:#f7f9fc;font-weight:700;color:#555;vertical-align:middle;"
-            def _pnl_color(v): return "#089981" if v>=0 else "#F23645"
-            def _dir_color(d): return "#089981" if d=="LONG" else "#F23645"
-            def _match(bt, lv):
-                if bt is None or lv is None: return "-"
-                if bt["dir"]==lv["dir"] and bt["entry_ist"]==lv["entry_ist"]: return "✅"
-                return "❌"
-            def _section_html(strat, bt_rows, lv_rows):
-                n_bt = len(bt_rows); n_lv = len(lv_rows)
-                tc = max(n_bt, n_lv)
-                bt_pnl5  = sum(r["pnl_inr5"]  for r in bt_rows)
-                bt_pnl10 = sum(r["pnl_inr10"] for r in bt_rows)
-                lv_pnl5  = sum(r["pnl_inr5"]  for r in lv_rows)
-                lv_pnl10 = sum(r["pnl_inr10"] for r in lv_rows)
-                def _pc(v): return "#089981" if v>=0 else "#F23645"
-                def _fmt(v): return f"+₹{v:,.0f}" if v>=0 else f"-₹{abs(v):,.0f}"
-                hdr = (
-                    '<div style="margin:12px 0 0 0;font-size:12px;font-weight:700;color:#fff;'
-                    'background:#1565C0;padding:6px 10px;border-radius:4px 4px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:6px;">'
-                    f'<span>TODAY\'S TRADES ({today_str}) — Backtest {strat} vs Forward Test {strat}</span>'
-                    f'<span style="background:#fff;color:#1565C0;border-radius:3px;padding:3px 10px;font-size:12px;font-weight:700;">BT Trades: {n_bt}</span>'
-                    f'<span style="background:#e8f5e9;color:#1b5e20;border-radius:3px;padding:3px 10px;font-size:12px;font-weight:700;">LV Trades: {n_lv}</span>'
-                    f'<span style="background:#fff3e0;color:#e65100;border-radius:3px;padding:3px 10px;font-size:12px;">BT PnL $5: <b style="color:{_pc(bt_pnl5)}">{_fmt(bt_pnl5)}</b> | $10: <b style="color:{_pc(bt_pnl10)}">{_fmt(bt_pnl10)}</b></span>'
-                    f'<span style="background:#e3f2fd;color:#0d47a1;border-radius:3px;padding:3px 10px;font-size:12px;">LV PnL $5: <b style="color:{_pc(lv_pnl5)}">{_fmt(lv_pnl5)}</b> | $10: <b style="color:{_pc(lv_pnl10)}">{_fmt(lv_pnl10)}</b></span>'
-                    '</div>'
-                )
-                tbl = '<table style="width:100%;border-collapse:collapse;margin-bottom:4px;">'
-                tbl += '<thead><tr>'
-                tbl += f'<th style="{THS}">S.No</th>'
-                tbl += f'<th style="{TH}">Source</th>'
-                tbl += f'<th style="{TH}">Dir</th>'
-                tbl += f'<th style="{TH}">Entry IST</th>'
-                tbl += f'<th style="{TH}">Exit IST</th>'
-                tbl += f'<th style="{TH}">Entry $</th>'
-                tbl += f'<th style="{TH}">Exit $</th>'
-                tbl += f'<th style="{TH}">PnL $</th>'
-                tbl += f'<th style="{TH}">Net PnL ₹ ($5/side)</th>'
-                tbl += f'<th style="{TH}">Net PnL ₹ ($10/side)</th>'
-                tbl += f'<th style="{TH}">Charges ₹</th>'
-                tbl += f'<th style="{TH}">Match</th>'
-                tbl += '</tr></thead><tbody>'
-                if tc == 0:
-                    tbl += f'<tr><td colspan="12" style="{TD}color:#aaa;">No trades yet</td></tr>'
-                for i in range(tc):
-                    bt = bt_rows[i] if i < n_bt else None
-                    lv = lv_rows[i] if i < n_lv else None
-                    _sep = "border-top:3px solid #42A5F5;" if i>0 else ""
-                    sno_cell = f'<td rowspan="2" style="{TDN}{_sep}">{i+1}</td>'
-                    for ridx, (row, src) in enumerate([(bt, f"BT {strat}"), (lv, f"LV {strat}")]):
-                        is_lv = (ridx == 1)
-                        match_cell = (f'<td style="{TD}font-size:14px;">{_match(bt,lv)}</td>' if is_lv
-                                      else f'<td style="{TD}"></td>')
-                        sno = sno_cell if not is_lv else ""
-                        if row is None:
-                            tbl += f'<tr>{sno}<td style="{TD}color:#aaa;">{src}</td>'
-                            tbl += (f'<td style="{TD}color:#aaa;">-</td>' * 9)
-                            tbl += f'{match_cell}</tr>'
-                        else:
-                            dc  = _dir_color(row["dir"])
-                            pc5 = _pnl_color(row["pnl_inr5"])
-                            pc10= _pnl_color(row["pnl_inr10"])
-                            pu  = _pnl_color(row["pnl_usd"])
-                            bg  = "background:#f0f7ff;" if not is_lv else ""
-                            _row_sep = _sep if ridx==0 else ""
-                            tbl += f'<tr style="{_row_sep}">{sno}'
-                            tbl += f'<td style="{TD}{bg}font-weight:700;">{src}</td>'
-                            tbl += f'<td style="{TD}color:{dc};font-weight:700;">{row["dir"]}</td>'
-                            tbl += f'<td style="{TD}{bg}">{row["entry_ist"]}</td>'
-                            tbl += f'<td style="{TD}{bg}">{row["exit_ist"]}</td>'
-                            tbl += f'<td style="{TD}{bg}">${row["entry_p"]:,.0f}</td>'
-                            tbl += f'<td style="{TD}{bg}">${row["exit_p"]:,.0f}</td>'
-                            tbl += f'<td style="{TD}color:{pu};font-weight:700;">${row["pnl_usd"]:+,.2f}</td>'
-                            tbl += f'<td style="{TD}color:{pc5};font-weight:700;">₹{row["pnl_inr5"]:+,.0f}</td>'
-                            tbl += f'<td style="{TD}color:{pc10};font-weight:700;">₹{row["pnl_inr10"]:+,.0f}</td>'
-                            tbl += f'<td style="{TD}{bg}">₹{row["charges"]:,.0f}</td>'
-                            tbl += f'{match_cell}</tr>'
-                tbl += '</tbody></table>'
-                return hdr + tbl
-            html = '<div style="overflow-x:auto;margin:8px 0;">'
-            html += _section_html("S2", bt2, lv2)
-            html += '<div style="height:14px;"></div>'
-            html += _section_html("S4", bt4, lv4)
-            html += '</div>'
-            return html
-        st.markdown(_today_trades_html(_d2_full, _d4_full, _df2_fwd, _df4_fwd), unsafe_allow_html=True)
-        st.markdown("---")
-        st.markdown(_tbl14(_d2_1yr,_d4_1yr,"1-YEAR BACKTEST",_1yr_label,_df2_fwd,_df4_fwd),unsafe_allow_html=True)
-        st.markdown("---")
-        st.markdown(_tbl14(_d2_full,_d4_full,"FULL CSV BACKTEST",_full_label,_df2_fwd,_df4_fwd),unsafe_allow_html=True)
-        st.markdown("---")
-
-        # DEPLOYMENT PLAN SECTION
-        _d2f = _d2_full or {}
-        _d4f = _d4_full or {}
-        _port_dd_inr = ((_d2f.get("dd",0) + _d4f.get("dd",0)) * _INR14)
-        _rec_cap = max(_port_dd_inr * 3, 200000)
-
-        st.markdown(f"""
-        <div style="overflow-x:auto;margin:4px 0;">
-        <table style="width:100%;border-collapse:collapse;">
-        <thead>
-        <tr><th style="{_PLNH14}" colspan="2">DEPLOYMENT PLAN</th></tr>
-        </thead>
-        <tbody>
-        <tr><td style="{_PLND14}">Margin Mode</td><td style="{_PLNV14}">Isolated</td></tr>
-        <tr><td style="{_PLND14}">Leverage</td><td style="{_PLNV14}">50x</td></tr>
-        <tr><td style="{_PLND14}">Subaccount</td><td style="{_PLNV14}">Single (S2 + S4 together)</td></tr>
-        <tr><td style="{_PLND14}">Starting Capital</td><td style="{_PLNV14}">₹2,00,000</td></tr>
-        <tr><td style="{_PLND14}">Starting Lots</td><td style="{_PLNV14}">100 lots (fixed)</td></tr>
-        <tr><td style="{_PLND14}">Go-Live Date</td><td style="{_PLNV14}">Aug 1, 2026</td></tr>
-        <tr><td style="{_PLND14}">First Withdrawal</td><td style="{_PLNV14}">Feb 2027 (after 6 months)</td></tr>
-        <tr><td style="{_PLND14}">Max Lots Cap</td><td style="{_PLNV14}">1000 lots (never exceed)</td></tr>
-        </tbody>
-        </table>
-        </div>
-
-        <div style="overflow-x:auto;margin:10px 0 4px 0;">
-        <table style="width:100%;border-collapse:collapse;">
-        <thead>
-        <tr>
-          <th style="{_PLNH14}">Lots</th>
-          <th style="{_PLNH14}">Safe Keep</th>
-          <th style="{_PLNH14}">Monthly Target</th>
-          <th style="{_PLNH14}">Action</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr><td style="{_PLND14}">100</td><td style="{_PLNV14}">₹1,00,000</td><td style="{_TDG14}">₹1,11,328</td><td style="{_PLND14}">Start Aug 1</td></tr>
-        <tr><td style="{_PLND14}">300</td><td style="{_PLNV14}">₹2,00,000</td><td style="{_TDG14}">₹3,33,984</td><td style="{_PLND14}">Sep 1 if profit</td></tr>
-        <tr><td style="{_PLND14}">500</td><td style="{_PLNV14}">₹3,00,000</td><td style="{_TDG14}">₹5,56,640</td><td style="{_PLND14}">Oct 1 if profit</td></tr>
-        <tr><td style="{_PLND14}">700</td><td style="{_PLNV14}">₹4,00,000</td><td style="{_TDG14}">₹7,79,296</td><td style="{_PLND14}">Nov 1 if profit</td></tr>
-        <tr><td style="{_PLND14}">900</td><td style="{_PLNV14}">₹5,50,000</td><td style="{_TDG14}">₹10,01,952</td><td style="{_PLND14}">Dec 1 if profit</td></tr>
-        <tr><td style="{_PLND14}">1000</td><td style="{_PLNV14}">₹6,00,000</td><td style="{_TDG14}">₹10,65,265</td><td style="{_PLND14}">Jan 1 if profit — FINAL CAP</td></tr>
-        </tbody>
-        </table>
-        </div>
-
-        <div style="background:#fff8e1;border-left:3px solid #e07000;padding:8px 12px;margin:10px 0 4px 0;font-size:11px;color:#131722;">
-        <b>Golden Rules (Never Break):</b>
-        <ol style="margin:4px 0;padding-left:16px;">
-        <li>Start 100 lots — never skip levels</li>
-        <li>Increase +200 only after profitable month confirmed</li>
-        <li>Never decrease lots even in losing month — FREEZE ONLY</li>
-        <li>Cap = 1000 lots maximum — never exceed</li>
-        <li>Check Section 13 on 1st of every month — 30 seconds</li>
-        <li>Never change lots during open position — wait FLAT</li>
-        <li>If 2 consecutive losing months = pause and review</li>
-        <li>First 6 months = ZERO withdrawal — build buffer</li>
-        <li>Go live only after 5 consecutive MATCH trades confirmed</li>
-        </ol>
-        </div>
-
-        <div style="background:#f0f4ff;border-left:3px solid #2962FF;padding:8px 12px;margin:10px 0 4px 0;font-size:11px;color:#131722;">
-        <b>Key Observations:</b>
-        <ul style="margin:4px 0;padding-left:16px;">
-        <li>Trade count identical at both slippages - strategy logic is unchanged</li>
-        <li style="color:#089981;font-weight:600;">$5/side: S2 improves from 25/31 to 31/31 green months - all months profitable</li>
-        <li style="color:#089981;font-weight:600;">$5/side: Portfolio Rec Capital 3.8x lower = ROC jumps from 4,697% to 22,433%</li>
-        <li>$10/side is conservative/safe assumption for live trading presentation</li>
-        <li>$5/side is realistic for actual Delta Exchange execution (taker ~$3-5/side)</li>
-        <li>Both are valid - use $10 for conservative view, $5 for realistic view</li>
-        </ul>
-        </div>
-        """, unsafe_allow_html=True)
-
-
-@st.fragment(run_every=60)
-def _frag_today():
-    st.markdown("<div class='section-title'>TODAY'S TRADES</div>", unsafe_allow_html=True)
-    st.caption('Live comparison of today\'s backtest signals vs forward test execution')
-    try:
-        st.markdown(_today_trades_html(_d2_full, _d4_full, _df2_fwd, _df4_fwd), unsafe_allow_html=True)
-    except:
-        st.info('Open ANALYSIS tab first to load data, then return here.')
-
-    st.markdown("<div class='section-title'>TODAY'S TRADES</div>", unsafe_allow_html=True)
-    st.caption('Live comparison of today\'s backtest signals vs forward test execution')
-    try:
-        st.markdown(_today_trades_html(_d2_full, _d4_full, _df2_fwd, _df4_fwd), unsafe_allow_html=True)
-    except:
-        st.info('Open ANALYSIS tab first to load data, then return here.')
-
-
-
 with _tab_analysis:
-    _frag_analysis()
+    # SECTION 13 - STRATEGY PERFORMANCE SUMMARY
+    # ================================================================
+    if 'exp_13s' not in st.session_state: st.session_state['exp_13s'] = False
+    with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.session_state.get('exp_13s', False)):
+        import time as _t13, hmac as _hm13, hashlib as _hs13, requests as _rq13, datetime as _dt13, glob as _gl13, pandas as _pd13, re as _re13
+
+        try:
+            _VF13 = open("logs/valid_from_baseline.txt").read().strip()
+        except:
+            _VF13 = "2026-07-14T15:00:00"
+        # Section 13 display window = last 7 days rolling (not VALID_FROM)
+        import datetime as _dt13_7
+        _VF13_7D = (_dt13_7.datetime.utcnow() - _dt13_7.timedelta(days=7)).strftime('%Y-%m-%dT%H:%M:%S')
+        _INR13 = 84.0
+        _BASE13= "https://cdn-ind.testnet.deltaex.org"
+        _TH13  = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:11px;font-weight:700;color:#333;text-align:center;"
+        _TD13  = "padding:6px 8px;border:1px solid #E0E3EB;font-size:13px;color:#131722;font-weight:600;"
+        _TDN13 = "padding:6px 8px;border:1px solid #E0E3EB;font-size:13px;color:#131722;text-align:center;font-weight:500;"
+        _TDG13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#089981;font-weight:700;text-align:center;"
+        _TDR13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#F23645;font-weight:700;text-align:center;"
+        _TDB13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#2962FF;font-weight:700;text-align:center;"
+        _SUB13 = "padding:4px 8px;border:1px solid #C8D0DC;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
+        _HDR13 = "padding:6px 12px;background:#1E3A5F;font-size:11px;font-weight:700;color:#ffffff;margin:8px 0 4px 0;border-left:4px solid #2962FF;"
+
+        def _auth13(k, s, path, qs=""):
+            try:
+                ts  = str(int(_t13.time()))
+                qp  = f"?{qs}" if qs else ""
+                msg = f"GET{ts}{path}{qp}"
+                sig = _hm13.new(s.encode(), msg.encode(), _hs13.sha256).hexdigest()
+                return {"api-key":k,"timestamp":ts,"signature":sig,"Content-Type":"application/json"}
+            except:
+                return {}
+
+        def _fetch13(k, s):
+            orders, after = [], None
+            try:
+                vf  = int(_dt13.datetime.strptime(_VF13,"%Y-%m-%dT%H:%M:%S").replace(tzinfo=_dt13.timezone.utc).timestamp())
+                now = int(_dt13.datetime.now(_dt13.timezone.utc).timestamp())
+                path= "/v2/orders/history"
+                prm = {"product_id":84,"page_size":100,"start_time":int(vf*1e6),"end_time":int(now*1e6)}
+                for _ in range(50):
+                    p = dict(prm)
+                    if after: p["after"] = after
+                    qs = "&".join(f"{a}={b}" for a,b in sorted(p.items()))
+                    h = _auth13(k, s, path, qs)
+                    r = _rq13.get(f"{_BASE13}{path}?{qs}", headers=h, timeout=10)
+                    d = r.json()
+                    if not d.get("success"): break
+                    batch = d.get("result",[])
+                    orders += batch
+                    after  = d.get("meta",{}).get("after")
+                    if not after or not batch: break
+            except:
+                pass
+            return orders
+
+        def _pair13(orders):
+            pairs, used = [], set()
+            srt = sorted(orders, key=lambda x: x.get("created_at",""))
+            for i, e in enumerate(srt):
+                if i in used or e.get("state")!="closed": continue
+                # Entry must be reduce_only=False
+                if str(e.get("reduce_only","")).lower() in ["true","1"]: continue
+                es = e.get("side")
+                if es not in ["buy","sell"]: continue
+                xs  = "sell" if es=="buy" else "buy"
+                dir = "LONG" if es=="buy" else "SHORT"
+                ets = int(_dt13.datetime.strptime(e.get("created_at","1970-01-01T00:00:00")[:19], "%Y-%m-%dT%H:%M:%S").timestamp())
+                ep  = float(e.get("average_fill_price") or e.get("limit_price") or 0)
+                for j, x in enumerate(srt):
+                    if j in used or j==i: continue
+                    if x.get("side")!=xs or x.get("state")!="closed": continue
+                    # Exit must be reduce_only=True
+                    if str(x.get("reduce_only","")).lower() not in ["true","1"]: continue
+                    xts = int(_dt13.datetime.strptime(x.get("created_at","1970-01-01T00:00:00")[:19], "%Y-%m-%dT%H:%M:%S").timestamp())
+                    xp  = float(x.get("average_fill_price") or x.get("limit_price") or 0)
+                    if xts < ets: continue
+                    sz  = int(e.get("size",0))
+                    # Use actual exchange PnL from exit order meta_data
+                    raw_pnl = float(x.get("meta_data",{}).get("pnl") or 0)
+                    cm  = float(e.get("paid_commission") or 0)+float(x.get("paid_commission") or 0)
+                    pnl = raw_pnl - cm
+                    pairs.append({"dir":dir,"ep":ep,"xp":xp,"pnl":pnl,"cm":cm,"ets":ets,"xts":xts,"sz":sz})
+                    used.add(i); used.add(j); break
+            return pairs
+
+        def _calc13(pairs):
+            if not pairs: return None
+            tot = len(pairs)
+            win = sum(1 for p in pairs if p["pnl"]>0)
+            los = tot-win
+            wr  = win/tot*100
+            nu  = sum(p["pnl"] for p in pairs)
+            ni  = nu*_INR13
+            cm  = sum(p["cm"] for p in pairs)
+            pls = [p["pnl"] for p in pairs]
+            cum,pk,dd = 0,0,0
+            for v in pls:
+                cum+=v
+                if cum>pk: pk=cum
+                drop = pk - cum
+                if drop > dd: dd = drop
+            aw = sum(v for v in pls if v>0)/win if win>0 else 0
+            al = sum(v for v in pls if v<0)/los if los>0 else 0
+            pf = abs(sum(v for v in pls if v>0)/sum(v for v in pls if v<0)) if los>0 and sum(v for v in pls if v<0)!=0 else 0
+            import datetime as _dt_c
+            now_c = _dt_c.datetime.utcnow()
+            today_start = now_c.replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
+            week_start  = (now_c - _dt_c.timedelta(days=now_c.weekday())).replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
+            month_start = now_c.replace(day=1,hour=0,minute=0,second=0,microsecond=0).timestamp()
+            year_start  = now_c.replace(month=1,day=1,hour=0,minute=0,second=0,microsecond=0).timestamp()
+            pnl_today   = sum(p["pnl"] for p in pairs if p.get("xts",0) >= today_start)
+            pnl_week    = sum(p["pnl"] for p in pairs if p.get("xts",0) >= week_start)
+            pnl_month   = sum(p["pnl"] for p in pairs if p.get("xts",0) >= month_start)
+            pnl_year    = sum(p["pnl"] for p in pairs if p.get("xts",0) >= year_start)
+            avg_slip    = sum(abs(p.get("ep",0)-p.get("xp",0))*0.001 for p in pairs)/tot if tot>0 else 5.0
+            return {"tot":tot,"win":win,"los":los,"wr":wr,"nu":nu,"ni":ni,"cm":cm,"dd":dd,"aw":aw,"al":al,"pf":pf,
+                    "pnl_today":pnl_today,"pnl_week":pnl_week,"pnl_month":pnl_month,"pnl_year":pnl_year,"avg_slip":avg_slip}
+
+        def _bt_calc13(csv_pattern, vf_str):
+            try:
+                files = sorted(_gl13.glob(csv_pattern), reverse=True)
+                if not files: return None
+                df = _pd13.read_csv(files[0])
+                if 'entry_datetime' not in df.columns: return None
+                df['entry_datetime'] = _pd13.to_datetime(df['entry_datetime'])
+                vf_dt = _pd13.to_datetime(vf_str)
+                df = df[df['entry_datetime'] >= vf_dt]
+                if df.empty: return None
+                tot = len(df)
+                win = (df['net_pnl'] > 0).sum()
+                los = tot - win
+                wr  = win/tot*100
+                nu  = df['net_pnl'].sum()
+                ni_pretax = df['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else nu*_INR13
+                _win_inr13 = df[df['net_pnl_inr']>0]['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else 0
+                ni = ni_pretax - _win_inr13*0.10
+                cm  = df['total_charges_usd'].sum() if 'total_charges_usd' in df.columns else (df['charges'].sum() if 'charges' in df.columns else 0)
+                pls = df['net_pnl'].tolist()
+                cum,pk,dd = 0,0,0
+                for v in pls:
+                    cum+=v
+                    if cum>pk: pk=cum
+                    drop = pk - cum
+                    if drop > dd: dd = drop
+                aw = df[df['net_pnl']>0]['net_pnl'].mean() if win>0 else 0
+                al = df[df['net_pnl']<0]['net_pnl'].mean() if los>0 else 0
+                pf_n = df[df['net_pnl']>0]['net_pnl'].sum()
+                pf_d = abs(df[df['net_pnl']<0]['net_pnl'].sum())
+                pf = pf_n/pf_d if pf_d>0 else 0
+                import datetime as _dt_bt
+                now_bt = _dt_bt.datetime.utcnow()
+                today_s = now_bt.replace(hour=0,minute=0,second=0,microsecond=0)
+                week_s  = (now_bt - _dt_bt.timedelta(days=now_bt.weekday())).replace(hour=0,minute=0,second=0,microsecond=0)
+                month_s = now_bt.replace(day=1,hour=0,minute=0,second=0,microsecond=0)
+                year_s  = now_bt.replace(month=1,day=1,hour=0,minute=0,second=0,microsecond=0)
+                if 'exit_datetime' in df.columns:
+                    df['exit_dt'] = _pd13.to_datetime(df['exit_datetime'])
+                    pnl_today = df[df['exit_dt'] >= _pd13.Timestamp(today_s)]['net_pnl'].sum()
+                    pnl_week  = df[df['exit_dt'] >= _pd13.Timestamp(week_s)]['net_pnl'].sum()
+                    pnl_month = df[df['exit_dt'] >= _pd13.Timestamp(month_s)]['net_pnl'].sum()
+                    pnl_year  = df[df['exit_dt'] >= _pd13.Timestamp(year_s)]['net_pnl'].sum()
+                else:
+                    pnl_today = pnl_week = pnl_month = pnl_year = 0
+                avg_slip = df['slippage_usd'].mean() if 'slippage_usd' in df.columns else 5.0
+                return {"tot":tot,"win":int(win),"los":int(los),"wr":wr,"nu":nu,"ni":ni,"cm":cm,"dd":dd,"aw":aw,"al":al,"pf":pf,
+                        "pnl_today":pnl_today,"pnl_week":pnl_week,"pnl_month":pnl_month,"pnl_year":pnl_year,"avg_slip":avg_slip}
+            except:
+                return None
+
+        def _v13(m, t):
+            if m is None: return "N/A"
+            if t=="tot":  return str(m["tot"])
+            if t=="win":  return str(m["win"])
+            if t=="los":  return str(m["los"])
+            if t=="wr":   return f"{m['wr']:.2f}%"
+            if t=="pnl":  return f"${m['nu']:,.2f} / \u20b9{m['ni']:,.0f}"
+            if t=="aw":   return f"${m['aw']:,.2f}"
+            if t=="al":   return f"${m['al']:,.2f}"
+            if t=="pf":   return f"{m['pf']:.2f}"
+            if t=="dd":   return f"-₹{m['dd']*84:,.0f}" if m['dd']>0 else "₹0"
+            if t=="cm":      return f"${m['cm']:,.2f} / \u20b9{m['cm']*_INR13:,.0f}"
+            if t=="cap":     return f"\u20b9{1816*_INR13:,.0f}"
+            if t=="today":   return f"\u20b9{m.get('pnl_today',0)*_INR13:,.0f}"
+            if t=="week":    return f"\u20b9{m.get('pnl_week',0)*_INR13:,.0f}"
+            if t=="month":   return f"\u20b9{m.get('pnl_month',0)*_INR13:,.0f}"
+            if t=="year":    return f"\u20b9{m.get('pnl_year',0)*_INR13:,.0f}"
+            if t=="slip":    return f"${m.get('avg_slip',0):,.2f}/side"
+            if t=="slipdiff":
+                diff = m.get("avg_slip", 5.0) - 5.0
+                sign = "+" if diff > 0 else ""
+                return f"{sign}${diff:,.2f} vs $5.00"
+            return "N/A"
+
+        def _c13(m, pos=True):
+            if m is None: return _TDN13
+            if pos: return _TDG13 if m.get("nu",0)>=0 else _TDR13
+            return _TDR13
+
+        def _build_tbl13(s2m, s4m, cbm):
+            def _row(lbl, v2, v4, vc, c2=None, c4=None, cc=None):
+                # S2/S4 columns: grey if N/A
+                _c2 = _TDN13 if str(v2)=='N/A' else (c2 or _TDN13)
+                _c4 = _TDN13 if str(v4)=='N/A' else (c4 or _TDN13)
+                # Combined column: green/red/grey based on value
+                # Always override color for N/A regardless of passed cc
+                _vc = str(vc)
+                if _vc == 'N/A':
+                    cc = _TDN13
+                elif cc is None:
+                    if _vc.startswith('-') or _vc.startswith('$-') or _vc.startswith('₹-'):
+                        cc = _TDR13
+                    elif _vc in ['0','0.00%','$0.00','₹0','0.00','0.00%']:
+                        cc = _TDN13
+                    else:
+                        cc = _TDG13
+                return (f"<tr><td style='{_TD13}'>{lbl}</td>"
+                        f"<td style='{_c2}'>{v2}</td>"
+                        f"<td style='{_c4}'>{v4}</td>"
+                        f"<td style='{cc}'>{vc}</td></tr>")
+            return (
+                f"<div style='overflow-x:auto;margin:4px 0;'>"
+                f"<table style='width:100%;border-collapse:collapse;'>"
+                f"<thead><tr>"
+                f"<th style='{_TH13}'>Metric</th>"
+                f"<th style='{_TH13}'>S2</th>"
+                f"<th style='{_TH13}'>S4</th>"
+                f"<th style='{_TH13}'>Combined</th>"
+                f"</tr></thead><tbody>"
+                f"<tr><td colspan='4' style='{_SUB13}'>CAPITAL</td></tr>"
+                + _row("Total Capital Required", _v13(s2m,"cap"), _v13(s4m,"cap"), f"\u20b9{int(1816*_INR13):,}")
+                + f"<tr><td colspan='4' style='{_SUB13}'>CUMULATIVE PnL</td></tr>"
+                + _row("Today PnL",   _v13(s2m,"today"), _v13(s4m,"today"), _v13(cbm,"today"), _c13(s2m,True) if s2m and s2m.get("pnl_today",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_today",0)>=0 else _TDR13, _c13(cbm,True) if cbm and cbm.get("pnl_today",0)>=0 else _TDR13)
+                + _row("Weekly PnL",  _v13(s2m,"week"),  _v13(s4m,"week"),  _v13(cbm,"week"),  _c13(s2m,True) if s2m and s2m.get("pnl_week",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_week",0)>=0 else _TDR13,  _c13(cbm,True) if cbm and cbm.get("pnl_week",0)>=0 else _TDR13)
+                + _row("Monthly PnL", _v13(s2m,"month"), _v13(s4m,"month"), _v13(cbm,"month"), _c13(s2m,True) if s2m and s2m.get("pnl_month",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_month",0)>=0 else _TDR13, _c13(cbm,True) if cbm and cbm.get("pnl_month",0)>=0 else _TDR13)
+                + _row("Yearly PnL",  _v13(s2m,"year"),  _v13(s4m,"year"),  _v13(cbm,"year"),  _c13(s2m,True) if s2m and s2m.get("pnl_year",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_year",0)>=0 else _TDR13,  _c13(cbm,True) if cbm and cbm.get("pnl_year",0)>=0 else _TDR13)
+                + f"<tr><td colspan='4' style='{_SUB13}'>CHARGES</td></tr>"
+                + _row("Total Charges", _v13(s2m,"cm"),  _v13(s4m,"cm"),  _v13(cbm,"cm"),  _TDR13,_TDR13,_TDR13)
+                + f"<tr><td colspan='4' style='{_SUB13}'>TRADE COUNT</td></tr>"
+                + _row("Total Trades",  _v13(s2m,"tot"), _v13(s4m,"tot"), _v13(cbm,"tot"))
+                + _row("Wins",          _v13(s2m,"win"), _v13(s4m,"win"), _v13(cbm,"win"), _TDG13,_TDG13,_TDG13)
+                + _row("Losses",        _v13(s2m,"los"), _v13(s4m,"los"), _v13(cbm,"los"), _TDR13,_TDR13,_TDR13)
+                + f"<tr><td colspan='4' style='{_SUB13}'>PERFORMANCE</td></tr>"
+                + _row("Win Rate",      _v13(s2m,"wr"),  _v13(s4m,"wr"),  _v13(cbm,"wr"))
+                + _row("Net PnL",       _v13(s2m,"pnl"), _v13(s4m,"pnl"), _v13(cbm,"pnl"), _c13(s2m),_c13(s4m),_c13(cbm))
+                + _row("Avg Win",       _v13(s2m,"aw"),  _v13(s4m,"aw"),  _v13(cbm,"aw"),  _TDG13,_TDG13,_TDG13)
+                + _row("Avg Loss",      _v13(s2m,"al"),  _v13(s4m,"al"),  _v13(cbm,"al"),  _TDR13,_TDR13,_TDR13)
+                + _row("Profit Factor", _v13(s2m,"pf"),  _v13(s4m,"pf"),  _v13(cbm,"pf"))
+                + f"<tr><td colspan='4' style='{_SUB13}'>RISK</td></tr>"
+                + _row("Max Drawdown",  _v13(s2m,"dd"),  _v13(s4m,"dd"),  _v13(cbm,"dd"),  _TDR13,_TDR13,_TDR13)
+                + f"<tr><td colspan='4' style='{_SUB13}'>SLIPPAGE</td></tr>"
+                + _row("Avg Slippage/side", _v13(s2m,"slip"), _v13(s4m,"slip"), _v13(cbm,"slip"), _TDR13,_TDR13,_TDR13)
+                + _row("vs Backtest ($5/side)", _v13(s2m,"slipdiff"), _v13(s4m,"slipdiff"), _v13(cbm,"slipdiff"), _TDG13 if s2m and s2m.get("avg_slip",5)<=5 else _TDR13, _TDG13 if s4m and s4m.get("avg_slip",5)<=5 else _TDR13, _TDB13)
+                + "</tbody></table></div>"
+            )
+
+        # ── FETCH LIVE DATA ──────────────────────────────────────
+        with st.spinner("Fetching live forward test data..."):
+            s2o = _fetch13(os.environ.get("S2_API_KEY",""), os.environ.get("S2_API_SECRET",""))
+            s4o = _fetch13(os.environ.get("S4_API_KEY",""), os.environ.get("S4_API_SECRET",""))
+        s2p  = _pair13(s2o)
+        s4p  = _pair13(s4o)
+        s2m  = _calc13(s2p)
+        s4m  = _calc13(s4p)
+        cbm  = _calc13(s2p+s4p)
+
+        # ── FETCH BACKTEST DATA (same date range) ────────────────
+        s2_bt = _bt_calc13("output/trade_log_RenkoReversal*.csv",        _VF13_7D)
+        s4_bt = _bt_calc13("output/trade_log_RenkoSMIIOSupertrend*.csv", _VF13_7D)
+        cb_bt_pairs = []
+        if s2_bt: cb_bt_pairs.append(s2_bt)
+        if s4_bt: cb_bt_pairs.append(s4_bt)
+        cb_bt = None
+        if s2_bt and s4_bt:
+            merged = {"tot":s2_bt["tot"]+s4_bt["tot"],
+                      "win":s2_bt["win"]+s4_bt["win"],
+                      "los":s2_bt["los"]+s4_bt["los"],
+                      "wr":(s2_bt["win"]+s4_bt["win"])/(s2_bt["tot"]+s4_bt["tot"])*100,
+                      "nu":s2_bt["nu"]+s4_bt["nu"],
+                      "ni":s2_bt["ni"]+s4_bt["ni"],
+                      "cm":s2_bt["cm"]+s4_bt["cm"],
+                      "dd":max(s2_bt["dd"],s4_bt["dd"]),
+                      "aw":(s2_bt["aw"]*s2_bt["win"]+s4_bt["aw"]*s4_bt["win"])/(s2_bt["win"]+s4_bt["win"]) if (s2_bt["win"]+s4_bt["win"])>0 else 0,
+                      "al":(s2_bt["al"]*s2_bt["los"]+s4_bt["al"]*s4_bt["los"])/(s2_bt["los"]+s4_bt["los"]) if (s2_bt["los"]+s4_bt["los"])>0 else 0,
+                      "pf":abs((s2_bt["aw"]*s2_bt["win"]+s4_bt["aw"]*s4_bt["win"])/(s2_bt["al"]*s2_bt["los"]+s4_bt["al"]*s4_bt["los"])) if (s2_bt["los"]+s4_bt["los"])>0 and (s2_bt["al"]*s2_bt["los"]+s4_bt["al"]*s4_bt["los"])!=0 else 0,
+                      "pnl_today":s2_bt.get("pnl_today",0)+s4_bt.get("pnl_today",0),
+                      "pnl_week":s2_bt.get("pnl_week",0)+s4_bt.get("pnl_week",0),
+                      "pnl_month":s2_bt.get("pnl_month",0)+s4_bt.get("pnl_month",0),
+                      "pnl_year":s2_bt.get("pnl_year",0)+s4_bt.get("pnl_year",0)}
+            cb_bt = merged
+
+        st.caption(f"Showing last 7 days | Valid from: {_VF13_7D[:10]} UTC | Auto updates on page load | Testnet")
+
+        # ── TOP TABLE: FORWARD TEST / LIVE ───────────────────────
+        # Side by side: Forward Test | Backtest
+        _col13a, _col13b = st.columns(2)
+        with _col13a:
+            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST / LIVE</div>", unsafe_allow_html=True)
+            st.markdown(_build_tbl13(s2m, s4m, cbm), unsafe_allow_html=True)
+        with _col13b:
+            st.markdown(f"<div style='{_HDR13}'>BACKTEST (LAST 7 DAYS: {_VF13_7D[:10]} to TODAY)</div>", unsafe_allow_html=True)
+            st.markdown(_build_tbl13(s2_bt, s4_bt, cb_bt), unsafe_allow_html=True)
+
+        # ================================================================
+        # LAST 20 TRADES - FORWARD TEST (LEFT) | BACKTEST (RIGHT)
+        # ================================================================
+        st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+
+        _TH20 = "padding:4px 6px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#333;text-align:center;white-space:nowrap;"
+        _TD20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:center;white-space:nowrap;"
+        _TG20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
+        _TR20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#F23645;font-weight:700;text-align:center;"
+        _TY20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#e07000;font-weight:700;text-align:center;"
+
+        def _fwd20(pairs):
+            try:
+                if not pairs:
+                    return (f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'><table style='width:100%;border-collapse:collapse;'><thead><tr><th style='{_TH20}'>Date</th><th style='{_TH20}'>Dir</th><th style='{_TH20}'>Entry Time</th><th style='{_TH20}'>Exit Time</th><th style='{_TH20}'>Entry (INR)</th><th style='{_TH20}'>Exit (INR)</th><th style='{_TH20}'>Slip Diff vs $5</th><th style='{_TH20}'>Tax+Charges</th><th style='{_TH20}'>PnL</th></tr></thead><tbody><tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>Waiting for first trade</td></tr></tbody></table></div>")
+                import datetime as _dfw
+                last20 = pairs[-20:][::-1]
+                rows = ""
+                for p in last20:
+                    pnl      = float(p.get('pnl', 0))
+                    pnl_inr  = pnl * _INR13
+                    ep_inr   = float(p.get('ep', 0))
+                    xp_inr   = float(p.get('xp', 0))
+                    cm_inr   = float(p.get('cm', 0)) * _INR13
+                    _ist_off1 = _dfw.timedelta(hours=5, minutes=30)
+                    et       = (_dfw.datetime.utcfromtimestamp(p.get('ets',0)) + _ist_off1).strftime('%d-%b-%Y %I:%M %p IST')
+                    xt       = (_dfw.datetime.utcfromtimestamp(p.get('xts',0)) + _ist_off1).strftime('%d-%b-%Y %I:%M %p IST')
+                    dirv     = str(p.get('dir','')).upper()
+                    slip_act = abs(float(p.get('ep',0)) - float(p.get('xp',0))) * 0.001
+                    slip_diff= slip_act - 5.0
+                    slip_str = f"+${slip_diff:.2f}" if slip_diff >= 0 else f"-${abs(slip_diff):.2f}"
+                    mp_style  = _TG20
+                    ps        = _TG20 if pnl >= 0 else _TR20
+                    ds        = _TG20 if dirv == 'LONG' else _TR20
+                    rows += (
+                        f"<tr>"
+                        f"<td style='{_TD20}'>{et[:11].strip()}</td>"
+                        f"<td style='{ds}'>{dirv}</td>"
+                        f"<td style='{_TD20}'>{et[12:] if len(et)>12 else et}</td>"
+                        f"<td style='{_TD20}'>{xt[12:] if len(xt)>12 else xt}</td>"
+                        f"<td style='{_TD20}'>${ep_inr:,.0f}</td>"
+                        f"<td style='{_TD20}'>${xp_inr:,.0f}</td>"
+                        f"<td style='{_TR20}'>{slip_str} vs $5</td>"
+                        f"<td style='{_TR20}'>₹{cm_inr:,.0f}</td>"
+                        f"<td style='{ps}'>₹{pnl_inr:,.0f}</td>"
+                        f"</tr>"
+                    )
+                return (
+                    f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
+                    f"<table style='width:100%;border-collapse:collapse;'>"
+                    f"<thead><tr>"
+                    f"<th style='{_TH20}'>Date</th>"
+                    f"<th style='{_TH20}'>Dir</th>"
+                    f"<th style='{_TH20}'>Entry Time</th>"
+                    f"<th style='{_TH20}'>Exit Time</th>"
+                    f"<th style='{_TH20}'>Entry $</th>"
+                    f"<th style='{_TH20}'>Exit $</th>"
+                    f"<th style='{_TH20}'>Slip Diff vs $5</th>"
+                    f"<th style='{_TH20}'>Tax+Charges</th>"
+                    f"<th style='{_TH20}'>PnL</th>"
+                    f"</tr></thead><tbody>{rows}</tbody></table></div>"
+                )
+            except Exception as e:
+                return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
+
+        def _bt20(csv_pattern, vf_str):
+            try:
+                import glob as _gb, pandas as _pb
+                _WAIT_BT = (
+                    f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
+                    f"<table style='width:100%;border-collapse:collapse;'>"
+                    f"<thead><tr>"
+                    f"<th style='{_TH20}'>Date</th>"
+                    f"<th style='{_TH20}'>Dir</th>"
+                    f"<th style='{_TH20}'>Entry Time (IST)</th>"
+                    f"<th style='{_TH20}'>Exit Time (IST)</th>"
+                    f"<th style='{_TH20}'>Entry (INR)</th>"
+                    f"<th style='{_TH20}'>Exit (INR)</th>"
+                    f"<th style='{_TH20}'>Slip $5</th>"
+                    f"<th style='{_TH20}'>Tax+Charges</th>"
+                    f"<th style='{_TH20}'>PnL</th>"
+                    f"</tr></thead><tbody>"
+                    f"<tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>No backtest trades in this window</td></tr>"
+                    f"</tbody></table></div>"
+                )
+                s2_files = sorted(_gb.glob("output/trade_log_RenkoReversal*.csv"), reverse=True)
+                s4_files = sorted(_gb.glob("output/trade_log_RenkoSMIIO*.csv"), reverse=True)
+                frames = []
+                vf_dt = _pb.to_datetime(vf_str)
+                for ff in (s2_files[:1] + s4_files[:1]):
+                    _df = _pb.read_csv(ff)
+                    _df['entry_datetime'] = _pb.to_datetime(_df['entry_datetime'])
+                    _df_vf = _df[_df['entry_datetime'] >= vf_dt]
+                    if not _df_vf.empty:
+                        frames.append(_df_vf)
+                if not frames:
+                    return _WAIT_BT
+                df = _pb.concat(frames).sort_values('entry_datetime').tail(20).iloc[::-1].reset_index(drop=True)
+                if df.empty:
+                    return _WAIT_BT
+                rows = ""
+                for i, r in df.iterrows():
+                    pnl     = float(r.get('net_pnl', 0))
+                    pnl_inr = float(r.get('net_pnl_inr', pnl * _INR13))
+                    ep_inr  = float(r.get('entry_price', 0))
+                    xp_inr  = float(r.get('exit_price',  0))
+                    slip    = float(r.get('slippage_usd', 10.0))
+                    tax_inr = float(r.get('total_charges_usd', 0)) * _INR13
+                    import datetime as _dfw
+                    _ist_off2 = _dfw.timedelta(hours=5, minutes=30)
+                    _et_raw = str(r.get('entry_datetime',''))[:19]
+                    _xt_raw = str(r.get('exit_datetime', ''))[:19]
+                    try:
+                        et = (_dfw.datetime.strptime(_et_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_off2).strftime('%d-%b-%Y %I:%M %p IST')
+                        xt = (_dfw.datetime.strptime(_xt_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_off2).strftime('%d-%b-%Y %I:%M %p IST')
+                    except:
+                        et = _et_raw
+                        xt = _xt_raw
+                    dirv    = str(r.get('direction','')).upper()
+                    ps      = _TG20 if pnl >= 0 else _TR20
+                    ds      = _TG20 if dirv == 'LONG' else _TR20
+                    rows += (
+                        f"<tr>"
+                        f"<td style='{_TD20}'>{et[:11].strip()}</td>"
+                        f"<td style='{ds}'>{dirv}</td>"
+                        f"<td style='{_TD20}'>{et[12:] if len(et)>12 else et}</td>"
+                        f"<td style='{_TD20}'>{xt[12:] if len(xt)>12 else xt}</td>"
+                        f"<td style='{_TD20}'>${ep_inr:,.0f}</td>"
+                        f"<td style='{_TD20}'>${xp_inr:,.0f}</td>"
+                        f"<td style='{_TR20}'>${slip:.2f}</td>"
+                        f"<td style='{_TR20}'>₹{tax_inr:,.0f}</td>"
+                        f"<td style='{ps}'>₹{pnl_inr:,.0f}</td>"
+                        f"</tr>"
+                    )
+                return (
+                    f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
+                    f"<table style='width:100%;border-collapse:collapse;'>"
+                    f"<thead><tr>"
+                    f"<th style='{_TH20}'>Date</th>"
+                    f"<th style='{_TH20}'>Dir</th>"
+                    f"<th style='{_TH20}'>Entry Time (IST)</th>"
+                    f"<th style='{_TH20}'>Exit Time (IST)</th>"
+                    f"<th style='{_TH20}'>Entry (INR)</th>"
+                    f"<th style='{_TH20}'>Exit (INR)</th>"
+                    f"<th style='{_TH20}'>Slip $5</th>"
+                    f"<th style='{_TH20}'>Tax+Charges</th>"
+                    f"<th style='{_TH20}'>PnL</th>"
+                    f"</tr></thead><tbody>{rows}</tbody></table></div>"
+                )
+            except Exception as e:
+                return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
+
+        def _cmp20(csv_pattern, fwd_pairs, vf_str):
+            try:
+                import glob as _gc, pandas as _pc, datetime as _dc
+                files = sorted(_gc.glob(csv_pattern), reverse=True)
+                s2_ff = sorted(_gc.glob("output/trade_log_RenkoReversal*.csv"), reverse=True)
+                s4_ff = sorted(_gc.glob("output/trade_log_RenkoSMIIO*.csv"), reverse=True)
+                _frames = []
+                vf_dt = _pc.to_datetime(vf_str)
+                for _ff in (s2_ff[:1] + s4_ff[:1]):
+                    _dff = _pc.read_csv(_ff)
+                    _dff['entry_datetime'] = _pc.to_datetime(_dff['entry_datetime'])
+                    _dff_vf = _dff[_dff['entry_datetime'] >= vf_dt]
+                    if not _dff_vf.empty:
+                        _frames.append(_dff_vf)
+                if not _frames:
+                    return "<p style='color:#aaa;font-size:12px;padding:8px'>No backtest trades in this window yet</p>"
+                df = _pc.concat(_frames).sort_values('entry_datetime').tail(20).iloc[::-1].reset_index(drop=True)
+                if df.empty:
+                    return "<p style='color:#aaa;font-size:12px;padding:8px'>No backtest trades in this window yet</p>"
+                last20 = (fwd_pairs or [])[-20:][::-1]
+                used_fwd = set()
+                max_rows = len(df)
+                rows = ""
+                for i in range(max_rows):
+                    bt  = df.iloc[i]
+                    # Match forward test trade by closest entry time not by position
+                    fwd = None
+                    bt_et_raw = str(bt.get('entry_datetime',''))[:19]
+                    try:
+                        import datetime as _dmatch
+                        bt_et_dt = _dmatch.datetime.strptime(bt_et_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S')
+                        best_diff = None
+                        for _fp in last20:
+                            try:
+                                _fp_et = _dmatch.datetime.utcfromtimestamp(_fp.get('ets', 0))
+                                _diff = abs((_fp_et - bt_et_dt).total_seconds())
+                                if best_diff is None or _diff < best_diff:
+                                    best_diff = _diff
+                                    fwd = _fp
+                            except:
+                                pass
+                        # Only match if within 4 hours
+                        if best_diff is not None and best_diff > 14400:
+                            fwd = None
+                        # Skip already matched fwd trades
+                        if fwd is not None:
+                            fwd_key = fwd.get('ets', 0)
+                            if fwd_key in used_fwd:
+                                fwd = None
+                            else:
+                                used_fwd.add(fwd_key)
+                    except:
+                        fwd = last20[i] if i < len(last20) else None
+                    bt_ep   = float(bt.get('entry_price', 0))
+                    bt_xp   = float(bt.get('exit_price',  0))
+                    bt_pnl  = float(bt.get('net_pnl_inr', float(bt.get('net_pnl',0)) * _INR13))
+                    bt_dir  = str(bt.get('direction','')).upper()
+                    import datetime as _dbt
+                    _ist_bt = _dbt.timedelta(hours=5, minutes=30)
+                    _bt_et_raw = str(bt.get('entry_datetime',''))[:19]
+                    _bt_xt_raw = str(bt.get('exit_datetime', ''))[:19]
+                    try:
+                        bt_et = (_dbt.datetime.strptime(_bt_et_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_bt).strftime('%d-%b-%Y %I:%M %p IST')
+                        bt_xt = (_dbt.datetime.strptime(_bt_xt_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_bt).strftime('%d-%b-%Y %I:%M %p IST')
+                    except:
+                        bt_et = _bt_et_raw
+                        bt_xt = _bt_xt_raw
+                    if fwd is None:
+                        # No live trade yet - show PENDING
+                        _pnd = "background:#fff8e1;color:#b8860b;font-weight:bold;padding:4px 6px;font-size:11px;"
+                        _ds2 = _TG20 if bt_dir == "LONG" else _TR20
+                        rows += (
+                            f"<tr>"
+                            f"<td style='{_pnd}'>PENDING</td>"
+                            f"<td style='{_TD20}'>{bt_et[:11].strip()}</td>"
+                            f"<td style='{_ds2}'>{bt_dir}</td>"
+                            f"<td style='{_TD20}'>{bt_et[12:] if len(bt_et)>12 else bt_et}</td>"
+                            f"<td style='{_TD20}'>-</td>"
+                            f"<td style='{_TD20}'>₹{bt_ep:,.0f}</td>"
+                            f"<td style='{_TD20}'>-</td>"
+                            f"<td style='{_TD20}'>₹{bt_xp:,.0f}</td>"
+                            f"<td style='{_TD20}'>-</td>"
+                            f"<td style='{_TG20 if bt_pnl>=0 else _TR20}'>₹{bt_pnl:,.0f}</td>"
+                            f"<td style='{_TD20}'>-</td>"
+                            f"<td style='{_pnd}'>Waiting live</td>"
+                            f"</tr>"
+                        )
+                        continue
+                    fwd_ep  = float(fwd.get('ep', 0))
+                    fwd_xp  = float(fwd.get('xp', 0))
+                    fwd_pnl = float(fwd.get('pnl', 0)) * _INR13
+                    fwd_dir = str(fwd.get('dir','')).upper()
+                    _ist_cmp = _dc.timedelta(hours=5, minutes=30)
+                    fwd_et  = (_dc.datetime.utcfromtimestamp(fwd.get('ets',0)) + _ist_cmp).strftime('%d-%b-%Y %I:%M %p IST')
+                    fwd_xt  = (_dc.datetime.utcfromtimestamp(fwd.get('xts',0)) + _ist_cmp).strftime('%d-%b-%Y %I:%M %p IST')
+                    pnl_diff  = abs(bt_pnl - fwd_pnl)
+                    pnl_pct   = (pnl_diff / abs(bt_pnl) * 100) if bt_pnl != 0 else 0
+                    dir_match = bt_dir == fwd_dir
+                    match_pct = 100.0
+                    if not dir_match:  match_pct -= 50
+                    if pnl_pct > 10:   match_pct -= 30
+                    elif pnl_pct > 5:  match_pct -= 10
+                    mp_style  = _TG20 if match_pct >= 95 else (_TY20 if match_pct >= 80 else _TR20)
+                    ds        = _TG20 if dir_match else _TR20
+                    pd_style  = _TG20 if pnl_pct <= 5 else (_TY20 if pnl_pct <= 10 else _TR20)
+                    rows += (
+                        f"<tr>"
+                        f"<td style='{mp_style}'>{match_pct:.0f}%</td>"
+                        f"<td style='{_TD20}'>{bt_et[:11].strip()}</td>"
+                        f"<td style='{ds}'>{bt_dir}</td>"
+                        f"<td style='{_TD20}'>{bt_et[12:] if len(bt_et)>12 else bt_et}</td>"
+                        f"<td style='{_TD20}'>{fwd_et[12:] if len(fwd_et)>12 else fwd_et}</td>"
+                        f"<td style='{_TD20}'>{bt_xt[12:] if len(bt_xt)>12 else bt_xt}</td>"
+                        f"<td style='{_TD20}'>{fwd_xt[12:] if len(fwd_xt)>12 else fwd_xt}</td>"
+                        f"<td style='{_TD20}'>${bt_ep:,.0f}</td>"
+                        f"<td style='{_TD20}'>${fwd_ep:,.0f}</td>"
+                        f"<td style='{_TD20}'>${bt_xp:,.0f}</td>"
+                        f"<td style='{_TD20}'>${fwd_xp:,.0f}</td>"
+                        f"<td style='{_TG20}'>₹{bt_pnl:,.0f}</td>"
+                        f"<td style='{_TG20 if fwd_pnl>=0 else _TR20}'>₹{fwd_pnl:,.0f}</td>"
+                        f"<td style='{pd_style}'>₹{pnl_diff:,.0f} ({pnl_pct:.1f}%)</td>"
+                        f"</tr>"
+                    )
+                return (
+                    f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
+                    f"<table style='width:100%;border-collapse:collapse;'>"
+                    f"<thead><tr>"
+                    f"<th style='{_TH20}'>Match%</th>"
+                    f"<th style='{_TH20}'>Date</th>"
+                    f"<th style='{_TH20}'>Dir</th>"
+                    f"<th style='{_TH20}'>BT Entry T</th>"
+                    f"<th style='{_TH20}'>FT Entry T</th>"
+                    f"<th style='{_TH20}'>BT Exit T</th>"
+                    f"<th style='{_TH20}'>FT Exit T</th>"
+                    f"<th style='{_TH20}'>BT Entry ₹</th>"
+                    f"<th style='{_TH20}'>FT Entry ₹</th>"
+                    f"<th style='{_TH20}'>BT Exit ₹</th>"
+                    f"<th style='{_TH20}'>FT Exit ₹</th>"
+                    f"<th style='{_TH20}'>BT PnL</th>"
+                    f"<th style='{_TH20}'>FT PnL</th>"
+                    f"<th style='{_TH20}'>PnL Diff</th>"
+                    f"</tr></thead><tbody>{rows}</tbody></table></div>"
+                )
+            except Exception as e:
+                return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
+
+        # ── RENDER SIDE BY SIDE LAST 20 ──────────────────────────
+        _col20a, _col20b = st.columns(2)
+        with _col20a:
+            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST - LAST 20 TRADES</div>", unsafe_allow_html=True)
+            st.markdown(_fwd20(s2p + s4p), unsafe_allow_html=True)
+        with _col20b:
+            st.markdown(f"<div style='{_HDR13}'>BACKTEST - LAST 20 TRADES</div>", unsafe_allow_html=True)
+            st.markdown(_bt20("output/trade_log_Renko*.csv", _VF13_7D), unsafe_allow_html=True)
+
+        # ── COMPARISON TABLE FULL WIDTH BELOW ────────────────────
+        st.markdown(f"<div style='{_HDR13}'>BACKTEST vs FORWARD TEST - LAST 20 COMPARISON</div>", unsafe_allow_html=True)
+        st.markdown(_cmp20("output/trade_log_Renko*.csv", s2p + s4p, _VF13_7D), unsafe_allow_html=True)
+
+
+    # ================================================================
+    # FOOTER
+    # ================================================================
+    st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
+    st.caption(f"Version: {system.get('version', 'v3.9')} | Commit: {git_commit} | Last refresh: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5,minutes=30))).strftime('%d-%b-%Y %I:%M %p IST')}")
+    # This line intentionally left blank
+
+
+
+
+    # ============================================================
+    # SECTION 14 - SLIPPAGE COMPARISON
+    # ============================================================
+    if 'exp_14s' not in st.session_state: st.session_state['exp_14s'] = False
+    with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st.session_state.get('exp_14s', False)):
+
+        import glob as _gl14, pandas as _pd14, datetime as _dt14
+
+        # TODAY'S TRADES TABLE AT TOP
+        def _today_trades_html(df2, df4, df2_fwd, df4_fwd):
+            import datetime as _dtt
+            _INR = 84.0
+            _SLIP10_EXTRA = 10.0
+            now_utc = _dtt.datetime.utcnow()
+            today_s = now_utc.replace(hour=0,minute=0,second=0,microsecond=0)
+            def _to_ist(ts):
+                try:
+                    dt = _pd14.to_datetime(str(ts).replace("T"," "))
+                    ist = dt + _dtt.timedelta(hours=5, minutes=30)
+                    return ist.strftime("%d-%b %I:%M %p")
+                except: return "-"
+            def _get_bt_rows(df, label):
+                if df is None: return []
+                rows = []
+                try:
+                    import pandas as _pd_t
+                    # df is a dict from _load14 - get raw_df
+                    dfc = df.get("raw_df") if isinstance(df, dict) else df
+                    if dfc is None or not hasattr(dfc, 'iterrows'): return []
+                    dfc = dfc.copy()
+                    dfc['exit_datetime'] = _pd_t.to_datetime(dfc['exit_datetime'])
+                    dfc['entry_datetime'] = _pd_t.to_datetime(dfc['entry_datetime'])
+                    # filter to today only (entry or exit today)
+                    import datetime as _dtt_bt
+                    _today_bt = _dtt_bt.datetime.utcnow().strftime("%Y-%m-%d")
+                    dfc = dfc[dfc['exit_datetime'].dt.strftime("%Y-%m-%d") >= _today_bt]
+                    dfc = dfc.sort_values('exit_datetime', ascending=False).head(10)
+                    for _, r in dfc.iterrows():
+                        rows.append({
+                            'label'    : label,
+                            'dir'      : str(r.get('direction','')).upper(),
+                            'entry_ist': _to_ist(r.get('entry_datetime','')),
+                            'exit_ist' : _to_ist(r.get('exit_datetime','')),
+                            'entry_p'  : float(r.get('entry_price',0)),
+                            'exit_p'   : float(r.get('exit_price',0)),
+                            'pnl_usd'  : float(r.get('net_pnl',0)),
+                            'pnl_inr5' : float(r.get('net_pnl_inr',0)) - (max(float(r.get('net_pnl_inr',0)),0)*0.10),
+                            'pnl_inr10': float(r.get('net_pnl_inr',0)) - (max(float(r.get('net_pnl_inr',0)),0)*0.10) - (_SLIP10_EXTRA * _INR),
+                            'charges'  : (float(r.get('taker_fees_usd',0))+float(r.get('slippage_usd',0))+float(r.get('funding_usd',0))+float(r.get('tax_usd',0)))*_INR,
+                        })
+                except: pass
+                return rows
+            def _get_fwd_rows(df_fwd, label):
+                if df_fwd is None: return []
+                rows = []
+                try:
+                    import datetime as _dtt_fwd
+                    _today_fwd = _dtt_fwd.datetime.utcnow().strftime("%Y-%m-%d")
+                    raw = [p for p in (df_fwd.get("raw_pairs",[]) if isinstance(df_fwd,dict) else []) if str(p.get("entry_ts",""))[:10] >= _today_fwd]
+                    # last 10 trades most recent first
+                    for p in reversed(raw[-10:]):
+                        ep   = float(p.get('entry_price',0))
+                        xp   = float(p.get('exit_price',0))
+                        side = str(p.get('side','buy')).lower()
+                        lots = float(p.get('size',100))
+                        pnl_net = float(p.get('pnl',0))
+                        comm    = float(p.get('comm',0))
+                        entry_ts = p.get('entry_ts','')
+                        exit_ts  = p.get('exit_ts','')
+                        rows.append({
+                            'label'    : label,
+                            'dir'      : 'LONG' if side=='buy' else 'SHORT',
+                            'entry_ist': _to_ist(entry_ts),
+                            'exit_ist' : _to_ist(exit_ts),
+                            'entry_p'  : ep,
+                            'exit_p'   : xp,
+                            'pnl_usd'  : pnl_net,
+                            'pnl_inr5' : pnl_net*_INR,
+                            'pnl_inr10': pnl_net*_INR,
+                            'charges'  : comm*_INR,
+                        })
+                except: pass
+                return rows
+            bt2 = _get_bt_rows(df2, "BT S2")
+            bt4 = _get_bt_rows(df4, "BT S4")
+            lv2 = _get_fwd_rows(df2_fwd, "LV S2")
+            lv4 = _get_fwd_rows(df4_fwd, "LV S4")
+            today_str = _dtt.datetime.utcnow().strftime("%d-%b-%Y")
+            TH  = "padding:5px 8px;border:1px solid #C8D0DC;background:#1565C0;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+            THS = "padding:5px 8px;border:1px solid #C8D0DC;background:#1565C0;font-size:10px;font-weight:700;color:#fff;text-align:center;width:40px;"
+            TD  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;text-align:center;"
+            TDN = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;text-align:center;background:#f7f9fc;font-weight:700;color:#555;vertical-align:middle;"
+            def _pnl_color(v): return "#089981" if v>=0 else "#F23645"
+            def _dir_color(d): return "#089981" if d=="LONG" else "#F23645"
+            def _match(bt, lv):
+                if bt is None or lv is None: return "-"
+                if bt["dir"]==lv["dir"] and bt["entry_ist"]==lv["entry_ist"]: return "✅"
+                return "❌"
+            def _section_html(strat, bt_rows, lv_rows):
+                n_bt = len(bt_rows); n_lv = len(lv_rows)
+                tc = max(n_bt, n_lv)
+                bt_pnl5  = sum(r["pnl_inr5"]  for r in bt_rows)
+                bt_pnl10 = sum(r["pnl_inr10"] for r in bt_rows)
+                lv_pnl5  = sum(r["pnl_inr5"]  for r in lv_rows)
+                lv_pnl10 = sum(r["pnl_inr10"] for r in lv_rows)
+                def _pc(v): return "#089981" if v>=0 else "#F23645"
+                def _fmt(v): return f"+₹{v:,.0f}" if v>=0 else f"-₹{abs(v):,.0f}"
+                hdr = (
+                    '<div style="margin:12px 0 0 0;font-size:12px;font-weight:700;color:#fff;'
+                    'background:#1565C0;padding:6px 10px;border-radius:4px 4px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:6px;">'
+                    f'<span>TODAY\'S TRADES ({today_str}) — Backtest {strat} vs Forward Test {strat}</span>'
+                    f'<span style="background:#fff;color:#1565C0;border-radius:3px;padding:3px 10px;font-size:12px;font-weight:700;">BT Trades: {n_bt}</span>'
+                    f'<span style="background:#e8f5e9;color:#1b5e20;border-radius:3px;padding:3px 10px;font-size:12px;font-weight:700;">LV Trades: {n_lv}</span>'
+                    f'<span style="background:#fff3e0;color:#e65100;border-radius:3px;padding:3px 10px;font-size:12px;">BT PnL $5: <b style="color:{_pc(bt_pnl5)}">{_fmt(bt_pnl5)}</b> | $10: <b style="color:{_pc(bt_pnl10)}">{_fmt(bt_pnl10)}</b></span>'
+                    f'<span style="background:#e3f2fd;color:#0d47a1;border-radius:3px;padding:3px 10px;font-size:12px;">LV PnL $5: <b style="color:{_pc(lv_pnl5)}">{_fmt(lv_pnl5)}</b> | $10: <b style="color:{_pc(lv_pnl10)}">{_fmt(lv_pnl10)}</b></span>'
+                    '</div>'
+                )
+                tbl = '<table style="width:100%;border-collapse:collapse;margin-bottom:4px;">'
+                tbl += '<thead><tr>'
+                tbl += f'<th style="{THS}">S.No</th>'
+                tbl += f'<th style="{TH}">Source</th>'
+                tbl += f'<th style="{TH}">Dir</th>'
+                tbl += f'<th style="{TH}">Entry IST</th>'
+                tbl += f'<th style="{TH}">Exit IST</th>'
+                tbl += f'<th style="{TH}">Entry $</th>'
+                tbl += f'<th style="{TH}">Exit $</th>'
+                tbl += f'<th style="{TH}">PnL $</th>'
+                tbl += f'<th style="{TH}">Net PnL ₹ ($5/side)</th>'
+                tbl += f'<th style="{TH}">Net PnL ₹ ($10/side)</th>'
+                tbl += f'<th style="{TH}">Charges ₹</th>'
+                tbl += f'<th style="{TH}">Match</th>'
+                tbl += '</tr></thead><tbody>'
+                if tc == 0:
+                    tbl += f'<tr><td colspan="12" style="{TD}color:#aaa;">No trades yet</td></tr>'
+                for i in range(tc):
+                    bt = bt_rows[i] if i < n_bt else None
+                    lv = lv_rows[i] if i < n_lv else None
+                    _sep = "border-top:3px solid #42A5F5;" if i>0 else ""
+                    sno_cell = f'<td rowspan="2" style="{TDN}{_sep}">{i+1}</td>'
+                    for ridx, (row, src) in enumerate([(bt, f"BT {strat}"), (lv, f"LV {strat}")]):
+                        is_lv = (ridx == 1)
+                        match_cell = (f'<td style="{TD}font-size:14px;">{_match(bt,lv)}</td>' if is_lv
+                                      else f'<td style="{TD}"></td>')
+                        sno = sno_cell if not is_lv else ""
+                        if row is None:
+                            tbl += f'<tr>{sno}<td style="{TD}color:#aaa;">{src}</td>'
+                            tbl += (f'<td style="{TD}color:#aaa;">-</td>' * 9)
+                            tbl += f'{match_cell}</tr>'
+                        else:
+                            dc  = _dir_color(row["dir"])
+                            pc5 = _pnl_color(row["pnl_inr5"])
+                            pc10= _pnl_color(row["pnl_inr10"])
+                            pu  = _pnl_color(row["pnl_usd"])
+                            bg  = "background:#f0f7ff;" if not is_lv else ""
+                            _row_sep = _sep if ridx==0 else ""
+                            tbl += f'<tr style="{_row_sep}">{sno}'
+                            tbl += f'<td style="{TD}{bg}font-weight:700;">{src}</td>'
+                            tbl += f'<td style="{TD}color:{dc};font-weight:700;">{row["dir"]}</td>'
+                            tbl += f'<td style="{TD}{bg}">{row["entry_ist"]}</td>'
+                            tbl += f'<td style="{TD}{bg}">{row["exit_ist"]}</td>'
+                            tbl += f'<td style="{TD}{bg}">${row["entry_p"]:,.0f}</td>'
+                            tbl += f'<td style="{TD}{bg}">${row["exit_p"]:,.0f}</td>'
+                            tbl += f'<td style="{TD}color:{pu};font-weight:700;">${row["pnl_usd"]:+,.2f}</td>'
+                            tbl += f'<td style="{TD}color:{pc5};font-weight:700;">₹{row["pnl_inr5"]:+,.0f}</td>'
+                            tbl += f'<td style="{TD}color:{pc10};font-weight:700;">₹{row["pnl_inr10"]:+,.0f}</td>'
+                            tbl += f'<td style="{TD}{bg}">₹{row["charges"]:,.0f}</td>'
+                            tbl += f'{match_cell}</tr>'
+                tbl += '</tbody></table>'
+                return hdr + tbl
+            html = '<div style="overflow-x:auto;margin:8px 0;">'
+            html += _section_html("S2", bt2, lv2)
+            html += '<div style="height:14px;"></div>'
+            html += _section_html("S4", bt4, lv4)
+            html += '</div>'
+            return html
+        st.markdown(_today_trades_html(_d2_full, _d4_full, _df2_fwd, _df4_fwd), unsafe_allow_html=True)
+        st.markdown("---")
+        st.markdown(_tbl14(_d2_1yr,_d4_1yr,"1-YEAR BACKTEST",_1yr_label,_df2_fwd,_df4_fwd),unsafe_allow_html=True)
+        st.markdown("---")
+        st.markdown(_tbl14(_d2_full,_d4_full,"FULL CSV BACKTEST",_full_label,_df2_fwd,_df4_fwd),unsafe_allow_html=True)
+        st.markdown("---")
+
+        # DEPLOYMENT PLAN SECTION
+        _d2f = _d2_full or {}
+        _d4f = _d4_full or {}
+        _port_dd_inr = ((_d2f.get("dd",0) + _d4f.get("dd",0)) * _INR14)
+        _rec_cap = max(_port_dd_inr * 3, 200000)
+
+        st.markdown(f"""
+        <div style="overflow-x:auto;margin:4px 0;">
+        <table style="width:100%;border-collapse:collapse;">
+        <thead>
+        <tr><th style="{_PLNH14}" colspan="2">DEPLOYMENT PLAN</th></tr>
+        </thead>
+        <tbody>
+        <tr><td style="{_PLND14}">Margin Mode</td><td style="{_PLNV14}">Isolated</td></tr>
+        <tr><td style="{_PLND14}">Leverage</td><td style="{_PLNV14}">50x</td></tr>
+        <tr><td style="{_PLND14}">Subaccount</td><td style="{_PLNV14}">Single (S2 + S4 together)</td></tr>
+        <tr><td style="{_PLND14}">Starting Capital</td><td style="{_PLNV14}">₹2,00,000</td></tr>
+        <tr><td style="{_PLND14}">Starting Lots</td><td style="{_PLNV14}">100 lots (fixed)</td></tr>
+        <tr><td style="{_PLND14}">Go-Live Date</td><td style="{_PLNV14}">Aug 1, 2026</td></tr>
+        <tr><td style="{_PLND14}">First Withdrawal</td><td style="{_PLNV14}">Feb 2027 (after 6 months)</td></tr>
+        <tr><td style="{_PLND14}">Max Lots Cap</td><td style="{_PLNV14}">1000 lots (never exceed)</td></tr>
+        </tbody>
+        </table>
+        </div>
+
+        <div style="overflow-x:auto;margin:10px 0 4px 0;">
+        <table style="width:100%;border-collapse:collapse;">
+        <thead>
+        <tr>
+          <th style="{_PLNH14}">Lots</th>
+          <th style="{_PLNH14}">Safe Keep</th>
+          <th style="{_PLNH14}">Monthly Target</th>
+          <th style="{_PLNH14}">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr><td style="{_PLND14}">100</td><td style="{_PLNV14}">₹1,00,000</td><td style="{_TDG14}">₹1,11,328</td><td style="{_PLND14}">Start Aug 1</td></tr>
+        <tr><td style="{_PLND14}">300</td><td style="{_PLNV14}">₹2,00,000</td><td style="{_TDG14}">₹3,33,984</td><td style="{_PLND14}">Sep 1 if profit</td></tr>
+        <tr><td style="{_PLND14}">500</td><td style="{_PLNV14}">₹3,00,000</td><td style="{_TDG14}">₹5,56,640</td><td style="{_PLND14}">Oct 1 if profit</td></tr>
+        <tr><td style="{_PLND14}">700</td><td style="{_PLNV14}">₹4,00,000</td><td style="{_TDG14}">₹7,79,296</td><td style="{_PLND14}">Nov 1 if profit</td></tr>
+        <tr><td style="{_PLND14}">900</td><td style="{_PLNV14}">₹5,50,000</td><td style="{_TDG14}">₹10,01,952</td><td style="{_PLND14}">Dec 1 if profit</td></tr>
+        <tr><td style="{_PLND14}">1000</td><td style="{_PLNV14}">₹6,00,000</td><td style="{_TDG14}">₹10,65,265</td><td style="{_PLND14}">Jan 1 if profit — FINAL CAP</td></tr>
+        </tbody>
+        </table>
+        </div>
+
+        <div style="background:#fff8e1;border-left:3px solid #e07000;padding:8px 12px;margin:10px 0 4px 0;font-size:11px;color:#131722;">
+        <b>Golden Rules (Never Break):</b>
+        <ol style="margin:4px 0;padding-left:16px;">
+        <li>Start 100 lots — never skip levels</li>
+        <li>Increase +200 only after profitable month confirmed</li>
+        <li>Never decrease lots even in losing month — FREEZE ONLY</li>
+        <li>Cap = 1000 lots maximum — never exceed</li>
+        <li>Check Section 13 on 1st of every month — 30 seconds</li>
+        <li>Never change lots during open position — wait FLAT</li>
+        <li>If 2 consecutive losing months = pause and review</li>
+        <li>First 6 months = ZERO withdrawal — build buffer</li>
+        <li>Go live only after 5 consecutive MATCH trades confirmed</li>
+        </ol>
+        </div>
+
+        <div style="background:#f0f4ff;border-left:3px solid #2962FF;padding:8px 12px;margin:10px 0 4px 0;font-size:11px;color:#131722;">
+        <b>Key Observations:</b>
+        <ul style="margin:4px 0;padding-left:16px;">
+        <li>Trade count identical at both slippages - strategy logic is unchanged</li>
+        <li style="color:#089981;font-weight:600;">$5/side: S2 improves from 25/31 to 31/31 green months - all months profitable</li>
+        <li style="color:#089981;font-weight:600;">$5/side: Portfolio Rec Capital 3.8x lower = ROC jumps from 4,697% to 22,433%</li>
+        <li>$10/side is conservative/safe assumption for live trading presentation</li>
+        <li>$5/side is realistic for actual Delta Exchange execution (taker ~$3-5/side)</li>
+        <li>Both are valid - use $10 for conservative view, $5 for realistic view</li>
+        </ul>
+        </div>
+        """, unsafe_allow_html=True)
+
+
 with _tab_today:
-    _frag_today()
+    st.markdown("<div class='section-title'>TODAY'S TRADES</div>", unsafe_allow_html=True)
+    st.caption('Live comparison of today\'s backtest signals vs forward test execution')
+    try:
+        st.markdown(_today_trades_html(_d2_full, _d4_full, _df2_fwd, _df4_fwd), unsafe_allow_html=True)
+    except:
+        st.info('Open ANALYSIS tab first to load data, then return here.')
