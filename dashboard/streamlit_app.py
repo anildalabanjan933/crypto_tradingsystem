@@ -633,6 +633,7 @@ _PLNH14= "padding:5px 8px;border:1px solid #C8D0DC;background:#2962FF;font-size:
 _PLND14= "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:left;"
 _PLNV14= "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;font-weight:700;text-align:center;"
 
+@st.cache_data(ttl=60)
 def _load14(csv_pattern, from_dt=None):
     try:
         files = sorted(_gl14.glob(csv_pattern), reverse=True)
@@ -758,6 +759,7 @@ def _load14(csv_pattern, from_dt=None):
     except Exception as _e14:
         return None
 
+@st.cache_data(ttl=60)
 def _load14_fwd(product_id, api_key, api_secret, base_url):
     import hmac as _hm,hashlib as _hs,time as _tm,requests as _rq,math as _mf,numpy as _npf
     try:
