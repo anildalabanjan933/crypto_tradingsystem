@@ -619,17 +619,21 @@ with col_status:
 
 st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
-# AUTO REFRESH - HTML META REFRESH (works even when tab is backgrounded)
 import datetime as _dt_refresh
 _last_refresh = (_dt_refresh.datetime.utcnow() + _dt_refresh.timedelta(hours=5, minutes=30)).strftime("%d-%b-%Y %I:%M %p")
-st.markdown(
-    f'''<meta http-equiv="refresh" content="60">
-    <div style="text-align:right;font-size:12px;color:#222;font-weight:700;margin:-8px 0 4px 0;">
-    Auto-refresh every 60s &nbsp;|&nbsp; Last updated: {_last_refresh} IST
-    &nbsp; <span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:700;">LIVE</span>
-    </div>''',
-    unsafe_allow_html=True
-)
+_col_ref1, _col_ref2 = st.columns([8,1])
+with _col_ref1:
+    st.markdown(
+        f'''<div style="text-align:right;font-size:12px;color:#222;font-weight:700;margin:-8px 0 4px 0;">
+        Last updated: {_last_refresh} IST
+        &nbsp; <span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:700;">LIVE</span>
+        </div>''',
+        unsafe_allow_html=True
+    )
+with _col_ref2:
+    if st.button("REFRESH", key="manual_refresh"):
+        st.cache_data.clear()
+        st.rerun()
 
 # MAIN NAVIGATION TABS
 
