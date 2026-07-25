@@ -770,10 +770,10 @@ def _load14_fwd(product_id, api_key, api_secret, base_url):
         if r.status_code!=200: return None
         fills=r.json().get("result",[])
         if not fills: return None
-        # Deduplicate fills by order_id - take weighted avg price per order
+        # Deduplicate fills by created_at timestamp - testnet returns multiple fills per order
         from collections import defaultdict as _dd
         _ord = _dd(list)
-        for _fx in fills: _ord[_fx.get("order_id","")].append(_fx)
+        for _fx in fills: _ord[_fx.get("created_at","")[:16]].append(_fx)
         _deduped = []
         for _oid, _flist in _ord.items():
             _tot_sz = sum(float(_fx.get("size",0)) for _fx in _flist)
