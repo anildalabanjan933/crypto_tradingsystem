@@ -145,7 +145,9 @@ st.markdown("""
 
 /* BASE - pure white, light, fast */
 .stApp { background-color: #FFFFFF; }
-.block-container { padding: 0.4rem 1rem 0.4rem 1rem !important; max-width: 100% !important; }
+.block-container { padding: 0rem 1rem 0.4rem 1rem !important; max-width: 100% !important; }
+.stApp > header { height: 0rem !important; }
+#root > div:first-child { padding-top: 0rem !important; }
 section[data-testid="stSidebar"] { display: none; }
 header[data-testid="stHeader"] { background: transparent !important; }
 
@@ -617,23 +619,17 @@ with col_status:
         unsafe_allow_html=True
     )
 
-st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
+st.markdown('<hr style="margin:2px 0 4px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
 import datetime as _dt_refresh
 _last_refresh = (_dt_refresh.datetime.utcnow() + _dt_refresh.timedelta(hours=5, minutes=30)).strftime("%d-%b-%Y %I:%M %p")
-_col_ref1, _col_ref2 = st.columns([8,1])
-with _col_ref1:
-    st.markdown(
-        f'''<div style="text-align:right;font-size:12px;color:#222;font-weight:700;margin:-8px 0 4px 0;">
-        Last updated: {_last_refresh} IST
-        &nbsp; <span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:700;">LIVE</span>
-        </div>''',
-        unsafe_allow_html=True
-    )
-with _col_ref2:
-    if st.button("REFRESH", key="manual_refresh"):
-        st.cache_data.clear()
-        st.rerun()
+st.markdown(
+    f'''<div style="text-align:right;font-size:11px;color:#444;font-weight:600;margin:-4px 0 2px 0;">
+    Auto-refresh every 60s &nbsp;|&nbsp; Last updated: {_last_refresh} IST
+    &nbsp; <span style="background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:700;">LIVE</span>
+    </div>''',
+    unsafe_allow_html=True
+)
 
 # MAIN NAVIGATION TABS
 
