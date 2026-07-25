@@ -601,6 +601,420 @@ with col_status:
 st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
 # MAIN NAVIGATION TABS
+
+# DATA LOADING - before tabs
+_INR14 = 84.0
+_TH14  = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;"
+_TD14  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;"
+_TDR14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:center;"
+_TDG14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
+_TDO14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#e07000;font-weight:700;text-align:center;"
+_TDB14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
+_TDR14B= "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#F23645;font-weight:700;text-align:center;"
+_THGR14= "padding:5px 8px;border:1px solid #C8D0DC;background:#089981;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+_THOG14= "padding:5px 8px;border:1px solid #C8D0DC;background:#e07000;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+_SUB14 = "padding:4px 8px;border:1px solid #C8D0DC;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
+_DASH14= "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#aaa;text-align:center;"
+_PLNH14= "padding:5px 8px;border:1px solid #C8D0DC;background:#2962FF;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+_PLND14= "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:left;"
+_PLNV14= "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;font-weight:700;text-align:center;"
+
+def _load14(csv_pattern, from_dt=None):
+    try:
+        files = sorted(_gl14.glob(csv_pattern), reverse=True)
+        if not files: return None
+        df = _pd14.read_csv(files[0])
+        if 'entry_datetime' not in df.columns: return None
+        df['entry_datetime'] = _pd14.to_datetime(df['entry_datetime'])
+        if from_dt:
+            df = df[df['entry_datetime'] >= _pd14.to_datetime(from_dt)]
+        if df.empty: return None
+        now14 = _dt14.datetime.utcnow()
+        today_s  = now14.replace(hour=0,minute=0,second=0,microsecond=0)
+        month_s  = now14.replace(day=1,hour=0,minute=0,second=0,microsecond=0)
+        tot  = len(df)
+        gross= df['gross_pnl'].sum() if 'gross_pnl' in df.columns else 0
+        net  = df['net_pnl'].sum() if 'net_pnl' in df.columns else 0
+        net_inr = df['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else net*_INR14
+        tax  = df['tax_usd'].sum() if 'tax_usd' in df.columns else 0
+        fees = df['taker_fees_usd'].sum() if 'taker_fees_usd' in df.columns else 0
+        slip = df['slippage_usd'].sum() if 'slippage_usd' in df.columns else 0
+        fund = df['funding_usd'].sum() if 'funding_usd' in df.columns else 0
+        total_charges = tax + fees + slip + fund
+        margin_avg = df['margin_required'].mean() if 'margin_required' in df.columns else 0
+        # Green months
+        if 'exit_datetime' in df.columns:
+            df['exit_dt'] = _pd14.to_datetime(df['exit_datetime'])
+            df['ym'] = df['exit_dt'].dt.to_period('M')
+            monthly = df.groupby('ym')['net_pnl'].sum()
+            green_m = (monthly > 0).sum()
+            total_m = len(monthly)
+            # Max DD
+            pls = df['net_pnl'].tolist()
+            cum,pk,dd = 0,0,0
+            for v in pls:
+                cum+=v
+                if cum>pk: pk=cum
+                drop=pk-cum
+                if drop>dd: dd=drop
+            # Today + Month PnL
+            pnl_today = df[df['exit_dt'] >= _pd14.Timestamp(today_s)]['net_pnl'].sum()
+            pnl_month = df[df['exit_dt'] >= _pd14.Timestamp(month_s)]['net_pnl'].sum()
+            # This month max DD
+            df_mo = df[df['exit_dt'] >= _pd14.Timestamp(month_s)]
+            pls_mo = df_mo['net_pnl'].tolist()
+            cum_mo,pk_mo,dd_mo = 0,0,0
+            for v in pls_mo:
+                cum_mo+=v
+                if cum_mo>pk_mo: pk_mo=cum_mo
+                drop_mo=pk_mo-cum_mo
+                if drop_mo>dd_mo: dd_mo=drop_mo
+            # $10/side this month max DD
+            mo_cnt_tmp=len(df_mo)
+            pls_mo10=[v-10 for v in pls_mo]
+            cum_mo10,pk_mo10,dd_mo10=0,0,0
+            for v in pls_mo10:
+                cum_mo10+=v
+                if cum_mo10>pk_mo10: pk_mo10=cum_mo10
+                drop_mo10=pk_mo10-cum_mo10
+                if drop_mo10>dd_mo10: dd_mo10=drop_mo10
+        else:
+            green_m=total_m=0; dd=0; pnl_today=pnl_month=0; dd_mo=0; dd_mo10=0
+        rec_cap = dd * 3 * _INR14
+        roc = (net_inr / rec_cap * 100) if rec_cap > 0 else 0
+        months = max(total_m, 1)
+        roc_monthly = roc / months
+        # Today + month trade count
+        today_count = len(df[df['exit_dt'] >= _pd14.Timestamp(today_s)]) if 'exit_dt' in df.columns else 0
+        month_count = len(df[df['exit_dt'] >= _pd14.Timestamp(month_s)]) if 'exit_dt' in df.columns else 0
+        # extra metrics
+        import math as _m14x, numpy as _np14x
+        pc='net_pnl'
+        wins_s=df[df[pc]>0][pc] if pc in df.columns else __import__('pandas').Series(dtype=float)
+        loss_s=df[df[pc]<0][pc] if pc in df.columns else __import__('pandas').Series(dtype=float)
+        win_rate=(len(wins_s)/tot*100) if tot>0 else 0
+        max_profit=wins_s.max()*_INR14 if len(wins_s)>0 else 0
+        max_loss=loss_s.min()*_INR14 if len(loss_s)>0 else 0
+        avg_win=wins_s.mean() if len(wins_s)>0 else 0
+        avg_loss=abs(loss_s.mean()) if len(loss_s)>0 else 0
+        risk_reward=avg_win/avg_loss if avg_loss>0 else 0
+        gw_u=wins_s.sum() if len(wins_s)>0 else 0
+        gl_u=abs(loss_s.sum()) if len(loss_s)>0 else 0
+        profit_factor=gw_u/gl_u if gl_u>0 else 0
+        arr=_np14x.array(df[pc].tolist()) if pc in df.columns else _np14x.array([])
+        sharpe=(arr.mean()/arr.std()*_m14x.sqrt(252)) if len(arr)>1 and arr.std()>0 else 0
+        # max dd period
+        pls2=df[pc].tolist() if pc in df.columns else []
+        cum2,pk2,dd2,csi,dsi,dei=0,0,0,0,0,0
+        for i,v in enumerate(pls2):
+            cum2+=v
+            if cum2>pk2: pk2=cum2; csi=i
+            drop=pk2-cum2
+            if drop>dd2: dd2=drop; dsi=csi; dei=i
+        try:
+            t0=df['exit_dt'].iloc[dsi]; t1=df['exit_dt'].iloc[dei]
+            max_dd_days=max(1,(t1-t0).days) if dei>dsi else 0
+        except: max_dd_days=0
+        max_dd_period_loss=dd2*_INR14
+        # win streak days
+        try:
+            df2s=df.sort_values('exit_dt').copy()
+            df2s['_w']=df2s[pc]>0; df2s['_d']=df2s['exit_dt'].dt.date
+            dw=df2s.groupby('_d')['_w'].all()
+            mws=cws=0
+            for w in dw:
+                if w: cws+=1; mws=max(mws,cws)
+                else: cws=0
+            max_win_streak_days=mws
+        except: max_win_streak_days=0
+        return {
+            "tot":tot,"gross":gross,"net":net,"net_inr":net_inr,
+            "tax":tax,"fees":fees,"slip":slip,"fund":fund,"total_charges":total_charges,
+            "green_m":green_m,"total_m":total_m,"dd":dd,"rec_cap":rec_cap,
+            "roc":roc,"roc_monthly":roc_monthly,"margin_avg":margin_avg,
+            "pnl_today":pnl_today,"pnl_month":pnl_month,"dd_month":dd_mo,"dd_month10":dd_mo10,
+            "today_count":today_count,"month_count":month_count,
+            "gross_win":df[df['gross_pnl']>0]['gross_pnl'].sum() if 'gross_pnl' in df.columns else 0,
+            "win_rate":win_rate,"max_profit":max_profit,"max_loss":max_loss,
+            "risk_reward":risk_reward,"profit_factor":profit_factor,"sharpe":sharpe,
+            "max_dd_days":max_dd_days,"max_dd_period_loss":max_dd_period_loss,
+            "max_win_streak_days":max_win_streak_days,
+            "raw_df":df
+        }
+    except Exception as _e14:
+        return None
+
+def _load14_fwd(product_id, api_key, api_secret, base_url):
+    import hmac as _hm,hashlib as _hs,time as _tm,requests as _rq,math as _mf,numpy as _npf
+    try:
+        if not api_key or not api_secret: return None
+        method="GET"; path="/v2/fills"; qs=f"?product_id={product_id}&page_size=500"
+        ts=str(int(_tm.time()))
+        sig=_hm.new(api_secret.encode(),(method+ts+path+qs).encode(),_hs.sha256).hexdigest()
+        hdrs={"api-key":api_key,"timestamp":ts,"signature":sig,"Content-Type":"application/json"}
+        r=_rq.get(base_url+path+qs,headers=hdrs,timeout=10)
+        if r.status_code!=200: return None
+        fills=r.json().get("result",[])
+        if not fills: return None
+        all_s=sorted(fills,key=lambda x:x.get("created_at",""))
+        pairs=[]; open_pos=None
+        for f in all_s:
+            side=f.get("side",""); price=float(f.get("fill_price",0))
+            size=float(f.get("size",0)); ts_f=f.get("created_at","")
+            if open_pos is None:
+                open_pos={"side":side,"price":price,"size":size,"ts":ts_f}
+            else:
+                if side!=open_pos["side"]:
+                    ep=open_pos["price"]; xp=price
+                    pnl_usd=(xp-ep)*open_pos["size"]*0.001 if open_pos["side"]=="buy" else (ep-xp)*open_pos["size"]*0.001
+                    comm=float(f.get("commission",0))*2
+                    pairs.append({"pnl":pnl_usd-comm,"exit_ts":ts_f,"comm":comm,"entry_ts":open_pos["ts"],"entry_price":open_pos["price"],"exit_price":price,"side":open_pos["side"],"size":open_pos["size"]})
+                    open_pos=None
+                else:
+                    open_pos={"side":side,"price":price,"size":size,"ts":ts_f}
+        if not pairs: return None
+        tot=len(pairs); pnls=[p["pnl"] for p in pairs]
+        wins=[v for v in pnls if v>0]; losses=[v for v in pnls if v<0]
+        win_rate=len(wins)/tot*100 if tot>0 else 0
+        net_usd=sum(pnls); net_inr=net_usd*_INR14
+        gw=sum(wins) if wins else 0; gl=abs(sum(losses)) if losses else 0
+        profit_factor=gw/gl if gl>0 else 0
+        avg_win=sum(wins)/len(wins) if wins else 0
+        avg_loss=abs(sum(losses)/len(losses)) if losses else 0
+        risk_reward=avg_win/avg_loss if avg_loss>0 else 0
+        max_profit=max(wins)*_INR14 if wins else 0
+        max_loss=min(losses)*_INR14 if losses else 0
+        arr=_npf.array(pnls)
+        sharpe=(arr.mean()/arr.std()*_mf.sqrt(252)) if len(arr)>1 and arr.std()>0 else 0
+        cum,pk,dd=0,0,0
+        for v in pnls:
+            cum+=v
+            if cum>pk: pk=cum
+            drop=pk-cum
+            if drop>dd: dd=drop
+        mp={}
+        for p in pairs:
+            mo=p["exit_ts"][:7]; mp[mo]=mp.get(mo,0)+p["pnl"]
+        green_m=sum(1 for v in mp.values() if v>0); total_m=len(mp)
+        dw={}
+        for p in pairs:
+            d=p["exit_ts"][:10]; dw[d]=dw.get(d,True) and p["pnl"]>0
+        mws=cws=0
+        for k in sorted(dw):
+            if dw[k]: cws+=1; mws=max(mws,cws)
+            else: cws=0
+        now14f=_dt14.datetime.utcnow()
+        td=now14f.replace(hour=0,minute=0,second=0,microsecond=0).strftime("%Y-%m-%d")
+        ms=now14f.replace(day=1,hour=0,minute=0,second=0,microsecond=0).strftime("%Y-%m-%d")
+        pnl_today=sum(p["pnl"] for p in pairs if p["exit_ts"][:10]>=td)*_INR14
+        pnl_month=sum(p["pnl"] for p in pairs if p["exit_ts"][:10]>=ms)*_INR14
+        today_count=sum(1 for p in pairs if p["exit_ts"][:10]>=td)
+        month_count=sum(1 for p in pairs if p["exit_ts"][:10]>=ms)
+        rec_cap=dd*3*_INR14; roc=(net_inr/rec_cap*100) if rec_cap>0 else 0
+        roc_monthly=roc/max(total_m,1)
+        return {
+            "tot":tot,"net_inr":net_inr,"green_m":green_m,"total_m":total_m,
+            "win_rate":win_rate,"max_profit":max_profit,"max_loss":max_loss,
+            "risk_reward":risk_reward,"profit_factor":profit_factor,"sharpe":sharpe,
+            "dd":dd,"max_dd_period_loss":dd*_INR14,"max_dd_days":0,
+            "max_win_streak_days":mws,"rec_cap":rec_cap,"roc":roc,
+            "roc_monthly":roc_monthly,"pnl_today":pnl_today,"pnl_month":pnl_month,
+            "today_count":today_count,"month_count":month_count,
+            "gross_win":gw*_INR14,"total_charges":sum(p["comm"] for p in pairs),
+            "gross":net_usd,"net":net_usd,"margin_avg":0,
+            "raw_pairs":pairs
+        }
+    except Exception as _ef14:
+        return None
+
+def _tbl14(d2, d4, label, period_str, df2=None, df4=None):
+    if not d2 and not d4:
+        return f"<p style='color:#aaa;font-size:11px;'>No data available for {label}</p>"
+    def _g(d, k): return d[k] if d and k in d else 0
+    def _inr(v): return f"₹{v*_INR14:,.0f}"
+    def _pct(v): return f"{v:,.1f}%"
+    def _c(v): return _TDG14 if v>=0 else _TDR14B
+
+    # Today trade count
+    s2_tot=_g(d2,"tot"); s4_tot=_g(d4,"tot"); port_tot=s2_tot+s4_tot
+    s2_tod_cnt=_g(d2,"today_count"); s4_tod_cnt=_g(d4,"today_count"); port_tod_cnt=s2_tod_cnt+s4_tod_cnt
+
+    # $5/side (CSV as-is, slippage $10/trade already deducted)
+    s2_net5=_g(d2,"net_inr"); s4_net5=_g(d4,"net_inr"); port_net5=s2_net5+s4_net5
+    s2_gross=_g(d2,"gross")*_INR14; s4_gross=_g(d4,"gross")*_INR14; port_gross=s2_gross+s4_gross
+    s2_chg5=_g(d2,"total_charges")*_INR14; s4_chg5=_g(d4,"total_charges")*_INR14; port_chg5=s2_chg5+s4_chg5
+    s2_dd=_g(d2,"dd")*_INR14; s4_dd=_g(d4,"dd")*_INR14; port_dd=max(s2_dd,s4_dd)
+    s2_rc5=_g(d2,"rec_cap"); s4_rc5=_g(d4,"rec_cap"); port_rc5=s2_rc5+s4_rc5
+    s2_roc5=_g(d2,"roc"); s4_roc5=_g(d4,"roc")
+    port_roc5=(port_net5/port_rc5*100) if port_rc5>0 else 0
+    s2_rocm5=_g(d2,"roc_monthly"); s4_rocm5=_g(d4,"roc_monthly")
+    port_rocm5=port_roc5/max(_g(d2,"total_m"),1)
+
+    # $10/side (extra $5/side = $10/trade extra deducted)
+    tot2=_g(d2,"tot"); tot4=_g(d4,"tot")
+    s2_net10=s2_net5-tot2*10*_INR14; s4_net10=s4_net5-tot4*10*_INR14; port_net10=s2_net10+s4_net10
+    s2_chg10=s2_chg5+tot2*10*_INR14; s4_chg10=s4_chg5+tot4*10*_INR14; port_chg10=s2_chg10+s4_chg10
+    s2_rc10=s2_rc5; s4_rc10=s4_rc5; port_rc10=port_rc5
+    s2_roc10=(s2_net10/s2_rc10*100) if s2_rc10>0 else 0
+    s4_roc10=(s4_net10/s4_rc10*100) if s4_rc10>0 else 0
+    port_roc10=(port_net10/port_rc10*100) if port_rc10>0 else 0
+    s2_rocm10=s2_roc10/max(_g(d2,"total_m"),1)
+    s4_rocm10=s4_roc10/max(_g(d4,"total_m"),1)
+    port_rocm10=port_roc10/max(_g(d2,"total_m"),1)
+
+    s2_gm=_g(d2,"green_m"); s2_tm=_g(d2,"total_m")
+    s4_gm=_g(d4,"green_m"); s4_tm=_g(d4,"total_m")
+    s2_td=_g(d2,"pnl_today")*_INR14; s4_td=_g(d4,"pnl_today")*_INR14
+    s2_tod_cnt=int(_g(d2,"today_count")); s4_tod_cnt=int(_g(d4,"today_count")); port_tod_cnt=s2_tod_cnt+s4_tod_cnt
+    s2_mo=_g(d2,"pnl_month")*_INR14; s4_mo=_g(d4,"pnl_month")*_INR14
+    s2_mo_cnt=int(_g(d2,"month_count")); s4_mo_cnt=int(_g(d4,"month_count")); port_mo_cnt=s2_mo_cnt+s4_mo_cnt
+    s2_dd_mo=_g(d2,"dd_month")*_INR14; s4_dd_mo=_g(d4,"dd_month")*_INR14; port_dd_mo=max(s2_dd_mo,s4_dd_mo)
+    s2_dd_mo10=_g(d2,"dd_month10")*_INR14; s4_dd_mo10=_g(d4,"dd_month10")*_INR14; port_dd_mo10=max(s2_dd_mo10,s4_dd_mo10)
+    s2_td10=s2_td-s2_tod_cnt*10*_INR14; s4_td10=s4_td-s4_tod_cnt*10*_INR14; port_td10=s2_td10+s4_td10
+    s2_mo10=s2_mo-s2_mo_cnt*10*_INR14; s4_mo10=s4_mo-s4_mo_cnt*10*_INR14; port_mo10=s2_mo10+s4_mo10
+    # ITR Tax 30% on gross wins (Indian Income Tax - pay to govt via ITR filing)
+    s2_gross_win=_g(d2,"gross_win")*_INR14; s4_gross_win=_g(d4,"gross_win")*_INR14; port_gross_win=s2_gross_win+s4_gross_win
+    s2_itr5=s2_gross_win*0.30; s4_itr5=s4_gross_win*0.30; port_itr5=port_gross_win*0.30
+    s2_net_itr5=s2_net5-s2_itr5; s4_net_itr5=s4_net5-s4_itr5; port_net_itr5=port_net5-port_itr5
+    s2_net_itr10=s2_net10-s2_itr5; s4_net_itr10=s4_net10-s4_itr5; port_net_itr10=port_net10-port_itr5
+    s2_mg=_g(d2,"margin_avg")*_INR14; s4_mg=_g(d4,"margin_avg")*_INR14
+    _THFW14="padding:5px 8px;border:1px solid #C8D0DC;background:#089981;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+    _na14='<span style="color:#aaa">N/A</span>'
+    def _fna(v,fmt="inr"):
+        if not v: return _na14
+        if fmt=="inr": return f"₹{v:,.0f}"
+        if fmt=="pct": return f"{v:,.1f}%"
+        if fmt=="num": return f"{v:,.2f}"
+        if fmt=="int": return f"{int(v):,}"
+        return str(v)
+    def _cf(v): return _TDG14 if v>=0 else _TDR14B
+    s2_wr=_g(d2,"win_rate"); s4_wr=_g(d4,"win_rate"); port_wr=(s2_wr*tot2+s4_wr*tot4)/(tot2+tot4) if (tot2+tot4)>0 else 0
+    s2_mp=_g(d2,"max_profit"); s4_mp=_g(d4,"max_profit"); port_mp=max(s2_mp,s4_mp)
+    s2_ml=_g(d2,"max_loss"); s4_ml=_g(d4,"max_loss"); port_ml=min(s2_ml,s4_ml) if s2_ml and s4_ml else 0
+    s2_rr=_g(d2,"risk_reward"); s4_rr=_g(d4,"risk_reward"); port_rr=(s2_rr+s4_rr)/2 if s2_rr and s4_rr else max(s2_rr,s4_rr)
+    s2_pf=_g(d2,"profit_factor"); s4_pf=_g(d4,"profit_factor"); port_pf=(s2_pf+s4_pf)/2 if s2_pf and s4_pf else max(s2_pf,s4_pf)
+    s2_sh=_g(d2,"sharpe"); s4_sh=_g(d4,"sharpe"); port_sh=(s2_sh+s4_sh)/2 if s2_sh and s4_sh else max(s2_sh,s4_sh)
+    s2_ddd=_g(d2,"max_dd_days"); s4_ddd=_g(d4,"max_dd_days"); port_ddd=max(s2_ddd,s4_ddd)
+    s2_ddl=_g(d2,"max_dd_period_loss"); s4_ddl=_g(d4,"max_dd_period_loss"); port_ddl=max(s2_ddl,s4_ddl)
+    s2_ws=_g(d2,"max_win_streak_days"); s4_ws=_g(d4,"max_win_streak_days"); port_ws=max(s2_ws,s4_ws)
+    fw2_net=_g(df2,"net_inr"); fw4_net=_g(df4,"net_inr"); fwp_net=fw2_net+fw4_net
+    fw2_tot=_g(df2,"tot"); fw4_tot=_g(df4,"tot"); fwp_tot=fw2_tot+fw4_tot
+    fw2_gm=_g(df2,"green_m"); fw4_gm=_g(df4,"green_m"); fw2_tm=_g(df2,"total_m"); fw4_tm=_g(df4,"total_m")
+    fw2_wr=_g(df2,"win_rate"); fw4_wr=_g(df4,"win_rate"); fwp_wr=(fw2_wr*fw2_tot+fw4_wr*fw4_tot)/(fw2_tot+fw4_tot) if (fw2_tot+fw4_tot)>0 else 0
+    fw2_mp=_g(df2,"max_profit"); fw4_mp=_g(df4,"max_profit"); fwp_mp=max(fw2_mp,fw4_mp)
+    fw2_ml=_g(df2,"max_loss"); fw4_ml=_g(df4,"max_loss"); fwp_ml=min(fw2_ml,fw4_ml) if fw2_ml and fw4_ml else 0
+    fw2_rr=_g(df2,"risk_reward"); fw4_rr=_g(df4,"risk_reward"); fwp_rr=(fw2_rr+fw4_rr)/2 if fw2_rr and fw4_rr else max(fw2_rr,fw4_rr)
+    fw2_pf=_g(df2,"profit_factor"); fw4_pf=_g(df4,"profit_factor"); fwp_pf=(fw2_pf+fw4_pf)/2 if fw2_pf and fw4_pf else max(fw2_pf,fw4_pf)
+    fw2_sh=_g(df2,"sharpe"); fw4_sh=_g(df4,"sharpe"); fwp_sh=(fw2_sh+fw4_sh)/2 if fw2_sh and fw4_sh else max(fw2_sh,fw4_sh)
+    fw2_dd=_g(df2,"dd")*_INR14; fw4_dd=_g(df4,"dd")*_INR14; fwp_dd=max(fw2_dd,fw4_dd)
+    fw2_ddl=_g(df2,"max_dd_period_loss"); fw4_ddl=_g(df4,"max_dd_period_loss"); fwp_ddl=max(fw2_ddl,fw4_ddl)
+    fw2_ddd=_g(df2,"max_dd_days"); fw4_ddd=_g(df4,"max_dd_days"); fwp_ddd=max(fw2_ddd,fw4_ddd)
+    fw2_ws=_g(df2,"max_win_streak_days"); fw4_ws=_g(df4,"max_win_streak_days"); fwp_ws=max(fw2_ws,fw4_ws)
+    fw2_rc=_g(df2,"rec_cap"); fw4_rc=_g(df4,"rec_cap"); fwp_rc=fw2_rc+fw4_rc
+    fw2_roc=_g(df2,"roc"); fw4_roc=_g(df4,"roc"); fwp_roc=(fwp_net/fwp_rc*100) if fwp_rc>0 else 0
+    fw2_rocm=_g(df2,"roc_monthly"); fw4_rocm=_g(df4,"roc_monthly"); fwp_rocm=fwp_roc/max(max(fw2_tm,fw4_tm),1)
+    fw2_td=_g(df2,"pnl_today"); fw4_td=_g(df4,"pnl_today")
+    fw2_mo=_g(df2,"pnl_month"); fw4_mo=_g(df4,"pnl_month")
+    fw2_tc=int(_g(df2,"today_count")); fw4_tc=int(_g(df4,"today_count")); fwp_tc=fw2_tc+fw4_tc
+    fw2_mc=int(_g(df2,"month_count")); fw4_mc=int(_g(df4,"month_count")); fwp_mc=fw2_mc+fw4_mc
+    fw2_gw=_g(df2,"gross_win"); fw4_gw=_g(df4,"gross_win"); fwp_gw=fw2_gw+fw4_gw
+    fw2_itr=fw2_gw*0.30; fw4_itr=fw4_gw*0.30; fwp_itr=fwp_gw*0.30
+    fw2_nitr=fw2_net-fw2_itr; fw4_nitr=fw4_net-fw4_itr; fwp_nitr=fwp_net-fwp_itr
+
+    def _row9(lbl,v5s2,v5s4,v5p,v10s2,v10s4,v10p,vfs2="",vfs4="",vfp="",c5s2=None,c5s4=None,c5p=None,c10s2=None,c10s4=None,c10p=None,cfs2=None,cfs4=None,cfp=None):
+        c5s2=c5s2 or _TDR14; c5s4=c5s4 or _TDR14; c5p=c5p or _TDR14
+        c10s2=c10s2 or _TDR14; c10s4=c10s4 or _TDR14; c10p=c10p or _TDR14
+        cfs2=cfs2 or _TDB14; cfs4=cfs4 or _TDB14; cfp=cfp or _TDB14
+        return (f"<tr><td style='{_TD14}'>{lbl}</td>"
+                f"<td style='{c5s2}'>{v5s2}</td><td style='{c5s4}'>{v5s4}</td><td style='{c5p}'>{v5p}</td>"
+                f"<td style='{c10s2}'>{v10s2}</td><td style='{c10s4}'>{v10s4}</td><td style='{c10p}'>{v10p}</td>"
+                f"<td style='{cfs2}'>{vfs2}</td><td style='{cfs4}'>{vfs4}</td><td style='{cfp}'>{vfp}</td></tr>")
+
+    return f"""
+    <p style="font-size:11px;color:#555;margin:2px 0 6px 0;"><b>{label}</b> &nbsp;|&nbsp; {period_str} &nbsp;|&nbsp; BTCUSD Perpetual &nbsp;|&nbsp; 100 lots/trade &nbsp;|&nbsp; Dynamic update every page load</p>
+    <div style="overflow-x:auto;margin:4px 0;">
+    <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
+    <colgroup>
+      <col style="width:16%">
+      <col style="width:9%"><col style="width:9%"><col style="width:9%">
+      <col style="width:9%"><col style="width:9%"><col style="width:9%">
+      <col style="width:9%"><col style="width:9%"><col style="width:9%">
+    </colgroup>
+    <thead>
+    <tr>
+      <th style="{_TH14}" rowspan="2">Metric</th>
+      <th style="{_THGR14}" colspan="3">$5/side Realistic | 100 lots</th>
+      <th style="{_THOG14}" colspan="3">$10/side Conservative | 100 lots</th>
+      <th style="{_THFW14}" colspan="3">Forward Test (Live)</th>
+    </tr>
+    <tr>
+      <th style="{_THGR14}">S2</th><th style="{_THGR14}">S4</th><th style="{_THGR14}">Portfolio</th>
+      <th style="{_THOG14}">S2</th><th style="{_THOG14}">S4</th><th style="{_THOG14}">Portfolio</th>
+      <th style="{_THFW14}">S2</th><th style="{_THFW14}">S4</th><th style="{_THFW14}">Portfolio</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr><td colspan="10" style="{_SUB14}">DYNAMIC PnL (SYNCED WITH SECTION 13)</td></tr>
+    {_row9("Today PnL",f"₹{s2_td:,.0f}",f"₹{s4_td:,.0f}",f"₹{s2_td+s4_td:,.0f}",f"₹{s2_td10:,.0f}",f"₹{s4_td10:,.0f}",f"₹{port_td10:,.0f}",_fna(fw2_td),_fna(fw4_td),_fna(fw2_td+fw4_td),_c(s2_td),_c(s4_td),_c(s2_td+s4_td),_c(s2_td10),_c(s4_td10),_c(port_td10),_cf(fw2_td),_cf(fw4_td),_cf(fw2_td+fw4_td))}
+    {_row9("Today Trades",f"{s2_tod_cnt:,}",f"{s4_tod_cnt:,}",f"{port_tod_cnt:,}",f"{s2_tod_cnt:,}",f"{s4_tod_cnt:,}",f"{port_tod_cnt:,}",_fna(fw2_tc,"int"),_fna(fw4_tc,"int"),_fna(fwp_tc,"int"),_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDB14,_TDB14,_TDB14)}
+    {_row9("This Month PnL",f"₹{s2_mo:,.0f}",f"₹{s4_mo:,.0f}",f"₹{s2_mo+s4_mo:,.0f}",f"₹{s2_mo10:,.0f}",f"₹{s4_mo10:,.0f}",f"₹{port_mo10:,.0f}",_fna(fw2_mo),_fna(fw4_mo),_fna(fw2_mo+fw4_mo),_c(s2_mo),_c(s4_mo),_c(s2_mo+s4_mo),_c(s2_mo10),_c(s4_mo10),_c(port_mo10),_cf(fw2_mo),_cf(fw4_mo),_cf(fw2_mo+fw4_mo))}
+    {_row9("This Month Trades",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",_fna(fw2_mc,"int"),_fna(fw4_mc,"int"),_fna(fwp_mc,"int"),_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDB14,_TDB14,_TDB14)}
+    {_row9("This Month Max DD",f"₹{s2_dd_mo:,.0f}",f"₹{s4_dd_mo:,.0f}",f"₹{port_dd_mo:,.0f}",f"₹{s2_dd_mo10:,.0f}",f"₹{s4_dd_mo10:,.0f}",f"₹{port_dd_mo10:,.0f}",_na14,_na14,_na14,_TDR14B if s2_dd_mo>0 else _TDB14,_TDR14B if s4_dd_mo>0 else _TDB14,_TDR14B if port_dd_mo>0 else _TDB14,_TDR14B if s2_dd_mo10>0 else _TDB14,_TDR14B if s4_dd_mo10>0 else _TDB14,_TDR14B if port_dd_mo10>0 else _TDB14,_na14,_na14,_na14)}
+    <tr><td colspan="10" style="{_SUB14}">TRADE COUNT</td></tr>
+    {_row9("Total Trades",f"{tot2:,}",f"{tot4:,}",f"{tot2+tot4:,}",f"{tot2:,}",f"{tot4:,}",f"{tot2+tot4:,}",_fna(fw2_tot,"int"),_fna(fw4_tot,"int"),_fna(fwp_tot,"int"))}
+    <tr><td colspan="10" style="{_SUB14}">GREEN MONTHS</td></tr>
+    {_row9("Green Months",f"{s2_gm}/{s2_tm}",f"{s4_gm}/{s4_tm}",f"{min(s2_gm,s4_gm)}/{s2_tm}",f"{s2_gm}/{s2_tm}",f"{s4_gm}/{s4_tm}",f"{min(s2_gm,s4_gm)}/{s2_tm}",_fna(fw2_gm,"int") if fw2_tm else _na14,_fna(fw4_gm,"int") if fw4_tm else _na14,_na14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDB14,_TDB14,_TDB14)}
+    <tr><td colspan="10" style="{_SUB14}">PERFORMANCE METRICS</td></tr>
+    {_row9("Win Rate %",_pct(s2_wr),_pct(s4_wr),_pct(port_wr),_pct(s2_wr),_pct(s4_wr),_pct(port_wr),_fna(fw2_wr,"pct"),_fna(fw4_wr,"pct"),_fna(fwp_wr,"pct"),_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDB14,_TDB14,_TDB14)}
+    {_row9("Max Profit Trade",f"₹{s2_mp:,.0f}",f"₹{s4_mp:,.0f}",f"₹{port_mp:,.0f}",f"₹{s2_mp:,.0f}",f"₹{s4_mp:,.0f}",f"₹{port_mp:,.0f}",_fna(fw2_mp),_fna(fw4_mp),_fna(fwp_mp),_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDB14,_TDB14,_TDB14)}
+    {_row9("Max Loss Trade",f"₹{s2_ml:,.0f}",f"₹{s4_ml:,.0f}",f"₹{port_ml:,.0f}",f"₹{s2_ml:,.0f}",f"₹{s4_ml:,.0f}",f"₹{port_ml:,.0f}",_fna(fw2_ml),_fna(fw4_ml),_fna(fwp_ml),_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B)}
+    {_row9("Risk:Reward",f"{s2_rr:,.2f}",f"{s4_rr:,.2f}",f"{port_rr:,.2f}",f"{s2_rr:,.2f}",f"{s4_rr:,.2f}",f"{port_rr:,.2f}",_fna(fw2_rr,"num"),_fna(fw4_rr,"num"),_fna(fwp_rr,"num"),_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDB14,_TDB14,_TDB14)}
+    {_row9("Profit Factor",f"{s2_pf:,.2f}",f"{s4_pf:,.2f}",f"{port_pf:,.2f}",f"{s2_pf:,.2f}",f"{s4_pf:,.2f}",f"{port_pf:,.2f}",_fna(fw2_pf,"num"),_fna(fw4_pf,"num"),_fna(fwp_pf,"num"),_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDB14,_TDB14,_TDB14)}
+    {_row9("Sharpe Ratio",f"{s2_sh:,.2f}",f"{s4_sh:,.2f}",f"{port_sh:,.2f}",f"{s2_sh:,.2f}",f"{s4_sh:,.2f}",f"{port_sh:,.2f}",_fna(fw2_sh,"num"),_fna(fw4_sh,"num"),_fna(fwp_sh,"num"),_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDB14,_TDB14,_TDB14)}
+    <tr><td colspan="10" style="{_SUB14}">PnL BREAKDOWN</td></tr>
+    {_row9("Gross PnL",_inr(s2_gross/_INR14),_inr(s4_gross/_INR14),_inr(port_gross/_INR14),_inr(s2_gross/_INR14),_inr(s4_gross/_INR14),_inr(port_gross/_INR14),_na14,_na14,_na14,_c(s2_gross),_c(s4_gross),_c(port_gross),_c(s2_gross),_c(s4_gross),_c(port_gross))}
+    {_row9("Tax + All Charges",f"-₹{s2_chg5:,.0f}",f"-₹{s4_chg5:,.0f}",f"-₹{port_chg5:,.0f}",f"-₹{s2_chg10:,.0f}",f"-₹{s4_chg10:,.0f}",f"-₹{port_chg10:,.0f}",_na14,_na14,_na14,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B)}
+    {_row9("Net PnL (After Tax)",_inr(s2_net5/_INR14),_inr(s4_net5/_INR14),_inr(port_net5/_INR14),_inr(s2_net10/_INR14),_inr(s4_net10/_INR14),_inr(port_net10/_INR14),_fna(fw2_net),_fna(fw4_net),_fna(fwp_net),_c(s2_net5),_c(s4_net5),_c(port_net5),_c(s2_net10),_c(s4_net10),_c(port_net10),_cf(fw2_net),_cf(fw4_net),_cf(fwp_net))}
+    <tr><td colspan="10" style="{_SUB14}">INDIAN ITR TAX (30% on Gross Wins - Pay via ITR Filing)</td></tr>
+    {_row9("Gross Wins",f"₹{s2_gross_win:,.0f}",f"₹{s4_gross_win:,.0f}",f"₹{port_gross_win:,.0f}",f"₹{s2_gross_win:,.0f}",f"₹{s4_gross_win:,.0f}",f"₹{port_gross_win:,.0f}",_fna(fw2_gw),_fna(fw4_gw),_fna(fwp_gw),_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDB14,_TDB14,_TDB14)}
+    {_row9("ITR Tax 30%",f"-₹{s2_itr5:,.0f}",f"-₹{s4_itr5:,.0f}",f"-₹{port_itr5:,.0f}",f"-₹{s2_itr5:,.0f}",f"-₹{s4_itr5:,.0f}",f"-₹{port_itr5:,.0f}",_fna(fw2_itr),_fna(fw4_itr),_fna(fwp_itr),_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B)}
+    {_row9("Keep Aside (ITR)",f"₹{s2_itr5:,.0f}",f"₹{s4_itr5:,.0f}",f"₹{port_itr5:,.0f}",f"₹{s2_itr5:,.0f}",f"₹{s4_itr5:,.0f}",f"₹{port_itr5:,.0f}",_fna(fw2_itr),_fna(fw4_itr),_fna(fwp_itr),_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14)}
+    {_row9("Net After ITR Tax",f"₹{s2_net_itr5:,.0f}",f"₹{s4_net_itr5:,.0f}",f"₹{port_net_itr5:,.0f}",f"₹{s2_net_itr10:,.0f}",f"₹{s4_net_itr10:,.0f}",f"₹{port_net_itr10:,.0f}",_fna(fw2_nitr),_fna(fw4_nitr),_fna(fwp_nitr),_c(s2_net_itr5),_c(s4_net_itr5),_c(port_net_itr5),_c(s2_net_itr10),_c(s4_net_itr10),_c(port_net_itr10),_cf(fw2_nitr),_cf(fw4_nitr),_cf(fwp_nitr))}
+    <tr><td colspan="10" style="{_SUB14}">RECOMMENDED CAPITAL (3x MAX DD)</td></tr>
+    {_row9("Rec Capital",f"₹{s2_rc5:,.0f}",f"₹{s4_rc5:,.0f}",f"₹{port_rc5:,.0f}",f"₹{s2_rc10:,.0f}",f"₹{s4_rc10:,.0f}",f"₹{port_rc10:,.0f}",_fna(fw2_rc),_fna(fw4_rc),_fna(fwp_rc),_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14)}
+    <tr><td colspan="10" style="{_SUB14}">RETURN ON CAPITAL</td></tr>
+    {_row9("ROC Total",_pct(s2_roc5),_pct(s4_roc5),_pct(port_roc5),_pct(s2_roc10),_pct(s4_roc10),_pct(port_roc10),_fna(fw2_roc,"pct"),_fna(fw4_roc,"pct"),_fna(fwp_roc,"pct"),_TDG14,_TDG14,_TDG14,_c(s2_roc10),_c(s4_roc10),_c(port_roc10),_TDB14,_TDB14,_TDB14)}
+    {_row9("ROC Monthly Avg",_pct(s2_rocm5),_pct(s4_rocm5),_pct(port_rocm5),_pct(s2_rocm10),_pct(s4_rocm10),_pct(port_rocm10),_fna(fw2_rocm,"pct"),_fna(fw4_rocm,"pct"),_fna(fwp_rocm,"pct"),_TDG14,_TDG14,_TDG14,_c(s2_rocm10),_c(s4_rocm10),_c(port_rocm10),_TDB14,_TDB14,_TDB14)}
+    <tr><td colspan="10" style="{_SUB14}">MAX DRAWDOWN</td></tr>
+    {_row9("Max Drawdown",f"-₹{s2_dd:,.0f}",f"-₹{s4_dd:,.0f}",f"-₹{port_dd:,.0f}",f"-₹{s2_dd:,.0f}",f"-₹{s4_dd:,.0f}",f"-₹{port_dd:,.0f}",f"-{_fna(fw2_dd)}" if fw2_dd else _na14,f"-{_fna(fw4_dd)}" if fw4_dd else _na14,f"-{_fna(fwp_dd)}" if fwp_dd else _na14,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B)}
+    {_row9("Max DD Period (days)",f"{s2_ddd}d",f"{s4_ddd}d",f"{port_ddd}d",f"{s2_ddd}d",f"{s4_ddd}d",f"{port_ddd}d",_fna(fw2_ddd,"int") if fw2_ddd else _na14,_fna(fw4_ddd,"int") if fw4_ddd else _na14,_na14,_TDR14,_TDR14,_TDR14,_TDR14,_TDR14,_TDR14)}
+    {_row9("Max DD Period Loss",f"-₹{s2_ddl:,.0f}",f"-₹{s4_ddl:,.0f}",f"-₹{port_ddl:,.0f}",f"-₹{s2_ddl:,.0f}",f"-₹{s4_ddl:,.0f}",f"-₹{port_ddl:,.0f}",f"-{_fna(fw2_ddl)}" if fw2_ddl else _na14,f"-{_fna(fw4_ddl)}" if fw4_ddl else _na14,f"-{_fna(fwp_ddl)}" if fwp_ddl else _na14,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B)}
+    {_row9("Max Win Streak Days",f"{s2_ws}d",f"{s4_ws}d",f"{port_ws}d",f"{s2_ws}d",f"{s4_ws}d",f"{port_ws}d",_fna(fw2_ws,"int") if fw2_ws else _na14,_fna(fw4_ws,"int") if fw4_ws else _na14,_na14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDB14,_TDB14,_TDB14)}
+    {_row9("Avg Margin/trade",f"₹{s2_mg:,.0f}",f"₹{s4_mg:,.0f}","-",f"₹{s2_mg:,.0f}",f"₹{s4_mg:,.0f}","-",_na14,_na14,_na14,_TDR14,_TDR14,_DASH14,_TDR14,_TDR14,_DASH14)}
+    </tbody>
+    </table>
+    </div>"""
+
+# Load data
+_now14 = _dt14.datetime.utcnow()
+_1yr_from = (_now14 - _dt14.timedelta(days=365)).strftime("%Y-%m-%d")
+_full_from = "2024-01-01"
+
+_d2_1yr  = _load14("output/trade_log_RenkoReversal*.csv",       _1yr_from)
+_d4_1yr  = _load14("output/trade_log_RenkoSMIIOSupertrend*.csv",_1yr_from)
+_d2_full = _load14("output/trade_log_RenkoReversal*.csv",       _full_from)
+_d4_full = _load14("output/trade_log_RenkoSMIIOSupertrend*.csv",_full_from)
+
+_1yr_label = f"{(_now14-_dt14.timedelta(days=365)).strftime('%d-%b-%Y')} to {_now14.strftime('%d-%b-%Y')} (1 Year)"
+_full_label= f"2024-01-01 to {_now14.strftime('%d-%b-%Y')} (Full CSV)"
+
+import os as _os14
+_s2_key=_os14.getenv("S2_API_KEY",""); _s2_sec=_os14.getenv("S2_API_SECRET","")
+_s4_key=_os14.getenv("S4_API_KEY",""); _s4_sec=_os14.getenv("S4_API_SECRET","")
+_fwd_base="https://cdn-ind.testnet.deltaex.org"
+_df2_fwd=_load14_fwd(84,_s2_key,_s2_sec,_fwd_base)
+_df4_fwd=_load14_fwd(84,_s4_key,_s4_sec,_fwd_base)
+
 _tab_monitor, _tab_trading, _tab_today, _tab_analysis, _tab_backtest, _tab_datasync, _tab_maint = st.tabs([
     "MONITOR", "TRADING", "TODAY'S TRADES", "ANALYSIS", "BACKTEST", "DATA & SYNC", "MAINTENANCE"
 ])
@@ -1842,8 +2256,8 @@ with _tab_trading:
                 _mname = m.get('name','').lower().replace(' ','_')
                 s2_screen = f"{_mname}_s2"
                 s4_screen = f"{_mname}_s4"
-                _s2_log = f"logs/live_trading_{_mname}_s2.log"
-                _s4_log = f"logs/live_trading_{_mname}_s4.log"
+                _s2_log = "logs/live_trading_s2.log"
+                _s4_log = "logs/live_trading_s4.log"
                 import subprocess
                 _scr_out = _timed('screen_list', 30, _fetch_screen_list)
                 s2_running = s2_screen in _scr_out
@@ -1978,7 +2392,7 @@ with _tab_trading:
                                         f'"cd {_base} && '
                                         f"export $(grep -v '#' {_base}/.env | xargs) && "
                                         f'.venv/bin/python3 scripts/signal_replay_{_mkey}_{_b}.py >> '
-                                        f'logs/live_trading_{_mkey}_{_b}.log 2>&1"'
+                                        f'logs/live_trading_{_b}.log 2>&1"'
                                     )
                             if _new_screens:
                                 _start_content = _start_content.replace(
@@ -2001,7 +2415,7 @@ with _tab_trading:
                                        f'screen -dmS {_screen_name} bash -c "cd {_base} && '
                                        f'export $(grep -v \'#\' {_base}/.env | xargs) && '
                                        f'.venv/bin/python3 scripts/signal_replay_{_mkey}_{_b}.py >> '
-                                       f'logs/live_trading_{_mkey}_{_b}.log 2>&1"')
+                                       f'logs/live_trading_{_b}.log 2>&1"')
                                 _sp2.Popen(['bash', '-c', _cmd])
                         except Exception as _e:
                             _errors.append(f"Bot start failed: {_e}")
@@ -4682,417 +5096,6 @@ with _tab_analysis:
 
         import glob as _gl14, pandas as _pd14, datetime as _dt14
 
-        _INR14 = 84.0
-        _TH14  = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;"
-        _TD14  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;"
-        _TDR14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:center;"
-        _TDG14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
-        _TDO14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#e07000;font-weight:700;text-align:center;"
-        _TDB14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
-        _TDR14B= "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#F23645;font-weight:700;text-align:center;"
-        _THGR14= "padding:5px 8px;border:1px solid #C8D0DC;background:#089981;font-size:10px;font-weight:700;color:#fff;text-align:center;"
-        _THOG14= "padding:5px 8px;border:1px solid #C8D0DC;background:#e07000;font-size:10px;font-weight:700;color:#fff;text-align:center;"
-        _SUB14 = "padding:4px 8px;border:1px solid #C8D0DC;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
-        _DASH14= "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#aaa;text-align:center;"
-        _PLNH14= "padding:5px 8px;border:1px solid #C8D0DC;background:#2962FF;font-size:10px;font-weight:700;color:#fff;text-align:center;"
-        _PLND14= "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:left;"
-        _PLNV14= "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;font-weight:700;text-align:center;"
-
-        def _load14(csv_pattern, from_dt=None):
-            try:
-                files = sorted(_gl14.glob(csv_pattern), reverse=True)
-                if not files: return None
-                df = _pd14.read_csv(files[0])
-                if 'entry_datetime' not in df.columns: return None
-                df['entry_datetime'] = _pd14.to_datetime(df['entry_datetime'])
-                if from_dt:
-                    df = df[df['entry_datetime'] >= _pd14.to_datetime(from_dt)]
-                if df.empty: return None
-                now14 = _dt14.datetime.utcnow()
-                today_s  = now14.replace(hour=0,minute=0,second=0,microsecond=0)
-                month_s  = now14.replace(day=1,hour=0,minute=0,second=0,microsecond=0)
-                tot  = len(df)
-                gross= df['gross_pnl'].sum() if 'gross_pnl' in df.columns else 0
-                net  = df['net_pnl'].sum() if 'net_pnl' in df.columns else 0
-                net_inr = df['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else net*_INR14
-                tax  = df['tax_usd'].sum() if 'tax_usd' in df.columns else 0
-                fees = df['taker_fees_usd'].sum() if 'taker_fees_usd' in df.columns else 0
-                slip = df['slippage_usd'].sum() if 'slippage_usd' in df.columns else 0
-                fund = df['funding_usd'].sum() if 'funding_usd' in df.columns else 0
-                total_charges = tax + fees + slip + fund
-                margin_avg = df['margin_required'].mean() if 'margin_required' in df.columns else 0
-                # Green months
-                if 'exit_datetime' in df.columns:
-                    df['exit_dt'] = _pd14.to_datetime(df['exit_datetime'])
-                    df['ym'] = df['exit_dt'].dt.to_period('M')
-                    monthly = df.groupby('ym')['net_pnl'].sum()
-                    green_m = (monthly > 0).sum()
-                    total_m = len(monthly)
-                    # Max DD
-                    pls = df['net_pnl'].tolist()
-                    cum,pk,dd = 0,0,0
-                    for v in pls:
-                        cum+=v
-                        if cum>pk: pk=cum
-                        drop=pk-cum
-                        if drop>dd: dd=drop
-                    # Today + Month PnL
-                    pnl_today = df[df['exit_dt'] >= _pd14.Timestamp(today_s)]['net_pnl'].sum()
-                    pnl_month = df[df['exit_dt'] >= _pd14.Timestamp(month_s)]['net_pnl'].sum()
-                    # This month max DD
-                    df_mo = df[df['exit_dt'] >= _pd14.Timestamp(month_s)]
-                    pls_mo = df_mo['net_pnl'].tolist()
-                    cum_mo,pk_mo,dd_mo = 0,0,0
-                    for v in pls_mo:
-                        cum_mo+=v
-                        if cum_mo>pk_mo: pk_mo=cum_mo
-                        drop_mo=pk_mo-cum_mo
-                        if drop_mo>dd_mo: dd_mo=drop_mo
-                    # $10/side this month max DD
-                    mo_cnt_tmp=len(df_mo)
-                    pls_mo10=[v-10 for v in pls_mo]
-                    cum_mo10,pk_mo10,dd_mo10=0,0,0
-                    for v in pls_mo10:
-                        cum_mo10+=v
-                        if cum_mo10>pk_mo10: pk_mo10=cum_mo10
-                        drop_mo10=pk_mo10-cum_mo10
-                        if drop_mo10>dd_mo10: dd_mo10=drop_mo10
-                else:
-                    green_m=total_m=0; dd=0; pnl_today=pnl_month=0; dd_mo=0; dd_mo10=0
-                rec_cap = dd * 3 * _INR14
-                roc = (net_inr / rec_cap * 100) if rec_cap > 0 else 0
-                months = max(total_m, 1)
-                roc_monthly = roc / months
-                # Today + month trade count
-                today_count = len(df[df['exit_dt'] >= _pd14.Timestamp(today_s)]) if 'exit_dt' in df.columns else 0
-                month_count = len(df[df['exit_dt'] >= _pd14.Timestamp(month_s)]) if 'exit_dt' in df.columns else 0
-                # extra metrics
-                import math as _m14x, numpy as _np14x
-                pc='net_pnl'
-                wins_s=df[df[pc]>0][pc] if pc in df.columns else __import__('pandas').Series(dtype=float)
-                loss_s=df[df[pc]<0][pc] if pc in df.columns else __import__('pandas').Series(dtype=float)
-                win_rate=(len(wins_s)/tot*100) if tot>0 else 0
-                max_profit=wins_s.max()*_INR14 if len(wins_s)>0 else 0
-                max_loss=loss_s.min()*_INR14 if len(loss_s)>0 else 0
-                avg_win=wins_s.mean() if len(wins_s)>0 else 0
-                avg_loss=abs(loss_s.mean()) if len(loss_s)>0 else 0
-                risk_reward=avg_win/avg_loss if avg_loss>0 else 0
-                gw_u=wins_s.sum() if len(wins_s)>0 else 0
-                gl_u=abs(loss_s.sum()) if len(loss_s)>0 else 0
-                profit_factor=gw_u/gl_u if gl_u>0 else 0
-                arr=_np14x.array(df[pc].tolist()) if pc in df.columns else _np14x.array([])
-                sharpe=(arr.mean()/arr.std()*_m14x.sqrt(252)) if len(arr)>1 and arr.std()>0 else 0
-                # max dd period
-                pls2=df[pc].tolist() if pc in df.columns else []
-                cum2,pk2,dd2,csi,dsi,dei=0,0,0,0,0,0
-                for i,v in enumerate(pls2):
-                    cum2+=v
-                    if cum2>pk2: pk2=cum2; csi=i
-                    drop=pk2-cum2
-                    if drop>dd2: dd2=drop; dsi=csi; dei=i
-                try:
-                    t0=df['exit_dt'].iloc[dsi]; t1=df['exit_dt'].iloc[dei]
-                    max_dd_days=max(1,(t1-t0).days) if dei>dsi else 0
-                except: max_dd_days=0
-                max_dd_period_loss=dd2*_INR14
-                # win streak days
-                try:
-                    df2s=df.sort_values('exit_dt').copy()
-                    df2s['_w']=df2s[pc]>0; df2s['_d']=df2s['exit_dt'].dt.date
-                    dw=df2s.groupby('_d')['_w'].all()
-                    mws=cws=0
-                    for w in dw:
-                        if w: cws+=1; mws=max(mws,cws)
-                        else: cws=0
-                    max_win_streak_days=mws
-                except: max_win_streak_days=0
-                return {
-                    "tot":tot,"gross":gross,"net":net,"net_inr":net_inr,
-                    "tax":tax,"fees":fees,"slip":slip,"fund":fund,"total_charges":total_charges,
-                    "green_m":green_m,"total_m":total_m,"dd":dd,"rec_cap":rec_cap,
-                    "roc":roc,"roc_monthly":roc_monthly,"margin_avg":margin_avg,
-                    "pnl_today":pnl_today,"pnl_month":pnl_month,"dd_month":dd_mo,"dd_month10":dd_mo10,
-                    "today_count":today_count,"month_count":month_count,
-                    "gross_win":df[df['gross_pnl']>0]['gross_pnl'].sum() if 'gross_pnl' in df.columns else 0,
-                    "win_rate":win_rate,"max_profit":max_profit,"max_loss":max_loss,
-                    "risk_reward":risk_reward,"profit_factor":profit_factor,"sharpe":sharpe,
-                    "max_dd_days":max_dd_days,"max_dd_period_loss":max_dd_period_loss,
-                    "max_win_streak_days":max_win_streak_days,
-                    "raw_df":df
-                }
-            except Exception as _e14:
-                return None
-
-        def _load14_fwd(product_id, api_key, api_secret, base_url):
-            import hmac as _hm,hashlib as _hs,time as _tm,requests as _rq,math as _mf,numpy as _npf
-            try:
-                if not api_key or not api_secret: return None
-                method="GET"; path="/v2/fills"; qs=f"?product_id={product_id}&page_size=500"
-                ts=str(int(_tm.time()))
-                sig=_hm.new(api_secret.encode(),(method+ts+path+qs).encode(),_hs.sha256).hexdigest()
-                hdrs={"api-key":api_key,"timestamp":ts,"signature":sig,"Content-Type":"application/json"}
-                r=_rq.get(base_url+path+qs,headers=hdrs,timeout=10)
-                if r.status_code!=200: return None
-                fills=r.json().get("result",[])
-                if not fills: return None
-                all_s=sorted(fills,key=lambda x:x.get("created_at",""))
-                pairs=[]; open_pos=None
-                for f in all_s:
-                    side=f.get("side",""); price=float(f.get("fill_price",0))
-                    size=float(f.get("size",0)); ts_f=f.get("created_at","")
-                    if open_pos is None:
-                        open_pos={"side":side,"price":price,"size":size,"ts":ts_f}
-                    else:
-                        if side!=open_pos["side"]:
-                            ep=open_pos["price"]; xp=price
-                            pnl_usd=(xp-ep)*open_pos["size"]*0.001 if open_pos["side"]=="buy" else (ep-xp)*open_pos["size"]*0.001
-                            comm=float(f.get("commission",0))*2
-                            pairs.append({"pnl":pnl_usd-comm,"exit_ts":ts_f,"comm":comm,"entry_ts":open_pos["ts"],"entry_price":open_pos["price"],"exit_price":price,"side":open_pos["side"],"size":open_pos["size"]})
-                            open_pos=None
-                        else:
-                            open_pos={"side":side,"price":price,"size":size,"ts":ts_f}
-                if not pairs: return None
-                tot=len(pairs); pnls=[p["pnl"] for p in pairs]
-                wins=[v for v in pnls if v>0]; losses=[v for v in pnls if v<0]
-                win_rate=len(wins)/tot*100 if tot>0 else 0
-                net_usd=sum(pnls); net_inr=net_usd*_INR14
-                gw=sum(wins) if wins else 0; gl=abs(sum(losses)) if losses else 0
-                profit_factor=gw/gl if gl>0 else 0
-                avg_win=sum(wins)/len(wins) if wins else 0
-                avg_loss=abs(sum(losses)/len(losses)) if losses else 0
-                risk_reward=avg_win/avg_loss if avg_loss>0 else 0
-                max_profit=max(wins)*_INR14 if wins else 0
-                max_loss=min(losses)*_INR14 if losses else 0
-                arr=_npf.array(pnls)
-                sharpe=(arr.mean()/arr.std()*_mf.sqrt(252)) if len(arr)>1 and arr.std()>0 else 0
-                cum,pk,dd=0,0,0
-                for v in pnls:
-                    cum+=v
-                    if cum>pk: pk=cum
-                    drop=pk-cum
-                    if drop>dd: dd=drop
-                mp={}
-                for p in pairs:
-                    mo=p["exit_ts"][:7]; mp[mo]=mp.get(mo,0)+p["pnl"]
-                green_m=sum(1 for v in mp.values() if v>0); total_m=len(mp)
-                dw={}
-                for p in pairs:
-                    d=p["exit_ts"][:10]; dw[d]=dw.get(d,True) and p["pnl"]>0
-                mws=cws=0
-                for k in sorted(dw):
-                    if dw[k]: cws+=1; mws=max(mws,cws)
-                    else: cws=0
-                now14f=_dt14.datetime.utcnow()
-                td=now14f.replace(hour=0,minute=0,second=0,microsecond=0).strftime("%Y-%m-%d")
-                ms=now14f.replace(day=1,hour=0,minute=0,second=0,microsecond=0).strftime("%Y-%m-%d")
-                pnl_today=sum(p["pnl"] for p in pairs if p["exit_ts"][:10]>=td)*_INR14
-                pnl_month=sum(p["pnl"] for p in pairs if p["exit_ts"][:10]>=ms)*_INR14
-                today_count=sum(1 for p in pairs if p["exit_ts"][:10]>=td)
-                month_count=sum(1 for p in pairs if p["exit_ts"][:10]>=ms)
-                rec_cap=dd*3*_INR14; roc=(net_inr/rec_cap*100) if rec_cap>0 else 0
-                roc_monthly=roc/max(total_m,1)
-                return {
-                    "tot":tot,"net_inr":net_inr,"green_m":green_m,"total_m":total_m,
-                    "win_rate":win_rate,"max_profit":max_profit,"max_loss":max_loss,
-                    "risk_reward":risk_reward,"profit_factor":profit_factor,"sharpe":sharpe,
-                    "dd":dd,"max_dd_period_loss":dd*_INR14,"max_dd_days":0,
-                    "max_win_streak_days":mws,"rec_cap":rec_cap,"roc":roc,
-                    "roc_monthly":roc_monthly,"pnl_today":pnl_today,"pnl_month":pnl_month,
-                    "today_count":today_count,"month_count":month_count,
-                    "gross_win":gw*_INR14,"total_charges":sum(p["comm"] for p in pairs),
-                    "gross":net_usd,"net":net_usd,"margin_avg":0,
-                    "raw_pairs":pairs
-                }
-            except Exception as _ef14:
-                return None
-
-        def _tbl14(d2, d4, label, period_str, df2=None, df4=None):
-            if not d2 and not d4:
-                return f"<p style='color:#aaa;font-size:11px;'>No data available for {label}</p>"
-            def _g(d, k): return d[k] if d and k in d else 0
-            def _inr(v): return f"₹{v*_INR14:,.0f}"
-            def _pct(v): return f"{v:,.1f}%"
-            def _c(v): return _TDG14 if v>=0 else _TDR14B
-
-            # Today trade count
-            s2_tot=_g(d2,"tot"); s4_tot=_g(d4,"tot"); port_tot=s2_tot+s4_tot
-            s2_tod_cnt=_g(d2,"today_count"); s4_tod_cnt=_g(d4,"today_count"); port_tod_cnt=s2_tod_cnt+s4_tod_cnt
-
-            # $5/side (CSV as-is, slippage $10/trade already deducted)
-            s2_net5=_g(d2,"net_inr"); s4_net5=_g(d4,"net_inr"); port_net5=s2_net5+s4_net5
-            s2_gross=_g(d2,"gross")*_INR14; s4_gross=_g(d4,"gross")*_INR14; port_gross=s2_gross+s4_gross
-            s2_chg5=_g(d2,"total_charges")*_INR14; s4_chg5=_g(d4,"total_charges")*_INR14; port_chg5=s2_chg5+s4_chg5
-            s2_dd=_g(d2,"dd")*_INR14; s4_dd=_g(d4,"dd")*_INR14; port_dd=max(s2_dd,s4_dd)
-            s2_rc5=_g(d2,"rec_cap"); s4_rc5=_g(d4,"rec_cap"); port_rc5=s2_rc5+s4_rc5
-            s2_roc5=_g(d2,"roc"); s4_roc5=_g(d4,"roc")
-            port_roc5=(port_net5/port_rc5*100) if port_rc5>0 else 0
-            s2_rocm5=_g(d2,"roc_monthly"); s4_rocm5=_g(d4,"roc_monthly")
-            port_rocm5=port_roc5/max(_g(d2,"total_m"),1)
-
-            # $10/side (extra $5/side = $10/trade extra deducted)
-            tot2=_g(d2,"tot"); tot4=_g(d4,"tot")
-            s2_net10=s2_net5-tot2*10*_INR14; s4_net10=s4_net5-tot4*10*_INR14; port_net10=s2_net10+s4_net10
-            s2_chg10=s2_chg5+tot2*10*_INR14; s4_chg10=s4_chg5+tot4*10*_INR14; port_chg10=s2_chg10+s4_chg10
-            s2_rc10=s2_rc5; s4_rc10=s4_rc5; port_rc10=port_rc5
-            s2_roc10=(s2_net10/s2_rc10*100) if s2_rc10>0 else 0
-            s4_roc10=(s4_net10/s4_rc10*100) if s4_rc10>0 else 0
-            port_roc10=(port_net10/port_rc10*100) if port_rc10>0 else 0
-            s2_rocm10=s2_roc10/max(_g(d2,"total_m"),1)
-            s4_rocm10=s4_roc10/max(_g(d4,"total_m"),1)
-            port_rocm10=port_roc10/max(_g(d2,"total_m"),1)
-
-            s2_gm=_g(d2,"green_m"); s2_tm=_g(d2,"total_m")
-            s4_gm=_g(d4,"green_m"); s4_tm=_g(d4,"total_m")
-            s2_td=_g(d2,"pnl_today")*_INR14; s4_td=_g(d4,"pnl_today")*_INR14
-            s2_tod_cnt=int(_g(d2,"today_count")); s4_tod_cnt=int(_g(d4,"today_count")); port_tod_cnt=s2_tod_cnt+s4_tod_cnt
-            s2_mo=_g(d2,"pnl_month")*_INR14; s4_mo=_g(d4,"pnl_month")*_INR14
-            s2_mo_cnt=int(_g(d2,"month_count")); s4_mo_cnt=int(_g(d4,"month_count")); port_mo_cnt=s2_mo_cnt+s4_mo_cnt
-            s2_dd_mo=_g(d2,"dd_month")*_INR14; s4_dd_mo=_g(d4,"dd_month")*_INR14; port_dd_mo=max(s2_dd_mo,s4_dd_mo)
-            s2_dd_mo10=_g(d2,"dd_month10")*_INR14; s4_dd_mo10=_g(d4,"dd_month10")*_INR14; port_dd_mo10=max(s2_dd_mo10,s4_dd_mo10)
-            s2_td10=s2_td-s2_tod_cnt*10*_INR14; s4_td10=s4_td-s4_tod_cnt*10*_INR14; port_td10=s2_td10+s4_td10
-            s2_mo10=s2_mo-s2_mo_cnt*10*_INR14; s4_mo10=s4_mo-s4_mo_cnt*10*_INR14; port_mo10=s2_mo10+s4_mo10
-            # ITR Tax 30% on gross wins (Indian Income Tax - pay to govt via ITR filing)
-            s2_gross_win=_g(d2,"gross_win")*_INR14; s4_gross_win=_g(d4,"gross_win")*_INR14; port_gross_win=s2_gross_win+s4_gross_win
-            s2_itr5=s2_gross_win*0.30; s4_itr5=s4_gross_win*0.30; port_itr5=port_gross_win*0.30
-            s2_net_itr5=s2_net5-s2_itr5; s4_net_itr5=s4_net5-s4_itr5; port_net_itr5=port_net5-port_itr5
-            s2_net_itr10=s2_net10-s2_itr5; s4_net_itr10=s4_net10-s4_itr5; port_net_itr10=port_net10-port_itr5
-            s2_mg=_g(d2,"margin_avg")*_INR14; s4_mg=_g(d4,"margin_avg")*_INR14
-            _THFW14="padding:5px 8px;border:1px solid #C8D0DC;background:#089981;font-size:10px;font-weight:700;color:#fff;text-align:center;"
-            _na14='<span style="color:#aaa">N/A</span>'
-            def _fna(v,fmt="inr"):
-                if not v: return _na14
-                if fmt=="inr": return f"₹{v:,.0f}"
-                if fmt=="pct": return f"{v:,.1f}%"
-                if fmt=="num": return f"{v:,.2f}"
-                if fmt=="int": return f"{int(v):,}"
-                return str(v)
-            def _cf(v): return _TDG14 if v>=0 else _TDR14B
-            s2_wr=_g(d2,"win_rate"); s4_wr=_g(d4,"win_rate"); port_wr=(s2_wr*tot2+s4_wr*tot4)/(tot2+tot4) if (tot2+tot4)>0 else 0
-            s2_mp=_g(d2,"max_profit"); s4_mp=_g(d4,"max_profit"); port_mp=max(s2_mp,s4_mp)
-            s2_ml=_g(d2,"max_loss"); s4_ml=_g(d4,"max_loss"); port_ml=min(s2_ml,s4_ml) if s2_ml and s4_ml else 0
-            s2_rr=_g(d2,"risk_reward"); s4_rr=_g(d4,"risk_reward"); port_rr=(s2_rr+s4_rr)/2 if s2_rr and s4_rr else max(s2_rr,s4_rr)
-            s2_pf=_g(d2,"profit_factor"); s4_pf=_g(d4,"profit_factor"); port_pf=(s2_pf+s4_pf)/2 if s2_pf and s4_pf else max(s2_pf,s4_pf)
-            s2_sh=_g(d2,"sharpe"); s4_sh=_g(d4,"sharpe"); port_sh=(s2_sh+s4_sh)/2 if s2_sh and s4_sh else max(s2_sh,s4_sh)
-            s2_ddd=_g(d2,"max_dd_days"); s4_ddd=_g(d4,"max_dd_days"); port_ddd=max(s2_ddd,s4_ddd)
-            s2_ddl=_g(d2,"max_dd_period_loss"); s4_ddl=_g(d4,"max_dd_period_loss"); port_ddl=max(s2_ddl,s4_ddl)
-            s2_ws=_g(d2,"max_win_streak_days"); s4_ws=_g(d4,"max_win_streak_days"); port_ws=max(s2_ws,s4_ws)
-            fw2_net=_g(df2,"net_inr"); fw4_net=_g(df4,"net_inr"); fwp_net=fw2_net+fw4_net
-            fw2_tot=_g(df2,"tot"); fw4_tot=_g(df4,"tot"); fwp_tot=fw2_tot+fw4_tot
-            fw2_gm=_g(df2,"green_m"); fw4_gm=_g(df4,"green_m"); fw2_tm=_g(df2,"total_m"); fw4_tm=_g(df4,"total_m")
-            fw2_wr=_g(df2,"win_rate"); fw4_wr=_g(df4,"win_rate"); fwp_wr=(fw2_wr*fw2_tot+fw4_wr*fw4_tot)/(fw2_tot+fw4_tot) if (fw2_tot+fw4_tot)>0 else 0
-            fw2_mp=_g(df2,"max_profit"); fw4_mp=_g(df4,"max_profit"); fwp_mp=max(fw2_mp,fw4_mp)
-            fw2_ml=_g(df2,"max_loss"); fw4_ml=_g(df4,"max_loss"); fwp_ml=min(fw2_ml,fw4_ml) if fw2_ml and fw4_ml else 0
-            fw2_rr=_g(df2,"risk_reward"); fw4_rr=_g(df4,"risk_reward"); fwp_rr=(fw2_rr+fw4_rr)/2 if fw2_rr and fw4_rr else max(fw2_rr,fw4_rr)
-            fw2_pf=_g(df2,"profit_factor"); fw4_pf=_g(df4,"profit_factor"); fwp_pf=(fw2_pf+fw4_pf)/2 if fw2_pf and fw4_pf else max(fw2_pf,fw4_pf)
-            fw2_sh=_g(df2,"sharpe"); fw4_sh=_g(df4,"sharpe"); fwp_sh=(fw2_sh+fw4_sh)/2 if fw2_sh and fw4_sh else max(fw2_sh,fw4_sh)
-            fw2_dd=_g(df2,"dd")*_INR14; fw4_dd=_g(df4,"dd")*_INR14; fwp_dd=max(fw2_dd,fw4_dd)
-            fw2_ddl=_g(df2,"max_dd_period_loss"); fw4_ddl=_g(df4,"max_dd_period_loss"); fwp_ddl=max(fw2_ddl,fw4_ddl)
-            fw2_ddd=_g(df2,"max_dd_days"); fw4_ddd=_g(df4,"max_dd_days"); fwp_ddd=max(fw2_ddd,fw4_ddd)
-            fw2_ws=_g(df2,"max_win_streak_days"); fw4_ws=_g(df4,"max_win_streak_days"); fwp_ws=max(fw2_ws,fw4_ws)
-            fw2_rc=_g(df2,"rec_cap"); fw4_rc=_g(df4,"rec_cap"); fwp_rc=fw2_rc+fw4_rc
-            fw2_roc=_g(df2,"roc"); fw4_roc=_g(df4,"roc"); fwp_roc=(fwp_net/fwp_rc*100) if fwp_rc>0 else 0
-            fw2_rocm=_g(df2,"roc_monthly"); fw4_rocm=_g(df4,"roc_monthly"); fwp_rocm=fwp_roc/max(max(fw2_tm,fw4_tm),1)
-            fw2_td=_g(df2,"pnl_today"); fw4_td=_g(df4,"pnl_today")
-            fw2_mo=_g(df2,"pnl_month"); fw4_mo=_g(df4,"pnl_month")
-            fw2_tc=int(_g(df2,"today_count")); fw4_tc=int(_g(df4,"today_count")); fwp_tc=fw2_tc+fw4_tc
-            fw2_mc=int(_g(df2,"month_count")); fw4_mc=int(_g(df4,"month_count")); fwp_mc=fw2_mc+fw4_mc
-            fw2_gw=_g(df2,"gross_win"); fw4_gw=_g(df4,"gross_win"); fwp_gw=fw2_gw+fw4_gw
-            fw2_itr=fw2_gw*0.30; fw4_itr=fw4_gw*0.30; fwp_itr=fwp_gw*0.30
-            fw2_nitr=fw2_net-fw2_itr; fw4_nitr=fw4_net-fw4_itr; fwp_nitr=fwp_net-fwp_itr
-
-            def _row9(lbl,v5s2,v5s4,v5p,v10s2,v10s4,v10p,vfs2="",vfs4="",vfp="",c5s2=None,c5s4=None,c5p=None,c10s2=None,c10s4=None,c10p=None,cfs2=None,cfs4=None,cfp=None):
-                c5s2=c5s2 or _TDR14; c5s4=c5s4 or _TDR14; c5p=c5p or _TDR14
-                c10s2=c10s2 or _TDR14; c10s4=c10s4 or _TDR14; c10p=c10p or _TDR14
-                cfs2=cfs2 or _TDB14; cfs4=cfs4 or _TDB14; cfp=cfp or _TDB14
-                return (f"<tr><td style='{_TD14}'>{lbl}</td>"
-                        f"<td style='{c5s2}'>{v5s2}</td><td style='{c5s4}'>{v5s4}</td><td style='{c5p}'>{v5p}</td>"
-                        f"<td style='{c10s2}'>{v10s2}</td><td style='{c10s4}'>{v10s4}</td><td style='{c10p}'>{v10p}</td>"
-                        f"<td style='{cfs2}'>{vfs2}</td><td style='{cfs4}'>{vfs4}</td><td style='{cfp}'>{vfp}</td></tr>")
-
-            return f"""
-            <p style="font-size:11px;color:#555;margin:2px 0 6px 0;"><b>{label}</b> &nbsp;|&nbsp; {period_str} &nbsp;|&nbsp; BTCUSD Perpetual &nbsp;|&nbsp; 100 lots/trade &nbsp;|&nbsp; Dynamic update every page load</p>
-            <div style="overflow-x:auto;margin:4px 0;">
-            <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
-            <colgroup>
-              <col style="width:16%">
-              <col style="width:9%"><col style="width:9%"><col style="width:9%">
-              <col style="width:9%"><col style="width:9%"><col style="width:9%">
-              <col style="width:9%"><col style="width:9%"><col style="width:9%">
-            </colgroup>
-            <thead>
-            <tr>
-              <th style="{_TH14}" rowspan="2">Metric</th>
-              <th style="{_THGR14}" colspan="3">$5/side Realistic | 100 lots</th>
-              <th style="{_THOG14}" colspan="3">$10/side Conservative | 100 lots</th>
-              <th style="{_THFW14}" colspan="3">Forward Test (Live)</th>
-            </tr>
-            <tr>
-              <th style="{_THGR14}">S2</th><th style="{_THGR14}">S4</th><th style="{_THGR14}">Portfolio</th>
-              <th style="{_THOG14}">S2</th><th style="{_THOG14}">S4</th><th style="{_THOG14}">Portfolio</th>
-              <th style="{_THFW14}">S2</th><th style="{_THFW14}">S4</th><th style="{_THFW14}">Portfolio</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr><td colspan="10" style="{_SUB14}">DYNAMIC PnL (SYNCED WITH SECTION 13)</td></tr>
-            {_row9("Today PnL",f"₹{s2_td:,.0f}",f"₹{s4_td:,.0f}",f"₹{s2_td+s4_td:,.0f}",f"₹{s2_td10:,.0f}",f"₹{s4_td10:,.0f}",f"₹{port_td10:,.0f}",_fna(fw2_td),_fna(fw4_td),_fna(fw2_td+fw4_td),_c(s2_td),_c(s4_td),_c(s2_td+s4_td),_c(s2_td10),_c(s4_td10),_c(port_td10),_cf(fw2_td),_cf(fw4_td),_cf(fw2_td+fw4_td))}
-            {_row9("Today Trades",f"{s2_tod_cnt:,}",f"{s4_tod_cnt:,}",f"{port_tod_cnt:,}",f"{s2_tod_cnt:,}",f"{s4_tod_cnt:,}",f"{port_tod_cnt:,}",_fna(fw2_tc,"int"),_fna(fw4_tc,"int"),_fna(fwp_tc,"int"),_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDB14,_TDB14,_TDB14)}
-            {_row9("This Month PnL",f"₹{s2_mo:,.0f}",f"₹{s4_mo:,.0f}",f"₹{s2_mo+s4_mo:,.0f}",f"₹{s2_mo10:,.0f}",f"₹{s4_mo10:,.0f}",f"₹{port_mo10:,.0f}",_fna(fw2_mo),_fna(fw4_mo),_fna(fw2_mo+fw4_mo),_c(s2_mo),_c(s4_mo),_c(s2_mo+s4_mo),_c(s2_mo10),_c(s4_mo10),_c(port_mo10),_cf(fw2_mo),_cf(fw4_mo),_cf(fw2_mo+fw4_mo))}
-            {_row9("This Month Trades",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",_fna(fw2_mc,"int"),_fna(fw4_mc,"int"),_fna(fwp_mc,"int"),_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDB14,_TDB14,_TDB14)}
-            {_row9("This Month Max DD",f"₹{s2_dd_mo:,.0f}",f"₹{s4_dd_mo:,.0f}",f"₹{port_dd_mo:,.0f}",f"₹{s2_dd_mo10:,.0f}",f"₹{s4_dd_mo10:,.0f}",f"₹{port_dd_mo10:,.0f}",_na14,_na14,_na14,_TDR14B if s2_dd_mo>0 else _TDB14,_TDR14B if s4_dd_mo>0 else _TDB14,_TDR14B if port_dd_mo>0 else _TDB14,_TDR14B if s2_dd_mo10>0 else _TDB14,_TDR14B if s4_dd_mo10>0 else _TDB14,_TDR14B if port_dd_mo10>0 else _TDB14,_na14,_na14,_na14)}
-            <tr><td colspan="10" style="{_SUB14}">TRADE COUNT</td></tr>
-            {_row9("Total Trades",f"{tot2:,}",f"{tot4:,}",f"{tot2+tot4:,}",f"{tot2:,}",f"{tot4:,}",f"{tot2+tot4:,}",_fna(fw2_tot,"int"),_fna(fw4_tot,"int"),_fna(fwp_tot,"int"))}
-            <tr><td colspan="10" style="{_SUB14}">GREEN MONTHS</td></tr>
-            {_row9("Green Months",f"{s2_gm}/{s2_tm}",f"{s4_gm}/{s4_tm}",f"{min(s2_gm,s4_gm)}/{s2_tm}",f"{s2_gm}/{s2_tm}",f"{s4_gm}/{s4_tm}",f"{min(s2_gm,s4_gm)}/{s2_tm}",_fna(fw2_gm,"int") if fw2_tm else _na14,_fna(fw4_gm,"int") if fw4_tm else _na14,_na14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDB14,_TDB14,_TDB14)}
-            <tr><td colspan="10" style="{_SUB14}">PERFORMANCE METRICS</td></tr>
-            {_row9("Win Rate %",_pct(s2_wr),_pct(s4_wr),_pct(port_wr),_pct(s2_wr),_pct(s4_wr),_pct(port_wr),_fna(fw2_wr,"pct"),_fna(fw4_wr,"pct"),_fna(fwp_wr,"pct"),_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDB14,_TDB14,_TDB14)}
-            {_row9("Max Profit Trade",f"₹{s2_mp:,.0f}",f"₹{s4_mp:,.0f}",f"₹{port_mp:,.0f}",f"₹{s2_mp:,.0f}",f"₹{s4_mp:,.0f}",f"₹{port_mp:,.0f}",_fna(fw2_mp),_fna(fw4_mp),_fna(fwp_mp),_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDB14,_TDB14,_TDB14)}
-            {_row9("Max Loss Trade",f"₹{s2_ml:,.0f}",f"₹{s4_ml:,.0f}",f"₹{port_ml:,.0f}",f"₹{s2_ml:,.0f}",f"₹{s4_ml:,.0f}",f"₹{port_ml:,.0f}",_fna(fw2_ml),_fna(fw4_ml),_fna(fwp_ml),_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B)}
-            {_row9("Risk:Reward",f"{s2_rr:,.2f}",f"{s4_rr:,.2f}",f"{port_rr:,.2f}",f"{s2_rr:,.2f}",f"{s4_rr:,.2f}",f"{port_rr:,.2f}",_fna(fw2_rr,"num"),_fna(fw4_rr,"num"),_fna(fwp_rr,"num"),_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDB14,_TDB14,_TDB14)}
-            {_row9("Profit Factor",f"{s2_pf:,.2f}",f"{s4_pf:,.2f}",f"{port_pf:,.2f}",f"{s2_pf:,.2f}",f"{s4_pf:,.2f}",f"{port_pf:,.2f}",_fna(fw2_pf,"num"),_fna(fw4_pf,"num"),_fna(fwp_pf,"num"),_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDB14,_TDB14,_TDB14)}
-            {_row9("Sharpe Ratio",f"{s2_sh:,.2f}",f"{s4_sh:,.2f}",f"{port_sh:,.2f}",f"{s2_sh:,.2f}",f"{s4_sh:,.2f}",f"{port_sh:,.2f}",_fna(fw2_sh,"num"),_fna(fw4_sh,"num"),_fna(fwp_sh,"num"),_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDB14,_TDB14,_TDB14)}
-            <tr><td colspan="10" style="{_SUB14}">PnL BREAKDOWN</td></tr>
-            {_row9("Gross PnL",_inr(s2_gross/_INR14),_inr(s4_gross/_INR14),_inr(port_gross/_INR14),_inr(s2_gross/_INR14),_inr(s4_gross/_INR14),_inr(port_gross/_INR14),_na14,_na14,_na14,_c(s2_gross),_c(s4_gross),_c(port_gross),_c(s2_gross),_c(s4_gross),_c(port_gross))}
-            {_row9("Tax + All Charges",f"-₹{s2_chg5:,.0f}",f"-₹{s4_chg5:,.0f}",f"-₹{port_chg5:,.0f}",f"-₹{s2_chg10:,.0f}",f"-₹{s4_chg10:,.0f}",f"-₹{port_chg10:,.0f}",_na14,_na14,_na14,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B)}
-            {_row9("Net PnL (After Tax)",_inr(s2_net5/_INR14),_inr(s4_net5/_INR14),_inr(port_net5/_INR14),_inr(s2_net10/_INR14),_inr(s4_net10/_INR14),_inr(port_net10/_INR14),_fna(fw2_net),_fna(fw4_net),_fna(fwp_net),_c(s2_net5),_c(s4_net5),_c(port_net5),_c(s2_net10),_c(s4_net10),_c(port_net10),_cf(fw2_net),_cf(fw4_net),_cf(fwp_net))}
-            <tr><td colspan="10" style="{_SUB14}">INDIAN ITR TAX (30% on Gross Wins - Pay via ITR Filing)</td></tr>
-            {_row9("Gross Wins",f"₹{s2_gross_win:,.0f}",f"₹{s4_gross_win:,.0f}",f"₹{port_gross_win:,.0f}",f"₹{s2_gross_win:,.0f}",f"₹{s4_gross_win:,.0f}",f"₹{port_gross_win:,.0f}",_fna(fw2_gw),_fna(fw4_gw),_fna(fwp_gw),_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDB14,_TDB14,_TDB14)}
-            {_row9("ITR Tax 30%",f"-₹{s2_itr5:,.0f}",f"-₹{s4_itr5:,.0f}",f"-₹{port_itr5:,.0f}",f"-₹{s2_itr5:,.0f}",f"-₹{s4_itr5:,.0f}",f"-₹{port_itr5:,.0f}",_fna(fw2_itr),_fna(fw4_itr),_fna(fwp_itr),_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B)}
-            {_row9("Keep Aside (ITR)",f"₹{s2_itr5:,.0f}",f"₹{s4_itr5:,.0f}",f"₹{port_itr5:,.0f}",f"₹{s2_itr5:,.0f}",f"₹{s4_itr5:,.0f}",f"₹{port_itr5:,.0f}",_fna(fw2_itr),_fna(fw4_itr),_fna(fwp_itr),_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14)}
-            {_row9("Net After ITR Tax",f"₹{s2_net_itr5:,.0f}",f"₹{s4_net_itr5:,.0f}",f"₹{port_net_itr5:,.0f}",f"₹{s2_net_itr10:,.0f}",f"₹{s4_net_itr10:,.0f}",f"₹{port_net_itr10:,.0f}",_fna(fw2_nitr),_fna(fw4_nitr),_fna(fwp_nitr),_c(s2_net_itr5),_c(s4_net_itr5),_c(port_net_itr5),_c(s2_net_itr10),_c(s4_net_itr10),_c(port_net_itr10),_cf(fw2_nitr),_cf(fw4_nitr),_cf(fwp_nitr))}
-            <tr><td colspan="10" style="{_SUB14}">RECOMMENDED CAPITAL (3x MAX DD)</td></tr>
-            {_row9("Rec Capital",f"₹{s2_rc5:,.0f}",f"₹{s4_rc5:,.0f}",f"₹{port_rc5:,.0f}",f"₹{s2_rc10:,.0f}",f"₹{s4_rc10:,.0f}",f"₹{port_rc10:,.0f}",_fna(fw2_rc),_fna(fw4_rc),_fna(fwp_rc),_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14)}
-            <tr><td colspan="10" style="{_SUB14}">RETURN ON CAPITAL</td></tr>
-            {_row9("ROC Total",_pct(s2_roc5),_pct(s4_roc5),_pct(port_roc5),_pct(s2_roc10),_pct(s4_roc10),_pct(port_roc10),_fna(fw2_roc,"pct"),_fna(fw4_roc,"pct"),_fna(fwp_roc,"pct"),_TDG14,_TDG14,_TDG14,_c(s2_roc10),_c(s4_roc10),_c(port_roc10),_TDB14,_TDB14,_TDB14)}
-            {_row9("ROC Monthly Avg",_pct(s2_rocm5),_pct(s4_rocm5),_pct(port_rocm5),_pct(s2_rocm10),_pct(s4_rocm10),_pct(port_rocm10),_fna(fw2_rocm,"pct"),_fna(fw4_rocm,"pct"),_fna(fwp_rocm,"pct"),_TDG14,_TDG14,_TDG14,_c(s2_rocm10),_c(s4_rocm10),_c(port_rocm10),_TDB14,_TDB14,_TDB14)}
-            <tr><td colspan="10" style="{_SUB14}">MAX DRAWDOWN</td></tr>
-            {_row9("Max Drawdown",f"-₹{s2_dd:,.0f}",f"-₹{s4_dd:,.0f}",f"-₹{port_dd:,.0f}",f"-₹{s2_dd:,.0f}",f"-₹{s4_dd:,.0f}",f"-₹{port_dd:,.0f}",f"-{_fna(fw2_dd)}" if fw2_dd else _na14,f"-{_fna(fw4_dd)}" if fw4_dd else _na14,f"-{_fna(fwp_dd)}" if fwp_dd else _na14,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B)}
-            {_row9("Max DD Period (days)",f"{s2_ddd}d",f"{s4_ddd}d",f"{port_ddd}d",f"{s2_ddd}d",f"{s4_ddd}d",f"{port_ddd}d",_fna(fw2_ddd,"int") if fw2_ddd else _na14,_fna(fw4_ddd,"int") if fw4_ddd else _na14,_na14,_TDR14,_TDR14,_TDR14,_TDR14,_TDR14,_TDR14)}
-            {_row9("Max DD Period Loss",f"-₹{s2_ddl:,.0f}",f"-₹{s4_ddl:,.0f}",f"-₹{port_ddl:,.0f}",f"-₹{s2_ddl:,.0f}",f"-₹{s4_ddl:,.0f}",f"-₹{port_ddl:,.0f}",f"-{_fna(fw2_ddl)}" if fw2_ddl else _na14,f"-{_fna(fw4_ddl)}" if fw4_ddl else _na14,f"-{_fna(fwp_ddl)}" if fwp_ddl else _na14,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B)}
-            {_row9("Max Win Streak Days",f"{s2_ws}d",f"{s4_ws}d",f"{port_ws}d",f"{s2_ws}d",f"{s4_ws}d",f"{port_ws}d",_fna(fw2_ws,"int") if fw2_ws else _na14,_fna(fw4_ws,"int") if fw4_ws else _na14,_na14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDB14,_TDB14,_TDB14)}
-            {_row9("Avg Margin/trade",f"₹{s2_mg:,.0f}",f"₹{s4_mg:,.0f}","-",f"₹{s2_mg:,.0f}",f"₹{s4_mg:,.0f}","-",_na14,_na14,_na14,_TDR14,_TDR14,_DASH14,_TDR14,_TDR14,_DASH14)}
-            </tbody>
-            </table>
-            </div>"""
-
-        # Load data
-        _now14 = _dt14.datetime.utcnow()
-        _1yr_from = (_now14 - _dt14.timedelta(days=365)).strftime("%Y-%m-%d")
-        _full_from = "2024-01-01"
-
-        _d2_1yr  = _load14("output/trade_log_RenkoReversal*.csv",       _1yr_from)
-        _d4_1yr  = _load14("output/trade_log_RenkoSMIIOSupertrend*.csv",_1yr_from)
-        _d2_full = _load14("output/trade_log_RenkoReversal*.csv",       _full_from)
-        _d4_full = _load14("output/trade_log_RenkoSMIIOSupertrend*.csv",_full_from)
-
-        _1yr_label = f"{(_now14-_dt14.timedelta(days=365)).strftime('%d-%b-%Y')} to {_now14.strftime('%d-%b-%Y')} (1 Year)"
-        _full_label= f"2024-01-01 to {_now14.strftime('%d-%b-%Y')} (Full CSV)"
-
-        import os as _os14
-        _s2_key=_os14.getenv("S2_API_KEY",""); _s2_sec=_os14.getenv("S2_API_SECRET","")
-        _s4_key=_os14.getenv("S4_API_KEY",""); _s4_sec=_os14.getenv("S4_API_SECRET","")
-        _fwd_base="https://cdn-ind.testnet.deltaex.org"
-        _df2_fwd=_load14_fwd(84,_s2_key,_s2_sec,_fwd_base)
-        _df4_fwd=_load14_fwd(84,_s4_key,_s4_sec,_fwd_base)
         # TODAY'S TRADES TABLE AT TOP
         def _today_trades_html(df2, df4, df2_fwd, df4_fwd):
             import datetime as _dtt
