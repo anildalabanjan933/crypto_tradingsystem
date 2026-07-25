@@ -5250,7 +5250,8 @@ with _tab_analysis:
                 for i in range(tc):
                     bt = bt_rows[i] if i < n_bt else None
                     lv = lv_rows[i] if i < n_lv else None
-                    sno_cell = f'<td rowspan="2" style="{TDN}">{i+1}</td>'
+                    _sep = "border-top:3px solid #42A5F5;" if i>0 else ""
+                    sno_cell = f'<td rowspan="2" style="{TDN}{_sep}">{i+1}</td>'
                     for ridx, (row, src) in enumerate([(bt, f"BT {strat}"), (lv, f"LV {strat}")]):
                         is_lv = (ridx == 1)
                         match_cell = (f'<td style="{TD}font-size:14px;">{_match(bt,lv)}</td>' if is_lv
