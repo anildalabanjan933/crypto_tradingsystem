@@ -14,6 +14,14 @@ mkdir -p logs
 # Load API keys from .env
 set -a; source .env; set +a
 
+# Trim large log files before start
+for log in logs/live_trading_testmember1_s2.log logs/live_trading_testmember1_s4.log logs/live_trading_s2.log logs/live_trading_s4.log; do
+    if [ -f "$log" ] && [ $(du -m "$log" | cut -f1) -gt 50 ]; then
+        tail -2000 "$log" > "$log.tmp" && mv "$log.tmp" "$log"
+        echo "Trimmed $log"
+    fi
+done
+
 # Kill ALL existing screens
 screen -S signal_generator -X quit 2>/dev/null
 screen -S renko_engine -X quit 2>/dev/null
