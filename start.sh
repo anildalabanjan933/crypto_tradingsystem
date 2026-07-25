@@ -34,11 +34,11 @@ sleep 2
 
 # Start fresh screens using venv python directly
 screen -dmS signal_generator bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/renko_state_engine.py >> logs/renko_state_engine.log 2>&1"
-screen -dmS live_s2 bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/signal_replay_s2.py >> logs/live_trading_s2.log 2>&1"
-screen -dmS live_s4 bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/signal_replay_s4.py >> logs/live_trading_s4.log 2>&1"
+screen -dmS live_s2 bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/signal_replay_s2.py"
+screen -dmS live_s4 bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/signal_replay_s4.py"
 
 echo "S2 and S4 started"
-screen -dmS testmember1_s2 bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/signal_replay_testmember1_s2.py >> logs/live_trading_testmember1_s2.log 2>&1"
-screen -dmS testmember1_s4 bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/signal_replay_testmember1_s4.py >> logs/live_trading_testmember1_s4.log 2>&1"
+screen -dmS testmember1_s2 bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/signal_replay_testmember1_s2.py"
+screen -dmS testmember1_s4 bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/signal_replay_testmember1_s4.py"
 screen -S dashboard -dm bash -c "cd $REPO && $REPO/.venv/bin/python -m streamlit run dashboard/streamlit_app.py --server.port 8501 --server.address 0.0.0.0 >> logs/dashboard.log 2>&1" 
 screen -ls
