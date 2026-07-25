@@ -234,7 +234,10 @@ while True:
                 break
 
         else:
-            # Sync position from exchange every 5 minutes - detects SL hits and ghost positions
+            log.info(f"[WAIT] now={now} | position={position} | last_known_ts={last_known_ts}")
+            continue
+
+        # Sync position from exchange every 5 minutes - detects SL hits and ghost positions
         if int(time.time()) % 300 < 2:
             _exch = om.get_position()
             _exch_size = abs(_exch.get("size", 0)) if _exch.get("success") else -1
