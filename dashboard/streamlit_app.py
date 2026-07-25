@@ -1311,11 +1311,12 @@ with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b',
 
     # 12B. CHECK ENGINE (renko_state_engine) RUNNING
     try:
+        import time as _time_eng
         _eng_log = "/home/anildalabanjan933/crypto_trading_system/logs/renko_state_engine.log"
         if not os.path.exists(_eng_log):
             errors.append("ENGINE LOG MISSING - renko_state_engine.py never started - run bash start.sh")
         else:
-            _eng_age_mins = (time.time() - os.path.getmtime(_eng_log)) / 60
+            _eng_age_mins = (_time_eng.time() - os.path.getmtime(_eng_log)) / 60
             if _eng_age_mins > 10:
                 errors.append(f"ENGINE DEAD - no update in {int(_eng_age_mins)}m - signals not firing - run bash start.sh IMMEDIATELY")
             elif _eng_age_mins > 3:
@@ -1325,7 +1326,7 @@ with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b',
         # Check signal files age
         for _sf, _label in [("logs/live_signal_s2.txt","S2 signal"), ("logs/live_signal_s4.txt","S4 signal")]:
             if os.path.exists(_sf):
-                _sf_age = (time.time() - os.path.getmtime(_sf)) / 60
+                _sf_age = (_time_eng.time() - os.path.getmtime(_sf)) / 60
                 if _sf_age > 30:
                     warnings.append(f"{_label} file not updated in {int(_sf_age)}m - engine may not be firing")
                 else:
