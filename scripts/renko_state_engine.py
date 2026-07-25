@@ -305,11 +305,15 @@ if __name__=="__main__":
     _ts_s2=_get_signal_ts("logs/live_signal_s2.txt")
     _ts_s4=_get_signal_ts("logs/live_signal_s4.txt")
     if not _ts_s2:
-        _ts_s2=_get_signal_ts("logs/last_known_ts_s2.txt")
-        if _ts_s2: log.info(f"[ENGINE] S2 signal file empty - using bot ts fallback lock: {_ts_s2}")
+        try:
+            _ts_s2=open("logs/last_known_ts_s2.txt").read().strip() or None
+            if _ts_s2: log.info(f"[ENGINE] S2 signal file empty - using bot ts fallback lock: {_ts_s2}")
+        except: pass
     if not _ts_s4:
-        _ts_s4=_get_signal_ts("logs/last_known_ts_s4.txt")
-        if _ts_s4: log.info(f"[ENGINE] S4 signal file empty - using bot ts fallback lock: {_ts_s4}")
+        try:
+            _ts_s4=open("logs/last_known_ts_s4.txt").read().strip() or None
+            if _ts_s4: log.info(f"[ENGINE] S4 signal file empty - using bot ts fallback lock: {_ts_s4}")
+        except: pass
     if _ts_s2:
         s2.last_signal_ts=_ts_s2
         log.info(f"[ENGINE] S2 startup lock ts: {_ts_s2}")
