@@ -5101,7 +5101,9 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
             if df_fwd is None: return []
             rows = []
             try:
-                raw = df_fwd.get("raw_pairs",[]) if isinstance(df_fwd,dict) else []
+                import datetime as _dtt_fwd
+                _today_fwd = _dtt_fwd.datetime.utcnow().strftime("%Y-%m-%d")
+                raw = [p for p in (df_fwd.get("raw_pairs",[]) if isinstance(df_fwd,dict) else []) if str(p.get("entry_ts",""))[:10] >= _today_fwd]
                 # last 10 trades most recent first
                 for p in reversed(raw[-10:]):
                     ep   = float(p.get('entry_price',0))
