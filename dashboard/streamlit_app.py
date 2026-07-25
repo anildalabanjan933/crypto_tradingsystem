@@ -4730,7 +4730,8 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
                 "win_rate":win_rate,"max_profit":max_profit,"max_loss":max_loss,
                 "risk_reward":risk_reward,"profit_factor":profit_factor,"sharpe":sharpe,
                 "max_dd_days":max_dd_days,"max_dd_period_loss":max_dd_period_loss,
-                "max_win_streak_days":max_win_streak_days
+                "max_win_streak_days":max_win_streak_days,
+                "raw_df":df
             }
         except Exception as _e14:
             return None
@@ -4759,7 +4760,7 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
                         ep=open_pos["price"]; xp=price
                         pnl_usd=(xp-ep)*open_pos["size"]*0.001 if open_pos["side"]=="buy" else (ep-xp)*open_pos["size"]*0.001
                         comm=float(f.get("commission",0))*2
-                        pairs.append({"pnl":pnl_usd-comm,"exit_ts":ts_f,"comm":comm})
+                        pairs.append({"pnl":pnl_usd-comm,"exit_ts":ts_f,"comm":comm,"entry_ts":open_pos["ts"],"entry_price":open_pos["price"],"exit_price":price,"side":open_pos["side"],"size":open_pos["size"]})
                         open_pos=None
                     else:
                         open_pos={"side":side,"price":price,"size":size,"ts":ts_f}
@@ -4812,7 +4813,8 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
                 "roc_monthly":roc_monthly,"pnl_today":pnl_today,"pnl_month":pnl_month,
                 "today_count":today_count,"month_count":month_count,
                 "gross_win":gw*_INR14,"total_charges":sum(p["comm"] for p in pairs),
-                "gross":net_usd,"net":net_usd,"margin_avg":0
+                "gross":net_usd,"net":net_usd,"margin_avg":0,
+                "raw_pairs":pairs
             }
         except Exception as _ef14:
             return None
@@ -5004,6 +5006,148 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
     _fwd_base="https://cdn-ind.testnet.deltaex.org"
     _df2_fwd=_load14_fwd(84,_s2_key,_s2_sec,_fwd_base)
     _df4_fwd=_load14_fwd(84,_s4_key,_s4_sec,_fwd_base)
+    # TODAY'S TRADES TABLE AT TOP
+    def _today_trades_html(df2, df4, df2_fwd, df4_fwd):
+        import datetime as _dtt
+        _INR = 84.0
+        _SLIP10_EXTRA = 10.0
+        now_utc = _dtt.datetime.utcnow()
+        today_s = now_utc.replace(hour=0,minute=0,second=0,microsecond=0)
+        def _to_ist(ts):
+            try:
+                dt = _pd14.to_datetime(str(ts).replace("T"," "))
+                ist = dt + _dtt.timedelta(hours=5, minutes=30)
+                return ist.strftime("%d-%b %I:%M %p")
+            except: return "-"
+        def _get_bt_rows(df, label):
+            if df is None: return []
+            rows = []
+            try:
+                import pandas as _pd_t
+                # df is a dict from _load14 - get raw_df
+                dfc = df.get("raw_df") if isinstance(df, dict) else df
+                if dfc is None or not hasattr(dfc, 'iterrows'): return []
+                dfc = dfc.copy()
+                dfc['exit_datetime'] = _pd_t.to_datetime(dfc['exit_datetime'])
+                dfc['entry_datetime'] = _pd_t.to_datetime(dfc['entry_datetime'])
+                # last 10 trades most recent first
+                dfc = dfc.sort_values('exit_datetime', ascending=False).head(10)
+                for _, r in dfc.iterrows():
+                    rows.append({
+                        'label'    : label,
+                        'dir'      : str(r.get('direction','')).upper(),
+                        'entry_ist': _to_ist(r.get('entry_datetime','')),
+                        'exit_ist' : _to_ist(r.get('exit_datetime','')),
+                        'entry_p'  : float(r.get('entry_price',0)),
+                        'exit_p'   : float(r.get('exit_price',0)),
+                        'pnl_usd'  : float(r.get('net_pnl',0)),
+                        'pnl_inr5' : float(r.get('net_pnl_inr',0)),
+                        'pnl_inr10': float(r.get('net_pnl_inr',0)) - (_SLIP10_EXTRA * _INR),
+                        'charges'  : (float(r.get('taker_fees_usd',0))+float(r.get('slippage_usd',0))+float(r.get('funding_usd',0))+float(r.get('tax_usd',0)))*_INR,
+                    })
+            except: pass
+            return rows
+        def _get_fwd_rows(df_fwd, label):
+            if df_fwd is None: return []
+            rows = []
+            try:
+                raw = df_fwd.get("raw_pairs",[]) if isinstance(df_fwd,dict) else []
+                # last 10 trades most recent first
+                for p in reversed(raw[-10:]):
+                    ep   = float(p.get('entry_price',0))
+                    xp   = float(p.get('exit_price',0))
+                    side = str(p.get('side','buy')).lower()
+                    lots = float(p.get('size',100))
+                    pnl_net = float(p.get('pnl',0))
+                    comm    = float(p.get('comm',0))
+                    entry_ts = p.get('entry_ts','')
+                    exit_ts  = p.get('exit_ts','')
+                    rows.append({
+                        'label'    : label,
+                        'dir'      : 'LONG' if side=='buy' else 'SHORT',
+                        'entry_ist': _to_ist(entry_ts),
+                        'exit_ist' : _to_ist(exit_ts),
+                        'entry_p'  : ep,
+                        'exit_p'   : xp,
+                        'pnl_usd'  : pnl_net,
+                        'pnl_inr5' : pnl_net*_INR,
+                        'pnl_inr10': pnl_net*_INR,
+                        'charges'  : comm*_INR,
+                    })
+            except: pass
+            return rows
+        bt2 = _get_bt_rows(df2, "BT S2")
+        bt4 = _get_bt_rows(df4, "BT S4")
+        lv2 = _get_fwd_rows(df2_fwd, "LV S2")
+        lv4 = _get_fwd_rows(df4_fwd, "LV S4")
+        all_pairs = []
+        max_len = max(len(bt2),len(lv2),len(bt4),len(lv4),1)
+        for i in range(max(len(bt2),len(lv2))):
+            bt = bt2[i] if i < len(bt2) else None
+            lv = lv2[i] if i < len(lv2) else None
+            all_pairs.append(('S2', bt, lv))
+        for i in range(max(len(bt4),len(lv4))):
+            bt = bt4[i] if i < len(bt4) else None
+            lv = lv4[i] if i < len(lv4) else None
+            all_pairs.append(('S4', bt, lv))
+        today_str = _dtt.datetime.utcnow().strftime("%d-%b-%Y")
+        TH = "padding:5px 8px;border:1px solid #C8D0DC;background:#1565C0;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+        TD = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;text-align:center;"
+        def _pnl_color(v): return "#089981" if v>=0 else "#F23645"
+        def _dir_color(d): return "#089981" if d=="LONG" else "#F23645"
+        def _match(bt, lv):
+            if bt is None or lv is None: return "-"
+            if bt['dir']==lv['dir'] and bt['entry_ist']==lv['entry_ist']: return "✅"
+            return "❌"
+        html = f"""<div style="overflow-x:auto;margin:8px 0;">
+<div style="font-size:13px;font-weight:700;color:#1565C0;margin-bottom:6px;">TODAY'S TRADES — {today_str} (Dynamic | Auto-updates)</div>
+<table style="width:100%;border-collapse:collapse;">
+<thead><tr>
+<th style="{TH}">Source</th>
+<th style="{TH}">Dir</th>
+<th style="{TH}">Entry IST</th>
+<th style="{TH}">Exit IST</th>
+<th style="{TH}">Entry $</th>
+<th style="{TH}">Exit $</th>
+<th style="{TH}">PnL $</th>
+<th style="{TH}">Net PnL ₹ ($5/side)</th>
+<th style="{TH}">Net PnL ₹ ($10/side)</th>
+<th style="{TH}">Charges ₹</th>
+<th style="{TH}">Match</th>
+</tr></thead><tbody>"""
+        if not all_pairs:
+            html += f'<tr><td colspan="11" style="{TD}color:#aaa;">No trades today yet</td></tr>'
+        for strat, bt, lv in all_pairs:
+            sep = f'<tr><td colspan="11" style="padding:2px;background:#f0f3fa;border:1px solid #E0E3EB;font-size:9px;font-weight:700;color:#555;text-align:left;padding-left:8px;">{strat}</td></tr>'
+            html += sep
+            for row, src in [(bt, f"BT {strat}"), (lv, f"LV {strat}")]:
+                if row is None:
+                    html += f'<tr><td style="{TD}color:#aaa;">{src}</td>'+''.join([f'<td style="{TD}color:#aaa;">-</td>']*9)
+                    if src.startswith("LV"): html += f'<td style="{TD}">-</td>'
+                    html += '</tr>'
+                else:
+                    dc = _dir_color(row["dir"])
+                    pc5 = _pnl_color(row["pnl_inr5"])
+                    pc10 = _pnl_color(row["pnl_inr10"])
+                    pu = _pnl_color(row["pnl_usd"])
+                    match_cell = f'<td style="{TD}font-size:14px;">{_match(bt,lv)}</td>' if src.startswith("LV") else '<td style="{}"></td>'.format(TD)
+                    html += f"""<tr>
+<td style="{TD}font-weight:700;">{src}</td>
+<td style="{TD}color:{dc};font-weight:700;">{row["dir"]}</td>
+<td style="{TD}">{row["entry_ist"]}</td>
+<td style="{TD}">{row["exit_ist"]}</td>
+<td style="{TD}">${row["entry_p"]:,.0f}</td>
+<td style="{TD}">${row["exit_p"]:,.0f}</td>
+<td style="{TD}color:{pu};font-weight:700;">${row["pnl_usd"]:+,.2f}</td>
+<td style="{TD}color:{pc5};font-weight:700;">₹{row["pnl_inr5"]:+,.0f}</td>
+<td style="{TD}color:{pc10};font-weight:700;">₹{row["pnl_inr10"]:+,.0f}</td>
+<td style="{TD}">₹{row["charges"]:,.0f}</td>
+{match_cell}
+</tr>"""
+        html += "</tbody></table></div>"
+        return html
+    st.markdown(_today_trades_html(_d2_full, _d4_full, _df2_fwd, _df4_fwd), unsafe_allow_html=True)
+    st.markdown("---")
     st.markdown(_tbl14(_d2_1yr,_d4_1yr,"1-YEAR BACKTEST",_1yr_label,_df2_fwd,_df4_fwd),unsafe_allow_html=True)
     st.markdown("---")
     st.markdown(_tbl14(_d2_full,_d4_full,"FULL CSV BACKTEST",_full_label,_df2_fwd,_df4_fwd),unsafe_allow_html=True)
