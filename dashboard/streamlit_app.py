@@ -627,9 +627,9 @@ else:
 
 # REFRESH STATUS IN HEADER
 import datetime as _dt_refresh
-_last_refresh = _dt_refresh.datetime.now().strftime("%I:%M %p")
+_last_refresh = (_dt_refresh.datetime.utcnow() + _dt_refresh.timedelta(hours=5, minutes=30)).strftime("%I:%M %p")
 st.markdown(
-    f'''<div style="text-align:right;font-size:10px;color:#888;margin:-8px 0 4px 0;">
+    f'''<div style="text-align:right;font-size:11px;color:#333;font-weight:600;margin:-8px 0 4px 0;">
     Auto-refresh every 60s &nbsp;|&nbsp; Last updated: {_last_refresh} IST
     &nbsp; <span style="background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:3px;font-size:10px;">LIVE</span>
     </div>''',
