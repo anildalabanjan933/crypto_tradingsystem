@@ -671,8 +671,12 @@ def _load14(csv_pattern, from_dt=None):
         tot  = len(df)
         gross= df['gross_pnl'].sum() if 'gross_pnl' in df.columns else 0
         net  = df['net_pnl'].sum() if 'net_pnl' in df.columns else 0
-        net_inr = df['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else net*_INR14
+        net_inr_pretax = df['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else net*_INR14
         tax  = df['tax_usd'].sum() if 'tax_usd' in df.columns else 0
+        # Apply 10% tax on winning PnL (matches manual backtest engine)
+        _win_pnl_inr = df[df['net_pnl_inr']>0]['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else 0
+        _tax_inr = _win_pnl_inr * 0.10
+        net_inr = net_inr_pretax - _tax_inr
         fees = df['taker_fees_usd'].sum() if 'taker_fees_usd' in df.columns else 0
         slip = df['slippage_usd'].sum() if 'slippage_usd' in df.columns else 0
         fund = df['funding_usd'].sum() if 'funding_usd' in df.columns else 0
@@ -823,7 +827,10 @@ def _load14_fwd(product_id, api_key, api_secret, base_url):
         tot=len(pairs); pnls=[p["pnl"] for p in pairs]
         wins=[v for v in pnls if v>0]; losses=[v for v in pnls if v<0]
         win_rate=len(wins)/tot*100 if tot>0 else 0
-        net_usd=sum(pnls); net_inr=net_usd*_INR14
+        net_usd=sum(pnls)
+        _win_usd=[v for v in pnls if v>0]
+        _tax_usd=sum(_win_usd)*0.10
+        net_inr=(net_usd-_tax_usd)*_INR14
         gw=sum(wins) if wins else 0; gl=abs(sum(losses)) if losses else 0
         profit_factor=gw/gl if gl>0 else 0
         avg_win=sum(wins)/len(wins) if wins else 0
@@ -4647,7 +4654,9 @@ with _tab_analysis:
                 los = tot - win
                 wr  = win/tot*100
                 nu  = df['net_pnl'].sum()
-                ni  = df['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else nu*_INR13
+                ni_pretax = df['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else nu*_INR13
+                _win_inr13 = df[df['net_pnl_inr']>0]['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else 0
+                ni = ni_pretax - _win_inr13*0.10
                 cm  = df['total_charges_usd'].sum() if 'total_charges_usd' in df.columns else (df['charges'].sum() if 'charges' in df.columns else 0)
                 pls = df['net_pnl'].tolist()
                 cum,pk,dd = 0,0,0
@@ -5182,8 +5191,8 @@ with _tab_analysis:
                             'entry_p'  : float(r.get('entry_price',0)),
                             'exit_p'   : float(r.get('exit_price',0)),
                             'pnl_usd'  : float(r.get('net_pnl',0)),
-                            'pnl_inr5' : float(r.get('net_pnl_inr',0)),
-                            'pnl_inr10': float(r.get('net_pnl_inr',0)) - (_SLIP10_EXTRA * _INR),
+                            'pnl_inr5' : float(r.get('net_pnl_inr',0)) - (max(float(r.get('net_pnl_inr',0)),0)*0.10),
+                            'pnl_inr10': float(r.get('net_pnl_inr',0)) - (max(float(r.get('net_pnl_inr',0)),0)*0.10) - (_SLIP10_EXTRA * _INR),
                             'charges'  : (float(r.get('taker_fees_usd',0))+float(r.get('slippage_usd',0))+float(r.get('funding_usd',0))+float(r.get('tax_usd',0)))*_INR,
                         })
                 except: pass
