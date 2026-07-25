@@ -374,6 +374,7 @@ if __name__=="__main__":
         log.info("[WS] Connected - instant candle detection active")
         ws.send(json.dumps({"type":"subscribe","payload":{"channels":[{"name":"candlestick_1m","symbols":["BTCUSD"]}]}}))
 
+    _ws_fail_count=[0]
     def _ws_thread():
         while True:
             try:
@@ -381,7 +382,17 @@ if __name__=="__main__":
                     ws=websocket.WebSocketApp("wss://socket.india.delta.exchange",
                         on_open=_ws_on_open,on_message=_ws_on_message,
                         on_error=_ws_on_error,on_close=_ws_on_close)
-                    ws.run_forever(ping_interval=30,ping_timeout=10)
+                    ws.run_forever(ping_interval=20,ping_timeout=8)
+                    _ws_fail_count[0]+=1
+                    if _ws_fail_count[0]>=3:
+                        try:
+                            from engine.telegram_alert import send_alert
+                            send_alert(f"CTS ENGINE WARNING
+WebSocket disconnected {_ws_fail_count[0]} times
+Engine still running via polling
+Check VM if alerts stop")
+                        except: pass
+                        _ws_fail_count[0]=0
             except Exception as e:
                 log.error(f"[WS] Thread error: {e}")
             log.warning("[WS] Reconnecting in 5s...")
