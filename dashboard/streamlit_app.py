@@ -5224,10 +5224,10 @@ with _tab_analysis:
                     '<div style="margin:12px 0 0 0;font-size:12px;font-weight:700;color:#fff;'
                     'background:#1565C0;padding:6px 10px;border-radius:4px 4px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:6px;">'
                     f'<span>TODAY\'S TRADES ({today_str}) — Backtest {strat} vs Forward Test {strat}</span>'
-                    f'<span style="background:#fff;color:#1565C0;border-radius:3px;padding:1px 7px;font-size:11px;">BT Trades: {n_bt}</span>'
-                    f'<span style="background:#e8f5e9;color:#1b5e20;border-radius:3px;padding:1px 7px;font-size:11px;">LV Trades: {n_lv}</span>'
-                    f'<span style="background:#fff3e0;color:#e65100;border-radius:3px;padding:1px 7px;font-size:11px;">BT PnL $5: <b style="color:{_pc(bt_pnl5)}">{_fmt(bt_pnl5)}</b> | $10: <b style="color:{_pc(bt_pnl10)}">{_fmt(bt_pnl10)}</b></span>'
-                    f'<span style="background:#e3f2fd;color:#0d47a1;border-radius:3px;padding:1px 7px;font-size:11px;">LV PnL $5: <b style="color:{_pc(lv_pnl5)}">{_fmt(lv_pnl5)}</b> | $10: <b style="color:{_pc(lv_pnl10)}">{_fmt(lv_pnl10)}</b></span>'
+                    f'<span style="background:#fff;color:#1565C0;border-radius:3px;padding:3px 10px;font-size:12px;font-weight:700;">BT Trades: {n_bt}</span>'
+                    f'<span style="background:#e8f5e9;color:#1b5e20;border-radius:3px;padding:3px 10px;font-size:12px;font-weight:700;">LV Trades: {n_lv}</span>'
+                    f'<span style="background:#fff3e0;color:#e65100;border-radius:3px;padding:3px 10px;font-size:12px;">BT PnL $5: <b style="color:{_pc(bt_pnl5)}">{_fmt(bt_pnl5)}</b> | $10: <b style="color:{_pc(bt_pnl10)}">{_fmt(bt_pnl10)}</b></span>'
+                    f'<span style="background:#e3f2fd;color:#0d47a1;border-radius:3px;padding:3px 10px;font-size:12px;">LV PnL $5: <b style="color:{_pc(lv_pnl5)}">{_fmt(lv_pnl5)}</b> | $10: <b style="color:{_pc(lv_pnl10)}">{_fmt(lv_pnl10)}</b></span>'
                     '</div>'
                 )
                 tbl = '<table style="width:100%;border-collapse:collapse;margin-bottom:4px;">'
@@ -5267,7 +5267,8 @@ with _tab_analysis:
                             pc10= _pnl_color(row["pnl_inr10"])
                             pu  = _pnl_color(row["pnl_usd"])
                             bg  = "background:#f0f7ff;" if not is_lv else ""
-                            tbl += f'<tr>{sno}'
+                            _row_sep = _sep if ridx==0 else ""
+                            tbl += f'<tr style="{_row_sep}">{sno}'
                             tbl += f'<td style="{TD}{bg}font-weight:700;">{src}</td>'
                             tbl += f'<td style="{TD}color:{dc};font-weight:700;">{row["dir"]}</td>'
                             tbl += f'<td style="{TD}{bg}">{row["entry_ist"]}</td>'
