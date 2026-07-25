@@ -602,7 +602,7 @@ st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e
 
 # MAIN NAVIGATION TABS
 _tab_monitor, _tab_trading, _tab_today, _tab_analysis, _tab_backtest, _tab_datasync, _tab_maint = st.tabs([
-    "📊 MONITOR", "🤖 TRADING", "📅 TODAY'S TRADES", "📈 ANALYSIS", "🧪 BACKTEST", "💾 DATA & SYNC", "🔧 MAINTENANCE"
+    "MONITOR", "TRADING", "TODAY'S TRADES", "ANALYSIS", "BACKTEST", "DATA & SYNC", "MAINTENANCE"
 ])
 
 with _tab_monitor:
