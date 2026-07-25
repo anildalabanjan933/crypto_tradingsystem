@@ -756,7 +756,17 @@ def _load14_fwd(product_id, api_key, api_secret, base_url):
         if r.status_code!=200: return None
         fills=r.json().get("result",[])
         if not fills: return None
-        all_s=sorted(fills,key=lambda x:x.get("created_at",""))
+        # Deduplicate fills by order_id - take weighted avg price per order
+        from collections import defaultdict as _dd
+        _ord = _dd(list)
+        for _fx in fills: _ord[_fx.get("order_id","")].append(_fx)
+        _deduped = []
+        for _oid, _flist in _ord.items():
+            _tot_sz = sum(float(_fx.get("size",0)) for _fx in _flist)
+            _avg_px = sum(float(_fx.get("fill_price",0) or 0)*float(_fx.get("size",0)) for _fx in _flist) / max(_tot_sz,1)
+            _f0 = _flist[0]
+            _deduped.append({"side":_f0.get("side",""),"fill_price":_avg_px,"size":_tot_sz,"created_at":_f0.get("created_at",""),"commission":sum(float(_fx.get("commission",0)) for _fx in _flist)})
+        all_s=sorted(_deduped,key=lambda x:x.get("created_at",""))
         pairs=[]; open_pos=None
         for f in all_s:
             side=f.get("side",""); price=float(f.get("fill_price",0))
