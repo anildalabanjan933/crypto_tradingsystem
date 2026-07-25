@@ -385,7 +385,7 @@ if __name__=="__main__":
                         on_error=_ws_on_error,on_close=_ws_on_close)
                     ws.run_forever(ping_interval=20,ping_timeout=8)
                     _ws_fail_count[0]+=1
-                    if _ws_fail_count[0]>=3:
+                    if _ws_fail_count[0]>=10:
                         try:
                             from engine.telegram_alert import send_alert
                             _msg = "CTS ENGINE WARNING - WebSocket disconnected " + str(_ws_fail_count[0]) + " times. Engine still running via polling. Check VM if alerts stop."
