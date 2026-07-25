@@ -5080,71 +5080,82 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
         bt4 = _get_bt_rows(df4, "BT S4")
         lv2 = _get_fwd_rows(df2_fwd, "LV S2")
         lv4 = _get_fwd_rows(df4_fwd, "LV S4")
-        all_pairs = []
-        max_len = max(len(bt2),len(lv2),len(bt4),len(lv4),1)
-        for i in range(max(len(bt2),len(lv2))):
-            bt = bt2[i] if i < len(bt2) else None
-            lv = lv2[i] if i < len(lv2) else None
-            all_pairs.append(('S2', bt, lv))
-        for i in range(max(len(bt4),len(lv4))):
-            bt = bt4[i] if i < len(bt4) else None
-            lv = lv4[i] if i < len(lv4) else None
-            all_pairs.append(('S4', bt, lv))
         today_str = _dtt.datetime.utcnow().strftime("%d-%b-%Y")
-        TH = "padding:5px 8px;border:1px solid #C8D0DC;background:#1565C0;font-size:10px;font-weight:700;color:#fff;text-align:center;"
-        TD = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;text-align:center;"
+        TH  = "padding:5px 8px;border:1px solid #C8D0DC;background:#1565C0;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+        THS = "padding:5px 8px;border:1px solid #C8D0DC;background:#1565C0;font-size:10px;font-weight:700;color:#fff;text-align:center;width:40px;"
+        TD  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;text-align:center;"
+        TDN = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;text-align:center;background:#f7f9fc;font-weight:700;color:#555;vertical-align:middle;"
         def _pnl_color(v): return "#089981" if v>=0 else "#F23645"
         def _dir_color(d): return "#089981" if d=="LONG" else "#F23645"
         def _match(bt, lv):
             if bt is None or lv is None: return "-"
-            if bt['dir']==lv['dir'] and bt['entry_ist']==lv['entry_ist']: return "✅"
+            if bt["dir"]==lv["dir"] and bt["entry_ist"]==lv["entry_ist"]: return "✅"
             return "❌"
-        html = f"""<div style="overflow-x:auto;margin:8px 0;">
-<div style="font-size:13px;font-weight:700;color:#1565C0;margin-bottom:6px;">TODAY'S TRADES — {today_str} (Dynamic | Auto-updates)</div>
-<table style="width:100%;border-collapse:collapse;">
-<thead><tr>
-<th style="{TH}">Source</th>
-<th style="{TH}">Dir</th>
-<th style="{TH}">Entry IST</th>
-<th style="{TH}">Exit IST</th>
-<th style="{TH}">Entry $</th>
-<th style="{TH}">Exit $</th>
-<th style="{TH}">PnL $</th>
-<th style="{TH}">Net PnL ₹ ($5/side)</th>
-<th style="{TH}">Net PnL ₹ ($10/side)</th>
-<th style="{TH}">Charges ₹</th>
-<th style="{TH}">Match</th>
-</tr></thead><tbody>"""
-        if not all_pairs:
-            html += f'<tr><td colspan="11" style="{TD}color:#aaa;">No trades today yet</td></tr>'
-        for strat, bt, lv in all_pairs:
-            sep = f'<tr><td colspan="11" style="padding:2px;background:#f0f3fa;border:1px solid #E0E3EB;font-size:9px;font-weight:700;color:#555;text-align:left;padding-left:8px;">{strat}</td></tr>'
-            html += sep
-            for row, src in [(bt, f"BT {strat}"), (lv, f"LV {strat}")]:
-                if row is None:
-                    html += f'<tr><td style="{TD}color:#aaa;">{src}</td>'+''.join([f'<td style="{TD}color:#aaa;">-</td>']*9)
-                    if src.startswith("LV"): html += f'<td style="{TD}">-</td>'
-                    html += '</tr>'
-                else:
-                    dc = _dir_color(row["dir"])
-                    pc5 = _pnl_color(row["pnl_inr5"])
-                    pc10 = _pnl_color(row["pnl_inr10"])
-                    pu = _pnl_color(row["pnl_usd"])
-                    match_cell = f'<td style="{TD}font-size:14px;">{_match(bt,lv)}</td>' if src.startswith("LV") else '<td style="{}"></td>'.format(TD)
-                    html += f"""<tr>
-<td style="{TD}font-weight:700;">{src}</td>
-<td style="{TD}color:{dc};font-weight:700;">{row["dir"]}</td>
-<td style="{TD}">{row["entry_ist"]}</td>
-<td style="{TD}">{row["exit_ist"]}</td>
-<td style="{TD}">${row["entry_p"]:,.0f}</td>
-<td style="{TD}">${row["exit_p"]:,.0f}</td>
-<td style="{TD}color:{pu};font-weight:700;">${row["pnl_usd"]:+,.2f}</td>
-<td style="{TD}color:{pc5};font-weight:700;">₹{row["pnl_inr5"]:+,.0f}</td>
-<td style="{TD}color:{pc10};font-weight:700;">₹{row["pnl_inr10"]:+,.0f}</td>
-<td style="{TD}">₹{row["charges"]:,.0f}</td>
-{match_cell}
-</tr>"""
-        html += "</tbody></table></div>"
+        def _section_html(strat, bt_rows, lv_rows):
+            n_bt = len(bt_rows); n_lv = len(lv_rows)
+            tc = max(n_bt, n_lv)
+            hdr = (
+                '<div style="margin:12px 0 0 0;font-size:12px;font-weight:700;color:#fff;'
+                'background:#1565C0;padding:6px 10px;border-radius:4px 4px 0 0;">'
+                f"TODAY'S TRADES ({today_str}) — Backtest {strat} vs Forward Test {strat}"
+                f'&nbsp;&nbsp;<span style="background:#fff;color:#1565C0;border-radius:3px;'
+                f'padding:1px 7px;font-size:11px;">Trade Count: {tc}</span></div>'
+            )
+            tbl = '<table style="width:100%;border-collapse:collapse;margin-bottom:4px;">'
+            tbl += '<thead><tr>'
+            tbl += f'<th style="{THS}">S.No</th>'
+            tbl += f'<th style="{TH}">Source</th>'
+            tbl += f'<th style="{TH}">Dir</th>'
+            tbl += f'<th style="{TH}">Entry IST</th>'
+            tbl += f'<th style="{TH}">Exit IST</th>'
+            tbl += f'<th style="{TH}">Entry $</th>'
+            tbl += f'<th style="{TH}">Exit $</th>'
+            tbl += f'<th style="{TH}">PnL $</th>'
+            tbl += f'<th style="{TH}">Net PnL ₹ ($5/side)</th>'
+            tbl += f'<th style="{TH}">Net PnL ₹ ($10/side)</th>'
+            tbl += f'<th style="{TH}">Charges ₹</th>'
+            tbl += f'<th style="{TH}">Match</th>'
+            tbl += '</tr></thead><tbody>'
+            if tc == 0:
+                tbl += f'<tr><td colspan="12" style="{TD}color:#aaa;">No trades yet</td></tr>'
+            for i in range(tc):
+                bt = bt_rows[i] if i < n_bt else None
+                lv = lv_rows[i] if i < n_lv else None
+                sno_cell = f'<td rowspan="2" style="{TDN}">{i+1}</td>'
+                for ridx, (row, src) in enumerate([(bt, f"BT {strat}"), (lv, f"LV {strat}")]):
+                    is_lv = (ridx == 1)
+                    match_cell = (f'<td style="{TD}font-size:14px;">{_match(bt,lv)}</td>' if is_lv
+                                  else f'<td style="{TD}"></td>')
+                    sno = sno_cell if not is_lv else ""
+                    if row is None:
+                        tbl += f'<tr>{sno}<td style="{TD}color:#aaa;">{src}</td>'
+                        tbl += (f'<td style="{TD}color:#aaa;">-</td>' * 9)
+                        tbl += f'{match_cell}</tr>'
+                    else:
+                        dc  = _dir_color(row["dir"])
+                        pc5 = _pnl_color(row["pnl_inr5"])
+                        pc10= _pnl_color(row["pnl_inr10"])
+                        pu  = _pnl_color(row["pnl_usd"])
+                        bg  = "background:#f0f7ff;" if not is_lv else ""
+                        tbl += f'<tr>{sno}'
+                        tbl += f'<td style="{TD}{bg}font-weight:700;">{src}</td>'
+                        tbl += f'<td style="{TD}color:{dc};font-weight:700;">{row["dir"]}</td>'
+                        tbl += f'<td style="{TD}{bg}">{row["entry_ist"]}</td>'
+                        tbl += f'<td style="{TD}{bg}">{row["exit_ist"]}</td>'
+                        tbl += f'<td style="{TD}{bg}">${row["entry_p"]:,.0f}</td>'
+                        tbl += f'<td style="{TD}{bg}">${row["exit_p"]:,.0f}</td>'
+                        tbl += f'<td style="{TD}color:{pu};font-weight:700;">${row["pnl_usd"]:+,.2f}</td>'
+                        tbl += f'<td style="{TD}color:{pc5};font-weight:700;">₹{row["pnl_inr5"]:+,.0f}</td>'
+                        tbl += f'<td style="{TD}color:{pc10};font-weight:700;">₹{row["pnl_inr10"]:+,.0f}</td>'
+                        tbl += f'<td style="{TD}{bg}">₹{row["charges"]:,.0f}</td>'
+                        tbl += f'{match_cell}</tr>'
+            tbl += '</tbody></table>'
+            return hdr + tbl
+        html = '<div style="overflow-x:auto;margin:8px 0;">'
+        html += _section_html("S2", bt2, lv2)
+        html += '<div style="height:14px;"></div>'
+        html += _section_html("S4", bt4, lv4)
+        html += '</div>'
         return html
     st.markdown(_today_trades_html(_d2_full, _d4_full, _df2_fwd, _df4_fwd), unsafe_allow_html=True)
     st.markdown("---")
