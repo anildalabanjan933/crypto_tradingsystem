@@ -1309,6 +1309,43 @@ with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b',
     except Exception as e:
         warnings.append(f"Forward test date check failed: {e}")
 
+    # 12B. CHECK ENGINE (renko_state_engine) RUNNING
+    try:
+        _eng_log = "/home/anildalabanjan933/crypto_trading_system/logs/renko_state_engine.log"
+        if not os.path.exists(_eng_log):
+            errors.append("ENGINE LOG MISSING - renko_state_engine.py never started - run bash start.sh")
+        else:
+            _eng_age_mins = (time.time() - os.path.getmtime(_eng_log)) / 60
+            if _eng_age_mins > 10:
+                errors.append(f"ENGINE DEAD - no update in {int(_eng_age_mins)}m - signals not firing - run bash start.sh IMMEDIATELY")
+            elif _eng_age_mins > 3:
+                warnings.append(f"ENGINE SLOW - last update {int(_eng_age_mins)}m ago - may be stuck")
+            else:
+                ok.append(f"Engine (renko_state_engine): RUNNING - last update {int(_eng_age_mins)}m ago")
+        # Check signal files age
+        for _sf, _label in [("logs/live_signal_s2.txt","S2 signal"), ("logs/live_signal_s4.txt","S4 signal")]:
+            if os.path.exists(_sf):
+                _sf_age = (time.time() - os.path.getmtime(_sf)) / 60
+                if _sf_age > 30:
+                    warnings.append(f"{_label} file not updated in {int(_sf_age)}m - engine may not be firing")
+                else:
+                    ok.append(f"{_label} file: updated {int(_sf_age)}m ago")
+            else:
+                warnings.append(f"{_label} file missing")
+    except Exception as e:
+        warnings.append(f"Engine check failed: {e}")
+
+    # 12C. CHECK SIGNAL_GENERATOR SCREEN RUNNING
+    try:
+        import subprocess
+        _scr = subprocess.run(["screen","-ls"], capture_output=True, text=True, timeout=5)
+        if "signal_generator" in _scr.stdout:
+            ok.append("signal_generator screen: RUNNING")
+        else:
+            errors.append("signal_generator screen MISSING - engine not running - run bash start.sh IMMEDIATELY")
+    except Exception as e:
+        warnings.append(f"signal_generator screen check failed: {e}")
+
     # 13. CHECK .ENV FILE EXISTS AND HAS API KEYS
     try:
         if os.path.exists('.env'):
