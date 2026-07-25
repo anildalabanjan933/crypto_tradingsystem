@@ -642,11 +642,13 @@ import datetime as _dt_cards, time as _t_cards
 # ROW 2 - SYSTEM HEALTH
 _cr2a, _cr2b, _cr2c = st.columns(3)
 
-# CARD 1 - BOT LOG STATUS
+# CARD 1 - BOT LOG STATUS + ENGINE STATUS
 with _cr2a:
     try:
         _s2_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s2.log")) / 60 if os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s2.log") else 999
         _s4_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4.log")) / 60 if os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4.log") else 999
+        _eng_log = "/home/anildalabanjan933/crypto_trading_system/logs/renko_state_engine.log"
+        _eng_age = (_t_cards.time() - os.path.getmtime(_eng_log)) / 60 if os.path.exists(_eng_log) else 999
         st.markdown("**BOT LOG**")
         if _s2_log_age > 10 or _s4_log_age > 10:
             st.error("INACTIVE")
@@ -654,6 +656,16 @@ with _cr2a:
         else:
             st.success("ACTIVE")
             st.caption(f"S2: {int(_s2_log_age)}m ago | S4: {int(_s4_log_age)}m ago")
+        st.markdown("**ENGINE**")
+        if _eng_age > 10:
+            st.error(f"DEAD - {int(_eng_age)}m no update")
+            st.caption("Run: bash start.sh immediately")
+        elif _eng_age > 3:
+            st.warning(f"SLOW - {int(_eng_age)}m ago")
+            st.caption("Engine may be stuck")
+        else:
+            st.success(f"RUNNING - {int(_eng_age)}m ago")
+            st.caption("Engine firing normally")
     except Exception as _e:
         st.markdown("**BOT LOG**")
         st.warning("UNKNOWN")
