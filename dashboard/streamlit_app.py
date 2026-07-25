@@ -1074,7 +1074,9 @@ _tab_monitor, _tab_trading, _tab_today, _tab_analysis, _tab_backtest, _tab_datas
     "MONITOR", "TRADING", "TODAY'S TRADES", "ANALYSIS", "BACKTEST", "DATA & SYNC", "MAINTENANCE"
 ])
 
-with _tab_monitor:
+@st.fragment(run_every=60)
+def _frag_monitor():
+    pass
     # SECTION 1 - SYSTEM STATUS CARDS
     # ================================================================
     st.markdown("<div class='section-title'>SECTION 1 - SYSTEM STATUS & MAINTENANCE</div>", unsafe_allow_html=True)
@@ -2277,6 +2279,9 @@ with _tab_monitor:
     st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
     # ================================================================
+
+with _tab_monitor:
+    _frag_monitor()
 with _tab_trading:
     # SECTION 2 - BOT CONTROL
     st.markdown("<div class='section-title'>SECTION 2 - BOT CONTROL</div>", unsafe_allow_html=True)
@@ -4518,7 +4523,9 @@ with _tab_maint:
 
 
         # ================================================================
-with _tab_analysis:
+@st.fragment(run_every=60)
+def _frag_analysis():
+    pass
     # SECTION 13 - STRATEGY PERFORMANCE SUMMARY
     # ================================================================
     if 'exp_13s' not in st.session_state: st.session_state['exp_13s'] = False
@@ -5402,10 +5409,19 @@ with _tab_analysis:
         """, unsafe_allow_html=True)
 
 
-with _tab_today:
+@st.fragment(run_every=60)
+def _frag_today():
+    pass
     st.markdown("<div class='section-title'>TODAY'S TRADES</div>", unsafe_allow_html=True)
     st.caption('Live comparison of today\'s backtest signals vs forward test execution')
     try:
         st.markdown(_today_trades_html(_d2_full, _d4_full, _df2_fwd, _df4_fwd), unsafe_allow_html=True)
     except:
         st.info('Open ANALYSIS tab first to load data, then return here.')
+
+
+
+with _tab_analysis:
+    _frag_analysis()
+with _tab_today:
+    _frag_today()
