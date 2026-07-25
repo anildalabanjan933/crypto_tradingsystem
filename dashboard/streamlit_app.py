@@ -5080,7 +5080,10 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
                 dfc = dfc.copy()
                 dfc['exit_datetime'] = _pd_t.to_datetime(dfc['exit_datetime'])
                 dfc['entry_datetime'] = _pd_t.to_datetime(dfc['entry_datetime'])
-                # last 10 trades most recent first
+                # filter to today only (entry or exit today)
+                import datetime as _dtt_bt
+                _today_bt = _dtt_bt.datetime.utcnow().strftime("%Y-%m-%d")
+                dfc = dfc[dfc['exit_datetime'].dt.strftime("%Y-%m-%d") >= _today_bt]
                 dfc = dfc.sort_values('exit_datetime', ascending=False).head(10)
                 for _, r in dfc.iterrows():
                     rows.append({
