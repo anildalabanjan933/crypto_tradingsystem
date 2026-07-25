@@ -302,20 +302,22 @@ if __name__=="__main__":
         except:
             pass
         return None
-    _ts_s2=_get_signal_ts("logs/live_signal_s2.txt")
-    _ts_s4=_get_signal_ts("logs/live_signal_s4.txt")
+    # PRIMARY lock = bot last_known_ts files (always correct)
+    # FALLBACK = signal file (only if ts file missing)
+    try:
+        _ts_s2=open("/home/anildalabanjan933/crypto_trading_system/logs/last_known_ts_s2.txt").read().strip() or None
+        if _ts_s2: log.info(f"[ENGINE] S2 lock from bot ts file: {_ts_s2}")
+    except: _ts_s2=None
+    try:
+        _ts_s4=open("/home/anildalabanjan933/crypto_trading_system/logs/last_known_ts_s4.txt").read().strip() or None
+        if _ts_s4: log.info(f"[ENGINE] S4 lock from bot ts file: {_ts_s4}")
+    except: _ts_s4=None
     if not _ts_s2:
-        try:
-            _base=os.path.dirname(os.path.abspath(__file__))
-            _ts_s2=open(os.path.join(_base,"../logs/last_known_ts_s2.txt")).read().strip() or None
-            if _ts_s2: log.info(f"[ENGINE] S2 signal file empty - using bot ts fallback lock: {_ts_s2}")
-        except: pass
+        _ts_s2=_get_signal_ts("logs/live_signal_s2.txt")
+        if _ts_s2: log.info(f"[ENGINE] S2 fallback lock from signal file: {_ts_s2}")
     if not _ts_s4:
-        try:
-            _base=os.path.dirname(os.path.abspath(__file__))
-            _ts_s4=open(os.path.join(_base,"../logs/last_known_ts_s4.txt")).read().strip() or None
-            if _ts_s4: log.info(f"[ENGINE] S4 signal file empty - using bot ts fallback lock: {_ts_s4}")
-        except: pass
+        _ts_s4=_get_signal_ts("logs/live_signal_s4.txt")
+        if _ts_s4: log.info(f"[ENGINE] S4 fallback lock from signal file: {_ts_s4}")
     if _ts_s2:
         s2.last_signal_ts=_ts_s2
         log.info(f"[ENGINE] S2 startup lock ts: {_ts_s2}")
