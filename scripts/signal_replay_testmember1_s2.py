@@ -25,11 +25,12 @@ LOG_FILE     = "logs/live_trading_testmember1_s2.log"
 
 # --- Logging ---
 os.makedirs("logs", exist_ok=True)
+from logging.handlers import RotatingFileHandler as _RFH
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(message)s",
     handlers=[
-        logging.FileHandler(LOG_FILE, mode="a")
+        _RFH(LOG_FILE, maxBytes=5*1024*1024, backupCount=1)
     ]
 )
 log = logging.getLogger(__name__)
