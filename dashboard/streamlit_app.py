@@ -428,7 +428,10 @@ div[data-testid="stExpander"] details summary:hover {
 }
 .stTabs [aria-selected="true"] {
     color: #ffffff !important; background: #1565C0 !important;
-    border-bottom: 3px solid #1565C0 !important;
+    border-bottom: 3px solid #0D47A0 !important;
+    text-shadow: none !important;
+    font-size: 13px !important;
+    font-weight: 800 !important;
 }
 .stTabs [data-baseweb="tab"]:hover {
     color: #1565C0 !important; background: #e3f2fd !important;
