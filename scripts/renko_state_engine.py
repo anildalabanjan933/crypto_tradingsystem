@@ -305,11 +305,11 @@ if __name__=="__main__":
     _ts_s2=_get_signal_ts("logs/live_signal_s2.txt")
     _ts_s4=_get_signal_ts("logs/live_signal_s4.txt")
     if not _ts_s2:
-        _ts_s2=_get_csv_last_exit_ts("output/trade_log_RenkoReversal*.csv")
-        if _ts_s2: log.info(f"[ENGINE] S2 signal file empty - using CSV fallback lock: {_ts_s2}")
+        _ts_s2=_get_signal_ts("logs/last_known_ts_s2.txt")
+        if _ts_s2: log.info(f"[ENGINE] S2 signal file empty - using bot ts fallback lock: {_ts_s2}")
     if not _ts_s4:
-        _ts_s4=_get_csv_last_exit_ts("output/trade_log_RenkoSMIIO*.csv")
-        if _ts_s4: log.info(f"[ENGINE] S4 signal file empty - using CSV fallback lock: {_ts_s4}")
+        _ts_s4=_get_signal_ts("logs/last_known_ts_s4.txt")
+        if _ts_s4: log.info(f"[ENGINE] S4 signal file empty - using bot ts fallback lock: {_ts_s4}")
     if _ts_s2:
         s2.last_signal_ts=_ts_s2
         log.info(f"[ENGINE] S2 startup lock ts: {_ts_s2}")
