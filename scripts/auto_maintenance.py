@@ -88,6 +88,18 @@ def trim_logs():
             log(f"[MAINTENANCE] Log OK: {os.path.basename(lf)} | {size_mb:.2f}MB")
 
 # ── 3. OUTPUT CLEANUP ─────────────────────────────────────────
+def clean_system_journals():
+    """Clean systemd journal logs keeping only 100MB"""
+    try:
+        import subprocess
+        result = subprocess.run(
+            ['sudo', 'journalctl', '--vacuum-size=100M'],
+            capture_output=True, text=True, timeout=30
+        )
+        log.info(f"[MAINTENANCE] Journal cleanup: {result.stderr.strip().split(chr(10))[-1]}")
+    except Exception as e:
+        log.warning(f"[MAINTENANCE] Journal cleanup failed: {e}")
+
 def clean_junk_files():
     """Remove .bak* and .lock files from repo permanently."""
     import glob
@@ -157,6 +169,7 @@ def check_disk():
 # ── RUN ALL ───────────────────────────────────────────────────
 log(f"[MAINTENANCE] Starting auto maintenance - {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S')} UTC")
 clean_pycache()
+clean_system_journals()
 trim_logs()
 clean_output()
 clean_junk_files()
