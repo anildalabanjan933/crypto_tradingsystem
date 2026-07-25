@@ -151,6 +151,25 @@ h2 { font-size: 14px !important; font-weight: 600 !important; margin: 0 !importa
 h3 { font-size: 13px !important; font-weight: 600 !important; margin: 0 !important; color: #131722 !important; }
 p  { font-size: 12px !important; margin: 0 !important; color: #131722 !important; }
 
+/* TAB STYLING */
+button[data-baseweb="tab"] {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    color: #555 !important;
+    background: #f0f3fa !important;
+    border-radius: 4px 4px 0 0 !important;
+    padding: 6px 14px !important;
+}
+button[data-baseweb="tab"][aria-selected="true"] {
+    color: #ffffff !important;
+    background: #1565C0 !important;
+    border-bottom: 3px solid #1565C0 !important;
+}
+button[data-baseweb="tab"]:hover {
+    color: #1565C0 !important;
+    background: #e3f2fd !important;
+}
+
 /* SECTION TITLES - TradingView dark navy, white text, blue accent */
 .section-title {
     background: #42A5F5 !important;
