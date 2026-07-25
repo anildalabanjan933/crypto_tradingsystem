@@ -5098,8 +5098,8 @@ with st.expander('SECTION 14 - BACKTEST ANALYSIS + DEPLOYMENT PLAN', expanded=st
                 '<div style="margin:12px 0 0 0;font-size:12px;font-weight:700;color:#fff;'
                 'background:#1565C0;padding:6px 10px;border-radius:4px 4px 0 0;">'
                 f"TODAY'S TRADES ({today_str}) — Backtest {strat} vs Forward Test {strat}"
-                f'&nbsp;&nbsp;<span style="background:#fff;color:#1565C0;border-radius:3px;'
-                f'padding:1px 7px;font-size:11px;">Trade Count: {tc}</span></div>'
+                f'&nbsp;&nbsp;<span style="background:#fff;color:#1565C0;border-radius:3px;padding:1px 7px;font-size:11px;">BT Trades: {n_bt}</span>'
+                f'&nbsp;<span style="background:#e8f5e9;color:#1b5e20;border-radius:3px;padding:1px 7px;font-size:11px;">LV Trades: {n_lv}</span></div>'
             )
             tbl = '<table style="width:100%;border-collapse:collapse;margin-bottom:4px;">'
             tbl += '<thead><tr>'
