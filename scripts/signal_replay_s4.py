@@ -394,6 +394,18 @@ while True:
                     last_known_ts = load_ts_file(TS_FILE)
                 break
 
+        # Sync position from exchange every 5 minutes - detects SL hits and ghost positions
+        if int(time.time()) % 300 < 2:
+            _exch = om.get_position()
+            _exch_size = abs(_exch.get("size", 0)) if _exch.get("success") else -1
+            if _exch_size == 0 and position is not None:
+                log.warning(f"[SYNC] Exchange FLAT but bot={position} - SL hit or manual close - syncing to FLAT")
+                position = None
+            elif _exch_size > 0 and position is None:
+                _exch_side = _exch.get("side","")
+                position = "long" if _exch_side == "buy" else "short"
+                log.warning(f"[SYNC] Exchange has position={position} but bot=None - syncing to exchange")
+
         log.info(f"[WAIT] now={now} | position={position} | last_known_ts={last_known_ts}")
 
     except Exception as e:
