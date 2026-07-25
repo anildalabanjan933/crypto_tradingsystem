@@ -5177,10 +5177,10 @@ with _tab_analysis:
             lv2 = _get_fwd_rows(df2_fwd, "LV S2")
             lv4 = _get_fwd_rows(df4_fwd, "LV S4")
             today_str = _dtt.datetime.utcnow().strftime("%d-%b-%Y")
-            TH  = "padding:5px 8px;border:1px solid #C8D0DC;background:#1565C0;font-size:10px;font-weight:700;color:#fff;text-align:center;"
-            THS = "padding:5px 8px;border:1px solid #C8D0DC;background:#1565C0;font-size:10px;font-weight:700;color:#fff;text-align:center;width:40px;"
-            TD  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;text-align:center;"
-            TDN = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;text-align:center;background:#f7f9fc;font-weight:700;color:#555;vertical-align:middle;"
+            TH  = "padding:3px 6px;border:1px solid #C8D0DC;background:#1565C0;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+            THS = "padding:3px 6px;border:1px solid #C8D0DC;background:#1565C0;font-size:10px;font-weight:700;color:#fff;text-align:center;width:30px;"
+            TD  = "padding:3px 6px;border:1px solid #E0E3EB;font-size:10px;text-align:center;"
+            TDN = "padding:3px 6px;border:1px solid #E0E3EB;font-size:10px;text-align:center;background:#f7f9fc;font-weight:700;color:#555;vertical-align:middle;"
             def _pnl_color(v): return "#089981" if v>=0 else "#F23645"
             def _dir_color(d): return "#089981" if d=="LONG" else "#F23645"
             def _match(bt, lv):
