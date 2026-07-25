@@ -996,6 +996,7 @@ def _tbl14(d2, d4, label, period_str, df2=None, df4=None):
     </div>"""
 
 # Load data
+import glob as _gl14, pandas as _pd14, datetime as _dt14, numpy as _npf14
 _now14 = _dt14.datetime.utcnow()
 _1yr_from = (_now14 - _dt14.timedelta(days=365)).strftime("%Y-%m-%d")
 _full_from = "2024-01-01"
