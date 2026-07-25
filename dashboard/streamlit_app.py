@@ -422,11 +422,16 @@ div[data-testid="stExpander"] details summary:hover {
 
 /* TABS */
 .stTabs [data-baseweb="tab"] {
-    padding: 4px 14px !important; font-size: 11px !important;
-    font-weight: 600 !important; color: #787B86 !important;
+    padding: 6px 16px !important; font-size: 12px !important;
+    font-weight: 700 !important; color: #555 !important;
+    background: #f0f3fa !important; border-radius: 6px 6px 0 0 !important;
 }
 .stTabs [aria-selected="true"] {
-    color: #2196F3 !important; border-bottom: 2px solid #2196F3 !important;
+    color: #ffffff !important; background: #1565C0 !important;
+    border-bottom: 3px solid #1565C0 !important;
+}
+.stTabs [data-baseweb="tab"]:hover {
+    color: #1565C0 !important; background: #e3f2fd !important;
 }
 
 /* STATUS BOXES */
