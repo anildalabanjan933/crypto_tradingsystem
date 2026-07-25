@@ -621,15 +621,20 @@ st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e
 
 import datetime as _dt_refresh
 _last_refresh = (_dt_refresh.datetime.utcnow() + _dt_refresh.timedelta(hours=5, minutes=30)).strftime("%d-%b-%Y %I:%M:%S %p")
-_col_ref1, _col_ref2 = st.columns([8,1])
-with _col_ref1:
-    st.markdown(
-        f'''<div style="text-align:right;font-size:12px;color:#222;font-weight:700;margin:-8px 0 4px 0;">
-        Last updated: {_last_refresh} IST
-        &nbsp; <span style="background:#e8f5e9;color:#2e7d32;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:700;">LIVE</span>
-        </div>''',
-        unsafe_allow_html=True
-    )
+# Tab-aware auto refresh
+_active_tab = st.session_state.get('active_tab', 'MONITOR')
+if _AR_AVAILABLE:
+    if _active_tab in ['MONITOR', "TODAY'S TRADES"]:
+        st_autorefresh(interval=60000, limit=None, key="ar_fast")
+    elif _active_tab == 'ANALYSIS':
+        st_autorefresh(interval=300000, limit=None, key="ar_slow")
+st.markdown(
+    f'''<div style="text-align:right;font-size:11px;color:#444;font-weight:600;margin:-4px 0 2px 0;">
+    Auto-refresh every 60s &nbsp;|&nbsp; Last updated: {_last_refresh} IST
+    &nbsp; <span style="background:#e8f5e9;color:#2e7d32;padding:1px 6px;border-radius:3px;font-size:10px;font-weight:700;">LIVE</span>
+    </div>''',
+    unsafe_allow_html=True
+)
 
 
 # MAIN NAVIGATION TABS
@@ -1072,6 +1077,7 @@ _tab_monitor, _tab_trading, _tab_today, _tab_analysis, _tab_backtest, _tab_datas
 ])
 
 with _tab_monitor:
+    st.session_state['active_tab'] = 'MONITOR'
     # SECTION 1 - SYSTEM STATUS CARDS
     # ================================================================
     st.markdown("<div class='section-title'>SECTION 1 - SYSTEM STATUS & MAINTENANCE</div>", unsafe_allow_html=True)
@@ -4516,6 +4522,7 @@ with _tab_maint:
 
         # ================================================================
 with _tab_analysis:
+    st.session_state['active_tab'] = 'ANALYSIS'
     # SECTION 13 - STRATEGY PERFORMANCE SUMMARY
     # ================================================================
     if 'exp_13s' not in st.session_state: st.session_state['exp_13s'] = False
@@ -5400,6 +5407,7 @@ with _tab_analysis:
 
 
 with _tab_today:
+    st.session_state['active_tab'] = "TODAY'S TRADES"
     st.markdown("<div class='section-title'>TODAY'S TRADES</div>", unsafe_allow_html=True)
     st.caption('Live comparison of today\'s backtest signals vs forward test execution')
     try:
