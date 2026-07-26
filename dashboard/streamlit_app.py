@@ -820,6 +820,8 @@ def _load14_fwd(product_id, api_key, api_secret, base_url):
                     open_pos=None
                 else:
                     open_pos={"side":side,"price":price,"size":size,"ts":ts_f}
+        if open_pos is not None:
+            pairs.append({"pnl":0,"exit_ts":"-","comm":0,"entry_ts":open_pos["ts"],"entry_price":open_pos["price"],"exit_price":0,"side":open_pos["side"],"size":open_pos["size"],"open":True})
         if not pairs: return None
         tot=len(pairs); pnls=[p["pnl"] for p in pairs]
         wins=[v for v in pnls if v>0]; losses=[v for v in pnls if v<0]
@@ -2767,7 +2769,8 @@ with _tab_trading:
         # ── ORDER HISTORY ──────────────────────────────────────────
         st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
-        with st.expander("ORDER HISTORY", expanded=False):
+        st.markdown("<div class='section-title' style='font-size:13px;margin:8px 0 4px 0;'>ORDER HISTORY</div>", unsafe_allow_html=True)
+        if True:
 
             f1, f2, f3, f4 = st.columns(4)
             with f1:
@@ -2795,8 +2798,8 @@ with _tab_trading:
                 from_date = today - _dt.timedelta(days=days_back)
                 to_date = today
 
-            from_ts_oh = int(datetime.datetime.combine(from_date, datetime.time.min).replace(tzinfo=datetime.timezone.utc).timestamp())
-            to_ts_oh   = int(datetime.datetime.combine(to_date, datetime.time.max).replace(tzinfo=datetime.timezone.utc).timestamp())
+            from_ts_oh = int(_dt.datetime.combine(from_date, _dt.time.min).replace(tzinfo=_dt.timezone.utc).timestamp())
+            to_ts_oh   = int(_dt.datetime.combine(to_date, _dt.time.max).replace(tzinfo=_dt.timezone.utc).timestamp())
 
             def fetch_orders_full(api_key, api_secret, from_ts, to_ts, product_id=84):
                 from collections import defaultdict
