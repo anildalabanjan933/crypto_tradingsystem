@@ -108,37 +108,41 @@ def _get_fwd_rows(df_fwd, label):
 def _load14_fwd(product_id, api_key, api_secret, base_url):
     try:
         method = 'GET'
-        path = '/v2/fills'
+        path = '/v2/orders'
         ts = str(int(time.time()))
-        qs = f'?product_id={product_id}&page_size=100'
+        qs = f'?product_id={product_id}&page_size=100&state=closed'
         sig_data = method + ts + path + qs
         sig = hmac.new(api_secret.encode(), sig_data.encode(), hashlib.sha256).hexdigest()
         headers = {'api-key': api_key, 'timestamp': ts, 'signature': sig, 'Content-Type': 'application/json'}
         r = requests.get(base_url + path + qs, headers=headers, timeout=5)
-        fills = r.json().get('result', [])
-        if not fills: return {'raw_pairs': []}
+        orders = r.json().get('result', [])
+        if not orders: return {'raw_pairs': []}
         pairs = []
-        open_pos = None
-        seen = set()
-        for f in sorted(fills, key=lambda x: x.get('created_at', '')):
-            oid = f.get('order_id')
-            if oid in seen: continue
-            seen.add(oid)
-            side = f.get('side', '')
-            price = float(f.get('fill_price') or 0)
-            size = float(f.get('size') or 0)
-            ts_f = f.get('created_at', '')[:19]
-            comm = float(f.get('commission') or 0)
-            if open_pos is None:
-                open_pos = {'side': side, 'price': price, 'size': size, 'ts': ts_f, 'comm': comm}
-            else:
-                ep = open_pos['price']
-                xp = price
-                pnl = (xp - ep) * size * 0.001 if open_pos['side'] == 'buy' else (ep - xp) * size * 0.001
-                pairs.append({'pnl': pnl - comm * 2, 'entry_ts': open_pos['ts'], 'exit_ts': ts_f,
-                               'entry_price': ep, 'exit_price': xp, 'side': open_pos['side'],
-                               'size': size, 'comm': comm})
-                open_pos = None
+        used = set()
+        srt = sorted(orders, key=lambda x: x.get('created_at', ''))
+        for i, e in enumerate(srt):
+            if i in used: continue
+            if str(e.get('reduce_only', '')).lower() in ['true', '1']: continue
+            es = e.get('side', '')
+            if es not in ['buy', 'sell']: continue
+            xs = 'sell' if es == 'buy' else 'buy'
+            ep = float(e.get('average_fill_price') or e.get('limit_price') or 0)
+            ets = e.get('created_at', '')[:19]
+            comm_e = float(e.get('paid_commission') or 0)
+            for j, x in enumerate(srt):
+                if j in used or j == i: continue
+                if x.get('side') != xs: continue
+                if str(x.get('reduce_only', '')).lower() not in ['true', '1']: continue
+                xp = float(x.get('average_fill_price') or x.get('limit_price') or 0)
+                xts = x.get('created_at', '')[:19]
+                if xts < ets: continue
+                sz = int(e.get('size', 0))
+                comm = comm_e + float(x.get('paid_commission') or 0)
+                pnl = (xp - ep) * sz * 0.001 if es == 'buy' else (ep - xp) * sz * 0.001
+                pairs.append({'pnl': pnl - comm, 'entry_ts': ets, 'exit_ts': xts,
+                               'entry_price': ep, 'exit_price': xp, 'side': es,
+                               'size': sz, 'comm': comm})
+                used.add(i); used.add(j); break
         return {'raw_pairs': pairs}
     except:
         return {'raw_pairs': []}
