@@ -312,22 +312,17 @@ if __name__=="__main__":
         _ts_s4=open("/home/anildalabanjan933/crypto_trading_system/logs/last_known_ts_s4.txt").read().strip() or None
         if _ts_s4: log.info(f"[ENGINE] S4 lock from bot ts file: {_ts_s4}")
     except: _ts_s4=None
+    _now_lock=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
     if not _ts_s2:
-        _ts_s2=_get_signal_ts("logs/live_signal_s2.txt")
-        if _ts_s2: log.info(f"[ENGINE] S2 fallback lock from signal file: {_ts_s2}")
+        _ts_s2=_now_lock
+        log.info(f"[ENGINE] S2 no ts file - lock set to NOW: {_ts_s2}")
     if not _ts_s4:
-        _ts_s4=_get_signal_ts("logs/live_signal_s4.txt")
-        if _ts_s4: log.info(f"[ENGINE] S4 fallback lock from signal file: {_ts_s4}")
-    if _ts_s2:
-        s2.last_signal_ts=_ts_s2
-        log.info(f"[ENGINE] S2 startup lock ts: {_ts_s2}")
-    else:
-        log.info("[ENGINE] S2 no lock source found - no startup lock applied")
-    if _ts_s4:
-        s4.last_signal_ts=_ts_s4
-        log.info(f"[ENGINE] S4 startup lock ts: {_ts_s4}")
-    else:
-        log.info("[ENGINE] S4 no lock source found - no startup lock applied")
+        _ts_s4=_now_lock
+        log.info(f"[ENGINE] S4 no ts file - lock set to NOW: {_ts_s4}")
+    s2.last_signal_ts=_ts_s2
+    log.info(f"[ENGINE] S2 startup lock ts: {_ts_s2}")
+    s4.last_signal_ts=_ts_s4
+    log.info(f"[ENGINE] S4 startup lock ts: {_ts_s4}")
     _last_dl=time.time()
     _last_ts=get_csv_last_ts()
     _last_csv_regen=time.time()
