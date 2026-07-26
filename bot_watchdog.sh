@@ -25,10 +25,18 @@ check_and_start() {
     local log=$3
     local alert_key=$REPO/logs/watchdog_down_${name}.txt
     if ! /usr/bin/screen -list 2>/dev/null | grep -q "$name"; then
-        # Send Telegram alert every 60s while down (watchdog runs every 60s)
-        local msg="⚠️ CTS WATCHDOG ALERT%0A━━━━━━━━━━━━━━━━━━%0AScreen : ${name}%0AScript : ${script}%0AStatus : DOWN - restarting now%0ATime   : $(date -u +%Y-%m-%dT%H:%M:%S) UTC%0A━━━━━━━━━━━━━━━━━━"
-        send_telegram "$msg"
-        echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] DOWN alert sent for $name" >> logs/maintenance.log
+        # Send Telegram alert only once per 30 minutes per screen
+        local alert_ts_file=$REPO/logs/watchdog_alert_${name}.txt
+        local now_ts=$(date +%s)
+        local last_alert=0
+        [ -f "$alert_ts_file" ] && last_alert=$(cat "$alert_ts_file")
+        local diff=$((now_ts - last_alert))
+        if [ $diff -gt 1800 ]; then
+            local msg="⚠️ CTS WATCHDOG ALERT%0A━━━━━━━━━━━━━━━━━━%0AScreen : ${name}%0AScript : ${script}%0AStatus : DOWN - restarting now%0ATime   : $(date -u +%Y-%m-%dT%H:%M:%S) UTC%0A━━━━━━━━━━━━━━━━━━"
+            send_telegram "$msg"
+            echo "$now_ts" > "$alert_ts_file"
+            echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] DOWN alert sent for $name" >> logs/maintenance.log
+        fi
         /usr/bin/screen -dmS "$name" /bin/bash -c "cd /home/anildalabanjan933/crypto_trading_system && .venv/bin/python3 $script >> $log 2>&1"
         echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] Started $name" >> logs/maintenance.log
     fi

@@ -461,16 +461,24 @@ if __name__=="__main__":
             if os.path.exists(_trig_s2):
                 _t2 = open(_trig_s2).read().strip()
                 os.remove(_trig_s2)
-                if _t2 > _ws_state["last_s2_tf"]:
-                    _ws_state["last_s2_tf"] = _t2
+                try:
+                    _t2_dt = __import__('datetime').datetime.strptime(_t2, '%Y-%m-%d %H:%M:%S')
+                except:
+                    _t2_dt = __import__('datetime').datetime.strptime(_t2, '%Y-%m-%dT%H:%M:%S')
+                if _t2_dt > _ws_state["last_s2_tf"]:
+                    _ws_state["last_s2_tf"] = _t2_dt
                     log.info(f"[ENGINE] Boundary watcher trigger S2: {_t2} - checking S2")
                     append_new_candles(s2)
                     check_and_fire(s2, is_s4=False)
             if os.path.exists(_trig_s4):
                 _t4 = open(_trig_s4).read().strip()
                 os.remove(_trig_s4)
-                if _t4 > _ws_state["last_s4_tf"]:
-                    _ws_state["last_s4_tf"] = _t4
+                try:
+                    _t4_dt = __import__('datetime').datetime.strptime(_t4, '%Y-%m-%d %H:%M:%S')
+                except:
+                    _t4_dt = __import__('datetime').datetime.strptime(_t4, '%Y-%m-%dT%H:%M:%S')
+                if _t4_dt > _ws_state["last_s4_tf"]:
+                    _ws_state["last_s4_tf"] = _t4_dt
                     log.info(f"[ENGINE] Boundary watcher trigger S4: {_t4} - checking S4")
                     append_new_candles(s4)
                     check_and_fire(s4, is_s4=True)
@@ -494,4 +502,9 @@ if __name__=="__main__":
         except Exception as e:
             log.error(f"[ENGINE] Error: {e}",exc_info=True)
 
+        # Write heartbeat every cycle - bots check this before placing orders
+        try:
+            open('logs/engine_heartbeat.txt','w').write(__import__('datetime').datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S'))
+        except:
+            pass
         time.sleep(SLEEP_SEC)
