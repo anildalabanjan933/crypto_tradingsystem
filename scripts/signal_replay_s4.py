@@ -289,6 +289,7 @@ try:
         log.error(f"[CRITICAL] API key validation FAILED: {_d_val.get('error')} - check API key and testnet setting")
 except Exception as _e_val:
     log.error(f"[CRITICAL] API key validation error: {_e_val}")
+_bot_start_time = time.time()
 while True:
     try:
         now = now_utc_str()
@@ -300,10 +301,10 @@ while True:
             sig_ts    = live_sig["timestamp"]
             lots      = live_sig["lots"]
 
-            # Skip stale signals older than 1 candle (120 min for S4)
-            _sig_age_min = (datetime.now(timezone.utc) - datetime.strptime(sig_ts, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)).total_seconds() / 60
-            if _sig_age_min > 2:
-                log.warning(f"[SKIP] Stale signal skipped | age={_sig_age_min:.0f}min | ts={sig_ts}")
+            # Skip signal if file was written before bot startup (stale on restart)
+            _sig_file_mtime = os.path.getmtime("logs/live_signal_s4.txt")
+            if _sig_file_mtime < _bot_start_time:
+                log.warning(f"[SKIP] Signal file older than bot startup - skipping | ts={sig_ts}")
                 save_ts_file(TS_FILE, sig_ts)
                 last_known_ts = sig_ts
                 clear_live_signal("logs/live_signal_s4.txt")
