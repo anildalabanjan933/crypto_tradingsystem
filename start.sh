@@ -23,6 +23,7 @@ for log in logs/live_trading_testmember1_s2.log logs/live_trading_testmember1_s4
 done
 
 # Kill ALL existing screens
+screen -S boundary_watcher -dm bash -c 'cd ~/crypto_trading_system && set -a && source .env && set +a && .venv/bin/python3 scripts/boundary_watcher.py >> logs/boundary_watcher.log 2>&1'
 screen -S signal_generator -X quit 2>/dev/null
 screen -S renko_engine -X quit 2>/dev/null
 screen -S live_s2 -X quit 2>/dev/null
