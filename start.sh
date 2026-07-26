@@ -31,6 +31,8 @@ screen -S live_s4 -X quit 2>/dev/null
 screen -S dashboard -X quit 2>/dev/null
 screen -S testmember1_s2 -X quit 2>/dev/null
 screen -S testmember1_s4 -X quit 2>/dev/null
+screen -S today_trades -X quit 2>/dev/null
+screen -S boundary_watcher -X quit 2>/dev/null
 sleep 2
 
 # Start fresh screens using venv python directly
