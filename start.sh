@@ -41,5 +41,6 @@ echo "S2 and S4 started"
 screen -dmS testmember1_s2 bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/signal_replay_testmember1_s2.py"
 screen -dmS testmember1_s4 bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/signal_replay_testmember1_s4.py"
 screen -S dashboard -dm bash -c "cd $REPO && $REPO/.venv/bin/python -m streamlit run dashboard/streamlit_app.py --server.port 8501 --server.address 0.0.0.0 >> logs/dashboard.log 2>&1"
-screen -S today_trades -dm bash -c "cd $REPO && $REPO/.venv/bin/python -m streamlit run dashboard/today_trades_app.py --server.port 8502 --server.address 0.0.0.0 >> logs/today_trades.log 2>&1" 
+screen -S today_trades -dm bash -c "cd $REPO && $REPO/.venv/bin/python -m streamlit run dashboard/today_trades_app.py --server.port 8502 --server.address 0.0.0.0 >> logs/today_trades.log 2>&1"
+screen -S analysis -dm bash -c "cd $REPO && $REPO/.venv/bin/python -m streamlit run dashboard/analysis_app.py --server.port 8503 --server.address 0.0.0.0 >> logs/analysis.log 2>&1" 
 screen -ls
