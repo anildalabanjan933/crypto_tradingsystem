@@ -7,11 +7,28 @@ export SCREENDIR=/run/screen/S-anildalabanjan933
 export TERM=xterm
 cd /home/anildalabanjan933/crypto_trading_system
 
+REPO=/home/anildalabanjan933/crypto_trading_system
+ALERT_FILE=$REPO/logs/watchdog_alert_sent.txt
+
+send_telegram() {
+    local msg=$1
+    local token=$(grep TELEGRAM_BOT_TOKEN $REPO/.env | cut -d= -f2)
+    local chat=$(grep TELEGRAM_CHAT_ID $REPO/.env | cut -d= -f2)
+    if [ -n "$token" ] && [ -n "$chat" ]; then
+        curl -s -X POST "https://api.telegram.org/bot${token}/sendMessage"             -d "chat_id=${chat}"             -d "text=${msg}"             -d "parse_mode=HTML" > /dev/null 2>&1
+    fi
+}
+
 check_and_start() {
     local name=$1
     local script=$2
     local log=$3
+    local alert_key=$REPO/logs/watchdog_down_${name}.txt
     if ! /usr/bin/screen -list 2>/dev/null | grep -q "$name"; then
+        # Send Telegram alert every 60s while down (watchdog runs every 60s)
+        local msg="⚠️ CTS WATCHDOG ALERT%0A━━━━━━━━━━━━━━━━━━%0AScreen : ${name}%0AScript : ${script}%0AStatus : DOWN - restarting now%0ATime   : $(date -u +%Y-%m-%dT%H:%M:%S) UTC%0A━━━━━━━━━━━━━━━━━━"
+        send_telegram "$msg"
+        echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] DOWN alert sent for $name" >> logs/maintenance.log
         /usr/bin/screen -dmS "$name" /bin/bash -c "cd /home/anildalabanjan933/crypto_trading_system && .venv/bin/python3 $script >> $log 2>&1"
         echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] Started $name" >> logs/maintenance.log
     fi
