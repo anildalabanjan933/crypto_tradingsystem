@@ -250,6 +250,40 @@ log.info(f"[STARTUP] last_known_ts={last_known_ts} | valid_from={valid_from}")
 signals = load_signals()
 open_lot_size = LOT_SIZE
 
+# --- Missed Trade Check on Startup ---
+try:
+    _now_check = now_utc_str()
+    _missed = []
+    for _sig in signals:
+        _et = _sig["entry_time"]
+        _xt = _sig["exit_time"]
+        _dr = _sig["direction"]
+        if last_known_ts and _et <= last_known_ts:
+            continue
+        if _xt > _now_check:
+            continue
+        _missed.append(_sig)
+    if _missed:
+        for _ms in _missed:
+            _ist_e = _utc_to_ist(_ms["entry_time"])
+            _ist_x = _utc_to_ist(_ms["exit_time"])
+            log.warning(f"[MISSED TRADE] entry={_ms['entry_time']} exit={_ms['exit_time']} dir={_ms['direction']} reason=bot_restart")
+            send_alert(
+                f"⚠️ CTS S2 BOT RESTART - MISSED TRADE\n"
+                f"━━━━━━━━━━━━━━━━━━\n"
+                f"Dir   : {_ms['direction'].upper()}\n"
+                f"Entry : {_ist_e}\n"
+                f"Exit  : {_ist_x}\n"
+                f"Reason: Bot was offline\n"
+                f"Action: Trade NOT fired - report only\n"
+                f"━━━━━━━━━━━━━━━━━━"
+            )
+        log.warning(f"[MISSED TRADE] Total {len(_missed)} trade(s) missed during offline period")
+    else:
+        log.info("[STARTUP] No missed trades detected")
+except Exception as _me:
+    log.error(f"[MISSED TRADE CHECK] Error: {_me}")
+
 
 def read_live_signal(signal_file):
     """Read latest signal from live engine signal file."""
