@@ -107,39 +107,57 @@ def _get_fwd_rows(df_fwd, label):
 
 def _load14_fwd(product_id, api_key, api_secret, base_url):
     try:
-        method = 'GET'
-        path = '/v2/orders'
-        ts = str(int(time.time()))
-        qs = f'?product_id={product_id}&page_size=100&state=closed'
-        sig_data = method + ts + path + qs
-        sig = hmac.new(api_secret.encode(), sig_data.encode(), hashlib.sha256).hexdigest()
-        headers = {'api-key': api_key, 'timestamp': ts, 'signature': sig, 'Content-Type': 'application/json'}
-        r = requests.get(base_url + path + qs, headers=headers, timeout=5)
-        orders = r.json().get('result', [])
-        if not orders: return {'raw_pairs': []}
+        from collections import defaultdict
+        now_ts = int(time.time())
+        from_ts = now_ts - 30*24*3600
+        start_us = from_ts * 1000000
+        end_us   = now_ts  * 1000000
+        all_fills = []
+        after_cursor = None
+        for page in range(1, 20):
+            ts_str = str(int(time.time()))
+            params = {'product_id': product_id, 'page_size': 100,
+                      'start_time': start_us, 'end_time': end_us}
+            if after_cursor:
+                params['after'] = after_cursor
+            qs = '?' + '&'.join(f'{k}={v}' for k,v in params.items())
+            sig_data = 'GET' + ts_str + '/v2/fills' + qs
+            sig = hmac.new(api_secret.encode(), sig_data.encode(), hashlib.sha256).hexdigest()
+            headers = {'api-key': api_key, 'timestamp': ts_str, 'signature': sig, 'Content-Type': 'application/json'}
+            r = requests.get(base_url + '/v2/fills', params=params, headers=headers, timeout=5)
+            fills = r.json().get('result', [])
+            if not fills: break
+            all_fills.extend(fills)
+            meta = r.json().get('meta', {})
+            after_cursor = meta.get('after')
+            if not after_cursor or len(fills) < 100: break
+        if not all_fills: return {'raw_pairs': []}
+        order_fills = defaultdict(list)
+        for f in all_fills:
+            order_fills[f.get('order_id','')].append(f)
+        orders = []
+        for oid, fills in order_fills.items():
+            total_size = sum(float(f.get('size',0)) for f in fills)
+            wavg = sum(float(f.get('price',0) or 0)*float(f.get('size',0)) for f in fills) / max(total_size,1)
+            comm = sum(abs(float(f.get('commission',0))) for f in fills)
+            orders.append({'order_id': oid, 'side': fills[0].get('side',''),
+                           'size': total_size, 'price': wavg, 'comm': comm,
+                           'time': fills[0].get('created_at','')[:19]})
+        orders = sorted(orders, key=lambda x: x['time'])
         pairs = []
         used = set()
-        srt = sorted(orders, key=lambda x: x.get('created_at', ''))
-        for i, e in enumerate(srt):
+        for i, e in enumerate(orders):
             if i in used: continue
-            if str(e.get('reduce_only', '')).lower() in ['true', '1']: continue
-            es = e.get('side', '')
-            if es not in ['buy', 'sell']: continue
+            es = e['side']
             xs = 'sell' if es == 'buy' else 'buy'
-            ep = float(e.get('average_fill_price') or e.get('limit_price') or 0)
-            ets = e.get('created_at', '')[:19]
-            comm_e = float(e.get('paid_commission') or 0)
-            for j, x in enumerate(srt):
-                if j in used or j == i: continue
-                if x.get('side') != xs: continue
-                if str(x.get('reduce_only', '')).lower() not in ['true', '1']: continue
-                xp = float(x.get('average_fill_price') or x.get('limit_price') or 0)
-                xts = x.get('created_at', '')[:19]
-                if xts < ets: continue
-                sz = int(e.get('size', 0))
-                comm = comm_e + float(x.get('paid_commission') or 0)
-                pnl = (xp - ep) * sz * 0.001 if es == 'buy' else (ep - xp) * sz * 0.001
-                pairs.append({'pnl': pnl - comm, 'entry_ts': ets, 'exit_ts': xts,
+            for j, x in enumerate(orders):
+                if j <= i or j in used: continue
+                if x['side'] != xs: continue
+                sz = e['size']
+                ep = e['price']; xp = x['price']
+                comm = e['comm'] + x['comm']
+                pnl = (xp-ep)*sz*0.001 if es=='buy' else (ep-xp)*sz*0.001
+                pairs.append({'pnl': pnl-comm, 'entry_ts': e['time'], 'exit_ts': x['time'],
                                'entry_price': ep, 'exit_price': xp, 'side': es,
                                'size': sz, 'comm': comm})
                 used.add(i); used.add(j); break
