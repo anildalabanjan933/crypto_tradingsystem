@@ -919,8 +919,8 @@ def _tbl14(d2, d4, label, period_str, df2=None, df4=None):
     s2_tod_cnt=int(_g(d2,"today_count")); s4_tod_cnt=int(_g(d4,"today_count")); port_tod_cnt=s2_tod_cnt+s4_tod_cnt
     s2_mo=_g(d2,"pnl_month")*_INR14; s4_mo=_g(d4,"pnl_month")*_INR14
     s2_mo_cnt=int(_g(d2,"month_count")); s4_mo_cnt=int(_g(d4,"month_count")); port_mo_cnt=s2_mo_cnt+s4_mo_cnt
-    s2_dd_mo=_g(d2,"dd_month")*_INR14; s4_dd_mo=_g(d4,"dd_month")*_INR14; port_dd_mo=max(s2_dd_mo,s4_dd_mo)
-    s2_dd_mo10=_g(d2,"dd_month10")*_INR14; s4_dd_mo10=_g(d4,"dd_month10")*_INR14; port_dd_mo10=max(s2_dd_mo10,s4_dd_mo10)
+    s2_dd_mo=_g(d2,"dd_month")*_INR14; s4_dd_mo=_g(d4,"dd_month")*_INR14; port_dd_mo=s2_dd_mo+s4_dd_mo
+    s2_dd_mo10=_g(d2,"dd_month10")*_INR14; s4_dd_mo10=_g(d4,"dd_month10")*_INR14; port_dd_mo10=s2_dd_mo10+s4_dd_mo10
     s2_td10=s2_td-s2_tod_cnt*10*_INR14; s4_td10=s4_td-s4_tod_cnt*10*_INR14; port_td10=s2_td10+s4_td10
     s2_mo10=s2_mo-s2_mo_cnt*10*_INR14; s4_mo10=s4_mo-s4_mo_cnt*10*_INR14; port_mo10=s2_mo10+s4_mo10
     # ITR Tax 30% on gross wins (Indian Income Tax - pay to govt via ITR filing)
