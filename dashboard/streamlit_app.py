@@ -782,46 +782,111 @@ def _load14(csv_pattern, from_dt=None):
         return None
 
 @st.cache_data(ttl=60)
+def _delta_get_auth_top(api_key, api_secret, base_url, path, params={}):
+    import hmac as _hm, hashlib as _hs, time as _tm, requests as _rq
+    try:
+        ts  = str(int(_tm.time()))
+        qs  = '&'.join(f"{k}={v}" for k,v in params.items())
+        query_path = path + ('?' + qs if qs else '')
+        msg = 'GET' + ts + query_path
+        sig = _hm.new(api_secret.encode(), msg.encode(), _hs.sha256).hexdigest()
+        hdrs = {'api-key': api_key, 'timestamp': ts, 'signature': sig, 'Content-Type': 'application/json'}
+        r = _rq.get(base_url + path, params=params, headers=hdrs, timeout=(3,10), verify=False)
+        return r.json()
+    except:
+        return {}
+
+def _fetch_orders_top(api_key, api_secret, base_url, from_ts, to_ts, product_id=84):
+    from collections import defaultdict
+    all_fills = []
+    try:
+        start_us = from_ts * 1000000
+        end_us   = to_ts   * 1000000
+        after_cursor = None
+        for page in range(1, 20):
+            params = {'product_id': product_id, 'page_size': 100,
+                      'start_time': start_us, 'end_time': end_us}
+            if after_cursor:
+                params['after'] = after_cursor
+            resp  = _delta_get_auth_top(api_key, api_secret, base_url, '/v2/fills', params)
+            fills = resp.get('result', [])
+            if not fills:
+                break
+            all_fills.extend(fills)
+            meta  = resp.get('meta', {})
+            after_cursor = meta.get('after')
+            if not after_cursor or len(fills) < 100:
+                break
+    except:
+        pass
+    order_fills = defaultdict(list)
+    for f in all_fills:
+        order_fills[f.get('order_id','')].append(f)
+    orders = []
+    for oid, fills in order_fills.items():
+        total_size = sum(float(f.get('size',0)) for f in fills)
+        wavg = sum(float(f.get('price',0) or 0)*float(f.get('size',0)) for f in fills) / max(total_size,1)
+        order_commission = sum(abs(float(f.get('commission',0))) for f in fills)
+        orders.append({
+            'order_id': oid,
+            'side': fills[0].get('side','').upper(),
+            'size': total_size,
+            'price': wavg,
+            'time': fills[0].get('created_at','')[:16],
+            'commission': order_commission
+        })
+    return sorted(orders, key=lambda x: x['time'])
+
+def _pair_orders_top(orders):
+    pairs = []
+    used  = set()
+    orders_sorted = sorted(orders, key=lambda x: x['time'])
+    for i, entry_order in enumerate(orders_sorted):
+        if i in used:
+            continue
+        entry_side = entry_order['side']
+        exit_side  = 'SELL' if entry_side == 'BUY' else 'BUY'
+        for j, exit_order in enumerate(orders_sorted):
+            if j <= i or j in used:
+                continue
+            if exit_order['side'] == exit_side:
+                used.add(i); used.add(j)
+                if entry_side == 'BUY':
+                    pnl = (exit_order['price'] - entry_order['price']) * entry_order['size'] * 0.001
+                    side_label = 'LONG'
+                else:
+                    pnl = (entry_order['price'] - exit_order['price']) * entry_order['size'] * 0.001
+                    side_label = 'SHORT'
+                pairs.append({
+                    'entry_ts': entry_order['time'], 'exit_ts': exit_order['time'],
+                    'entry_price': entry_order['price'], 'exit_price': exit_order['price'],
+                    'size': entry_order['size'], 'pnl': pnl,
+                    'comm': entry_order['commission'] + exit_order['commission'],
+                    'side': 'buy' if side_label=='LONG' else 'sell'
+                })
+                break
+        else:
+            # Open position - no exit yet
+            side_label = 'LONG' if entry_side=='BUY' else 'SHORT'
+            pairs.append({
+                'entry_ts': entry_order['time'], 'exit_ts': '-',
+                'entry_price': entry_order['price'], 'exit_price': 0,
+                'size': entry_order['size'], 'pnl': 0,
+                'comm': entry_order['commission'],
+                'side': 'buy' if side_label=='LONG' else 'sell',
+                'open': True
+            })
+    return pairs
+
 def _load14_fwd(product_id, api_key, api_secret, base_url):
-    import hmac as _hm,hashlib as _hs,time as _tm,requests as _rq,math as _mf,numpy as _npf
+    import math as _mf, numpy as _npf, datetime as _dt14f
     try:
         if not api_key or not api_secret: return None
-        method="GET"; path="/v2/fills"; qs=f"?product_id={product_id}&page_size=500"
-        ts=str(int(_tm.time()))
-        sig=_hm.new(api_secret.encode(),(method+ts+path+qs).encode(),_hs.sha256).hexdigest()
-        hdrs={"api-key":api_key,"timestamp":ts,"signature":sig,"Content-Type":"application/json"}
-        r=_rq.get(base_url+path+qs,headers=hdrs,timeout=10)
-        if r.status_code!=200: return None
-        fills=r.json().get("result",[])
-        if not fills: return None
-        # Deduplicate fills by created_at timestamp - testnet returns multiple fills per order
-        from collections import defaultdict as _dd
-        _ord = _dd(list)
-        for _fx in fills: _ord[_fx.get("created_at","")[:16]].append(_fx)
-        _deduped = []
-        for _oid, _flist in _ord.items():
-            _tot_sz = sum(float(_fx.get("size",0)) for _fx in _flist)
-            _avg_px = sum(float(_fx.get("fill_price",0) or 0)*float(_fx.get("size",0)) for _fx in _flist) / max(_tot_sz,1)
-            _f0 = _flist[0]
-            _deduped.append({"side":_f0.get("side",""),"fill_price":_avg_px,"size":_tot_sz,"created_at":_f0.get("created_at",""),"commission":sum(float(_fx.get("commission",0)) for _fx in _flist)})
-        all_s=sorted(_deduped,key=lambda x:x.get("created_at",""))
-        pairs=[]; open_pos=None
-        for f in all_s:
-            side=f.get("side",""); price=float(f.get("fill_price",0))
-            size=float(f.get("size",0)); ts_f=f.get("created_at","")
-            if open_pos is None:
-                open_pos={"side":side,"price":price,"size":size,"ts":ts_f}
-            else:
-                if side!=open_pos["side"]:
-                    ep=open_pos["price"]; xp=price
-                    pnl_usd=(xp-ep)*open_pos["size"]*0.001 if open_pos["side"]=="buy" else (ep-xp)*open_pos["size"]*0.001
-                    comm=float(f.get("commission",0))*2
-                    pairs.append({"pnl":pnl_usd-comm,"exit_ts":ts_f,"comm":comm,"entry_ts":open_pos["ts"],"entry_price":open_pos["price"],"exit_price":price,"side":open_pos["side"],"size":open_pos["size"]})
-                    open_pos=None
-                else:
-                    open_pos={"side":side,"price":price,"size":size,"ts":ts_f}
-        if open_pos is not None:
-            pairs.append({"pnl":0,"exit_ts":"-","comm":0,"entry_ts":open_pos["ts"],"entry_price":open_pos["price"],"exit_price":0,"side":open_pos["side"],"size":open_pos["size"],"open":True})
+        import time as _tm14
+        now_ts = int(_tm14.time())
+        from_ts = now_ts - 30*24*3600  # last 30 days
+        orders = _fetch_orders_top(api_key, api_secret, base_url, from_ts, now_ts, product_id)
+        pairs = _pair_orders_top(orders)
         if not pairs: return None
         tot=len(pairs); pnls=[p["pnl"] for p in pairs]
         wins=[v for v in pnls if v>0]; losses=[v for v in pnls if v<0]
