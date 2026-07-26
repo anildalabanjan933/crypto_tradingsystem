@@ -300,7 +300,14 @@ while True:
             sig_ts    = live_sig["timestamp"]
             lots      = live_sig["lots"]
 
-            if sig_ts >= valid_from and sig_ts != last_known_ts:
+            # Skip stale signals older than 1 candle (120 min for S4)
+            _sig_age_min = (datetime.now(timezone.utc) - datetime.strptime(sig_ts, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)).total_seconds() / 60
+            if _sig_age_min > 2:
+                log.warning(f"[SKIP] Stale signal skipped | age={_sig_age_min:.0f}min | ts={sig_ts}")
+                save_ts_file(TS_FILE, sig_ts)
+                last_known_ts = sig_ts
+                clear_live_signal("logs/live_signal_s4.txt")
+            elif sig_ts >= valid_from and sig_ts != last_known_ts:
 
                 # --- ENTRY ---
                 if "ENTRY" in sig_type and position is None:
