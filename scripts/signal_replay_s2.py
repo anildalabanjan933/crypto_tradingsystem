@@ -285,6 +285,25 @@ except Exception as _me:
     log.error(f"[MISSED TRADE CHECK] Error: {_me}")
 
 
+def check_engine_heartbeat():
+    """Returns True if engine is alive, False if dead"""
+    hb_file = "logs/engine_heartbeat.txt"
+    try:
+        if not __import__('os').path.exists(hb_file):
+            return False
+        hb_str = open(hb_file).read().strip()
+        hb_dt = __import__('datetime').datetime.strptime(hb_str, '%Y-%m-%dT%H:%M:%S')
+        age_min = (__import__('datetime').datetime.utcnow() - hb_dt).total_seconds() / 60
+        if age_min > 15:
+            log.warning(f"[ENGINE] Heartbeat stale {int(age_min)}m - engine may be dead - skipping order")
+            from engine.telegram_alert import send_alert
+            send_alert(f"CTS S2 WARNING - Engine heartbeat stale {int(age_min)}m - orders blocked until engine restarts")
+            return False
+        return True
+    except Exception as e:
+        log.warning(f"[ENGINE] Heartbeat check failed: {e} - skipping order")
+        return False
+
 def read_live_signal(signal_file):
     """Read latest signal from live engine signal file."""
     try:
@@ -357,6 +376,9 @@ while True:
                     save_ts_file(TS_FILE, sig_ts)
                     last_known_ts = sig_ts
                     clear_live_signal("logs/live_signal_s2.txt")
+                    if not check_engine_heartbeat():
+                        log.warning("[ORDER] ENTRY blocked - engine heartbeat stale")
+                        continue
                     result = om.place_market_order(side=side, size=lots)
                     if result.get("success"):
                         position = direction
@@ -396,6 +418,9 @@ while True:
                     save_ts_file(TS_FILE, sig_ts)
                     last_known_ts = sig_ts
                     clear_live_signal("logs/live_signal_s2.txt")
+                    if not check_engine_heartbeat():
+                        log.warning("[ORDER] EXIT blocked - engine heartbeat stale")
+                        continue
                     result = om.close_position(size=close_size, side=side)
                     if result.get("success"):
                         position = None
