@@ -454,6 +454,17 @@ while True:
             if _exch_size == 0 and position is not None:
                 log.warning(f"[SYNC] Exchange FLAT but bot={position} - SL hit or manual close - syncing to FLAT")
                 position = None
+                save_ts_file(TS_FILE, last_known_ts)
+                log.warning(f"[SYNC] last_known_ts saved after SL hit: {last_known_ts}")
+                send_alert(
+                    f"⚠️ CTS SL HIT DETECTED\n"
+                    f"━━━━━━━━━━━━━━━━━━\n"
+                    f"Bot   : {TS_FILE}\n"
+                    f"Action: Position closed by SL on exchange\n"
+                    f"TS    : {last_known_ts}\n"
+                    f"Status: Synced to FLAT - waiting for next signal\n"
+                    f"━━━━━━━━━━━━━━━━━━"
+                )
             elif _exch_size > 0 and position is None:
                 _exch_side = _exch.get("side","")
                 position = "long" if _exch_side == "buy" else "short"
