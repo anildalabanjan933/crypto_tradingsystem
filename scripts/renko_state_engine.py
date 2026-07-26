@@ -316,9 +316,15 @@ if __name__=="__main__":
     if not _ts_s2:
         _ts_s2=_now_lock
         log.info(f"[ENGINE] S2 no ts file - lock set to NOW: {_ts_s2}")
+    else:
+        _ts_s2=max(_ts_s2,_now_lock)
+        log.info(f"[ENGINE] S2 lock set to max(ts_file,NOW): {_ts_s2}")
     if not _ts_s4:
         _ts_s4=_now_lock
         log.info(f"[ENGINE] S4 no ts file - lock set to NOW: {_ts_s4}")
+    else:
+        _ts_s4=max(_ts_s4,_now_lock)
+        log.info(f"[ENGINE] S4 lock set to max(ts_file,NOW): {_ts_s4}")
     s2.last_signal_ts=_ts_s2
     log.info(f"[ENGINE] S2 startup lock ts: {_ts_s2}")
     s4.last_signal_ts=_ts_s4
