@@ -1071,16 +1071,7 @@ _tab_monitor, _tab_trading, _tab_today, _tab_analysis, _tab_backtest, _tab_datas
     "MONITOR", "TRADING", "TODAY'S TRADES", "ANALYSIS", "BACKTEST", "DATA & SYNC", "MAINTENANCE"
 ])
 
-@st.fragment(run_every=60)
-def _frag_monitor():
-    try:
-        import json as _json_frag
-        config = _json_frag.load(open("dashboard/algo_config.json"))
-    except:
-        config = {}
-    system = config.get('system', {})
-    s2_log = system.get('log_path_s2', 'logs/live_trading_s2.log')
-    s4_log = system.get('log_path_s4', 'logs/live_trading_s4.log')
+with _tab_monitor:
     # SECTION 1 - SYSTEM STATUS CARDS
     # ================================================================
     st.markdown("<div class='section-title'>SECTION 1 - SYSTEM STATUS & MAINTENANCE</div>", unsafe_allow_html=True)
@@ -2283,10 +2274,6 @@ def _frag_monitor():
     st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
     # ================================================================
-
-with _tab_monitor:
-    _frag_monitor()
-
 with _tab_trading:
     # SECTION 2 - BOT CONTROL
     st.markdown("<div class='section-title'>SECTION 2 - BOT CONTROL</div>", unsafe_allow_html=True)
@@ -4528,32 +4515,7 @@ with _tab_maint:
 
 
         # ================================================================
-
-@st.fragment(run_every=60)
-def _frag_analysis():
-    import glob as _gl14, pandas as _pd14, datetime as _dt14
-    _INR14 = 84.0
-    _PLND14= 'padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:left;'
-    _PLNV14= 'padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;font-weight:700;text-align:center;'
-    _PLNH14= 'padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;background:#f0f3fa;font-weight:700;text-align:center;'
-    _TDG14 = 'padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;'
-    _now14 = _dt14.datetime.utcnow()
-    _1yr_from = (_now14 - _dt14.timedelta(days=365)).strftime('%Y-%m-%d')
-    _full_from = '2024-01-01'
-    _1yr_label = str((_now14-_dt14.timedelta(days=365)).strftime('%d-%b-%Y')) + ' to ' + str(_now14.strftime('%d-%b-%Y')) + ' (1 Year)'
-    _full_label = '2024-01-01 to ' + str(_now14.strftime('%d-%b-%Y')) + ' (Full CSV)'
-    _d2_1yr  = _load14('output/trade_log_RenkoReversal*.csv', _1yr_from)
-    _d4_1yr  = _load14('output/trade_log_RenkoSMIIOSupertrend*.csv', _1yr_from)
-    _d2_full = _load14('output/trade_log_RenkoReversal*.csv', _full_from)
-    _d4_full = _load14('output/trade_log_RenkoSMIIOSupertrend*.csv', _full_from)
-    try:
-        import json as _jf
-        _cfg = _jf.load(open('dashboard/algo_config.json'))
-    except:
-        _cfg = {}
-    _sys = _cfg.get('system', {})
-    _df2_fwd = _load14_fwd(84, _sys.get('s2_api_key',''), _sys.get('s2_api_secret',''), _sys.get('base_url','https://cdn-ind.testnet.deltaex.org'))
-    _df4_fwd = _load14_fwd(84, _sys.get('s4_api_key',''), _sys.get('s4_api_secret',''), _sys.get('base_url','https://cdn-ind.testnet.deltaex.org'))
+with _tab_analysis:
     # SECTION 13 - STRATEGY PERFORMANCE SUMMARY
     # ================================================================
     if 'exp_13s' not in st.session_state: st.session_state['exp_13s'] = False
@@ -5437,31 +5399,10 @@ def _frag_analysis():
         """, unsafe_allow_html=True)
 
 
-
-with _tab_analysis:
-    _frag_analysis()
-
-@st.fragment(run_every=60)
-def _frag_today():
-    import glob as _gl14, pandas as _pd14, datetime as _dt14
-    _full_from = '2024-01-01'
-    _d2_full = _load14('output/trade_log_RenkoReversal*.csv', _full_from)
-    _d4_full = _load14('output/trade_log_RenkoSMIIOSupertrend*.csv', _full_from)
-    try:
-        import json as _jf
-        _cfg = _jf.load(open('dashboard/algo_config.json'))
-    except:
-        _cfg = {}
-    _sys = _cfg.get('system', {})
-    _df2_fwd = _load14_fwd(84, _sys.get('s2_api_key',''), _sys.get('s2_api_secret',''), _sys.get('base_url','https://cdn-ind.testnet.deltaex.org'))
-    _df4_fwd = _load14_fwd(84, _sys.get('s4_api_key',''), _sys.get('s4_api_secret',''), _sys.get('base_url','https://cdn-ind.testnet.deltaex.org'))
+with _tab_today:
     st.markdown("<div class='section-title'>TODAY'S TRADES</div>", unsafe_allow_html=True)
     st.caption('Live comparison of today\'s backtest signals vs forward test execution')
     try:
         st.markdown(_today_trades_html(_d2_full, _d4_full, _df2_fwd, _df4_fwd), unsafe_allow_html=True)
     except:
         st.info('Open ANALYSIS tab first to load data, then return here.')
-
-
-with _tab_today:
-    _frag_today()
