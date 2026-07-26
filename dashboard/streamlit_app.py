@@ -1210,6 +1210,149 @@ with _tab_monitor:
     # ================================================================
     st.markdown("<div class='section-title'>SECTION 1 - SYSTEM STATUS & MAINTENANCE</div>", unsafe_allow_html=True)
 
+    # STATUS LAMPS ROW - one glance full system health
+    import datetime as _dt_lamps, os as _os_lamps
+    def _lamp(label, ok, warn=False):
+        dot = "🟢" if ok else ("🟡" if warn else "🔴")
+        return f"<span style='font-size:13px;font-weight:bold;margin-right:18px;'>{dot} {label}</span>"
+
+    # S2 BOT
+    try:
+        _s2l = _os_lamps.path.getmtime("logs/live_trading_s2.log")
+        _s2_ok = ((_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(_s2l)).total_seconds()/60) < 2
+    except: _s2_ok = False
+
+    # S4 BOT
+    try:
+        _s4l = _os_lamps.path.getmtime("logs/live_trading_s4.log")
+        _s4_ok = ((_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(_s4l)).total_seconds()/60) < 2
+    except: _s4_ok = False
+
+    # ENGINE - uses heartbeat file
+    try:
+        _hb = open("logs/engine_heartbeat.txt").read().strip()
+        _hb_dt = _dt_lamps.datetime.strptime(_hb, '%Y-%m-%dT%H:%M:%S')
+        _hb_age = (_dt_lamps.datetime.utcnow() - _hb_dt).total_seconds()/60
+        _eng_ok = _hb_age < 15
+        _eng_warn = 2 < _hb_age < 15
+    except: _eng_ok = False; _eng_warn = False
+
+    # TM1 S2
+    try:
+        _tm1s2l = _os_lamps.path.getmtime("logs/live_trading_testmember1_s2.log")
+        _tm1s2_ok = ((_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(_tm1s2l)).total_seconds()/60) < 2
+    except: _tm1s2_ok = False
+
+    # TM1 S4
+    try:
+        _tm1s4l = _os_lamps.path.getmtime("logs/live_trading_testmember1_s4.log")
+        _tm1s4_ok = ((_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(_tm1s4l)).total_seconds()/60) < 2
+    except: _tm1s4_ok = False
+
+    # BOUNDARY WATCHER
+    try:
+        _bwl = _os_lamps.path.getmtime("logs/boundary_watcher.log")
+        _bw_ok = ((_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(_bwl)).total_seconds()/60) < 60
+    except: _bw_ok = False
+
+    # DELTA API
+    try:
+        import requests as _rq_lamp
+        _api_ok = _rq_lamp.get("https://api.india.delta.exchange/v2/assets", timeout=3, verify=False).status_code == 200
+    except: _api_ok = False
+
+    # DISK
+    try:
+        import shutil as _sh
+        _du = _sh.disk_usage("/")
+        _disk_pct_lamp = _du.used/_du.total*100
+        _disk_ok = _disk_pct_lamp < 70
+        _disk_warn = 70 <= _disk_pct_lamp < 80
+    except: _disk_ok = False; _disk_warn = False
+
+    # SIGNAL FRESH - checks live_signal files updated in last 15 min
+    try:
+        _sig_s2_age = (_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(
+            _os_lamps.path.getmtime("logs/live_signal_s2.txt"))).total_seconds()/60
+        _sig_s4_age = (_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(
+            _os_lamps.path.getmtime("logs/live_signal_s4.txt"))).total_seconds()/60
+        _sig_ok = _sig_s2_age < 15 and _sig_s4_age < 15
+        _sig_warn = not _sig_ok and (_sig_s2_age < 60 or _sig_s4_age < 60)
+    except: _sig_ok = False; _sig_warn = False
+
+    _lamps_html = (
+        _lamp("S2 BOT", _s2_ok) +
+        _lamp("S4 BOT", _s4_ok) +
+        _lamp("ENGINE", _eng_ok, _eng_warn) +
+        _lamp("SIGNAL", _sig_ok, _sig_warn) +
+        _lamp("TM1 S2", _tm1s2_ok) +
+        _lamp("TM1 S4", _tm1s4_ok) +
+        _lamp("BOUNDARY", _bw_ok) +
+        _lamp("DELTA API", _api_ok) +
+        _lamp("DISK", _disk_ok, _disk_warn if not _disk_ok else False)
+    )
+    st.markdown(f"<div style='background:#f0f7ff;border:1px solid #90CAF9;border-radius:6px;padding:10px 16px;margin-bottom:12px;'>{_lamps_html}</div>", unsafe_allow_html=True)
+
+    # STATUS LAMPS ROW - one glance full system health
+    import datetime as _dt_lamps, os as _os_lamps
+    def _lamp(label, ok, warn=False):
+        dot = "🟢" if ok else ("🟡" if warn else "🔴")
+        return f"<span style='font-size:13px;font-weight:bold;margin-right:18px;'>{dot} {label}</span>"
+
+    # S2 BOT
+    try:
+        _s2l = _os_lamps.path.getmtime("logs/live_trading_s2.log")
+        _s2_ok = ((_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(_s2l)).total_seconds() / 60) < 2
+    except: _s2_ok = False
+
+    # S4 BOT
+    try:
+        _s4l = _os_lamps.path.getmtime("logs/live_trading_s4.log")
+        _s4_ok = ((_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(_s4l)).total_seconds() / 60) < 2
+    except: _s4_ok = False
+
+    # ENGINE - uses heartbeat file
+    try:
+        _hb = open("logs/engine_heartbeat.txt").read().strip()
+        _hb_dt = _dt_lamps.datetime.strptime(_hb, '%Y-%m-%dT%H:%M:%S')
+        _hb_age = (_dt_lamps.datetime.utcnow() - _hb_dt).total_seconds() / 60
+        _eng_ok = _hb_age < 15
+        _eng_warn = 2 < _hb_age < 15
+    except: _eng_ok = False; _eng_warn = False
+
+    # TM1 S2
+    try:
+        _tm1s2l = _os_lamps.path.getmtime("logs/live_trading_testmember1_s2.log")
+        _tm1s2_ok = ((_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(_tm1s2l)).total_seconds() / 60) < 2
+    except: _tm1s2_ok = False
+
+    # TM1 S4
+    try:
+        _tm1s4l = _os_lamps.path.getmtime("logs/live_trading_testmember1_s4.log")
+        _tm1s4_ok = ((_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(_tm1s4l)).total_seconds() / 60) < 2
+    except: _tm1s4_ok = False
+
+    # BOUNDARY WATCHER
+    try:
+        _bwl = _os_lamps.path.getmtime("logs/boundary_watcher.log")
+        _bw_ok = ((_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(_bwl)).total_seconds() / 60) < 2
+    except: _bw_ok = False
+
+    # DELTA API
+    try:
+        import requests as _rq_lamp
+        _api_ok = _rq_lamp.get("https://api.india.delta.exchange/v2/assets", timeout=3, verify=False).status_code == 200
+    except: _api_ok = False
+
+    # DISK
+    try:
+        import shutil as _sh
+        _du = _sh.disk_usage("/")
+        _disk_pct_lamp = _du.used / _du.total * 100
+        _disk_ok = _disk_pct_lamp < 70
+        _disk_warn = 70 <= _disk_pct_lamp < 80
+    except: _disk_ok = False; _disk_warn = False
+
     disk_pct, disk_free = _timed('disk_usage', 30, _fetch_disk)
     git_commit = _timed('git_commit', 60, _fetch_git)
     s2_last = _timed('s2_last_sig', 15, _fetch_log_signal, s2_log)
