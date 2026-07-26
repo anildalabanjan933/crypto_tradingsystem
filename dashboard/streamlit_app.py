@@ -878,6 +878,73 @@ def _pair_orders_top(orders):
             })
     return pairs
 
+def _parse_log_trades(log_path, log_path_bak=None):
+    import re, datetime as _dtp
+    pairs = []
+    lines = []
+    try:
+        if log_path_bak:
+            try: lines += open(log_path_bak).readlines()
+            except: pass
+        lines += open(log_path).readlines()
+    except: return pairs
+    today = _dtp.datetime.utcnow().strftime("%Y-%m-%d")
+    entries = []
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if "[ORDER] ENTRY" in line and "confirmed" not in line:
+            m_dir = re.search(r'dir=(\w+)', line)
+            m_ts  = re.search(r'ts=(\S+)', line)
+            m_log = re.search(r'^(\d{4}-\d{2}-\d{2} \d{2}:\d{2})', line)
+            direction = m_dir.group(1) if m_dir else ""
+            sig_ts    = m_ts.group(1) if m_ts else ""
+            log_ts    = m_log.group(1) if m_log else ""
+            entry_price = 0.0
+            # Look ahead for entry price
+            for j in range(i+1, min(i+5, len(lines))):
+                m_ep = re.search(r'entry=([\d.]+)', lines[j])
+                if m_ep:
+                    entry_price = float(m_ep.group(1))
+                    break
+            entries.append({
+                "direction": direction,
+                "sig_ts": sig_ts,
+                "log_ts": log_ts,
+                "entry_price": entry_price,
+                "exit_price": 0.0,
+                "exit_ts": "-",
+                "open": True
+            })
+        elif "[ORDER] EXIT" in line and "skipped" not in line and "confirmed" not in line:
+            m_ts  = re.search(r'ts=(\S+)', line)
+            m_log = re.search(r'^(\d{4}-\d{2}-\d{2} \d{2}:\d{2})', line)
+            exit_ts  = m_ts.group(1) if m_ts else ""
+            log_ts_x = m_log.group(1) if m_log else ""
+            if entries:
+                last = entries[-1]
+                last["exit_ts"]    = exit_ts
+                last["exit_log_ts"]= log_ts_x
+                last["open"]       = False
+        i += 1
+    # Filter to today only
+    for e in entries:
+        log_date = e.get("log_ts","")[:10]
+        if log_date >= today:
+            side = "buy" if e["direction"].lower() == "long" else "sell"
+            pairs.append({
+                "entry_ts":    e["log_ts"],
+                "exit_ts":     e.get("exit_log_ts", e["exit_ts"]),
+                "entry_price": e["entry_price"],
+                "exit_price":  e["exit_price"],
+                "size":        100,
+                "pnl":         0,
+                "comm":        0,
+                "side":        side,
+                "open":        e["open"]
+            })
+    return pairs
+
 def _load14_fwd(product_id, api_key, api_secret, base_url):
     import math as _mf, numpy as _npf, datetime as _dt14f
     try:
@@ -5263,27 +5330,26 @@ with _tab_analysis:
                 except: pass
                 return rows
             def _get_fwd_rows(df_fwd, label):
-                if df_fwd is None: return []
                 rows = []
                 try:
-                    import datetime as _dtt_fwd
-                    _today_fwd = _dtt_fwd.datetime.utcnow().strftime("%Y-%m-%d")
-                    raw = [p for p in (df_fwd.get("raw_pairs",[]) if isinstance(df_fwd,dict) else []) if str(p.get("entry_ts",""))[:10] >= _today_fwd]
-                    # last 10 trades most recent first
-                    for p in reversed(raw[-10:]):
+                    log_map = {"LV S2": ("logs/live_trading_s2.log","logs/live_trading_s2.log.1"),
+                               "LV S4": ("logs/live_trading_s4.log","logs/live_trading_s4.log.1")}
+                    log_path, log_bak = log_map.get(label, (None, None))
+                    if not log_path: return []
+                    raw = _parse_log_trades(log_path, log_bak)
+                    for p in raw[-10:]:
                         ep   = float(p.get('entry_price',0))
                         xp   = float(p.get('exit_price',0))
                         side = str(p.get('side','buy')).lower()
-                        lots = float(p.get('size',100))
                         pnl_net = float(p.get('pnl',0))
                         comm    = float(p.get('comm',0))
                         entry_ts = p.get('entry_ts','')
-                        exit_ts  = p.get('exit_ts','')
+                        exit_ts  = p.get('exit_ts','-')
                         rows.append({
                             'label'    : label,
                             'dir'      : 'LONG' if side=='buy' else 'SHORT',
                             'entry_ist': _to_ist(entry_ts),
-                            'exit_ist' : _to_ist(exit_ts),
+                            'exit_ist' : _to_ist(exit_ts) if exit_ts != '-' else '-',
                             'entry_p'  : ep,
                             'exit_p'   : xp,
                             'pnl_usd'  : pnl_net,
