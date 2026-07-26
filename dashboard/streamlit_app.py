@@ -175,13 +175,13 @@ button[data-baseweb="tab"] {
     font-size: 12px !important;
     font-weight: 600 !important;
     color: #555 !important;
-    background: #f0f3fa !important;
+    background: #E3F2FD !important;
     border-radius: 4px 4px 0 0 !important;
     padding: 6px 14px !important;
 }
 button[data-baseweb="tab"][aria-selected="true"] {
     color: #ffffff !important;
-    background: #1565C0 !important;
+    background: #42A5F5 !important;
     border-bottom: 3px solid #1565C0 !important;
 }
 button[data-baseweb="tab"]:hover {
@@ -229,7 +229,7 @@ div[data-testid="stExpander"] > details > summary span {
 
 /* EXPANDER - same shade as section title, NO red border */
 div[data-testid="stExpander"] {
-    border: 1px solid #C8D0DC !important;
+    border: 1px solid #90CAF9 !important;
     border-left: 4px solid #2196F3 !important;
     border-radius: 3px !important;
     margin-bottom: 3px !important;
@@ -240,7 +240,7 @@ div[data-testid="stExpander"] {
 }
 div[data-testid="stExpander"]:focus,
 div[data-testid="stExpander"]:focus-within {
-    border: 1px solid #C8D0DC !important;
+    border: 1px solid #90CAF9 !important;
     border-left: 4px solid #2196F3 !important;
     box-shadow: none !important;
     outline: none !important;
@@ -252,7 +252,7 @@ summary,
 .streamlit-expanderHeader,
 [data-testid="stExpander"] summary,
 div[data-testid="stExpander"] details summary {
-    background: linear-gradient(135deg, #CDD3E0 0%, #D4DAE8 50%, #C8CEE0 100%) !important;
+    background: #E3F2FD !important;
     color: #131722 !important;
     font-weight: 700 !important;
     font-size: 9px !important;
@@ -268,9 +268,9 @@ details summary:hover,
 details > summary:hover,
 summary:hover,
 .streamlit-expanderHeader:hover {
-    background-color: #D8DCE6 !important;
+    background-color: #BBDEFB !important;
 }
-summary:hover { background-color: #D8DCE6 !important; }
+summary:hover { background-color: #BBDEFB !important; }
 details summary p, details summary span, details summary div,
 summary p, summary span, summary div,
 .streamlit-expanderHeader p, .streamlit-expanderHeader span {
@@ -281,31 +281,31 @@ summary p, summary span, summary div,
     letter-spacing: 1px !important;
 }
 [data-testid="stExpander"] > details {
-    border: 1px solid #E0E3EB !important;
+    border: 1px solid #BBDEFB !important;
     border-radius: 3px !important;
 }
 [data-testid="stExpanderToggleIcon"] {
     color: #2196F3 !important;
 }
 div[data-testid="stExpander"] > div:first-child {
-    background: linear-gradient(135deg, #E8ECF2 0%, #F4F6FA 50%, #DDE2EC 100%) !important;
+    background: #E3F2FD !important;
     border-left: 4px solid #2196F3 !important;
     border-radius: 3px !important;
     padding: 0 !important;
 }
 /* Nested expanders inside expanders */
 div[data-testid="stExpander"] div[data-testid="stExpander"] > div:first-child {
-    background: linear-gradient(135deg, #E8ECF2 0%, #F4F6FA 50%, #DDE2EC 100%) !important;
+    background: #E3F2FD !important;
     border-left: 4px solid #2196F3 !important;
 }
 div[data-testid="stExpander"] div[data-testid="stExpander"] details summary {
-    background: linear-gradient(135deg, #E8ECF2 0%, #F4F6FA 50%, #DDE2EC 100%) !important;
+    background: #E3F2FD !important;
     color: #131722 !important;
     border-left: 4px solid #2196F3 !important;
 }
 /* Force ALL summary elements site-wide */
 summary {
-    background: linear-gradient(135deg, #E8ECF2 0%, #F4F6FA 50%, #DDE2EC 100%) !important;
+    background: #E3F2FD !important;
     color: #131722 !important;
     border-left: 4px solid #2196F3 !important;
     font-weight: 700 !important;
@@ -315,9 +315,9 @@ summary {
     padding: 4px 10px !important;
 }
 summary:hover {
-    background-color: #D8DCE6 !important;
+    background-color: #BBDEFB !important;
 }
-summary:hover { background-color: #D8DCE6 !important; }
+summary:hover { background-color: #BBDEFB !important; }
 summary p, summary span, summary div {
     color: #FFFFFF !important;
     font-weight: 700 !important;
@@ -334,13 +334,13 @@ div[data-testid="stExpander"] {
     box-shadow: none !important;
 }
 div[data-testid="stExpander"] > div:first-child {
-    background: linear-gradient(135deg, #E8ECF2 0%, #F4F6FA 50%, #DDE2EC 100%) !important;
+    background: #E3F2FD !important;
     border-left: 4px solid #2196F3 !important;
     border-radius: 3px !important;
     padding: 0 !important;
 }
 div[data-testid="stExpander"] details summary:hover {
-    background-color: #D8DCE6 !important;
+    background-color: #BBDEFB !important;
     cursor: pointer !important;
 }
 div[data-testid="stExpander"] details summary:focus {
@@ -361,7 +361,7 @@ div[data-testid="stExpander"] details summary svg {
     stroke: #2196F3 !important;
 }
 div[data-testid="stExpander"] details[open] summary {
-    background-color: #D8DCE6 !important;
+    background-color: #BBDEFB !important;
     border-bottom: 1px solid #363A45 !important;
 }
 
@@ -395,7 +395,7 @@ div[data-testid="stExpander"] details summary:hover {
 [data-testid="stMetricLabel"] { font-size: 10px !important; color: #787B86 !important; font-weight: 600 !important; }
 [data-testid="metric-container"] {
     padding: 6px 10px !important;
-    border: 1px solid #C8D0DC !important;
+    border: 1px solid #90CAF9 !important;
     border-radius: 4px !important;
     background: #FFFFFF !important;
     border-left: 3px solid #2196F3 !important;
@@ -427,8 +427,8 @@ div[data-testid="stExpander"] details summary:hover {
     padding: 1px 6px !important; font-size: 9px !important; height: 22px !important; line-height: 1.1 !important;
     height: 28px !important; border-radius: 3px !important;
     font-weight: 600 !important;
-    border: 1px solid #C8D0DC !important;
-    color: #131722 !important; background: #F0F3FA !important;
+    border: 1px solid #90CAF9 !important;
+    color: #131722 !important; background: #E3F2FD !important;
 }
 .stButton > button:hover {
     background: #2196F3 !important; color: #FFFFFF !important;
@@ -453,7 +453,7 @@ div[data-testid="stExpander"] details summary:hover {
     font-weight: 800 !important;
 }
 .stTabs [data-baseweb="tab"]:hover {
-    color: #ffffff !important; background: #1565C0 !important;
+    color: #ffffff !important; background: #42A5F5 !important;
 }
 
 /* STATUS BOXES */
@@ -510,7 +510,7 @@ footer { display: none !important; }
 /* METRIC BOX CUSTOM */
 .metric-box {
     padding: 6px 10px; border-radius: 4px;
-    border: 1px solid #C8D0DC; background: #FFFFFF;
+    border: 1px solid #90CAF9; background: #FFFFFF;
     margin-bottom: 4px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.08);
 }
@@ -636,20 +636,20 @@ with _col_ref1:
 
 # DATA LOADING - before tabs
 _INR14 = 84.0
-_TH14  = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;"
-_TD14  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;"
-_TDR14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:center;"
-_TDG14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
-_TDO14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#e07000;font-weight:700;text-align:center;"
-_TDB14 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
-_TDR14B= "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#F23645;font-weight:700;text-align:center;"
-_THGR14= "padding:5px 8px;border:1px solid #C8D0DC;background:#089981;font-size:10px;font-weight:700;color:#fff;text-align:center;"
-_THOG14= "padding:5px 8px;border:1px solid #C8D0DC;background:#e07000;font-size:10px;font-weight:700;color:#fff;text-align:center;"
-_SUB14 = "padding:4px 8px;border:1px solid #C8D0DC;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
-_DASH14= "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#aaa;text-align:center;"
-_PLNH14= "padding:5px 8px;border:1px solid #C8D0DC;background:#2962FF;font-size:10px;font-weight:700;color:#fff;text-align:center;"
-_PLND14= "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:left;"
-_PLNV14= "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;font-weight:700;text-align:center;"
+_TH14  = "padding:5px 8px;border:1px solid #90CAF9;background:#E3F2FD;font-size:10px;font-weight:700;color:#555;"
+_TD14  = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;color:#131722;"
+_TDR14 = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;color:#131722;text-align:center;"
+_TDG14 = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
+_TDO14 = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;color:#e07000;font-weight:700;text-align:center;"
+_TDB14 = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
+_TDR14B= "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;color:#F23645;font-weight:700;text-align:center;"
+_THGR14= "padding:5px 8px;border:1px solid #90CAF9;background:#089981;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+_THOG14= "padding:5px 8px;border:1px solid #90CAF9;background:#e07000;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+_SUB14 = "padding:4px 8px;border:1px solid #90CAF9;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
+_DASH14= "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;color:#aaa;text-align:center;"
+_PLNH14= "padding:5px 8px;border:1px solid #90CAF9;background:#2962FF;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+_PLND14= "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;color:#131722;text-align:left;"
+_PLNV14= "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;color:#131722;font-weight:700;text-align:center;"
 
 @st.cache_data(ttl=60)
 def _load14(csv_pattern, from_dt=None):
@@ -929,7 +929,7 @@ def _tbl14(d2, d4, label, period_str, df2=None, df4=None):
     s2_net_itr5=s2_net5-s2_itr5; s4_net_itr5=s4_net5-s4_itr5; port_net_itr5=port_net5-port_itr5
     s2_net_itr10=s2_net10-s2_itr5; s4_net_itr10=s4_net10-s4_itr5; port_net_itr10=port_net10-port_itr5
     s2_mg=_g(d2,"margin_avg")*_INR14; s4_mg=_g(d4,"margin_avg")*_INR14
-    _THFW14="padding:5px 8px;border:1px solid #C8D0DC;background:#089981;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+    _THFW14="padding:5px 8px;border:1px solid #90CAF9;background:#089981;font-size:10px;font-weight:700;color:#fff;text-align:center;"
     _na14='<span style="color:#aaa">N/A</span>'
     def _fna(v,fmt="inr"):
         if not v: return _na14
@@ -1931,11 +1931,11 @@ with _tab_monitor:
         import re as _re1c, datetime as _dt1c
 
         _BASE_DIR = '/home/anildalabanjan933/crypto_trading_system'
-        _TH1C = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;"
-        _TD1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#131722;"
-        _TDG1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;"
-        _TDR1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#F23645;font-weight:700;"
-        _TDO1C = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;color:#e07000;font-weight:700;"
+        _TH1C = "padding:5px 8px;border:1px solid #90CAF9;background:#E3F2FD;font-size:10px;font-weight:700;color:#555;"
+        _TD1C = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;color:#131722;"
+        _TDG1C = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;color:#089981;font-weight:700;"
+        _TDR1C = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;color:#F23645;font-weight:700;"
+        _TDO1C = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;color:#e07000;font-weight:700;"
 
         def _read_last_lines(path, n=200):
             try:
@@ -3009,9 +3009,9 @@ with _tab_trading:
                     )
 
             if all_pairs or open_pos_filtered:
-                TH2 = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#555;white-space:nowrap;"
-                TD2 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;"
-                TDR2 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;text-align:right;"
+                TH2 = "padding:5px 8px;border:1px solid #90CAF9;background:#E3F2FD;font-size:10px;font-weight:700;color:#555;white-space:nowrap;"
+                TD2 = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;"
+                TDR2 = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;text-align:right;"
                 _heads = ['#','DateTime','Member','Strat','Side','Entry$','Exit$','Lots','PnL$','PnL₹','Charges$|₹','Cum PnL$','Count','Status']
                 _tbl = "<div style='overflow-x:auto;margin:4px 0;'><table style='width:100%;border-collapse:collapse;'><thead><tr>"
                 _tbl += "".join("<th style='{}'>{}</th>".format(TH2, hh) for hh in _heads)
@@ -3717,7 +3717,7 @@ with _tab_backtest:
                     f"<td style='padding:4px 8px;border:1px solid #ddd;'>{r['profitable_months']}/{r['profitable_months']+r['losing_months']}</td>"
                     "</tr>")
             _tbl_html = ("<div style='overflow-x:auto;'><table style='width:100%;border-collapse:collapse;font-size:12px;'>"
-                "<thead><tr style='background:#f0f3fa;'>"
+                "<thead><tr style='background:#E3F2FD;'>"
                 "<th style='padding:6px 8px;border:1px solid #ddd;'>Rank</th>"
                 "<th style='padding:6px 8px;border:1px solid #ddd;'>Period</th>"
                 "<th style='padding:6px 8px;border:1px solid #ddd;'>Step</th>"
@@ -3781,7 +3781,7 @@ with _tab_backtest:
                     f"<td style='padding:4px 8px;border:1px solid #ddd;{_sc2}'>Rs{_si:,.0f}</td>"
                     f"<td style='padding:4px 8px;border:1px solid #ddd;{_dc}'>Rs{_di:,.0f}</td></tr>")
             st.markdown(("<div style='overflow-x:auto;'><table style='width:100%;border-collapse:collapse;font-size:12px;'>"
-                "<thead><tr style='background:#f0f3fa;'>"
+                "<thead><tr style='background:#E3F2FD;'>"
                 "<th style='padding:6px 8px;border:1px solid #ddd;'>Month</th>"
                 "<th style='padding:6px 8px;border:1px solid #ddd;'>Normal INR</th>"
                 "<th style='padding:6px 8px;border:1px solid #ddd;'>Scaled INR</th>"
@@ -3805,7 +3805,7 @@ with _tab_backtest:
                     f"<td style='padding:4px 8px;border:1px solid #ddd;{_sc3}'>Rs{_si:,.0f}</td>"
                     f"<td style='padding:4px 8px;border:1px solid #ddd;{_dc}'>Rs{_di:,.0f}</td></tr>")
             st.markdown(("<div style='overflow-x:auto;'><table style='width:100%;border-collapse:collapse;font-size:12px;'>"
-                "<thead><tr style='background:#f0f3fa;'>"
+                "<thead><tr style='background:#E3F2FD;'>"
                 "<th style='padding:6px 8px;border:1px solid #ddd;'>Year</th>"
                 "<th style='padding:6px 8px;border:1px solid #ddd;'>Normal INR</th>"
                 "<th style='padding:6px 8px;border:1px solid #ddd;'>Scaled INR</th>"
@@ -4531,13 +4531,13 @@ with _tab_analysis:
         _VF13_7D = (_dt13_7.datetime.utcnow() - _dt13_7.timedelta(days=7)).strftime('%Y-%m-%dT%H:%M:%S')
         _INR13 = 84.0
         _BASE13= "https://cdn-ind.testnet.deltaex.org"
-        _TH13  = "padding:5px 8px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:11px;font-weight:700;color:#333;text-align:center;"
-        _TD13  = "padding:6px 8px;border:1px solid #E0E3EB;font-size:13px;color:#131722;font-weight:600;"
-        _TDN13 = "padding:6px 8px;border:1px solid #E0E3EB;font-size:13px;color:#131722;text-align:center;font-weight:500;"
-        _TDG13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#089981;font-weight:700;text-align:center;"
-        _TDR13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#F23645;font-weight:700;text-align:center;"
-        _TDB13 = "padding:5px 8px;border:1px solid #E0E3EB;font-size:12px;color:#2962FF;font-weight:700;text-align:center;"
-        _SUB13 = "padding:4px 8px;border:1px solid #C8D0DC;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
+        _TH13  = "padding:5px 8px;border:1px solid #90CAF9;background:#E3F2FD;font-size:11px;font-weight:700;color:#333;text-align:center;"
+        _TD13  = "padding:6px 8px;border:1px solid #BBDEFB;font-size:13px;color:#131722;font-weight:600;"
+        _TDN13 = "padding:6px 8px;border:1px solid #BBDEFB;font-size:13px;color:#131722;text-align:center;font-weight:500;"
+        _TDG13 = "padding:5px 8px;border:1px solid #BBDEFB;font-size:12px;color:#089981;font-weight:700;text-align:center;"
+        _TDR13 = "padding:5px 8px;border:1px solid #BBDEFB;font-size:12px;color:#F23645;font-weight:700;text-align:center;"
+        _TDB13 = "padding:5px 8px;border:1px solid #BBDEFB;font-size:12px;color:#2962FF;font-weight:700;text-align:center;"
+        _SUB13 = "padding:4px 8px;border:1px solid #90CAF9;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
         _HDR13 = "padding:6px 12px;background:#1E3A5F;font-size:11px;font-weight:700;color:#ffffff;margin:8px 0 4px 0;border-left:4px solid #2962FF;"
 
         def _auth13(k, s, path, qs=""):
@@ -4825,11 +4825,11 @@ with _tab_analysis:
         # ================================================================
         st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
 
-        _TH20 = "padding:4px 6px;border:1px solid #C8D0DC;background:#f0f3fa;font-size:10px;font-weight:700;color:#333;text-align:center;white-space:nowrap;"
-        _TD20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#131722;text-align:center;white-space:nowrap;"
-        _TG20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
-        _TR20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#F23645;font-weight:700;text-align:center;"
-        _TY20 = "padding:4px 6px;border:1px solid #E0E3EB;font-size:11px;color:#e07000;font-weight:700;text-align:center;"
+        _TH20 = "padding:4px 6px;border:1px solid #90CAF9;background:#E3F2FD;font-size:10px;font-weight:700;color:#333;text-align:center;white-space:nowrap;"
+        _TD20 = "padding:4px 6px;border:1px solid #BBDEFB;font-size:11px;color:#131722;text-align:center;white-space:nowrap;"
+        _TG20 = "padding:4px 6px;border:1px solid #BBDEFB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
+        _TR20 = "padding:4px 6px;border:1px solid #BBDEFB;font-size:11px;color:#F23645;font-weight:700;text-align:center;"
+        _TY20 = "padding:4px 6px;border:1px solid #BBDEFB;font-size:11px;color:#e07000;font-weight:700;text-align:center;"
 
         def _fwd20(pairs):
             try:
@@ -5230,10 +5230,10 @@ with _tab_analysis:
             lv2 = _get_fwd_rows(df2_fwd, "LV S2")
             lv4 = _get_fwd_rows(df4_fwd, "LV S4")
             today_str = _dtt.datetime.utcnow().strftime("%d-%b-%Y")
-            TH  = "padding:5px 8px;border:1px solid #C8D0DC;background:#1565C0;font-size:10px;font-weight:700;color:#fff;text-align:center;"
-            THS = "padding:5px 8px;border:1px solid #C8D0DC;background:#1565C0;font-size:10px;font-weight:700;color:#fff;text-align:center;width:40px;"
-            TD  = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;text-align:center;"
-            TDN = "padding:5px 8px;border:1px solid #E0E3EB;font-size:11px;text-align:center;background:#f7f9fc;font-weight:700;color:#555;vertical-align:middle;"
+            TH  = "padding:5px 8px;border:1px solid #90CAF9;background:#42A5F5;font-size:10px;font-weight:700;color:#fff;text-align:center;"
+            THS = "padding:5px 8px;border:1px solid #90CAF9;background:#42A5F5;font-size:10px;font-weight:700;color:#fff;text-align:center;width:40px;"
+            TD  = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;text-align:center;"
+            TDN = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;text-align:center;background:#f7f9fc;font-weight:700;color:#555;vertical-align:middle;"
             def _pnl_color(v): return "#089981" if v>=0 else "#F23645"
             def _dir_color(d): return "#089981" if d=="LONG" else "#F23645"
             def _match(bt, lv):
@@ -5251,7 +5251,7 @@ with _tab_analysis:
                 def _fmt(v): return f"+₹{v:,.0f}" if v>=0 else f"-₹{abs(v):,.0f}"
                 hdr = (
                     '<div style="margin:12px 0 0 0;font-size:12px;font-weight:700;color:#fff;'
-                    'background:#1565C0;padding:6px 10px;border-radius:4px 4px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:6px;">'
+                    'background:#42A5F5;padding:6px 10px;border-radius:4px 4px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:6px;">'
                     f'<span>TODAY\'S TRADES ({today_str}) — Backtest {strat} vs Forward Test {strat}</span>'
                     f'<span style="background:#fff;color:#1565C0;border-radius:3px;padding:3px 10px;font-size:12px;font-weight:700;">BT Trades: {n_bt}</span>'
                     f'<span style="background:#e8f5e9;color:#1b5e20;border-radius:3px;padding:3px 10px;font-size:12px;font-weight:700;">LV Trades: {n_lv}</span>'
