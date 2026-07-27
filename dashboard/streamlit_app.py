@@ -1294,8 +1294,8 @@ with _tab_monitor:
         _all_lines = _s2_log_lines + _s4_log_lines
         _order_lines = [l for l in _all_lines if "[ORDER] ENTRY" in l or "[ORDER] EXIT" in l]
         _last_order_ok = len(_order_lines) > 0
-        _last_order_warn = False
-    except: _last_order_ok = False; _last_order_warn = False
+        _last_order_warn = not _last_order_ok
+    except: _last_order_ok = False; _last_order_warn = True
 
     # POSITION SYNC - no ghost position (check last startup reconciliation)
     try:
