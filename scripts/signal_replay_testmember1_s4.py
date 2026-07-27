@@ -358,10 +358,13 @@ while True:
         _live_matched = None
         if _live_sig and _live_sig.get("timestamp"):
             _live_ts = _live_sig["timestamp"]
+            _live_type = _live_sig.get("type","")
             for _row in signals:
-                if _row["entry_time"][:16] == _live_ts[:16] and _row["entry_time"] > last_known_ts:
+                _et_match = _row["entry_time"][:16] == _live_ts[:16]
+                _xt_match = _row["exit_time"][:16] == _live_ts[:16]
+                if (_et_match or _xt_match) and _row["entry_time"] > last_known_ts:
                     _live_matched = _row
-                    log.info(f"[LIVE] Signal from engine matched CSV: {_live_ts}")
+                    log.info(f"[LIVE] Signal from engine matched CSV: {_live_ts} type={_live_type}")
                     break
 
         _matched = _live_matched
