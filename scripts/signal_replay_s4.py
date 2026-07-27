@@ -375,7 +375,7 @@ while True:
             for _row in signals:
                 _et = _row["entry_time"]
                 _xt = _row["exit_time"]
-                if _et <= last_known_ts:
+                if _et < last_known_ts:
                     continue
                 if now >= _et:
                     _matched = _row
