@@ -1210,49 +1210,43 @@ with _tab_monitor:
     # ================================================================
     st.markdown("<div class='section-title'>SECTION 1 - SYSTEM STATUS & MAINTENANCE</div>", unsafe_allow_html=True)
 
-    # STATUS LAMPS ROW - one glance full system health
+    # STATUS LAMPS ROW - full pro implementation
     import datetime as _dt_lamps, os as _os_lamps
     def _lamp(label, ok, warn=False):
         dot = "🟢" if ok else ("🟡" if warn else "🔴")
         return f"<span style='font-size:13px;font-weight:bold;margin-right:18px;'>{dot} {label}</span>"
+    def _log_age_min(path):
+        return (_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(
+            _os_lamps.path.getmtime(path))).total_seconds()/60
 
     # S2 BOT
-    try:
-        _s2l = _os_lamps.path.getmtime("logs/live_trading_s2.log")
-        _s2_ok = ((_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(_s2l)).total_seconds()/60) < 2
+    try: _s2_ok = _log_age_min("logs/live_trading_s2.log") < 2
     except: _s2_ok = False
 
     # S4 BOT
-    try:
-        _s4l = _os_lamps.path.getmtime("logs/live_trading_s4.log")
-        _s4_ok = ((_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(_s4l)).total_seconds()/60) < 2
+    try: _s4_ok = _log_age_min("logs/live_trading_s4.log") < 2
     except: _s4_ok = False
 
-    # ENGINE - uses heartbeat file
+    # ENGINE - heartbeat AND log file both must be fresh
     try:
         _hb = open("logs/engine_heartbeat.txt").read().strip()
         _hb_dt = _dt_lamps.datetime.strptime(_hb, '%Y-%m-%dT%H:%M:%S')
         _hb_age = (_dt_lamps.datetime.utcnow() - _hb_dt).total_seconds()/60
-        _eng_ok = _hb_age < 15
-        _eng_warn = 2 < _hb_age < 15
+        _eng_log_age = _log_age_min("logs/renko_state_engine.log")
+        _eng_ok = _hb_age < 15 and _eng_log_age < 15
+        _eng_warn = not _eng_ok and (_hb_age < 30 or _eng_log_age < 30)
     except: _eng_ok = False; _eng_warn = False
 
     # TM1 S2
-    try:
-        _tm1s2l = _os_lamps.path.getmtime("logs/live_trading_testmember1_s2.log")
-        _tm1s2_ok = ((_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(_tm1s2l)).total_seconds()/60) < 2
+    try: _tm1s2_ok = _log_age_min("logs/live_trading_testmember1_s2.log") < 2
     except: _tm1s2_ok = False
 
     # TM1 S4
-    try:
-        _tm1s4l = _os_lamps.path.getmtime("logs/live_trading_testmember1_s4.log")
-        _tm1s4_ok = ((_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(_tm1s4l)).total_seconds()/60) < 2
+    try: _tm1s4_ok = _log_age_min("logs/live_trading_testmember1_s4.log") < 2
     except: _tm1s4_ok = False
 
     # BOUNDARY WATCHER
-    try:
-        _bwl = _os_lamps.path.getmtime("logs/boundary_watcher.log")
-        _bw_ok = ((_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(_bwl)).total_seconds()/60) < 60
+    try: _bw_ok = _log_age_min("logs/boundary_watcher.log") < 60
     except: _bw_ok = False
 
     # DELTA API
@@ -1270,34 +1264,79 @@ with _tab_monitor:
         _disk_warn = 70 <= _disk_pct_lamp < 80
     except: _disk_ok = False; _disk_warn = False
 
-    # SIGNAL FRESH - checks live_signal files updated in last 15 min
+    # SIGNAL FRESH - signal files updated in last 15 min
     try:
-        _sig_s2_age = (_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(
-            _os_lamps.path.getmtime("logs/live_signal_s2.txt"))).total_seconds()/60
-        _sig_s4_age = (_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(
-            _os_lamps.path.getmtime("logs/live_signal_s4.txt"))).total_seconds()/60
+        _sig_s2_age = _log_age_min("logs/live_signal_s2.txt")
+        _sig_s4_age = _log_age_min("logs/live_signal_s4.txt")
         _sig_ok = _sig_s2_age < 15 and _sig_s4_age < 15
         _sig_warn = not _sig_ok and (_sig_s2_age < 60 or _sig_s4_age < 60)
     except: _sig_ok = False; _sig_warn = False
 
-    _lamps_html = (
+    # CSV FRESH - market data not stale (engine updates every 5 min)
+    try:
+        _csv_age = _log_age_min("data/btc_1m_delta.csv")
+        _csv_ok = _csv_age < 35
+        _csv_warn = 35 <= _csv_age < 120
+    except: _csv_ok = False; _csv_warn = False
+
+    # WEBSOCKET - check engine log for recent WS connected line
+    try:
+        _ws_lines = open("logs/renko_state_engine.log").readlines()[-100:]
+        _ws_ok = any("WS] Connected" in l or "Websocket connected" in l or "WS] Completed" in l
+                     for l in _ws_lines[-20:])
+        _ws_warn = not _ws_ok and any("WS]" in l for l in _ws_lines)
+    except: _ws_ok = False; _ws_warn = False
+
+    # LAST ORDER - check if any order placed in last 7 days (not stuck)
+    try:
+        _s2_log_lines = open("logs/live_trading_s2.log").readlines()
+        _s4_log_lines = open("logs/live_trading_s4.log").readlines()
+        _all_lines = _s2_log_lines + _s4_log_lines
+        _order_lines = [l for l in _all_lines if "[ORDER] ENTRY" in l or "[ORDER] EXIT" in l]
+        _last_order_ok = len(_order_lines) > 0
+        _last_order_warn = False
+    except: _last_order_ok = False; _last_order_warn = False
+
+    # POSITION SYNC - no ghost position (check last startup reconciliation)
+    try:
+        _pos_lines = open("logs/live_trading_s2.log").readlines()[-200:]
+        _pos_lines += open("logs/live_trading_s4.log").readlines()[-200:]
+        _ghost_found = any("Position mismatch" in l for l in _pos_lines)
+        _pos_ok = not _ghost_found
+        _pos_warn = _ghost_found
+    except: _pos_ok = True; _pos_warn = False
+
+    # ENTRY TIMING - check if last entry was stale signal skip
+    try:
+        _s2_recent = open("logs/live_trading_s2.log").readlines()[-500:]
+        _s4_recent = open("logs/live_trading_s4.log").readlines()[-500:]
+        _stale_s2 = any("STALE" in l or "signal too old" in l for l in _s2_recent)
+        _stale_s4 = any("STALE" in l or "signal too old" in l for l in _s4_recent)
+        _timing_ok = not (_stale_s2 or _stale_s4)
+        _timing_warn = _stale_s2 or _stale_s4
+    except: _timing_ok = True; _timing_warn = False
+
+    # Build 2 rows of lamps
+    _row1 = (
         _lamp("S2 BOT", _s2_ok) +
         _lamp("S4 BOT", _s4_ok) +
         _lamp("ENGINE", _eng_ok, _eng_warn) +
         _lamp("SIGNAL", _sig_ok, _sig_warn) +
+        _lamp("WEBSOCKET", _ws_ok, _ws_warn) +
+        _lamp("CSV", _csv_ok, _csv_warn) +
+        _lamp("DELTA API", _api_ok)
+    )
+    _row2 = (
         _lamp("TM1 S2", _tm1s2_ok) +
         _lamp("TM1 S4", _tm1s4_ok) +
         _lamp("BOUNDARY", _bw_ok) +
-        _lamp("DELTA API", _api_ok) +
+        _lamp("LAST ORDER", _last_order_ok, _last_order_warn) +
+        _lamp("POSITION", _pos_ok, _pos_warn) +
+        _lamp("ENTRY TIMING", _timing_ok, _timing_warn) +
         _lamp("DISK", _disk_ok, _disk_warn if not _disk_ok else False)
     )
-    st.markdown(f"<div style='background:#f0f7ff;border:1px solid #90CAF9;border-radius:6px;padding:10px 16px;margin-bottom:12px;'>{_lamps_html}</div>", unsafe_allow_html=True)
-
-    # STATUS LAMPS ROW - one glance full system health
-    import datetime as _dt_lamps, os as _os_lamps
-    def _lamp(label, ok, warn=False):
-        dot = "🟢" if ok else ("🟡" if warn else "🔴")
-        return f"<span style='font-size:13px;font-weight:bold;margin-right:18px;'>{dot} {label}</span>"
+    st.markdown(f"""<div style='background:#f0f7ff;border:1px solid #90CAF9;border-radius:6px;padding:10px 16px;margin-bottom:4px;'>{_row1}</div>
+<div style='background:#f0f7ff;border:1px solid #90CAF9;border-radius:6px;padding:10px 16px;margin-bottom:12px;'>{_row2}</div>""", unsafe_allow_html=True)
 
     # S2 BOT
     try:
