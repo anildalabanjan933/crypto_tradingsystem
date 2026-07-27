@@ -353,15 +353,27 @@ while True:
             signals = load_signals()
             log.info(f"[RELOAD] Signal CSV reloaded: {len(signals)} signals")
 
-        _matched = None
-        for _row in signals:
-            _et = _row["entry_time"]
-            _xt = _row["exit_time"]
-            if _et <= last_known_ts:
-                continue
-            if now >= _et:
-                _matched = _row
-                break
+        # --- Check logs/live_signal_s4.txt first (1-2 sec from engine) ---
+        _live_sig = read_live_signal("logs/live_signal_s4.txt")
+        _live_matched = None
+        if _live_sig and _live_sig.get("timestamp"):
+            _live_ts = _live_sig["timestamp"]
+            for _row in signals:
+                if _row["entry_time"][:16] == _live_ts[:16] and _row["entry_time"] > last_known_ts:
+                    _live_matched = _row
+                    log.info(f"[LIVE] Signal from engine matched CSV: {_live_ts}")
+                    break
+
+        _matched = _live_matched
+        if not _matched:
+            for _row in signals:
+                _et = _row["entry_time"]
+                _xt = _row["exit_time"]
+                if _et <= last_known_ts:
+                    continue
+                if now >= _et:
+                    _matched = _row
+                    break
 
         if _matched:
             sig_ts = _matched["entry_time"]
