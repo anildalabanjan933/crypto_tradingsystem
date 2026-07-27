@@ -695,7 +695,7 @@ def _load14(csv_pattern, from_dt=None):
                 drop=pk-cum
                 if drop>dd: dd=drop
             # Today + Month PnL
-            pnl_today = df[df['exit_dt'] >= _pd14.Timestamp(today_s)]['net_pnl'].sum()
+            pnl_today = df[df['entry_datetime'].dt.date == today_s.date()]['net_pnl'].sum()
             pnl_month = df[df['exit_dt'] >= _pd14.Timestamp(month_s)]['net_pnl'].sum()
             # This month max DD
             df_mo = df[df['exit_dt'] >= _pd14.Timestamp(month_s)]
@@ -722,7 +722,7 @@ def _load14(csv_pattern, from_dt=None):
         months = max(total_m, 1)
         roc_monthly = roc / months
         # Today + month trade count
-        today_count = len(df[df['exit_dt'] >= _pd14.Timestamp(today_s)]) if 'exit_dt' in df.columns else 0
+        today_count = len(df[df['entry_datetime'].dt.date == today_s.date()]) if 'entry_datetime' in df.columns else 0
         month_count = len(df[df['exit_dt'] >= _pd14.Timestamp(month_s)]) if 'exit_dt' in df.columns else 0
         # extra metrics
         import math as _m14x, numpy as _np14x
@@ -991,9 +991,9 @@ def _load14_fwd(product_id, api_key, api_secret, base_url):
         now14f=_dt14.datetime.utcnow()
         td=now14f.replace(hour=0,minute=0,second=0,microsecond=0).strftime("%Y-%m-%d")
         ms=now14f.replace(day=1,hour=0,minute=0,second=0,microsecond=0).strftime("%Y-%m-%d")
-        pnl_today=sum(p["pnl"] for p in pairs if p["exit_ts"][:10]>=td)*_INR14
+        pnl_today=sum(p["pnl"] for p in pairs if p.get("entry_ts","")[:10]==td)*_INR14
         pnl_month=sum(p["pnl"] for p in pairs if p["exit_ts"][:10]>=ms)*_INR14
-        today_count=sum(1 for p in pairs if p["exit_ts"][:10]>=td)
+        today_count=sum(1 for p in pairs if p.get("entry_ts","")[:10]==td)
         month_count=sum(1 for p in pairs if p["exit_ts"][:10]>=ms)
         rec_cap=dd*3*_INR14; roc=(net_inr/rec_cap*100) if rec_cap>0 else 0
         roc_monthly=roc/max(total_m,1)

@@ -57,7 +57,7 @@ def _get_bt_rows(df, label):
     try:
         now_utc = datetime.datetime.utcnow()
         today_s = now_utc.replace(hour=0, minute=0, second=0, microsecond=0)
-        dfc = df[df['exit_datetime'] >= pd.Timestamp(today_s)].copy()
+        dfc = df[df['entry_datetime'].dt.date == today_s.date()].copy()
         for _, r in dfc.iterrows():
             pnl_inr = float(r.get('net_pnl_inr', 0))
             win_tax = max(pnl_inr, 0) * 0.10
