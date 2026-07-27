@@ -230,25 +230,49 @@ def check_and_fire(state,is_s4=False):
             price=float(sig.get("price",0))
             box=state.box_size if state.box_size else 100
             if sig_type=="EXIT" and state.current_direction==direction:
-                _fire(state,ts,price,direction,"EXIT",box,now_utc); return
+                _fire(state,ts,price,direction,"EXIT",box,now_utc,signals); return
             elif sig_type in ("BUY_A","BUY_B","SELL_A","SELL_B","ENTRY") and state.current_direction is None:
-                _fire(state,ts,price,direction,"ENTRY",box,now_utc); return
+                _fire(state,ts,price,direction,"ENTRY",box,now_utc,signals); return
     except Exception as e:
         log.error(f"[{state.label}] check error: {e}",exc_info=True)
 
-def _fire(state,ts,cl,direction,sig_type,box,now_utc):
+def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
     from datetime import datetime,timezone
-    # Regenerate CSV FIRST before writing signal file
-    # Bot cross-checks CSV - must be updated before bot reads signal
+    # INSTANT CSV append - no full backtest rerun
+    # Append only new signal row directly to signals CSV
     try:
-        import subprocess as _sp, io as _io, contextlib as _ctx
-        with _ctx.redirect_stdout(_io.StringIO()), _ctx.redirect_stderr(_io.StringIO()):
-            _sp.run([".venv/bin/python","scripts/generate_signals.py"],
-                    capture_output=True, timeout=120,
-                    cwd="/home/anildalabanjan933/crypto_trading_system")
-        log.info(f"[{state.label}] CSV regenerated BEFORE signal file write")
+        import csv as _csv, os as _os
+        sig_label = state.label[-1]  # "2" or "4"
+        sig_csv = f"logs/signals_s{sig_label}.csv"
+        # Read existing signals
+        existing = []
+        if _os.path.exists(sig_csv):
+            with open(sig_csv,"r") as _f:
+                existing = list(_csv.reader(_f))
+        # Only append if this signal not already in CSV
+        already = any(len(r)>=2 and r[0]==ts for r in existing)
+        if not already and sig_type=="ENTRY" and signals:
+            # Find matching exit from signals list
+            exit_ts = None
+            for _sig in signals:
+                if _sig.get("timestamp","") > ts and _sig.get("signal_type","") in ("EXIT","SELL_A","SELL_B","BUY_A","BUY_B"):
+                    exit_ts = _sig.get("timestamp","")
+                    break
+            if exit_ts:
+                tmp = sig_csv+".tmp"
+                with open(tmp,"w",newline="") as _f:
+                    _w = _csv.writer(_f)
+                    for r in existing:
+                        _w.writerow(r)
+                    _w.writerow([ts, exit_ts, direction, 100])
+                _os.replace(tmp, sig_csv)
+                log.info(f"[{state.label}] INSTANT CSV append: {ts},{exit_ts},{direction}")
+            else:
+                log.warning(f"[{state.label}] No exit found for {ts} - signal file only")
+        elif sig_type=="EXIT":
+            log.info(f"[{state.label}] EXIT signal - CSV already has entry row")
     except Exception as _e:
-        log.error(f"[{state.label}] CSV regen failed: {_e}")
+        log.error(f"[{state.label}] CSV append failed: {_e}")
     write_signal_file(state.label,sig_type,direction,ts)
     state.last_signal_ts=ts
     if sig_type=="EXIT": state.last_exit_ts=ts
