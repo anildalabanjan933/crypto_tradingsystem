@@ -4990,12 +4990,12 @@ with _tab_analysis:
                 week_s  = (now_bt - _dt_bt.timedelta(days=now_bt.weekday())).replace(hour=0,minute=0,second=0,microsecond=0)
                 month_s = now_bt.replace(day=1,hour=0,minute=0,second=0,microsecond=0)
                 year_s  = now_bt.replace(month=1,day=1,hour=0,minute=0,second=0,microsecond=0)
-                if 'exit_datetime' in df.columns:
-                    df['exit_dt'] = _pd13.to_datetime(df['exit_datetime'])
-                    pnl_today = df[df['exit_dt'] >= _pd13.Timestamp(today_s)]['net_pnl'].sum()
-                    pnl_week  = df[df['exit_dt'] >= _pd13.Timestamp(week_s)]['net_pnl'].sum()
-                    pnl_month = df[df['exit_dt'] >= _pd13.Timestamp(month_s)]['net_pnl'].sum()
-                    pnl_year  = df[df['exit_dt'] >= _pd13.Timestamp(year_s)]['net_pnl'].sum()
+                if 'entry_datetime' in df.columns:
+                    df['entry_dt'] = _pd13.to_datetime(df['entry_datetime'])
+                    pnl_today = df[df['entry_dt'].dt.date == today_s.date()]['net_pnl'].sum()
+                    pnl_week  = df[df['entry_dt'] >= _pd13.Timestamp(week_s)]['net_pnl'].sum()
+                    pnl_month = df[df['entry_dt'] >= _pd13.Timestamp(month_s)]['net_pnl'].sum()
+                    pnl_year  = df[df['entry_dt'] >= _pd13.Timestamp(year_s)]['net_pnl'].sum()
                 else:
                     pnl_today = pnl_week = pnl_month = pnl_year = 0
                 avg_slip = df['slippage_usd'].mean() if 'slippage_usd' in df.columns else 5.0
