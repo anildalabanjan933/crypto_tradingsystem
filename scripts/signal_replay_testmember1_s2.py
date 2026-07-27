@@ -350,27 +350,64 @@ while True:
     try:
         now = now_utc_str()
 
-        # Read live signal from engine
-        live_sig = read_live_signal("logs/live_signal_s2.txt")
-        if live_sig:
-            sig_type  = live_sig["type"]   # ENTRY_LONG, ENTRY_SHORT, EXIT_LONG, EXIT_SHORT
-            sig_ts    = live_sig["timestamp"]
-            lots      = live_sig["lots"]
+        # --- CSV Signal Matching (single source of truth) ---
+        _now_min = int(time.time()) // 60
+        if _now_min % 10 == 0 and _now_min != getattr(check_engine_heartbeat, '_last_reload', -1):
+            check_engine_heartbeat._last_reload = _now_min
+            signals = load_signals()
+            log.info(f"[RELOAD] Signal CSV reloaded: {len(signals)} signals")
 
-            # Skip signals before valid_from
-            if sig_ts >= valid_from and sig_ts != last_known_ts:
+        _matched = None
+        for _row in signals:
+            _et = _row["entry_time"]
+            _xt = _row["exit_time"]
+            if _et <= last_known_ts:
+                continue
+            if now >= _et:
+                _matched = _row
+                break
 
-                # --- ENTRY ---
-                if "ENTRY" in sig_type and position is None:
-                    direction = "long" if "LONG" in sig_type else "short"
-                    side = "buy" if direction == "long" else "sell"
-                    log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
-                    save_ts_file(TS_FILE, sig_ts)
-                    last_known_ts = sig_ts
-                    clear_live_signal("logs/live_signal_s2.txt")
+        if _matched:
+            sig_ts = _matched["entry_time"]
+            lots   = _matched["lots"]
+            dirn   = _matched["direction"]
+            _xt    = _matched["exit_time"]
+
+            if position is not None and now >= _xt:
+                actual = om.get_position()
+                _ex_size = abs(actual.get("size", 0)) if actual.get("success") else 0
+                if _ex_size == 0:
+                    log.info(f"[ORDER] EXIT skipped - exchange already FLAT | ts={_xt}")
+                    position = None
+                    save_ts_file(TS_FILE, _xt)
+                    last_known_ts = _xt
+                else:
+                    side = "sell" if position == "long" else "buy"
+                    close_size = _ex_size
+                    log.info(f"[ORDER] EXIT {side} {close_size} lots | ts={_xt}")
+                    save_ts_file(TS_FILE, _xt)
+                    last_known_ts = _xt
                     if not check_engine_heartbeat():
-                        log.warning("[ORDER] ENTRY blocked - engine heartbeat stale")
-                        continue
+                        log.warning("[ORDER] EXIT blocked - engine heartbeat stale")
+                    else:
+                        result = om.close_position(size=close_size, side=side)
+                        if result.get("success"):
+                            position = None
+                            log.info(f"[ORDER] EXIT confirmed | position=None")
+                            send_alert(f"CTS TM1_S2 EXIT\nDir: {dirn.upper()}\nLots: {close_size}")
+                        else:
+                            log.error(f"[ORDER] EXIT FAILED: {result}")
+                            last_known_ts = load_ts_file(TS_FILE)
+
+            elif position is None and now < _xt:
+                direction = dirn
+                side = "buy" if direction == "long" else "sell"
+                log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
+                save_ts_file(TS_FILE, sig_ts)
+                last_known_ts = sig_ts
+                if not check_engine_heartbeat():
+                    log.warning("[ORDER] ENTRY blocked - engine heartbeat stale")
+                else:
                     result = om.place_market_order(side=side, size=lots)
                     if result.get("success"):
                         position = direction
@@ -385,110 +422,22 @@ while True:
                             else:
                                 log.warning(f"[SL] Stop SL FAILED: {sl_result}")
                         log.info(f"[ORDER] ENTRY confirmed | position={position}")
-                        bt_row = _get_bt_trade(sig_ts, "S2")
-                        _msg = _build_alert("ENTRY","S2",direction,sig_ts,real_entry,None,0,0,bt_row)
-                        send_alert(_msg)
+                        send_alert(f"CTS TM1_S2 ENTRY\nDir: {direction.upper()}\nLots: {lots}")
                     else:
                         log.error(f"[ORDER] ENTRY FAILED: {result}")
-                        send_alert(f"CTS S2 ENTRY FAILED\nError: {result}")
                         last_known_ts = load_ts_file(TS_FILE)
 
-                # --- EXIT ---
-                elif "EXIT" in sig_type:
-                    actual = om.get_position()
-                    _ex_size = abs(actual.get("size", 0)) if actual.get("success") else 0
-                    if _ex_size == 0:
-                        log.info(f"[ORDER] EXIT skipped - exchange already FLAT | ts={sig_ts}")
-                        position = None
-                        save_ts_file(TS_FILE, sig_ts)
-                        last_known_ts = sig_ts
-                        clear_live_signal("logs/live_signal_s2.txt")
-                    else:
-                        side = "sell" if position == "long" else "buy"
-                        close_size = _ex_size
-                    log.info(f"[ORDER] EXIT {side} {close_size} lots | ts={sig_ts}")
-                    save_ts_file(TS_FILE, sig_ts)
-                    last_known_ts = sig_ts
-                    clear_live_signal("logs/live_signal_s2.txt")
-                    if not check_engine_heartbeat():
-                        log.warning("[ORDER] EXIT blocked - engine heartbeat stale")
-                        continue
-                    result = om.close_position(size=close_size, side=side)
-                    if result.get("success"):
-                        position = None
-                        log.info(f"[ORDER] EXIT confirmed | position=None")
-                        _ex_price = om.get_position().get("entry_price",0) if False else 0
-                        try:
-                            _fills = om.get_recent_fill_price()
-                            _ex_price = _fills if _fills else 0
-                        except: pass
-                        bt_row = _get_bt_trade(sig_ts, "S2")
-                        _entry_ts = load_ts_file(TS_FILE) or sig_ts
-                        _msg = _build_alert("EXIT","S2",position or direction,_entry_ts,0,sig_ts,_ex_price,0,bt_row)
-                        send_alert(_msg)
-                    else:
-                        log.error(f"[ORDER] EXIT FAILED: {result}")
-                        last_known_ts = load_ts_file(TS_FILE)
-
-        if True:  # placeholder to maintain indentation
-            if False:
-                side = "buy" if direction == "long" else "sell"
-                log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={entry_time}")
-                save_ts_file(TS_FILE, entry_time)
-                last_known_ts = entry_time
-                if not check_engine_heartbeat():
-                    log.warning("[ORDER] ENTRY blocked - engine heartbeat stale")
-                    continue
-                result = om.place_market_order(side=side, size=lots)
-                if result.get("success"):
-                    position     = direction
-                    open_lot_size = lots
-                    time.sleep(1)
-                    pos_check = om.get_position()
-                    real_entry = pos_check.get("entry_price", 0.0) if pos_check.get("success") else 0.0
-                    if real_entry > 0:
-                        sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=2.0)
-                        if sl_result.get("success"):
-                            log.info(f"[SL] Stop SL placed | sl_price={sl_result['sl_price']}")
-                        else:
-                            log.warning(f"[SL] Stop SL FAILED: {sl_result}")
-                    else:
-                        log.warning(f"[SL] Skipped - could not get real entry price from position")
-                    log.info(f"[ORDER] ENTRY confirmed | position={position}")
-                    send_alert(f"CTS S2 ENTRY\nDirection: {direction.upper()}\nLots: {lots}")
-                else:
-                    log.error(f"[ORDER] ENTRY FAILED: {result}")
-                    if result.get('error',{}).get('code') == 'invalid_api_key':
-                        log.error("[CRITICAL] invalid_api_key - check API key and IP whitelist")
-                    send_alert(f"CTS S2 ENTRY FAILED\nError: {result}")
-                    if result.get('error',{}).get('code') == 'invalid_api_key':
-                        log.error("[CRITICAL] invalid_api_key - check API key and IP whitelist")
-                        send_alert("CTS S2 CRITICAL: invalid_api_key - check API key and IP whitelist")
-                    last_known_ts = load_ts_file(TS_FILE)
-                break  # process one signal per cycle
-
-        # Sync position from exchange every 5 minutes - detects SL hits and ghost positions
         if int(time.time()) % 300 < 2:
             _exch = om.get_position()
             _exch_size = abs(_exch.get("size", 0)) if _exch.get("success") else -1
             if _exch_size == 0 and position is not None:
-                log.warning(f"[SYNC] Exchange FLAT but bot={position} - SL hit or manual close - syncing to FLAT")
+                log.warning(f"[SYNC] Exchange FLAT but bot={position} - syncing to FLAT")
                 position = None
                 save_ts_file(TS_FILE, last_known_ts)
-                log.warning(f"[SYNC] last_known_ts saved after SL hit: {last_known_ts}")
-                send_alert(
-                    f"⚠️ CTS SL HIT DETECTED\n"
-                    f"━━━━━━━━━━━━━━━━━━\n"
-                    f"Bot   : {TS_FILE}\n"
-                    f"Action: Position closed by SL on exchange\n"
-                    f"TS    : {last_known_ts}\n"
-                    f"Status: Synced to FLAT - waiting for next signal\n"
-                    f"━━━━━━━━━━━━━━━━━━"
-                )
             elif _exch_size > 0 and position is None:
                 _exch_side = _exch.get("side","")
                 position = "long" if _exch_side == "buy" else "short"
-                log.warning(f"[SYNC] Exchange has position={position} but bot=None - syncing to exchange")
+                log.warning(f"[SYNC] Exchange has position={position} but bot=None - syncing")
 
         log.info(f"[WAIT] now={now} | position={position} | last_known_ts={last_known_ts}")
 
