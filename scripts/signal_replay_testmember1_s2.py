@@ -359,14 +359,7 @@ while True:
             lots      = live_sig["lots"]
 
             # Skip signals before valid_from
-            # Skip signal if file was written before bot startup (stale on restart)
-            _sig_file_mtime = os.path.getmtime("logs/live_signal_s2.txt")
-            if _sig_file_mtime < _bot_start_time:
-                log.warning(f"[SKIP] Signal file older than bot startup - skipping | ts={sig_ts}")
-                save_ts_file(TS_FILE, sig_ts)
-                last_known_ts = sig_ts
-                clear_live_signal("logs/live_signal_s2.txt")
-            elif sig_ts >= valid_from and sig_ts != last_known_ts:
+            if sig_ts >= valid_from and sig_ts != last_known_ts:
 
                 # --- ENTRY ---
                 if "ENTRY" in sig_type and position is None:
