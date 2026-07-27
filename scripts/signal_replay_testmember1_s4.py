@@ -369,7 +369,13 @@ while True:
             dirn   = _matched["direction"]
             _xt    = _matched["exit_time"]
 
-            if position is not None and now >= _xt:
+            # --- Skip expired signal (exit already passed, no position) ---
+            if position is None and now >= _xt:
+                log.info(f"[SKIP] Expired signal | entry={sig_ts} exit={_xt} | advancing last_known_ts")
+                save_ts_file(TS_FILE, _xt)
+                last_known_ts = _xt
+
+            elif position is not None and now >= _xt:
                 actual = om.get_position()
                 _ex_size = abs(actual.get("size", 0)) if actual.get("success") else 0
                 if _ex_size == 0:
