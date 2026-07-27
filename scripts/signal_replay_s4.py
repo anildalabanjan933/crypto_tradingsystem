@@ -342,7 +342,6 @@ try:
         log.error(f"[CRITICAL] API key validation FAILED: {_d_val.get('error')} - check API key and testnet setting")
 except Exception as _e_val:
     log.error(f"[CRITICAL] API key validation error: {_e_val}")
-_bot_start_time = time.time()
 while True:
     try:
         now = now_utc_str()
