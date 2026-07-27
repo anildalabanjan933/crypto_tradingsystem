@@ -238,21 +238,22 @@ def check_and_fire(state,is_s4=False):
 
 def _fire(state,ts,cl,direction,sig_type,box,now_utc):
     from datetime import datetime,timezone
-    write_signal_file(state.label,sig_type,direction,ts)
-    state.last_signal_ts=ts
-    if sig_type=="EXIT": state.last_exit_ts=ts
-    state.current_direction=direction if sig_type=="ENTRY" else None
-    log.info(f"[{state.label}] {sig_type} {direction} at {ts}")
-    # Regenerate trade log CSV after every signal so Section 13+14 stay in sync
+    # Regenerate CSV FIRST before writing signal file
+    # Bot cross-checks CSV - must be updated before bot reads signal
     try:
         import subprocess as _sp, io as _io, contextlib as _ctx
         with _ctx.redirect_stdout(_io.StringIO()), _ctx.redirect_stderr(_io.StringIO()):
             _sp.run([".venv/bin/python","scripts/generate_signals.py"],
                     capture_output=True, timeout=120,
                     cwd="/home/anildalabanjan933/crypto_trading_system")
-        log.info(f"[{state.label}] Trade log CSV regenerated after {sig_type}")
+        log.info(f"[{state.label}] CSV regenerated BEFORE signal file write")
     except Exception as _e:
         log.error(f"[{state.label}] CSV regen failed: {_e}")
+    write_signal_file(state.label,sig_type,direction,ts)
+    state.last_signal_ts=ts
+    if sig_type=="EXIT": state.last_exit_ts=ts
+    state.current_direction=direction if sig_type=="ENTRY" else None
+    log.info(f"[{state.label}] {sig_type} {direction} at {ts}")
 
 
 
