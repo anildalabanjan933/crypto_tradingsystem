@@ -391,6 +391,7 @@ log.info(f"[STARTUP] last_known_ts={last_known_ts} | valid_from={valid_from}")
 signals = load_signals()
 open_lot_size   = LOT_SIZE
 open_entry_price = 0.0
+last_processed_seq = 0  # SEQ-based signal detection - no last_known_ts needed
 
 # --- Missed Trade Check on Startup ---
 try:
@@ -457,7 +458,11 @@ def read_live_signal(signal_file):
         parts = line.split("|")
         if len(parts) < 3:
             return None
-        return {"type": parts[0], "timestamp": parts[1], "lots": int(parts[2])}
+        seq = 0
+        for p in parts:
+            if p.startswith("SEQ="):
+                seq = int(p.split("=")[1])
+        return {"type": parts[0], "timestamp": parts[1], "lots": int(parts[2]), "seq": seq}
     except Exception:
         return None
 
@@ -500,22 +505,24 @@ while True:
             signals = load_signals()
             log.info(f"[RELOAD] Signal CSV reloaded: {len(signals)} signals")
 
-        # --- Check live_signal_s2.txt first (1-2 sec from engine) ---
+        # --- Check live_signal_s2.txt (engine single source of truth) ---
         _live_sig = read_live_signal("logs/live_signal_s2.txt")
         _live_matched = None
-        if _live_sig and _live_sig.get("timestamp"):
+        if _live_sig and _live_sig.get("seq", 0) > last_processed_seq:
             _live_ts = _live_sig["timestamp"]
             _live_type = _live_sig.get("type","")
-            # Cross-check: match entry_time OR exit_time against CSV
+            # Find matching row in CSV for exit time and direction
             for _row in signals:
                 _et_match = _row["entry_time"][:16] == _live_ts[:16]
                 _xt_match = _row["exit_time"][:16] == _live_ts[:16]
-                if (_et_match or _xt_match) and _row["entry_time"] > last_known_ts:
+                if _et_match or _xt_match:
                     _live_matched = _row
-                    log.info(f"[LIVE] Signal from engine matched CSV: {_live_ts} type={_live_type}")
+                    log.info(f"[LIVE] New engine signal SEQ={_live_sig['seq']}: {_live_ts} type={_live_type}")
                     break
+            if not _live_matched:
+                log.info(f"[LIVE] Engine signal {_live_ts} not in CSV yet - waiting for CSV update")
 
-        # Find current signal from CSV (fallback if live signal not available)
+        # Fallback: CSV polling if no live signal
         _matched = _live_matched
         if not _matched:
             for _row in signals:
@@ -573,6 +580,7 @@ while True:
                         if result.get("success"):
                             position = None
                             open_entry_price = 0.0
+                            if _live_sig: last_processed_seq = _live_sig.get("seq", 0)
                             log.info(f"[ORDER] EXIT confirmed | position=None")
                             time.sleep(1)
                             _exit_pos = om.get_position()
@@ -607,6 +615,7 @@ while True:
                         position = direction
                         open_lot_size = lots
                         open_entry_price = real_entry
+                        if _live_sig: last_processed_seq = _live_sig.get("seq", 0)
                         time.sleep(1)
                         pos_check = om.get_position()
                         real_entry = pos_check.get("entry_price", 0.0) if pos_check.get("success") else 0.0
