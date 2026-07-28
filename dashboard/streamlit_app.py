@@ -951,7 +951,7 @@ def _load14_fwd(product_id, api_key, api_secret, base_url):
         if not api_key or not api_secret: return None
         import time as _tm14
         now_ts = int(_tm14.time())
-        from_ts = now_ts - 30*24*3600  # last 30 days
+        import datetime as _dt14fx; _today14 = _dt14fx.datetime.utcnow().replace(hour=0,minute=0,second=0,microsecond=0); from_ts = int(_today14.timestamp())  # today only
         orders = _fetch_orders_top(api_key, api_secret, base_url, from_ts, now_ts, product_id)
         pairs = _pair_orders_top(orders)
         if not pairs: return None
@@ -5639,6 +5639,8 @@ with _tab_analysis:
             html += _section_html("S4", bt4, lv4)
             html += '</div>'
             return html
+        _df2_fwd=_load14_fwd(84,_s2_key,_s2_sec,_fwd_base)
+        _df4_fwd=_load14_fwd(84,_s4_key,_s4_sec,_fwd_base)
         st.markdown(_today_trades_html(_d2_full, _d4_full, _df2_fwd, _df4_fwd), unsafe_allow_html=True)
         st.markdown("---")
         st.markdown(_tbl14(_d2_1yr,_d4_1yr,"1-YEAR BACKTEST",_1yr_label,_df2_fwd,_df4_fwd),unsafe_allow_html=True)
@@ -5725,6 +5727,8 @@ with _tab_today:
     st.markdown("<div class='section-title'>TODAY'S TRADES</div>", unsafe_allow_html=True)
     st.caption('Live comparison of today\'s backtest signals vs forward test execution')
     try:
+        _df2_fwd=_load14_fwd(84,_s2_key,_s2_sec,_fwd_base)
+        _df4_fwd=_load14_fwd(84,_s4_key,_s4_sec,_fwd_base)
         st.markdown(_today_trades_html(_d2_full, _d4_full, _df2_fwd, _df4_fwd), unsafe_allow_html=True)
     except:
         st.info('Open ANALYSIS tab first to load data, then return here.')
