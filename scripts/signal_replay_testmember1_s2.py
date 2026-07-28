@@ -503,6 +503,11 @@ while True:
                 _et = _row["entry_time"]
                 _xt = _row["exit_time"]
                 if _et < last_known_ts:
+                    # Even if entry is behind last_known_ts, advance if exit also passed and no position
+                    if position is None and now >= _xt and _xt > last_known_ts:
+                        log.info(f"[SKIP] Expired signal entry={_et} exit={_xt} | advancing last_known_ts")
+                        save_ts_file(TS_FILE, _xt)
+                        last_known_ts = _xt
                     continue
                 # Expired signal: exit already passed and no position - skip and advance
                 if position is None and now >= _xt:
