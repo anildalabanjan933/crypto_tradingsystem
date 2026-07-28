@@ -274,6 +274,12 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
     except Exception as _e:
         log.error(f"[{state.label}] CSV append failed: {_e}")
     write_signal_file(state.label,sig_type,direction,ts)
+    try:
+        _ep = float(state.last_entry_price) if hasattr(state,'last_entry_price') and state.last_entry_price else 0.0
+        _xp = float(state.last_exit_price)  if hasattr(state,'last_exit_price')  and state.last_exit_price  else 0.0
+        _send_bt_signal_alert(state.label, direction, ts, exit_ts, _ep, _xp)
+    except Exception as _ae:
+        log.warning(f"[TELEGRAM] BT alert error: {_ae}")
     state.last_signal_ts=ts
     if sig_type=="EXIT": state.last_exit_ts=ts
     state.current_direction=direction if sig_type=="ENTRY" else None
@@ -529,7 +535,40 @@ if __name__=="__main__":
 
         # Write heartbeat every cycle - bots check this before placing orders
         try:
-            open('logs/engine_heartbeat.txt','w').write(__import__('datetime').datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S'))
+            open('logs/engine_heartbeat.txt','w').write(str(__import__('time').time()))
         except:
             pass
         time.sleep(SLEEP_SEC)
+
+def _send_bt_signal_alert(strategy_label, direction, entry_ts, exit_ts, entry_price, exit_price, lots=100, slippage=5.0):
+    """Send Telegram alert when backtest signal fires."""
+    try:
+        from engine.telegram_alert import send_alert
+        import datetime as _dt
+
+        def _to_ist(ts_str):
+            try:
+                dt = _dt.datetime.strptime(ts_str, "%Y-%m-%dT%H:%M:%S")
+                dt_ist = dt + _dt.timedelta(hours=5, minutes=30)
+                return dt_ist.strftime("%d-%b-%Y %I:%M %p IST")
+            except:
+                return ts_str
+
+        slip_total = slippage * 2 * lots * 0.001
+        gross_pnl  = (exit_price - entry_price) if direction == "long" else (entry_price - exit_price)
+        gross_pnl  = gross_pnl * lots * 0.001
+        net_pnl    = round(gross_pnl - slip_total, 2)
+        sign       = "+" if net_pnl >= 0 else ""
+
+        msg = (
+            f"CTS BACKTEST {strategy_label} SIGNAL\n"
+            f"Direction : {direction.upper()}\n"
+            f"Entry time: {_to_ist(entry_ts)}\n"
+            f"Exit time : {_to_ist(exit_ts)}\n"
+            f"BT Entry  : ${entry_price:,.2f}\n"
+            f"BT Exit   : ${exit_price:,.2f}\n"
+            f"Net PnL   : {sign}${net_pnl:,.2f} (after $5/side slip)"
+        )
+        send_alert(msg)
+    except Exception as e:
+        log.warning(f"[TELEGRAM] BT signal alert failed: {e}")
