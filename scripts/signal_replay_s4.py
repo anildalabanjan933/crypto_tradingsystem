@@ -62,74 +62,153 @@ def _get_bt_trade(sig_ts, strategy_name):
         pass
     return None
 
-def _build_alert(sig_type, label, direction, live_entry_ts, live_entry_price,
-                 live_exit_ts, live_exit_price, live_pnl, bt_row):
-    """Build formatted Telegram alert message."""
-    ist_entry = _utc_to_ist(live_entry_ts) if live_entry_ts else "-"
-    ist_exit  = _utc_to_ist(live_exit_ts)  if live_exit_ts  else "-"
+def _get_csv_bt_row(label, entry_ts):
+    """Read BT row from signals CSV by entry_time - returns list [entry_ts, exit_ts, dir, lots, bt_entry_price, bt_exit_price]"""
+    import csv as _csv
+    sig_num = "2" if label in ("S2","TM1_S2") else "4"
+    sig_csv = f"logs/signals_s{sig_num}.csv"
+    try:
+        with open(sig_csv,"r") as _f:
+            for row in _csv.reader(_f):
+                if len(row) >= 5 and row[0] == entry_ts:
+                    return row
+    except:
+        pass
+    return None
 
-    if sig_type == "ENTRY":
-        live_block = (
-            f"Dir   : {direction.upper()}\n"
-            f"Entry : {ist_entry} | ${live_entry_price:,.0f}"
+def _send_live_entry_alert(label, direction, entry_ts, fill_price, sl_price, lots=100):
+    try:
+        from engine.telegram_alert import send_alert
+        sl_str = f"${sl_price:,.2f} (2% away)" if sl_price > 0 else "pending"
+        msg = (
+            f"CTS LIVE {label} ENTRY\n"
+            f"Direction : {direction.upper()}\n"
+            f"Entry time: {_utc_to_ist(entry_ts)}\n"
+            f"Fill price: ${fill_price:,.2f}\n"
+            f"SL placed : {sl_str}\n"
+            f"Lots      : {lots}"
         )
-    else:
-        pnl_sign = "+" if live_pnl >= 0 else ""
-        live_block = (
-            f"Dir   : {direction.upper()}\n"
-            f"Entry : {ist_entry} | ${live_entry_price:,.0f}\n"
-            f"Exit  : {ist_exit} | ${live_exit_price:,.0f}\n"
-            f"PnL   : {pnl_sign}${live_pnl:,.2f}"
+        send_alert(msg)
+    except Exception as e:
+        pass
+
+def _send_live_exit_alert(label, direction, exit_ts, fill_price, entry_fill, lots=100):
+    try:
+        from engine.telegram_alert import send_alert
+        if entry_fill and entry_fill > 0:
+            sign = 1 if direction.lower() == "long" else -1
+            live_pnl = round((fill_price - entry_fill) * sign * lots * 0.001, 2)
+            pnl_sign = "+" if live_pnl >= 0 else ""
+            pnl_str  = f"{pnl_sign}${live_pnl:,.2f}"
+        else:
+            pnl_str = "N/A"
+        msg = (
+            f"CTS LIVE {label} EXIT\n"
+            f"Direction : {direction.upper()}\n"
+            f"Exit time : {_utc_to_ist(exit_ts)}\n"
+            f"Fill price: ${fill_price:,.2f}\n"
+            f"Lots      : {lots}\n"
+            f"Live PnL  : {pnl_str}"
         )
+        send_alert(msg)
+    except Exception as e:
+        pass
 
-    if bt_row:
-        # bt_row is now a signal dict from strategy.generate_signals()
-        bt_entry_ts  = bt_row.get("timestamp","")
-        bt_exit_ts   = bt_row.get("timestamp","")
-        bt_dir       = bt_row.get("direction","")
-        bt_entry_p   = float(bt_row.get("price",0))
-        bt_exit_p    = float(bt_row.get("price",0))
-        bt_pnl       = 0.0
-        bt_slip      = 5.0
-        bt_ist_entry = _utc_to_ist(bt_entry_ts)
-        bt_ist_exit  = _utc_to_ist(bt_exit_ts)
-        pnl_sign     = "+" if bt_pnl >= 0 else ""
+def _send_entry_match_alert(label, direction, entry_ts, bt_entry_price, lv_fill_price,
+                             bt_exit_ts, bt_exit_price, lots=100):
+    try:
+        from engine.telegram_alert import send_alert
+        entry_slip = abs(lv_fill_price - bt_entry_price)
+        slip_ok    = entry_slip <= 10
+        slip_str   = f"${entry_slip:.2f} - OK (within $10)" if slip_ok else f"${entry_slip:.2f} - EXCEEDS $10"
+        sign_ok    = "CTS ENTRY MATCH" if slip_ok else "CTS ENTRY MISMATCH"
+        gross      = (bt_exit_price - bt_entry_price) if direction.lower()=="long" else (bt_entry_price - bt_exit_price)
+        gross      = gross * lots * 0.001
+        pnl5       = round(gross - (5*2*lots*0.001), 2)
+        pnl10      = round(gross - (10*2*lots*0.001), 2)
+        s5         = "+" if pnl5  >= 0 else ""
+        s10        = "+" if pnl10 >= 0 else ""
+        action_str = "" if slip_ok else "\nAction    : Check dashboard immediately"
+        msg = (
+            f"{sign_ok} {label}\n"
+            f"Direction : MATCH ({direction.upper()})\n"
+            f"Entry time: MATCH ({_utc_to_ist(entry_ts)})\n"
+            f"BT Entry  : ${bt_entry_price:,.2f}\n"
+            f"LV Fill   : ${lv_fill_price:,.2f}\n"
+            f"Entry slip: {slip_str}\n"
+            f"BT PnL ($5/side) : {s5}${pnl5:,.2f} (estimated)\n"
+            f"BT PnL ($10/side): {s10}${pnl10:,.2f} (estimated)\n"
+            f"Exit pending at  : {_utc_to_ist(bt_exit_ts)}{action_str}"
+        )
+        send_alert(msg)
+    except Exception as e:
+        pass
 
-        if sig_type == "ENTRY":
-            bt_block = (
-                f"Dir   : {bt_dir.upper()}\n"
-                f"Entry : {bt_ist_entry} | ${bt_entry_p:,.0f}"
-            )
+def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
+                                 bt_entry_price, bt_exit_price, lots=100):
+    try:
+        from engine.telegram_alert import send_alert
+        entry_slip  = abs(entry_fill - bt_entry_price)
+        exit_slip   = abs(exit_fill  - bt_exit_price)
+        round_trip  = entry_slip + exit_slip
+        rt_ok       = round_trip <= 10
+        sign_ok     = "CTS ROUND TRIP MATCH" if rt_ok else "CTS ROUND TRIP WARNING"
+        e_str       = f"${entry_slip:.2f} - OK" if entry_slip <= 10 else f"${entry_slip:.2f} - HIGH"
+        x_str       = f"${exit_slip:.2f} - OK"  if exit_slip  <= 10 else f"${exit_slip:.2f} - HIGH"
+        rt_str      = f"${round_trip:.2f} - WITHIN $10 OK" if rt_ok else f"${round_trip:.2f} - EXCEEDS $10"
+        gross_bt    = (bt_exit_price - bt_entry_price) if direction.lower()=="long" else (bt_entry_price - bt_exit_price)
+        gross_bt    = gross_bt * lots * 0.001
+        pnl5        = round(gross_bt - (5*2*lots*0.001), 2)
+        pnl10       = round(gross_bt - (10*2*lots*0.001), 2)
+        s5          = "+" if pnl5  >= 0 else ""
+        s10         = "+" if pnl10 >= 0 else ""
+        sign_lv     = 1 if direction.lower()=="long" else -1
+        live_pnl    = round((exit_fill - entry_fill) * sign_lv * lots * 0.001, 2)
+        slv         = "+" if live_pnl >= 0 else ""
+        pnl_diff    = round(live_pnl - pnl5, 2)
+        diff_s      = "+" if pnl_diff >= 0 else ""
+        action_str  = ""
+        count_str   = ""
+        if rt_ok:
+            mc        = _increment_match_count()
+            count_str = f"\nStatus    : {mc}/5 toward go-live"
         else:
-            bt_block = (
-                f"Dir   : {bt_dir.upper()}\n"
-                f"Entry : {bt_ist_entry} | ${bt_entry_p:,.0f}\n"
-                f"Exit  : {bt_ist_exit} | ${bt_exit_p:,.0f}\n"
-                f"PnL   : {pnl_sign}${bt_pnl:,.2f} (slip ${bt_slip:.0f}/side)"
-            )
+            action_str = "\nAction    : Check dashboard immediately"
+        msg = (
+            f"{sign_ok} {label}\n"
+            f"Direction : MATCH ({direction.upper()})\n"
+            f"Entry slip: {e_str}\n"
+            f"Exit slip : {x_str}\n"
+            f"Round trip: {rt_str}\n"
+            f"BT PnL ($5/side) : {s5}${pnl5:,.2f}\n"
+            f"BT PnL ($10/side): {s10}${pnl10:,.2f}\n"
+            f"Live PnL         : {slv}${live_pnl:,.2f}\n"
+            f"PnL diff         : {diff_s}${pnl_diff:,.2f}{count_str}{action_str}"
+        )
+        send_alert(msg)
+    except Exception as e:
+        pass
 
-        # Match check
-        dir_match   = "✅" if direction.lower() == bt_dir.lower() else "❌"
-        entry_match = "✅" if live_entry_ts[:16] == bt_entry_ts[:16] else "❌"
-        if sig_type == "EXIT":
-            exit_match = "✅" if live_exit_ts[:16] == bt_exit_ts[:16] else "❌"
-            match_line = f"MATCH : Dir {dir_match} | Entry {entry_match} | Exit {exit_match}"
-        else:
-            match_line = f"MATCH : Dir {dir_match} | Entry {entry_match}"
-    else:
-        bt_block   = "No matching trade found in CSV"
-        match_line = "MATCH : ⚠️ No backtest data"
+def _send_match_alert(label, direction, bt_entry_price, lv_fill_price, entry_ts, match_count=None):
+    pass  # replaced by _send_entry_match_alert and _send_roundtrip_match_alert
 
-    icon = "🟢" if sig_type == "ENTRY" else "🔴"
-    msg = (
-        f"{icon} CTS {label} {sig_type}\n"
-        f"━━━━━━━━━━━━━━━━━━\n"
-        f"LIVE:\n{live_block}\n\n"
-        f"BACKTEST:\n{bt_block}\n\n"
-        f"{match_line}\n"
-        f"━━━━━━━━━━━━━━━━━━"
-    )
-    return msg
+
+from dotenv import load_dotenv
+load_dotenv(dotenv_path="/home/anildalabanjan933/crypto_trading_system/.env")
+
+def _get_csv_bt_row(label, entry_ts):
+    """Read BT row from signals CSV by entry_time - returns list [entry_ts, exit_ts, dir, lots, bt_entry_price, bt_exit_price]"""
+    import csv as _csv
+    sig_num = "2" if label in ("S2","TM1_S2") else "4"
+    sig_csv = f"logs/signals_s{sig_num}.csv"
+    try:
+        with open(sig_csv,"r") as _f:
+            for row in _csv.reader(_f):
+                if len(row) >= 5 and row[0] == entry_ts:
+                    return row
+    except:
+        pass
+
 
 
 from dotenv import load_dotenv
@@ -178,32 +257,7 @@ def _send_live_exit_alert(label, direction, exit_ts, fill_price, lots=100):
     except Exception as e:
         pass
 
-def _send_match_alert(label, direction, bt_entry_price, lv_fill_price, entry_ts, match_count=None):
-    """Send Telegram alert on BT vs LV match confirmation."""
-    try:
-        from engine.telegram_alert import send_alert
-        import datetime as _dt
-        def _ist(ts):
-            try:
-                dt = _dt.datetime.strptime(ts[:19], "%Y-%m-%dT%H:%M:%S")
-                return (dt + _dt.timedelta(hours=5, minutes=30)).strftime("%d-%b-%Y %I:%M %p IST")
-            except: return ts
-        price_gap  = abs(lv_fill_price - bt_entry_price)
-        gap_status = "WITHIN $10" if price_gap <= 10 else f"GAP ${price_gap:.2f}"
-        dir_match  = "MATCH"
-        count_str  = f"{match_count}/5 toward go-live" if match_count else "counting..."
-        msg = (
-            f"CTS MATCH CONFIRMED {label}\n"
-            f"Direction : {dir_match}\n"
-            f"Entry time: {_ist(entry_ts)}\n"
-            f"BT price  : ${bt_entry_price:,.2f}\n"
-            f"LV fill   : ${lv_fill_price:,.2f}\n"
-            f"Price gap : ${price_gap:.2f} ({gap_status})\n"
-            f"Status    : {count_str}"
-        )
-        send_alert(msg)
-    except Exception as e:
-        pass
+
 
 
 # --- Config ---
@@ -316,7 +370,8 @@ if last_known_ts and valid_from and last_known_ts < valid_from:
 log.info(f"[STARTUP] last_known_ts={last_known_ts} | valid_from={valid_from}")
 
 signals = load_signals()
-open_lot_size = LOT_SIZE
+open_lot_size   = LOT_SIZE
+open_entry_price = 0.0
 
 # --- Missed Trade Check on Startup ---
 try:
@@ -486,10 +541,19 @@ while True:
                         result = om.close_position(size=close_size, side=side)
                         if result.get("success"):
                             position = None
+                            open_entry_price = 0.0
                             log.info(f"[ORDER] EXIT confirmed | position=None")
-                            bt_row = _get_bt_trade(_xt, "S4")
-                            _msg = _build_alert("EXIT","S4",dirn,sig_ts,0,_xt,0,0,bt_row)
-                            send_alert(_msg)
+                            time.sleep(1)
+                            _exit_pos = om.get_position()
+                            _exit_fill_price = _exit_pos.get("exit_price", 0.0) if _exit_pos.get("success") else 0.0
+                            if _exit_fill_price == 0.0:
+                                _exit_fill_price = result.get("avg_fill_price", 0.0)
+                            _send_live_exit_alert("S4", dirn, _xt, _exit_fill_price, open_entry_price, lots)
+                            _bt_csv2 = _get_csv_bt_row("S4", sig_ts)
+                            _bt_ep2  = float(_bt_csv2[4]) if _bt_csv2 and len(_bt_csv2) > 4 else 0.0
+                            _bt_xp2  = float(_bt_csv2[5]) if _bt_csv2 and len(_bt_csv2) > 5 else 0.0
+                            if _bt_ep2 > 0 and open_entry_price > 0 and _exit_fill_price > 0:
+                                _send_roundtrip_match_alert("S4", dirn, open_entry_price, _exit_fill_price, _bt_ep2, _bt_xp2, lots)
                         else:
                             log.error(f"[ORDER] EXIT FAILED: {result}")
                             send_alert(f"CTS S4 EXIT FAILED\nError: {result}")
@@ -500,8 +564,6 @@ while True:
                 direction = dirn
                 side = "buy" if direction == "long" else "sell"
                 log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
-                _send_live_entry_alert('S4', _dir, _et, float(_entry_fill), float(_sl_price) if '_sl_price' in dir() else 0.0)
-                _send_match_alert('S4', _dir, float(_bt_ep) if '_bt_ep' in dir() else 0.0, float(_entry_fill), _et)
                 save_ts_file(TS_FILE, sig_ts)
                 last_known_ts = sig_ts
                 if not check_engine_heartbeat():
@@ -514,16 +576,23 @@ while True:
                         time.sleep(1)
                         pos_check = om.get_position()
                         real_entry = pos_check.get("entry_price", 0.0) if pos_check.get("success") else 0.0
+                        _sl_price_val = 0.0
                         if real_entry > 0:
                             sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=2.0)
                             if sl_result.get("success"):
-                                log.info(f"[SL] Stop SL placed | sl_price={sl_result['sl_price']}")
+                                _sl_price_val = sl_result.get("sl_price", 0.0)
+                                log.info(f"[SL] Stop SL placed | sl_price={_sl_price_val}")
                             else:
                                 log.warning(f"[SL] Stop SL FAILED: {sl_result}")
+                        _send_live_entry_alert("S4", direction, sig_ts, real_entry, _sl_price_val, lots)
+                        _bt_csv = _get_csv_bt_row("S4", sig_ts)
+                        _bt_ep  = float(_bt_csv[4]) if _bt_csv and len(_bt_csv) > 4 else 0.0
+                        _bt_xt  = _bt_csv[1] if _bt_csv else ""
+                        _bt_xp  = float(_bt_csv[5]) if _bt_csv and len(_bt_csv) > 5 else 0.0
+                        if _bt_ep > 0 and real_entry > 0:
+                            _send_entry_match_alert("S4", direction, sig_ts, _bt_ep, real_entry, _bt_xt, _bt_xp, lots)
+                        open_entry_price = real_entry
                         log.info(f"[ORDER] ENTRY confirmed | position={position}")
-                        bt_row = _get_bt_trade(sig_ts, "S4")
-                        _msg = _build_alert("ENTRY","S4",direction,sig_ts,real_entry,None,0,0,bt_row)
-                        send_alert(_msg)
                     else:
                         log.error(f"[ORDER] ENTRY FAILED: {result}")
                         send_alert(f"CTS S4 ENTRY FAILED\nError: {result}")

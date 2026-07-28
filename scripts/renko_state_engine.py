@@ -264,7 +264,7 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
                     _w = _csv.writer(_f)
                     for r in existing:
                         _w.writerow(r)
-                    _w.writerow([ts, exit_ts, direction, 100])
+                    _w.writerow([ts, exit_ts, direction, 100, round(float(cl),2)])
                 _os.replace(tmp, sig_csv)
                 log.info(f"[{state.label}] INSTANT CSV append: {ts},{exit_ts},{direction}")
             else:
@@ -274,12 +274,19 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
     except Exception as _e:
         log.error(f"[{state.label}] CSV append failed: {_e}")
     write_signal_file(state.label,sig_type,direction,ts)
-    try:
-        _ep = float(state.last_entry_price) if hasattr(state,'last_entry_price') and state.last_entry_price else 0.0
-        _xp = float(state.last_exit_price)  if hasattr(state,'last_exit_price')  and state.last_exit_price  else 0.0
-        _send_bt_signal_alert(state.label, direction, ts, exit_ts, _ep, _xp)
-    except Exception as _ae:
-        log.warning(f"[TELEGRAM] BT alert error: {_ae}")
+    if sig_type == "ENTRY":
+        try:
+            _ep = float(cl) if cl else 0.0
+            _exit_ts_alert = exit_ts if exit_ts else ""
+            _xp = 0.0
+            if _exit_ts_alert and signals:
+                for _s in signals:
+                    if _s.get("timestamp","") == _exit_ts_alert:
+                        _xp = float(_s.get("price", 0.0))
+                        break
+            _send_bt_signal_alert(state.label, direction, ts, _exit_ts_alert, _ep, _xp)
+        except Exception as _ae:
+            log.warning(f"[TELEGRAM] BT alert error: {_ae}")
     state.last_signal_ts=ts
     if sig_type=="EXIT": state.last_exit_ts=ts
     state.current_direction=direction if sig_type=="ENTRY" else None
@@ -560,6 +567,9 @@ def _send_bt_signal_alert(strategy_label, direction, entry_ts, exit_ts, entry_pr
         net_pnl    = round(gross_pnl - slip_total, 2)
         sign       = "+" if net_pnl >= 0 else ""
 
+        slip10_total = 10.0 * 2 * lots * 0.001
+        net_pnl10    = round(gross_pnl - slip10_total, 2)
+        sign10       = "+" if net_pnl10 >= 0 else ""
         msg = (
             f"CTS BACKTEST {strategy_label} SIGNAL\n"
             f"Direction : {direction.upper()}\n"
@@ -567,7 +577,8 @@ def _send_bt_signal_alert(strategy_label, direction, entry_ts, exit_ts, entry_pr
             f"Exit time : {_to_ist(exit_ts)}\n"
             f"BT Entry  : ${entry_price:,.2f}\n"
             f"BT Exit   : ${exit_price:,.2f}\n"
-            f"Net PnL   : {sign}${net_pnl:,.2f} (after $5/side slip)"
+            f"Est PnL ($5/side) : {sign}${net_pnl:,.2f}\n"
+            f"Est PnL ($10/side): {sign10}${net_pnl10:,.2f}"
         )
         send_alert(msg)
     except Exception as e:
