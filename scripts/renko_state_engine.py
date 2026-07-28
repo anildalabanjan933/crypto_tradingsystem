@@ -83,15 +83,14 @@ def append_trade_to_csv(trade,label):
     except: return False
 
 def write_signal_file(label,sig_type,direction,sig_ts):
-    import os
-    sig_line=f"{sig_type}_{direction.upper()}|{sig_ts}|100"
+    import os, time
+    seq = str(int(time.time()))
+    sig_line=f"{sig_type}_{direction.upper()}|{sig_ts}|100|SEQ={seq}"
     sf=f"logs/live_signal_s{label[-1]}.txt"
     tmp=sf+".tmp"; open(tmp,"w").write(sig_line); os.replace(tmp,sf)
 
 def touch_signal_file(label):
-    import os
-    sf=f"logs/live_signal_s{label[-1]}.txt"
-    if os.path.exists(sf): os.utime(sf,None)
+    pass  # disabled - SEQ handles new vs old detection
 
 def get_csv_last_ts():
     try:
