@@ -1230,8 +1230,11 @@ with _tab_monitor:
     # ENGINE - heartbeat AND log file both must be fresh
     try:
         _hb = open("logs/engine_heartbeat.txt").read().strip()
-        _hb_dt = _dt_lamps.datetime.strptime(_hb, '%Y-%m-%dT%H:%M:%S')
-        _hb_age = (_dt_lamps.datetime.utcnow() - _hb_dt).total_seconds()/60
+        try:
+            _hb_age = (_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(float(_hb))).total_seconds()/60
+        except:
+            _hb_dt = _dt_lamps.datetime.strptime(_hb, '%Y-%m-%dT%H:%M:%S')
+            _hb_age = (_dt_lamps.datetime.utcnow() - _hb_dt).total_seconds()/60
         _eng_log_age = _log_age_min("logs/renko_state_engine.log")
         _eng_ok = _hb_age < 15 and _eng_log_age < 15
         _eng_warn = not _eng_ok and (_hb_age < 30 or _eng_log_age < 30)
@@ -1353,8 +1356,11 @@ with _tab_monitor:
     # ENGINE - uses heartbeat file
     try:
         _hb = open("logs/engine_heartbeat.txt").read().strip()
-        _hb_dt = _dt_lamps.datetime.strptime(_hb, '%Y-%m-%dT%H:%M:%S')
-        _hb_age = (_dt_lamps.datetime.utcnow() - _hb_dt).total_seconds() / 60
+        try:
+            _hb_age = (_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(float(_hb))).total_seconds() / 60
+        except:
+            _hb_dt = _dt_lamps.datetime.strptime(_hb, '%Y-%m-%dT%H:%M:%S')
+            _hb_age = (_dt_lamps.datetime.utcnow() - _hb_dt).total_seconds() / 60
         _eng_ok = _hb_age < 15
         _eng_warn = 2 < _hb_age < 15
     except: _eng_ok = False; _eng_warn = False
