@@ -435,7 +435,10 @@ def check_engine_heartbeat():
         if not __import__('os').path.exists(hb_file):
             return False
         hb_str = open(hb_file).read().strip()
-        hb_dt = __import__('datetime').datetime.strptime(hb_str, '%Y-%m-%dT%H:%M:%S')
+        try:
+            hb_dt = __import__('datetime').datetime.utcfromtimestamp(float(hb_str))
+        except:
+            hb_dt = __import__('datetime').datetime.strptime(hb_str, '%Y-%m-%dT%H:%M:%S')
         age_min = (__import__('datetime').datetime.utcnow() - hb_dt).total_seconds() / 60
         if age_min > 15:
             log.warning(f"[ENGINE] Heartbeat stale {int(age_min)}m - engine may be dead - skipping order")
@@ -511,7 +514,8 @@ while True:
         if _live_sig and _live_sig.get("seq", 0) > last_processed_seq:
             _live_ts = _live_sig["timestamp"]
             _live_type = _live_sig.get("type","")
-            # Find matching row in CSV for exit time and direction
+            # Reload CSV immediately when new signal detected
+            signals = load_signals()
             for _row in signals:
                 _et_match = _row["entry_time"][:16] == _live_ts[:16]
                 _xt_match = _row["exit_time"][:16] == _live_ts[:16]
@@ -524,6 +528,7 @@ while True:
 
         # Fallback: CSV polling if no live signal
         _matched = _live_matched
+
         if not _matched:
             for _row in signals:
                 _et = _row["entry_time"]
@@ -551,11 +556,13 @@ while True:
             dirn   = _matched["direction"]
             _xt    = _matched["exit_time"]
 
+
             # --- Skip expired signal (exit already passed, no position) ---
             if position is None and now >= _xt:
                 log.info(f"[SKIP] Expired signal | entry={sig_ts} exit={_xt} | advancing last_known_ts")
                 save_ts_file(TS_FILE, _xt)
                 last_known_ts = _xt
+                if _live_sig: last_processed_seq = _live_sig.get("seq", 0)
 
             # --- EXIT first if position open and exit time reached ---
             elif position is not None and now >= _xt:
@@ -604,6 +611,7 @@ while True:
             elif position is None and now < _xt:
                 direction = dirn
                 side = "buy" if direction == "long" else "sell"
+
                 log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
                 save_ts_file(TS_FILE, sig_ts)
                 last_known_ts = sig_ts

@@ -416,7 +416,10 @@ def check_engine_heartbeat():
         if not __import__('os').path.exists(hb_file):
             return False
         hb_str = open(hb_file).read().strip()
-        hb_dt = __import__('datetime').datetime.strptime(hb_str, '%Y-%m-%dT%H:%M:%S')
+        try:
+            hb_dt = __import__('datetime').datetime.utcfromtimestamp(float(hb_str))
+        except:
+            hb_dt = __import__('datetime').datetime.strptime(hb_str, '%Y-%m-%dT%H:%M:%S')
         age_min = (__import__('datetime').datetime.utcnow() - hb_dt).total_seconds() / 60
         if age_min > 15:
             log.warning(f"[ENGINE] Heartbeat stale {int(age_min)}m - engine may be dead - skipping order")
@@ -487,6 +490,7 @@ while True:
         if _live_sig and _live_sig.get("seq", 0) > last_processed_seq:
             _live_ts = _live_sig["timestamp"]
             _live_type = _live_sig.get("type","")
+            signals = load_signals()
             for _row in signals:
                 _et_match = _row["entry_time"][:16] == _live_ts[:16]
                 _xt_match = _row["exit_time"][:16] == _live_ts[:16]
@@ -531,6 +535,7 @@ while True:
                 log.info(f"[SKIP] Expired signal | entry={sig_ts} exit={_xt} | advancing last_known_ts")
                 save_ts_file(TS_FILE, _xt)
                 last_known_ts = _xt
+                if _live_sig: last_processed_seq = _live_sig.get("seq", 0)
 
             # --- EXIT first if position open and exit time reached ---
             elif position is not None and now >= _xt:
