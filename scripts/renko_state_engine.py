@@ -365,7 +365,6 @@ if __name__=="__main__":
     log.info(f"[ENGINE] S4 startup lock ts: {_ts_s4}")
     _last_dl=time.time()
     _last_ts=get_csv_last_ts()
-    _last_csv_regen=time.time()
 
     # WebSocket for instant candle close detection
     _ws_last_candle_start=None
@@ -524,18 +523,8 @@ if __name__=="__main__":
             touch_signal_file("S2")
             touch_signal_file("S4")
 
-            # Regenerate CSV every 30 minutes regardless of signal - keeps Section 13/14 always fresh
-            if time.time()-_last_csv_regen>=1800:
-                try:
-                    import subprocess as _sp2, io as _io2, contextlib as _ctx2
-                    with _ctx2.redirect_stdout(_io2.StringIO()), _ctx2.redirect_stderr(_io2.StringIO()):
-                        _sp2.run([".venv/bin/python","scripts/generate_signals.py"],
-                                capture_output=True, timeout=120,
-                                cwd="/home/anildalabanjan933/crypto_trading_system")
-                    _last_csv_regen=time.time()
-                    log.info("[ENGINE] Periodic CSV regeneration complete")
-                except Exception as _ce:
-                    log.error(f"[ENGINE] Periodic CSV regen failed: {_ce}")
+            # Periodic CSV regeneration removed - instant append handles all new signals
+            # Full regeneration runs daily at 3AM UTC via systemd timer (generate_signals.py)
 
         except Exception as e:
             log.error(f"[ENGINE] Error: {e}",exc_info=True)
