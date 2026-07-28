@@ -23,7 +23,6 @@ for log in logs/live_trading_testmember1_s2.log logs/live_trading_testmember1_s4
 done
 
 # Kill ALL existing screens
-screen -S boundary_watcher -dm bash -c 'cd ~/crypto_trading_system && set -a && source .env && set +a && .venv/bin/python3 scripts/boundary_watcher.py >> logs/boundary_watcher.log 2>&1'
 screen -S signal_generator -X quit 2>/dev/null
 screen -S renko_engine -X quit 2>/dev/null
 screen -S live_s2 -X quit 2>/dev/null
@@ -36,6 +35,7 @@ screen -S boundary_watcher -X quit 2>/dev/null
 sleep 2
 
 # Start fresh screens using venv python directly
+screen -dmS boundary_watcher bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/boundary_watcher.py >> logs/boundary_watcher.log 2>&1"
 screen -dmS signal_generator bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/renko_state_engine.py >> logs/renko_state_engine.log 2>&1"
 screen -dmS live_s2 bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/signal_replay_s2.py"
 screen -dmS live_s4 bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/signal_replay_s4.py"
