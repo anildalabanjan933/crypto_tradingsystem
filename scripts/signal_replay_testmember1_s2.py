@@ -135,6 +135,77 @@ def _build_alert(sig_type, label, direction, live_entry_ts, live_entry_price,
 from dotenv import load_dotenv
 load_dotenv(dotenv_path="/home/anildalabanjan933/crypto_trading_system/.env")
 
+def _send_live_entry_alert(label, direction, entry_ts, fill_price, sl_price, lots=100):
+    """Send Telegram alert on live entry fill."""
+    try:
+        from engine.telegram_alert import send_alert
+        import datetime as _dt
+        def _ist(ts):
+            try:
+                dt = _dt.datetime.strptime(ts[:19], "%Y-%m-%dT%H:%M:%S")
+                return (dt + _dt.timedelta(hours=5, minutes=30)).strftime("%d-%b-%Y %I:%M %p IST")
+            except: return ts
+        msg = (
+            f"CTS LIVE {label} ENTRY\n"
+            f"Direction : {direction.upper()}\n"
+            f"Entry time: {_ist(entry_ts)}\n"
+            f"Fill price: ${fill_price:,.2f}\n"
+            f"SL placed : ${sl_price:,.2f}\n"
+            f"Lots      : {lots}"
+        )
+        send_alert(msg)
+    except Exception as e:
+        pass
+
+def _send_live_exit_alert(label, direction, exit_ts, fill_price, lots=100):
+    """Send Telegram alert on live exit fill."""
+    try:
+        from engine.telegram_alert import send_alert
+        import datetime as _dt
+        def _ist(ts):
+            try:
+                dt = _dt.datetime.strptime(ts[:19], "%Y-%m-%dT%H:%M:%S")
+                return (dt + _dt.timedelta(hours=5, minutes=30)).strftime("%d-%b-%Y %I:%M %p IST")
+            except: return ts
+        msg = (
+            f"CTS LIVE {label} EXIT\n"
+            f"Direction : {direction.upper()}\n"
+            f"Exit time : {_ist(exit_ts)}\n"
+            f"Fill price: ${fill_price:,.2f}\n"
+            f"Lots      : {lots}"
+        )
+        send_alert(msg)
+    except Exception as e:
+        pass
+
+def _send_match_alert(label, direction, bt_entry_price, lv_fill_price, entry_ts, match_count=None):
+    """Send Telegram alert on BT vs LV match confirmation."""
+    try:
+        from engine.telegram_alert import send_alert
+        import datetime as _dt
+        def _ist(ts):
+            try:
+                dt = _dt.datetime.strptime(ts[:19], "%Y-%m-%dT%H:%M:%S")
+                return (dt + _dt.timedelta(hours=5, minutes=30)).strftime("%d-%b-%Y %I:%M %p IST")
+            except: return ts
+        price_gap  = abs(lv_fill_price - bt_entry_price)
+        gap_status = "WITHIN $10" if price_gap <= 10 else f"GAP ${price_gap:.2f}"
+        dir_match  = "MATCH"
+        count_str  = f"{match_count}/5 toward go-live" if match_count else "counting..."
+        msg = (
+            f"CTS MATCH CONFIRMED {label}\n"
+            f"Direction : {dir_match}\n"
+            f"Entry time: {_ist(entry_ts)}\n"
+            f"BT price  : ${bt_entry_price:,.2f}\n"
+            f"LV fill   : ${lv_fill_price:,.2f}\n"
+            f"Price gap : ${price_gap:.2f} ({gap_status})\n"
+            f"Status    : {count_str}"
+        )
+        send_alert(msg)
+    except Exception as e:
+        pass
+
+
 # --- Config ---
 SYMBOL       = "BTCUSD"
 LOT_SIZE     = 100
@@ -399,6 +470,7 @@ while True:
                 _ex_size = abs(actual.get("size", 0)) if actual.get("success") else 0
                 if _ex_size == 0:
                     log.info(f"[ORDER] EXIT skipped - exchange already FLAT | ts={_xt}")
+                    _send_live_exit_alert('TM1_S2', _dir, _xt, float(_exit_fill))
                     position = None
                     save_ts_file(TS_FILE, _xt)
                     last_known_ts = _xt
@@ -424,6 +496,8 @@ while True:
                 direction = dirn
                 side = "buy" if direction == "long" else "sell"
                 log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
+                _send_live_entry_alert('TM1_S2', _dir, _et, float(_entry_fill), float(_sl_price) if '_sl_price' in dir() else 0.0)
+                _send_match_alert('TM1_S2', _dir, float(_bt_ep) if '_bt_ep' in dir() else 0.0, float(_entry_fill), _et)
                 save_ts_file(TS_FILE, sig_ts)
                 last_known_ts = sig_ts
                 if not check_engine_heartbeat():
