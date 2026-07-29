@@ -347,11 +347,25 @@ def load_signals():
     return signals
 
 def get_valid_from():
-    """VALID_FROM = today 00:00 UTC on every startup. Always fresh window."""
+    """VALID_FROM = max(today 00:00 UTC, signal file exit time).
+    Prevents firing yesterday signal on restart = no stale SL hits."""
     _today = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-    _now_str = _today.strftime('%Y-%m-%dT%H:%M:%S')
+    _base = _today
+    # Check signal file exit time - if yesterday signal still in file, skip it
+    try:
+        _sig = open(SIGNAL_FILE).read().strip()
+        if _sig and "|" in _sig:
+            _parts = _sig.split("|")
+            if len(_parts) >= 2:
+                _sig_exit = datetime.fromisoformat(_parts[1]).replace(tzinfo=None)
+                if _sig_exit > _base:
+                    _base = _sig_exit
+                    log.info(f"[STARTUP] VALID_FROM advanced to signal exit: {_sig_exit.strftime('%Y-%m-%dT%H:%M:%S')}")
+    except Exception as _e:
+        pass
+    _now_str = _base.strftime('%Y-%m-%dT%H:%M:%S')
     open(BASELINE_FILE, 'w').write(_now_str)
-    log.info(f"[STARTUP] VALID_FROM auto-set to today 00:00 UTC: {_now_str}")
+    log.info(f"[STARTUP] VALID_FROM auto-set to: {_now_str}")
     return _now_str
 
 # --- Startup ---
