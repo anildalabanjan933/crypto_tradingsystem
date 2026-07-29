@@ -1266,13 +1266,22 @@ with _tab_monitor:
         _disk_warn = 70 <= _disk_pct_lamp < 80
     except: _disk_ok = False; _disk_warn = False
 
-    # SIGNAL FRESH - signal files updated in last 15 min
+    # SIGNAL FRESH - signal file age vs engine heartbeat (not fixed time window)
+    # Signals only update when new Renko brick forms - can be hours apart in sideways market
+    # Real check: is ENGINE alive and heartbeat fresh (already checked by ENGINE lamp)
+    # This lamp only goes RED if engine heartbeat itself is stale for very long
     try:
-        _sig_s2_age = _log_age_min("logs/live_signal_s2.txt")
-        _sig_s4_age = _log_age_min("logs/live_signal_s4.txt")
-        _sig_ok = _sig_s2_age < 15 and _sig_s4_age < 15
-        _sig_warn = not _sig_ok and (_sig_s2_age < 60 or _sig_s4_age < 60)
-    except: _sig_ok = False; _sig_warn = False
+        _hb_val = open("logs/engine_heartbeat.txt").read().strip()
+        try:
+            _hb_ts = float(_hb_val)
+        except:
+            _hb_ts = _dt_refresh.datetime.strptime(_hb_val, "%Y-%m-%dT%H:%M:%S").timestamp()
+        _hb_age_min = (_perf_time.time() - _hb_ts) / 60
+        _sig_ok = _hb_age_min < 30
+        _sig_warn = not _sig_ok and _hb_age_min < 120
+    except Exception as _sig_exc:
+        _sig_ok = False; _sig_warn = False
+        print(f"[DEBUG SIGNAL LAMP] {_sig_exc}")
 
     # CSV FRESH - market data not stale (engine updates every 5 min)
     try:
