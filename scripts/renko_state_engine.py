@@ -32,6 +32,43 @@ LOT_SIZE=100
 SLEEP_SEC=1
 S2_PARAMS=dict(renko_box_pct=0.001,renko_timeframe="30m",st_atr_length=10,st_factor=2.0)
 S4_PARAMS=dict(renko_box_pct=0.001,renko_timeframe="2h",st_atr_length=5,st_factor=2.0,smiio_shortlen=10,smiio_longlen=10,smiio_siglen=3)
+def _send_bt_signal_alert(strategy_label, direction, entry_ts, exit_ts, entry_price, exit_price, lots=100, slippage=5.0):
+    """Send Telegram alert when backtest signal fires."""
+    try:
+        from engine.telegram_alert import send_alert
+        import datetime as _dt
+
+        def _to_ist(ts_str):
+            try:
+                dt = _dt.datetime.strptime(ts_str, "%Y-%m-%dT%H:%M:%S")
+                dt_ist = dt + _dt.timedelta(hours=5, minutes=30)
+                return dt_ist.strftime("%d-%b-%Y %I:%M %p IST")
+            except:
+                return ts_str
+
+        slip_total = slippage * 2 * lots * 0.001
+        gross_pnl  = (exit_price - entry_price) if direction == "long" else (entry_price - exit_price)
+        gross_pnl  = gross_pnl * lots * 0.001
+        net_pnl    = round(gross_pnl - slip_total, 2)
+        sign       = "+" if net_pnl >= 0 else ""
+
+        slip10_total = 10.0 * 2 * lots * 0.001
+        net_pnl10    = round(gross_pnl - slip10_total, 2)
+        sign10       = "+" if net_pnl10 >= 0 else ""
+        msg = (
+            f"CTS BACKTEST {strategy_label} SIGNAL\n"
+            f"Direction : {direction.upper()}\n"
+            f"Entry time: {_to_ist(entry_ts)}\n"
+            f"Exit time : {_to_ist(exit_ts)}\n"
+            f"BT Entry  : ${entry_price:,.2f}\n"
+            f"BT Exit   : ${exit_price:,.2f}\n"
+            f"Est PnL ($5/side) : {sign}${net_pnl:,.2f}\n"
+            f"Est PnL ($10/side): {sign10}${net_pnl10:,.2f}"
+        )
+        send_alert(msg)
+    except Exception as e:
+        log.warning(f"[TELEGRAM] BT signal alert failed: {e}")
+
 
 def compute_smiio(closes,short_len=5,long_len=20,signal_len=5):
     n=len(closes); mom=np.zeros(n); abs_mom=np.zeros(n)
@@ -250,26 +287,42 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
                 existing = list(_csv.reader(_f))
         # Only append if this signal not already in CSV
         already = any(len(r)>=2 and r[0]==ts for r in existing)
-        if not already and sig_type=="ENTRY" and signals:
-            # Find matching exit from signals list
+        if not already and sig_type=="ENTRY":
+            # Find matching exit from signals list if already known, else PENDING placeholder
             exit_ts = None
-            for _sig in signals:
-                if _sig.get("timestamp","") > ts and _sig.get("signal_type","") in ("EXIT","SELL_A","SELL_B","BUY_A","BUY_B"):
-                    exit_ts = _sig.get("timestamp","")
-                    break
-            if exit_ts:
+            if signals:
+                for _sig in signals:
+                    if _sig.get("timestamp","") > ts and _sig.get("signal_type","") in ("EXIT","SELL_A","SELL_B","BUY_A","BUY_B"):
+                        exit_ts = _sig.get("timestamp","")
+                        break
+            tmp = sig_csv+".tmp"
+            with open(tmp,"w",newline="") as _f:
+                _w = _csv.writer(_f)
+                for r in existing:
+                    _w.writerow(r)
+                _w.writerow([ts, exit_ts or "PENDING", direction, 100, round(float(cl),2)])
+            _os.replace(tmp, sig_csv)
+            log.info(f"[{state.label}] INSTANT CSV append: {ts},{exit_ts or 'PENDING'},{direction}")
+        elif sig_type=="EXIT":
+            # Find the PENDING row for this trade and fill in the real exit timestamp
+            updated = False
+            new_rows = []
+            for r in existing:
+                if len(r)>=2 and r[1]=="PENDING" and not updated:
+                    r = list(r)
+                    r[1] = ts
+                    updated = True
+                new_rows.append(r)
+            if updated:
                 tmp = sig_csv+".tmp"
                 with open(tmp,"w",newline="") as _f:
                     _w = _csv.writer(_f)
-                    for r in existing:
+                    for r in new_rows:
                         _w.writerow(r)
-                    _w.writerow([ts, exit_ts, direction, 100, round(float(cl),2)])
                 _os.replace(tmp, sig_csv)
-                log.info(f"[{state.label}] INSTANT CSV append: {ts},{exit_ts},{direction}")
+                log.info(f"[{state.label}] CSV exit updated to {ts}")
             else:
-                log.warning(f"[{state.label}] No exit found for {ts} - signal file only")
-        elif sig_type=="EXIT":
-            log.info(f"[{state.label}] EXIT signal - CSV already has entry row")
+                log.warning(f"[{state.label}] EXIT fired but no PENDING row found in CSV")
     except Exception as _e:
         log.error(f"[{state.label}] CSV append failed: {_e}")
     write_signal_file(state.label,sig_type,direction,ts)
@@ -535,39 +588,3 @@ if __name__=="__main__":
             pass
         time.sleep(SLEEP_SEC)
 
-def _send_bt_signal_alert(strategy_label, direction, entry_ts, exit_ts, entry_price, exit_price, lots=100, slippage=5.0):
-    """Send Telegram alert when backtest signal fires."""
-    try:
-        from engine.telegram_alert import send_alert
-        import datetime as _dt
-
-        def _to_ist(ts_str):
-            try:
-                dt = _dt.datetime.strptime(ts_str, "%Y-%m-%dT%H:%M:%S")
-                dt_ist = dt + _dt.timedelta(hours=5, minutes=30)
-                return dt_ist.strftime("%d-%b-%Y %I:%M %p IST")
-            except:
-                return ts_str
-
-        slip_total = slippage * 2 * lots * 0.001
-        gross_pnl  = (exit_price - entry_price) if direction == "long" else (entry_price - exit_price)
-        gross_pnl  = gross_pnl * lots * 0.001
-        net_pnl    = round(gross_pnl - slip_total, 2)
-        sign       = "+" if net_pnl >= 0 else ""
-
-        slip10_total = 10.0 * 2 * lots * 0.001
-        net_pnl10    = round(gross_pnl - slip10_total, 2)
-        sign10       = "+" if net_pnl10 >= 0 else ""
-        msg = (
-            f"CTS BACKTEST {strategy_label} SIGNAL\n"
-            f"Direction : {direction.upper()}\n"
-            f"Entry time: {_to_ist(entry_ts)}\n"
-            f"Exit time : {_to_ist(exit_ts)}\n"
-            f"BT Entry  : ${entry_price:,.2f}\n"
-            f"BT Exit   : ${exit_price:,.2f}\n"
-            f"Est PnL ($5/side) : {sign}${net_pnl:,.2f}\n"
-            f"Est PnL ($10/side): {sign10}${net_pnl10:,.2f}"
-        )
-        send_alert(msg)
-    except Exception as e:
-        log.warning(f"[TELEGRAM] BT signal alert failed: {e}")
