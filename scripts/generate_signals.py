@@ -78,19 +78,26 @@ def write_signal_csv(trades, out_path):
     log.info(f"[GENERATE] Written: {out_path} ({len(trades)} rows)")
 
 if __name__ == "__main__":
+    _skip_live = "--skip-live-signals" in sys.argv
     update_csv()
 
     # S2
     s2_params = dict(renko_box_pct=0.001, renko_timeframe="30m", st_atr_length=10, st_factor=2.0)
     s2_trades = run_backtest(RenkoReversalStrategy, s2_params, "S2")
-    write_signal_csv(s2_trades, "logs/signals_s2.csv")
+    if not _skip_live:
+        write_signal_csv(s2_trades, "logs/signals_s2.csv")
+    else:
+        log.info("[GENERATE] Skipped logs/signals_s2.csv (dashboard-refresh-only mode)")
     write_trade_log_csv(s2_trades, "S2")
 
     # S4
     s4_params = dict(renko_box_pct=0.001, renko_timeframe="2h", st_atr_length=5, st_factor=2.0,
                      smiio_shortlen=10, smiio_longlen=10, smiio_siglen=3)
     s4_trades = run_backtest(RenkoSMIIOSupertrendStrategy, s4_params, "S4")
-    write_signal_csv(s4_trades, "logs/signals_s4.csv")
+    if not _skip_live:
+        write_signal_csv(s4_trades, "logs/signals_s4.csv")
+    else:
+        log.info("[GENERATE] Skipped logs/signals_s4.csv (dashboard-refresh-only mode)")
     write_trade_log_csv(s4_trades, "S4")
 
     log.info("[GENERATE] All signal CSVs ready.")
