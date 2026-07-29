@@ -1180,26 +1180,25 @@ def _tbl14(d2, d4, label, period_str, df2=None, df4=None):
     </table>
     </div>"""
 
-# Load data
-import glob as _gl14, pandas as _pd14, datetime as _dt14, numpy as _npf14
-_now14 = _dt14.datetime.utcnow()
-_1yr_from = (_now14 - _dt14.timedelta(days=365)).strftime("%Y-%m-%d")
-_full_from = "2024-01-01"
+# Load data - defined as function so every tab reloads fresh on page load
+import glob as _gl14, pandas as _pd14, datetime as _dt14, numpy as _npf14, os as _os14
 
-_d2_1yr  = _load14("output/trade_log_RenkoReversal*.csv",       _1yr_from)
-_d4_1yr  = _load14("output/trade_log_RenkoSMIIOSupertrend*.csv",_1yr_from)
-_d2_full = _load14("output/trade_log_RenkoReversal*.csv",       _full_from)
-_d4_full = _load14("output/trade_log_RenkoSMIIOSupertrend*.csv",_full_from)
-
-_1yr_label = f"{(_now14-_dt14.timedelta(days=365)).strftime('%d-%b-%Y')} to {_now14.strftime('%d-%b-%Y')} (1 Year)"
-_full_label= f"2024-01-01 to {_now14.strftime('%d-%b-%Y')} (Full CSV)"
-
-import os as _os14
-_s2_key=_os14.getenv("S2_API_KEY",""); _s2_sec=_os14.getenv("S2_API_SECRET","")
-_s4_key=_os14.getenv("S4_API_KEY",""); _s4_sec=_os14.getenv("S4_API_SECRET","")
-_fwd_base="https://cdn-ind.testnet.deltaex.org"
-_df2_fwd=_load14_fwd(84,_s2_key,_s2_sec,_fwd_base)
-_df4_fwd=_load14_fwd(84,_s4_key,_s4_sec,_fwd_base)
+def _reload_all_data():
+    _now14 = _dt14.datetime.utcnow()
+    _1yr_from = (_now14 - _dt14.timedelta(days=365)).strftime("%Y-%m-%d")
+    _full_from = "2024-01-01"
+    _d2_1yr  = _load14("output/trade_log_RenkoReversal*.csv",       _1yr_from)
+    _d4_1yr  = _load14("output/trade_log_RenkoSMIIOSupertrend*.csv",_1yr_from)
+    _d2_full = _load14("output/trade_log_RenkoReversal*.csv",       _full_from)
+    _d4_full = _load14("output/trade_log_RenkoSMIIOSupertrend*.csv",_full_from)
+    _1yr_label = f"{(_now14-_dt14.timedelta(days=365)).strftime('%d-%b-%Y')} to {_now14.strftime('%d-%b-%Y')} (1 Year)"
+    _full_label= f"2024-01-01 to {_now14.strftime('%d-%b-%Y')} (Full CSV)"
+    _s2_key=_os14.getenv("S2_API_KEY",""); _s2_sec=_os14.getenv("S2_API_SECRET","")
+    _s4_key=_os14.getenv("S4_API_KEY",""); _s4_sec=_os14.getenv("S4_API_SECRET","")
+    _fwd_base="https://cdn-ind.testnet.deltaex.org"
+    _df2_fwd=_load14_fwd(84,_s2_key,_s2_sec,_fwd_base)
+    _df4_fwd=_load14_fwd(84,_s4_key,_s4_sec,_fwd_base)
+    return _d2_1yr,_d4_1yr,_d2_full,_d4_full,_1yr_label,_full_label,_df2_fwd,_df4_fwd
 
 _tab_monitor, _tab_trading, _tab_today, _tab_analysis, _tab_backtest, _tab_datasync, _tab_maint = st.tabs([
     "MONITOR", "TRADING", "TODAY'S TRADES", "ANALYSIS", "BACKTEST", "DATA & SYNC", "MAINTENANCE"
@@ -5639,8 +5638,7 @@ with _tab_analysis:
             html += _section_html("S4", bt4, lv4)
             html += '</div>'
             return html
-        _df2_fwd=_load14_fwd(84,_s2_key,_s2_sec,_fwd_base)
-        _df4_fwd=_load14_fwd(84,_s4_key,_s4_sec,_fwd_base)
+        _d2_1yr,_d4_1yr,_d2_full,_d4_full,_1yr_label,_full_label,_df2_fwd,_df4_fwd = _reload_all_data()
         st.markdown(_today_trades_html(_d2_full, _d4_full, _df2_fwd, _df4_fwd), unsafe_allow_html=True)
         st.markdown("---")
         st.markdown(_tbl14(_d2_1yr,_d4_1yr,"1-YEAR BACKTEST",_1yr_label,_df2_fwd,_df4_fwd),unsafe_allow_html=True)
@@ -5727,8 +5725,7 @@ with _tab_today:
     st.markdown("<div class='section-title'>TODAY'S TRADES</div>", unsafe_allow_html=True)
     st.caption('Live comparison of today\'s backtest signals vs forward test execution')
     try:
-        _df2_fwd=_load14_fwd(84,_s2_key,_s2_sec,_fwd_base)
-        _df4_fwd=_load14_fwd(84,_s4_key,_s4_sec,_fwd_base)
+        _d2_1yr,_d4_1yr,_d2_full,_d4_full,_1yr_label,_full_label,_df2_fwd,_df4_fwd = _reload_all_data()
         st.markdown(_today_trades_html(_d2_full, _d4_full, _df2_fwd, _df4_fwd), unsafe_allow_html=True)
-    except:
-        st.info('Open ANALYSIS tab first to load data, then return here.')
+    except Exception as _e_today:
+        st.error(f'Today trades load error: {_e_today}')
