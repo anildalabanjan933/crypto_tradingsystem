@@ -695,7 +695,13 @@ def _load14(csv_pattern, from_dt=None):
                 drop=pk-cum
                 if drop>dd: dd=drop
             # Today + Month PnL
-            pnl_today = df[df['entry_datetime'].dt.date == today_s.date()]['net_pnl'].sum()
+            _today_df = df[df['entry_datetime'].dt.date == today_s.date()]
+            if 'net_pnl_inr' in df.columns:
+                _today_win_inr = _today_df[_today_df['net_pnl_inr']>0]['net_pnl_inr'].sum()
+                pnl_today_inr = _today_df['net_pnl_inr'].sum() - (_today_win_inr*0.10)
+                pnl_today = pnl_today_inr / _INR14 if _INR14 else 0
+            else:
+                pnl_today = _today_df['net_pnl'].sum()
             pnl_month = df[df['exit_dt'] >= _pd14.Timestamp(month_s)]['net_pnl'].sum()
             # This month max DD
             df_mo = df[df['exit_dt'] >= _pd14.Timestamp(month_s)]
@@ -5509,7 +5515,7 @@ with _tab_analysis:
                     import datetime as _dtt_bt
                     _today_bt = _dtt_bt.datetime.utcnow().date()
                     dfc = dfc[dfc['entry_datetime'].dt.date == _today_bt]
-                    dfc = dfc.sort_values('entry_datetime', ascending=False).head(10)
+                    dfc = dfc.sort_values('entry_datetime', ascending=False)
                     for _, r in dfc.iterrows():
                         rows.append({
                             'label'    : label,
