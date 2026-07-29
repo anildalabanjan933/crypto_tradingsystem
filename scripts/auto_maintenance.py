@@ -96,9 +96,9 @@ def clean_system_journals():
             ['sudo', 'journalctl', '--vacuum-size=100M'],
             capture_output=True, text=True, timeout=30
         )
-        log.info(f"[MAINTENANCE] Journal cleanup: {result.stderr.strip().split(chr(10))[-1]}")
+        log(f"[MAINTENANCE] Journal cleanup: {result.stderr.strip().split(chr(10))[-1]}")
     except Exception as e:
-        log.warning(f"[MAINTENANCE] Journal cleanup failed: {e}")
+        log(f"[MAINTENANCE] Journal cleanup failed: {e}")
 
 def clean_junk_files():
     """Remove .bak* and .lock files from repo permanently."""
@@ -187,6 +187,16 @@ if result.returncode == 0:
     log(f"[MAINTENANCE] Signal CSVs regenerated successfully")
 else:
     log(f"[MAINTENANCE] Signal CSV regeneration failed: {result.stderr[-200:]}")
+
+# ── BOX_SIZE DRIFT CHECK ────────────────────────────────────
+log(f"[MAINTENANCE] Checking box_size drift (engine vs backtest)...")
+result2 = subprocess.run(
+    [sys.executable, "scripts/check_box_drift.py"],
+    timeout=120, capture_output=True, text=True
+)
+log(f"[MAINTENANCE] Box drift check output: {result2.stdout.strip()}")
+if result2.returncode != 0:
+    log(f"[MAINTENANCE] Box drift check FAILED: {result2.stderr[-200:]}")
 
 # Auto restart bots after maintenance
 import subprocess
