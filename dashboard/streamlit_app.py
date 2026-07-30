@@ -29,8 +29,14 @@ def _get_strat_list():
     ordered = [f for f in priority if f in files] + [f for f in files if f not in priority]
     return [_STRAT_DISPLAY.get(s, s) for s in ordered]
 
+_STRAT_CLASS_OVERRIDE = {
+    "renko_smiio_supertrend_strategy": "RenkoSMIIOSupertrendStrategy",
+}
+
 def _display_to_class(display_name):
     fname = _STRAT_REVERSE.get(display_name, display_name)
+    if fname in _STRAT_CLASS_OVERRIDE:
+        return _STRAT_CLASS_OVERRIDE[fname]
     return "".join(w.capitalize() for w in fname.replace("_strategy","").split("_")) + "Strategy"
 
 import json, os, subprocess, datetime, shutil, glob
