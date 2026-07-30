@@ -938,14 +938,25 @@ def _parse_log_trades(log_path, log_path_bak=None):
         log_date = e.get("log_ts","")[:10]
         if log_date >= today:
             side = "buy" if e["direction"].lower() == "long" else "sell"
+            _ep = e["entry_price"]; _xp = e["exit_price"]
+            _qty_btc = 100 * 0.001  # 100 lots = 0.1 BTC
+            if not e["open"] and _ep > 0 and _xp > 0:
+                _raw_pnl = (_xp - _ep) * _qty_btc if side == "buy" else (_ep - _xp) * _qty_btc
+                _fees = (_ep + _xp) * _qty_btc * 0.0005
+                _net = _raw_pnl - _fees
+                _tax = max(_net, 0) * 0.10
+                _final_pnl = _net - _tax
+            else:
+                _fees = 0.0
+                _final_pnl = 0.0
             pairs.append({
                 "entry_ts":    e["log_ts"],
                 "exit_ts":     e.get("exit_log_ts", e["exit_ts"]),
                 "entry_price": e["entry_price"],
                 "exit_price":  e["exit_price"],
                 "size":        100,
-                "pnl":         0,
-                "comm":        0,
+                "pnl":         _final_pnl,
+                "comm":        _fees,
                 "side":        side,
                 "open":        e["open"]
             })
