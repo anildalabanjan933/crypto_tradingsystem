@@ -557,7 +557,13 @@ if __name__=="__main__":
                 if _t2_dt > _ws_state["last_s2_tf"]:
                     _ws_state["last_s2_tf"] = _t2_dt
                     log.info(f"[ENGINE] Boundary watcher trigger S2: {_t2} - checking S2")
-                    append_new_candles(s2)
+                    for _retry in range(6):
+                        update_market_data()
+                        append_new_candles(s2)
+                        if s2.last_1m_ts is not None and s2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _t2_dt:
+                            break
+                        log.info(f"[ENGINE] S2 data not caught up yet, retry {_retry+1}/6")
+                        time.sleep(10)
                     check_and_fire(s2, is_s4=False)
             if os.path.exists(_trig_s4):
                 _t4 = open(_trig_s4).read().strip()
@@ -569,7 +575,13 @@ if __name__=="__main__":
                 if _t4_dt > _ws_state["last_s4_tf"]:
                     _ws_state["last_s4_tf"] = _t4_dt
                     log.info(f"[ENGINE] Boundary watcher trigger S4: {_t4} - checking S4")
-                    append_new_candles(s4)
+                    for _retry in range(6):
+                        update_market_data()
+                        append_new_candles(s4)
+                        if s4.last_1m_ts is not None and s4.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _t4_dt:
+                            break
+                        log.info(f"[ENGINE] S4 data not caught up yet, retry {_retry+1}/6")
+                        time.sleep(10)
                     check_and_fire(s4, is_s4=True)
 
             touch_signal_file("S2")
