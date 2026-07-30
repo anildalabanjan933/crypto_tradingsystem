@@ -207,7 +207,7 @@ class OrderManager:
                 "direction":   "LONG" if size > 0 else ("SHORT" if size < 0 else "FLAT")
             }
         else:
-            return {"success": False, "size": 0, "entry_price": 0.0, "direction": "FLAT"}
+            return {"success": False, "size": 0, "entry_price": 0.0, "direction": "UNKNOWN"}
 
     def cancel_all_orders(self) -> dict:
         """Cancel all open orders for BTCUSD."""
