@@ -3870,7 +3870,7 @@ with _tab_backtest:
                 try:
                     cmd = [
                         ".venv/bin/python", "scripts/run_backtest_cli.py",
-                        "--strategy", bt_strategy,
+                        "--strategy", _display_to_class(bt_strategy),
                         "--lots", str(bt_lots),
                         "--start", str(bt_start),
                         "--end", str(bt_end),
@@ -3905,7 +3905,7 @@ with _tab_backtest:
         st.markdown("**Backtest Reports**")
 
         import os as _glob_os; html_files = sorted([f for f in glob.glob("output/*.html") if "backtest_report_" in f and "optimization" not in f], key=_glob_os.path.getmtime, reverse=True)
-        csv_files = sorted([f for f in glob.glob("output/*.csv") if "trade_log_" in f], reverse=True)
+        csv_files = sorted([f for f in glob.glob("output/*.csv") if "trade_log_" in f], key=os.path.getmtime, reverse=True)
 
         st.markdown("**HTML Reports**")
         if html_files:
