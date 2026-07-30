@@ -54,3 +54,37 @@ WHAT IS NOW IMPOSSIBLE:
 - Wrong data URL: IMPOSSIBLE (no live data fetch)
 - Renko brick mismatch: IMPOSSIBLE (no Renko in live bot)
 ----------------------------------------------------------------
+
+----------------------------------------------------------------
+[30-Jul-2026] | v5.44 | Today's Trades LV PnL Fix - Real Calculation
+----------------------------------------------------------------
+FILE: dashboard/streamlit_app.py | Commit: 9a6afb7
+
+ROOT CAUSE:
+- _parse_log_trades() returned hardcoded pnl=0, comm=0 for all trades
+- Today's Trades tab LV columns always showed $0 regardless of real gains/losses
+- Broke BT-vs-LV match validation (can't compare $0 to real backtest PnL)
+
+FIX:
+- Compute real pnl from entry_price/exit_price/side using 100 lots = 0.1 BTC
+- Formula: raw_pnl = (exit - entry) × 0.1 for LONG, (entry - exit) × 0.1 for SHORT
+- Deduct 0.05% taker fee both sides: fees = (entry + exit) × 0.1 × 0.0005
+- Deduct 10% tax on winning trades only: tax = max(net, 0) × 0.10
+- Final: pnl = raw_pnl - fees - tax (matches backtest tax formula exactly)
+- Open trades correctly stay pnl=0 (unrealized)
+
+VERIFIED:
+- Syntax OK, old code removed (grep count=0), new code present (grep count=3)
+- Dashboard restarted clean, commit 9a6afb7 pushed
+- Will validate on next live trade (no trades since 29-Jul baseline)
+
+PERMANENT RULE:
+- LV PnL must always match BT PnL formula (same fees, same tax, same lot size)
+- Today's Trades tab is single source of truth for forward test validation
+- Any mismatch between BT and LV PnL columns = investigate immediately
+
+PENDING VALIDATION:
+- Next trade fires → check Today's Trades tab → confirm LV PnL shows real number
+- Confirm LV PnL ≈ BT PnL (within $10 slippage tolerance)
+- If validated → mark v5.44 complete, proceed to next item
+----------------------------------------------------------------
