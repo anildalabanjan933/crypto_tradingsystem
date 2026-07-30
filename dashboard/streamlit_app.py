@@ -4446,7 +4446,7 @@ with _tab_backtest:
                         try:
                             cmd = [
                                 ".venv/bin/python", "scripts/run_portfolio_cli.py",
-                                "--strategies", ",".join(selected_strategies),
+                                "--strategies", ",".join(_display_to_class(x) for x in selected_strategies),
                                 "--lots", str(port_dyn_lots),
                                 "--start", str(port_dyn_start),
                                 "--end", str(port_dyn_end),
