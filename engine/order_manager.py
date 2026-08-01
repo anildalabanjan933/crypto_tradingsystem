@@ -95,13 +95,14 @@ class OrderManager:
 
     def _get(self, path: str, params: dict = None, retries: int = 3) -> dict:
         params     = params or {}
-        query_str  = "&".join(f"{k}={v}" for k, v in sorted(params.items()))
+        sorted_items = sorted(params.items())
+        query_str  = "&".join(f"{k}={v}" for k, v in sorted_items)
         query_part = ("?" + query_str) if query_str else ""
         headers    = self._sign("GET", path, query_part, "")
-        url        = self.base_url + path
+        url        = self.base_url + path + query_part
         for attempt in range(1, retries + 1):
             try:
-                resp = self.session.get(url, params=params, headers=headers, timeout=(3, 27))
+                resp = self.session.get(url, headers=headers, timeout=(3, 27))
                 return resp.json()
             except Exception as e:
                 logging.warning(f"[OrderManager] GET attempt {attempt}/{retries} failed: {e}")

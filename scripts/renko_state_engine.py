@@ -287,6 +287,7 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
                 existing = list(_csv.reader(_f))
         # Only append if this signal not already in CSV
         already = any(len(r)>=2 and r[0]==ts for r in existing)
+        exit_ts = None
         if not already and sig_type=="ENTRY":
             # Find matching exit from signals list if already known, else PENDING placeholder
             exit_ts = None
@@ -415,6 +416,19 @@ if __name__=="__main__":
     log.info(f"[ENGINE] S2 startup lock ts: {_ts_s2}")
     s4.last_signal_ts=_ts_s4
     log.info(f"[ENGINE] S4 startup lock ts: {_ts_s4}")
+    # Restore current_direction from CSV last row (survive restart mid-position)
+    import csv as _csv2
+    for _st,_fn in [(s2,"logs/signals_s2.csv"),(s4,"logs/signals_s4.csv")]:
+        try:
+            with open(_fn) as _f:
+                _rows=list(_csv2.reader(_f))
+            if _rows:
+                _last=_rows[-1]
+                if len(_last)>=3 and (_last[1]=="PENDING" or _last[1]>_now_lock):
+                    _st.current_direction=_last[2]
+                    log.info(f"[{_st.label}] current_direction restored: {_last[2]}")
+        except Exception as _e:
+            log.warning(f"restore current_direction failed: {_e}")
     _last_dl=time.time()
     _last_ts=get_csv_last_ts()
 

@@ -346,6 +346,7 @@ def load_signals():
     log.info(f"[REPLAY] Loaded {len(signals)} signals from {SIGNAL_CSV}")
     return signals
 
+SIGNAL_FILE = "logs/live_signal_s2.txt"
 def get_valid_from():
     """VALID_FROM = max(today 00:00 UTC, signal file exit time).
     Prevents firing yesterday signal on restart = no stale SL hits."""
@@ -387,7 +388,7 @@ last_known_ts = load_ts_file(TS_FILE)
 valid_from    = get_valid_from()
 # If last_known_ts empty - use signal file as fallback lock
 if not last_known_ts:
-    _sig_file = "logs/live_signal_s2.txt" if "s2" in fname else "logs/live_signal_s4.txt"
+    _sig_file = "logs/live_signal_s2.txt"
     try:
         _line = open(_sig_file).read().strip()
         if _line and "|" in _line:
@@ -584,7 +585,7 @@ while True:
                 _ex_size = abs(actual.get("size", 0)) if actual.get("success") else 0
                 if _ex_size == 0:
                     log.info(f"[ORDER] EXIT skipped - exchange already FLAT | ts={_xt}")
-                    _send_live_exit_alert('S2', _dir, _xt, float(_exit_fill))
+                    _send_live_exit_alert('S2', dirn, _xt, 0.0)
                     position = None
                     save_ts_file(TS_FILE, _xt)
                     last_known_ts = _xt
@@ -689,3 +690,21 @@ while True:
         log.error(f"[ERROR] {e}", exc_info=True)
 
     time.sleep(SLEEP_SEC)
+    
+# Position sync every 60 cycles (60 seconds)
+if hasattr(sys, '_sync_counter'):
+    sys._sync_counter += 1
+else:
+    sys._sync_counter = 0
+if sys._sync_counter >= 60:
+    sys._sync_counter = 0
+    exchange_pos = om.get_position()
+    if exchange_pos['direction'] == 'FLAT' and position is not None:
+        log.warning(f"[SYNC] Exchange is FLAT but bot thinks position={position}. Syncing to FLAT.")
+        position = None
+        open_lot_size = None
+    elif exchange_pos['direction'] != 'FLAT' and position is None:
+        log.warning(f"[SYNC] Exchange has position but bot thinks FLAT. Syncing to {exchange_pos['direction']}.")
+        position = exchange_pos['direction'].lower()
+        open_lot_size = abs(exchange_pos['size'])
+
