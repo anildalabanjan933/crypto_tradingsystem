@@ -72,10 +72,10 @@ class OrderManager:
 
     def _post(self, path: str, payload: dict, retries: int = 3) -> dict:
         body    = json.dumps(payload)
-        headers = self._sign("POST", path, "", body)
         url     = self.base_url + path
         for attempt in range(1, retries + 1):
             try:
+                headers = self._sign("POST", path, "", body)
                 resp = self.session.post(url, data=body, headers=headers, timeout=(3, 27))
                 return resp.json()
             except Exception as e:
@@ -98,10 +98,10 @@ class OrderManager:
         sorted_items = sorted(params.items())
         query_str  = "&".join(f"{k}={v}" for k, v in sorted_items)
         query_part = ("?" + query_str) if query_str else ""
-        headers    = self._sign("GET", path, query_part, "")
         url        = self.base_url + path + query_part
         for attempt in range(1, retries + 1):
             try:
+                headers = self._sign("GET", path, query_part, "")
                 resp = self.session.get(url, headers=headers, timeout=(3, 27))
                 return resp.json()
             except Exception as e:
