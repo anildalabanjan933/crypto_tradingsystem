@@ -137,8 +137,18 @@ def _fetch_screen_list():
 
 def _fetch_delta_api_status():
     import requests as _rq2
-    r = _rq2.get('https://api.india.delta.exchange/v2/products?contract_types=perpetual_futures&limit=1', timeout=5)
-    return r.status_code
+    try:
+        r = _rq2.get('https://cdn-ind.testnet.deltaex.org/v2/products?contract_types=perpetual_futures&limit=1', timeout=5)
+        if r.status_code != 200:
+            return f"FAIL_{r.status_code}"
+        from engine.order_manager import OrderManager
+        om = OrderManager(os.getenv("S2_API_KEY"), os.getenv("S2_API_SECRET"), testnet=True)
+        pos = om.get_position()
+        if not pos.get('success', False):
+            return "AUTH_FAIL"
+        return 200
+    except Exception as e:
+        return f"ERROR_{str(e)[:20]}"
 # ================================================================
 # END PERFORMANCE HELPERS
 # ================================================================
@@ -1276,8 +1286,8 @@ with _tab_monitor:
 
     # DELTA API
     try:
-        import requests as _rq_lamp
-        _api_ok = _rq_lamp.get("https://api.india.delta.exchange/v2/assets", timeout=3, verify=False).status_code == 200
+        _api_result = _timed('delta_api_status', 60, _fetch_delta_api_status)
+        _api_ok = (_api_result == 200)
     except: _api_ok = False
 
     # DISK
@@ -1300,7 +1310,7 @@ with _tab_monitor:
         except:
             _hb_ts = _dt_refresh.datetime.strptime(_hb_val, "%Y-%m-%dT%H:%M:%S").timestamp()
         _hb_age_min = (_perf_time.time() - _hb_ts) / 60
-        _sig_ok = _hb_age_min < 30
+        _sig_ok = _hb_age_min < 35
         _sig_warn = not _sig_ok and _hb_age_min < 120
     except Exception as _sig_exc:
         _sig_ok = False; _sig_warn = False
@@ -1416,8 +1426,8 @@ with _tab_monitor:
 
     # DELTA API
     try:
-        import requests as _rq_lamp
-        _api_ok = _rq_lamp.get("https://api.india.delta.exchange/v2/assets", timeout=3, verify=False).status_code == 200
+        _api_result = _timed('delta_api_status', 60, _fetch_delta_api_status)
+        _api_ok = (_api_result == 200)
     except: _api_ok = False
 
     # DISK
@@ -1472,17 +1482,19 @@ with _tab_monitor:
     with c5:
         st.markdown("**DELTA API**")
         try:
-            import requests as _req, warnings as _w
-            _w.filterwarnings('ignore')
-            _r = _req.get('https://cdn-ind.testnet.deltaex.org/v2/products/84', timeout=3, verify=False)
-            if _r.status_code == 200:
+            _api_result = _timed('delta_api_status', 60, _fetch_delta_api_status)
+            if _api_result == 200:
                 st.success("CONNECTED")
-                st.caption("Testnet OK")
+                st.caption("Testnet + Auth OK")
+            elif _api_result == "AUTH_FAIL":
+                st.error("AUTH FAILING")
+                st.caption("Positions call rejected")
             else:
                 st.error("ERROR")
-                st.caption(f"Status: {_r.status_code}")
-        except:
+                st.caption(f"Status: {_api_result}")
+        except Exception as _e:
             st.error("UNREACHABLE")
+            st.caption(str(_e)[:30])
             st.caption("Check network")
 
     # ================================================================
