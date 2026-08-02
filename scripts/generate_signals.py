@@ -47,17 +47,21 @@ def run_backtest(strategy_class, params, label):
     trades = result.get("trades", [])
     log.info(f"[GENERATE] {label}: {len(trades)} trades generated")
     # Capture exact reference price used for box_size - freeze for live engine
-    try:
-        tf = params.get("renko_timeframe")
-        tf_df = engine.data_dict.get(tf)
-        if tf_df is not None and len(tf_df) > 0:
-            ref_price = float(tf_df["close"].iloc[-1]) if label == "S2" else float(tf_df["close"].iloc[0])
-            sig_num = "2" if label == "S2" else "4"
-            with open(f"logs/box_ref_price_s{sig_num}.txt", "w") as _bf:
-                _bf.write(str(ref_price))
-            log.info(f"[GENERATE] {label}: box reference_price={ref_price} saved")
-    except Exception as _e:
-        log.warning(f"[GENERATE] {label}: box reference_price capture failed: {_e}")
+    # Only update on REAL signal generation runs (3AM daily), never on dashboard-refresh-only runs
+    if "--skip-live-signals" not in sys.argv:
+        try:
+            tf = params.get("renko_timeframe")
+            tf_df = engine.data_dict.get(tf)
+            if tf_df is not None and len(tf_df) > 0:
+                ref_price = float(tf_df["close"].iloc[-1]) if label == "S2" else float(tf_df["close"].iloc[0])
+                sig_num = "2" if label == "S2" else "4"
+                with open(f"logs/box_ref_price_s{sig_num}.txt", "w") as _bf:
+                    _bf.write(str(ref_price))
+                log.info(f"[GENERATE] {label}: box reference_price={ref_price} saved")
+        except Exception as _e:
+            log.warning(f"[GENERATE] {label}: box reference_price capture failed: {_e}")
+    else:
+        log.info(f"[GENERATE] {label}: box reference_price capture skipped (dashboard-refresh-only mode)")
     return trades
 
 def write_trade_log_csv(trades, label):
