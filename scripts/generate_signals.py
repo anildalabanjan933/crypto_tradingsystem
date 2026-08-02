@@ -46,6 +46,29 @@ def run_backtest(strategy_class, params, label):
         result = engine.run()
     trades = result.get("trades", [])
     log.info(f"[GENERATE] {label}: {len(trades)} trades generated")
+    # Detect trailing open ENTRY (dropped by TradeBuilder) - build PENDING row for signal CSV only
+    # Does NOT touch trades list (PnL/dashboard) - only affects signal file bots read
+    pending_row = None
+    try:
+        raw_signals = sorted(result.get("signals", []), key=lambda x: x.get("timestamp",""))
+        _open = None
+        for _s in raw_signals:
+            _t = _s.get("signal_type","").upper()
+            if _t == "ENTRY":
+                _open = _s
+            elif _t == "EXIT":
+                _open = None
+        if _open is not None:
+            pending_row = {
+                "entry_datetime": _open.get("timestamp",""),
+                "exit_datetime":  "PENDING",
+                "direction":      _open.get("direction",""),
+                "entry_price":    _open.get("price",""),
+                "exit_price":     ""
+            }
+            log.info(f"[GENERATE] {label}: trailing open trade found at {_open.get('timestamp')} - added as PENDING to signal CSV only")
+    except Exception as _pe:
+        log.warning(f"[GENERATE] {label}: pending row detection failed: {_pe}")
     # Capture exact reference price used for box_size - freeze for live engine
     # Only update on REAL signal generation runs (3AM daily), never on dashboard-refresh-only runs
     if "--skip-live-signals" not in sys.argv:
@@ -62,7 +85,7 @@ def run_backtest(strategy_class, params, label):
             log.warning(f"[GENERATE] {label}: box reference_price capture failed: {_e}")
     else:
         log.info(f"[GENERATE] {label}: box reference_price capture skipped (dashboard-refresh-only mode)")
-    return trades
+    return trades, pending_row
 
 def write_trade_log_csv(trades, label):
     import glob as _gl, pandas as _pd
@@ -101,9 +124,9 @@ if __name__ == "__main__":
 
     # S2
     s2_params = dict(renko_box_pct=0.001, renko_timeframe="30m", st_atr_length=10, st_factor=2.0)
-    s2_trades = run_backtest(RenkoReversalStrategy, s2_params, "S2")
+    s2_trades, s2_pending = run_backtest(RenkoReversalStrategy, s2_params, "S2")
     if not _skip_live:
-        write_signal_csv(s2_trades, "logs/signals_s2.csv")
+        write_signal_csv(s2_trades + ([s2_pending] if s2_pending else []), "logs/signals_s2.csv")
     else:
         log.info("[GENERATE] Skipped logs/signals_s2.csv (dashboard-refresh-only mode)")
     write_trade_log_csv(s2_trades, "S2")
@@ -111,9 +134,9 @@ if __name__ == "__main__":
     # S4
     s4_params = dict(renko_box_pct=0.001, renko_timeframe="2h", st_atr_length=5, st_factor=2.0,
                      smiio_shortlen=10, smiio_longlen=10, smiio_siglen=3)
-    s4_trades = run_backtest(RenkoSMIIOSupertrendStrategy, s4_params, "S4")
+    s4_trades, s4_pending = run_backtest(RenkoSMIIOSupertrendStrategy, s4_params, "S4")
     if not _skip_live:
-        write_signal_csv(s4_trades, "logs/signals_s4.csv")
+        write_signal_csv(s4_trades + ([s4_pending] if s4_pending else []), "logs/signals_s4.csv")
     else:
         log.info("[GENERATE] Skipped logs/signals_s4.csv (dashboard-refresh-only mode)")
     write_trade_log_csv(s4_trades, "S4")
