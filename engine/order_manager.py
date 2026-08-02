@@ -142,13 +142,15 @@ class OrderManager:
         if resp.get("success"):
             result = resp["result"]
             logging.info(f"[OrderManager] Order placed | id={result['id']} state={result['state']}")
+            _avg = result.get("average_fill_price")
             return {
                 "success":      True,
                 "order_id":     result["id"],
                 "state":        result["state"],
                 "side":         result["side"],
                 "size":         result["size"],
-                "filled_price": result.get("limit_price", "market")
+                "filled_price": result.get("limit_price", "market"),
+                "avg_fill_price": float(_avg) if _avg else 0.0
             }
         else:
             logging.error(f"[OrderManager] Order FAILED: {resp.get('error')}")
@@ -180,10 +182,12 @@ class OrderManager:
         if resp.get("success"):
             result = resp["result"]
             logging.info(f"[OrderManager] Close order placed | id={result['id']} state={result['state']}")
+            _avg2 = result.get("average_fill_price")
             return {
                 "success":  True,
                 "order_id": result["id"],
-                "state":    result["state"]
+                "state":    result["state"],
+                "avg_fill_price": float(_avg2) if _avg2 else 0.0
             }
         else:
             logging.error(f"[OrderManager] Close FAILED: {resp.get('error')}")
@@ -201,10 +205,12 @@ class OrderManager:
             result = resp.get("result", {})
             size   = result.get("size", 0)
             entry  = result.get("entry_price", "0")
+            mark   = result.get("mark_price", "0")
             return {
                 "success":     True,
                 "size":        size,
                 "entry_price": float(entry) if entry else 0.0,
+                "exit_price":  float(mark) if mark else 0.0,
                 "direction":   "LONG" if size > 0 else ("SHORT" if size < 0 else "FLAT")
             }
         else:

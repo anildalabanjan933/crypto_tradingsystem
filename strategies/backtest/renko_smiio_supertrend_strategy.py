@@ -77,6 +77,7 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
 
         # --- Core strategy parameters ---
         self.renko_box_pct = kwargs.get('renko_box_pct', 0.001)
+        self.reference_price = kwargs.get('reference_price', None)
         self.renko_timeframe = kwargs.get('renko_timeframe', '2h')
         self.st_atr_length = kwargs.get('st_atr_length', 5)
         self.st_factor      = kwargs.get('st_factor',      2.0)
@@ -140,7 +141,7 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
                       else pd.to_datetime(df_tf['timestamp']))
 
         current_price = closes[0] if len(closes) > 0 else 100000.0
-        box_size = max(1, round(closes[0] * self.renko_box_pct))
+        box_size = max(1, round((self.reference_price if self.reference_price else closes[0]) * self.renko_box_pct))
         builder = RenkoBuilder(box_size=box_size)
         renko_raw = builder.build(closes)
         if renko_raw is None or len(renko_raw) == 0:
@@ -162,7 +163,7 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
         closes    = df['renko_close'].values
         renko_dir = df['renko_dir'].values
         current_price = closes[0] if len(closes) > 0 else 100000.0
-        box = max(1, round(closes[0] * self.renko_box_pct))
+        box = max(1, round((self.reference_price if self.reference_price else closes[0]) * self.renko_box_pct))
 
         # --- SupertrendIndicator ---
         st_ind = SupertrendIndicator(
