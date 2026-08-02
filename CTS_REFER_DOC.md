@@ -88,3 +88,27 @@ PENDING VALIDATION:
 - Confirm LV PnL ≈ BT PnL (within $10 slippage tolerance)
 - If validated → mark v5.44 complete, proceed to next item
 ----------------------------------------------------------------
+
+----------------------------------------------------------------
+[02-Aug-2026] | SECURITY - .env Was Tracked In Git Since Before v4.76
+----------------------------------------------------------------
+FOUND: .env was committed to git despite .gitignore listing it (gitignore
+added after .env was already tracked - does not retroactively untrack).
+Confirmed present in commits back through at least 4116347 (v4.76).
+
+FIXED: git rm --cached .env (commit a500d82) - file remains on disk,
+removed from git tracking going forward. Garbage 0-byte '^C' file also
+removed same commit.
+
+NOT FIXED: old commit history still contains .env content with real
+keys/secrets/Telegram token. This is a residual exposure risk if repo
+was ever public/shared. Recommend rotating all keys/tokens that were
+ever in .env (S2/S4/TM1 API keys, Telegram bot token) as precaution.
+Git history purge not performed - requires explicit decision (rewrites
+commit history, needs force-push, could break clone on other machines).
+
+NOTE: local machine .env was deleted by git pull (file was tracked,
+pull applied delete). VM .env confirmed intact/unaffected (1912 bytes,
+23 lines) - bots/dashboard unaffected. Recreate local .env manually if
+needed for local dev use.
+----------------------------------------------------------------
