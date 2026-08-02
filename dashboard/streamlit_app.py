@@ -1090,6 +1090,8 @@ def _tbl14(d2, d4, label, period_str, df2=None, df4=None):
     s2_dd_mo10=_g(d2,"dd_month10")*_INR14; s4_dd_mo10=_g(d4,"dd_month10")*_INR14; port_dd_mo10=s2_dd_mo10+s4_dd_mo10
     s2_td10=s2_td-s2_tod_cnt*10*_INR14; s4_td10=s4_td-s4_tod_cnt*10*_INR14; port_td10=s2_td10+s4_td10
     s2_mo10=s2_mo-s2_mo_cnt*10*_INR14; s4_mo10=s4_mo-s4_mo_cnt*10*_INR14; port_mo10=s2_mo10+s4_mo10
+    s2_prev=s2_mo-s2_td; s4_prev=s4_mo-s4_td; port_prev=s2_prev+s4_prev
+    s2_prev10=s2_mo10-s2_td10; s4_prev10=s4_mo10-s4_td10; port_prev10=s2_prev10+s4_prev10
     # ITR Tax 30% on gross wins (Indian Income Tax - pay to govt via ITR filing)
     s2_gross_win=_g(d2,"gross_win")*_INR14; s4_gross_win=_g(d4,"gross_win")*_INR14; port_gross_win=s2_gross_win+s4_gross_win
     s2_itr5=s2_gross_win*0.30; s4_itr5=s4_gross_win*0.30; port_itr5=port_gross_win*0.30
@@ -1175,6 +1177,7 @@ def _tbl14(d2, d4, label, period_str, df2=None, df4=None):
     <tr><td colspan="10" style="{_SUB14}">DYNAMIC PnL (SYNCED WITH SECTION 13)</td></tr>
     {_row9("Today PnL",f"₹{s2_td:,.0f}",f"₹{s4_td:,.0f}",f"₹{s2_td+s4_td:,.0f}",f"₹{s2_td10:,.0f}",f"₹{s4_td10:,.0f}",f"₹{port_td10:,.0f}",_fna(fw2_td),_fna(fw4_td),_fna(fw2_td+fw4_td),_c(s2_td),_c(s4_td),_c(s2_td+s4_td),_c(s2_td10),_c(s4_td10),_c(port_td10),_cf(fw2_td),_cf(fw4_td),_cf(fw2_td+fw4_td))}
     {_row9("Today Trades",f"{s2_tod_cnt:,}",f"{s4_tod_cnt:,}",f"{port_tod_cnt:,}",f"{s2_tod_cnt:,}",f"{s4_tod_cnt:,}",f"{port_tod_cnt:,}",_fna(fw2_tc,"int"),_fna(fw4_tc,"int"),_fna(fwp_tc,"int"),_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDB14,_TDB14,_TDB14)}
+    {_row9("Previous Days PnL (This Month, excl today)",f"₹{s2_prev:,.0f}",f"₹{s4_prev:,.0f}",f"₹{s2_prev+s4_prev:,.0f}",f"₹{s2_prev10:,.0f}",f"₹{s4_prev10:,.0f}",f"₹{port_prev10:,.0f}",_na14,_na14,_na14,_c(s2_prev),_c(s4_prev),_c(s2_prev+s4_prev),_c(s2_prev10),_c(s4_prev10),_c(port_prev10),_na14,_na14,_na14)}
     {_row9("This Month PnL",f"₹{s2_mo:,.0f}",f"₹{s4_mo:,.0f}",f"₹{s2_mo+s4_mo:,.0f}",f"₹{s2_mo10:,.0f}",f"₹{s4_mo10:,.0f}",f"₹{port_mo10:,.0f}",_fna(fw2_mo),_fna(fw4_mo),_fna(fw2_mo+fw4_mo),_c(s2_mo),_c(s4_mo),_c(s2_mo+s4_mo),_c(s2_mo10),_c(s4_mo10),_c(port_mo10),_cf(fw2_mo),_cf(fw4_mo),_cf(fw2_mo+fw4_mo))}
     {_row9("This Month Trades",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",_fna(fw2_mc,"int"),_fna(fw4_mc,"int"),_fna(fwp_mc,"int"),_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDB14,_TDB14,_TDB14)}
     {_row9("This Month Max DD",f"₹{s2_dd_mo:,.0f}",f"₹{s4_dd_mo:,.0f}",f"₹{port_dd_mo:,.0f}",f"₹{s2_dd_mo10:,.0f}",f"₹{s4_dd_mo10:,.0f}",f"₹{port_dd_mo10:,.0f}",_na14,_na14,_na14,_TDR14B if s2_dd_mo>0 else _TDB14,_TDR14B if s4_dd_mo>0 else _TDB14,_TDR14B if port_dd_mo>0 else _TDB14,_TDR14B if s2_dd_mo10>0 else _TDB14,_TDR14B if s4_dd_mo10>0 else _TDB14,_TDR14B if port_dd_mo10>0 else _TDB14,_na14,_na14,_na14)}
