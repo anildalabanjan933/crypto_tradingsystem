@@ -601,22 +601,23 @@ while True:
                         result = om.close_position(size=close_size, side=side)
                         if result.get("success"):
                             position = None
+                            _entry_price_for_alert = open_entry_price
                             open_entry_price = 0.0
                             if _live_sig: last_processed_seq = _live_sig.get("seq", 0)
                             log.info(f"[ORDER] EXIT confirmed | position=None")
                             time.sleep(1)
-                            _exit_pos = om.get_position()
-                            _exit_fill_price = _exit_pos.get("exit_price", 0.0) if _exit_pos.get("success") else 0.0
+                            _exit_fill_price = result.get("avg_fill_price", 0.0)
                             if _exit_fill_price == 0.0:
-                                _exit_fill_price = result.get("avg_fill_price", 0.0)
+                                _exit_pos = om.get_position()
+                                _exit_fill_price = _exit_pos.get("exit_price", 0.0) if _exit_pos.get("success") else 0.0
                             # Alert 4: Live exit filled
-                            _send_live_exit_alert("S2", dirn, _xt, _exit_fill_price, open_entry_price, lots)
+                            _send_live_exit_alert("S2", dirn, _xt, _exit_fill_price, _entry_price_for_alert, lots)
                             # Alert 7B: Round trip match
                             _bt_csv2 = _get_csv_bt_row("S2", sig_ts)
                             _bt_ep2  = float(_bt_csv2[4]) if _bt_csv2 and len(_bt_csv2) > 4 else 0.0
                             _bt_xp2  = float(_bt_csv2[5]) if _bt_csv2 and len(_bt_csv2) > 5 else 0.0
-                            if _bt_ep2 > 0 and open_entry_price > 0 and _exit_fill_price > 0:
-                                _send_roundtrip_match_alert("S2", dirn, open_entry_price, _exit_fill_price, _bt_ep2, _bt_xp2, lots)
+                            if _bt_ep2 > 0 and _entry_price_for_alert > 0 and _exit_fill_price > 0:
+                                _send_roundtrip_match_alert("S2", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2, lots)
                         else:
                             log.error(f"[ORDER] EXIT FAILED: {result}")
                             send_alert(f"CTS S2 EXIT FAILED\nError: {result}")
