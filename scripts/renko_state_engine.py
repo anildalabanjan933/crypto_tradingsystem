@@ -284,9 +284,9 @@ def check_and_fire(state,is_s4=False):
             price=float(sig.get("price",0))
             box=state.box_size if state.box_size else 100
             if sig_type=="EXIT" and state.current_direction==direction:
-                _fire(state,ts,price,direction,"EXIT",box,now_utc,signals); return
+                _fire(state,ts,price,direction,"EXIT",box,now_utc,signals)
             elif sig_type in ("BUY_A","BUY_B","SELL_A","SELL_B","ENTRY") and state.current_direction is None:
-                _fire(state,ts,price,direction,"ENTRY",box,now_utc,signals); return
+                _fire(state,ts,price,direction,"ENTRY",box,now_utc,signals)
     except Exception as e:
         log.error(f"[{state.label}] check error: {e}",exc_info=True)
 
