@@ -622,6 +622,25 @@ while True:
                         send_alert(f"CTS TM1_S2 ENTRY FAILED\nError: {result}")
                         last_known_ts = load_ts_file(TS_FILE)
 
+        # Sync position from exchange every 5 minutes
+        if int(time.time()) % 300 < 2:
+            _exch = om.get_position()
+            _exch_size = abs(_exch.get("size", 0)) if _exch.get("success") else -1
+            if _exch_size == 0 and position is not None:
+                log.warning(f"[SYNC] Exchange FLAT but bot={position} - SL hit or manual close - syncing to FLAT")
+                position = None
+                save_ts_file(TS_FILE, last_known_ts)
+                send_alert(
+                    f"CTS SL HIT DETECTED\n"
+                    f"Bot: TestMember1_S2\n"
+                    f"Action: Position closed by SL on exchange\n"
+                    f"Status: Synced to FLAT"
+                )
+            elif _exch_size > 0 and position is None:
+                _exch_side = _exch.get("side","")
+                position = "long" if _exch_side == "buy" else "short"
+                log.warning(f"[SYNC] Exchange has position={position} but bot=None - syncing to exchange")
+
         if int(time.time()) % 300 < 2:
             _exch = om.get_position()
             _exch_size = abs(_exch.get("size", 0)) if _exch.get("success") else -1

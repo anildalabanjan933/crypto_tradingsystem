@@ -42,6 +42,7 @@ class RenkoReversalStrategy(BaseStrategy):
 
         # Renko settings
         self.renko_box_pct = kwargs.get('renko_box_pct', 0.0010)
+        self.reference_price = kwargs.get('reference_price', None)
         self.renko_timeframe = kwargs.get('renko_timeframe', '30m')
         self.last_exit_ts = None
         self.sr_tolerance = kwargs.get('sr_tolerance', 1.5)   # multiplier of box_size - auto-scales per symbol
@@ -98,7 +99,7 @@ class RenkoReversalStrategy(BaseStrategy):
 
         # Build Renko bricks
         current_price = self._data[self.renko_timeframe]['close'].iloc[-1]
-        box_size = max(1, round(current_price * self.renko_box_pct))
+        box_size = max(1, round((self.reference_price if self.reference_price else current_price) * self.renko_box_pct))
         builder   = RenkoBuilder(box_size=box_size)
         renko_raw = builder.build(closes)
 
@@ -154,7 +155,7 @@ class RenkoReversalStrategy(BaseStrategy):
         timestamps  = df['timestamp'].values
 
         current_price = self._data[self.renko_timeframe]['close'].iloc[-1]
-        box      = max(1, round(current_price * self.renko_box_pct))
+        box      = max(1, round((self.reference_price if self.reference_price else current_price) * self.renko_box_pct))
         max_bars = self.max_tl_bars
         lookback = self.sr_lookback
 

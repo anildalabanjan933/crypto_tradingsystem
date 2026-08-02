@@ -145,7 +145,8 @@ def resample_to_tf(df_1m,tf):
     import pandas as pd
     rule=tf.replace("H","h").replace("T","min").replace("m","min")
     df=df_1m.copy().set_index("timestamp")
-    df_tf=df["Close"].resample(rule).ohlc()
+    agg_dict={"Open":"first","High":"max","Low":"min","Close":"last"}
+    df_tf=df.resample(rule).agg(agg_dict)
     df_tf.columns=["open","high","low","close"]
     return df_tf.dropna().reset_index()
 
@@ -211,12 +212,18 @@ def append_new_candles(state):
         state.candles_1m=pd.concat([state.candles_1m,new_rows],ignore_index=True)
         state.last_1m_ts=state.candles_1m["timestamp"].iloc[-1]
         log.info(f"[{state.label}] +{len(new_rows)} candles | last={state.last_1m_ts}")
-        # Update pre-built tf dataframe incrementally - append only new rows
+        # Recompute recent window FULLY from accumulated 1m data (not just new_rows)
+        # Prevents partial/incomplete OHLC on the currently-forming candle
         tf=state.params["renko_timeframe"]
-        new_tf=resample_to_tf(new_rows,tf)
-        if new_tf is not None and not new_tf.empty:
-            state.candles_tf=pd.concat([state.candles_tf,new_tf],ignore_index=True)
-            state.candles_tf=state.candles_tf.drop_duplicates(subset=["timestamp"],keep="last").reset_index(drop=True)
+        tf_minutes_map={"30m":30,"1h":60,"2h":120}
+        tf_minutes=tf_minutes_map.get(tf,120)
+        window_start=state.last_1m_ts-pd.Timedelta(minutes=tf_minutes*3)
+        recent_1m=state.candles_1m[state.candles_1m["timestamp"]>window_start]
+        recomputed_tf=resample_to_tf(recent_1m,tf)
+        if recomputed_tf is not None and not recomputed_tf.empty:
+            cutoff=recomputed_tf["timestamp"].min()
+            state.candles_tf=state.candles_tf[state.candles_tf["timestamp"]<cutoff]
+            state.candles_tf=pd.concat([state.candles_tf,recomputed_tf],ignore_index=True).reset_index(drop=True)
         return True
     except Exception as e:
         log.error(f"[{state.label}] append error: {e}",exc_info=True)
@@ -240,13 +247,24 @@ def check_and_fire(state,is_s4=False):
         data_dict={tf:df_tf_indexed}
         # Call EXACT same strategy class as backtest - single source of truth
         if not is_s4:
-            strategy=RenkoReversalStrategy(data_dict,LOT_SIZE,**p)
+            _ref_s2 = None
+            try:
+                _ref_s2 = float(open("logs/box_ref_price_s2.txt").read().strip())
+            except Exception:
+                _ref_s2 = state.candles_tf['close'].iloc[-1]
+            p_with_ref = dict(p, reference_price=_ref_s2); strategy=RenkoReversalStrategy(data_dict,LOT_SIZE,**p_with_ref)
         else:
-            strategy=RenkoSMIIOSupertrendStrategy(data_dict,LOT_SIZE,**p)
+            _ref_s4 = None
+            try:
+                _ref_s4 = float(open("logs/box_ref_price_s4.txt").read().strip())
+            except Exception:
+                _ref_s4 = state.candles_tf['close'].iloc[0]
+            p_with_ref = dict(p, reference_price=_ref_s4); strategy=RenkoSMIIOSupertrendStrategy(data_dict,LOT_SIZE,**p_with_ref)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             with contextlib.redirect_stdout(io.StringIO()):
                 signals=strategy.generate_signals()
+        log.info(f"[{state.label}] Strategy returned {len(signals) if signals else 0} signals")
         if not signals: return
         now_utc=datetime.now(timezone.utc)
         # Collect ALL new signals after last_signal_ts - oldest first
@@ -511,10 +529,9 @@ if __name__=="__main__":
 
     def _last_closed_tf(tf_minutes):
         now=_dt2.now(_tz2.utc).replace(second=0,microsecond=0,tzinfo=None)
-        import math
-        floored=_dt2(now.year,now.month,now.day,
-                     (now.hour*60+now.minute)//tf_minutes*tf_minutes//60,
-                     (now.hour*60+now.minute)//tf_minutes*tf_minutes%60)
+        total_minutes = now.hour * 60 + now.minute
+        floored_minutes = (total_minutes // tf_minutes) * tf_minutes
+        floored = _dt2(now.year, now.month, now.day, floored_minutes // 60, floored_minutes % 60)
         # last CLOSED candle = one tf before current open
         import datetime as _dtt
         return floored - _dtt.timedelta(minutes=tf_minutes)

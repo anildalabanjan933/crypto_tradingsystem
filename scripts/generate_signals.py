@@ -46,6 +46,18 @@ def run_backtest(strategy_class, params, label):
         result = engine.run()
     trades = result.get("trades", [])
     log.info(f"[GENERATE] {label}: {len(trades)} trades generated")
+    # Capture exact reference price used for box_size - freeze for live engine
+    try:
+        tf = params.get("renko_timeframe")
+        tf_df = engine.data_dict.get(tf)
+        if tf_df is not None and len(tf_df) > 0:
+            ref_price = float(tf_df["close"].iloc[-1]) if label == "S2" else float(tf_df["close"].iloc[0])
+            sig_num = "2" if label == "S2" else "4"
+            with open(f"logs/box_ref_price_s{sig_num}.txt", "w") as _bf:
+                _bf.write(str(ref_price))
+            log.info(f"[GENERATE] {label}: box reference_price={ref_price} saved")
+    except Exception as _e:
+        log.warning(f"[GENERATE] {label}: box reference_price capture failed: {_e}")
     return trades
 
 def write_trade_log_csv(trades, label):
@@ -74,7 +86,9 @@ def write_signal_csv(trades, out_path):
             entry = str(t.get("entry_datetime", ""))
             exit_ = str(t.get("exit_datetime",  ""))
             dirn  = str(t.get("direction",       ""))
-            writer.writerow([entry, exit_, dirn, LOT_SIZE])
+            entry_price = t.get("entry_price", "")
+            exit_price  = t.get("exit_price", "")
+            writer.writerow([entry, exit_, dirn, LOT_SIZE, entry_price, exit_price])
     log.info(f"[GENERATE] Written: {out_path} ({len(trades)} rows)")
 
 if __name__ == "__main__":
