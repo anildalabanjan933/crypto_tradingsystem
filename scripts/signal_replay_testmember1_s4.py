@@ -369,7 +369,7 @@ last_known_ts = load_ts_file(TS_FILE)
 valid_from    = get_valid_from()
 # If last_known_ts empty - use signal file as fallback lock
 if not last_known_ts:
-    _sig_file = "logs/live_signal_s2.txt" if "s2" in fname else "logs/live_signal_s4.txt"
+    _sig_file = "logs/live_signal_s4.txt"
     try:
         _line = open(_sig_file).read().strip()
         if _line and "|" in _line:
