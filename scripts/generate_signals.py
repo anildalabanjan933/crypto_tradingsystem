@@ -125,6 +125,7 @@ if __name__ == "__main__":
     # S2
     s2_params = dict(renko_box_pct=0.001, renko_timeframe="30m", st_atr_length=10, st_factor=2.0)
     s2_trades, s2_pending = run_backtest(RenkoReversalStrategy, s2_params, "S2")
+    s2_trades = [t for t in s2_trades if "entry_datetime" in t]
     if not _skip_live:
         write_signal_csv(s2_trades + ([s2_pending] if s2_pending else []), "logs/signals_s2.csv")
     else:
@@ -135,6 +136,7 @@ if __name__ == "__main__":
     s4_params = dict(renko_box_pct=0.001, renko_timeframe="2h", st_atr_length=5, st_factor=2.0,
                      smiio_shortlen=10, smiio_longlen=10, smiio_siglen=3)
     s4_trades, s4_pending = run_backtest(RenkoSMIIOSupertrendStrategy, s4_params, "S4")
+    s4_trades = [t for t in s4_trades if "entry_datetime" in t]
     if not _skip_live:
         write_signal_csv(s4_trades + ([s4_pending] if s4_pending else []), "logs/signals_s4.csv")
     else:
