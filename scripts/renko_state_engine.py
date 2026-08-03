@@ -319,7 +319,7 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
                 _w = _csv.writer(_f)
                 for r in existing:
                     _w.writerow(r)
-                _w.writerow([ts, exit_ts or "PENDING", direction, 100, round(float(cl),2)])
+                _w.writerow([ts, exit_ts or "PENDING", direction, 100, round(float(cl),2), ""])
             _os.replace(tmp, sig_csv)
             log.info(f"[{state.label}] INSTANT CSV append: {ts},{exit_ts or 'PENDING'},{direction}")
         elif sig_type=="EXIT":
@@ -330,6 +330,9 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
                 if len(r)>=2 and r[1]=="PENDING" and not updated:
                     r = list(r)
                     r[1] = ts
+                    while len(r) < 6:
+                        r.append("")
+                    r[5] = round(float(cl),2)
                     updated = True
                 new_rows.append(r)
             if updated:
