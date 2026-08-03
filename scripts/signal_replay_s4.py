@@ -588,8 +588,8 @@ while True:
                                 _exit_fill_price = _exit_pos.get("exit_price", 0.0) if _exit_pos.get("success") else 0.0
                             _send_live_exit_alert("S4", dirn, _xt, _exit_fill_price, _entry_price_for_alert, lots)
                             _bt_csv2 = _get_csv_bt_row("S4", sig_ts)
-                            _bt_ep2  = float(_bt_csv2[4]) if _bt_csv2 and len(_bt_csv2) > 4 else 0.0
-                            _bt_xp2  = float(_bt_csv2[5]) if _bt_csv2 and len(_bt_csv2) > 5 else 0.0
+                            _bt_ep2  = float(_bt_csv2[4]) if _bt_csv2 and len(_bt_csv2) > 4 and str(_bt_csv2[4]).strip() not in ("", "PENDING") else 0.0
+                            _bt_xp2  = float(_bt_csv2[5]) if _bt_csv2 and len(_bt_csv2) > 5 and str(_bt_csv2[5]).strip() not in ("", "PENDING") else 0.0
                             if _bt_ep2 > 0 and _entry_price_for_alert > 0 and _exit_fill_price > 0:
                                 _send_roundtrip_match_alert("S4", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2, lots)
                         else:
@@ -625,9 +625,9 @@ while True:
                                 log.warning(f"[SL] Stop SL FAILED: {sl_result}")
                         _send_live_entry_alert("S4", direction, sig_ts, real_entry, _sl_price_val, lots)
                         _bt_csv = _get_csv_bt_row("S4", sig_ts)
-                        _bt_ep  = float(_bt_csv[4]) if _bt_csv and len(_bt_csv) > 4 else 0.0
+                        _bt_ep  = float(_bt_csv[4]) if _bt_csv and len(_bt_csv) > 4 and str(_bt_csv[4]).strip() not in ("", "PENDING") else 0.0
                         _bt_xt  = _bt_csv[1] if _bt_csv else ""
-                        _bt_xp  = float(_bt_csv[5]) if _bt_csv and len(_bt_csv) > 5 else 0.0
+                        _bt_xp  = float(_bt_csv[5]) if _bt_csv and len(_bt_csv) > 5 and str(_bt_csv[5]).strip() not in ("", "PENDING") else 0.0
                         if _bt_ep > 0 and real_entry > 0:
                             _send_entry_match_alert("S4", direction, sig_ts, _bt_ep, real_entry, _bt_xt, _bt_xp, lots)
                         open_entry_price = real_entry

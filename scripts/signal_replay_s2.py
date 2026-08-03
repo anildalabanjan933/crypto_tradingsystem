@@ -407,6 +407,7 @@ signals = load_signals()
 open_lot_size   = LOT_SIZE
 open_entry_price = 0.0
 last_processed_seq = 0  # SEQ-based signal detection - no last_known_ts needed
+_entry_fail_count = {}  # tracks consecutive ENTRY failures per signal timestamp
 
 # --- Missed Trade Check on Startup ---
 try:
@@ -614,8 +615,8 @@ while True:
                             _send_live_exit_alert("S2", dirn, _xt, _exit_fill_price, _entry_price_for_alert, lots)
                             # Alert 7B: Round trip match
                             _bt_csv2 = _get_csv_bt_row("S2", sig_ts)
-                            _bt_ep2  = float(_bt_csv2[4]) if _bt_csv2 and len(_bt_csv2) > 4 else 0.0
-                            _bt_xp2  = float(_bt_csv2[5]) if _bt_csv2 and len(_bt_csv2) > 5 else 0.0
+                            _bt_ep2  = float(_bt_csv2[4]) if _bt_csv2 and len(_bt_csv2) > 4 and str(_bt_csv2[4]).strip() not in ("", "PENDING") else 0.0
+                            _bt_xp2  = float(_bt_csv2[5]) if _bt_csv2 and len(_bt_csv2) > 5 and str(_bt_csv2[5]).strip() not in ("", "PENDING") else 0.0
                             if _bt_ep2 > 0 and _entry_price_for_alert > 0 and _exit_fill_price > 0:
                                 _send_roundtrip_match_alert("S2", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2, lots)
                         else:
@@ -638,11 +639,11 @@ while True:
                     if result.get("success"):
                         position = direction
                         open_lot_size = lots
-                        open_entry_price = real_entry
                         if _live_sig: last_processed_seq = _live_sig.get("seq", 0)
                         time.sleep(1)
                         pos_check = om.get_position()
                         real_entry = pos_check.get("entry_price", 0.0) if pos_check.get("success") else 0.0
+                        open_entry_price = real_entry
                         _sl_price_val = 0.0
                         if real_entry > 0:
                             sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=2.0)
@@ -655,16 +656,25 @@ while True:
                         _send_live_entry_alert("S2", direction, sig_ts, real_entry, _sl_price_val, lots)
                         # Alert 7A: Entry match
                         _bt_csv = _get_csv_bt_row("S2", sig_ts)
-                        _bt_ep  = float(_bt_csv[4]) if _bt_csv and len(_bt_csv) > 4 else 0.0
+                        _bt_ep  = float(_bt_csv[4]) if _bt_csv and len(_bt_csv) > 4 and str(_bt_csv[4]).strip() not in ("", "PENDING") else 0.0
                         _bt_xt  = _bt_csv[1] if _bt_csv else ""
-                        _bt_xp  = float(_bt_csv[5]) if _bt_csv and len(_bt_csv) > 5 else 0.0
+                        _bt_xp  = float(_bt_csv[5]) if _bt_csv and len(_bt_csv) > 5 and str(_bt_csv[5]).strip() not in ("", "PENDING") else 0.0
                         if _bt_ep > 0 and real_entry > 0:
                             _send_entry_match_alert("S2", direction, sig_ts, _bt_ep, real_entry, _bt_xt, _bt_xp, lots)
                         log.info(f"[ORDER] ENTRY confirmed | position={position}")
                     else:
                         log.error(f"[ORDER] ENTRY FAILED: {result}")
-                        send_alert(f"CTS S2 ENTRY FAILED\nError: {result}")
-                        last_known_ts = load_ts_file(TS_FILE)
+                        _entry_fail_count[sig_ts] = _entry_fail_count.get(sig_ts, 0) + 1
+                        _fail_n = _entry_fail_count[sig_ts]
+                        if _fail_n >= 5:
+                            log.error(f"[ORDER] ENTRY giving up after {_fail_n} failures | ts={sig_ts} - advancing past signal")
+                            send_alert(f"CTS S2 ENTRY GAVE UP after {_fail_n} failures\nSignal: {sig_ts}\nLast error: {result}\nAdvancing past this signal - will NOT retry")
+                            save_ts_file(TS_FILE, _xt)
+                            last_known_ts = _xt
+                            _entry_fail_count.pop(sig_ts, None)
+                        else:
+                            send_alert(f"CTS S2 ENTRY FAILED (attempt {_fail_n}/5)\nError: {result}")
+                            last_known_ts = load_ts_file(TS_FILE)
 
         # Sync position from exchange every 5 minutes
         if int(time.time()) % 300 < 2:
