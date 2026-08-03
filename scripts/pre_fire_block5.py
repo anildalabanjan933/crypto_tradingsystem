@@ -25,6 +25,15 @@ def get_mark(key,secret):
     r=requests.get(f"{BASE}/v2/tickers/BTCUSD",headers={"api-key":key,"timestamp":ts,"signature":sig},timeout=5)
     d=r.json().get("result",{})
     return float(d.get("mark_price",0)),float(d.get("quotes",{}).get("best_bid",0)),float(d.get("quotes",{}).get("best_ask",0))
+def get_fill_price(key,secret,order_id,pid):
+    ts,sig=sign(secret,"GET","/v2/fills",f"?product_ids={pid}")
+    r=requests.get(f"{BASE}/v2/fills?product_ids={pid}",headers={"api-key":key,"timestamp":ts,"signature":sig},timeout=5)
+    fills=[f for f in r.json().get("result",[]) if str(f.get("order_id"))==str(order_id)]
+    if not fills: return 0.0
+    tot=sum(float(f["size"]) for f in fills)
+    if tot==0: return 0.0
+    return sum(float(f["price"])*float(f["size"]) for f in fills)/tot
+
 def place_order(key,secret,side,size,pid):
     body=json.dumps({"product_id":pid,"size":size,"side":side,"order_type":"market_order","time_in_force":"ioc"})
     ts,sig=sign(secret,"POST","/v2/orders",body)
@@ -97,7 +106,7 @@ def run_test(label,key,secret,sigs,csv_path,ts_file,sig_file):
     print(f"\n[{label}] STEP 6: ENTRY ORDER - {bt_dir.upper()} 100 LOTS")
     eside="buy" if bt_dir=="long" else "sell"
     eo,elat=place_order(key,secret,eside,100,pid)
-    eid=eo.get("id");ef=float(eo.get("average_fill_price") or 0);est=eo.get("state")
+    eid=eo.get("id");ef=get_fill_price(key,secret,eid,pid) if eo.get("id") else 0.0;est=eo.get("state")
     print(f"  BT dir={bt_dir} → side={eside}")
     print(f"  id={eid} state={est} fill=${ef:,.2f} lat={elat}ms")
     if eid and est=="closed":
@@ -132,7 +141,7 @@ def run_test(label,key,secret,sigs,csv_path,ts_file,sig_file):
             requests.delete(f"{BASE}/v2/orders/{slid}",headers=hdrs(key,ts,sig),timeout=5)
             print(f"  SL {slid} cancelled")
         xo,xlat=place_order(key,secret,xside,100,pid)
-        xid=xo.get("id");xf=float(xo.get("average_fill_price") or 0);xst=xo.get("state")
+        xid=xo.get("id");xf=get_fill_price(key,secret,xid,pid) if xo.get("id") else 0.0;xst=xo.get("state")
         print(f"  BT dir={bt_dir} → side={xside}")
         print(f"  id={xid} state={xst} fill=${xf:,.2f} lat={xlat}ms")
         if xid and xst=="closed":

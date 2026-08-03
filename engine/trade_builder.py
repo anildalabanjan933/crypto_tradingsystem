@@ -68,7 +68,22 @@ class TradeBuilder:
 
         if active_trade is not None:
             print(f"  Warning: Unclosed trade (Entry at {active_trade['timestamp']}) "
-                  f"at end of data. Skipping.")
+                  f"at end of data. Recording as OPEN trade (not dropped).")
+            open_record = {
+                "trade_number":   self.trade_number + 1,
+                "entry_time":     active_trade["timestamp"],
+                "entry_price":    float(active_trade["price"]),
+                "direction":      active_trade.get("direction", "short").lower(),
+                "entry_type":     active_trade.get("entry_type", "FIRST_ENTRY"),
+                "stop_loss_price": float(active_trade.get("sl_price", active_trade.get("stop_loss", 0.0))),
+                "exit_time":      None,
+                "exit_price":     None,
+                "exit_reason":    "OPEN_AT_END_OF_DATA",
+                "status":         "OPEN",
+                "pnl":            None,
+                "pnl_inr":        None,
+            }
+            self.trades.append(open_record)
         print(f"Built {len(self.trades)} complete trade records")
         return self.trades
 
