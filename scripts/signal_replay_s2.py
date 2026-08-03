@@ -315,7 +315,10 @@ def load_ts_file(path):
     return None
 
 def save_ts_file(path, val):
-    open(path, "w").write(str(val))
+    val = str(val)
+    if not TS_PATTERN.match(val):
+        val = now_utc_str()
+    open(path, "w").write(val)
 
 def now_utc_str():
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
