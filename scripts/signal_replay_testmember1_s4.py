@@ -438,7 +438,10 @@ def check_engine_heartbeat():
         if not __import__('os').path.exists(hb_file):
             return False
         hb_str = open(hb_file).read().strip()
-        hb_dt = __import__('datetime').datetime.strptime(hb_str, '%Y-%m-%dT%H:%M:%S')
+        try:
+            hb_dt = __import__('datetime').datetime.utcfromtimestamp(float(hb_str))
+        except:
+            hb_dt = __import__('datetime').datetime.strptime(hb_str, '%Y-%m-%dT%H:%M:%S')
         age_min = (__import__('datetime').datetime.utcnow() - hb_dt).total_seconds() / 60
         if age_min > 15:
             log.warning(f"[ENGINE] Heartbeat stale {int(age_min)}m - engine may be dead - skipping order")
