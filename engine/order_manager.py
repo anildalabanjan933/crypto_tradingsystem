@@ -116,6 +116,22 @@ class OrderManager:
     # Public API
     # ------------------------------------------------------------------
 
+    def _get_avg_fill_price(self, order_id: int) -> float:
+        """Fetch real fill price for an order from /v2/fills.
+        The order-placement response has NO average_fill_price field
+        (confirmed against official Delta API schema) - must query fills."""
+        resp = self._get("/v2/fills", {"product_ids": str(self.PRODUCT_ID)})
+        if not resp.get("success"):
+            return 0.0
+        fills = [f for f in resp.get("result", []) if str(f.get("order_id")) == str(order_id)]
+        if not fills:
+            return 0.0
+        total_size = sum(float(f["size"]) for f in fills)
+        if total_size == 0:
+            return 0.0
+        weighted = sum(float(f["price"]) * float(f["size"]) for f in fills)
+        return weighted / total_size
+
     def place_market_order(self, side: str, size: int, client_order_id: str = None) -> dict:
         """
         Place a market order.
@@ -142,7 +158,7 @@ class OrderManager:
         if resp.get("success"):
             result = resp["result"]
             logging.info(f"[OrderManager] Order placed | id={result['id']} state={result['state']}")
-            _avg = result.get("average_fill_price")
+            _avg = self._get_avg_fill_price(result["id"])
             return {
                 "success":      True,
                 "order_id":     result["id"],
@@ -182,7 +198,7 @@ class OrderManager:
         if resp.get("success"):
             result = resp["result"]
             logging.info(f"[OrderManager] Close order placed | id={result['id']} state={result['state']}")
-            _avg2 = result.get("average_fill_price")
+            _avg2 = self._get_avg_fill_price(result["id"])
             return {
                 "success":  True,
                 "order_id": result["id"],

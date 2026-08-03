@@ -8,6 +8,15 @@ results=[];failures=[]
 def ok(msg): results.append(f"  PASS  {msg}")
 def fail(msg): failures.append(f"  FAIL  {msg}")
 pat_ts=re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$")
+def get_fill_price(key,secret,order_id,pid):
+    ts,sig=sign(secret,"GET","/v2/fills",f"?product_ids={pid}")
+    r=requests.get(f"{BASE}/v2/fills?product_ids={pid}",headers={"api-key":key,"timestamp":ts,"signature":sig},timeout=5)
+    fills=[f for f in r.json().get("result",[]) if str(f.get("order_id"))==str(order_id)]
+    if not fills: return 0.0
+    tot=sum(float(f["size"]) for f in fills)
+    if tot==0: return 0.0
+    return sum(float(f["price"])*float(f["size"]) for f in fills)/tot
+
 BASE="https://cdn-ind.testnet.deltaex.org"
 def read_ts(p):
     try:
@@ -152,7 +161,7 @@ def run_chain(label,key,secret):
     if not pid: fail(f"{label} product lookup failed"); return
     mark_e,bid_e,ask_e=get_mark(key,secret)
     entry_o,entry_lat=place_mkt(key,secret,"buy",100,pid)
-    entry_id=entry_o.get("id");entry_fill=float(entry_o.get("average_fill_price") or 0)
+    entry_id=entry_o.get("id");entry_fill=get_fill_price(key,secret,entry_id,pid) if entry_o.get("id") else 0.0
     print(f"  {label} ENTRY: id={entry_id} fill=${entry_fill:,.2f} lat={entry_lat}ms")
     if not(entry_id and entry_o.get("state")=="closed"): fail(f"{label} entry not filled"); return
     ok(f"{label} entry filled ${entry_fill:,.2f} lat={entry_lat}ms")
@@ -169,7 +178,7 @@ def run_chain(label,key,secret):
         ts,sig=sign(secret,"DELETE",f"/v2/orders/{sl_id}")
         requests.delete(f"{BASE}/v2/orders/{sl_id}",headers=hdrs(key,ts,sig),timeout=5)
     exit_o,exit_lat=place_mkt(key,secret,"sell",100,pid)
-    exit_id=exit_o.get("id");exit_fill=float(exit_o.get("average_fill_price") or 0)
+    exit_id=exit_o.get("id");exit_fill=get_fill_price(key,secret,exit_id,pid) if exit_o.get("id") else 0.0
     print(f"  {label} EXIT: id={exit_id} fill=${exit_fill:,.2f} lat={exit_lat}ms")
     if not(exit_id and exit_o.get("state")=="closed"): fail(f"{label} exit not filled"); return
     ok(f"{label} exit filled ${exit_fill:,.2f} lat={exit_lat}ms")
