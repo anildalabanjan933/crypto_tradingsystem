@@ -457,7 +457,11 @@ def read_live_signal(signal_file):
         parts = line.split("|")
         if len(parts) < 3:
             return None
-        return {"type": parts[0], "timestamp": parts[1], "lots": int(parts[2])}
+        seq = 0
+        for p in parts:
+            if p.startswith("SEQ="):
+                seq = int(p.split("=")[1])
+        return {"type": parts[0], "timestamp": parts[1], "lots": int(parts[2]), "seq": seq}
     except Exception:
         return None
 
