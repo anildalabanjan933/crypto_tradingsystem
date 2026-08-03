@@ -320,6 +320,12 @@ def save_ts_file(path, val):
         val = now_utc_str()
     open(path, "w").write(val)
 
+def safe_ts(val):
+    val = str(val)
+    if not TS_PATTERN.match(val):
+        return now_utc_str()
+    return val
+
 def now_utc_str():
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
 
@@ -557,13 +563,13 @@ while True:
                     if position is None and now >= _xt and _xt > last_known_ts:
                         log.info(f"[SKIP] Expired signal entry={_et} exit={_xt} | advancing last_known_ts")
                         save_ts_file(TS_FILE, _xt)
-                        last_known_ts = _xt
+                        last_known_ts = safe_ts(_xt)
                     continue
                 # Expired signal: exit already passed and no position - skip and advance
                 if position is None and now >= _xt:
                     log.info(f"[SKIP] Expired signal entry={_et} exit={_xt} | advancing last_known_ts")
                     save_ts_file(TS_FILE, _xt)
-                    last_known_ts = _xt
+                    last_known_ts = safe_ts(_xt)
                     continue
                 if now >= _et:
                     _matched = _row
@@ -580,7 +586,7 @@ while True:
             if position is None and now >= _xt:
                 log.info(f"[SKIP] Expired signal | entry={sig_ts} exit={_xt} | advancing last_known_ts")
                 save_ts_file(TS_FILE, _xt)
-                last_known_ts = _xt
+                last_known_ts = safe_ts(_xt)
                 if _live_sig: last_processed_seq = _live_sig.get("seq", 0)
 
             # --- EXIT first if position open and exit time reached ---
@@ -592,13 +598,13 @@ while True:
                     _send_live_exit_alert('S2', dirn, _xt, 0.0)
                     position = None
                     save_ts_file(TS_FILE, _xt)
-                    last_known_ts = _xt
+                    last_known_ts = safe_ts(_xt)
                 else:
                     side = "sell" if position == "long" else "buy"
                     close_size = _ex_size
                     log.info(f"[ORDER] EXIT {side} {close_size} lots | ts={_xt}")
                     save_ts_file(TS_FILE, _xt)
-                    last_known_ts = _xt
+                    last_known_ts = safe_ts(_xt)
                     if not check_engine_heartbeat():
                         log.warning("[ORDER] EXIT blocked - engine heartbeat stale")
                     else:
@@ -673,7 +679,7 @@ while True:
                             log.error(f"[ORDER] ENTRY giving up after {_fail_n} failures | ts={sig_ts} - advancing past signal")
                             send_alert(f"CTS S2 ENTRY GAVE UP after {_fail_n} failures\nSignal: {sig_ts}\nLast error: {result}\nAdvancing past this signal - will NOT retry")
                             save_ts_file(TS_FILE, _xt)
-                            last_known_ts = _xt
+                            last_known_ts = safe_ts(_xt)
                             _entry_fail_count.pop(sig_ts, None)
                         else:
                             send_alert(f"CTS S2 ENTRY FAILED (attempt {_fail_n}/5)\nError: {result}")
