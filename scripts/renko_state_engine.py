@@ -506,7 +506,7 @@ if __name__=="__main__":
                     ws=websocket.WebSocketApp("wss://socket.india.delta.exchange",
                         on_open=_ws_on_open,on_message=_ws_on_message,
                         on_error=_ws_on_error,on_close=_ws_on_close)
-                    ws.run_forever(ping_interval=20,ping_timeout=8)
+                    ws.run_forever(ping_interval=30,ping_timeout=20)
                     _ws_fail_count[0]+=1
                     if _ws_fail_count[0]>=10:
                         try:
@@ -549,7 +549,7 @@ if __name__=="__main__":
 
     while True:
         try:
-            if time.time()-_last_dl>=300 and time.time()-_ws_state.get("last_dl",0)>=30:
+            if time.time()-_last_dl>=60 and time.time()-_ws_state.get("last_dl",0)>=30:
                 update_market_data()
                 _last_dl=time.time()
 
