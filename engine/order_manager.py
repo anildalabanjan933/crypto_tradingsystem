@@ -283,6 +283,7 @@ class OrderManager:
             "side":           side,
             "size":           100,
             "order_type":     "market_order",
+            "stop_order_type": "stop_loss_order",
             "stop_price":     str(sl_price),
             "reduce_only":    True,
             "close_on_trigger": True
