@@ -97,7 +97,8 @@ class BacktestReportGenerator:
 
         if self.trades:
             all_equity_dates = [pd.to_datetime(self.start_date)] + [
-                pd.to_datetime(t['exit_datetime']) for t in self.trades
+                pd.to_datetime(t.get('exit_datetime') or t.get('entry_datetime') or t.get('entry_time') or t.get('exit_time'))
+                for t in self.trades
             ]
             # Trim dates to match trimmed equity length
             equity_dates = all_equity_dates[:len(equity_data_trimmed)]
@@ -177,7 +178,8 @@ class BacktestReportGenerator:
 
         if self.trades:
             all_dd_dates = [pd.to_datetime(self.start_date)] + [
-                pd.to_datetime(t['exit_datetime']) for t in self.trades
+                pd.to_datetime(t.get('exit_datetime') or t.get('entry_datetime') or t.get('entry_time') or t.get('exit_time'))
+                for t in self.trades
             ]
         else:
             all_dd_dates = [pd.to_datetime(self.start_date)]
@@ -585,7 +587,8 @@ class BacktestReportGenerator:
             trimmed       = True
 
             dates = [pd.to_datetime(self.start_date)] + [
-                pd.to_datetime(t['exit_datetime']) for t in self.trades
+                pd.to_datetime(t.get('exit_datetime') or t.get('entry_datetime') or t.get('entry_time') or t.get('exit_time'))
+                for t in self.trades
             ]
             if trimmed:
                 dates = dates[:len(equity_for_dd)]
