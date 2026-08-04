@@ -473,8 +473,11 @@ if __name__=="__main__":
             # Completed candle detected instantly via WebSocket
             log.info(f"[WS] Completed candle detected - updating data")
             _ws_state["last_dl"]=time.time()
-            threading.Thread(target=update_market_data, daemon=True).start()
-            time.sleep(1.5)
+            _dl_thread=threading.Thread(target=update_market_data, daemon=True)
+            _dl_thread.start()
+            _dl_thread.join(timeout=8)
+            if _dl_thread.is_alive():
+                log.warning("[WS] Market data download still running after 8s - proceeding with retry")
             _new_ts=get_csv_last_ts()
             if _new_ts is None: return
             append_new_candles(s2)
