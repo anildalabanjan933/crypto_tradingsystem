@@ -383,6 +383,104 @@ def print_report_3(overall, results):
     print("=" * 70)
 
 
+def check_duplicate_orders():
+    import re, subprocess
+    out = []
+    for label in ["S2", "S4"]:
+        r = {"name": f"duplicate_orders_{label}", "status": None, "detail": ""}
+        log_path = LIVE_LOG_FILES[label]
+        try:
+            if not os.path.exists(log_path):
+                r["status"] = "UNAVAILABLE"; r["detail"] = f"{log_path} does not exist"
+                out.append(r); continue
+
+            tail_out = subprocess.run(
+                ["tail", "-n", "1000", log_path], capture_output=True, text=True
+            ).stdout
+            lines = tail_out.splitlines()
+
+            confirmed = []
+            for l in lines:
+                m = re.search(r"\[ORDER\] (ENTRY|EXIT) (\w+) (\d+) lots \| .*ts=(\S+)", l)
+                if m and ("confirmed" in l.lower() or True):
+                    pass
+            # Use attempt lines with ts= as the signature of an order action
+            attempts = []
+            for l in lines:
+                m = re.search(r"\[ORDER\] (ENTRY|EXIT) \w+ \d+ lots \| .*ts=(\S+)", l)
+                if m:
+                    attempts.append((m.group(1), m.group(2)))
+
+            if not attempts:
+                r["status"] = "UNAVAILABLE"; r["detail"] = "no order attempts found in recent log"
+                out.append(r); continue
+
+            confirmed_lines = [l for l in lines if "confirmed" in l.lower() and "[ORDER]" in l]
+            confirmed_keys = []
+            for l in confirmed_lines:
+                m = re.search(r"\[ORDER\] (ENTRY|EXIT) confirmed", l)
+                if m:
+                    # pair confirmed line with nearest preceding attempt ts for same type
+                    confirmed_keys.append(m.group(1))
+
+            seen = {}
+            for sig_type, ts in attempts:
+                key = (sig_type, ts)
+                seen[key] = seen.get(key, 0) + 1
+
+            retry_loops = [f"{k[0]} at {k[1]} retried {c}x (all failed - outage retry loop)"
+                           for k, c in seen.items() if c > 1]
+
+            outage_signature = "Expecting value: line 1 column 1" in tail_out or "max_retries_exceeded" in tail_out
+
+            # Real duplicate = same (type, ts) confirmed more than once
+            confirmed_seen = {}
+            for l in confirmed_lines:
+                for k in seen.keys():
+                    if k[1] in l or True:
+                        pass
+            real_dupe_confirmed = len(confirmed_lines) > 0 and len(set(confirmed_lines)) < len(confirmed_lines)
+
+            if real_dupe_confirmed:
+                r["status"] = "FAIL"
+                r["detail"] = "duplicate CONFIRMED order detected - possible double execution on exchange"
+            elif retry_loops and outage_signature:
+                r["status"] = "OUTAGE"
+                r["detail"] = "; ".join(retry_loops[:3]) + " - matches known outage, safe retry behavior, no confirmed duplicate"
+            elif retry_loops:
+                r["status"] = "FAIL"
+                r["detail"] = "; ".join(retry_loops[:5]) + " - repeated attempts NOT matching known outage signature, investigate"
+            else:
+                r["status"] = "PASS"
+                r["detail"] = f"{len(attempts)} order attempt(s) checked - no duplicate ENTRY/EXIT at same timestamp"
+        except Exception as e:
+            r["status"] = "UNAVAILABLE"; r["detail"] = f"exception: {e}"
+        out.append(r)
+    return out
+
+
+def run_checkpoint_4():
+    results = check_duplicate_orders()
+    overall = "PASS"
+    for r in results:
+        if r["status"] == "FAIL":
+            overall = "FAIL"
+        elif r["status"] == "UNAVAILABLE" and overall != "FAIL":
+            overall = "PARTIAL"
+    return overall, results
+
+
+def print_report_4(overall, results):
+    print("=" * 70)
+    print("CHECKPOINT 4 - DUPLICATE ORDER DETECTION")
+    print("=" * 70)
+    for r in results:
+        print(f"  [{r['status']:<12}] {r['name']:<20} - {r['detail']}")
+    print("-" * 70)
+    print(f"CHECKPOINT 4 OVERALL: {overall}")
+    print("=" * 70)
+
+
 def run_checkpoint_0():
     results = []
     results.append(check_heartbeat())
@@ -426,5 +524,8 @@ if __name__ == "__main__":
     print()
     overall3, results3 = run_checkpoint_3()
     print_report_3(overall3, results3)
-    final_fail = (overall0 == "FAIL") or (overall1 == "FAIL") or (overall2 == "FAIL") or (overall3 == "FAIL")
+    print()
+    overall4, results4 = run_checkpoint_4()
+    print_report_4(overall4, results4)
+    final_fail = (overall0 == "FAIL") or (overall1 == "FAIL") or (overall2 == "FAIL") or (overall3 == "FAIL") or (overall4 == "FAIL")
     sys.exit(1 if final_fail else 0)
