@@ -575,6 +575,15 @@ while True:
                     _matched = _row
                     break
 
+        # --- SAFETY OVERRIDE: always re-check current open position's own exit ---
+        # Prevents deadlock when live_signal fast-path grabs a NEW entry row
+        # while the OPEN position's own exit (in CSV) has already resolved+passed
+        if position is not None:
+            for _row in signals:
+                if _row["entry_time"] == last_known_ts and _row["exit_time"] not in ("PENDING", "") and now >= _row["exit_time"]:
+                    _matched = _row
+                    break
+
         if _matched:
             sig_ts = _matched["entry_time"]
             lots   = _matched["lots"]
