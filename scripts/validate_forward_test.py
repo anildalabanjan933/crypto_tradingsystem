@@ -610,6 +610,76 @@ def print_report_6(overall, results):
     print(f"CHECKPOINT 6 OVERALL: {overall}")
     print("=" * 70)
 
+LATENCY_WARN_SEC = 60
+
+def check_signal_to_order_latency():
+    import subprocess, re
+    from datetime import datetime
+    out = []
+    for label in ["S2", "S4"]:
+        r = {"name": f"latency_{label}", "status": None, "detail": ""}
+        log_path = LIVE_LOG_FILES[label]
+        try:
+            if not os.path.exists(log_path):
+                r["status"] = "UNAVAILABLE"; r["detail"] = f"{log_path} does not exist"
+                out.append(r); continue
+
+            tail_out = subprocess.run(["tail", "-n", "1000", log_path], capture_output=True, text=True).stdout
+            lines = tail_out.splitlines()
+
+            signal_lines = [l for l in lines if "[SIGNAL]" in l or "signal detected" in l.lower()]
+            order_lines = [l for l in lines if "[ORDER] ENTRY confirmed" in l or "[ORDER] EXIT confirmed" in l]
+
+            if not signal_lines or not order_lines:
+                r["status"] = "UNAVAILABLE"; r["detail"] = "not enough signal/order pairs in recent log to measure latency"
+                out.append(r); continue
+
+            def get_ts(line):
+                m = re.match(r"^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})", line)
+                if m:
+                    try:
+                        return datetime.strptime(m.group(1), "%Y-%m-%d %H:%M:%S")
+                    except Exception:
+                        return None
+                return None
+
+            sig_ts = get_ts(signal_lines[-1])
+            ord_ts = get_ts(order_lines[-1])
+
+            if not sig_ts or not ord_ts:
+                r["status"] = "UNAVAILABLE"; r["detail"] = "could not parse timestamps for latency check"
+                out.append(r); continue
+
+            delta_sec = abs((ord_ts - sig_ts).total_seconds())
+            if delta_sec > LATENCY_WARN_SEC:
+                r["status"] = "PARTIAL"
+                r["detail"] = f"latency {delta_sec:.0f}s exceeds {LATENCY_WARN_SEC}s warning threshold"
+            else:
+                r["status"] = "PASS"
+                r["detail"] = f"latency {delta_sec:.0f}s within {LATENCY_WARN_SEC}s threshold"
+        except Exception as e:
+            r["status"] = "UNAVAILABLE"; r["detail"] = f"exception: {e}"
+        out.append(r)
+    return out
+
+def run_checkpoint_7():
+    results = check_signal_to_order_latency()
+    overall = "PASS"
+    for r in results:
+        if r["status"] == "FAIL": overall = "FAIL"
+        elif r["status"] in ("UNAVAILABLE", "PARTIAL") and overall != "FAIL": overall = "PARTIAL"
+    return overall, results
+
+def print_report_7(overall, results):
+    print("=" * 70)
+    print("CHECKPOINT 7 - SIGNAL TO ORDER LATENCY")
+    print("=" * 70)
+    for r in results:
+        print(f"  [{r['status']:<12}] {r['name']:<20} - {r['detail']}")
+    print("-" * 70)
+    print(f"CHECKPOINT 7 OVERALL: {overall}")
+    print("=" * 70)
+
 def run_checkpoint_0():
     results = []
     results.append(check_heartbeat())
@@ -662,5 +732,8 @@ if __name__ == "__main__":
     print()
     overall6, results6 = run_checkpoint_6()
     print_report_6(overall6, results6)
-    final_fail = (overall0 == "FAIL") or (overall1 == "FAIL") or (overall2 == "FAIL") or (overall3 == "FAIL") or (overall4 == "FAIL") or (overall5 == "FAIL") or (overall6 == "FAIL")
+    print()
+    overall7, results7 = run_checkpoint_7()
+    print_report_7(overall7, results7)
+    final_fail = (overall0 == "FAIL") or (overall1 == "FAIL") or (overall2 == "FAIL") or (overall3 == "FAIL") or (overall4 == "FAIL") or (overall5 == "FAIL") or (overall6 == "FAIL") or (overall7 == "FAIL")
     sys.exit(1 if final_fail else 0)
