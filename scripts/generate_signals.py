@@ -104,6 +104,26 @@ def write_trade_log_csv(trades, label):
     df.to_csv(out, index=False)
     log.info(f"[GENERATE] Trade log saved: {out} ({len(trades)} rows)")
 
+def merge_signal_csv(new_trades, csv_path):
+    import csv as _csv
+    merged = {}
+    if os.path.exists(csv_path):
+        with open(csv_path, "r") as f:
+            for row in _csv.reader(f):
+                if len(row) >= 3 and row[0]:
+                    merged[row[0]] = {
+                        "entry_datetime": row[0],
+                        "exit_datetime": row[1] if len(row) > 1 else "",
+                        "direction": row[2] if len(row) > 2 else "",
+                        "entry_price": row[4] if len(row) > 4 else "",
+                        "exit_price": row[5] if len(row) > 5 else "",
+                    }
+    for t in new_trades:
+        key = str(t.get("entry_datetime",""))
+        if key:
+            merged[key] = t
+    return [merged[k] for k in sorted(merged.keys())]
+
 def write_signal_csv(trades, out_path):
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
     with open(out_path, "w", newline="") as f:
@@ -127,7 +147,8 @@ if __name__ == "__main__":
     s2_trades, s2_pending = run_backtest(RenkoReversalStrategy, s2_params, "S2")
     s2_trades = [t for t in s2_trades if "entry_datetime" in t]
     if not _skip_live:
-        write_signal_csv(s2_trades + ([s2_pending] if s2_pending else []), "logs/signals_s2.csv")
+        _s2_all = merge_signal_csv(s2_trades + ([s2_pending] if s2_pending else []), "logs/signals_s2.csv")
+        write_signal_csv(_s2_all, "logs/signals_s2.csv")
     else:
         log.info("[GENERATE] Skipped logs/signals_s2.csv (dashboard-refresh-only mode)")
     write_trade_log_csv(s2_trades, "S2")
@@ -138,7 +159,8 @@ if __name__ == "__main__":
     s4_trades, s4_pending = run_backtest(RenkoSMIIOSupertrendStrategy, s4_params, "S4")
     s4_trades = [t for t in s4_trades if "entry_datetime" in t]
     if not _skip_live:
-        write_signal_csv(s4_trades + ([s4_pending] if s4_pending else []), "logs/signals_s4.csv")
+        _s4_all = merge_signal_csv(s4_trades + ([s4_pending] if s4_pending else []), "logs/signals_s4.csv")
+        write_signal_csv(_s4_all, "logs/signals_s4.csv")
     else:
         log.info("[GENERATE] Skipped logs/signals_s4.csv (dashboard-refresh-only mode)")
     write_trade_log_csv(s4_trades, "S4")
