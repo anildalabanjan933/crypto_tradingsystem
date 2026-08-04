@@ -797,6 +797,39 @@ def print_report_9(overall, results):
     print(f"CHECKPOINT 9 OVERALL: {overall}")
     print("=" * 70)
 
+def run_checkpoint_10(all_overalls):
+    labels = ["Pre-flight", "Signal Generation", "Order Execution", "Position Sync",
+              "Duplicate Detection", "Stop Loss", "PnL Reconciliation", "Signal Latency",
+              "Error Rate", "CSV Integrity"]
+    pass_count = sum(1 for o in all_overalls if o == "PASS")
+    fail_count = sum(1 for o in all_overalls if o == "FAIL")
+    outage_count = sum(1 for o in all_overalls if o == "OUTAGE")
+    partial_count = sum(1 for o in all_overalls if o == "PARTIAL")
+    unavail_count = sum(1 for o in all_overalls if o == "UNAVAILABLE")
+
+    if fail_count > 0:
+        verdict = "NOT READY - real bug(s) found, fix before continuing forward test"
+    elif outage_count > 0:
+        verdict = "BLOCKED BY OUTAGE - all real code checks clean, waiting on Delta testnet outage to clear"
+    elif partial_count > 0 or unavail_count > 0:
+        verdict = "IN PROGRESS - some checkpoints awaiting more live data, no failures yet"
+    else:
+        verdict = "ALL CLEAR - system fully validated"
+
+    return verdict, labels, all_overalls, pass_count, fail_count, outage_count, partial_count, unavail_count
+
+def print_report_10(verdict, labels, all_overalls, pass_count, fail_count, outage_count, partial_count, unavail_count):
+    print("=" * 70)
+    print("CHECKPOINT 10 - OVERALL SYSTEM HEALTH SUMMARY")
+    print("=" * 70)
+    for i, label in enumerate(labels):
+        print(f"  Checkpoint {i}: {label:<22} -> {all_overalls[i]}")
+    print("-" * 70)
+    print(f"  PASS={pass_count} FAIL={fail_count} OUTAGE={outage_count} PARTIAL={partial_count} UNAVAILABLE={unavail_count}")
+    print("-" * 70)
+    print(f"FINAL VERDICT: {verdict}")
+    print("=" * 70)
+
 def run_checkpoint_0():
     results = []
     results.append(check_heartbeat())
@@ -858,5 +891,9 @@ if __name__ == "__main__":
     print()
     overall9, results9 = run_checkpoint_9()
     print_report_9(overall9, results9)
+    print()
+    all_overalls = [overall0, overall1, overall2, overall3, overall4, overall5, overall6, overall7, overall8, overall9]
+    verdict, labels, all_o, pc, fc, oc, prc, uc = run_checkpoint_10(all_overalls)
+    print_report_10(verdict, labels, all_o, pc, fc, oc, prc, uc)
     final_fail = (overall0 == "FAIL") or (overall1 == "FAIL") or (overall2 == "FAIL") or (overall3 == "FAIL") or (overall4 == "FAIL") or (overall5 == "FAIL") or (overall6 == "FAIL") or (overall7 == "FAIL") or (overall8 == "FAIL") or (overall9 == "FAIL")
     sys.exit(1 if final_fail else 0)
