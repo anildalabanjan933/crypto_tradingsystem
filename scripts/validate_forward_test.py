@@ -297,6 +297,92 @@ def print_report_2(overall, results):
     print("=" * 70)
 
 
+def check_position_sync():
+    out = []
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(dotenv_path=os.path.join(REPO, ".env"), override=True)
+        from engine.order_manager import OrderManager
+    except Exception as e:
+        return [{"name": "position_sync_import", "status": "UNAVAILABLE", "detail": f"import failed: {e}"}]
+
+    import subprocess
+    for label in ["S2", "S4"]:
+        r = {"name": f"position_sync_{label}", "status": None, "detail": ""}
+        try:
+            api_key = os.getenv(f"{label}_API_KEY")
+            api_secret = os.getenv(f"{label}_API_SECRET")
+            if not api_key or not api_secret:
+                r["status"] = "UNAVAILABLE"; r["detail"] = f"{label} API key/secret missing"
+                out.append(r); continue
+
+            om = OrderManager(api_key, api_secret, testnet=True)
+            exchange_pos = om.get_position()
+            if not exchange_pos or not exchange_pos.get("success"):
+                r["status"] = "UNAVAILABLE"; r["detail"] = "could not fetch exchange position (API unreachable)"
+                out.append(r); continue
+
+            exchange_dir = exchange_pos.get("direction", "FLAT")
+            exchange_size = abs(exchange_pos.get("size", 0))
+
+            log_path = LIVE_LOG_FILES[label]
+            if not os.path.exists(log_path):
+                r["status"] = "UNAVAILABLE"; r["detail"] = f"{log_path} does not exist"
+                out.append(r); continue
+
+            tail_out = subprocess.run(
+                ["tail", "-n", "300", log_path], capture_output=True, text=True
+            ).stdout
+            bot_position = None
+            for line in reversed(tail_out.splitlines()):
+                if "position=" in line:
+                    try:
+                        bot_position = line.split("position=")[1].split("|")[0].strip()
+                    except Exception:
+                        pass
+                    break
+
+            if bot_position is None:
+                r["status"] = "UNAVAILABLE"; r["detail"] = "no position= field found in recent log lines"
+                out.append(r); continue
+
+            bot_dir_norm = "FLAT" if bot_position in ("None", "flat", "FLAT") else bot_position.upper()
+            exch_dir_norm = exchange_dir.upper()
+
+            if bot_dir_norm == exch_dir_norm:
+                r["status"] = "PASS"
+                r["detail"] = f"bot={bot_dir_norm} matches exchange={exch_dir_norm} (size={exchange_size})"
+            else:
+                r["status"] = "FAIL"
+                r["detail"] = f"MISMATCH: bot thinks position={bot_dir_norm} but exchange shows={exch_dir_norm} (size={exchange_size}) - possible ghost position or stuck state"
+        except Exception as e:
+            r["status"] = "UNAVAILABLE"; r["detail"] = f"exception: {e}"
+        out.append(r)
+    return out
+
+
+def run_checkpoint_3():
+    results = check_position_sync()
+    overall = "PASS"
+    for r in results:
+        if r["status"] == "FAIL":
+            overall = "FAIL"
+        elif r["status"] == "UNAVAILABLE" and overall != "FAIL":
+            overall = "PARTIAL"
+    return overall, results
+
+
+def print_report_3(overall, results):
+    print("=" * 70)
+    print("CHECKPOINT 3 - POSITION STATE SYNC (BOT vs EXCHANGE)")
+    print("=" * 70)
+    for r in results:
+        print(f"  [{r['status']:<12}] {r['name']:<20} - {r['detail']}")
+    print("-" * 70)
+    print(f"CHECKPOINT 3 OVERALL: {overall}")
+    print("=" * 70)
+
+
 def run_checkpoint_0():
     results = []
     results.append(check_heartbeat())
@@ -337,5 +423,8 @@ if __name__ == "__main__":
     print()
     overall2, results2 = run_checkpoint_2()
     print_report_2(overall2, results2)
-    final_fail = (overall0 == "FAIL") or (overall1 == "FAIL") or (overall2 == "FAIL")
+    print()
+    overall3, results3 = run_checkpoint_3()
+    print_report_3(overall3, results3)
+    final_fail = (overall0 == "FAIL") or (overall1 == "FAIL") or (overall2 == "FAIL") or (overall3 == "FAIL")
     sys.exit(1 if final_fail else 0)
