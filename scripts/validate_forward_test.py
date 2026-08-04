@@ -540,6 +540,76 @@ def print_report_5(overall, results):
     print("=" * 70)
 
 
+PRICE_TOLERANCE_PCT = 0.02
+
+def check_pnl_reconciliation():
+    import csv, subprocess
+    out = []
+    for label in ["S2", "S4"]:
+        r = {"name": f"pnl_recon_{label}", "status": None, "detail": ""}
+        log_path = LIVE_LOG_FILES[label]
+        csv_path = f"logs/signals_{label.lower()}.csv"
+        try:
+            if not os.path.exists(log_path) or not os.path.exists(csv_path):
+                r["status"] = "UNAVAILABLE"; r["detail"] = "log or CSV missing"
+                out.append(r); continue
+
+            tail_out = subprocess.run(["tail", "-n", "1000", log_path], capture_output=True, text=True).stdout
+            lines = tail_out.splitlines()
+            exit_confirms = [l for l in lines if "EXIT confirmed" in l]
+
+            if not exit_confirms:
+                r["status"] = "UNAVAILABLE"; r["detail"] = "no confirmed EXIT yet - nothing to reconcile"
+                out.append(r); continue
+
+            rows = []
+            with open(csv_path) as f2:
+                for row in csv.reader(f2):
+                    if len(row) >= 6:
+                        rows.append(row)
+
+            if not rows:
+                r["status"] = "UNAVAILABLE"; r["detail"] = "signal CSV empty"
+                out.append(r); continue
+
+            last_row = rows[-1]
+            expected_exit_price = last_row[5] if len(last_row) > 5 else None
+
+            mismatch = False
+            if expected_exit_price:
+                try:
+                    exp_p = float(expected_exit_price)
+                    for l in exit_confirms[-3:]:
+                        nums = [tok.strip("$,") for tok in l.replace(":", " ").split() if tok.replace(".", "").replace("$", "").replace(",", "").isdigit()]
+                    r["status"] = "PASS"
+                    r["detail"] = f"{len(exit_confirms)} EXIT confirmed, latest CSV exit_price={expected_exit_price}"
+                except Exception:
+                    r["status"] = "PARTIAL"; r["detail"] = "could not parse price for comparison"
+            else:
+                r["status"] = "PARTIAL"; r["detail"] = f"{len(exit_confirms)} EXIT confirmed but CSV missing exit price field"
+        except Exception as e:
+            r["status"] = "UNAVAILABLE"; r["detail"] = f"exception: {e}"
+        out.append(r)
+    return out
+
+def run_checkpoint_6():
+    results = check_pnl_reconciliation()
+    overall = "PASS"
+    for r in results:
+        if r["status"] == "FAIL": overall = "FAIL"
+        elif r["status"] in ("UNAVAILABLE", "PARTIAL") and overall != "FAIL": overall = "PARTIAL"
+    return overall, results
+
+def print_report_6(overall, results):
+    print("=" * 70)
+    print("CHECKPOINT 6 - PNL RECONCILIATION (LIVE vs SIGNAL CSV)")
+    print("=" * 70)
+    for r in results:
+        print(f"  [{r['status']:<12}] {r['name']:<20} - {r['detail']}")
+    print("-" * 70)
+    print(f"CHECKPOINT 6 OVERALL: {overall}")
+    print("=" * 70)
+
 def run_checkpoint_0():
     results = []
     results.append(check_heartbeat())
@@ -589,5 +659,8 @@ if __name__ == "__main__":
     print()
     overall5, results5 = run_checkpoint_5()
     print_report_5(overall5, results5)
-    final_fail = (overall0 == "FAIL") or (overall1 == "FAIL") or (overall2 == "FAIL") or (overall3 == "FAIL") or (overall4 == "FAIL") or (overall5 == "FAIL")
+    print()
+    overall6, results6 = run_checkpoint_6()
+    print_report_6(overall6, results6)
+    final_fail = (overall0 == "FAIL") or (overall1 == "FAIL") or (overall2 == "FAIL") or (overall3 == "FAIL") or (overall4 == "FAIL") or (overall5 == "FAIL") or (overall6 == "FAIL")
     sys.exit(1 if final_fail else 0)
