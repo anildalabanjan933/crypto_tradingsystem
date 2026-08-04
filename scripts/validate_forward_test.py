@@ -680,6 +680,61 @@ def print_report_7(overall, results):
     print(f"CHECKPOINT 7 OVERALL: {overall}")
     print("=" * 70)
 
+ERROR_RATE_WARN = 5
+
+def check_error_rate():
+    import subprocess
+    out = []
+    outage_sig = ["Expecting value: line 1 column 1", "max_retries_exceeded", "POST failed after 3 attempts", "GET failed after 3 attempts"]
+    for label in ["S2", "S4"]:
+        r = {"name": f"error_rate_{label}", "status": None, "detail": ""}
+        log_path = LIVE_LOG_FILES[label]
+        try:
+            if not os.path.exists(log_path):
+                r["status"] = "UNAVAILABLE"; r["detail"] = f"{log_path} does not exist"
+                out.append(r); continue
+
+            tail_out = subprocess.run(["tail", "-n", "1000", log_path], capture_output=True, text=True).stdout
+            lines = tail_out.splitlines()
+
+            error_lines = [l for l in lines if " ERROR " in l or " CRITICAL " in l]
+            outage_errors = [l for l in error_lines if any(sig in l for sig in outage_sig)]
+            real_errors = [l for l in error_lines if l not in outage_errors]
+
+            if not error_lines:
+                r["status"] = "PASS"; r["detail"] = "zero ERROR/CRITICAL lines in recent log"
+            elif not real_errors:
+                r["status"] = "OUTAGE"
+                r["detail"] = f"{len(error_lines)} error line(s), all match known outage signature - not a code bug"
+            elif len(real_errors) > ERROR_RATE_WARN:
+                r["status"] = "FAIL"
+                r["detail"] = f"{len(real_errors)} non-outage error(s) found - exceeds {ERROR_RATE_WARN} threshold - last: {real_errors[-1][:120]}"
+            else:
+                r["status"] = "PARTIAL"
+                r["detail"] = f"{len(real_errors)} non-outage error(s) found (within threshold) - last: {real_errors[-1][:120]}"
+        except Exception as e:
+            r["status"] = "UNAVAILABLE"; r["detail"] = f"exception: {e}"
+        out.append(r)
+    return out
+
+def run_checkpoint_8():
+    results = check_error_rate()
+    overall = "PASS"
+    for r in results:
+        if r["status"] == "FAIL": overall = "FAIL"
+        elif r["status"] in ("UNAVAILABLE", "PARTIAL", "OUTAGE") and overall != "FAIL": overall = r["status"] if overall == "PASS" else overall
+    return overall, results
+
+def print_report_8(overall, results):
+    print("=" * 70)
+    print("CHECKPOINT 8 - ERROR RATE MONITORING")
+    print("=" * 70)
+    for r in results:
+        print(f"  [{r['status']:<12}] {r['name']:<20} - {r['detail']}")
+    print("-" * 70)
+    print(f"CHECKPOINT 8 OVERALL: {overall}")
+    print("=" * 70)
+
 def run_checkpoint_0():
     results = []
     results.append(check_heartbeat())
@@ -735,5 +790,8 @@ if __name__ == "__main__":
     print()
     overall7, results7 = run_checkpoint_7()
     print_report_7(overall7, results7)
-    final_fail = (overall0 == "FAIL") or (overall1 == "FAIL") or (overall2 == "FAIL") or (overall3 == "FAIL") or (overall4 == "FAIL") or (overall5 == "FAIL") or (overall6 == "FAIL") or (overall7 == "FAIL")
+    print()
+    overall8, results8 = run_checkpoint_8()
+    print_report_8(overall8, results8)
+    final_fail = (overall0 == "FAIL") or (overall1 == "FAIL") or (overall2 == "FAIL") or (overall3 == "FAIL") or (overall4 == "FAIL") or (overall5 == "FAIL") or (overall6 == "FAIL") or (overall7 == "FAIL") or (overall8 == "FAIL")
     sys.exit(1 if final_fail else 0)
