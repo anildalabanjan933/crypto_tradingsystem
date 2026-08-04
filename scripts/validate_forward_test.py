@@ -481,6 +481,65 @@ def print_report_4(overall, results):
     print("=" * 70)
 
 
+SL_PCT_EXPECTED = 0.02
+
+def check_stop_loss_placement():
+    import re, subprocess
+    out = []
+    for label in ["S2", "S4"]:
+        r = {"name": f"sl_check_{label}", "status": None, "detail": ""}
+        log_path = LIVE_LOG_FILES[label]
+        try:
+            if not os.path.exists(log_path):
+                r["status"] = "UNAVAILABLE"; r["detail"] = f"{log_path} does not exist"
+                out.append(r); continue
+
+            tail_out = subprocess.run(
+                ["tail", "-n", "1000", log_path], capture_output=True, text=True
+            ).stdout
+            lines = tail_out.splitlines()
+
+            entry_confirms = [l for l in lines if "[ORDER] ENTRY confirmed" in l]
+            sl_placed = [l for l in lines if "stop" in l.lower() and ("placed" in l.lower() or "sl" in l.lower())]
+
+            if not entry_confirms:
+                r["status"] = "UNAVAILABLE"; r["detail"] = "no confirmed ENTRY found in recent log - nothing to verify SL against"
+                out.append(r); continue
+
+            if not sl_placed:
+                r["status"] = "FAIL"
+                r["detail"] = f"{len(entry_confirms)} confirmed ENTRY found but NO stop-loss placement log line found - SL may be missing"
+            else:
+                r["status"] = "PASS"
+                r["detail"] = f"{len(entry_confirms)} confirmed ENTRY, {len(sl_placed)} SL-related log line(s) found"
+        except Exception as e:
+            r["status"] = "UNAVAILABLE"; r["detail"] = f"exception: {e}"
+        out.append(r)
+    return out
+
+
+def run_checkpoint_5():
+    results = check_stop_loss_placement()
+    overall = "PASS"
+    for r in results:
+        if r["status"] == "FAIL":
+            overall = "FAIL"
+        elif r["status"] == "UNAVAILABLE" and overall != "FAIL":
+            overall = "PARTIAL"
+    return overall, results
+
+
+def print_report_5(overall, results):
+    print("=" * 70)
+    print("CHECKPOINT 5 - STOP LOSS VERIFICATION")
+    print("=" * 70)
+    for r in results:
+        print(f"  [{r['status']:<12}] {r['name']:<20} - {r['detail']}")
+    print("-" * 70)
+    print(f"CHECKPOINT 5 OVERALL: {overall}")
+    print("=" * 70)
+
+
 def run_checkpoint_0():
     results = []
     results.append(check_heartbeat())
@@ -527,5 +586,8 @@ if __name__ == "__main__":
     print()
     overall4, results4 = run_checkpoint_4()
     print_report_4(overall4, results4)
-    final_fail = (overall0 == "FAIL") or (overall1 == "FAIL") or (overall2 == "FAIL") or (overall3 == "FAIL") or (overall4 == "FAIL")
+    print()
+    overall5, results5 = run_checkpoint_5()
+    print_report_5(overall5, results5)
+    final_fail = (overall0 == "FAIL") or (overall1 == "FAIL") or (overall2 == "FAIL") or (overall3 == "FAIL") or (overall4 == "FAIL") or (overall5 == "FAIL")
     sys.exit(1 if final_fail else 0)
