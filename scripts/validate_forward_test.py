@@ -735,6 +735,68 @@ def print_report_8(overall, results):
     print(f"CHECKPOINT 8 OVERALL: {overall}")
     print("=" * 70)
 
+EXPECTED_CSV_COLUMNS = 6
+
+def check_csv_integrity():
+    import csv
+    out = []
+    for label in ["S2", "S4"]:
+        r = {"name": f"csv_integrity_{label}", "status": None, "detail": ""}
+        csv_path = f"logs/signals_{label.lower()}.csv"
+        try:
+            if not os.path.exists(csv_path):
+                r["status"] = "UNAVAILABLE"; r["detail"] = f"{csv_path} does not exist"
+                out.append(r); continue
+
+            rows = []
+            with open(csv_path) as f2:
+                for row in csv.reader(f2):
+                    if row:
+                        rows.append(row)
+
+            if not rows:
+                r["status"] = "UNAVAILABLE"; r["detail"] = "CSV is empty"
+                out.append(r); continue
+
+            bad_col_count = [row for row in rows if len(row) != EXPECTED_CSV_COLUMNS]
+            entry_times = [row[0] for row in rows if len(row) > 0]
+            dupes = len(entry_times) - len(set(entry_times))
+
+            issues = []
+            if bad_col_count:
+                issues.append(f"{len(bad_col_count)} row(s) with wrong column count (expected {EXPECTED_CSV_COLUMNS})")
+            if dupes > 0:
+                issues.append(f"{dupes} duplicate entry_time row(s)")
+
+            if issues:
+                r["status"] = "FAIL"
+                r["detail"] = f"{len(rows)} total rows - " + " | ".join(issues)
+            else:
+                r["status"] = "PASS"
+                r["detail"] = f"{len(rows)} rows, all {EXPECTED_CSV_COLUMNS}-column, zero duplicates"
+        except Exception as e:
+            r["status"] = "UNAVAILABLE"; r["detail"] = f"exception: {e}"
+        out.append(r)
+    return out
+
+def run_checkpoint_9():
+    results = check_csv_integrity()
+    overall = "PASS"
+    for r in results:
+        if r["status"] == "FAIL": overall = "FAIL"
+        elif r["status"] == "UNAVAILABLE" and overall != "FAIL": overall = "PARTIAL"
+    return overall, results
+
+def print_report_9(overall, results):
+    print("=" * 70)
+    print("CHECKPOINT 9 - CSV DATA INTEGRITY")
+    print("=" * 70)
+    for r in results:
+        print(f"  [{r['status']:<12}] {r['name']:<20} - {r['detail']}")
+    print("-" * 70)
+    print(f"CHECKPOINT 9 OVERALL: {overall}")
+    print("=" * 70)
+
 def run_checkpoint_0():
     results = []
     results.append(check_heartbeat())
@@ -793,5 +855,8 @@ if __name__ == "__main__":
     print()
     overall8, results8 = run_checkpoint_8()
     print_report_8(overall8, results8)
-    final_fail = (overall0 == "FAIL") or (overall1 == "FAIL") or (overall2 == "FAIL") or (overall3 == "FAIL") or (overall4 == "FAIL") or (overall5 == "FAIL") or (overall6 == "FAIL") or (overall7 == "FAIL") or (overall8 == "FAIL")
+    print()
+    overall9, results9 = run_checkpoint_9()
+    print_report_9(overall9, results9)
+    final_fail = (overall0 == "FAIL") or (overall1 == "FAIL") or (overall2 == "FAIL") or (overall3 == "FAIL") or (overall4 == "FAIL") or (overall5 == "FAIL") or (overall6 == "FAIL") or (overall7 == "FAIL") or (overall8 == "FAIL") or (overall9 == "FAIL")
     sys.exit(1 if final_fail else 0)
