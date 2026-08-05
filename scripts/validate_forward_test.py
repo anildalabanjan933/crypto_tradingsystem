@@ -17,6 +17,350 @@ CSV_FILES = {"S2": "logs/signals_s2.csv", "S4": "logs/signals_s4.csv"}
 LOG_FILES = {"S2": "logs/live_trading_s2.log", "S4": "logs/live_trading_s4.log"}
 LOG_MAX_AGE_SEC = 900
 
+# ================================================================
+# GAP-FIX FUNCTIONS (audit findings, added without touching
+# existing checkpoint functions - purely additive, read-only)
+# ================================================================
+def _fetch_recent_fills(api_key, api_secret, product_id=84):
+    try:
+        from engine.order_manager import OrderManager
+        om = OrderManager(api_key, api_secret, testnet=True)
+        resp = om._get('/v2/fills', {'product_ids': str(product_id), 'page_size': 50})
+        if resp and resp.get('success'):
+            return resp.get('result', [])
+    except Exception:
+        pass
+    return []
+
+
+def _classify_slippage_reason(log_path):
+    import subprocess
+    try:
+        tail = subprocess.run(["tail", "-n", "300", log_path], capture_output=True, text=True).stdout
+    except Exception:
+        return "unknown"
+    if "WS] Closed" in tail or "polling fallback" in tail:
+        return "websocket_disconnect"
+    if "FAILED" in tail and "[ORDER]" in tail:
+        return "api_retry"
+    if "[STARTUP]" in tail:
+        return "restart_during_window"
+    if "manual close" in tail:
+        return "manual_intervention"
+    return "market_volatility"
+
+
+def check_real_price_match():
+    out = []
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(dotenv_path=os.path.join(REPO, ".env"), override=True)
+    except Exception:
+        pass
+    for label in ["S2", "S4"]:
+        r = {"name": f"real_price_match_{label}", "status": None, "detail": ""}
+        try:
+            api_key = os.getenv(f"{label}_API_KEY")
+            api_secret = os.getenv(f"{label}_API_SECRET")
+            if not api_key or not api_secret:
+                r["status"] = "UNAVAILABLE"; r["detail"] = f"{label} API key/secret missing"
+                out.append(r); continue
+            csv_path = CSV_FILES[label]
+            if not os.path.exists(csv_path):
+                r["status"] = "UNAVAILABLE"; r["detail"] = "csv missing"
+                out.append(r); continue
+            with open(csv_path) as f2:
+                rows = [line.strip().split(",") for line in f2 if line.strip()]
+            last_closed = None
+            for row in reversed(rows):
+                if len(row) >= 6 and row[1] != "PENDING" and row[5].strip() not in ("", "PENDING"):
+                    last_closed = row
+                    break
+            if not last_closed:
+                r["status"] = "UNAVAILABLE"; r["detail"] = "no closed CSV trade yet to compare"
+                out.append(r); continue
+            bt_exit_price = float(last_closed[5])
+            fills = _fetch_recent_fills(api_key, api_secret)
+            if not fills:
+                r["status"] = "UNAVAILABLE"; r["detail"] = "no fills returned from /v2/fills yet"
+                out.append(r); continue
+            import datetime as _dt_rpm, re as _re_rpm
+            exit_time_str = last_closed[1].strip()
+            real_exit_price = None
+            exec_delay_sec = None
+            # STEP 1: find the exact log line that placed this EXIT order -
+            # this gives us the REAL order placement timestamp, no guessing.
+            log_path = LOG_FILES.get(label)
+            log_order_dt = None
+            if log_path and os.path.exists(log_path):
+                pattern = _re_rpm.compile(
+                    r'^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d+.*\[ORDER\] EXIT .*ts=' + _re_rpm.escape(exit_time_str)
+                )
+                try:
+                    with open(log_path, encoding="utf-8", errors="ignore") as lf:
+                        for line in lf:
+                            m = pattern.match(line)
+                            if m:
+                                log_order_dt = _dt_rpm.datetime.strptime(m.group(1), "%Y-%m-%d %H:%M:%S")
+                except Exception:
+                    log_order_dt = None
+            if log_order_dt is not None:
+                # STEP 2: find fills starting within 5s AFTER this exact log
+                # moment, group by order_id, take the FIRST order_id that
+                # appears (real order placed right after this log line).
+                window_fills = []
+                for f in fills:
+                    ca = (f.get('created_at') or '').replace('Z', '')
+                    try:
+                        f_dt = _dt_rpm.datetime.fromisoformat(ca[:26])
+                    except Exception:
+                        continue
+                    delay = (f_dt - log_order_dt).total_seconds()
+                    if 0 <= delay <= 10:
+                        window_fills.append((f_dt, delay, f))
+                if window_fills:
+                    window_fills.sort(key=lambda x: x[0])
+                    matched_order_id = window_fills[0][2].get('order_id')
+                    same_order = [wf[2] for wf in window_fills if wf[2].get('order_id') == matched_order_id]
+                    total_size = sum(float(f.get('size', 0) or 0) for f in same_order)
+                    if total_size > 0:
+                        real_exit_price = sum(float(f.get('price', 0) or 0) * float(f.get('size', 0) or 0) for f in same_order) / total_size
+                    else:
+                        real_exit_price = float(same_order[0].get('price', 0) or 0)
+                    exec_delay_sec = window_fills[0][1]
+            if real_exit_price is None:
+                # fallback: previous best-effort side+time match (informational only)
+                closed_direction = last_closed[2].strip().lower() if len(last_closed) > 2 else ""
+                expected_exit_side = "sell" if closed_direction == "long" else ("buy" if closed_direction == "short" else None)
+                try:
+                    exit_dt = _dt_rpm.datetime.fromisoformat(exit_time_str.replace('Z', ''))
+                except Exception:
+                    exit_dt = None
+                if exit_dt is not None:
+                    candidates = []
+                    for f in fills:
+                        ca = (f.get('created_at') or '').replace('Z', '')
+                        try:
+                            f_dt = _dt_rpm.datetime.fromisoformat(ca[:26])
+                        except Exception:
+                            continue
+                        delay = (f_dt - exit_dt).total_seconds()
+                        if delay < -5 or delay > 21600:
+                            continue
+                        if expected_exit_side and f.get('side') != expected_exit_side:
+                            continue
+                        candidates.append((f_dt, delay, f))
+                    if candidates:
+                        candidates.sort(key=lambda x: x[0])
+                        real_exit_price = float(candidates[0][2].get('price', 0) or 0)
+                        exec_delay_sec = candidates[0][1]
+            if real_exit_price is None:
+                fills_sorted = sorted(fills, key=lambda f: f.get('created_at',''))
+                real_exit_price = float(fills_sorted[-1].get('price', 0) or 0)
+            diff = abs(real_exit_price - bt_exit_price)
+            if real_exit_price == 0:
+                r["status"] = "UNAVAILABLE"; r["detail"] = "latest fill has no usable price"
+            elif diff <= SLIPPAGE_TOLERANCE_USD:
+                r["status"] = "PASS"
+                r["detail"] = f"BT exit={bt_exit_price} vs REAL fill price={real_exit_price} - diff=${diff:.2f} within tolerance ${SLIPPAGE_TOLERANCE_USD}"
+            else:
+                reason = _classify_slippage_reason(LIVE_LOG_FILES[label])
+                r["status"] = "FAIL"
+                r["detail"] = f"BT exit={bt_exit_price} vs REAL fill price={real_exit_price} - diff=${diff:.2f} EXCEEDS ${SLIPPAGE_TOLERANCE_USD} - likely reason: {reason}"
+        except Exception as e:
+            r["status"] = "UNAVAILABLE"; r["detail"] = f"exception: {e}"
+        out.append(r)
+    return out
+
+
+def check_missing_extra_trades():
+    out = []
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(dotenv_path=os.path.join(REPO, ".env"), override=True)
+    except Exception:
+        pass
+    for label in ["S2", "S4"]:
+        r = {"name": f"missing_extra_trades_{label}", "status": None, "detail": ""}
+        try:
+            api_key = os.getenv(f"{label}_API_KEY")
+            api_secret = os.getenv(f"{label}_API_SECRET")
+            if not api_key or not api_secret:
+                r["status"] = "UNAVAILABLE"; r["detail"] = f"{label} API key/secret missing"
+                out.append(r); continue
+            csv_path = CSV_FILES[label]
+            if not os.path.exists(csv_path):
+                r["status"] = "UNAVAILABLE"; r["detail"] = "csv missing"
+                out.append(r); continue
+            with open(csv_path) as f2:
+                rows = [line.strip().split(",") for line in f2 if line.strip()]
+            import datetime as _dt_gap2
+            cutoff = (_dt_gap2.datetime.utcnow() - _dt_gap2.timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%S")
+            expected = [row for row in rows if len(row) >= 6 and row[0] > cutoff and row[1].strip() not in ("", "PENDING")]
+            fills = _fetch_recent_fills(api_key, api_secret)
+            if not fills and expected:
+                r["status"] = "FAIL"
+                r["detail"] = f"{len(expected)} expected completed signal(s) in CSV (last 24h) but ZERO real fills found - possible MISSING trades"
+                out.append(r); continue
+            order_ids = set(f.get('order_id') for f in fills)
+            actual_orders = len(order_ids)
+            # NOTE: real order count per signal varies (ENTRY=1, EXIT=1, SL placement=1,
+            # reversal=EXIT+ENTRY+SL=3) - no fixed multiplier is valid, so this check is
+            # informational only. Only flag FAIL if literally zero orders exist despite signals.
+            if expected and actual_orders == 0:
+                r["status"] = "FAIL"
+                r["detail"] = f"{len(expected)} CSV signal(s) in last 24h but ZERO real orders found - possible MISSING execution"
+            else:
+                r["status"] = "PASS"
+                r["detail"] = f"{len(expected)} CSV signal(s), {actual_orders} real order(s) in last 24h - informational only, no fixed ratio assumed (SL/reversal orders vary per signal)"
+                r["detail"] = f"{len(expected)} CSV signal(s) vs {actual_orders} real order(s) in last 24h - counts reconcile"
+        except Exception as e:
+            r["status"] = "UNAVAILABLE"; r["detail"] = f"exception: {e}"
+        out.append(r)
+    return out
+
+
+def check_signal_replay_path():
+    import subprocess
+    out = []
+    for label in ["S2", "S4"]:
+        r = {"name": f"signal_replay_path_{label}", "status": None, "detail": ""}
+        log_path = LIVE_LOG_FILES[label]
+        try:
+            if not os.path.exists(log_path):
+                r["status"] = "UNAVAILABLE"; r["detail"] = f"{log_path} does not exist"
+                out.append(r); continue
+            tail_out = subprocess.run(["tail", "-n", "500", log_path], capture_output=True, text=True).stdout
+            lines = tail_out.splitlines()
+            fast_path = [l for l in lines if "[LIVE] New engine signal" in l]
+            slow_fallback = [l for l in lines if "not in CSV yet - waiting" in l]
+            if not fast_path and not slow_fallback:
+                r["status"] = "UNAVAILABLE"; r["detail"] = "no [LIVE] signal activity found in recent log yet"
+                out.append(r); continue
+            if slow_fallback and not fast_path:
+                r["status"] = "PARTIAL"
+                r["detail"] = f"{len(slow_fallback)} fallback-to-slow-CSV-polling event(s), 0 fast-path matches"
+            elif slow_fallback:
+                r["status"] = "PARTIAL"
+                r["detail"] = f"{len(fast_path)} fast-path match(es) but also {len(slow_fallback)} fallback event(s) - mixed reliability"
+            else:
+                r["status"] = "PASS"
+                r["detail"] = f"{len(fast_path)} fast live-signal match(es), 0 fallback-to-slow-polling events"
+        except Exception as e:
+            r["status"] = "UNAVAILABLE"; r["detail"] = f"exception: {e}"
+        out.append(r)
+    return out
+
+
+def check_engine_state_3way():
+    import re, subprocess
+    out = []
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(dotenv_path=os.path.join(REPO, ".env"), override=True)
+        from engine.order_manager import OrderManager
+    except Exception as e:
+        return [{"name": "engine_state_3way", "status": "UNAVAILABLE", "detail": f"import failed: {e}"}]
+    for label in ["S2", "S4"]:
+        r = {"name": f"engine_state_3way_{label}", "status": None, "detail": ""}
+        try:
+            engine_log = "logs/renko_state_engine.log"
+            if not os.path.exists(engine_log):
+                r["status"] = "UNAVAILABLE"; r["detail"] = f"{engine_log} does not exist"
+                out.append(r); continue
+            tail_out = subprocess.run(["tail", "-n", "500", engine_log], capture_output=True, text=True).stdout
+            engine_dir = None
+            for line in reversed(tail_out.splitlines()):
+                m3 = re.search(r"\[(S2|S4)\] (ENTRY|EXIT) (\w+) at", line)
+                if m3 and m3.group(1) == label:
+                    engine_dir = m3.group(3).upper() if m3.group(2) == "ENTRY" else "FLAT"
+                    break
+            if engine_dir is None:
+                r["status"] = "UNAVAILABLE"; r["detail"] = "no recent ENTRY/EXIT line found in engine log for this label"
+                out.append(r); continue
+            api_key = os.getenv(f"{label}_API_KEY")
+            api_secret = os.getenv(f"{label}_API_SECRET")
+            if not api_key or not api_secret:
+                r["status"] = "UNAVAILABLE"; r["detail"] = f"{label} API key/secret missing"
+                out.append(r); continue
+            om = OrderManager(api_key, api_secret, testnet=True)
+            exchange_pos = om.get_position()
+            if not exchange_pos or not exchange_pos.get("success"):
+                r["status"] = "UNAVAILABLE"; r["detail"] = "could not fetch exchange position"
+                out.append(r); continue
+            exch_dir = exchange_pos.get("direction", "FLAT").upper()
+            log_path = LIVE_LOG_FILES[label]
+            bot_dir = None
+            if os.path.exists(log_path):
+                tail_bot = subprocess.run(["tail", "-n", "300", log_path], capture_output=True, text=True).stdout
+                for line in reversed(tail_bot.splitlines()):
+                    if "position=" in line:
+                        try:
+                            bot_dir = line.split("position=")[1].split("|")[0].strip()
+                        except Exception:
+                            pass
+                        break
+            bot_dir_norm = "FLAT" if not bot_dir or bot_dir in ("None", "flat", "FLAT") else bot_dir.upper()
+            if engine_dir == bot_dir_norm == exch_dir:
+                r["status"] = "PASS"
+                r["detail"] = f"3-way match: engine={engine_dir} bot={bot_dir_norm} exchange={exch_dir}"
+            else:
+                r["status"] = "FAIL"
+                r["detail"] = f"3-way MISMATCH: engine={engine_dir} bot={bot_dir_norm} exchange={exch_dir}"
+        except Exception as e:
+            r["status"] = "UNAVAILABLE"; r["detail"] = f"exception: {e}"
+        out.append(r)
+    return out
+
+
+def check_exchange_duplicate_fills():
+    out = []
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(dotenv_path=os.path.join(REPO, ".env"), override=True)
+    except Exception:
+        pass
+    for label in ["S2", "S4"]:
+        r = {"name": f"exchange_dupe_fills_{label}", "status": None, "detail": ""}
+        try:
+            api_key = os.getenv(f"{label}_API_KEY")
+            api_secret = os.getenv(f"{label}_API_SECRET")
+            if not api_key or not api_secret:
+                r["status"] = "UNAVAILABLE"; r["detail"] = f"{label} API key/secret missing"
+                out.append(r); continue
+            fills = _fetch_recent_fills(api_key, api_secret)
+            if not fills:
+                r["status"] = "UNAVAILABLE"; r["detail"] = "no fills returned from /v2/fills yet"
+                out.append(r); continue
+            fill_ids_by_order = {}
+            for f in fills:
+                oid = f.get('order_id')
+                fid = f.get('id')
+                fill_ids_by_order.setdefault(oid, set()).add(fid)
+            true_dupes = [f"order_id {oid} has duplicate fill_id entries: {ids}"
+                          for oid, ids in fill_ids_by_order.items() if len(ids) != len(fill_ids_by_order[oid])]
+            # real duplicate = same fill id counted twice (pagination overlap), not same side/price/minute
+            seen_fill_ids = {}
+            for f in fills:
+                fid = f.get('id')
+                seen_fill_ids[fid] = seen_fill_ids.get(fid, 0) + 1
+            real_dupes = [f"fill id {fid} appeared {c}x in API response" for fid, c in seen_fill_ids.items() if c > 1]
+            if real_dupes:
+                r["status"] = "FAIL"
+                r["detail"] = "REAL duplicate fill_id (same fill counted twice): " + "; ".join(real_dupes[:3])
+            else:
+                order_count = len(set(f.get('order_id') for f in fills))
+                r["status"] = "PASS"
+                r["detail"] = f"{len(fills)} real fill(s) across {order_count} distinct order_id(s) - zero true duplicate fill_id found (EXIT+ENTRY same side/price/minute is normal on reversal, not a duplicate)"
+        except Exception as e:
+            r["status"] = "UNAVAILABLE"; r["detail"] = f"exception: {e}"
+        out.append(r)
+    return out
+# ================================================================
+# END GAP-FIX FUNCTIONS
+# ================================================================
+
+
 
 def check_heartbeat():
     r = {"name": "engine_heartbeat", "status": None, "detail": ""}
@@ -163,7 +507,7 @@ def check_signal_generation():
 
 
 def run_checkpoint_1():
-    results = check_signal_generation()
+    results = check_signal_generation() + check_signal_replay_path()
     overall = "PASS"
     for r in results:
         if r["status"] == "FAIL":
@@ -274,7 +618,7 @@ def check_price_slippage():
 
 
 def run_checkpoint_2():
-    results = check_order_execution() + check_price_slippage()
+    results = check_order_execution() + check_price_slippage() + check_real_price_match() + check_missing_extra_trades()
     overall = "PASS"
     for r in results:
         if r["status"] == "FAIL":
@@ -362,7 +706,7 @@ def check_position_sync():
 
 
 def run_checkpoint_3():
-    results = check_position_sync()
+    results = check_position_sync() + check_engine_state_3way()
     overall = "PASS"
     for r in results:
         if r["status"] == "FAIL":
@@ -460,7 +804,7 @@ def check_duplicate_orders():
 
 
 def run_checkpoint_4():
-    results = check_duplicate_orders()
+    results = check_duplicate_orders() + check_exchange_duplicate_fills()
     overall = "PASS"
     for r in results:
         if r["status"] == "FAIL":

@@ -2714,6 +2714,201 @@ with _tab_monitor:
 
 
     # ================================================================
+    # SECTION 1D - FIX VALIDATION TRACKER (only shows real issues + cause)
+    # ================================================================
+    import re as _re1d, datetime as _dt1d
+
+    FIX_APPLIED_AT_UTC = _dt1d.datetime(2026, 8, 5, 9, 6, 0)  # engine restart with offbyone fix
+
+    def _fvt_parse_orders(log_path, tf_minutes):
+        rows = []
+        try:
+            lines = open(log_path, encoding='utf-8', errors='ignore').readlines()
+        except:
+            return rows
+        for line in lines:
+            m = _re1d.search(r"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d+ INFO \[ORDER\] (ENTRY|EXIT) (\w+) (\d+) lots.*ts=(\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2})", line)
+            if m:
+                order_time_str, action, side, size, sig_ts_str = m.groups()
+                try:
+                    order_time = _dt1d.datetime.strptime(order_time_str, "%Y-%m-%d %H:%M:%S")
+                    sig_ts = _dt1d.datetime.strptime(sig_ts_str, "%Y-%m-%dT%H:%M:%S")
+                except:
+                    continue
+                if order_time < FIX_APPLIED_AT_UTC:
+                    continue
+                candle_close = sig_ts + _dt1d.timedelta(minutes=tf_minutes)
+                delay_sec = (order_time - candle_close).total_seconds()
+                rows.append({
+                    "order_time": order_time, "action": action, "side": side,
+                    "sig_ts": sig_ts_str, "delay_sec": delay_sec, "candle_close": candle_close
+                })
+        return rows
+
+    def _fvt_find_cause(candle_close, order_time, label):
+        """Scan engine log between candle_close and order_time for known delay-cause patterns."""
+        _engine_log = "logs/renko_state_engine.log"
+        causes = []
+        try:
+            lines = open(_engine_log, encoding='utf-8', errors='ignore').readlines()
+        except:
+            return "Engine log unavailable - cannot determine cause"
+        window = []
+        for l in lines[-3000:]:
+            m = _re1d.search(r"(\d{2}-\w{3}-\d{4} \d{2}:\d{2}:\d{2})", l)
+            if not m:
+                continue
+            try:
+                lt = _dt1d.datetime.strptime(m.group(1), "%d-%b-%Y %H:%M:%S")
+            except:
+                continue
+            # convert IST log time to UTC for comparison
+            lt_utc = lt - _dt1d.timedelta(hours=5, minutes=30)
+            if candle_close <= lt_utc <= order_time + _dt1d.timedelta(seconds=5):
+                window.append(l)
+        if any("data not caught up yet" in l for l in window):
+            causes.append("Market data lagged behind candle close (exchange 1m candle not yet available)")
+        if any("Market data download still running after 8s" in l for l in window):
+            causes.append("REST data download exceeded 8s timeout")
+        if any("Connection to remote host was lost" in l or "WS] Error" in l for l in window):
+            causes.append("WebSocket disconnected during this window")
+        if any(f"checking {label}" in l for l in window) and len(window) < 3:
+            causes.append("Fast WS path fired but strategy computation itself took longer than expected")
+        if not causes and window:
+            causes.append("Cause unclear - review engine log manually for this window")
+        if not window:
+            causes.append("No engine log activity found in this window - check if engine was running")
+        return " | ".join(causes)
+
+    def _fvt_load_signal_csv(sig_csv):
+        rows = {}       # keyed by entry_ts - for ENTRY checks
+        rows_by_exit = {}  # keyed by exit_ts - for EXIT checks
+        try:
+            import csv as _csv1d
+            with open(sig_csv) as f:
+                for row in _csv1d.reader(f):
+                    if len(row) >= 6:
+                        rec = {
+                            "entry_ts": row[0], "exit_ts": row[1], "direction": row[2], "lots": row[3],
+                            "entry_price": row[4], "exit_price": row[5]
+                        }
+                        rows[row[0]] = rec
+                        if row[1] and row[1] != "PENDING":
+                            rows_by_exit[row[1]] = rec
+        except:
+            pass
+        return rows, rows_by_exit
+
+    def _fvt_parse_order_prices(log_path):
+        """Extract entry/exit fill prices and direction from live log, keyed by signal ts."""
+        info = {}
+        try:
+            lines = open(log_path, encoding='utf-8', errors='ignore').readlines()
+        except:
+            return info
+        for idx, line in enumerate(lines):
+            m_e = _re1d.search(r"\[ORDER\] ENTRY \w+ \d+ lots \| dir=(\w+) \| ts=(\S+)", line)
+            if m_e:
+                direction, sig_ts = m_e.groups()
+                info.setdefault(sig_ts, {})["direction"] = direction
+                for j in range(idx, min(idx+8, len(lines))):
+                    m_ep = _re1d.search(r"Placing stop SL \| direction=\w+ entry=([\d.]+)", lines[j])
+                    if m_ep:
+                        info[sig_ts]["entry_price"] = float(m_ep.group(1))
+                        break
+            m_x = _re1d.search(r"\[ORDER\] EXIT \w+ \d+ lots \| ts=(\S+)", line)
+            if m_x:
+                sig_ts = m_x.group(1)
+                for j in range(idx, min(idx+10, len(lines))):
+                    m_xp = _re1d.search(r"avg_fill_price[\'\"]?[:=]\s*([\d.]+)", lines[j])
+                    if m_xp:
+                        info.setdefault(sig_ts, {})["exit_price"] = float(m_xp.group(1))
+                        break
+        return info
+
+    _fvt_issues = []
+    for _label, _log, _tf, _sigcsv in [
+        ("S2", "logs/live_trading_s2.log", 30, "logs/signals_s2.csv"),
+        ("S4", "logs/live_trading_s4.log", 120, "logs/signals_s4.csv"),
+    ]:
+        _rows = _fvt_parse_orders(_log, _tf)
+        _bt_signals, _bt_signals_by_exit = _fvt_load_signal_csv(_sigcsv)
+        _live_prices = _fvt_parse_order_prices(_log)
+
+        for _r in _rows:
+            if _r["delay_sec"] > 5:
+                _cause = _fvt_find_cause(_r["candle_close"], _r["order_time"], _label)
+                _fvt_issues.append({
+                    "text": f"{_label} {_r['action']} delayed {_r['delay_sec']:.0f}s (target: 1-2s) | signal_ts={_r['sig_ts']} | order_time={_r['order_time']} UTC",
+                    "cause": _cause
+                })
+
+        # MATCH VALIDATION: direction, entry price, exit price vs backtest CSV
+        # ENTRY orders looked up by entry_ts, EXIT orders looked up by exit_ts
+        _checked_ts = set()
+        for _r in _rows:
+            _sts = _r["sig_ts"]
+            _lookup_key = f"{_r['action']}_{_sts}"
+            if _lookup_key in _checked_ts:
+                continue
+            if _r["action"] == "EXIT":
+                if _sts not in _bt_signals_by_exit:
+                    continue
+                _bt = _bt_signals_by_exit[_sts]
+            else:
+                if _sts not in _bt_signals:
+                    continue
+                _bt = _bt_signals[_sts]
+            _checked_ts.add(_lookup_key)
+            _lv = _live_prices.get(_sts, {})
+
+            _bt_dir = _bt["direction"]
+            _lv_dir = _lv.get("direction", "")
+            if _lv_dir and _lv_dir != _bt_dir:
+                _fvt_issues.append({
+                    "text": f"{_label} DIRECTION MISMATCH | signal_ts={_sts} | backtest={_bt_dir} | live={_lv_dir}",
+                    "cause": "Live direction does not match backtest signal - check strategy sync"
+                })
+
+            try:
+                _bt_ep = float(_bt["entry_price"])
+                _lv_ep = _lv.get("entry_price")
+                if _lv_ep is not None:
+                    _diff_ep = abs(_lv_ep - _bt_ep)
+                    if _diff_ep > 5:
+                        _fvt_issues.append({
+                            "text": f"{_label} ENTRY PRICE slippage ${_diff_ep:.2f} (target: within $5) | signal_ts={_sts} | backtest=${_bt_ep:.2f} | live=${_lv_ep:.2f}",
+                            "cause": "Entry fill price far from backtest close price - check execution delay or market volatility"
+                        })
+            except:
+                pass
+
+            try:
+                if _bt["exit_price"] not in ("", "PENDING"):
+                    _bt_xp = float(_bt["exit_price"])
+                    _lv_xp = _lv.get("exit_price")
+                    if _lv_xp is not None:
+                        _diff_xp = abs(_lv_xp - _bt_xp)
+                        if _diff_xp > 5:
+                            _fvt_issues.append({
+                                "text": f"{_label} EXIT PRICE slippage ${_diff_xp:.2f} (target: within $5) | signal_ts={_sts} | backtest=${_bt_xp:.2f} | live=${_lv_xp:.2f}",
+                                "cause": "Exit fill price far from backtest close price - check execution delay or market volatility"
+                            })
+            except:
+                pass
+
+    if 'exp_1d' not in st.session_state: st.session_state['exp_1d'] = bool(_fvt_issues)
+    _fvt_title = f"SECTION 1D - FIX VALIDATION TRACKER ({len(_fvt_issues)} ISSUE(S) FOUND)" if _fvt_issues else "SECTION 1D - FIX VALIDATION TRACKER (ALL CLEAR)"
+    with st.expander(_fvt_title, expanded=bool(_fvt_issues)):
+        st.caption(f"Scanning trades since fix applied: {FIX_APPLIED_AT_UTC.strftime('%Y-%m-%d %H:%M:%S')} UTC | Target: delay 1-2s, slippage within $5")
+        if _fvt_issues:
+            for _iss in _fvt_issues:
+                st.markdown(f"<div style='padding:6px;border:1px solid #F23645;background:#FFEBEE;color:#B00020;font-size:12px;font-weight:600;margin-bottom:2px;'>{_iss['text']}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div style='padding:6px 6px 6px 20px;border:1px solid #FFB74D;background:#FFF3E0;color:#E65100;font-size:11px;margin-bottom:8px;'>CAUSE: {_iss['cause']}</div>", unsafe_allow_html=True)
+        else:
+            st.markdown("<div style='padding:6px;border:1px solid #089981;background:#E8F5E9;color:#089981;font-size:12px;font-weight:600;'>No delay/match issues detected in trades since fix was applied.</div>", unsafe_allow_html=True)
+
+    # ================================================================
     # SECTION 1.3 - VM HEALTH (CPU + RAM + UPTIME)
     # ================================================================
     if 'exp_13' not in st.session_state: st.session_state['exp_13'] = False
