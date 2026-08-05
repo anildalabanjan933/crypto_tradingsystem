@@ -132,6 +132,20 @@ def _load14_fwd(product_id, api_key, api_secret, base_url):
             after_cursor = meta.get('after')
             if not after_cursor or len(fills) < 100: break
         if not all_fills: return {'raw_pairs': []}
+        # DEDUP GUARD: remove any fill with a duplicate fill id (defensive
+        # against API pagination overlap or repeated retries producing the
+        # same fill more than once). Guarantees 1 real fill = counted once.
+        _seen_fill_ids = set()
+        _deduped_fills = []
+        for f in all_fills:
+            _fid = f.get('id')
+            if _fid is not None and _fid in _seen_fill_ids:
+                continue
+            if _fid is not None:
+                _seen_fill_ids.add(_fid)
+            _deduped_fills.append(f)
+        all_fills = _deduped_fills
+
         order_fills = defaultdict(list)
         for f in all_fills:
             order_fills[f.get('order_id','')].append(f)
@@ -161,6 +175,21 @@ def _load14_fwd(product_id, api_key, api_secret, base_url):
                                'entry_price': ep, 'exit_price': xp, 'side': es,
                                'size': sz, 'comm': comm})
                 used.add(i); used.add(j); break
+
+        # DEDUP GUARD 2: collapse any pairs that share the exact same
+        # entry_ts + exit_ts + entry_price + exit_price (belt-and-braces
+        # safeguard so 1 real signal always shows as exactly 1 row, same
+        # as backtest behaviour).
+        _seen_pair_keys = set()
+        _deduped_pairs = []
+        for p in pairs:
+            _pkey = (p['entry_ts'], p['exit_ts'], p['entry_price'], p['exit_price'], p['side'])
+            if _pkey in _seen_pair_keys:
+                continue
+            _seen_pair_keys.add(_pkey)
+            _deduped_pairs.append(p)
+        pairs = _deduped_pairs
+
         return {'raw_pairs': pairs}
     except:
         return {'raw_pairs': []}
