@@ -110,11 +110,14 @@ class BacktestReportGenerator:
             equity_dates    = equity_dates[:min_len]
             equity_data_inr = equity_data_inr[:min_len]
 
+        _eq_final = equity_data_inr[-1] if equity_data_inr else 0
+        _eq_color = '#27ae60' if _eq_final >= 0 else '#e74c3c'
+        _eq_fill  = 'rgba(39, 174, 96, 0.2)' if _eq_final >= 0 else 'rgba(231, 76, 60, 0.2)'
         equity_chart_fig = go.Figure(data=[
             go.Scatter(
                 x=equity_dates, y=equity_data_inr,
-                fill='tozeroy', fillcolor='rgba(39, 174, 96, 0.2)',
-                line=dict(color='#27ae60', width=2),
+                fill='tozeroy', fillcolor=_eq_fill,
+                line=dict(color=_eq_color, width=2),
                 mode='lines', name='Cumulative PnL'
             )
         ])

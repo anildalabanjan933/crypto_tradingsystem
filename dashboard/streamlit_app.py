@@ -149,6 +149,80 @@ def _fetch_delta_api_status():
         return 200
     except Exception as e:
         return f"ERROR_{str(e)[:20]}"
+
+def _fetch_key_validity():
+    _s2k = os.environ.get("S2_API_KEY","")
+    _s2s = os.environ.get("S2_API_SECRET","")
+    _s4k = os.environ.get("S4_API_KEY","")
+    _s4s = os.environ.get("S4_API_SECRET","")
+    if not _s2k or not _s2s:
+        return ("RED", "S2 API key or secret missing in .env. Bot cannot trade until added.")
+    if not _s4k or not _s4s:
+        return ("RED", "S4 API key or secret missing in .env. Bot cannot trade until added.")
+    try:
+        from engine.order_manager import OrderManager
+        _om_s2 = OrderManager(_s2k, _s2s, testnet=True)
+        _p_s2 = _om_s2.get_position()
+        if not _p_s2.get('success', False):
+            return ("RED", "Delta rejected the S2 API key. It may be wrong, expired, or deleted.")
+    except Exception as _e:
+        return ("RED", f"Could not verify S2 API key: {str(_e)[:50]}")
+    try:
+        from engine.order_manager import OrderManager
+        _om_s4 = OrderManager(_s4k, _s4s, testnet=True)
+        _p_s4 = _om_s4.get_position()
+        if not _p_s4.get('success', False):
+            return ("RED", "Delta rejected the S4 API key. It may be wrong, expired, or deleted.")
+    except Exception as _e:
+        return ("RED", f"Could not verify S4 API key: {str(_e)[:50]}")
+    return ("GREEN", "S2 and S4 API keys are valid and accepted by Delta.")
+
+def _fetch_delta_full_status():
+    import requests as _rq3
+    _known_errors = [
+        ("insufficient_margin", "Order rejected: Not enough margin in account. Add funds or reduce size."),
+        ("order_size_exceed_available", "Order rejected: Not enough buyers or sellers available right now."),
+        ("risk_limits_breached", "Order rejected: This trade would breach your allowed risk limit."),
+        ("invalid_contract", "Order rejected: This contract doesn't exist or has expired."),
+        ("immediate_liquidation", "Order rejected: This trade would immediately liquidate your position."),
+        ("out_of_bankruptcy", "Order rejected: Price is outside the allowed limit."),
+        ("self_matching_disrupted_post_only", "Order rejected: Self-matching not allowed during auction."),
+        ("immediate_execution_post_only", "Order rejected: Post-only order would execute immediately."),
+        ("rate_limit_exceeded", "Delta says bot is sending requests too fast. It will auto-slow-down for a few minutes."),
+        ("unauthorized", "Bot login to Delta failed. Check API key or secret."),
+        ("POST failed after 3 attempts", "Delta is not accepting new orders right now. This is a server issue on Delta side, not your bot."),
+        ("GET failed after 3 attempts", "Delta is not accepting new orders right now. This is a server issue on Delta side, not your bot."),
+        ("liquidation", "One of your positions was liquidated by Delta. Check your account immediately."),
+    ]
+    try:
+        r = _rq3.get('https://cdn-ind.testnet.deltaex.org/v2/products?contract_types=perpetual_futures&limit=1', timeout=5)
+        if r.status_code != 200:
+            return ("RED", f"Delta is not responding normally (code {r.status_code}). This is a server issue on Delta side.")
+        from engine.order_manager import OrderManager
+        om = OrderManager(os.getenv("S2_API_KEY"), os.getenv("S2_API_SECRET"), testnet=True)
+        pos = om.get_position()
+        if not pos.get('success', False):
+            return ("RED", "Bot cannot log in to Delta. Check API key or secret.")
+        _found = None
+        for _logf in ["logs/live_trading_s2.log", "logs/live_trading_s4.log"]:
+            try:
+                _lines = open(_logf).readlines()[-150:]
+            except:
+                continue
+            for _line in reversed(_lines):
+                for _code, _msg in _known_errors:
+                    if _code in _line:
+                        _found = _msg
+                        break
+                if _found:
+                    break
+            if _found:
+                break
+        if _found:
+            return ("YELLOW", _found)
+        return ("GREEN", "Everything working fine. Orders and account checks both OK.")
+    except Exception as e:
+        return ("RED", f"Cannot reach Delta at all: {str(e)[:60]}")
 # ================================================================
 # END PERFORMANCE HELPERS
 # ================================================================
@@ -1385,6 +1459,36 @@ with _tab_monitor:
     st.markdown(f"""<div style='background:#f0f7ff;border:1px solid #90CAF9;border-radius:6px;padding:10px 16px;margin-bottom:4px;'>{_row1}</div>
 <div style='background:#f0f7ff;border:1px solid #90CAF9;border-radius:6px;padding:10px 16px;margin-bottom:12px;'>{_row2}</div>""", unsafe_allow_html=True)
 
+    # ---- PLAIN MESSAGES FOR TOP LAMP ROWS (only show if NOT fully green) ----
+    _lamp_msgs = []
+    if not _sig_ok:
+        _lamp_msgs.append(("yellow" if _sig_warn else "red", "SIGNAL: Engine heartbeat not seen recently. Signals may be delayed."))
+    if not _ws_ok:
+        _lamp_msgs.append(("yellow" if _ws_warn else "red", "WEBSOCKET: Live price connection lost or never connected."))
+    if not _csv_ok:
+        _lamp_msgs.append(("yellow" if _csv_warn else "red", "CSV: Signal file not updated recently. New trades may be missed."))
+    if not _tm1s2_ok:
+        _lamp_msgs.append(("red", "TM1 S2: TestMember1 S2 bot log stuck or missing."))
+    if not _tm1s4_ok:
+        _lamp_msgs.append(("red", "TM1 S4: TestMember1 S4 bot log stuck or missing."))
+    if not _bw_ok:
+        _lamp_msgs.append(("red", "BOUNDARY: Boundary watcher stuck or not running."))
+    if not _last_order_ok:
+        _lamp_msgs.append(("yellow" if _last_order_warn else "red", "LAST ORDER: No order activity found in recent logs."))
+    if not _pos_ok:
+        _lamp_msgs.append(("yellow" if _pos_warn else "red", "POSITION: Mismatch found between bot's position and Delta's real position."))
+    if not _timing_ok:
+        _lamp_msgs.append(("yellow" if _timing_warn else "red", "ENTRY TIMING: Signal arrived too late or stale for entry."))
+
+    if _lamp_msgs:
+        for _lvl, _msg_txt in _lamp_msgs:
+            if _lvl == "red":
+                st.error(_msg_txt)
+            else:
+                st.warning(_msg_txt)
+    else:
+        st.success("All monitor checks normal: signal, websocket, csv, test accounts, boundary, orders, position, and timing are all healthy.")
+
     # S2 BOT
     try:
         _s2l = _os_lamps.path.getmtime("logs/live_trading_s2.log")
@@ -1453,19 +1557,47 @@ with _tab_monitor:
 
     with c1:
         st.markdown("**S2 BOT**")
-        if os.path.exists(s2_log):
-            st.success("LOG ACTIVE")
-        else:
-            st.error("LOG MISSING")
-        st.caption(f"Last: {s2_last[:40]}")
+        try:
+            import time as _t_s2c
+            if not os.path.exists(s2_log):
+                st.error("NOT STARTED")
+                st.caption("Bot log file not found. Bot may never have started.")
+            else:
+                _s2_age_c1 = (_t_s2c.time() - os.path.getmtime(s2_log)) / 60
+                if _s2_age_c1 > 10:
+                    st.error("STUCK")
+                    st.caption(f"No update in {int(_s2_age_c1)} min. Bot may be stuck or crashed.")
+                elif s2_error:
+                    st.warning("ERRORS FOUND")
+                    st.caption(f"Recent error: {s2_error[:60]}")
+                else:
+                    st.success("RUNNING")
+                    st.caption(f"Last: {s2_last[:40]}")
+        except Exception as _e:
+            st.warning("UNKNOWN")
+            st.caption(str(_e)[:40])
 
     with c2:
         st.markdown("**S4 BOT**")
-        if os.path.exists(s4_log):
-            st.success("LOG ACTIVE")
-        else:
-            st.error("LOG MISSING")
-        st.caption(f"Last: {s4_last[:40]}")
+        try:
+            import time as _t_s4c
+            if not os.path.exists(s4_log):
+                st.error("NOT STARTED")
+                st.caption("Bot log file not found. Bot may never have started.")
+            else:
+                _s4_age_c1 = (_t_s4c.time() - os.path.getmtime(s4_log)) / 60
+                if _s4_age_c1 > 10:
+                    st.error("STUCK")
+                    st.caption(f"No update in {int(_s4_age_c1)} min. Bot may be stuck or crashed.")
+                elif s4_error:
+                    st.warning("ERRORS FOUND")
+                    st.caption(f"Recent error: {s4_error[:60]}")
+                else:
+                    st.success("RUNNING")
+                    st.caption(f"Last: {s4_last[:40]}")
+        except Exception as _e:
+            st.warning("UNKNOWN")
+            st.caption(str(_e)[:40])
 
     with c3:
         st.markdown("**VM DISK**")
@@ -1479,25 +1611,37 @@ with _tab_monitor:
 
     with c4:
         st.markdown("**GITHUB**")
-        st.success("SYNCED")
-        st.caption(f"Commit: {git_commit}")
+        try:
+            import subprocess as _sp_gh
+            _gh_status = _sp_gh.run(["git", "status", "--porcelain"], cwd="/home/anildalabanjan933/crypto_trading_system", capture_output=True, text=True, timeout=5).stdout.strip()
+            _gh_unpushed = _sp_gh.run(["git", "log", "@{u}..", "--oneline"], cwd="/home/anildalabanjan933/crypto_trading_system", capture_output=True, text=True, timeout=5).stdout.strip()
+            if _gh_status:
+                st.warning("UNSAVED CHANGES")
+                st.caption("Local files changed but not committed yet.")
+            elif _gh_unpushed:
+                st.warning("NOT PUSHED")
+                st.caption("Committed locally but not pushed to GitHub yet.")
+            else:
+                st.success("SYNCED")
+                st.caption(f"Commit: {git_commit} - matches GitHub")
+        except Exception as _e:
+            st.warning("UNKNOWN")
+            st.caption(str(_e)[:40])
 
     with c5:
-        st.markdown("**DELTA API**")
+        st.markdown("**DELTA STATUS**")
         try:
-            _api_result = _timed('delta_api_status', 60, _fetch_delta_api_status)
-            if _api_result == 200:
-                st.success("CONNECTED")
-                st.caption("Testnet + Auth OK")
-            elif _api_result == "AUTH_FAIL":
-                st.error("AUTH FAILING")
-                st.caption("Positions call rejected")
+            _color, _msg = _timed('delta_full_status', 60, _fetch_delta_full_status)
+            if _color == "GREEN":
+                st.success("OK")
+            elif _color == "YELLOW":
+                st.warning("CHECK")
             else:
-                st.error("ERROR")
-                st.caption(f"Status: {_api_result}")
+                st.error("ISSUE")
+            st.caption(_msg)
         except Exception as _e:
             st.error("UNREACHABLE")
-            st.caption(str(_e)[:30])
+            st.caption(str(_e)[:60])
             st.caption("Check network")
 
     # ================================================================
@@ -1564,26 +1708,13 @@ with _tab_monitor:
     # CARD 3 - API KEY/SECRET STATUS
     with _cr2c:
         try:
-            _s2k = os.environ.get("S2_API_KEY","")
-            _s2s = os.environ.get("S2_API_SECRET","")
-            _s4k = os.environ.get("S4_API_KEY","")
-            _s4s = os.environ.get("S4_API_SECRET","")
             st.markdown("**API KEY/SECRET**")
-            if not _s2k:
-                st.error("S2 KEY MISSING")
-                st.caption("Check .env S2_API_KEY")
-            elif not _s2s:
-                st.error("S2 SECRET MISSING")
-                st.caption("Check .env S2_API_SECRET")
-            elif not _s4k:
-                st.error("S4 KEY MISSING")
-                st.caption("Check .env S4_API_KEY")
-            elif not _s4s:
-                st.error("S4 SECRET MISSING")
-                st.caption("Check .env S4_API_SECRET")
+            _kcolor, _kmsg = _timed('key_validity', 60, _fetch_key_validity)
+            if _kcolor == "GREEN":
+                st.success("OK")
             else:
-                st.success("ALL KEYS OK")
-                st.caption("S2 + S4 keys present")
+                st.error("ISSUE")
+            st.caption(_kmsg)
         except Exception as _e:
             st.markdown("**API KEY/SECRET**")
             st.warning("UNKNOWN")
