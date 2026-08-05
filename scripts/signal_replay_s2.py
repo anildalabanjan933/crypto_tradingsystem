@@ -112,7 +112,7 @@ def _send_live_entry_alert(label, direction, entry_ts, fill_price, sl_price, lot
     except Exception as e:
         pass
 
-def _send_live_exit_alert(label, direction, exit_ts, fill_price, entry_fill, lots=100):
+def _send_live_exit_alert(label, direction, exit_ts, fill_price, entry_fill=0.0, lots=100):
     try:
         from engine.telegram_alert import send_alert
         if entry_fill and entry_fill > 0:
@@ -133,6 +133,10 @@ def _send_live_exit_alert(label, direction, exit_ts, fill_price, entry_fill, lot
         send_alert(msg)
     except Exception as e:
         pass
+
+def _send_live_exit_alert_DEPRECATED_DUPLICATE(label, direction, exit_ts, fill_price, lots=100):
+    """DEPRECATED - duplicate removed, merged into single function above."""
+    pass
 
 def _send_entry_match_alert(label, direction, entry_ts, bt_entry_price, lv_fill_price,
                              bt_exit_ts, bt_exit_price, lots=100):
@@ -252,26 +256,7 @@ def _send_live_entry_alert(label, direction, entry_ts, fill_price, sl_price, lot
     except Exception as e:
         pass
 
-def _send_live_exit_alert(label, direction, exit_ts, fill_price, lots=100):
-    """Send Telegram alert on live exit fill."""
-    try:
-        from engine.telegram_alert import send_alert
-        import datetime as _dt
-        def _ist(ts):
-            try:
-                dt = _dt.datetime.strptime(ts[:19], "%Y-%m-%dT%H:%M:%S")
-                return (dt + _dt.timedelta(hours=5, minutes=30)).strftime("%d-%b-%Y %I:%M %p IST")
-            except: return ts
-        msg = (
-            f"CTS LIVE {label} EXIT\n"
-            f"Direction : {direction.upper()}\n"
-            f"Exit time : {_ist(exit_ts)}\n"
-            f"Fill price: ${fill_price:,.2f}\n"
-            f"Lots      : {lots}"
-        )
-        send_alert(msg)
-    except Exception as e:
-        pass
+
 
 
 
@@ -713,6 +698,15 @@ while True:
         if int(time.time()) % 300 < 2:
             _exch = om.get_position()
             _exch_size = abs(_exch.get("size", 0)) if _exch.get("success") else -1
+            if _exch_size == 0 and position is not None:
+                # FIX: confirm with a second check before declaring flat - prevents
+                # false SL-hit detection from a single transient/empty API response
+                time.sleep(3)
+                _exch2 = om.get_position()
+                _exch_size2 = abs(_exch2.get("size", 0)) if _exch2.get("success") else -1
+                if _exch_size2 != 0:
+                    log.warning(f"[SYNC] False FLAT detected (transient) - exchange size confirmed={_exch_size2} - skipping sync")
+                    _exch_size = _exch_size2
             if _exch_size == 0 and position is not None:
                 log.warning(f"[SYNC] Exchange FLAT but bot={position} - SL hit or manual close - syncing to FLAT")
                 # FIX: advance last_known_ts past this signal's exit_time so it

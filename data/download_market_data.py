@@ -62,11 +62,20 @@ def get_last_timestamp(filepath):
     if not os.path.exists(filepath):
         return None
     try:
-        df = pd.read_csv(filepath)
-        if df.empty:
+        # FIX: read only last ~4KB of file instead of loading entire CSV (was 1.3M+ rows)
+        with open(filepath, "rb") as f:
+            f.seek(0, 2)
+            fsize = f.tell()
+            f.seek(max(0, fsize - 4096), 0)
+            tail = f.read().decode("utf-8", errors="ignore")
+        lines = [l for l in tail.split("\n") if l.strip()]
+        if not lines:
             return None
-        last_row = df.iloc[-1]
-        dt_str = str(last_row["Date"]) + " " + str(last_row["Time"])
+        last_line = lines[-1]
+        parts = last_line.split(",")
+        if len(parts) < 2:
+            return None
+        dt_str = parts[0].strip() + " " + parts[1].strip()
         for fmt in ["%Y-%m-%d %H:%M:%S", "%Y-%m-%d %H:%M"]:
             try:
                 dt = datetime.strptime(dt_str.strip(), fmt)

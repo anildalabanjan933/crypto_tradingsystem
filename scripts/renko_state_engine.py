@@ -455,33 +455,61 @@ if __name__=="__main__":
 
     # WebSocket for instant candle close detection
     _ws_last_candle_start=None
+    _ws_current_candle=None
     _ws_lock=threading.Lock()
 
+    def _append_ws_candle(state,candle_start_us,o,h,l,c,v):
+        import pandas as pd
+        dt=pd.to_datetime(candle_start_us,unit="us",utc=True).tz_localize(None)
+        date_str=dt.strftime("%Y-%m-%d")
+        time_str=dt.strftime("%H:%M:%S")
+        new_row=pd.DataFrame([{"Date":date_str,"Time":time_str,"Open":o,"High":h,"Low":l,"Close":c,"Volume":v,"timestamp":dt}])
+        state.candles_1m=pd.concat([state.candles_1m,new_row],ignore_index=True)
+        state.last_1m_ts=dt
+        tf=state.params["renko_timeframe"]
+        tf_minutes_map={"30m":30,"1h":60,"2h":120}
+        tf_minutes=tf_minutes_map.get(tf,120)
+        window_start=dt-pd.Timedelta(minutes=tf_minutes*3)
+        recent_1m=state.candles_1m[state.candles_1m["timestamp"]>window_start]
+        recomputed_tf=resample_to_tf(recent_1m,tf)
+        if recomputed_tf is not None and not recomputed_tf.empty:
+            cutoff=recomputed_tf["timestamp"].min()
+            state.candles_tf=state.candles_tf[state.candles_tf["timestamp"]<cutoff]
+            state.candles_tf=pd.concat([state.candles_tf,recomputed_tf],ignore_index=True).reset_index(drop=True)
+
     def _ws_on_message(ws,message):
-        global _ws_last_candle_start
+        global _ws_last_candle_start,_ws_current_candle
         try:
             data=json.loads(message)
             if data.get("type")!="candlestick_1m": return
             candle_start=data.get("candle_start_time",0)
             if candle_start==0: return
+            o=data.get("open");h=data.get("high");l=data.get("low");c=data.get("close");v=data.get("volume")
+            _closed_candle=None
             with _ws_lock:
                 if _ws_last_candle_start is None:
                     _ws_last_candle_start=candle_start
+                    _ws_current_candle={"start":candle_start,"o":o,"h":h,"l":l,"c":c,"v":v}
                     return
-                if candle_start<=_ws_last_candle_start: return
+                if candle_start==_ws_last_candle_start:
+                    _ws_current_candle={"start":candle_start,"o":o,"h":h,"l":l,"c":c,"v":v}
+                    return
+                if candle_start<_ws_last_candle_start: return
+                _closed_candle=dict(_ws_current_candle) if _ws_current_candle else None
                 _ws_last_candle_start=candle_start
-            # Completed candle detected instantly via WebSocket
-            log.info(f"[WS] Completed candle detected - updating data")
+                _ws_current_candle={"start":candle_start,"o":o,"h":h,"l":l,"c":c,"v":v}
+            if _closed_candle is None: return
+            # Completed candle detected instantly via WebSocket - use live data directly, zero REST wait
+            log.info(f"[WS] Completed candle detected - fast in-memory update (no REST wait)")
+            try:
+                _append_ws_candle(s2,_closed_candle["start"],_closed_candle["o"],_closed_candle["h"],_closed_candle["l"],_closed_candle["c"],_closed_candle["v"])
+                _append_ws_candle(s4,_closed_candle["start"],_closed_candle["o"],_closed_candle["h"],_closed_candle["l"],_closed_candle["c"],_closed_candle["v"])
+            except Exception as _e:
+                log.error(f"[WS] Fast append error: {_e}",exc_info=True)
+                return
+            # Background REST sync for CSV file persistence only - does NOT block firing
             _ws_state["last_dl"]=time.time()
-            _dl_thread=threading.Thread(target=update_market_data, daemon=True)
-            _dl_thread.start()
-            _dl_thread.join(timeout=8)
-            if _dl_thread.is_alive():
-                log.warning("[WS] Market data download still running after 8s - proceeding with retry")
-            _new_ts=get_csv_last_ts()
-            if _new_ts is None: return
-            append_new_candles(s2)
-            append_new_candles(s4)
+            threading.Thread(target=update_market_data, daemon=True).start()
             _cur_s2=_last_closed_tf(30)
             if _cur_s2>_ws_state["last_s2_tf"]:
                 _ws_state["last_s2_tf"]=_cur_s2
@@ -584,6 +612,7 @@ if __name__=="__main__":
                     check_and_fire(s4,is_s4=True)
 
             # Boundary watcher trigger - fires if watcher detected missed boundary
+            # FIX: S2 and S4 now run in separate threads - S2 retry-wait no longer blocks S4
             _trig_s2 = "logs/boundary_trigger_s2.txt"
             _trig_s4 = "logs/boundary_trigger_s4.txt"
             if os.path.exists(_trig_s2):
@@ -593,17 +622,23 @@ if __name__=="__main__":
                     _t2_dt = __import__('datetime').datetime.strptime(_t2, '%Y-%m-%d %H:%M:%S')
                 except:
                     _t2_dt = __import__('datetime').datetime.strptime(_t2, '%Y-%m-%dT%H:%M:%S')
-                if _t2_dt > _ws_state["last_s2_tf"]:
+                _s2_already_caught_up = s2.last_1m_ts is not None and s2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= (_t2_dt - __import__('datetime').timedelta(minutes=1))
+                if _t2_dt > _ws_state["last_s2_tf"] and not _s2_already_caught_up:
                     _ws_state["last_s2_tf"] = _t2_dt
                     log.info(f"[ENGINE] Boundary watcher trigger S2: {_t2} - checking S2")
-                    for _retry in range(6):
-                        update_market_data()
-                        append_new_candles(s2)
-                        if s2.last_1m_ts is not None and s2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _t2_dt:
-                            break
-                        log.info(f"[ENGINE] S2 data not caught up yet, retry {_retry+1}/6")
-                        time.sleep(10)
-                    check_and_fire(s2, is_s4=False)
+                    def _run_s2_trigger(_dt=_t2_dt):
+                        try:
+                            for _retry in range(6):
+                                update_market_data()
+                                append_new_candles(s2)
+                                if s2.last_1m_ts is not None and s2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1):
+                                    break
+                                log.info(f"[ENGINE] S2 data not caught up yet, retry {_retry+1}/6")
+                                time.sleep(10)
+                            check_and_fire(s2, is_s4=False)
+                        except Exception as _e:
+                            log.error(f"[ENGINE] S2 trigger thread error: {_e}", exc_info=True)
+                    threading.Thread(target=_run_s2_trigger, daemon=True).start()
             if os.path.exists(_trig_s4):
                 _t4 = open(_trig_s4).read().strip()
                 os.remove(_trig_s4)
@@ -611,17 +646,23 @@ if __name__=="__main__":
                     _t4_dt = __import__('datetime').datetime.strptime(_t4, '%Y-%m-%d %H:%M:%S')
                 except:
                     _t4_dt = __import__('datetime').datetime.strptime(_t4, '%Y-%m-%dT%H:%M:%S')
-                if _t4_dt > _ws_state["last_s4_tf"]:
+                _s4_already_caught_up = s4.last_1m_ts is not None and s4.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= (_t4_dt - __import__('datetime').timedelta(minutes=1))
+                if _t4_dt > _ws_state["last_s4_tf"] and not _s4_already_caught_up:
                     _ws_state["last_s4_tf"] = _t4_dt
                     log.info(f"[ENGINE] Boundary watcher trigger S4: {_t4} - checking S4")
-                    for _retry in range(6):
-                        update_market_data()
-                        append_new_candles(s4)
-                        if s4.last_1m_ts is not None and s4.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _t4_dt:
-                            break
-                        log.info(f"[ENGINE] S4 data not caught up yet, retry {_retry+1}/6")
-                        time.sleep(10)
-                    check_and_fire(s4, is_s4=True)
+                    def _run_s4_trigger(_dt=_t4_dt):
+                        try:
+                            for _retry in range(6):
+                                update_market_data()
+                                append_new_candles(s4)
+                                if s4.last_1m_ts is not None and s4.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1):
+                                    break
+                                log.info(f"[ENGINE] S4 data not caught up yet, retry {_retry+1}/6")
+                                time.sleep(10)
+                            check_and_fire(s4, is_s4=True)
+                        except Exception as _e:
+                            log.error(f"[ENGINE] S4 trigger thread error: {_e}", exc_info=True)
+                    threading.Thread(target=_run_s4_trigger, daemon=True).start()
 
             touch_signal_file("S2")
             touch_signal_file("S4")
