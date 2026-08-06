@@ -6080,9 +6080,28 @@ with _tab_analysis:
                 tbl += '</tr></thead><tbody>'
                 if tc == 0:
                     tbl += f'<tr><td colspan="12" style="{TD}color:#aaa;">No trades yet</td></tr>'
+                _used_lv = set()
+                def _closest_lv(bt_row):
+                    if bt_row is None: return None
+                    best_lv, best_diff = None, None
+                    try:
+                        import datetime as _dtm
+                        bt_dt = _dtm.datetime.strptime(bt_row["entry_ist"], "%d-%b %I:%M %p")
+                    except: return None
+                    for j, lv_row in enumerate(lv_rows):
+                        if j in _used_lv: continue
+                        try:
+                            lv_dt = _dtm.datetime.strptime(lv_row["entry_ist"], "%d-%b %I:%M %p")
+                        except: continue
+                        diff = abs((lv_dt - bt_dt).total_seconds())
+                        if diff <= 14400 and (best_diff is None or diff < best_diff):
+                            best_diff, best_lv, best_idx = diff, lv_row, j
+                    if best_lv is not None:
+                        _used_lv.add(best_idx)
+                    return best_lv
                 for i in range(tc):
                     bt = bt_rows[i] if i < n_bt else None
-                    lv = lv_rows[i] if i < n_lv else None
+                    lv = _closest_lv(bt) if bt is not None else None
                     _sep = "border-top:3px solid #42A5F5;" if i>0 else ""
                     sno_cell = f'<td rowspan="2" style="{TDN}{_sep}">{i+1}</td>'
                     for ridx, (row, src) in enumerate([(bt, f"BT {strat}"), (lv, f"LV {strat}")]):
