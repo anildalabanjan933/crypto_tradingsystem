@@ -62,7 +62,7 @@ PREDEFINED_RANGES = {
     },
     "s4_combined": {
         "renko_box_pct":   {"values": [0.001, 0.0015]},
-        "renko_timeframe": {"values": ["30m", "1h", "2h"]},
+        "renko_timeframe": {"values": ["1m", "5m", "15m", "30m", "1h", "2h"]},
         "st_atr_length":   {"values": [5, 10]},
         "st_factor":       {"values": [1.5, 2.0, 3.0]},
         "smiio_shortlen":  {"values": [10, 20]},
@@ -125,3 +125,7 @@ if results:
     csv_out = f"output/optimization_results_{strat_name}_{args.symbol}_{ts}.csv"
     pd.DataFrame(rows).to_csv(csv_out, index=False)
     print(f"CSV saved: {csv_out}")
+    import glob as _glob_t, os as _os_t
+    _html_matches = sorted(_glob_t.glob(f"output/optimization_results_{strat_name}_{args.symbol}_*.html"), key=_os_t.path.getmtime, reverse=True)
+    _html_nm = _os_t.path.basename(_html_matches[0]) if _html_matches else "N/A"
+    print(f"\n=== COMPLETE - {strat_name} | HTML: {_html_nm} | CSV: {_os_t.path.basename(csv_out)} ===")

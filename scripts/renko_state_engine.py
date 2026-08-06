@@ -217,8 +217,8 @@ def append_new_candles(state):
         tf=state.params["renko_timeframe"]
         tf_minutes_map={"30m":30,"1h":60,"2h":120}
         tf_minutes=tf_minutes_map.get(tf,120)
-        window_start=state.last_1m_ts-pd.Timedelta(minutes=tf_minutes*3)
-        recent_1m=state.candles_1m[state.candles_1m["timestamp"]>window_start]
+        window_start=(state.last_1m_ts-pd.Timedelta(minutes=tf_minutes*3)).floor(f"{tf_minutes}min")
+        recent_1m=state.candles_1m[state.candles_1m["timestamp"]>=window_start]
         recomputed_tf=resample_to_tf(recent_1m,tf)
         if recomputed_tf is not None and not recomputed_tf.empty:
             cutoff=recomputed_tf["timestamp"].min()
@@ -469,8 +469,8 @@ if __name__=="__main__":
         tf=state.params["renko_timeframe"]
         tf_minutes_map={"30m":30,"1h":60,"2h":120}
         tf_minutes=tf_minutes_map.get(tf,120)
-        window_start=dt-pd.Timedelta(minutes=tf_minutes*3)
-        recent_1m=state.candles_1m[state.candles_1m["timestamp"]>window_start]
+        window_start=(dt-pd.Timedelta(minutes=tf_minutes*3)).floor(f"{tf_minutes}min")
+        recent_1m=state.candles_1m[state.candles_1m["timestamp"]>=window_start]
         recomputed_tf=resample_to_tf(recent_1m,tf)
         if recomputed_tf is not None and not recomputed_tf.empty:
             cutoff=recomputed_tf["timestamp"].min()
