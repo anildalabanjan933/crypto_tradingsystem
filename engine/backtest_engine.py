@@ -72,9 +72,8 @@ class BacktestEngine:
         if self.data_1m is None:
             raise ValueError("Failed to load data from CSV")
         loader.validate_format()
-        self.data_1m = loader.filter_by_date_range(self.start_date, self.end_date)
         if self.data_1m is None or len(self.data_1m) == 0:
-            raise ValueError("No data available for specified date range")
+            raise ValueError("No data available")
         loader.validate_data_continuity()
 
     def _aggregate_timeframes(self):
@@ -141,7 +140,12 @@ class BacktestEngine:
             slippage        = self.slippage,
         )
         self.trades = builder.build_trades(self.signals)
-        print(f"✅ Built {len(self.trades)} trades")
+        if self.start_date and self.end_date:
+            self.trades = [
+                t for t in self.trades
+                if self.start_date <= t.get("entry_datetime","")[:10] <= self.end_date
+            ]
+        print(f"✅ Built {len(self.trades)} trades (filtered to date range, full-history Renko)")
 
     def _calculate_metrics(self):
         calculator = MetricsCalculator(
