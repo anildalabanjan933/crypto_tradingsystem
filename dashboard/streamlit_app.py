@@ -2800,21 +2800,24 @@ with _tab_monitor:
         return rows, rows_by_exit
 
     def _fvt_parse_order_prices(log_path):
-        """Extract entry/exit fill prices and direction from live log, keyed by signal ts."""
-        info = {}
+        """Extract entry fill info (keyed by entry ts) and exit fill info
+        (keyed by exit ts) SEPARATELY - never merged, since exit_ts of one
+        trade equals entry_ts of the next trade in reversal strategies."""
+        entry_info = {}
+        exit_info = {}
         try:
             lines = open(log_path, encoding='utf-8', errors='ignore').readlines()
         except:
-            return info
+            return entry_info, exit_info
         for idx, line in enumerate(lines):
             m_e = _re1d.search(r"\[ORDER\] ENTRY \w+ \d+ lots \| dir=(\w+) \| ts=(\S+)", line)
             if m_e:
                 direction, sig_ts = m_e.groups()
-                info.setdefault(sig_ts, {})["direction"] = direction
+                entry_info.setdefault(sig_ts, {})["direction"] = direction
                 for j in range(idx, min(idx+8, len(lines))):
                     m_ep = _re1d.search(r"Placing stop SL \| direction=\w+ entry=([\d.]+)", lines[j])
                     if m_ep:
-                        info[sig_ts]["entry_price"] = float(m_ep.group(1))
+                        entry_info[sig_ts]["entry_price"] = float(m_ep.group(1))
                         break
             m_x = _re1d.search(r"\[ORDER\] EXIT \w+ \d+ lots \| ts=(\S+)", line)
             if m_x:
@@ -2822,9 +2825,9 @@ with _tab_monitor:
                 for j in range(idx, min(idx+10, len(lines))):
                     m_xp = _re1d.search(r"avg_fill_price[\'\"]?[:=]\s*([\d.]+)", lines[j])
                     if m_xp:
-                        info.setdefault(sig_ts, {})["exit_price"] = float(m_xp.group(1))
+                        exit_info.setdefault(sig_ts, {})["exit_price"] = float(m_xp.group(1))
                         break
-        return info
+        return entry_info, exit_info
 
     _fvt_issues = []
     for _label, _log, _tf, _sigcsv in [
@@ -2833,7 +2836,7 @@ with _tab_monitor:
     ]:
         _rows = _fvt_parse_orders(_log, _tf)
         _bt_signals, _bt_signals_by_exit = _fvt_load_signal_csv(_sigcsv)
-        _live_prices = _fvt_parse_order_prices(_log)
+        _entry_prices, _exit_prices = _fvt_parse_order_prices(_log)
 
         for _r in _rows:
             if _r["delay_sec"] > 5:
@@ -2860,20 +2863,24 @@ with _tab_monitor:
                     continue
                 _bt = _bt_signals[_sts]
             _checked_ts.add(_lookup_key)
-            _lv = _live_prices.get(_sts, {})
+            # ENTRY rows use entry-fill info; EXIT rows use exit-fill info.
+            # Direction is only checked on ENTRY rows (EXIT log lines carry
+            # no direction field, so there is nothing valid to compare).
+            _lv = _entry_prices.get(_sts, {}) if _r["action"] == "ENTRY" else _exit_prices.get(_sts, {})
 
-            _bt_dir = _bt["direction"]
-            _lv_dir = _lv.get("direction", "")
-            if _lv_dir and _lv_dir != _bt_dir:
-                _fvt_issues.append({
-                    "text": f"{_label} DIRECTION MISMATCH | signal_ts={_sts} | backtest={_bt_dir} | live={_lv_dir}",
-                    "cause": "Live direction does not match backtest signal - check strategy sync"
-                })
+            if _r["action"] == "ENTRY":
+                _bt_dir = _bt["direction"]
+                _lv_dir = _lv.get("direction", "")
+                if _lv_dir and _lv_dir != _bt_dir:
+                    _fvt_issues.append({
+                        "text": f"{_label} DIRECTION MISMATCH | signal_ts={_sts} | backtest={_bt_dir} | live={_lv_dir}",
+                        "cause": "Live direction does not match backtest signal - check strategy sync"
+                    })
 
             try:
                 _bt_ep = float(_bt["entry_price"])
                 _lv_ep = _lv.get("entry_price")
-                if _lv_ep is not None:
+                if _r["action"] == "ENTRY" and _lv_ep is not None:
                     _diff_ep = abs(_lv_ep - _bt_ep)
                     if _diff_ep > 5:
                         _fvt_issues.append({
