@@ -781,6 +781,7 @@ def _load14(csv_pattern, from_dt=None):
         now14 = _dt14.datetime.utcnow()
         today_s  = now14.replace(hour=0,minute=0,second=0,microsecond=0)
         month_s  = now14.replace(day=1,hour=0,minute=0,second=0,microsecond=0)
+        week_s   = now14 - _dt14.timedelta(days=7)
         tot  = len(df)
         gross= df['gross_pnl'].sum() if 'gross_pnl' in df.columns else 0
         net  = df['net_pnl'].sum() if 'net_pnl' in df.columns else 0
@@ -819,6 +820,7 @@ def _load14(csv_pattern, from_dt=None):
             else:
                 pnl_today = _today_df['net_pnl'].sum()
             pnl_month = df[df['exit_dt'] >= _pd14.Timestamp(month_s)]['net_pnl'].sum()
+            pnl_week  = df[df['exit_dt'] >= _pd14.Timestamp(week_s)]['net_pnl'].sum()
             # This month max DD
             df_mo = df[df['exit_dt'] >= _pd14.Timestamp(month_s)]
             pls_mo = df_mo['net_pnl'].tolist()
@@ -838,7 +840,7 @@ def _load14(csv_pattern, from_dt=None):
                 drop_mo10=pk_mo10-cum_mo10
                 if drop_mo10>dd_mo10: dd_mo10=drop_mo10
         else:
-            green_m=total_m=0; dd=0; pnl_today=pnl_month=0; dd_mo=0; dd_mo10=0
+            green_m=total_m=0; dd=0; pnl_today=pnl_month=pnl_week=0; dd_mo=0; dd_mo10=0
         rec_cap = dd * 3 * _INR14
         roc = (net_inr / rec_cap * 100) if rec_cap > 0 else 0
         months = max(total_m, 1)
@@ -891,7 +893,7 @@ def _load14(csv_pattern, from_dt=None):
             "tax":tax,"fees":fees,"slip":slip,"fund":fund,"total_charges":total_charges,
             "green_m":green_m,"total_m":total_m,"dd":dd,"rec_cap":rec_cap,
             "roc":roc,"roc_monthly":roc_monthly,"margin_avg":margin_avg,
-            "pnl_today":pnl_today,"pnl_month":pnl_month,"dd_month":dd_mo,"dd_month10":dd_mo10,
+            "pnl_today":pnl_today,"pnl_week":pnl_week,"pnl_month":pnl_month,"dd_month":dd_mo,"dd_month10":dd_mo10,
             "today_count":today_count,"month_count":month_count,
             "gross_win":df[df['gross_pnl']>0]['gross_pnl'].sum() if 'gross_pnl' in df.columns else 0,
             "win_rate":win_rate,"max_profit":max_profit,"max_loss":max_loss,
@@ -1140,6 +1142,8 @@ def _load14_fwd(product_id, api_key, api_secret, base_url):
             "today_count":today_count,"month_count":month_count,
             "gross_win":gw*_INR14,"total_charges":sum(p["comm"] for p in pairs),
             "gross":net_usd,"net":net_usd,"margin_avg":0,
+            "pnl_week":sum(p["pnl"] for p in pairs if p.get("xts",0) >= (_dt14.datetime.utcnow()-_dt14.timedelta(days=7)).timestamp()),
+            "avg_slip":(sum(abs(p.get("ep",0)-p.get("xp",0))*0.001 for p in pairs)/len(pairs)) if pairs else 0,
             "raw_pairs":pairs
         }
     except Exception as _ef14:
@@ -1183,6 +1187,8 @@ def _tbl14(d2, d4, label, period_str, df2=None, df4=None):
     s2_gm=_g(d2,"green_m"); s2_tm=_g(d2,"total_m")
     s4_gm=_g(d4,"green_m"); s4_tm=_g(d4,"total_m")
     s2_td=_g(d2,"pnl_today")*_INR14; s4_td=_g(d4,"pnl_today")*_INR14
+    s2_wk=_g(d2,"pnl_week")*_INR14; s4_wk=_g(d4,"pnl_week")*_INR14; port_wk=s2_wk+s4_wk
+    s2_slip=_g(d2,"slip"); s4_slip=_g(d4,"slip"); port_slip=s2_slip+s4_slip
     s2_tod_cnt=int(_g(d2,"today_count")); s4_tod_cnt=int(_g(d4,"today_count")); port_tod_cnt=s2_tod_cnt+s4_tod_cnt
     s2_mo=_g(d2,"pnl_month")*_INR14; s4_mo=_g(d4,"pnl_month")*_INR14
     s2_mo_cnt=int(_g(d2,"month_count")); s4_mo_cnt=int(_g(d4,"month_count")); port_mo_cnt=s2_mo_cnt+s4_mo_cnt
@@ -1234,6 +1240,9 @@ def _tbl14(d2, d4, label, period_str, df2=None, df4=None):
     fw2_roc=_g(df2,"roc"); fw4_roc=_g(df4,"roc"); fwp_roc=(fwp_net/fwp_rc*100) if fwp_rc>0 else 0
     fw2_rocm=_g(df2,"roc_monthly"); fw4_rocm=_g(df4,"roc_monthly"); fwp_rocm=fwp_roc/max(max(fw2_tm,fw4_tm),1)
     fw2_td=_g(df2,"pnl_today"); fw4_td=_g(df4,"pnl_today")
+    fw2_wk=_g(df2,"pnl_week"); fw4_wk=_g(df4,"pnl_week"); fwp_wk=fw2_wk+fw4_wk
+    fw2_slip=_g(df2,"avg_slip"); fw4_slip=_g(df4,"avg_slip")
+    fw2_chg=_g(df2,"total_charges"); fw4_chg=_g(df4,"total_charges"); fwp_chg=fw2_chg+fw4_chg
     fw2_mo=_g(df2,"pnl_month"); fw4_mo=_g(df4,"pnl_month")
     fw2_tc=int(_g(df2,"today_count")); fw4_tc=int(_g(df4,"today_count")); fwp_tc=fw2_tc+fw4_tc
     fw2_mc=int(_g(df2,"month_count")); fw4_mc=int(_g(df4,"month_count")); fwp_mc=fw2_mc+fw4_mc
@@ -1277,6 +1286,7 @@ def _tbl14(d2, d4, label, period_str, df2=None, df4=None):
     <tr><td colspan="10" style="{_SUB14}">DYNAMIC PnL (SYNCED WITH SECTION 13)</td></tr>
     {_row9("Today PnL",f"₹{s2_td:,.0f}",f"₹{s4_td:,.0f}",f"₹{s2_td+s4_td:,.0f}",f"₹{s2_td10:,.0f}",f"₹{s4_td10:,.0f}",f"₹{port_td10:,.0f}",_fna(fw2_td),_fna(fw4_td),_fna(fw2_td+fw4_td),_c(s2_td),_c(s4_td),_c(s2_td+s4_td),_c(s2_td10),_c(s4_td10),_c(port_td10),_cf(fw2_td),_cf(fw4_td),_cf(fw2_td+fw4_td))}
     {_row9("Today Trades",f"{s2_tod_cnt:,}",f"{s4_tod_cnt:,}",f"{port_tod_cnt:,}",f"{s2_tod_cnt:,}",f"{s4_tod_cnt:,}",f"{port_tod_cnt:,}",_fna(fw2_tc,"int"),_fna(fw4_tc,"int"),_fna(fwp_tc,"int"),_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDB14,_TDB14,_TDB14)}
+    {_row9("Weekly PnL",f"₹{s2_wk:,.0f}",f"₹{s4_wk:,.0f}",f"₹{port_wk:,.0f}",f"₹{s2_wk:,.0f}",f"₹{s4_wk:,.0f}",f"₹{port_wk:,.0f}",_fna(fw2_wk),_fna(fw4_wk),_fna(fwp_wk),_c(s2_wk),_c(s4_wk),_c(port_wk),_c(s2_wk),_c(s4_wk),_c(port_wk),_cf(fw2_wk),_cf(fw4_wk),_cf(fwp_wk))}
     {_row9("Previous Days PnL (This Month, excl today)",f"₹{s2_prev:,.0f}",f"₹{s4_prev:,.0f}",f"₹{s2_prev+s4_prev:,.0f}",f"₹{s2_prev10:,.0f}",f"₹{s4_prev10:,.0f}",f"₹{port_prev10:,.0f}",_na14,_na14,_na14,_c(s2_prev),_c(s4_prev),_c(s2_prev+s4_prev),_c(s2_prev10),_c(s4_prev10),_c(port_prev10),_na14,_na14,_na14)}
     {_row9("This Month PnL",f"₹{s2_mo:,.0f}",f"₹{s4_mo:,.0f}",f"₹{s2_mo+s4_mo:,.0f}",f"₹{s2_mo10:,.0f}",f"₹{s4_mo10:,.0f}",f"₹{port_mo10:,.0f}",_fna(fw2_mo),_fna(fw4_mo),_fna(fw2_mo+fw4_mo),_c(s2_mo),_c(s4_mo),_c(s2_mo+s4_mo),_c(s2_mo10),_c(s4_mo10),_c(port_mo10),_cf(fw2_mo),_cf(fw4_mo),_cf(fw2_mo+fw4_mo))}
     {_row9("This Month Trades",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",f"{s2_mo_cnt:,}",f"{s4_mo_cnt:,}",f"{port_mo_cnt:,}",_fna(fw2_mc,"int"),_fna(fw4_mc,"int"),_fna(fwp_mc,"int"),_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDO14,_TDB14,_TDB14,_TDB14)}
@@ -1294,7 +1304,8 @@ def _tbl14(d2, d4, label, period_str, df2=None, df4=None):
     {_row9("Sharpe Ratio",f"{s2_sh:,.2f}",f"{s4_sh:,.2f}",f"{port_sh:,.2f}",f"{s2_sh:,.2f}",f"{s4_sh:,.2f}",f"{port_sh:,.2f}",_fna(fw2_sh,"num"),_fna(fw4_sh,"num"),_fna(fwp_sh,"num"),_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDB14,_TDB14,_TDB14)}
     <tr><td colspan="10" style="{_SUB14}">PnL BREAKDOWN</td></tr>
     {_row9("Gross PnL",_inr(s2_gross/_INR14),_inr(s4_gross/_INR14),_inr(port_gross/_INR14),_inr(s2_gross/_INR14),_inr(s4_gross/_INR14),_inr(port_gross/_INR14),_na14,_na14,_na14,_c(s2_gross),_c(s4_gross),_c(port_gross),_c(s2_gross),_c(s4_gross),_c(port_gross))}
-    {_row9("Tax + All Charges",f"-₹{s2_chg5:,.0f}",f"-₹{s4_chg5:,.0f}",f"-₹{port_chg5:,.0f}",f"-₹{s2_chg10:,.0f}",f"-₹{s4_chg10:,.0f}",f"-₹{port_chg10:,.0f}",_na14,_na14,_na14,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B)}
+    {_row9("Tax + All Charges",f"-₹{s2_chg5:,.0f}",f"-₹{s4_chg5:,.0f}",f"-₹{port_chg5:,.0f}",f"-₹{s2_chg10:,.0f}",f"-₹{s4_chg10:,.0f}",f"-₹{port_chg10:,.0f}",_na14,_na14,_na14,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B)}
+    {_row9("Avg Slippage/side",f"${s2_slip/max(tot2,1)/2:,.2f}",f"${s4_slip/max(tot4,1)/2:,.2f}",f"${(s2_slip+s4_slip)/max(tot2+tot4,1)/2:,.2f}",f"${s2_slip/max(tot2,1):,.2f}",f"${s4_slip/max(tot4,1):,.2f}",f"${(s2_slip+s4_slip)/max(tot2+tot4,1):,.2f}",_fna(fw2_slip,"num") if fw2_slip else _na14,_fna(fw4_slip,"num") if fw4_slip else _na14,_na14,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDR14B,_TDB14,_TDB14,_TDB14)}
     {_row9("Net PnL (After Tax)",_inr(s2_net5/_INR14),_inr(s4_net5/_INR14),_inr(port_net5/_INR14),_inr(s2_net10/_INR14),_inr(s4_net10/_INR14),_inr(port_net10/_INR14),_fna(fw2_net),_fna(fw4_net),_fna(fwp_net),_c(s2_net5),_c(s4_net5),_c(port_net5),_c(s2_net10),_c(s4_net10),_c(port_net10),_cf(fw2_net),_cf(fw4_net),_cf(fwp_net))}
     <tr><td colspan="10" style="{_SUB14}">INDIAN ITR TAX (30% on Gross Wins - Pay via ITR Filing)</td></tr>
     {_row9("Gross Wins",f"₹{s2_gross_win:,.0f}",f"₹{s4_gross_win:,.0f}",f"₹{port_gross_win:,.0f}",f"₹{s2_gross_win:,.0f}",f"₹{s4_gross_win:,.0f}",f"₹{port_gross_win:,.0f}",_fna(fw2_gw),_fna(fw4_gw),_fna(fwp_gw),_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDG14,_TDB14,_TDB14,_TDB14)}
@@ -5608,20 +5619,7 @@ with _tab_analysis:
 
         st.caption(f"Showing last 7 days | Valid from: {_VF13_7D[:10]} UTC | Auto updates on page load | Testnet")
 
-        # ── TOP TABLE: FORWARD TEST / LIVE ───────────────────────
-        # Side by side: Forward Test | Backtest
-        _col13a, _col13b = st.columns(2)
-        with _col13a:
-            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST / LIVE</div>", unsafe_allow_html=True)
-            st.markdown(_build_tbl13(s2m, s4m, cbm), unsafe_allow_html=True)
-        with _col13b:
-            st.markdown(f"<div style='{_HDR13}'>BACKTEST (LAST 7 DAYS: {_VF13_7D[:10]} to TODAY)</div>", unsafe_allow_html=True)
-            st.markdown(_build_tbl13(s2_bt, s4_bt, cb_bt), unsafe_allow_html=True)
-
-        # ================================================================
-        # LAST 20 TRADES - FORWARD TEST (LEFT) | BACKTEST (RIGHT)
-        # ================================================================
-        st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
 
         _TH20 = "padding:4px 6px;border:1px solid #90CAF9;background:#E3F2FD;font-size:10px;font-weight:700;color:#333;text-align:center;white-space:nowrap;"
         _TD20 = "padding:4px 6px;border:1px solid #BBDEFB;font-size:11px;color:#131722;text-align:center;white-space:nowrap;"
@@ -5634,7 +5632,7 @@ with _tab_analysis:
                 if not pairs:
                     return (f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'><table style='width:100%;border-collapse:collapse;'><thead><tr><th style='{_TH20}'>Date</th><th style='{_TH20}'>Dir</th><th style='{_TH20}'>Entry Time</th><th style='{_TH20}'>Exit Time</th><th style='{_TH20}'>Entry (INR)</th><th style='{_TH20}'>Exit (INR)</th><th style='{_TH20}'>Slip Diff vs $5</th><th style='{_TH20}'>Tax+Charges</th><th style='{_TH20}'>PnL</th></tr></thead><tbody><tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>Waiting for first trade</td></tr></tbody></table></div>")
                 import datetime as _dfw
-                last20 = pairs[-20:][::-1]
+                last20 = pairs[::-1]
                 rows = ""
                 for p in last20:
                     pnl      = float(p.get('pnl', 0))
@@ -5683,7 +5681,7 @@ with _tab_analysis:
             except Exception as e:
                 return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
 
-        def _bt20(csv_pattern, vf_str):
+        def _bt20(csv_pattern, vf_str, which="both"):
             try:
                 import glob as _gb, pandas as _pb
                 _WAIT_BT = (
@@ -5707,7 +5705,8 @@ with _tab_analysis:
                 s4_files = sorted(_gb.glob("output/trade_log_RenkoSMIIO*.csv"), reverse=True)
                 frames = []
                 vf_dt = _pb.to_datetime(vf_str)
-                for ff in (s2_files[:1] + s4_files[:1]):
+                _sel_files = s2_files[:1] if which=="s2" else (s4_files[:1] if which=="s4" else s2_files[:1]+s4_files[:1])
+                for ff in _sel_files:
                     _df = _pb.read_csv(ff)
                     _df['entry_datetime'] = _pb.to_datetime(_df['entry_datetime'])
                     _df_vf = _df[_df['entry_datetime'] >= vf_dt]
@@ -5715,7 +5714,7 @@ with _tab_analysis:
                         frames.append(_df_vf)
                 if not frames:
                     return _WAIT_BT
-                df = _pb.concat(frames).sort_values('entry_datetime').tail(20).iloc[::-1].reset_index(drop=True)
+                df = _pb.concat(frames).sort_values('entry_datetime').iloc[::-1].reset_index(drop=True)
                 if df.empty:
                     return _WAIT_BT
                 rows = ""
@@ -5916,18 +5915,26 @@ with _tab_analysis:
             except Exception as e:
                 return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
 
-        # ── RENDER SIDE BY SIDE LAST 20 ──────────────────────────
-        _col20a, _col20b = st.columns(2)
-        with _col20a:
-            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST - LAST 20 TRADES</div>", unsafe_allow_html=True)
-            st.markdown(_fwd20(s2p + s4p), unsafe_allow_html=True)
-        with _col20b:
-            st.markdown(f"<div style='{_HDR13}'>BACKTEST - LAST 20 TRADES</div>", unsafe_allow_html=True)
-            st.markdown(_bt20("output/trade_log_Renko*.csv", _VF13_7D), unsafe_allow_html=True)
+        # ── RENDER: BT S2 | BT S4 | FWD S2 | FWD S4 (last 7 days, separate) ──
+        _vf7_ts = _pd13.to_datetime(_VF13_7D).timestamp()
+        s2p_7d = [p for p in s2p if p.get('ets',0) >= _vf7_ts]
+        s4p_7d = [p for p in s4p if p.get('ets',0) >= _vf7_ts]
 
-        # ── COMPARISON TABLE FULL WIDTH BELOW ────────────────────
-        st.markdown(f"<div style='{_HDR13}'>BACKTEST vs FORWARD TEST - LAST 20 COMPARISON</div>", unsafe_allow_html=True)
-        st.markdown(_cmp20("output/trade_log_Renko*.csv", s2p + s4p, _VF13_7D), unsafe_allow_html=True)
+        _colA, _colB = st.columns(2)
+        with _colA:
+            st.markdown(f"<div style='{_HDR13}'>BACKTEST S2 - LAST 7 DAYS</div>", unsafe_allow_html=True)
+            st.markdown(_bt20("output/trade_log_RenkoReversal*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
+        with _colB:
+            st.markdown(f"<div style='{_HDR13}'>BACKTEST S4 - LAST 7 DAYS</div>", unsafe_allow_html=True)
+            st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrend*.csv", _VF13_7D, which="s4"), unsafe_allow_html=True)
+
+        _colC, _colD = st.columns(2)
+        with _colC:
+            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S2 - LAST 7 DAYS</div>", unsafe_allow_html=True)
+            st.markdown(_fwd20(s2p_7d), unsafe_allow_html=True)
+        with _colD:
+            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4 - LAST 7 DAYS</div>", unsafe_allow_html=True)
+            st.markdown(_fwd20(s4p_7d), unsafe_allow_html=True)
 
 
     # ================================================================
