@@ -31,6 +31,7 @@ def _get_strat_list():
 
 _STRAT_CLASS_OVERRIDE = {
     "renko_smiio_supertrend_strategy": "RenkoSMIIOSupertrendStrategy",
+    "tf1_supertrend_ema_strategy": "TF1SupertrendEMAStrategy",
 }
 
 def _display_to_class(display_name):
@@ -2718,7 +2719,11 @@ with _tab_monitor:
     # ================================================================
     import re as _re1d, datetime as _dt1d
 
-    FIX_APPLIED_AT_UTC = _dt1d.datetime(2026, 8, 5, 9, 6, 0)  # engine restart with offbyone fix
+    try:
+        _fix_ts_str = open("logs/last_fix_applied.txt").read().strip()
+        FIX_APPLIED_AT_UTC = _dt1d.datetime.strptime(_fix_ts_str, "%Y-%m-%d %H:%M:%S")
+    except Exception:
+        FIX_APPLIED_AT_UTC = _dt1d.datetime(2026, 8, 5, 9, 6, 0)  # fallback if file missing
 
     def _fvt_parse_orders(log_path, tf_minutes):
         rows = []
@@ -4237,14 +4242,17 @@ with _tab_backtest:
                     result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
                     if result.returncode == 0:
                         _progress.progress(100)
-                        _status.success("Step 3/3 - Backtest complete! Report ready below.")
                         import glob as _glob, time as _time, os as _glob_os
                         _time.sleep(3)
                         _new_files = sorted([f for f in _glob.glob("output/*.html") if "backtest_report_" in f and "optimization" not in f], key=_glob_os.path.getmtime, reverse=True)
+                        _new_csvs = sorted([f for f in _glob.glob("output/*.csv") if "trade_log_" in f], key=_glob_os.path.getmtime, reverse=True)
                         if _new_files:
                             st.session_state["sec6_html_select"] = _new_files[0]
                             st.session_state["sec6_force_latest"] = False
-                        import time as _t; _t.sleep(1)
+                        _html_nm = _glob_os.path.basename(_new_files[0]) if _new_files else "N/A"
+                        _csv_nm = _glob_os.path.basename(_new_csvs[0]) if _new_csvs else "N/A"
+                        _status.success(f"COMPLETE - {bt_strategy}  |  HTML: {_html_nm}  |  CSV: {_csv_nm}")
+                        import time as _t; _t.sleep(2)
                         st.rerun()
                     else:
                         _progress.progress(100)
@@ -4715,14 +4723,17 @@ with _tab_backtest:
                         result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
                         if result.returncode == 0:
                             _pp_progress.progress(100)
-                            _pp_status.success("Step 3/3 - Portfolio backtest complete! Report ready below.")
                             import glob as _glob, time as _time, os as _glob_os
                             _time.sleep(3)
                             _new_port = sorted([f for f in _glob.glob("output/*.html") if "portfolio_report_" in f], key=_glob_os.path.getmtime, reverse=True)
+                            _new_port_csv = sorted([f for f in _glob.glob("output/*.csv") if "portfolio" in f.lower()], key=_glob_os.path.getmtime, reverse=True)
                             if _new_port:
                                 st.session_state["port_html_sel"] = _new_port[0]
                                 st.session_state["port_force_latest"] = False
-                            import time as _t; _t.sleep(1)
+                            _html_nm = _glob_os.path.basename(_new_port[0]) if _new_port else "N/A"
+                            _csv_nm = _glob_os.path.basename(_new_port_csv[0]) if _new_port_csv else "N/A"
+                            _pp_status.success(f"COMPLETE - S2+S4 Portfolio  |  HTML: {_html_nm}  |  CSV: {_csv_nm}")
+                            import time as _t; _t.sleep(2)
                             st.rerun()
                         else:
                             _pp_progress.progress(100)
@@ -4807,14 +4818,18 @@ with _tab_backtest:
                             result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
                             if result.returncode == 0:
                                 _pd_progress.progress(100)
-                                _pd_status.success("Step 3/3 - Dynamic portfolio complete! Report ready below.")
                                 import glob as _glob, time as _time, os as _glob_os
                                 _time.sleep(3)
                                 _new_dyn = sorted([f for f in _glob.glob("output/*.html") if "portfolio_report_" in f], key=_glob_os.path.getmtime, reverse=True)
+                                _new_dyn_csv = sorted([f for f in _glob.glob("output/*.csv") if "portfolio" in f.lower()], key=_glob_os.path.getmtime, reverse=True)
                                 if _new_dyn:
                                     st.session_state["port_html_sel"] = _new_dyn[0]
                                     st.session_state["port_force_latest"] = False
-                                import time as _t; _t.sleep(1)
+                                _html_nm = _glob_os.path.basename(_new_dyn[0]) if _new_dyn else "N/A"
+                                _csv_nm = _glob_os.path.basename(_new_dyn_csv[0]) if _new_dyn_csv else "N/A"
+                                _strat_nm = ",".join(selected_strategies) if selected_strategies else "N/A"
+                                _pd_status.success(f"COMPLETE - {_strat_nm}  |  HTML: {_html_nm}  |  CSV: {_csv_nm}")
+                                import time as _t; _t.sleep(2)
                                 st.rerun()
                             else:
                                 _pd_progress.progress(100)
@@ -4875,6 +4890,31 @@ with _tab_backtest:
     with st.expander("SECTION 6 - OPTIMISATION", expanded=True):
 
         import subprocess, glob, os
+        import json as _optjson, time as _optnowtime
+
+        _OPT_STATUS_FILE = "logs/opt_status.json"
+        def _read_opt_status():
+            try:
+                with open(_OPT_STATUS_FILE) as _f:
+                    return _optjson.load(_f)
+            except Exception:
+                return None
+        def _write_opt_status(_data):
+            try:
+                with open(_OPT_STATUS_FILE, "w") as _f:
+                    _optjson.dump(_data, _f)
+            except Exception:
+                pass
+
+        _opt_stat_now = _read_opt_status()
+        if _opt_stat_now and _opt_stat_now.get("status") == "running":
+            _opt_pid_chk = _opt_stat_now.get("pid")
+            _opt_alive = _opt_pid_chk and os.path.exists(f"/proc/{_opt_pid_chk}")
+            if _opt_alive:
+                _opt_elapsed_min = int((_optnowtime.time() - _opt_stat_now.get("start_time", _optnowtime.time())) / 60)
+                st.warning(f"OPTIMISATION RUNNING IN BACKGROUND: {_opt_stat_now.get('strategy','')} | {_opt_stat_now.get('group','')} | started {_opt_elapsed_min} min ago. Do NOT click RUN again - wait for it to finish, then refresh this tab.")
+            else:
+                _write_opt_status({"status": "idle"})
 
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -4883,7 +4923,7 @@ with _tab_backtest:
             ], key="sec7_strategy")
         with col2:
             opt_group = st.selectbox("Select Group", [
-                "renko", "supertrend", "smiio"
+                "renko", "supertrend", "smiio", "s2_combined (Full Mode)", "s4_combined (Full Mode)"
             ], key="sec7_group")
         with col3:
             opt_lots = st.number_input("Lots", min_value=1, max_value=10000, value=100, key="sec7_lots")
@@ -4935,7 +4975,7 @@ with _tab_backtest:
                 cmd = [
                     ".venv/bin/python", "scripts/run_optimization_cli.py",
                     "--strategy", opt_strategy,
-                    "--group", opt_group,
+                    "--group", opt_group.split(" (")[0],
                     "--lots", str(opt_lots),
                     "--start", str(opt_start),
                     "--end", str(opt_end),
@@ -4943,26 +4983,44 @@ with _tab_backtest:
                 ]
                 if not opt_include_charges:
                     cmd.append("--no-charges")
-                result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+                _opt_proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                _write_opt_status({"status": "running", "pid": _opt_proc.pid, "start_time": _optnowtime.time(), "strategy": opt_strategy, "group": opt_group})
+                _opt_stdout, _opt_stderr = _opt_proc.communicate(timeout=2700)
+                class _OptResult: pass
+                result = _OptResult()
+                result.returncode = _opt_proc.returncode
+                result.stdout = _opt_stdout
+                result.stderr = _opt_stderr
+                _write_opt_status({"status": "done" if result.returncode == 0 else "failed"})
                 if result.returncode == 0:
                     _opt_progress.progress(100)
-                    _opt_status.success("Step 3/3 - Optimisation complete! Report ready below.")
                     import glob as _glob, time as _time, os as _glob_os
                     _time.sleep(3)
                     _new_opt = sorted([f for f in _glob.glob("output/*.html") if "optimization_results_" in f], key=_glob_os.path.getmtime, reverse=True)
+                    _new_opt_csv = sorted([f for f in _glob.glob("output/*.csv") if "optimization" in f.lower()], key=_glob_os.path.getmtime, reverse=True)
                     if _new_opt:
                         st.session_state["sec7_html_sel"] = _new_opt[0]
                     st.session_state["sec7_force_latest"] = False
-                    import time as _t; _t.sleep(1)
+                    _html_nm = _glob_os.path.basename(_new_opt[0]) if _new_opt else "N/A"
+                    _csv_nm = _glob_os.path.basename(_new_opt_csv[0]) if _new_opt_csv else "N/A"
+                    _opt_msg = f"COMPLETE - {opt_strategy}  |  HTML: {_html_nm}  |  CSV: {_csv_nm}"
+                    st.session_state["sec7_complete_msg"] = _opt_msg
+                    _opt_status.success(_opt_msg)
+                    import time as _t; _t.sleep(2)
                     st.rerun()
                 else:
                     _opt_progress.progress(100)
                     _opt_status.error("Optimisation failed - see error below")
                     st.code(result.stderr[-2000:] if len(result.stderr) > 2000 else result.stderr)
             except subprocess.TimeoutExpired:
-                _opt_status.error("Optimisation timed out after 10 minutes")
+                _write_opt_status({"status": "failed"})
+                _opt_status.error("Optimisation timed out after 45 minutes")
             except Exception as e:
+                _write_opt_status({"status": "failed"})
                 _opt_status.error(f"Error: {e}")
+
+        if st.session_state.get("sec7_complete_msg"):
+            st.success(st.session_state["sec7_complete_msg"])
 
         st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
         st.markdown("**Optimisation Results**")

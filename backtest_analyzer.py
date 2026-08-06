@@ -110,14 +110,24 @@ class BacktestReportGenerator:
             equity_dates    = equity_dates[:min_len]
             equity_data_inr = equity_data_inr[:min_len]
 
-        _eq_final = equity_data_inr[-1] if equity_data_inr else 0
-        _eq_color = '#27ae60' if _eq_final >= 0 else '#e74c3c'
-        _eq_fill  = 'rgba(39, 174, 96, 0.2)' if _eq_final >= 0 else 'rgba(231, 76, 60, 0.2)'
+        _eq_pos = [v if v >= 0 else 0 for v in equity_data_inr]
+        _eq_neg = [v if v < 0 else 0 for v in equity_data_inr]
         equity_chart_fig = go.Figure(data=[
             go.Scatter(
+                x=equity_dates, y=_eq_pos,
+                fill='tozeroy', fillcolor='rgba(39, 174, 96, 0.2)',
+                line=dict(width=0), mode='lines',
+                name='Cumulative PnL (Profit)', showlegend=False, hoverinfo='skip'
+            ),
+            go.Scatter(
+                x=equity_dates, y=_eq_neg,
+                fill='tozeroy', fillcolor='rgba(231, 76, 60, 0.2)',
+                line=dict(width=0), mode='lines',
+                name='Cumulative PnL (Loss)', showlegend=False, hoverinfo='skip'
+            ),
+            go.Scatter(
                 x=equity_dates, y=equity_data_inr,
-                fill='tozeroy', fillcolor=_eq_fill,
-                line=dict(color=_eq_color, width=2),
+                line=dict(color='#2c3e50', width=2),
                 mode='lines', name='Cumulative PnL'
             )
         ])
