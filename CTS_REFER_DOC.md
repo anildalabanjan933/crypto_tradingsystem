@@ -112,3 +112,26 @@ pull applied delete). VM .env confirmed intact/unaffected (1912 bytes,
 23 lines) - bots/dashboard unaffected. Recreate local .env manually if
 needed for local dev use.
 ----------------------------------------------------------------
+
+----------------------------------------------------------------
+[06-Aug-2026] | S4 Full Optimization (432 combos) - PERMANENT RESULT
+----------------------------------------------------------------
+FILE: output/optimization_results_RenkoSMIIOSupertrendStrategy_BTCUSD_20260806_172419.csv
+FILE: output/optimization_results_RenkoSMIIOSupertrendStrategy_BTCUSD_20260806_172419.html
+STATUS: COMPLETE - 432/432 combos - DO NOT RE-RUN full s4_combined optimization
+        unless params intentionally changed. Use this CSV for all future queries.
+
+TOP 5 RESULTS (by total_pnl_inr):
+#1: tf=15m atr=10 factor=2.0 smiio=10/3 | PnL=Rs2,67,70,252 | Trades=22127 | Win=51.01% | Sharpe=6.37 | DD=-0.27% (Rs22,663)
+#2: tf=15m atr=5  factor=1.5 smiio=10/3 | PnL=Rs2,67,50,222 | Trades=22639 | Win=50.05% | Sharpe=6.36 | DD=-0.29% (Rs33,207)
+#3: tf=15m atr=10 factor=1.5 smiio=10/3 | PnL=Rs2,67,50,222 | Trades=22639 | Win=50.05% | Sharpe=6.36 | DD=-0.29% (Rs33,207)
+#4: tf=15m atr=5  factor=2.0 smiio=10/3 | PnL=Rs2,66,41,395 | Trades=21975 | Win=51.14% | Sharpe=6.30 | DD=-0.31% (Rs35,816)
+#5: tf=30m atr=5  factor=1.5 smiio=10/3 | PnL=Rs2,66,30,802 | Trades=13627 | Win=58.72% | Sharpe=7.67 | DD=-0.18% (Rs20,611)
+
+NOTE: Current live S4 uses tf=2h (NOT in top 5). All top-5 switched to 15m/30m
+      = far more trades = far more slippage exposure in live trading.
+#5 (30m) is safest choice: best win rate, best Sharpe, lowest DD, fewest trades.
+#1 (15m) has highest PnL but 22127 trades = high slippage risk on live deploy.
+
+DECISION: PENDING - user to choose #1 (max PnL) or #5 (safer/robust) for S4V2.
+Deploy target: S4RenkoV2 subaccount (not yet created).
