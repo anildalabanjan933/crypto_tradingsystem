@@ -102,4 +102,4 @@ if csv_file and os.path.exists(csv_file):
     print(f"Portfolio CSV saved: {new_csv}")
 
 import os as _os_t
-print(f"\n=== COMPLETE - {portfolio_name} | HTML: {_os_t.path.basename(new_html)} | CSV: {_os_t.path.basename(new_csv)} ===")
+print(f"\n=== TERMINAL RUN COMPLETE - {portfolio_name} | HTML: {_os_t.path.basename(new_html)} | CSV: {_os_t.path.basename(new_csv)} ===")
