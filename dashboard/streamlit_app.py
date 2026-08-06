@@ -34,6 +34,31 @@ _STRAT_CLASS_OVERRIDE = {
     "tf1_supertrend_ema_strategy": "TF1SupertrendEMAStrategy",
 }
 
+def _check_terminal_run(html_files, csv_files, tracker_name, dash_session_key, label):
+    """Detect if a new HTML/CSV report appeared from a TERMINAL run (not dashboard button click).
+    Shows a persistent 'TERMINAL RUN COMPLETE' message if so. Never touches dashboard's own message."""
+    import os as _os_tr
+    os.makedirs("logs", exist_ok=True)
+    tracker_file = f"logs/{tracker_name}.txt"
+    latest = html_files[0] if html_files else None
+    if not latest:
+        return
+    latest_name = _os_tr.path.basename(latest)
+    prev_seen = ""
+    if _os_tr.path.exists(tracker_file):
+        prev_seen = open(tracker_file).read().strip()
+    if latest_name != prev_seen:
+        dash_msg = st.session_state.get(dash_session_key, "")
+        if latest_name not in dash_msg:
+            csv_nm = _os_tr.path.basename(csv_files[0]) if csv_files else "N/A"
+            strat_part = latest_name
+            for pfx in ["backtest_report_", "portfolio_report_", "optimization_results_"]:
+                if strat_part.startswith(pfx):
+                    strat_part = strat_part[len(pfx):]
+            strat_part = strat_part.split("_BTCUSD_")[0]
+            st.session_state[dash_session_key] = f"TERMINAL RUN COMPLETE - {strat_part}  |  HTML: {latest_name}  |  CSV: {csv_nm}"
+        open(tracker_file, "w").write(latest_name)
+
 def _display_to_class(display_name):
     fname = _STRAT_REVERSE.get(display_name, display_name)
     if fname in _STRAT_CLASS_OVERRIDE:
@@ -4265,14 +4290,14 @@ with _tab_backtest:
                 except Exception as e:
                     _status.error(f"Error running backtest: {e}")
 
-        if st.session_state.get("sec6_complete_msg"):
-            st.success(st.session_state["sec6_complete_msg"])
-
         st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
         st.markdown("**Backtest Reports**")
 
         import os as _glob_os; html_files = sorted([f for f in glob.glob("output/*.html") if "backtest_report_" in f and "optimization" not in f], key=_glob_os.path.getmtime, reverse=True)
         csv_files = sorted([f for f in glob.glob("output/*.csv") if "trade_log_" in f], key=os.path.getmtime, reverse=True)
+        _check_terminal_run(html_files, csv_files, "seen_terminal_sec6", "sec6_complete_msg", "Backtest")
+        if st.session_state.get("sec6_complete_msg"):
+            st.success(st.session_state["sec6_complete_msg"])
 
         st.markdown("**HTML Reports**")
         if html_files:
@@ -4749,9 +4774,6 @@ with _tab_backtest:
                     except Exception as e:
                         _pp_status.error(f"Error: {e}")
 
-            if st.session_state.get("port_pre_complete_msg"):
-                st.success(st.session_state["port_pre_complete_msg"])
-
         with port_tab2:
             st.markdown("**Dynamic Portfolio - Select Strategies**")
             available_strategies = [
@@ -4850,15 +4872,17 @@ with _tab_backtest:
                         except Exception as e:
                             _pd_status.error(f"Error: {e}")
 
-            if st.session_state.get("port_dyn_complete_msg"):
-                st.success(st.session_state["port_dyn_complete_msg"])
-
         # ================================================================
 
         st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
         st.markdown("**Backtest Reports**")
         port_html = sorted([f for f in glob.glob("output/*.html") if "portfolio_report_" in f], key=_glob_os.path.getmtime, reverse=True)
-        port_csv = sorted([f for f in glob.glob("output/*.csv") if "portfolio_trade_log_" in f], reverse=True)
+        port_csv = sorted([f for f in glob.glob("output/*.csv") if "portfolio_trade_log_" in f], key=_glob_os.path.getmtime, reverse=True)
+        _check_terminal_run(port_html, port_csv, "seen_terminal_port", "port_pre_complete_msg", "Portfolio")
+        if st.session_state.get("port_pre_complete_msg"):
+            st.success(st.session_state["port_pre_complete_msg"])
+        if st.session_state.get("port_dyn_complete_msg"):
+            st.success(st.session_state["port_dyn_complete_msg"])
 
         st.markdown("**Select Report to View/Download**")
         if port_html:
@@ -5033,14 +5057,14 @@ with _tab_backtest:
                 _write_opt_status({"status": "failed"})
                 _opt_status.error(f"Error: {e}")
 
-        if st.session_state.get("sec7_complete_msg"):
-            st.success(st.session_state["sec7_complete_msg"])
-
         st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
         st.markdown("**Optimisation Results**")
 
-        opt_csv_files = sorted([f for f in glob.glob("output/*.csv") if "optimization_results_" in f], reverse=True)
+        opt_csv_files = sorted([f for f in glob.glob("output/*.csv") if "optimization_results_" in f], key=_glob_os.path.getmtime, reverse=True)
         opt_html_files = sorted([f for f in glob.glob("output/*.html") if "optimization_results_" in f], key=_glob_os.path.getmtime, reverse=True)
+        _check_terminal_run(opt_html_files, opt_csv_files, "seen_terminal_sec7", "sec7_complete_msg", "Optimisation")
+        if st.session_state.get("sec7_complete_msg"):
+            st.success(st.session_state["sec7_complete_msg"])
 
         st.markdown("**HTML Reports**")
         if opt_html_files:
