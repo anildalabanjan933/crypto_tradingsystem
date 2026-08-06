@@ -71,7 +71,7 @@ if result:
     _html_out = reporter.generate_html_report()
     _csv_out = reporter.generate_csv_trade_log()
     import os as _os_t
-    print(f"\n=== COMPLETE - {args.strategy} | HTML: {_os_t.path.basename(_html_out)} | CSV: {_os_t.path.basename(_csv_out)} ===")
+    print(f"\n=== TERMINAL RUN COMPLETE - {args.strategy} | HTML: {_os_t.path.basename(_html_out)} | CSV: {_os_t.path.basename(_csv_out)} ===")
 else:
     print("ERROR: Backtest failed")
     sys.exit(1)

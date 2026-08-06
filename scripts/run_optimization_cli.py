@@ -128,4 +128,4 @@ if results:
     import glob as _glob_t, os as _os_t
     _html_matches = sorted(_glob_t.glob(f"output/optimization_results_{strat_name}_{args.symbol}_*.html"), key=_os_t.path.getmtime, reverse=True)
     _html_nm = _os_t.path.basename(_html_matches[0]) if _html_matches else "N/A"
-    print(f"\n=== COMPLETE - {strat_name} | HTML: {_html_nm} | CSV: {_os_t.path.basename(csv_out)} ===")
+    print(f"\n=== TERMINAL RUN COMPLETE - {strat_name} | HTML: {_html_nm} | CSV: {_os_t.path.basename(csv_out)} ===")

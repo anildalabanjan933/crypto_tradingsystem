@@ -4251,7 +4251,9 @@ with _tab_backtest:
                             st.session_state["sec6_force_latest"] = False
                         _html_nm = _glob_os.path.basename(_new_files[0]) if _new_files else "N/A"
                         _csv_nm = _glob_os.path.basename(_new_csvs[0]) if _new_csvs else "N/A"
-                        _status.success(f"COMPLETE - {bt_strategy}  |  HTML: {_html_nm}  |  CSV: {_csv_nm}")
+                        _bt_msg = f"DASHBOARD RUN COMPLETE - {bt_strategy}  |  HTML: {_html_nm}  |  CSV: {_csv_nm}"
+                        st.session_state["sec6_complete_msg"] = _bt_msg
+                        _status.success(_bt_msg)
                         import time as _t; _t.sleep(2)
                         st.rerun()
                     else:
@@ -4262,6 +4264,9 @@ with _tab_backtest:
                     _status.error("Backtest timed out after 5 minutes")
                 except Exception as e:
                     _status.error(f"Error running backtest: {e}")
+
+        if st.session_state.get("sec6_complete_msg"):
+            st.success(st.session_state["sec6_complete_msg"])
 
         st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
         st.markdown("**Backtest Reports**")
@@ -4732,7 +4737,9 @@ with _tab_backtest:
                                 st.session_state["port_force_latest"] = False
                             _html_nm = _glob_os.path.basename(_new_port[0]) if _new_port else "N/A"
                             _csv_nm = _glob_os.path.basename(_new_port_csv[0]) if _new_port_csv else "N/A"
-                            _pp_status.success(f"COMPLETE - S2+S4 Portfolio  |  HTML: {_html_nm}  |  CSV: {_csv_nm}")
+                            _pp_msg = f"DASHBOARD RUN COMPLETE - S2+S4 Portfolio  |  HTML: {_html_nm}  |  CSV: {_csv_nm}"
+                            st.session_state["port_pre_complete_msg"] = _pp_msg
+                            _pp_status.success(_pp_msg)
                             import time as _t; _t.sleep(2)
                             st.rerun()
                         else:
@@ -4741,6 +4748,9 @@ with _tab_backtest:
                             st.code(result.stderr[-2000:])
                     except Exception as e:
                         _pp_status.error(f"Error: {e}")
+
+            if st.session_state.get("port_pre_complete_msg"):
+                st.success(st.session_state["port_pre_complete_msg"])
 
         with port_tab2:
             st.markdown("**Dynamic Portfolio - Select Strategies**")
@@ -4828,7 +4838,9 @@ with _tab_backtest:
                                 _html_nm = _glob_os.path.basename(_new_dyn[0]) if _new_dyn else "N/A"
                                 _csv_nm = _glob_os.path.basename(_new_dyn_csv[0]) if _new_dyn_csv else "N/A"
                                 _strat_nm = ",".join(selected_strategies) if selected_strategies else "N/A"
-                                _pd_status.success(f"COMPLETE - {_strat_nm}  |  HTML: {_html_nm}  |  CSV: {_csv_nm}")
+                                _pd_msg = f"DASHBOARD RUN COMPLETE - {_strat_nm}  |  HTML: {_html_nm}  |  CSV: {_csv_nm}"
+                                st.session_state["port_dyn_complete_msg"] = _pd_msg
+                                _pd_status.success(_pd_msg)
                                 import time as _t; _t.sleep(2)
                                 st.rerun()
                             else:
@@ -4838,6 +4850,8 @@ with _tab_backtest:
                         except Exception as e:
                             _pd_status.error(f"Error: {e}")
 
+            if st.session_state.get("port_dyn_complete_msg"):
+                st.success(st.session_state["port_dyn_complete_msg"])
 
         # ================================================================
 
@@ -5003,7 +5017,7 @@ with _tab_backtest:
                     st.session_state["sec7_force_latest"] = False
                     _html_nm = _glob_os.path.basename(_new_opt[0]) if _new_opt else "N/A"
                     _csv_nm = _glob_os.path.basename(_new_opt_csv[0]) if _new_opt_csv else "N/A"
-                    _opt_msg = f"COMPLETE - {opt_strategy}  |  HTML: {_html_nm}  |  CSV: {_csv_nm}"
+                    _opt_msg = f"DASHBOARD RUN COMPLETE - {opt_strategy}  |  HTML: {_html_nm}  |  CSV: {_csv_nm}"
                     st.session_state["sec7_complete_msg"] = _opt_msg
                     _opt_status.success(_opt_msg)
                     import time as _t; _t.sleep(2)
