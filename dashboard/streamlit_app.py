@@ -819,10 +819,10 @@ def _load14(csv_pattern, from_dt=None):
                 pnl_today = pnl_today_inr / _INR14 if _INR14 else 0
             else:
                 pnl_today = _today_df['net_pnl'].sum()
-            pnl_month = df[df['exit_dt'] >= _pd14.Timestamp(month_s)]['net_pnl'].sum()
-            pnl_week  = df[df['exit_dt'] >= _pd14.Timestamp(week_s)]['net_pnl'].sum()
+            pnl_month = df[df['entry_datetime'] >= _pd14.Timestamp(month_s)]['net_pnl'].sum()
+            pnl_week  = df[df['entry_datetime'] >= _pd14.Timestamp(week_s)]['net_pnl'].sum()
             # This month max DD
-            df_mo = df[df['exit_dt'] >= _pd14.Timestamp(month_s)]
+            df_mo = df[df['entry_datetime'] >= _pd14.Timestamp(month_s)]
             pls_mo = df_mo['net_pnl'].tolist()
             cum_mo,pk_mo,dd_mo = 0,0,0
             for v in pls_mo:
@@ -847,7 +847,7 @@ def _load14(csv_pattern, from_dt=None):
         roc_monthly = roc / months
         # Today + month trade count
         today_count = len(df[df['entry_datetime'].dt.date == today_s.date()]) if 'entry_datetime' in df.columns else 0
-        month_count = len(df[df['exit_dt'] >= _pd14.Timestamp(month_s)]) if 'exit_dt' in df.columns else 0
+        month_count = len(df[df['entry_datetime'] >= _pd14.Timestamp(month_s)]) if 'entry_datetime' in df.columns else 0
         # extra metrics
         import math as _m14x, numpy as _np14x
         pc='net_pnl'
