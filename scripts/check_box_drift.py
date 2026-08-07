@@ -41,16 +41,16 @@ def get_engine_box_size(label):
 def main():
     issues = []
 
-    # S2 check: box = round(last_close * 0.001)
+    # S4V2 check: box = round(first_close * 0.001) - 30m timeframe
     try:
         s2_closes = get_closes_30m()
-        s2_expected = max(1, round(s2_closes.iloc[-1] * 0.0010))
-        s2_engine = get_engine_box_size("S2")
+        s2_expected = max(1, round(s2_closes.iloc[0] * 0.0010))
+        s2_engine = get_engine_box_size("S4V2")
         if s2_engine is not None and s2_engine != s2_expected:
-            issues.append(f"S2 DRIFT: engine={s2_engine} expected={s2_expected}")
-        print(f"S2: engine={s2_engine} expected={s2_expected} {'MATCH' if s2_engine==s2_expected else 'DRIFT!'}")
+            issues.append(f"S4V2 DRIFT: engine={s2_engine} expected={s2_expected}")
+        print(f"S4V2: engine={s2_engine} expected={s2_expected} {'MATCH' if s2_engine==s2_expected else 'DRIFT!'}")
     except Exception as e:
-        print(f"S2 check failed: {e}")
+        print(f"S4V2 check failed: {e}")
 
     # S4 check: box = round(first_close * 0.001)
     try:

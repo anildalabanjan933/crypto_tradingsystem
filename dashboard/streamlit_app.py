@@ -8,7 +8,7 @@ except:
 
 # Strategy display name mapping
 _STRAT_DISPLAY = {
-    "renko_reversal_strategy":          "S2 - Renko Reversal (Bot Running)",
+    "renko_smiio_supertrend_v2_strategy": "S4V2 - Renko SMIIO V2 (Bot Running)",
     "renko_smiio_supertrend_strategy":  "S4 - Renko SMIIO Supertrend (Bot Running)",
     "renko_breakout_strategy":          "Renko Breakout",
     "renko_options_strategy":           "Renko Options",
@@ -24,8 +24,8 @@ def _get_strat_list():
                     if not _o.path.basename(p).startswith("_")
                     and _o.path.basename(p).endswith("_strategy.py")
                     and _o.path.basename(p) != "base_strategy.py"])
-    # S2 and S4 first, then rest alphabetically
-    priority = ["renko_reversal_strategy", "renko_smiio_supertrend_strategy"]
+    # S4V2 and S4 first, then rest alphabetically
+    priority = ["renko_smiio_supertrend_v2_strategy", "renko_smiio_supertrend_strategy"]
     ordered = [f for f in priority if f in files] + [f for f in files if f not in priority]
     return [_STRAT_DISPLAY.get(s, s) for s in ordered]
 
@@ -168,7 +168,7 @@ def _fetch_delta_api_status():
         if r.status_code != 200:
             return f"FAIL_{r.status_code}"
         from engine.order_manager import OrderManager
-        om = OrderManager(os.getenv("S2_API_KEY"), os.getenv("S2_API_SECRET"), testnet=True)
+        om = OrderManager(os.getenv("S4V2_API_KEY"), os.getenv("S4V2_API_SECRET"), testnet=True)
         pos = om.get_position()
         if not pos.get('success', False):
             return "AUTH_FAIL"
@@ -177,22 +177,22 @@ def _fetch_delta_api_status():
         return f"ERROR_{str(e)[:20]}"
 
 def _fetch_key_validity():
-    _s2k = os.environ.get("S2_API_KEY","")
-    _s2s = os.environ.get("S2_API_SECRET","")
+    _s4v2k = os.environ.get("S4V2_API_KEY","")
+    _s4v2s = os.environ.get("S4V2_API_SECRET","")
     _s4k = os.environ.get("S4_API_KEY","")
     _s4s = os.environ.get("S4_API_SECRET","")
-    if not _s2k or not _s2s:
-        return ("RED", "S2 API key or secret missing in .env. Bot cannot trade until added.")
+    if not _s4v2k or not _s4v2s:
+        return ("RED", "S4V2 API key or secret missing in .env. Bot cannot trade until added.")
     if not _s4k or not _s4s:
         return ("RED", "S4 API key or secret missing in .env. Bot cannot trade until added.")
     try:
         from engine.order_manager import OrderManager
-        _om_s2 = OrderManager(_s2k, _s2s, testnet=True)
-        _p_s2 = _om_s2.get_position()
-        if not _p_s2.get('success', False):
-            return ("RED", "Delta rejected the S2 API key. It may be wrong, expired, or deleted.")
+        _om_s4v2 = OrderManager(_s4v2k, _s4v2s, testnet=True)
+        _p_s4v2 = _om_s4v2.get_position()
+        if not _p_s4v2.get('success', False):
+            return ("RED", "Delta rejected the S4V2 API key. It may be wrong, expired, or deleted.")
     except Exception as _e:
-        return ("RED", f"Could not verify S2 API key: {str(_e)[:50]}")
+        return ("RED", f"Could not verify S4V2 API key: {str(_e)[:50]}")
     try:
         from engine.order_manager import OrderManager
         _om_s4 = OrderManager(_s4k, _s4s, testnet=True)
@@ -201,7 +201,7 @@ def _fetch_key_validity():
             return ("RED", "Delta rejected the S4 API key. It may be wrong, expired, or deleted.")
     except Exception as _e:
         return ("RED", f"Could not verify S4 API key: {str(_e)[:50]}")
-    return ("GREEN", "S2 and S4 API keys are valid and accepted by Delta.")
+    return ("GREEN", "S4V2 and S4 API keys are valid and accepted by Delta.")
 
 def _fetch_delta_full_status():
     import requests as _rq3
@@ -225,12 +225,12 @@ def _fetch_delta_full_status():
         if r.status_code != 200:
             return ("RED", f"Delta is not responding normally (code {r.status_code}). This is a server issue on Delta side.")
         from engine.order_manager import OrderManager
-        om = OrderManager(os.getenv("S2_API_KEY"), os.getenv("S2_API_SECRET"), testnet=True)
+        om = OrderManager(os.getenv("S4V2_API_KEY"), os.getenv("S4V2_API_SECRET"), testnet=True)
         pos = om.get_position()
         if not pos.get('success', False):
             return ("RED", "Bot cannot log in to Delta. Check API key or secret.")
         _found = None
-        for _logf in ["logs/live_trading_s2.log", "logs/live_trading_s4.log"]:
+        for _logf in ["logs/live_trading_s4v2.log", "logs/live_trading_s4.log"]:
             try:
                 _lines = open(_logf).readlines()[-150:]
             except:
@@ -697,7 +697,7 @@ def check_log_for_errors(log_path):
 # ================================================================
 config = load_config()
 system = config.get("system", {})
-s2_log = system.get("log_path_s2", "logs/live_trading_s2.log")
+s4v2_log = system.get("log_path_s4v2", "logs/live_trading_s4v2.log")
 s4_log = system.get("log_path_s4", "logs/live_trading_s4.log")
 
 # ================================================================
@@ -1277,9 +1277,9 @@ def _tbl14(d2, d4, label, period_str, df2=None, df4=None):
       <th style="{_THFW14}" colspan="3">Forward Test (Live)</th>
     </tr>
     <tr>
-      <th style="{_THGR14}">S2</th><th style="{_THGR14}">S4</th><th style="{_THGR14}">Portfolio</th>
-      <th style="{_THOG14}">S2</th><th style="{_THOG14}">S4</th><th style="{_THOG14}">Portfolio</th>
-      <th style="{_THFW14}">S2</th><th style="{_THFW14}">S4</th><th style="{_THFW14}">Portfolio</th>
+      <th style="{_THGR14}">S4V2</th><th style="{_THGR14}">S4</th><th style="{_THGR14}">Portfolio</th>
+      <th style="{_THOG14}">S4V2</th><th style="{_THOG14}">S4</th><th style="{_THOG14}">Portfolio</th>
+      <th style="{_THFW14}">S4V2</th><th style="{_THFW14}">S4</th><th style="{_THFW14}">Portfolio</th>
     </tr>
     </thead>
     <tbody>
@@ -1334,13 +1334,13 @@ def _reload_all_data():
     _now14 = _dt14.datetime.utcnow()
     _1yr_from = (_now14 - _dt14.timedelta(days=365)).strftime("%Y-%m-%d")
     _full_from = "2024-01-01"
-    _d2_1yr  = _load14("output/trade_log_RenkoReversal*.csv",       _1yr_from)
-    _d4_1yr  = _load14("output/trade_log_RenkoSMIIOSupertrend*.csv",_1yr_from)
-    _d2_full = _load14("output/trade_log_RenkoReversal*.csv",       _full_from)
-    _d4_full = _load14("output/trade_log_RenkoSMIIOSupertrend*.csv",_full_from)
+    _d2_1yr  = _load14("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv", _1yr_from)
+    _d4_1yr  = _load14("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv",   _1yr_from)
+    _d2_full = _load14("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv", _full_from)
+    _d4_full = _load14("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv",   _full_from)
     _1yr_label = f"{(_now14-_dt14.timedelta(days=365)).strftime('%d-%b-%Y')} to {_now14.strftime('%d-%b-%Y')} (1 Year)"
     _full_label= f"2024-01-01 to {_now14.strftime('%d-%b-%Y')} (Full CSV)"
-    _s2_key=_os14.getenv("S2_API_KEY",""); _s2_sec=_os14.getenv("S2_API_SECRET","")
+    _s2_key=_os14.getenv("S4V2_API_KEY",""); _s2_sec=_os14.getenv("S4V2_API_SECRET","")
     _s4_key=_os14.getenv("S4_API_KEY",""); _s4_sec=_os14.getenv("S4_API_SECRET","")
     _fwd_base="https://cdn-ind.testnet.deltaex.org"
     _df2_fwd=_load14_fwd(84,_s2_key,_s2_sec,_fwd_base)
@@ -1365,8 +1365,8 @@ with _tab_monitor:
         return (_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(
             _os_lamps.path.getmtime(path))).total_seconds()/60
 
-    # S2 BOT
-    try: _s2_ok = _log_age_min("logs/live_trading_s2.log") < 2
+    # S4V2 BOT
+    try: _s2_ok = _log_age_min("logs/live_trading_s4v2.log") < 2
     except: _s2_ok = False
 
     # S4 BOT
@@ -1386,8 +1386,8 @@ with _tab_monitor:
         _eng_warn = not _eng_ok and (_hb_age < 30 or _eng_log_age < 30)
     except: _eng_ok = False; _eng_warn = False
 
-    # TM1 S2
-    try: _tm1s2_ok = _log_age_min("logs/live_trading_testmember1_s2.log") < 2
+    # TM1 S4V2
+    try: _tm1s2_ok = _log_age_min("logs/live_trading_testmember1_s4v2.log") < 2
     except: _tm1s2_ok = False
 
     # TM1 S4
@@ -1447,7 +1447,7 @@ with _tab_monitor:
 
     # LAST ORDER - check if any order placed in last 7 days (not stuck)
     try:
-        _s2_log_lines = open("logs/live_trading_s2.log").readlines()
+        _s2_log_lines = open("logs/live_trading_s4v2.log").readlines()
         _s4_log_lines = open("logs/live_trading_s4.log").readlines()
         _all_lines = _s2_log_lines + _s4_log_lines
         _order_lines = [l for l in _all_lines if "[ORDER] ENTRY" in l or "[ORDER] EXIT" in l]
@@ -1457,7 +1457,7 @@ with _tab_monitor:
 
     # POSITION SYNC - no ghost position (check last startup reconciliation)
     try:
-        _pos_lines = open("logs/live_trading_s2.log").readlines()[-200:]
+        _pos_lines = open("logs/live_trading_s4v2.log").readlines()[-200:]
         _pos_lines += open("logs/live_trading_s4.log").readlines()[-200:]
         _ghost_found = any("Position mismatch" in l for l in _pos_lines)
         _pos_ok = not _ghost_found
@@ -1466,7 +1466,7 @@ with _tab_monitor:
 
     # ENTRY TIMING - check if last entry was stale signal skip
     try:
-        _s2_recent = open("logs/live_trading_s2.log").readlines()[-500:]
+        _s2_recent = open("logs/live_trading_s4v2.log").readlines()[-500:]
         _s4_recent = open("logs/live_trading_s4.log").readlines()[-500:]
         _stale_s2 = any("STALE" in l or "signal too old" in l for l in _s2_recent)
         _stale_s4 = any("STALE" in l or "signal too old" in l for l in _s4_recent)
@@ -1476,7 +1476,7 @@ with _tab_monitor:
 
     # Build 2 rows of lamps
     _row1 = (
-        _lamp("S2 BOT", _s2_ok) +
+        _lamp("S4V2 BOT", _s2_ok) +
         _lamp("S4 BOT", _s4_ok) +
         _lamp("ENGINE", _eng_ok, _eng_warn) +
         _lamp("SIGNAL", _sig_ok, _sig_warn) +
@@ -1485,7 +1485,7 @@ with _tab_monitor:
         _lamp("DELTA API", _api_ok)
     )
     _row2 = (
-        _lamp("TM1 S2", _tm1s2_ok) +
+        _lamp("TM1 S4V2", _tm1s2_ok) +
         _lamp("TM1 S4", _tm1s4_ok) +
         _lamp("BOUNDARY", _bw_ok) +
         _lamp("LAST ORDER", _last_order_ok, _last_order_warn) +
@@ -1505,7 +1505,7 @@ with _tab_monitor:
     if not _csv_ok:
         _lamp_msgs.append(("yellow" if _csv_warn else "red", "CSV: Signal file not updated recently. New trades may be missed."))
     if not _tm1s2_ok:
-        _lamp_msgs.append(("red", "TM1 S2: TestMember1 S2 bot log stuck or missing."))
+        _lamp_msgs.append(("red", "TM1 S4V2: TestMember1 S4V2 bot log stuck or missing."))
     if not _tm1s4_ok:
         _lamp_msgs.append(("red", "TM1 S4: TestMember1 S4 bot log stuck or missing."))
     if not _bw_ok:
@@ -1526,9 +1526,9 @@ with _tab_monitor:
     else:
         st.success("All monitor checks normal: signal, websocket, csv, test accounts, boundary, orders, position, and timing are all healthy.")
 
-    # S2 BOT
+    # S4V2 BOT
     try:
-        _s2l = _os_lamps.path.getmtime("logs/live_trading_s2.log")
+        _s2l = _os_lamps.path.getmtime("logs/live_trading_s4v2.log")
         _s2_ok = ((_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(_s2l)).total_seconds() / 60) < 2
     except: _s2_ok = False
 
@@ -1550,9 +1550,9 @@ with _tab_monitor:
         _eng_warn = 2 < _hb_age < 15
     except: _eng_ok = False; _eng_warn = False
 
-    # TM1 S2
+    # TM1 S4V2
     try:
-        _tm1s2l = _os_lamps.path.getmtime("logs/live_trading_testmember1_s2.log")
+        _tm1s2l = _os_lamps.path.getmtime("logs/live_trading_testmember1_s4v2.log")
         _tm1s2_ok = ((_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(_tm1s2l)).total_seconds() / 60) < 2
     except: _tm1s2_ok = False
 
@@ -1585,22 +1585,22 @@ with _tab_monitor:
 
     disk_pct, disk_free = _timed('disk_usage', 30, _fetch_disk)
     git_commit = _timed('git_commit', 60, _fetch_git)
-    s2_last = _timed('s2_last_sig', 15, _fetch_log_signal, s2_log)
+    s2_last = _timed('s2_last_sig', 15, _fetch_log_signal, s4v2_log)
     s4_last = _timed('s4_last_sig', 15, _fetch_log_signal, s4_log)
-    s2_error = _timed('s2_log_err', 15, _fetch_log_errors, s2_log)
+    s2_error = _timed('s2_log_err', 15, _fetch_log_errors, s4v2_log)
     s4_error = _timed('s4_log_err', 15, _fetch_log_errors, s4_log)
 
     c1, c2, c3, c4, c5 = st.columns(5)
 
     with c1:
-        st.markdown("**S2 BOT**")
+        st.markdown("**S4V2 BOT**")
         try:
             import time as _t_s2c
-            if not os.path.exists(s2_log):
+            if not os.path.exists(s4v2_log):
                 st.error("NOT STARTED")
                 st.caption("Bot log file not found. Bot may never have started.")
             else:
-                _s2_age_c1 = (_t_s2c.time() - os.path.getmtime(s2_log)) / 60
+                _s2_age_c1 = (_t_s2c.time() - os.path.getmtime(s4v2_log)) / 60
                 if _s2_age_c1 > 10:
                     st.error("STUCK")
                     st.caption(f"No update in {int(_s2_age_c1)} min. Bot may be stuck or crashed.")
@@ -1692,17 +1692,17 @@ with _tab_monitor:
     # CARD 1 - BOT LOG STATUS + ENGINE STATUS
     with _cr2a:
         try:
-            _s2_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s2.log")) / 60 if os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s2.log") else 999
+            _s2_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4v2.log")) / 60 if os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4v2.log") else 999
             _s4_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4.log")) / 60 if os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4.log") else 999
             _eng_log = "/home/anildalabanjan933/crypto_trading_system/logs/renko_state_engine.log"
             _eng_age = (_t_cards.time() - os.path.getmtime(_eng_log)) / 60 if os.path.exists(_eng_log) else 999
             st.markdown("**BOT LOG**")
             if _s2_log_age > 10 or _s4_log_age > 10:
                 st.error("INACTIVE")
-                st.caption(f"S2: {int(_s2_log_age)}m | S4: {int(_s4_log_age)}m no update")
+                st.caption(f"S4V2: {int(_s2_log_age)}m | S4: {int(_s4_log_age)}m no update")
             else:
                 st.success("ACTIVE")
-                st.caption(f"S2: {int(_s2_log_age)}m ago | S4: {int(_s4_log_age)}m ago")
+                st.caption(f"S4V2: {int(_s2_log_age)}m ago | S4: {int(_s4_log_age)}m ago")
             st.markdown("**ENGINE**")
             if _eng_age > 10:
                 st.error(f"DEAD - {int(_eng_age)}m no update")
@@ -1764,7 +1764,7 @@ with _tab_monitor:
     with _cr3a:
         try:
             _match_pct = None
-            for _lp in ["logs/live_trading_s2.log", "logs/live_trading_s4.log"]:
+            for _lp in ["logs/live_trading_s4v2.log", "logs/live_trading_s4.log"]:
                 if os.path.exists(_lp):
                     with open(_lp) as _lf:
                         _lines = _lf.readlines()
@@ -1797,7 +1797,7 @@ with _tab_monitor:
     with _cr3b:
         try:
             _fwd_count = 0
-            for _lp in ["logs/live_trading_s2.log", "logs/live_trading_s4.log"]:
+            for _lp in ["logs/live_trading_s4v2.log", "logs/live_trading_s4.log"]:
                 if os.path.exists(_lp):
                     with open(_lp) as _lf:
                         _lines = _lf.readlines()
@@ -1827,7 +1827,7 @@ with _tab_monitor:
     with _cr3c:
         try:
             _pnl_diff = None
-            for _lp in ["logs/live_trading_s2.log", "logs/live_trading_s4.log"]:
+            for _lp in ["logs/live_trading_s4v2.log", "logs/live_trading_s4.log"]:
                 if os.path.exists(_lp):
                     with open(_lp) as _lf:
                         _lines = _lf.readlines()
@@ -1866,12 +1866,12 @@ with _tab_monitor:
         alerts.append(("red", f"DISK CRITICAL: {disk_pct}% used - clean up immediately"))
     elif disk_pct > 70:
         alerts.append(("yellow", f"DISK WARNING: {disk_pct}% used - monitor closely"))
-    if not os.path.exists(s2_log):
-        alerts.append(("red", "S2 LOG NOT FOUND - bot may not be running"))
+    if not os.path.exists(s4v2_log):
+        alerts.append(("red", "S4V2 LOG NOT FOUND - bot may not be running"))
     if not os.path.exists(s4_log):
         alerts.append(("red", "S4 LOG NOT FOUND - bot may not be running"))
     if s2_error:
-        alerts.append(("red", f"S2 ERROR DETECTED: {s2_error}"))
+        alerts.append(("red", f"S4V2 ERROR DETECTED: {s2_error}"))
     if s4_error:
         alerts.append(("red", f"S4 ERROR DETECTED: {s4_error}"))
 
@@ -1879,7 +1879,7 @@ with _tab_monitor:
     try:
         import time as _t
         now_ts = _t.time()
-        for bot_name, log_path in [("S2", s2_log), ("S4", s4_log)]:
+        for bot_name, log_path in [("S4V2", s4v2_log), ("S4", s4_log)]:
             if os.path.exists(log_path):
                 log_age = now_ts - os.path.getmtime(log_path)
                 if log_age > 300:
@@ -1889,7 +1889,7 @@ with _tab_monitor:
 
     # New order detection
     try:
-        for bot_name, log_path in [("S2", s2_log), ("S4", s4_log)]:
+        for bot_name, log_path in [("S4V2", s4v2_log), ("S4", s4_log)]:
             if os.path.exists(log_path):
                 with open(log_path, 'r') as lf:
                     lines = lf.readlines()
@@ -1910,7 +1910,7 @@ with _tab_monitor:
 
     # Position closed detection
     try:
-        for bot_name, log_path in [("S2", s2_log), ("S4", s4_log)]:
+        for bot_name, log_path in [("S4V2", s4v2_log), ("S4", s4_log)]:
             if os.path.exists(log_path):
                 with open(log_path, 'r') as lf:
                     lines = lf.readlines()
@@ -2032,7 +2032,7 @@ with _tab_monitor:
             else:
                 st.success("PYCACHE: CLEAN")
         with c3:
-            s2_size = round(os.path.getsize(s2_log)/1024/1024, 1) if os.path.exists(s2_log) else 0
+            s2_size = round(os.path.getsize(s4v2_log)/1024/1024, 1) if os.path.exists(s4v2_log) else 0
             s4_size = round(os.path.getsize(s4_log)/1024/1024, 1) if os.path.exists(s4_log) else 0
             total_log = s2_size + s4_size
             if total_log > 100:
@@ -2067,7 +2067,7 @@ with _tab_monitor:
         with b3:
             if st.button("TRIM LOGS", key="sec12_trim"):
                 try:
-                    for log_path in [s2_log, s4_log]:
+                    for log_path in [s4v2_log, s4_log]:
                         if os.path.exists(log_path):
                             lines = open(log_path, encoding='utf-8', errors='ignore').readlines()
                             if len(lines) > 10000:
@@ -2095,10 +2095,10 @@ with _tab_monitor:
         # 1. CHECK BOT SCREENS RUNNING (cached 30s)
         try:
             _scr_ls = _timed('err_screen_ls', 30, _fetch_screen_list)
-            if 'live_s2' in _scr_ls:
-                ok.append("S2 bot screen: RUNNING")
+            if 'live_s4v2' in _scr_ls:
+                ok.append("S4V2 bot screen: RUNNING")
             else:
-                errors.append("S2 bot screen: NOT RUNNING - run bash start.sh on VM")
+                errors.append("S4V2 bot screen: NOT RUNNING - run bash start.sh on VM")
             if 'live_s4' in _scr_ls:
                 ok.append("S4 bot screen: RUNNING")
             else:
@@ -2107,7 +2107,7 @@ with _tab_monitor:
             errors.append(f"Screen check failed: {e}")
 
         # 2. CHECK LOG FILES EXIST AND RECENT
-        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log')]:
             try:
                 if os.path.exists(log):
                     mtime = os.path.getmtime(log)
@@ -2124,7 +2124,7 @@ with _tab_monitor:
                 errors.append(f"{bot} log check failed: {e}")
 
         # 3. CHECK FOR ERRORS IN LOGS
-        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log')]:
             try:
                 if os.path.exists(log):
                     lines = open(log).readlines()
@@ -2192,7 +2192,7 @@ with _tab_monitor:
         pass
 
         # 7. CHECK RECENT ALGOTEST SUCCESS
-        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log')]:
             try:
                 if os.path.exists(log):
                     lines = open(log).readlines()
@@ -2216,7 +2216,7 @@ with _tab_monitor:
 
 
         # 8. CHECK OPEN POSITION > 24H (orphan position risk)
-        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log')]:
             try:
                 if os.path.exists(log):
                     lines = open(log).readlines()
@@ -2244,7 +2244,7 @@ with _tab_monitor:
                 warnings.append(f"{bot} position check failed: {e}")
 
         # 9. CHECK NO ORDERS IN LAST 48H (bot alive but not trading)
-        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log')]:
             try:
                 if os.path.exists(log):
                     lines = open(log).readlines()
@@ -2267,7 +2267,7 @@ with _tab_monitor:
 
         # 10. CHECK DUPLICATE ORDERS (same timestamp fired twice)
         # Only check orders after VALID_FROM (last_known_ts file)
-        for bot, log, ts_file in [('S2', 'logs/live_trading_s2.log', 'logs/last_known_ts_s2.txt'),
+        for bot, log, ts_file in [('S4V2', 'logs/live_trading_s4v2.log', 'logs/last_known_ts_s4v2.txt'),
                                    ('S4', 'logs/live_trading_s4.log', 'logs/last_known_ts_s4.txt')]:
             try:
                 if os.path.exists(log):
@@ -2303,7 +2303,7 @@ with _tab_monitor:
 
 
         # 11. CHECK BOT CYCLING HEALTH (last [SIGNALS] line timestamp)
-        for bot, log in [('S2', 'logs/live_trading_s2.log'), ('S4', 'logs/live_trading_s4.log')]:
+        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log')]:
             try:
                 if os.path.exists(log):
                     lines = open(log).readlines()
@@ -2358,7 +2358,7 @@ with _tab_monitor:
                 else:
                     ok.append(f"Engine (renko_state_engine): RUNNING - last update {int(_eng_age_mins)}m ago")
             # Check signal files age
-            for _sf, _label in [("logs/live_signal_s2.txt","S2 signal"), ("logs/live_signal_s4.txt","S4 signal")]:
+            for _sf, _label in [("logs/live_signal_s4v2.txt","S4V2 signal"), ("logs/live_signal_s4.txt","S4 signal")]:
                 if os.path.exists(_sf):
                     _sf_age = (_time_eng.time() - os.path.getmtime(_sf)) / 60
                     if _sf_age > 30:
@@ -2385,7 +2385,7 @@ with _tab_monitor:
         try:
             if os.path.exists('.env'):
                 env_content = open('.env').read()
-                required_keys = ['S2_API_KEY', 'S4_API_KEY', 'S2_API_SECRET', 'S4_API_SECRET']
+                required_keys = ['S4V2_API_KEY', 'S4_API_KEY', 'S4V2_API_SECRET', 'S4_API_SECRET']
                 missing_keys = [k for k in required_keys if k not in env_content]
                 if missing_keys:
                     errors.append(f".env MISSING API KEYS: {missing_keys} - bots cannot trade")
@@ -2710,9 +2710,9 @@ with _tab_monitor:
             }
 
         s2_dbg = _get_bot_debug(
-            f'{_BASE_DIR}/logs/live_trading_s2.log',
-            f'{_BASE_DIR}/logs/last_known_ts_s2.txt',
-            f'{_BASE_DIR}/logs/live_signal_s2.txt', 'S2')
+            f'{_BASE_DIR}/logs/live_trading_s4v2.log',
+            f'{_BASE_DIR}/logs/last_known_ts_s4v2.txt',
+            f'{_BASE_DIR}/logs/live_signal_s4v2.txt', 'S4V2')
         s4_dbg = _get_bot_debug(
             f'{_BASE_DIR}/logs/live_trading_s4.log',
             f'{_BASE_DIR}/logs/last_known_ts_s4.txt',
@@ -2728,7 +2728,7 @@ with _tab_monitor:
             f"<table style='width:100%;border-collapse:collapse;'>"
             f"<thead><tr>"
             f"<th style='{_TH1C}'>Check</th>"
-            f"<th style='{_TH1C}'>S2</th>"
+            f"<th style='{_TH1C}'>S4V2</th>"
             f"<th style='{_TH1C}'>S4</th>"
             f"</tr></thead><tbody>"
             + _dbg_row("Bot Status", s2_dbg['bot_status'][0], s4_dbg['bot_status'][0], s2_dbg['bot_status'][1], s4_dbg['bot_status'][1])
@@ -2873,7 +2873,7 @@ with _tab_monitor:
     _fvt_issues = []
     _fvt_cards = []
     for _label, _log, _tf, _sigcsv in [
-        ("S2", "logs/live_trading_s2.log", 30, "logs/signals_s2.csv"),
+        ("S4V2", "logs/live_trading_s4v2.log", 30, "logs/signals_s4v2.csv"),
         ("S4", "logs/live_trading_s4.log", 120, "logs/signals_s4.csv"),
     ]:
         _rows = _fvt_parse_orders(_log, _tf)
@@ -3079,7 +3079,7 @@ with _tab_trading:
             m_cols = st.columns([2,2,1,1,1,1,1])
             m_cols[0].markdown("**Name**")
             m_cols[1].markdown("**Account**")
-            m_cols[2].markdown("**S2**")
+            m_cols[2].markdown("**S4V2**")
             m_cols[3].markdown("**S4**")
             m_cols[4].markdown("**Start**")
             m_cols[5].markdown("**Stop**")
@@ -3088,11 +3088,11 @@ with _tab_trading:
                 mc = st.columns([2,2,1,1,1,1,1])
                 mc[0].write(m.get('name',''))
                 mc[1].write(m.get('account','Testnet'))
-                # Check S2 status
+                # Check S4V2 status
                 _mname = m.get('name','').lower().replace(' ','_')
-                s2_screen = f"{_mname}_s2"
+                s2_screen = f"{_mname}_s4v2"
                 s4_screen = f"{_mname}_s4"
-                _s2_log = "logs/live_trading_s2.log"
+                _s2_log = "logs/live_trading_s4v2.log"
                 _s4_log = "logs/live_trading_s4.log"
                 import subprocess
                 _scr_out = _timed('screen_list', 30, _fetch_screen_list)
@@ -3102,8 +3102,8 @@ with _tab_trading:
                 mc[3].markdown(f"<span style='color:{'green' if s4_running else 'red'}'>{'ON' if s4_running else 'OFF'}</span>", unsafe_allow_html=True)
                 if mc[4].button("▶", key=f"m_start_{idx}"):
                     try:
-                        env = f"S2_API_KEY={m.get('s2_key','')} S2_API_SECRET={m.get('s2_secret','')} S4_API_KEY={m.get('s4_key','')} S4_API_SECRET={m.get('s4_secret','')}"
-                        subprocess.Popen(['bash','-c',f'screen -S {s2_screen} -X quit 2>/dev/null; sleep 1; screen -dmS {s2_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && export {env} && .venv/bin/python3 scripts/signal_replay_s2.py >> {_s2_log} 2>&1"'])
+                        env = f"S4V2_API_KEY={m.get('s2_key','')} S4V2_API_SECRET={m.get('s2_secret','')} S4_API_KEY={m.get('s4_key','')} S4_API_SECRET={m.get('s4_secret','')}"
+                        subprocess.Popen(['bash','-c',f'screen -S {s2_screen} -X quit 2>/dev/null; sleep 1; screen -dmS {s2_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && export {env} && .venv/bin/python3 scripts/signal_replay_s4v2.py >> {_s2_log} 2>&1"'])
                         subprocess.Popen(['bash','-c',f'screen -S {s4_screen} -X quit 2>/dev/null; sleep 1; screen -dmS {s4_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && export {env} && .venv/bin/python3 scripts/signal_replay_s4.py >> {_s4_log} 2>&1"'])
                         st.success(f"{m.get('name')} bots started")
                     except Exception as e:
@@ -3127,13 +3127,13 @@ with _tab_trading:
             with st.form("add_member_form"):
                 m_name    = st.text_input("Member Name (e.g. Friend1)")
                 m_account = st.text_input("Account Label (e.g. Testnet)")
-                m_bots    = st.multiselect("Bots to enable", ["S2","S4"], default=["S2","S4"])
+                m_bots    = st.multiselect("Bots to enable", ["S4V2","S4"], default=["S4V2","S4"])
                 col1, col2 = st.columns(2)
                 with col1:
-                    if "S2" in m_bots:
-                        m_s2_key  = st.text_input("S2 API Key")
-                        m_s2_sec  = st.text_input("S2 API Secret", type="password")
-                        m_lots_s2 = st.number_input("S2 Lots", min_value=1, value=100)
+                    if "S4V2" in m_bots:
+                        m_s2_key  = st.text_input("S4V2 API Key")
+                        m_s2_sec  = st.text_input("S4V2 API Secret", type="password")
+                        m_lots_s2 = st.number_input("S4V2 Lots", min_value=1, value=100)
                     else:
                         m_s2_key = m_s2_sec = ""; m_lots_s2 = 100
                 with col2:
@@ -3166,7 +3166,7 @@ with _tab_trading:
 
                         # 1. Create signal replay scripts
                         for _bot, _key, _sec, _lots in [
-                            ('s2', m_s2_key, m_s2_sec, m_lots_s2),
+                            ('s4v2', m_s2_key, m_s2_sec, m_lots_s2),
                             ('s4', m_s4_key, m_s4_sec, m_lots_s4)
                         ]:
                             if _bot.upper() not in m_bots: continue
@@ -3203,9 +3203,9 @@ with _tab_trading:
                             _env_path = f"{_base}/.env"
                             _env_content = open(_env_path).read()
                             _new_keys = ""
-                            if m_s2_key and f"{_mkey.upper()}_S2_API_KEY" not in _env_content:
-                                _new_keys += "\n" + f"{_mkey.upper()}_S2_API_KEY={m_s2_key}"
-                                _new_keys += "\n" + f"{_mkey.upper()}_S2_API_SECRET={m_s2_sec}"
+                            if m_s2_key and f"{_mkey.upper()}_S4V2_API_KEY" not in _env_content:
+                                _new_keys += "\n" + f"{_mkey.upper()}_S4V2_API_KEY={m_s2_key}"
+                                _new_keys += "\n" + f"{_mkey.upper()}_S4V2_API_SECRET={m_s2_sec}"
                             if m_s4_key and f"{_mkey.upper()}_S4_API_KEY" not in _env_content:
                                 _new_keys += "\n" + f"{_mkey.upper()}_S4_API_KEY={m_s4_key}"
                                 _new_keys += "\n" + f"{_mkey.upper()}_S4_API_SECRET={m_s4_sec}"
@@ -3232,8 +3232,8 @@ with _tab_trading:
                                     )
                             if _new_screens:
                                 _start_content = _start_content.replace(
-                                    'echo "S2 and S4 started"',
-                                    f'echo "S2 and S4 started"{_new_screens}'
+                                    'echo "S4V2 and S4 started"',
+                                    f'echo "S4V2 and S4 started"{_new_screens}'
                                 )
                                 open(_start_path, 'w').write(_start_content)
                         except Exception as _e:
@@ -3245,8 +3245,8 @@ with _tab_trading:
                             for _bot in m_bots:
                                 _b = _bot.lower()
                                 _screen_name = f"{_mkey}_{_b}"
-                                _api_k = m_s2_key if _b=='s2' else m_s4_key
-                                _api_s = m_s2_sec if _b=='s2' else m_s4_sec
+                                _api_k = m_s2_key if _b=='s4v2' else m_s4_key
+                                _api_s = m_s2_sec if _b=='s4v2' else m_s4_sec
                                 _cmd = (f'screen -S {_screen_name} -X quit 2>/dev/null; sleep 1; '
                                        f'screen -dmS {_screen_name} bash -c "cd {_base} && '
                                        f'export $(grep -v \'#\' {_base}/.env | xargs) && '
@@ -3346,7 +3346,7 @@ with _tab_trading:
         if st.button("STOP ALL", key="sec2_stop"):
             try:
                 import subprocess
-                subprocess.Popen(['bash','-c','screen -S live_s2 -X quit; screen -S live_s4 -X quit'])
+                subprocess.Popen(['bash','-c','screen -S live_s4v2 -X quit; screen -S live_s4 -X quit'])
                 st.warning("Stopped")
             except Exception as e:
                 st.error(str(e))
@@ -3359,11 +3359,11 @@ with _tab_trading:
             except Exception as e:
                 st.error(str(e))
     with b4:
-        if st.button("RESTART S2", key="sec2_restart_s2"):
+        if st.button("RESTART S4V2", key="sec2_restart_s2"):
             try:
                 import subprocess
-                subprocess.Popen(['bash','-c','screen -S live_s2 -X quit; sleep 2; screen -dmS live_s2 bash -c "cd /home/anildalabanjan933/crypto_trading_system && .venv/bin/python3 scripts/signal_replay_s2.py >> logs/live_trading_s2.log 2>&1"'])
-                st.success("S2 restarting...")
+                subprocess.Popen(['bash','-c','screen -S live_s4v2 -X quit; sleep 2; screen -dmS live_s4v2 bash -c "cd /home/anildalabanjan933/crypto_trading_system && .venv/bin/python3 scripts/signal_replay_s4v2.py >> logs/live_trading_s4v2.log 2>&1"'])
+                st.success("S4V2 restarting...")
             except Exception as e:
                 st.error(str(e))
     with b5:
@@ -3468,7 +3468,7 @@ with _tab_trading:
 
         # Load members
         members_cfg_file = 'dashboard/members_config.json'
-        all_accounts = [{'name': 'My Account', 's2_key': os.getenv('S2_API_KEY',''), 's2_secret': os.getenv('S2_API_SECRET',''), 's4_key': os.getenv('S4_API_KEY',''), 's4_secret': os.getenv('S4_API_SECRET','')}]
+        all_accounts = [{'name': 'My Account', 's2_key': os.getenv('S4V2_API_KEY',''), 's2_secret': os.getenv('S4V2_API_SECRET',''), 's4_key': os.getenv('S4_API_KEY',''), 's4_secret': os.getenv('S4_API_SECRET','')}]
         if os.path.exists(members_cfg_file):
             mcfg = _json.load(open(members_cfg_file))
             all_accounts += mcfg.get('members', [])
@@ -3481,7 +3481,7 @@ with _tab_trading:
         import warnings
         warnings.filterwarnings('ignore')
 
-        # Fetch S2+S4 data - cached 30s, null-safe
+        # Fetch S4V2+S4 data - cached 30s, null-safe
         _acct_key = acct.get('s2_key','')[:8]
         s2_bal, s2_unreal, s2_pos = _timed('s2_acct_'+_acct_key, 30, _fetch_account_data, acct.get('s2_key',''), acct.get('s2_secret',''))
         s4_bal, s4_unreal, s4_pos = _timed('s4_acct_'+_acct_key, 30, _fetch_account_data, acct.get('s4_key',''), acct.get('s4_secret',''))
@@ -3558,7 +3558,7 @@ with _tab_trading:
             with f1:
                 period = st.radio("Period", ["TODAY","YESTERDAY","2 DAYS","1 WEEK","1 MONTH","CUSTOM"], horizontal=True, key="oh_period")
             with f2:
-                strat_filter = st.radio("Strategy", ["ALL","S2","S4"], horizontal=True, key="oh_strat")
+                strat_filter = st.radio("Strategy", ["ALL","S4V2","S4"], horizontal=True, key="oh_strat")
             with f3:
                 members_cfg_oh = json.load(open('dashboard/members_config.json')) if os.path.exists('dashboard/members_config.json') else {'members':[]}
                 member_names = ['ALL','My Account'] + [m['name'] for m in members_cfg_oh.get('members',[])]
@@ -3691,14 +3691,14 @@ with _tab_trading:
             INR_OH = 84.0
             accounts_to_fetch = []
             if member_filter in ['ALL', 'My Account']:
-                if strat_filter in ['ALL', 'S2']:
-                    accounts_to_fetch.append(('My Account', 'S2', os.getenv('S2_API_KEY',''), os.getenv('S2_API_SECRET','')))
+                if strat_filter in ['ALL', 'S4V2']:
+                    accounts_to_fetch.append(('My Account', 'S4V2', os.getenv('S4V2_API_KEY',''), os.getenv('S4V2_API_SECRET','')))
                 if strat_filter in ['ALL', 'S4']:
                     accounts_to_fetch.append(('My Account', 'S4', os.getenv('S4_API_KEY',''), os.getenv('S4_API_SECRET','')))
             for m in members_cfg_oh.get('members', []):
                 if member_filter in ['ALL', m['name']]:
-                    if strat_filter in ['ALL','S2'] and m.get('s2_key'):
-                        accounts_to_fetch.append((m['name'], 'S2', m['s2_key'], m['s2_secret']))
+                    if strat_filter in ['ALL','S4V2'] and m.get('s2_key'):
+                        accounts_to_fetch.append((m['name'], 'S4V2', m['s2_key'], m['s2_secret']))
                     if strat_filter in ['ALL','S4'] and m.get('s4_key'):
                         accounts_to_fetch.append((m['name'], 'S4', m['s4_key'], m['s4_secret']))
 
@@ -3890,8 +3890,8 @@ with _tab_trading:
 
         st.markdown("**Webhook Status**")
         webhooks = [
-            "S2 BUY ENTRY", "S2 BUY EXIT",
-            "S2 SELL ENTRY", "S2 SELL EXIT",
+            "S4V2 BUY ENTRY", "S4V2 BUY EXIT",
+            "S4V2 SELL ENTRY", "S4V2 SELL EXIT",
             "S4 BUY ENTRY", "S4 BUY EXIT",
             "S4 SELL ENTRY", "S4 SELL EXIT"
         ]
@@ -3941,7 +3941,7 @@ with _tab_backtest:
 
         st.markdown("**Generate Detailed Comparison Report**")
 
-        comp_tab_s2, comp_tab_s4, comp_tab_match = st.tabs(["S2 - RenkoReversalStrategy", "S4 - RenkoSMIIOSupertrendStrategy", "LIVE MATCH REPORT"])
+        comp_tab_s2, comp_tab_s4, comp_tab_match = st.tabs(["S4V2 - RenkoSMIIOSupertrendV2", "S4 - RenkoSMIIOSupertrendStrategy", "LIVE MATCH REPORT"])
 
         # LIVE MATCH REPORT TAB
         with comp_tab_match:
@@ -4051,8 +4051,8 @@ with _tab_backtest:
                     return bt_n, lv_n, trades, summary
 
                 for s_key, s_label in [
-                    ("S2 RenkoReversal", "S2 - RenkoReversalStrategy"),
-                    ("S4 RenkoSMIIO",    "S4 - RenkoSMIIOSupertrendStrategy")
+                    ("S4V2 RenkoSMIIOV2", "S4V2 - RenkoSMIIOSupertrendV2"),
+                    ("S4 RenkoSMIIO",       "S4 - RenkoSMIIOSupertrendStrategy")
                 ]:
                     bt_n, lv_n, trades, summary = _parse_block(lines, s_key)
                     st.markdown(f"**{s_label}**")
@@ -4129,7 +4129,7 @@ with _tab_backtest:
                     with st.expander("Script errors"):
                         st.code(err[:500])
 
-        for comp_tab, algo_name, algo_key in [(comp_tab_s2, "S2", "s2"), (comp_tab_s4, "S4", "s4")]:
+        for comp_tab, algo_name, algo_key in [(comp_tab_s2, "S4V2", "s2"), (comp_tab_s4, "S4", "s4")]:
             with comp_tab:
                 st.markdown(f"**{algo_name} - Auto Pipeline (market data + backtest + Delta API)**")
                 c1, c2 = st.columns(2)
@@ -4221,7 +4221,7 @@ with _tab_backtest:
                     with c3:
                         try:
                             user_comp = open(sel_comp, encoding='utf-8').read()
-                            for sname in ['RenkoReversalStrategy', 'RenkoSMIIOSupertrendStrategy']:
+                            for sname in ['RenkoSMIIOSupertrendV2Strategy', 'RenkoSMIIOSupertrendStrategy']:
                                 user_comp = user_comp.replace(sname, 'Alpha Strategy')
                             _comp_dr = __import__("re").search(r'(\d{8})', __import__("os").path.basename(sel_comp))
                             _comp_ds = _comp_dr.group(1) if _comp_dr else "report"
@@ -4367,9 +4367,9 @@ with _tab_backtest:
             with c3:
                 try:
                     user_content = open(selected_html, encoding='utf-8').read()
-                    user_content = user_content.replace('<title>Backtest Report - RenkoReversalStrategy</title>', '<title>Backtest Report - Alpha Strategy</title>')
+                    user_content = user_content.replace('<title>Backtest Report - RenkoSMIIOSupertrendV2Strategy</title>', '<title>Backtest Report - Alpha Strategy</title>')
                     user_content = user_content.replace('<title>Backtest Report - RenkoSMIIOSupertrendStrategy</title>', '<title>Backtest Report - Alpha Strategy</title>')
-                    for sname in ['RenkoReversalStrategy','RenkoSMIIOSupertrendStrategy','RenkoBreakoutStrategy','RenkoTrendlinePullbackStrategy','RenkoOptionsStrategy']:
+                    for sname in ['RenkoSMIIOSupertrendV2Strategy','RenkoSMIIOSupertrendStrategy','RenkoBreakoutStrategy','RenkoTrendlinePullbackStrategy','RenkoOptionsStrategy']:
                         user_content = user_content.replace(f'<h1>{sname}</h1>', '<h1>Alpha Strategy</h1>')
                         user_content = user_content.replace(f'Strategy: {sname}', 'Strategy: Alpha Strategy')
                         user_content = user_content.replace(f'<title>Backtest Report - {sname}</title>', '<title>Backtest Report - Alpha Strategy</title>')
@@ -4409,7 +4409,7 @@ with _tab_backtest:
         from engine.scaling_engine import load_trades, run_full_mode, run_group_mode, apply_scaling, calculate_metrics
         _sc1, _sc2, _sc3 = st.columns(3)
         with _sc1:
-            sc_strategy = st.selectbox("Strategy", _get_strat_list() + ["Portfolio (S2+S4 Combined)"], key="sc_strategy")
+            sc_strategy = st.selectbox("Strategy", _get_strat_list() + ["Portfolio (S4V2+S4 Combined)"], key="sc_strategy")
         with _sc2:
             sc_scale_type = st.selectbox("Scaling Type", ["Step Based (Preferred)","Formula Based"], key="sc_type")
         with _sc3:
@@ -4446,7 +4446,7 @@ with _tab_backtest:
             _sc_progress = st.progress(0)
             try:
                 import glob as _scglob, os as _scos
-                if sc_strategy == "Portfolio (S2+S4 Combined)":
+                if sc_strategy == "Portfolio (S4V2+S4 Combined)":
                     _sc_pattern = "output/portfolio_trade_log_*.csv"
                 else:
                     _sc_pattern = f"output/trade_log_{sc_strategy}_BTCUSD_*.csv"
@@ -4793,7 +4793,7 @@ with _tab_backtest:
                     try:
                         cmd = [
                             ".venv/bin/python", "scripts/run_portfolio_cli.py",
-                            "--strategies", "RenkoReversalStrategy,RenkoSMIIOSupertrendStrategy",
+                            "--strategies", "RenkoSMIIOSupertrendV2Strategy,RenkoSMIIOSupertrendStrategy",
                             "--lots", str(port_lots),
                             "--start", str(port_start),
                             "--end", str(port_end),
@@ -4815,7 +4815,7 @@ with _tab_backtest:
                                 st.session_state["port_force_latest"] = False
                             _html_nm = _glob_os.path.basename(_new_port[0]) if _new_port else "N/A"
                             _csv_nm = _glob_os.path.basename(_new_port_csv[0]) if _new_port_csv else "N/A"
-                            _pp_msg = f"DASHBOARD RUN COMPLETE - S2+S4 Portfolio  |  HTML: {_html_nm}  |  CSV: {_csv_nm}"
+                            _pp_msg = f"DASHBOARD RUN COMPLETE - S4V2+S4 Portfolio  |  HTML: {_html_nm}  |  CSV: {_csv_nm}"
                             st.session_state["port_pre_complete_msg"] = _pp_msg
                             _pp_status.success(_pp_msg)
                             import time as _t; _t.sleep(2)
@@ -4952,7 +4952,7 @@ with _tab_backtest:
             with c3:
                 try:
                     user_content = open(sel_port_html, encoding='utf-8').read()
-                    for sname in ['Portfolio_Dynamic','RenkoReversalStrategy','RenkoSMIIOSupertrendStrategy','RenkoBreakoutStrategy','RenkoTrendlinePullbackStrategy','RenkoOptionsStrategy']:
+                    for sname in ['Portfolio_Dynamic','RenkoSMIIOSupertrendV2Strategy','RenkoSMIIOSupertrendStrategy','RenkoBreakoutStrategy','RenkoTrendlinePullbackStrategy','RenkoOptionsStrategy']:
                         user_content = user_content.replace(f'<h1>{sname}</h1>', '<h1>Alpha Strategy</h1>')
                         user_content = user_content.replace(f'Strategy: {sname}', 'Strategy: Alpha Strategy')
                         user_content = user_content.replace(f'<title>Backtest Report - {sname}</title>', '<title>Backtest Report - Alpha Strategy</title>')
@@ -5290,7 +5290,7 @@ with _tab_maint:
 
         col_sel, col_filter = st.columns([2,3])
         with col_sel:
-            log_choice = st.selectbox("Select Log", ["S2", "S4", "Both"], key="sec5_log")
+            log_choice = st.selectbox("Select Log", ["S4V2", "S4", "Both"], key="sec5_log")
         with col_filter:
             custom_filter = st.text_input("Custom Filter (type keyword)", value="", key="sec5_custom")
 
@@ -5331,12 +5331,12 @@ with _tab_maint:
             else:
                 return line.strip()
 
-        s2_log_path = '/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s2.log'
+        s2_log_path = '/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4v2.log'
         s4_log_path = '/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4.log'
 
-        if log_choice == "S2":
+        if log_choice == "S4V2":
             lines = read_log(s2_log_path, active_filter)
-            st.markdown(f"**S2 Log** - Filter: `{active_filter if active_filter else 'ALL'}`")
+            st.markdown(f"**S4V2 Log** - Filter: `{active_filter if active_filter else 'ALL'}`")
             st.code('\n'.join([format_log_line(l) for l in lines]), language=None)
         elif log_choice == "S4":
             lines = read_log(s4_log_path, active_filter)
@@ -5346,7 +5346,7 @@ with _tab_maint:
             col_s2, col_s4 = st.columns(2)
             with col_s2:
                 lines = read_log(s2_log_path, active_filter)
-                st.markdown(f"**S2 Log** - Filter: `{active_filter if active_filter else 'ALL'}`")
+                st.markdown(f"**S4V2 Log** - Filter: `{active_filter if active_filter else 'ALL'}`")
                 st.code('\n'.join([format_log_line(l) for l in lines]), language=None)
             with col_s4:
                 lines = read_log(s4_log_path, active_filter)
@@ -5569,7 +5569,7 @@ with _tab_analysis:
 
         def _build_tbl13(s2m, s4m, cbm):
             def _row(lbl, v2, v4, vc, c2=None, c4=None, cc=None):
-                # S2/S4 columns: grey if N/A
+                # S4V2/S4 columns: grey if N/A
                 _c2 = _TDN13 if str(v2)=='N/A' else (c2 or _TDN13)
                 _c4 = _TDN13 if str(v4)=='N/A' else (c4 or _TDN13)
                 # Combined column: green/red/grey based on value
@@ -5593,7 +5593,7 @@ with _tab_analysis:
                 f"<table style='width:100%;border-collapse:collapse;'>"
                 f"<thead><tr>"
                 f"<th style='{_TH13}'>Metric</th>"
-                f"<th style='{_TH13}'>S2</th>"
+                f"<th style='{_TH13}'>S4V2</th>"
                 f"<th style='{_TH13}'>S4</th>"
                 f"<th style='{_TH13}'>Combined</th>"
                 f"</tr></thead><tbody>"
@@ -5626,7 +5626,7 @@ with _tab_analysis:
 
         # ── FETCH LIVE DATA ──────────────────────────────────────
         with st.spinner("Fetching live forward test data..."):
-            s2o = _fetch13(os.environ.get("S2_API_KEY",""), os.environ.get("S2_API_SECRET",""))
+            s2o = _fetch13(os.environ.get("S4V2_API_KEY",""), os.environ.get("S4V2_API_SECRET",""))
             s4o = _fetch13(os.environ.get("S4_API_KEY",""), os.environ.get("S4_API_SECRET",""))
         s2p  = _pair13(s2o)
         s4p  = _pair13(s4o)
@@ -5635,8 +5635,8 @@ with _tab_analysis:
         cbm  = _calc13(s2p+s4p)
 
         # ── FETCH BACKTEST DATA (same date range) ────────────────
-        s2_bt = _bt_calc13("output/trade_log_RenkoReversal*.csv",        _VF13_7D)
-        s4_bt = _bt_calc13("output/trade_log_RenkoSMIIOSupertrend*.csv", _VF13_7D)
+        s2_bt = _bt_calc13("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv", _VF13_7D)
+        s4_bt = _bt_calc13("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv", _VF13_7D)
         cb_bt_pairs = []
         if s2_bt: cb_bt_pairs.append(s2_bt)
         if s4_bt: cb_bt_pairs.append(s4_bt)
@@ -5743,8 +5743,8 @@ with _tab_analysis:
                     f"<tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>No backtest trades in this window</td></tr>"
                     f"</tbody></table></div>"
                 )
-                s2_files = sorted(_gb.glob("output/trade_log_RenkoReversal*.csv"), reverse=True)
-                s4_files = sorted(_gb.glob("output/trade_log_RenkoSMIIO*.csv"), reverse=True)
+                s2_files = sorted(_gb.glob("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv"), reverse=True)
+                s4_files = sorted(_gb.glob("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv"), reverse=True)
                 frames = []
                 vf_dt = _pb.to_datetime(vf_str)
                 _sel_files = s2_files[:1] if which=="s2" else (s4_files[:1] if which=="s4" else s2_files[:1]+s4_files[:1])
@@ -5815,8 +5815,8 @@ with _tab_analysis:
             try:
                 import glob as _gc, pandas as _pc, datetime as _dc
                 files = sorted(_gc.glob(csv_pattern), reverse=True)
-                s2_ff = sorted(_gc.glob("output/trade_log_RenkoReversal*.csv"), reverse=True)
-                s4_ff = sorted(_gc.glob("output/trade_log_RenkoSMIIO*.csv"), reverse=True)
+                s2_ff = sorted(_gc.glob("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv"), reverse=True)
+                s4_ff = sorted(_gc.glob("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv"), reverse=True)
                 _frames = []
                 vf_dt = _pc.to_datetime(vf_str)
                 for _ff in (s2_ff[:1] + s4_ff[:1]):
@@ -5957,29 +5957,29 @@ with _tab_analysis:
             except Exception as e:
                 return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
 
-        # ── RENDER: BT S2 | BT S4 | FWD S2 | FWD S4 (last 7 days, separate) ──
+        # ── RENDER: BT S4V2 | BT S4 | FWD S4V2 | FWD S4 (last 7 days, separate) ──
         _vf7_ts = _pd13.to_datetime(_VF13_7D).timestamp()
         s2p_7d = [p for p in s2p if p.get('ets',0) >= _vf7_ts]
         s4p_7d = [p for p in s4p if p.get('ets',0) >= _vf7_ts]
 
         _colA, _colB = st.columns(2)
         with _colA:
-            st.markdown(f"<div style='{_HDR13}'>BACKTEST S2 - LAST 7 DAYS</div>", unsafe_allow_html=True)
-            st.markdown(_bt20("output/trade_log_RenkoReversal*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
+            st.markdown(f"<div style='{_HDR13}'>BACKTEST S4V2 - LAST 7 DAYS</div>", unsafe_allow_html=True)
+            st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
         with _colB:
             st.markdown(f"<div style='{_HDR13}'>BACKTEST S4 - LAST 7 DAYS</div>", unsafe_allow_html=True)
-            st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrend*.csv", _VF13_7D, which="s4"), unsafe_allow_html=True)
+            st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv", _VF13_7D, which="s4"), unsafe_allow_html=True)
 
         _colC, _colD = st.columns(2)
         with _colC:
-            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S2 - LAST 7 DAYS</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4V2 - LAST 7 DAYS</div>", unsafe_allow_html=True)
             st.markdown(_fwd20(s2p_7d), unsafe_allow_html=True)
         with _colD:
             st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4 - LAST 7 DAYS</div>", unsafe_allow_html=True)
             st.markdown(_fwd20(s4p_7d), unsafe_allow_html=True)
 
         # ================================================================
-        # EQUITY CURVE - MONTHLY VIEW (BT + FWD, S2 + S4)
+        # EQUITY CURVE - MONTHLY VIEW (BT + FWD, S4V2 + S4)
         # ================================================================
         import plotly.graph_objects as _go13
 
@@ -6043,17 +6043,17 @@ with _tab_analysis:
         st.markdown(f"<div style='{_HDR13}'>EQUITY CURVE - MONTHLY VIEW</div>", unsafe_allow_html=True)
 
         try:
-            _f = sorted(_gl13.glob("output/trade_log_RenkoReversal*.csv"))
+            _f = sorted(_gl13.glob("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv"))
             if _f:
                 _dfbt2 = _pd13.read_csv(_f[-1])
                 _dfbt2['exit_datetime'] = _pd13.to_datetime(_dfbt2['exit_datetime'])
                 _dfbt2 = _dfbt2.sort_values('exit_datetime')
-                _eq_render13(list(_dfbt2['exit_datetime']), list(_dfbt2['cumulative_pnl_inr']), "s2bt", "BACKTEST S2", reset_monthly=True)
+                _eq_render13(list(_dfbt2['exit_datetime']), list(_dfbt2['cumulative_pnl_inr']), "s2bt", "BACKTEST S4V2", reset_monthly=True)
         except Exception as _e:
-            st.caption(f"BT S2 equity curve error: {_e}")
+            st.caption(f"BT S4V2 equity curve error: {_e}")
 
         try:
-            _f = sorted(_gl13.glob("output/trade_log_RenkoSMIIOSupertrend*.csv"))
+            _f = sorted(_gl13.glob("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv"))
             if _f:
                 _dfbt4 = _pd13.read_csv(_f[-1])
                 _dfbt4['exit_datetime'] = _pd13.to_datetime(_dfbt4['exit_datetime'])
@@ -6071,11 +6071,11 @@ with _tab_analysis:
                 for p in _s2sorted:
                     _run += p['pnl']*_INR13
                     _cum.append(_run)
-                _eq_render13(_dates, _cum, "s2fwd", "FORWARD TEST S2")
+                _eq_render13(_dates, _cum, "s2fwd", "FORWARD TEST S4V2")
             else:
-                st.caption("FORWARD TEST S2: no trades yet")
+                st.caption("FORWARD TEST S4V2: no trades yet")
         except Exception as _e:
-            st.caption(f"FWD S2 equity curve error: {_e}")
+            st.caption(f"FWD S4V2 equity curve error: {_e}")
 
         try:
             if s4p:
@@ -6159,7 +6159,7 @@ with _tab_analysis:
             def _get_fwd_rows(df_fwd, label):
                 rows = []
                 try:
-                    log_map = {"LV S2": ("logs/live_trading_s2.log","logs/live_trading_s2.log.1"),
+                    log_map = {"LV S4V2": ("logs/live_trading_s4v2.log","logs/live_trading_s4v2.log.1"),
                                "LV S4": ("logs/live_trading_s4.log","logs/live_trading_s4.log.1")}
                     log_path, log_bak = log_map.get(label, (None, None))
                     if not log_path: return []
@@ -6186,9 +6186,9 @@ with _tab_analysis:
                         })
                 except: pass
                 return rows
-            bt2 = _get_bt_rows(df2, "BT S2")
+            bt2 = _get_bt_rows(df2, "BT S4V2")
             bt4 = _get_bt_rows(df4, "BT S4")
-            lv2 = _get_fwd_rows(df2_fwd, "LV S2")
+            lv2 = _get_fwd_rows(df2_fwd, "LV S4V2")
             lv4 = _get_fwd_rows(df4_fwd, "LV S4")
             today_str = _dtt.datetime.utcnow().strftime("%d-%b-%Y")
             TH  = "padding:5px 8px;border:1px solid #90CAF9;background:#42A5F5;font-size:10px;font-weight:700;color:#fff;text-align:center;"
@@ -6294,7 +6294,7 @@ with _tab_analysis:
                 tbl += '</tbody></table>'
                 return hdr + tbl
             html = '<div style="overflow-x:auto;margin:8px 0;">'
-            html += _section_html("S2", bt2, lv2)
+            html += _section_html("S4V2", bt2, lv2)
             html += '<div style="height:14px;"></div>'
             html += _section_html("S4", bt4, lv4)
             html += '</div>'
@@ -6322,7 +6322,7 @@ with _tab_analysis:
         <tbody>
         <tr><td style="{_PLND14}">Margin Mode</td><td style="{_PLNV14}">Isolated</td></tr>
         <tr><td style="{_PLND14}">Leverage</td><td style="{_PLNV14}">50x</td></tr>
-        <tr><td style="{_PLND14}">Subaccount</td><td style="{_PLNV14}">Single (S2 + S4 together)</td></tr>
+        <tr><td style="{_PLND14}">Subaccount</td><td style="{_PLNV14}">Single (S4V2 + S4 together)</td></tr>
         <tr><td style="{_PLND14}">Starting Capital</td><td style="{_PLNV14}">₹2,00,000</td></tr>
         <tr><td style="{_PLND14}">Starting Lots</td><td style="{_PLNV14}">100 lots (fixed)</td></tr>
         <tr><td style="{_PLND14}">Go-Live Date</td><td style="{_PLNV14}">Aug 1, 2026</td></tr>

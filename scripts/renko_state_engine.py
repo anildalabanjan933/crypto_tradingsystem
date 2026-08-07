@@ -16,6 +16,7 @@ from indicators.renko import RenkoBuilder,SupertrendIndicator
 from data.download_market_data import download_or_update
 from strategies.backtest.renko_reversal_strategy import RenkoReversalStrategy
 from strategies.backtest.renko_smiio_supertrend_strategy import RenkoSMIIOSupertrendStrategy
+from strategies.backtest.renko_smiio_supertrend_v2_strategy import RenkoSMIIOSupertrendV2Strategy
 
 import datetime as _logdt
 class _ISTFormatter(logging.Formatter):
@@ -30,8 +31,8 @@ log=logging.getLogger(__name__)
 CSV_PATH="data/btc_1m_delta.csv"
 LOT_SIZE=100
 SLEEP_SEC=1
-S2_PARAMS=dict(renko_box_pct=0.001,renko_timeframe="30m",st_atr_length=10,st_factor=2.0)
 S4_PARAMS=dict(renko_box_pct=0.001,renko_timeframe="2h",st_atr_length=5,st_factor=2.0,smiio_shortlen=10,smiio_longlen=10,smiio_siglen=3)
+S4V2_PARAMS=dict(renko_box_pct=0.001,renko_timeframe="30m",st_atr_length=5,st_factor=1.5,smiio_shortlen=10,smiio_longlen=20,smiio_siglen=3)
 def _send_bt_signal_alert(strategy_label, direction, entry_ts, exit_ts, entry_price, exit_price, lots=100, slippage=5.0):
     """Send Telegram alert when backtest signal fires."""
     try:
@@ -94,7 +95,9 @@ class StrategyState:
 
 def get_trade_csv(label):
     import glob
-    p="output/trade_log_RenkoReversalStrategy_BTCUSD_*.csv" if label=="S2" else "output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"
+    if label=="S2": p="output/trade_log_RenkoReversalStrategy_BTCUSD_*.csv"
+    elif label=="S4V2": p="output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv"
+    else: p="output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"
     files=sorted(glob.glob(p),reverse=True)
     return files[0] if files else None
 
@@ -123,7 +126,8 @@ def write_signal_file(label,sig_type,direction,sig_ts):
     import os, time
     seq = str(int(time.time()))
     sig_line=f"{sig_type}_{direction.upper()}|{sig_ts}|100|SEQ={seq}"
-    sf=f"logs/live_signal_s{label[-1]}.txt"
+    _sig_suffix={"S2":"2","S4":"4","S4V2":"4v2"}.get(label,"4")
+    sf=f"logs/live_signal_s{_sig_suffix}.txt"
     tmp=sf+".tmp"; open(tmp,"w").write(sig_line); os.replace(tmp,sf)
 
 def touch_signal_file(label):
@@ -246,20 +250,27 @@ def check_and_fire(state,is_s4=False):
             df_tf_indexed=df_tf_indexed.set_index("timestamp")
         data_dict={tf:df_tf_indexed}
         # Call EXACT same strategy class as backtest - single source of truth
-        if not is_s4:
-            _ref_s2 = None
+        if state.label=="S2":
+            _ref = None
             try:
-                _ref_s2 = float(open("logs/box_ref_price_s2.txt").read().strip())
+                _ref = float(open("logs/box_ref_price_s2.txt").read().strip())
             except Exception:
-                _ref_s2 = state.candles_tf['close'].iloc[-1]
-            p_with_ref = dict(p, reference_price=_ref_s2); strategy=RenkoReversalStrategy(data_dict,LOT_SIZE,**p_with_ref)
+                _ref = state.candles_tf['close'].iloc[-1]
+            p_with_ref = dict(p, reference_price=_ref); strategy=RenkoReversalStrategy(data_dict,LOT_SIZE,**p_with_ref)
+        elif state.label=="S4V2":
+            _ref = None
+            try:
+                _ref = float(open("logs/box_ref_price_s4v2.txt").read().strip())
+            except Exception:
+                _ref = state.candles_tf['close'].iloc[0]
+            p_with_ref = dict(p, reference_price=_ref); strategy=RenkoSMIIOSupertrendV2Strategy(data_dict,LOT_SIZE,**p_with_ref)
         else:
-            _ref_s4 = None
+            _ref = None
             try:
-                _ref_s4 = float(open("logs/box_ref_price_s4.txt").read().strip())
+                _ref = float(open("logs/box_ref_price_s4.txt").read().strip())
             except Exception:
-                _ref_s4 = state.candles_tf['close'].iloc[0]
-            p_with_ref = dict(p, reference_price=_ref_s4); strategy=RenkoSMIIOSupertrendStrategy(data_dict,LOT_SIZE,**p_with_ref)
+                _ref = state.candles_tf['close'].iloc[0]
+            p_with_ref = dict(p, reference_price=_ref); strategy=RenkoSMIIOSupertrendStrategy(data_dict,LOT_SIZE,**p_with_ref)
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             with contextlib.redirect_stdout(io.StringIO()):
@@ -296,7 +307,7 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
     # Append only new signal row directly to signals CSV
     try:
         import csv as _csv, os as _os
-        sig_label = state.label[-1]  # "2" or "4"
+        sig_label = {"S2":"2","S4":"4","S4V2":"4v2"}.get(state.label,"4")
         sig_csv = f"logs/signals_s{sig_label}.csv"
         # Read existing signals
         existing = []
@@ -385,10 +396,10 @@ if __name__=="__main__":
     log.info("[ENGINE] Only closed candles - zero repaint - zero false signal")
     log.info("[ENGINE] Backtest files untouched - single source of truth")
 
-    s2=StrategyState("S2",S2_PARAMS)
     s4=StrategyState("S4",S4_PARAMS)
-    load_history(s2)
+    s4v2=StrategyState("S4V2",S4V2_PARAMS)
     load_history(s4)
+    load_history(s4v2)
     # Lock last_signal_ts BEFORE startup check - use last SIGNAL ts not market CSV ts
     def _get_signal_ts(path):
         try:
@@ -413,33 +424,33 @@ if __name__=="__main__":
     # PRIMARY lock = bot last_known_ts files (always correct)
     # FALLBACK = signal file (only if ts file missing)
     try:
-        _ts_s2=open("/home/anildalabanjan933/crypto_trading_system/logs/last_known_ts_s2.txt").read().strip() or None
-        if _ts_s2: log.info(f"[ENGINE] S2 lock from bot ts file: {_ts_s2}")
-    except: _ts_s2=None
-    try:
         _ts_s4=open("/home/anildalabanjan933/crypto_trading_system/logs/last_known_ts_s4.txt").read().strip() or None
         if _ts_s4: log.info(f"[ENGINE] S4 lock from bot ts file: {_ts_s4}")
     except: _ts_s4=None
+    try:
+        _ts_s4v2=open("/home/anildalabanjan933/crypto_trading_system/logs/last_known_ts_s4v2.txt").read().strip() or None
+        if _ts_s4v2: log.info(f"[ENGINE] S4V2 lock from bot ts file: {_ts_s4v2}")
+    except: _ts_s4v2=None
     _now_lock=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
-    if not _ts_s2:
-        _ts_s2=_now_lock
-        log.info(f"[ENGINE] S2 no ts file - lock set to NOW: {_ts_s2}")
-    else:
-        _ts_s2=max(_ts_s2,_now_lock)
-        log.info(f"[ENGINE] S2 lock set to max(ts_file,NOW): {_ts_s2}")
     if not _ts_s4:
         _ts_s4=_now_lock
         log.info(f"[ENGINE] S4 no ts file - lock set to NOW: {_ts_s4}")
     else:
         _ts_s4=max(_ts_s4,_now_lock)
         log.info(f"[ENGINE] S4 lock set to max(ts_file,NOW): {_ts_s4}")
-    s2.last_signal_ts=_ts_s2
-    log.info(f"[ENGINE] S2 startup lock ts: {_ts_s2}")
+    if not _ts_s4v2:
+        _ts_s4v2=_now_lock
+        log.info(f"[ENGINE] S4V2 no ts file - lock set to NOW: {_ts_s4v2}")
+    else:
+        _ts_s4v2=max(_ts_s4v2,_now_lock)
+        log.info(f"[ENGINE] S4V2 lock set to max(ts_file,NOW): {_ts_s4v2}")
     s4.last_signal_ts=_ts_s4
     log.info(f"[ENGINE] S4 startup lock ts: {_ts_s4}")
+    s4v2.last_signal_ts=_ts_s4v2
+    log.info(f"[ENGINE] S4V2 startup lock ts: {_ts_s4v2}")
     # Restore current_direction from CSV last row (survive restart mid-position)
     import csv as _csv2
-    for _st,_fn in [(s2,"logs/signals_s2.csv"),(s4,"logs/signals_s4.csv")]:
+    for _st,_fn in [(s4,"logs/signals_s4.csv"),(s4v2,"logs/signals_s4v2.csv")]:
         try:
             with open(_fn) as _f:
                 _rows=list(_csv2.reader(_f))
@@ -502,19 +513,19 @@ if __name__=="__main__":
             # Completed candle detected instantly via WebSocket - use live data directly, zero REST wait
             log.info(f"[WS] Completed candle detected - fast in-memory update (no REST wait)")
             try:
-                _append_ws_candle(s2,_closed_candle["start"],_closed_candle["o"],_closed_candle["h"],_closed_candle["l"],_closed_candle["c"],_closed_candle["v"])
                 _append_ws_candle(s4,_closed_candle["start"],_closed_candle["o"],_closed_candle["h"],_closed_candle["l"],_closed_candle["c"],_closed_candle["v"])
+                _append_ws_candle(s4v2,_closed_candle["start"],_closed_candle["o"],_closed_candle["h"],_closed_candle["l"],_closed_candle["c"],_closed_candle["v"])
             except Exception as _e:
                 log.error(f"[WS] Fast append error: {_e}",exc_info=True)
                 return
             # Background REST sync for CSV file persistence only - does NOT block firing
             _ws_state["last_dl"]=time.time()
             threading.Thread(target=update_market_data, daemon=True).start()
-            _cur_s2=_last_closed_tf(30)
-            if _cur_s2>_ws_state["last_s2_tf"]:
-                _ws_state["last_s2_tf"]=_cur_s2
-                log.info(f"[WS] New 30m candle closed: {_cur_s2} - checking S2")
-                check_and_fire(s2,is_s4=False)
+            _cur_s4v2=_last_closed_tf(30)
+            if _cur_s4v2>_ws_state["last_s4v2_tf"]:
+                _ws_state["last_s4v2_tf"]=_cur_s4v2
+                log.info(f"[WS] New 30m candle closed: {_cur_s4v2} - checking S4V2")
+                check_and_fire(s4v2,is_s4=False)
             _cur_s4=_last_closed_tf(120)
             if _cur_s4>_ws_state["last_s4_tf"]:
                 _ws_state["last_s4_tf"]=_cur_s4
@@ -573,10 +584,10 @@ if __name__=="__main__":
     _last_s2_tf=_last_closed_tf(30)
     _last_s4_tf=_last_closed_tf(120)
     # State dict for ws thread - defined after tf vars
-    _ws_state={"last_s2_tf":_last_s2_tf,"last_s4_tf":_last_s4_tf,"last_dl":0.0}
+    _ws_state={"last_s2_tf":_last_s2_tf,"last_s4_tf":_last_s4_tf,"last_s4v2_tf":_last_s2_tf,"last_dl":0.0}
     # Startup check - fires only if current time is at 1H/2H boundary
-    check_and_fire(s2,is_s4=False)
     check_and_fire(s4,is_s4=True)
+    check_and_fire(s4v2,is_s4=False)
 
     while True:
         try:
@@ -594,15 +605,15 @@ if __name__=="__main__":
             if csv_last is not None and csv_last!=_last_ts:
                 _last_ts=csv_last
                 log.info(f"[ENGINE] New candle: {csv_last}")
-                append_new_candles(s2)
                 append_new_candles(s4)
+                append_new_candles(s4v2)
 
-                # S2: fire only on new closed 30m candle (shared state with WS)
-                cur_s2_tf=_last_closed_tf(30)
-                if cur_s2_tf>_ws_state["last_s2_tf"]:
-                    _ws_state["last_s2_tf"]=cur_s2_tf
-                    log.info(f"[ENGINE] New 30m candle closed: {cur_s2_tf} - checking S2")
-                    check_and_fire(s2,is_s4=False)
+                # S4V2: fire only on new closed 30m candle (shared state with WS)
+                cur_s4v2_tf=_last_closed_tf(30)
+                if cur_s4v2_tf>_ws_state["last_s4v2_tf"]:
+                    _ws_state["last_s4v2_tf"]=cur_s4v2_tf
+                    log.info(f"[ENGINE] New 30m candle closed: {cur_s4v2_tf} - checking S4V2")
+                    check_and_fire(s4v2,is_s4=False)
 
                 # S4: fire only on new closed 2H candle (shared state with WS)
                 cur_s4_tf=_last_closed_tf(120)
@@ -612,34 +623,7 @@ if __name__=="__main__":
                     check_and_fire(s4,is_s4=True)
 
             # Boundary watcher trigger - fires if watcher detected missed boundary
-            # FIX: S2 and S4 now run in separate threads - S2 retry-wait no longer blocks S4
-            _trig_s2 = "logs/boundary_trigger_s2.txt"
             _trig_s4 = "logs/boundary_trigger_s4.txt"
-            if os.path.exists(_trig_s2):
-                _t2 = open(_trig_s2).read().strip()
-                os.remove(_trig_s2)
-                try:
-                    _t2_dt = __import__('datetime').datetime.strptime(_t2, '%Y-%m-%d %H:%M:%S')
-                except:
-                    _t2_dt = __import__('datetime').datetime.strptime(_t2, '%Y-%m-%dT%H:%M:%S')
-                _s2_already_caught_up = s2.last_1m_ts is not None and s2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= (_t2_dt - __import__('datetime').timedelta(minutes=1))
-                _t2_dt_engine_label = _t2_dt - __import__('datetime').timedelta(minutes=30)
-                if _t2_dt_engine_label > _ws_state["last_s2_tf"] and not _s2_already_caught_up:
-                    _ws_state["last_s2_tf"] = _t2_dt_engine_label
-                    log.info(f"[ENGINE] Boundary watcher trigger S2: {_t2} - checking S2")
-                    def _run_s2_trigger(_dt=_t2_dt):
-                        try:
-                            for _retry in range(6):
-                                update_market_data()
-                                append_new_candles(s2)
-                                if s2.last_1m_ts is not None and s2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1):
-                                    break
-                                log.info(f"[ENGINE] S2 data not caught up yet, retry {_retry+1}/6")
-                                time.sleep(10)
-                            check_and_fire(s2, is_s4=False)
-                        except Exception as _e:
-                            log.error(f"[ENGINE] S2 trigger thread error: {_e}", exc_info=True)
-                    threading.Thread(target=_run_s2_trigger, daemon=True).start()
             if os.path.exists(_trig_s4):
                 _t4 = open(_trig_s4).read().strip()
                 os.remove(_trig_s4)
@@ -665,9 +649,36 @@ if __name__=="__main__":
                         except Exception as _e:
                             log.error(f"[ENGINE] S4 trigger thread error: {_e}", exc_info=True)
                     threading.Thread(target=_run_s4_trigger, daemon=True).start()
+            _trig_s4v2 = "logs/boundary_trigger_s4v2.txt"
+            if os.path.exists(_trig_s4v2):
+                _tv2 = open(_trig_s4v2).read().strip()
+                os.remove(_trig_s4v2)
+                try:
+                    _tv2_dt = __import__('datetime').datetime.strptime(_tv2, '%Y-%m-%d %H:%M:%S')
+                except:
+                    _tv2_dt = __import__('datetime').datetime.strptime(_tv2, '%Y-%m-%dT%H:%M:%S')
+                _s4v2_already_caught_up = s4v2.last_1m_ts is not None and s4v2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= (_tv2_dt - __import__('datetime').timedelta(minutes=1))
+                _tv2_dt_engine_label = _tv2_dt - __import__('datetime').timedelta(minutes=30)
+                if _tv2_dt_engine_label > _ws_state["last_s4v2_tf"] and not _s4v2_already_caught_up:
+                    _ws_state["last_s4v2_tf"] = _tv2_dt_engine_label
+                    log.info(f"[ENGINE] Boundary watcher trigger S4V2: {_tv2} - checking S4V2")
+                    def _run_s4v2_trigger(_dt=_tv2_dt):
+                        try:
+                            for _retry in range(6):
+                                update_market_data()
+                                append_new_candles(s4v2)
+                                if s4v2.last_1m_ts is not None and s4v2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1):
+                                    break
+                                log.info(f"[ENGINE] S4V2 data not caught up yet, retry {_retry+1}/6")
+                                time.sleep(10)
+                            check_and_fire(s4v2, is_s4=False)
+                        except Exception as _e:
+                            log.error(f"[ENGINE] S4V2 trigger thread error: {_e}", exc_info=True)
+                    threading.Thread(target=_run_s4v2_trigger, daemon=True).start()
 
             touch_signal_file("S2")
             touch_signal_file("S4")
+            touch_signal_file("S4V2")
 
             # Periodic CSV regeneration removed - instant append handles all new signals
             # Full regeneration runs daily at 3AM UTC via systemd timer (generate_signals.py)
