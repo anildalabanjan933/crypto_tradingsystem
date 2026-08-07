@@ -5983,7 +5983,7 @@ with _tab_analysis:
         # ================================================================
         import plotly.graph_objects as _go13
 
-        def _eq_render13(dates_all, cum_inr_all, key_prefix, title):
+        def _eq_render13(dates_all, cum_inr_all, key_prefix, title, reset_monthly=False):
             if not dates_all:
                 st.caption(f"{title}: no data yet")
                 return
@@ -6008,7 +6008,20 @@ with _tab_analysis:
                 st.caption("No trades this month")
                 return
             m_dates = [dates_all[i] for i in idxs]
-            m_cum   = [cum_inr_all[i] for i in idxs]
+            if reset_monthly:
+                deltas = []
+                for i in idxs:
+                    if i == 0:
+                        deltas.append(cum_inr_all[i])
+                    else:
+                        deltas.append(cum_inr_all[i] - cum_inr_all[i-1])
+                m_cum = []
+                _run = 0.0
+                for d in deltas:
+                    _run += d
+                    m_cum.append(_run)
+            else:
+                m_cum = [cum_inr_all[i] for i in idxs]
 
             _pos = [v if v>=0 else 0 for v in m_cum]
             _neg = [v if v<0 else 0 for v in m_cum]
@@ -6034,7 +6047,7 @@ with _tab_analysis:
                 _dfbt2 = _pd13.read_csv(_f[-1])
                 _dfbt2['exit_datetime'] = _pd13.to_datetime(_dfbt2['exit_datetime'])
                 _dfbt2 = _dfbt2.sort_values('exit_datetime')
-                _eq_render13(list(_dfbt2['exit_datetime']), list(_dfbt2['cumulative_pnl_inr']), "s2bt", "BACKTEST S2")
+                _eq_render13(list(_dfbt2['exit_datetime']), list(_dfbt2['cumulative_pnl_inr']), "s2bt", "BACKTEST S2", reset_monthly=True)
         except Exception as _e:
             st.caption(f"BT S2 equity curve error: {_e}")
 
@@ -6044,7 +6057,7 @@ with _tab_analysis:
                 _dfbt4 = _pd13.read_csv(_f[-1])
                 _dfbt4['exit_datetime'] = _pd13.to_datetime(_dfbt4['exit_datetime'])
                 _dfbt4 = _dfbt4.sort_values('exit_datetime')
-                _eq_render13(list(_dfbt4['exit_datetime']), list(_dfbt4['cumulative_pnl_inr']), "s4bt", "BACKTEST S4")
+                _eq_render13(list(_dfbt4['exit_datetime']), list(_dfbt4['cumulative_pnl_inr']), "s4bt", "BACKTEST S4", reset_monthly=True)
         except Exception as _e:
             st.caption(f"BT S4 equity curve error: {_e}")
 
