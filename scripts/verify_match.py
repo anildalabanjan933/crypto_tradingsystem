@@ -3,7 +3,7 @@ from datetime import datetime, timezone, timedelta
 sys.path.insert(0, '/home/anildalabanjan933/crypto_trading_system')
 
 from strategies.backtest.renko_smiio_supertrend_strategy import RenkoSMIIOSupertrendStrategy
-from strategies.backtest.renko_reversal_strategy import RenkoReversalStrategy
+from strategies.backtest.renko_smiio_supertrend_v2_strategy import RenkoSMIIOSupertrendV2Strategy
 from engine.backtest_engine import BacktestEngine
 from backtest_analyzer import BacktestReportGenerator
 
@@ -36,8 +36,8 @@ def get_valid_from():
             return val
     # Fallback: use max of ts files (most recent clean order)
     ts_s2, ts_s4 = None, None
-    if os.path.exists('logs/last_known_ts_s2.txt'):
-        ts_s2 = open('logs/last_known_ts_s2.txt').read().strip()
+    if os.path.exists('logs/last_known_ts_s4v2.txt'):
+        ts_s2 = open('logs/last_known_ts_s4v2.txt').read().strip()
     if os.path.exists('logs/last_known_ts_s4.txt'):
         ts_s4 = open('logs/last_known_ts_s4.txt').read().strip()
     if ts_s2 and ts_s4: return max(ts_s2, ts_s4)
@@ -63,9 +63,9 @@ def update_csv():
 
 def get_backtest_signals(strategy_class, name, params):
     # Read directly from signal CSV - faster and guaranteed match
-    # S2 = logs/signals_s2.csv | S4 = logs/signals_s4.csv
-    if 'Reversal' in name or 's2' in name.lower():
-        sig_csv = 'logs/signals_s2.csv'
+    # S4V2 = logs/signals_s4v2.csv | S4 = logs/signals_s4.csv
+    if 'V2' in name or 's4v2' in name.lower():
+        sig_csv = 'logs/signals_s4v2.csv'
     else:
         sig_csv = 'logs/signals_s4.csv'
 
@@ -321,9 +321,9 @@ import io
 from contextlib import redirect_stdout, redirect_stderr
 with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
     s2_bt = get_backtest_signals(
-        RenkoReversalStrategy, 'RenkoReversalStrategy',
-        {'renko_timeframe':'1h','renko_box_pct':0.001,
-         'st_atr_length':5,'st_factor':1.5})
+        RenkoSMIIOSupertrendV2Strategy, 'RenkoSMIIOSupertrendV2Strategy',
+        {'renko_timeframe':'30m','renko_box_pct':0.001,
+         'st_atr_length':5,'st_factor':1.5,'smiio_shortlen':10,'smiio_siglen':3})
     s4_bt = get_backtest_signals(
         RenkoSMIIOSupertrendStrategy, 'RenkoSMIIOSupertrendStrategy',
         {'renko_timeframe':'2h','renko_box_pct':0.001,'st_atr_length':10,
@@ -331,10 +331,10 @@ with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
 print("Done.")
 
 print("\nSTEP 3: Reading live bot orders...")
-s2_lv = get_live_trades('logs/live_trading_s2.log')
+s2_lv = get_live_trades('logs/live_trading_s4v2.log')
 s4_lv = get_live_trades('logs/live_trading_s4.log')
 
-s2_ok = compare("S2 RenkoReversal",  s2_bt, s2_lv)
+s2_ok = compare("S4V2 RenkoSMIIOV2", s2_bt, s2_lv)
 s4_ok = compare("S4 RenkoSMIIO",     s4_bt, s4_lv)
 
 print(f"\n{'='*60}")

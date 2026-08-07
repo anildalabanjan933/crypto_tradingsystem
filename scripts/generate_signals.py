@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 generate_signals.py
-Runs backtest for S2 and S4, exports signal CSVs to logs/
+Runs backtest for S4V2 and S4, exports signal CSVs to logs/
 Run daily at 3AM UTC via systemd or manually.
 Usage: .venv/bin/python3 scripts/generate_signals.py
 """
@@ -10,8 +10,8 @@ warnings.filterwarnings("ignore")
 sys.path.insert(0, ".")
 
 from datetime import datetime, timezone, timedelta
-from strategies.backtest.renko_reversal_strategy import RenkoReversalStrategy
 from strategies.backtest.renko_smiio_supertrend_strategy import RenkoSMIIOSupertrendStrategy
+from strategies.backtest.renko_smiio_supertrend_v2_strategy import RenkoSMIIOSupertrendV2Strategy
 from engine.backtest_engine import BacktestEngine
 import subprocess, logging
 
@@ -76,8 +76,8 @@ def run_backtest(strategy_class, params, label):
             tf = params.get("renko_timeframe")
             tf_df = engine.data_dict.get(tf)
             if tf_df is not None and len(tf_df) > 0:
-                ref_price = float(tf_df["close"].iloc[-1]) if label == "S2" else float(tf_df["close"].iloc[0])
-                sig_num = "2" if label == "S2" else "4"
+                ref_price = float(tf_df["close"].iloc[0])
+                sig_num = {"S4": "4", "S4V2": "4v2"}.get(label, "4")
                 with open(f"logs/box_ref_price_s{sig_num}.txt", "w") as _bf:
                     _bf.write(str(ref_price))
                 log.info(f"[GENERATE] {label}: box reference_price={ref_price} saved")
@@ -92,9 +92,9 @@ def write_trade_log_csv(trades, label):
     from datetime import datetime as _dt
     os.makedirs("output", exist_ok=True)
     ts = _dt.now().strftime("%Y%m%d_%H%M%S")
-    if label == "S2":
-        out = f"output/trade_log_RenkoReversalStrategy_BTCUSD_{ts}.csv"
-        pattern = "output/trade_log_RenkoReversalStrategy_BTCUSD_*.csv"
+    if label == "S4V2":
+        out = f"output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_{ts}.csv"
+        pattern = "output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv"
     else:
         out = f"output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_{ts}.csv"
         pattern = "output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"
@@ -142,16 +142,17 @@ if __name__ == "__main__":
     _skip_live = "--skip-live-signals" in sys.argv
     update_csv()
 
-    # S2
-    s2_params = dict(renko_box_pct=0.001, renko_timeframe="30m", st_atr_length=10, st_factor=2.0)
-    s2_trades, s2_pending = run_backtest(RenkoReversalStrategy, s2_params, "S2")
-    s2_trades = [t for t in s2_trades if "entry_datetime" in t]
+    # S4V2 (replaces S2)
+    s4v2_params = dict(renko_box_pct=0.001, renko_timeframe="30m", st_atr_length=5, st_factor=1.5,
+                       smiio_shortlen=10, smiio_longlen=20, smiio_siglen=3)
+    s4v2_trades, s4v2_pending = run_backtest(RenkoSMIIOSupertrendV2Strategy, s4v2_params, "S4V2")
+    s4v2_trades = [t for t in s4v2_trades if "entry_datetime" in t]
     if not _skip_live:
-        _s2_all = merge_signal_csv(s2_trades + ([s2_pending] if s2_pending else []), "logs/signals_s2.csv")
-        write_signal_csv(_s2_all, "logs/signals_s2.csv")
+        _s4v2_all = merge_signal_csv(s4v2_trades + ([s4v2_pending] if s4v2_pending else []), "logs/signals_s4v2.csv")
+        write_signal_csv(_s4v2_all, "logs/signals_s4v2.csv")
     else:
-        log.info("[GENERATE] Skipped logs/signals_s2.csv (dashboard-refresh-only mode)")
-    write_trade_log_csv(s2_trades, "S2")
+        log.info("[GENERATE] Skipped logs/signals_s4v2.csv (dashboard-refresh-only mode)")
+    write_trade_log_csv(s4v2_trades, "S4V2")
 
     # S4
     s4_params = dict(renko_box_pct=0.001, renko_timeframe="2h", st_atr_length=5, st_factor=2.0,

@@ -208,13 +208,13 @@ config = load_config()
 system = config.get('system', {})
 base_url = system.get('base_url', 'https://cdn-ind.testnet.deltaex.org')
 
-d2 = _load_bt("output/trade_log_RenkoReversal*.csv")
+d2 = _load_bt("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv")
 d4 = _load_bt("output/trade_log_RenkoSMIIOSupertrend*.csv")
-df2_fwd = _load14_fwd(84, system.get('s2_api_key', ''), system.get('s2_api_secret', ''), base_url)
+df2_fwd = _load14_fwd(84, system.get('s4v2_api_key', ''), system.get('s4v2_api_secret', ''), base_url)
 df4_fwd = _load14_fwd(84, system.get('s4_api_key', ''), system.get('s4_api_secret', ''), base_url)
 
 # Build rows
-for strat, df, df_fwd, pid in [('S2', d2, df2_fwd, 84), ('S4', d4, df4_fwd, 84)]:
+for strat, df, df_fwd, pid in [('S4V2', d2, df2_fwd, 84), ('S4', d4, df4_fwd, 84)]:
     bt_rows = _get_bt_rows(df, f'BT {strat}')
     lv_rows = _get_fwd_rows(df_fwd, f'LV {strat}')
     bt_pnl5 = sum(r['pnl_inr5'] for r in bt_rows)

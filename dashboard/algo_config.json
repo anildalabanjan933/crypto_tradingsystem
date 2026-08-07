@@ -1,25 +1,25 @@
 {
   "algos": [
     {
-      "name": "S2",
-      "file": "run_live_trading_s2.py",
-      "strategy": "RenkoReversalStrategy",
+      "name": "S4V2",
+      "file": "scripts/signal_replay_s4v2.py",
+      "strategy": "RenkoSMIIOSupertrendV2Strategy",
       "symbol": "BTCUSD",
       "lots": 100,
       "direction": "BOTH",
       "active": true,
       "delta_url": "https://cdn-ind.testnet.deltaex.org",
-      "delta_api_key_env": "S2_API_KEY",
-      "delta_api_secret_env": "S2_API_SECRET",
+      "delta_api_key_env": "S4V2_API_KEY",
+      "delta_api_secret_env": "S4V2_API_SECRET",
       "delta_product_id": 84,
-      "backtest_html": "output/backtest_report_RenkoReversalStrategy_BTCUSD_*.html",
-      "backtest_csv": "output/trade_log_RenkoReversalStrategy_BTCUSD_*.csv",
-      "log_path": "logs/live_trading_s2.log",
-      "backtest_trades": 1506,
-      "backtest_winrate": 52.26,
-      "backtest_pnl_inr": 2637633,
-      "backtest_dd_pct": 0.27,
-      "backtest_sharpe": 5.55,
+      "backtest_html": "output/backtest_report_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.html",
+      "backtest_csv": "output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv",
+      "log_path": "logs/live_trading_s4v2.log",
+      "backtest_trades": 13637,
+      "backtest_winrate": 58.72,
+      "backtest_pnl_inr": 26630802,
+      "backtest_dd_pct": 0.18,
+      "backtest_sharpe": 7.67,
       "backtest_slippage": 5.0
     },
     {
@@ -60,7 +60,7 @@
   "system": {
     "version": "v3.9",
     "commit": "321c96b",
-    "log_path_s2": "logs/live_trading_s2.log",
-    "log_path_s4": "logs/live_trading_s4.log"
+    "log_path_s4": "logs/live_trading_s4.log",
+    "log_path_s4v2": "logs/live_trading_s4v2.log"
   }
 }

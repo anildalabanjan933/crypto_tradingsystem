@@ -127,13 +127,13 @@ def clean_output():
 
     # Group files by type prefix
     patterns = {
-        'backtest_report_S2':     'backtest_report_RenkoReversal*.html',
-        'backtest_report_S4':     'backtest_report_RenkoSMIIO*.html',
-        'trade_log_S2':           'trade_log_RenkoReversal*.csv',
-        'trade_log_S4':           'trade_log_RenkoSMIIO*.csv',
-        'optimization_S2':        'optimization_results_RenkoReversal*.html',
-        'optimization_S4':        'optimization_results_RenkoSMIIO*.html',
-        'comparison_S2':          'comparison_report_S2_*.html',
+        'backtest_report_S4V2':   'backtest_report_RenkoSMIIOSupertrendV2Strategy*.html',
+        'backtest_report_S4':     'backtest_report_RenkoSMIIOSupertrendStrategy*.html',
+        'trade_log_S4V2':         'trade_log_RenkoSMIIOSupertrendV2Strategy*.csv',
+        'trade_log_S4':           'trade_log_RenkoSMIIOSupertrendStrategy*.csv',
+        'optimization_S4V2':      'optimization_results_RenkoSMIIOSupertrendV2Strategy*.html',
+        'optimization_S4':        'optimization_results_RenkoSMIIOSupertrendStrategy*.html',
+        'comparison_S4V2':        'comparison_report_S4V2_*.html',
         'comparison_S4':          'comparison_report_S4_*.html',
     }
 
@@ -177,7 +177,7 @@ check_disk()
 log(f"[MAINTENANCE] Auto maintenance complete")
 
 # ── REGENERATE SIGNAL CSVs ────────────────────────────────────
-log(f"[MAINTENANCE] Regenerating signal CSVs for S2 and S4...")
+log(f"[MAINTENANCE] Regenerating signal CSVs for S4V2 and S4...")
 import subprocess, sys
 result = subprocess.run(
     [sys.executable, "scripts/generate_signals.py"],
