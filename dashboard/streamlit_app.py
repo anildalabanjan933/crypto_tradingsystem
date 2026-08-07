@@ -6035,7 +6035,8 @@ with _tab_analysis:
             ])
             fig.update_layout(title=f'Equity Curve (Rs) - {sel_month}', xaxis_title='Date',
                                yaxis_title='Cumulative PnL (Rs)', hovermode='x unified', height=350,
-                               margin=dict(l=40,r=20,t=40,b=30))
+                               margin=dict(l=40,r=20,t=40,b=30),
+                               hoverlabel=dict(bgcolor='#2c3e50', font=dict(color='white', size=13)))
             st.plotly_chart(fig, use_container_width=True, key=f"{key_prefix}_chart")
 
         st.markdown("<hr style='margin:10px 0;'>", unsafe_allow_html=True)
