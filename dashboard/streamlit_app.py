@@ -2889,6 +2889,12 @@ with _tab_monitor:
             _bt = _bt_signals.get(_sts)
             if not _bt:
                 continue
+            try:
+                _sts_dt = _dt1d.datetime.strptime(_sts, "%Y-%m-%dT%H:%M:%S")
+                if _sts_dt < FIX_APPLIED_AT_UTC:
+                    continue
+            except:
+                continue
             _exit_ts = _bt["exit_ts"]
             _checks = []  # (name, ok(bool or None), detail)
 
@@ -5971,6 +5977,107 @@ with _tab_analysis:
         with _colD:
             st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4 - LAST 7 DAYS</div>", unsafe_allow_html=True)
             st.markdown(_fwd20(s4p_7d), unsafe_allow_html=True)
+
+        # ================================================================
+        # EQUITY CURVE - MONTHLY VIEW (BT + FWD, S2 + S4)
+        # ================================================================
+        import plotly.graph_objects as _go13
+
+        def _eq_render13(dates_all, cum_inr_all, key_prefix, title):
+            if not dates_all:
+                st.caption(f"{title}: no data yet")
+                return
+            months = sorted(set(d.strftime("%Y-%m") for d in dates_all))
+            skey = f"eq13_{key_prefix}_idx"
+            if skey not in st.session_state:
+                st.session_state[skey] = len(months) - 1
+            st.session_state[skey] = max(0, min(st.session_state[skey], len(months)-1))
+            c1, c2, c3 = st.columns([1,3,1])
+            with c1:
+                if st.button("< Prev", key=f"{key_prefix}_prev"):
+                    st.session_state[skey] = max(0, st.session_state[skey]-1)
+            with c3:
+                if st.button("Next >", key=f"{key_prefix}_next"):
+                    st.session_state[skey] = min(len(months)-1, st.session_state[skey]+1)
+            sel_month = months[st.session_state[skey]]
+            with c2:
+                st.markdown(f"<div style='text-align:center;font-weight:700;'>{title} - {sel_month}</div>", unsafe_allow_html=True)
+
+            idxs = [i for i,d in enumerate(dates_all) if d.strftime("%Y-%m")==sel_month]
+            if not idxs:
+                st.caption("No trades this month")
+                return
+            m_dates = [dates_all[i] for i in idxs]
+            m_cum   = [cum_inr_all[i] for i in idxs]
+
+            _pos = [v if v>=0 else 0 for v in m_cum]
+            _neg = [v if v<0 else 0 for v in m_cum]
+            fig = _go13.Figure(data=[
+                _go13.Scatter(x=m_dates, y=_pos, fill='tozeroy', fillcolor='rgba(39,174,96,0.2)',
+                              line=dict(width=0), mode='lines', showlegend=False, hoverinfo='skip'),
+                _go13.Scatter(x=m_dates, y=_neg, fill='tozeroy', fillcolor='rgba(231,76,60,0.2)',
+                              line=dict(width=0), mode='lines', showlegend=False, hoverinfo='skip'),
+                _go13.Scatter(x=m_dates, y=m_cum, line=dict(color='#2c3e50', width=2),
+                              mode='lines', name='Cumulative PnL')
+            ])
+            fig.update_layout(title=f'Equity Curve (Rs) - {sel_month}', xaxis_title='Date',
+                               yaxis_title='Cumulative PnL (Rs)', hovermode='x unified', height=350,
+                               margin=dict(l=40,r=20,t=40,b=30))
+            st.plotly_chart(fig, use_container_width=True, key=f"{key_prefix}_chart")
+
+        st.markdown("<hr style='margin:10px 0;'>", unsafe_allow_html=True)
+        st.markdown(f"<div style='{_HDR13}'>EQUITY CURVE - MONTHLY VIEW</div>", unsafe_allow_html=True)
+
+        try:
+            _f = sorted(_gl13.glob("output/trade_log_RenkoReversal*.csv"))
+            if _f:
+                _dfbt2 = _pd13.read_csv(_f[-1])
+                _dfbt2['exit_datetime'] = _pd13.to_datetime(_dfbt2['exit_datetime'])
+                _dfbt2 = _dfbt2.sort_values('exit_datetime')
+                _eq_render13(list(_dfbt2['exit_datetime']), list(_dfbt2['cumulative_pnl_inr']), "s2bt", "BACKTEST S2")
+        except Exception as _e:
+            st.caption(f"BT S2 equity curve error: {_e}")
+
+        try:
+            _f = sorted(_gl13.glob("output/trade_log_RenkoSMIIOSupertrend*.csv"))
+            if _f:
+                _dfbt4 = _pd13.read_csv(_f[-1])
+                _dfbt4['exit_datetime'] = _pd13.to_datetime(_dfbt4['exit_datetime'])
+                _dfbt4 = _dfbt4.sort_values('exit_datetime')
+                _eq_render13(list(_dfbt4['exit_datetime']), list(_dfbt4['cumulative_pnl_inr']), "s4bt", "BACKTEST S4")
+        except Exception as _e:
+            st.caption(f"BT S4 equity curve error: {_e}")
+
+        try:
+            if s2p:
+                _s2sorted = sorted(s2p, key=lambda p: p['xts'])
+                _dates = [_dt13.datetime.fromtimestamp(p['xts']) for p in _s2sorted]
+                _cum = []
+                _run = 0.0
+                for p in _s2sorted:
+                    _run += p['pnl']*_INR13
+                    _cum.append(_run)
+                _eq_render13(_dates, _cum, "s2fwd", "FORWARD TEST S2")
+            else:
+                st.caption("FORWARD TEST S2: no trades yet")
+        except Exception as _e:
+            st.caption(f"FWD S2 equity curve error: {_e}")
+
+        try:
+            if s4p:
+                _s4sorted = sorted(s4p, key=lambda p: p['xts'])
+                _dates = [_dt13.datetime.fromtimestamp(p['xts']) for p in _s4sorted]
+                _cum = []
+                _run = 0.0
+                for p in _s4sorted:
+                    _run += p['pnl']*_INR13
+                    _cum.append(_run)
+                _eq_render13(_dates, _cum, "s4fwd", "FORWARD TEST S4")
+            else:
+                st.caption("FORWARD TEST S4: no trades yet")
+        except Exception as _e:
+            st.caption(f"FWD S4 equity curve error: {_e}")
+
 
 
     # ================================================================
