@@ -623,8 +623,9 @@ if __name__=="__main__":
                 except:
                     _t2_dt = __import__('datetime').datetime.strptime(_t2, '%Y-%m-%dT%H:%M:%S')
                 _s2_already_caught_up = s2.last_1m_ts is not None and s2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= (_t2_dt - __import__('datetime').timedelta(minutes=1))
-                if _t2_dt > _ws_state["last_s2_tf"] and not _s2_already_caught_up:
-                    _ws_state["last_s2_tf"] = _t2_dt
+                _t2_dt_engine_label = _t2_dt - __import__('datetime').timedelta(minutes=30)
+                if _t2_dt_engine_label > _ws_state["last_s2_tf"] and not _s2_already_caught_up:
+                    _ws_state["last_s2_tf"] = _t2_dt_engine_label
                     log.info(f"[ENGINE] Boundary watcher trigger S2: {_t2} - checking S2")
                     def _run_s2_trigger(_dt=_t2_dt):
                         try:
@@ -647,8 +648,9 @@ if __name__=="__main__":
                 except:
                     _t4_dt = __import__('datetime').datetime.strptime(_t4, '%Y-%m-%dT%H:%M:%S')
                 _s4_already_caught_up = s4.last_1m_ts is not None and s4.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= (_t4_dt - __import__('datetime').timedelta(minutes=1))
-                if _t4_dt > _ws_state["last_s4_tf"] and not _s4_already_caught_up:
-                    _ws_state["last_s4_tf"] = _t4_dt
+                _t4_dt_engine_label = _t4_dt - __import__('datetime').timedelta(minutes=120)
+                if _t4_dt_engine_label > _ws_state["last_s4_tf"] and not _s4_already_caught_up:
+                    _ws_state["last_s4_tf"] = _t4_dt_engine_label
                     log.info(f"[ENGINE] Boundary watcher trigger S4: {_t4} - checking S4")
                     def _run_s4_trigger(_dt=_t4_dt):
                         try:
