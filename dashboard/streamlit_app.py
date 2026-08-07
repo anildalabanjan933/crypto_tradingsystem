@@ -6078,8 +6078,10 @@ with _tab_analysis:
             def _dir_color(d): return "#089981" if d=="LONG" else "#F23645"
             def _match(bt, lv):
                 if bt is None or lv is None: return "-"
-                if bt["dir"]==lv["dir"] and bt["entry_ist"]==lv["entry_ist"]: return "✅"
-                return "❌"
+                if bt["dir"] != lv["dir"]: return "❌"
+                if abs(bt["entry_p"] - lv["entry_p"]) > 5: return "❌"
+                if bt["exit_p"] and lv["exit_p"] and abs(bt["exit_p"] - lv["exit_p"]) > 5: return "❌"
+                return "✅"
             def _section_html(strat, bt_rows, lv_rows):
                 n_bt = len(bt_rows); n_lv = len(lv_rows)
                 tc = max(n_bt, n_lv)
