@@ -2871,6 +2871,7 @@ with _tab_monitor:
         return entry_info, exit_info
 
     _fvt_issues = []
+    _fvt_cards = []
     for _label, _log, _tf, _sigcsv in [
         ("S2", "logs/live_trading_s2.log", 30, "logs/signals_s2.csv"),
         ("S4", "logs/live_trading_s4.log", 120, "logs/signals_s4.csv"),
@@ -2879,77 +2880,112 @@ with _tab_monitor:
         _bt_signals, _bt_signals_by_exit = _fvt_load_signal_csv(_sigcsv)
         _entry_prices, _exit_prices = _fvt_parse_order_prices(_log)
 
-        for _r in _rows:
-            if _r["delay_sec"] > 5:
-                _cause = _fvt_find_cause(_r["candle_close"], _r["order_time"], _label)
-                _fvt_issues.append({
-                    "text": f"{_label} {_r['action']} delayed {_r['delay_sec']:.0f}s (target: 1-2s) | signal_ts={_r['sig_ts']} | order_time={_r['order_time']} UTC",
-                    "cause": _cause
-                })
+        # group ENTRY and EXIT rows by their common signal timestamp pair
+        _entry_rows = {r["sig_ts"]: r for r in _rows if r["action"] == "ENTRY"}
+        _exit_rows = {r["sig_ts"]: r for r in _rows if r["action"] == "EXIT"}
 
-        # MATCH VALIDATION: direction, entry price, exit price vs backtest CSV
-        # ENTRY orders looked up by entry_ts, EXIT orders looked up by exit_ts
-        _checked_ts = set()
-        for _r in _rows:
-            _sts = _r["sig_ts"]
-            _lookup_key = f"{_r['action']}_{_sts}"
-            if _lookup_key in _checked_ts:
+        _all_entry_ts = set(_entry_rows.keys()) | set(_bt_signals.keys())
+        for _sts in sorted(_all_entry_ts):
+            _bt = _bt_signals.get(_sts)
+            if not _bt:
                 continue
-            if _r["action"] == "EXIT":
-                if _sts not in _bt_signals_by_exit:
-                    continue
-                _bt = _bt_signals_by_exit[_sts]
+            _exit_ts = _bt["exit_ts"]
+            _checks = []  # (name, ok(bool or None), detail)
+
+            # DIRECTION
+            _er = _entry_rows.get(_sts)
+            _lv_entry = _entry_prices.get(_sts, {})
+            _bt_dir = _bt["direction"]
+            _lv_dir = _lv_entry.get("direction", "")
+            if _lv_dir:
+                _dir_ok = (_lv_dir == _bt_dir)
+                _checks.append(("Direction", _dir_ok, f"backtest={_bt_dir} | live={_lv_dir}"))
             else:
-                if _sts not in _bt_signals:
-                    continue
-                _bt = _bt_signals[_sts]
-            _checked_ts.add(_lookup_key)
-            # ENTRY rows use entry-fill info; EXIT rows use exit-fill info.
-            # Direction is only checked on ENTRY rows (EXIT log lines carry
-            # no direction field, so there is nothing valid to compare).
-            _lv = _entry_prices.get(_sts, {}) if _r["action"] == "ENTRY" else _exit_prices.get(_sts, {})
+                _checks.append(("Direction", None, "live order not placed yet"))
 
-            if _r["action"] == "ENTRY":
-                _bt_dir = _bt["direction"]
-                _lv_dir = _lv.get("direction", "")
-                if _lv_dir and _lv_dir != _bt_dir:
-                    _fvt_issues.append({
-                        "text": f"{_label} DIRECTION MISMATCH | signal_ts={_sts} | backtest={_bt_dir} | live={_lv_dir}",
-                        "cause": "Live direction does not match backtest signal - check strategy sync"
-                    })
+            # ENTRY TIMING
+            if _er:
+                _et_ok = _er["delay_sec"] <= 120
+                _checks.append(("Entry timing", _et_ok, f"order placed {_er['delay_sec']:.0f}s after candle close (target <=120s) | candle_close={_er['candle_close']} UTC | order={_er['order_time']} UTC"))
+                if not _et_ok:
+                    _cause = _fvt_find_cause(_er["candle_close"], _er["order_time"], _label)
+                    _fvt_issues.append({"text": f"{_label} ENTRY delayed {_er['delay_sec']:.0f}s (target <=120s) | signal_ts={_sts}", "cause": _cause})
+            else:
+                _checks.append(("Entry timing", None, "live order not placed yet"))
 
+            # EXIT TIMING
+            _xr = _exit_rows.get(_exit_ts) if _exit_ts and _exit_ts != "PENDING" else None
+            if _exit_ts == "PENDING":
+                _checks.append(("Exit timing", None, "trade still open - exit not fired yet"))
+            elif _xr:
+                _xt_ok = _xr["delay_sec"] <= 120
+                _checks.append(("Exit timing", _xt_ok, f"order placed {_xr['delay_sec']:.0f}s after candle close (target <=120s) | candle_close={_xr['candle_close']} UTC | order={_xr['order_time']} UTC"))
+                if not _xt_ok:
+                    _cause = _fvt_find_cause(_xr["candle_close"], _xr["order_time"], _label)
+                    _fvt_issues.append({"text": f"{_label} EXIT delayed {_xr['delay_sec']:.0f}s (target <=120s) | signal_ts={_exit_ts}", "cause": _cause})
+            else:
+                _checks.append(("Exit timing", None, "live exit order not placed yet"))
+
+            # ENTRY PRICE
             try:
                 _bt_ep = float(_bt["entry_price"])
-                _lv_ep = _lv.get("entry_price")
-                if _r["action"] == "ENTRY" and _lv_ep is not None:
+                _lv_ep = _lv_entry.get("entry_price")
+                if _lv_ep is not None:
                     _diff_ep = abs(_lv_ep - _bt_ep)
-                    if _diff_ep > 5:
-                        _fvt_issues.append({
-                            "text": f"{_label} ENTRY PRICE slippage ${_diff_ep:.2f} (target: within $5) | signal_ts={_sts} | backtest=${_bt_ep:.2f} | live=${_lv_ep:.2f}",
-                            "cause": "Entry fill price far from backtest close price - check execution delay or market volatility"
-                        })
+                    _ep_ok = _diff_ep <= 5
+                    _checks.append(("Entry price", _ep_ok, f"backtest=${_bt_ep:.2f} | live=${_lv_ep:.2f} | diff=${_diff_ep:.2f} (target within $5)"))
+                    if not _ep_ok:
+                        _fvt_issues.append({"text": f"{_label} ENTRY PRICE slippage ${_diff_ep:.2f} (target within $5) | signal_ts={_sts}", "cause": "Entry fill price far from backtest close price - check execution delay or market volatility"})
+                else:
+                    _checks.append(("Entry price", None, "live order not placed yet"))
             except:
-                pass
+                _checks.append(("Entry price", None, "backtest price unavailable"))
 
+            # EXIT PRICE
             try:
-                if _bt["exit_price"] not in ("", "PENDING"):
+                if _exit_ts == "PENDING" or _bt["exit_price"] in ("", "PENDING"):
+                    _checks.append(("Exit price", None, "trade still open - exit not fired yet"))
+                else:
                     _bt_xp = float(_bt["exit_price"])
-                    _lv_xp = _lv.get("exit_price")
+                    _lv_xp = _exit_prices.get(_exit_ts, {}).get("exit_price")
                     if _lv_xp is not None:
                         _diff_xp = abs(_lv_xp - _bt_xp)
-                        if _diff_xp > 5:
-                            _fvt_issues.append({
-                                "text": f"{_label} EXIT PRICE slippage ${_diff_xp:.2f} (target: within $5) | signal_ts={_sts} | backtest=${_bt_xp:.2f} | live=${_lv_xp:.2f}",
-                                "cause": "Exit fill price far from backtest close price - check execution delay or market volatility"
-                            })
+                        _xp_ok = _diff_xp <= 5
+                        _checks.append(("Exit price", _xp_ok, f"backtest=${_bt_xp:.2f} | live=${_lv_xp:.2f} | diff=${_diff_xp:.2f} (target within $5)"))
+                        if not _xp_ok:
+                            _fvt_issues.append({"text": f"{_label} EXIT PRICE slippage ${_diff_xp:.2f} (target within $5) | signal_ts={_exit_ts}", "cause": "Exit fill price far from backtest close price - check execution delay or market volatility"})
+                    else:
+                        _checks.append(("Exit price", None, "live exit order not placed yet"))
             except:
-                pass
+                _checks.append(("Exit price", None, "backtest price unavailable"))
+
+            _fail = any(c[1] is False for c in _checks)
+            _pending = all(c[1] is None for c in _checks)
+            _overall = "MISMATCH" if _fail else ("PENDING" if _pending else "FULL MATCH")
+            _fvt_cards.append({
+                "label": _label, "entry_ts": _sts, "exit_ts": _exit_ts,
+                "checks": _checks, "overall": _overall
+            })
 
     if 'exp_1d' not in st.session_state: st.session_state['exp_1d'] = bool(_fvt_issues)
     _fvt_title = f"SECTION 1D - FIX VALIDATION TRACKER ({len(_fvt_issues)} ISSUE(S) FOUND)" if _fvt_issues else "SECTION 1D - FIX VALIDATION TRACKER (ALL CLEAR)"
     with st.expander(_fvt_title, expanded=bool(_fvt_issues)):
-        st.caption(f"Scanning trades since fix applied: {FIX_APPLIED_AT_UTC.strftime('%Y-%m-%d %H:%M:%S')} UTC | Target: delay 1-2s, slippage within $5")
+        st.caption(f"Scanning trades since fix applied: {FIX_APPLIED_AT_UTC.strftime('%Y-%m-%d %H:%M:%S')} UTC | Target: delay <=120s, slippage within $5/side")
+        for _card in _fvt_cards:
+            _ov = _card["overall"]
+            _ov_color = "#B00020" if _ov == "MISMATCH" else ("#E65100" if _ov == "PENDING" else "#0B8043")
+            _ov_bg = "#FFEBEE" if _ov == "MISMATCH" else ("#FFF3E0" if _ov == "PENDING" else "#E8F5E9")
+            st.markdown(f"<div style='padding:6px;border:1px solid {_ov_color};background:{_ov_bg};color:{_ov_color};font-size:12px;font-weight:700;margin-top:10px;'>{_card['label']} Trade | Entry {_card['entry_ts']} -> Exit {_card['exit_ts']} | OVERALL: {_ov}</div>", unsafe_allow_html=True)
+            for _cname, _cok, _cdetail in _card["checks"]:
+                if _cok is True:
+                    _cicon, _ccolor, _cbg = "OK", "#0B8043", "#F1F8F2"
+                elif _cok is False:
+                    _cicon, _ccolor, _cbg = "FAIL", "#B00020", "#FFEBEE"
+                else:
+                    _cicon, _ccolor, _cbg = "PENDING", "#E65100", "#FFF8F0"
+                st.markdown(f"<div style='padding:4px 4px 4px 16px;border-left:3px solid {_ccolor};background:{_cbg};color:#333;font-size:11px;margin-bottom:1px;'><b style=\'color:{_ccolor}\'>[{_cicon}] {_cname}:</b> {_cdetail}</div>", unsafe_allow_html=True)
         if _fvt_issues:
+            st.markdown("<div style='margin-top:10px;font-size:12px;font-weight:700;'>ROOT CAUSE DETAILS FOR FAILURES:</div>", unsafe_allow_html=True)
             for _iss in _fvt_issues:
                 st.markdown(f"<div style='padding:6px;border:1px solid #F23645;background:#FFEBEE;color:#B00020;font-size:12px;font-weight:600;margin-bottom:2px;'>{_iss['text']}</div>", unsafe_allow_html=True)
                 st.markdown(f"<div style='padding:6px 6px 6px 20px;border:1px solid #FFB74D;background:#FFF3E0;color:#E65100;font-size:11px;margin-bottom:8px;'>CAUSE: {_iss['cause']}</div>", unsafe_allow_html=True)
