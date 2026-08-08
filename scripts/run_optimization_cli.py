@@ -67,6 +67,15 @@ PREDEFINED_RANGES = {
         "st_factor":       {"values": [1.5, 2.0, 3.0]},
         "smiio_shortlen":  {"values": [10, 20]},
         "smiio_siglen":    {"values": [3, 7, 9]}
+    },
+    "s4v2_combined": {
+        "renko_box_pct":   {"values": [0.001, 0.0015]},
+        "renko_timeframe": {"values": ["15m", "30m", "1h", "2h"]},
+        "st_atr_length":   {"values": [5, 10]},
+        "st_factor":       {"values": [1.5, 2.0, 3.0]},
+        "smiio_shortlen":  {"values": [10, 20]},
+        "smiio_longlen":   {"values": [10, 20, 30]},
+        "smiio_siglen":    {"values": [3, 7, 9]}
     }
 }
 

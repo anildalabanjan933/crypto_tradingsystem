@@ -619,7 +619,7 @@ while True:
             elif position is None and now < _xt:
                 direction = dirn
                 side = "buy" if direction == "long" else "sell"
-                log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
+                log.info(f"[ORDER] ENTRY attempt {side} {lots} lots | dir={direction} | ts={sig_ts}")
                 save_ts_file(TS_FILE, sig_ts)
                 last_known_ts = sig_ts
                 if not check_engine_heartbeat():
@@ -649,6 +649,7 @@ while True:
                         if _bt_ep > 0 and real_entry > 0:
                             _send_entry_match_alert("S4", direction, sig_ts, _bt_ep, real_entry, _bt_xt, _bt_xp, lots)
                         open_entry_price = real_entry
+                        log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
                         log.info(f"[ORDER] ENTRY confirmed | position={position}")
                     else:
                         log.error(f"[ORDER] ENTRY FAILED: {result}")

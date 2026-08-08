@@ -31,6 +31,7 @@ def _get_strat_list():
 
 _STRAT_CLASS_OVERRIDE = {
     "renko_smiio_supertrend_strategy": "RenkoSMIIOSupertrendStrategy",
+    "renko_smiio_supertrend_v2_strategy": "RenkoSMIIOSupertrendV2Strategy",
     "tf1_supertrend_ema_strategy": "TF1SupertrendEMAStrategy",
 }
 
@@ -975,6 +976,9 @@ def _pair_orders_top(orders):
                 continue
             if exit_order['side'] == exit_side:
                 used.add(i); used.add(j)
+                break
+            elif exit_order['side'] == entry_side:
+                break
                 if entry_side == 'BUY':
                     pnl = (exit_order['price'] - entry_order['price']) * entry_order['size'] * 0.001
                     side_label = 'LONG'
@@ -1086,9 +1090,12 @@ def _load14_fwd(product_id, api_key, api_secret, base_url):
         if not api_key or not api_secret: return None
         import time as _tm14
         now_ts = int(_tm14.time())
-        import datetime as _dt14fx; _today14 = _dt14fx.datetime.utcnow().replace(hour=0,minute=0,second=0,microsecond=0); from_ts = int(_today14.timestamp())  # today only
+        import datetime as _dt14fx; _today14 = _dt14fx.datetime.utcnow().replace(hour=0,minute=0,second=0,microsecond=0); _lookback14 = _today14 - _dt14fx.timedelta(days=3); from_ts = int(_lookback14.timestamp())  # lookback 3 days so cross-day trades pair correctly
         orders = _fetch_orders_top(api_key, api_secret, base_url, from_ts, now_ts, product_id)
-        pairs = _pair_orders_top(orders)
+        _pairs_all = _pair_orders_top(orders)
+        if not _pairs_all: return None
+        _td_early14 = _today14.strftime("%Y-%m-%d")
+        pairs = [p for p in _pairs_all if p.get("exit_ts","")[:10]==_td_early14 or p.get("entry_ts","")[:10]==_td_early14]
         if not pairs: return None
         tot=len(pairs); pnls=[p["pnl"] for p in pairs]
         wins=[v for v in pnls if v>0]; losses=[v for v in pnls if v<0]
@@ -2599,11 +2606,12 @@ with _tab_monitor:
                 next_color = _TDR1C
 
             # Signal CSV last update
+            _sig_thresh = 10800 if bot_name == 'S4' else 900
             try:
                 import os as _os1c, time as _t1c
                 age = _t1c.time() - _os1c.path.getmtime(sig_path)
                 sig_age = f"{int(age/60)} min ago"
-                sig_color = _TDG1C if age < 900 else _TDO1C
+                sig_color = _TDG1C if age < _sig_thresh else _TDO1C
             except:
                 sig_age = "Unknown"
                 sig_color = _TDO1C
@@ -2628,7 +2636,7 @@ with _tab_monitor:
                 import os as _os1c, time as _t1c
                 age = _t1c.time() - _os1c.path.getmtime(sig_path)
                 sig_age = f"{int(age/60)} min ago"
-                sig_color = _TDG1C if age < 900 else _TDO1C
+                sig_color = _TDG1C if age < _sig_thresh else _TDO1C
             except:
                 sig_age = "Unknown"
                 sig_color = _TDO1C
@@ -3496,12 +3504,12 @@ with _tab_trading:
         c1, c2, c3, c4 = st.columns(4)
         c1.metric("Total Balance", f"${total_bal:,.2f}", f"₹{total_bal*INR_RATE:,.0f}")
         c2.metric("Unrealised PnL", f"${total_unreal:,.2f}", f"₹{total_unreal*INR_RATE:,.0f}")
-        c3.metric("S2 Balance", f"${s2_bal:,.2f}")
+        c3.metric("S4V2 Balance", f"${s2_bal:,.2f}")
         c4.metric("S4 Balance", f"${s4_bal:,.2f}")
 
         # Open positions
         st.markdown("**Open Positions**")
-        all_pos = [dict(p, account='S2') for p in s2_pos] + [dict(p, account='S4') for p in s4_pos]
+        all_pos = [dict(p, account='S4V2') for p in s2_pos] + [dict(p, account='S4') for p in s4_pos]
         if all_pos:
             # Header row
             hc = st.columns([1,2,1,1,2,2,2])
@@ -5014,7 +5022,7 @@ with _tab_backtest:
             ], key="sec7_strategy")
         with col2:
             opt_group = st.selectbox("Select Group", [
-                "renko", "supertrend", "smiio", "s2_combined (Full Mode)", "s4_combined (Full Mode)"
+                "renko", "supertrend", "smiio", "s4v2_combined (Full Mode)", "s4_combined (Full Mode)"
             ], key="sec7_group")
         with col3:
             opt_lots = st.number_input("Lots", min_value=1, max_value=10000, value=100, key="sec7_lots")
@@ -5065,7 +5073,7 @@ with _tab_backtest:
             try:
                 cmd = [
                     ".venv/bin/python", "scripts/run_optimization_cli.py",
-                    "--strategy", opt_strategy,
+                    "--strategy", _display_to_class(opt_strategy),
                     "--group", opt_group.split(" (")[0],
                     "--lots", str(opt_lots),
                     "--start", str(opt_start),
@@ -5380,6 +5388,17 @@ with _tab_analysis:
         # Section 13 display window = last 7 days rolling (not VALID_FROM)
         import datetime as _dt13_7
         _VF13_7D = (_dt13_7.datetime.utcnow() - _dt13_7.timedelta(days=7)).strftime('%Y-%m-%dT%H:%M:%S')
+
+        # ── DYNAMIC INPUT CONTROLS (persist across refresh via session_state) ──
+        _c13a, _c13b, _c13c = st.columns(3)
+        with _c13a:
+            sec13_slip = st.number_input("Slippage/side ($)", min_value=0.0, value=st.session_state.get("sec13_slip", 5.0), key="sec13_slip")
+        with _c13b:
+            sec13_charges = st.checkbox("Include Tax & All Charges", value=st.session_state.get("sec13_charges", True), key="sec13_charges")
+        with _c13c:
+            sec13_lots = st.number_input("Lots", min_value=1, max_value=10000, value=st.session_state.get("sec13_lots", 100), key="sec13_lots")
+        _BASE_LOTS13 = 100.0
+        _LOT_RATIO13 = float(sec13_lots) / _BASE_LOTS13
         _INR13 = 84.0
         _BASE13= "https://cdn-ind.testnet.deltaex.org"
         _TH13  = "padding:5px 8px;border:1px solid #90CAF9;background:#E3F2FD;font-size:11px;font-weight:700;color:#333;text-align:center;"
@@ -5452,6 +5471,12 @@ with _tab_analysis:
                     pnl = raw_pnl - cm
                     pairs.append({"dir":dir,"ep":ep,"xp":xp,"pnl":pnl,"cm":cm,"ets":ets,"xts":xts,"sz":sz})
                     used.add(i); used.add(j); break
+                else:
+                    # No exit found yet - still an OPEN position, show it anyway
+                    sz  = int(e.get("size",0))
+                    cm_open = float(e.get("paid_commission") or 0)
+                    pairs.append({"dir":dir,"ep":ep,"xp":0,"pnl":0,"cm":cm_open,"ets":ets,"xts":0,"sz":sz,"open":True})
+                    used.add(i)
             return pairs
 
         def _calc13(pairs):
@@ -5683,26 +5708,29 @@ with _tab_analysis:
                     xp_inr   = float(p.get('xp', 0))
                     cm_inr   = float(p.get('cm', 0)) * _INR13
                     _ist_off1 = _dfw.timedelta(hours=5, minutes=30)
+                    is_open  = bool(p.get('open', False))
                     et       = (_dfw.datetime.utcfromtimestamp(p.get('ets',0)) + _ist_off1).strftime('%d-%b-%Y %I:%M %p IST')
-                    xt       = (_dfw.datetime.utcfromtimestamp(p.get('xts',0)) + _ist_off1).strftime('%d-%b-%Y %I:%M %p IST')
+                    xt       = "-" if is_open else (_dfw.datetime.utcfromtimestamp(p.get('xts',0)) + _ist_off1).strftime('%d-%b-%Y %I:%M %p IST')
                     dirv     = str(p.get('dir','')).upper()
-                    slip_act = abs(float(p.get('ep',0)) - float(p.get('xp',0))) * 0.001
+                    slip_act = 0 if is_open else abs(float(p.get('ep',0)) - float(p.get('xp',0))) * 0.001
                     slip_diff= slip_act - 5.0
-                    slip_str = f"+${slip_diff:.2f}" if slip_diff >= 0 else f"-${abs(slip_diff):.2f}"
+                    slip_str = "-" if is_open else (f"+${slip_diff:.2f}" if slip_diff >= 0 else f"-${abs(slip_diff):.2f}")
                     mp_style  = _TG20
-                    ps        = _TG20 if pnl >= 0 else _TR20
+                    ps        = _TY20 if is_open else (_TG20 if pnl >= 0 else _TR20)
                     ds        = _TG20 if dirv == 'LONG' else _TR20
+                    pnl_disp  = "OPEN" if is_open else f"₹{pnl_inr:,.0f}"
+                    xp_disp   = "-" if is_open else f"${xp_inr:,.0f}"
                     rows += (
                         f"<tr>"
                         f"<td style='{_TD20}'>{et[:11].strip()}</td>"
                         f"<td style='{ds}'>{dirv}</td>"
                         f"<td style='{_TD20}'>{et[12:] if len(et)>12 else et}</td>"
-                        f"<td style='{_TD20}'>{xt[12:] if len(xt)>12 else xt}</td>"
+                        f"<td style='{_TD20}'>{xt[12:] if len(xt)>12 and xt!='-' else xt}</td>"
                         f"<td style='{_TD20}'>${ep_inr:,.0f}</td>"
-                        f"<td style='{_TD20}'>${xp_inr:,.0f}</td>"
-                        f"<td style='{_TR20}'>{slip_str} vs $5</td>"
+                        f"<td style='{_TD20}'>{xp_disp}</td>"
+                        f"<td style='{_TR20}'>{slip_str}</td>"
                         f"<td style='{_TR20}'>₹{cm_inr:,.0f}</td>"
-                        f"<td style='{ps}'>₹{pnl_inr:,.0f}</td>"
+                        f"<td style='{ps}'>{pnl_disp}</td>"
                         f"</tr>"
                     )
                 return (
@@ -5726,6 +5754,7 @@ with _tab_analysis:
         def _bt20(csv_pattern, vf_str, which="both"):
             try:
                 import glob as _gb, pandas as _pb
+                _slip_lbl13 = f"Slip ${sec13_slip:g}"
                 _WAIT_BT = (
                     f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
                     f"<table style='width:100%;border-collapse:collapse;'>"
@@ -5736,7 +5765,7 @@ with _tab_analysis:
                     f"<th style='{_TH20}'>Exit Time (IST)</th>"
                     f"<th style='{_TH20}'>Entry (INR)</th>"
                     f"<th style='{_TH20}'>Exit (INR)</th>"
-                    f"<th style='{_TH20}'>Slip $5</th>"
+                    f"<th style='{_TH20}'>{_slip_lbl13}</th>"
                     f"<th style='{_TH20}'>Tax+Charges</th>"
                     f"<th style='{_TH20}'>PnL</th>"
                     f"</tr></thead><tbody>"
@@ -5761,12 +5790,18 @@ with _tab_analysis:
                     return _WAIT_BT
                 rows = ""
                 for i, r in df.iterrows():
-                    pnl     = float(r.get('net_pnl', 0))
-                    pnl_inr = float(r.get('net_pnl_inr', pnl * _INR13))
+                    _gross_pnl   = float(r.get('gross_pnl', r.get('net_pnl', 0)))
+                    _old_slip    = float(r.get('slippage_usd', 10.0))
+                    _old_charges = float(r.get('total_charges_usd', 0)) - _old_slip
+                    _sz_ratio    = _LOT_RATIO13
+                    _new_slip    = sec13_slip * 2 * _sz_ratio
+                    _new_charges = (_old_charges * _sz_ratio) if sec13_charges else 0.0
+                    pnl          = (_gross_pnl * _sz_ratio) - _new_slip - _new_charges
+                    pnl_inr      = pnl * _INR13
                     ep_inr  = float(r.get('entry_price', 0))
                     xp_inr  = float(r.get('exit_price',  0))
-                    slip    = float(r.get('slippage_usd', 10.0))
-                    tax_inr = float(r.get('total_charges_usd', 0)) * _INR13
+                    slip    = sec13_slip
+                    tax_inr = _new_charges * _INR13
                     import datetime as _dfw
                     _ist_off2 = _dfw.timedelta(hours=5, minutes=30)
                     _et_raw = str(r.get('entry_datetime',''))[:19]
@@ -5803,7 +5838,7 @@ with _tab_analysis:
                     f"<th style='{_TH20}'>Exit Time (IST)</th>"
                     f"<th style='{_TH20}'>Entry (INR)</th>"
                     f"<th style='{_TH20}'>Exit (INR)</th>"
-                    f"<th style='{_TH20}'>Slip $5</th>"
+                    f"<th style='{_TH20}'>{_slip_lbl13}</th>"
                     f"<th style='{_TH20}'>Tax+Charges</th>"
                     f"<th style='{_TH20}'>PnL</th>"
                     f"</tr></thead><tbody>{rows}</tbody></table></div>"
@@ -6008,6 +6043,10 @@ with _tab_analysis:
                 st.caption("No trades this month")
                 return
             m_dates = [dates_all[i] for i in idxs]
+            if len(m_dates) == 1:
+                import datetime as _dt13sp
+                m_dates = [m_dates[0] - _dt13sp.timedelta(hours=1), m_dates[0]]
+                idxs = [idxs[0], idxs[0]]
             if reset_monthly:
                 deltas = []
                 for i in idxs:
@@ -6048,7 +6087,12 @@ with _tab_analysis:
                 _dfbt2 = _pd13.read_csv(_f[-1])
                 _dfbt2['exit_datetime'] = _pd13.to_datetime(_dfbt2['exit_datetime'])
                 _dfbt2 = _dfbt2.sort_values('exit_datetime')
-                _eq_render13(list(_dfbt2['exit_datetime']), list(_dfbt2['cumulative_pnl_inr']), "s2bt", "BACKTEST S4V2", reset_monthly=True)
+                _gpnl2   = _dfbt2.get('gross_pnl', _dfbt2['net_pnl'])
+                _oslip2  = _dfbt2.get('slippage_usd', 10.0)
+                _ochg2   = _dfbt2.get('total_charges_usd', 0.0) - _oslip2
+                _npnl2   = (_gpnl2 * _LOT_RATIO13) - (sec13_slip*2*_LOT_RATIO13) - ((_ochg2*_LOT_RATIO13) if sec13_charges else 0.0)
+                _cum2_inr = list((_npnl2 * _INR13).cumsum())
+                _eq_render13(list(_dfbt2['exit_datetime']), _cum2_inr, "s2bt", "BACKTEST S4V2", reset_monthly=True)
         except Exception as _e:
             st.caption(f"BT S4V2 equity curve error: {_e}")
 
@@ -6058,14 +6102,19 @@ with _tab_analysis:
                 _dfbt4 = _pd13.read_csv(_f[-1])
                 _dfbt4['exit_datetime'] = _pd13.to_datetime(_dfbt4['exit_datetime'])
                 _dfbt4 = _dfbt4.sort_values('exit_datetime')
-                _eq_render13(list(_dfbt4['exit_datetime']), list(_dfbt4['cumulative_pnl_inr']), "s4bt", "BACKTEST S4", reset_monthly=True)
+                _gpnl4   = _dfbt4.get('gross_pnl', _dfbt4['net_pnl'])
+                _oslip4  = _dfbt4.get('slippage_usd', 10.0)
+                _ochg4   = _dfbt4.get('total_charges_usd', 0.0) - _oslip4
+                _npnl4   = (_gpnl4 * _LOT_RATIO13) - (sec13_slip*2*_LOT_RATIO13) - ((_ochg4*_LOT_RATIO13) if sec13_charges else 0.0)
+                _cum4_inr = list((_npnl4 * _INR13).cumsum())
+                _eq_render13(list(_dfbt4['exit_datetime']), _cum4_inr, "s4bt", "BACKTEST S4", reset_monthly=True)
         except Exception as _e:
             st.caption(f"BT S4 equity curve error: {_e}")
 
         try:
             if s2p:
-                _s2sorted = sorted(s2p, key=lambda p: p['xts'])
-                _dates = [_dt13.datetime.fromtimestamp(p['xts']) for p in _s2sorted]
+                _s2sorted = sorted(s2p, key=lambda p: p['xts'] if p.get('xts',0)>0 else p['ets'])
+                _dates = [_dt13.datetime.fromtimestamp(p['xts'] if p.get('xts',0)>0 else p['ets']) for p in _s2sorted]
                 _cum = []
                 _run = 0.0
                 for p in _s2sorted:
@@ -6079,8 +6128,8 @@ with _tab_analysis:
 
         try:
             if s4p:
-                _s4sorted = sorted(s4p, key=lambda p: p['xts'])
-                _dates = [_dt13.datetime.fromtimestamp(p['xts']) for p in _s4sorted]
+                _s4sorted = sorted(s4p, key=lambda p: p['xts'] if p.get('xts',0)>0 else p['ets'])
+                _dates = [_dt13.datetime.fromtimestamp(p['xts'] if p.get('xts',0)>0 else p['ets']) for p in _s4sorted]
                 _cum = []
                 _run = 0.0
                 for p in _s4sorted:
