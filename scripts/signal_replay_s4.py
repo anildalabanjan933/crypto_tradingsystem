@@ -504,32 +504,15 @@ while True:
     try:
         now = now_utc_str()
 
-        # --- CSV Signal Matching (single source of truth) ---
-        # Reload signals every 10 min
-        _now_min = int(time.time()) // 60
-        if _now_min % 10 == 0 and _now_min != getattr(check_engine_heartbeat, '_last_reload', -1):
-            check_engine_heartbeat._last_reload = _now_min
-            signals = load_signals()
-            log.info(f"[RELOAD] Signal CSV reloaded: {len(signals)} signals")
+        # --- CSV Signal Matching (single source of truth, CSV-only) ---
+        # Reload signals every loop iteration - CSV write is instant (0.05s)
+        signals = load_signals()
 
-        # --- Check logs/live_signal_s4.txt first (1-2 sec from engine) ---
-        _live_sig = read_live_signal("logs/live_signal_s4.txt")
+        # --- Fast live_signal path removed - CSV-only single source of truth ---
+        _live_sig = None
         _live_matched = None
-        if _live_sig and _live_sig.get("seq", 0) > last_processed_seq:
-            _live_ts = _live_sig["timestamp"]
-            _live_type = _live_sig.get("type","")
-            signals = load_signals()
-            for _row in signals:
-                _et_match = _row["entry_time"][:16] == _live_ts[:16]
-                _xt_match = _row["exit_time"][:16] == _live_ts[:16]
-                if _et_match or _xt_match:
-                    _live_matched = _row
-                    log.info(f"[LIVE] New engine signal SEQ={_live_sig['seq']}: {_live_ts} type={_live_type}")
-                    break
-            if not _live_matched:
-                log.info(f"[LIVE] Engine signal {_live_ts} not in CSV yet - waiting")
 
-        # Find current signal from CSV (fallback if live signal not available)
+        # Find current signal from CSV
         _matched = _live_matched
         if not _matched:
             for _row in signals:

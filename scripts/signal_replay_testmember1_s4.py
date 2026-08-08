@@ -92,7 +92,7 @@ def _send_live_entry_alert(label, direction, entry_ts, fill_price, sl_price, lot
     except Exception as e:
         pass
 
-def _send_live_exit_alert(label, direction, exit_ts, fill_price, entry_fill, lots=100):
+def _send_live_exit_alert(label, direction, exit_ts, fill_price, entry_fill=0.0, lots=100):
     try:
         from engine.telegram_alert import send_alert
         if entry_fill and entry_fill > 0:
@@ -113,6 +113,10 @@ def _send_live_exit_alert(label, direction, exit_ts, fill_price, entry_fill, lot
         send_alert(msg)
     except Exception as e:
         pass
+
+def _send_live_exit_alert_DEPRECATED_DUPLICATE(label, direction, exit_ts, fill_price, lots=100):
+    """DEPRECATED - duplicate removed, merged into single function above."""
+    pass
 
 def _send_entry_match_alert(label, direction, entry_ts, bt_entry_price, lv_fill_price,
                              bt_exit_ts, bt_exit_price, lots=100):
@@ -236,26 +240,7 @@ def _send_live_entry_alert(label, direction, entry_ts, fill_price, sl_price, lot
     except Exception as e:
         pass
 
-def _send_live_exit_alert(label, direction, exit_ts, fill_price, lots=100):
-    """Send Telegram alert on live exit fill."""
-    try:
-        from engine.telegram_alert import send_alert
-        import datetime as _dt
-        def _ist(ts):
-            try:
-                dt = _dt.datetime.strptime(ts[:19], "%Y-%m-%dT%H:%M:%S")
-                return (dt + _dt.timedelta(hours=5, minutes=30)).strftime("%d-%b-%Y %I:%M %p IST")
-            except: return ts
-        msg = (
-            f"CTS LIVE {label} EXIT\n"
-            f"Direction : {direction.upper()}\n"
-            f"Exit time : {_ist(exit_ts)}\n"
-            f"Fill price: ${fill_price:,.2f}\n"
-            f"Lots      : {lots}"
-        )
-        send_alert(msg)
-    except Exception as e:
-        pass
+
 
 
 
@@ -339,6 +324,7 @@ def load_signals():
     log.info(f"[REPLAY] Loaded {len(signals)} signals from {SIGNAL_CSV}")
     return signals
 
+SIGNAL_FILE = "logs/live_signal_s4.txt"
 def get_valid_from():
     """VALID_FROM = max(today 00:00 UTC, signal file exit time).
     Prevents firing yesterday signal on restart = no stale SL hits."""
@@ -363,7 +349,7 @@ def get_valid_from():
 
 # --- Startup ---
 # VALID_FROM resets to today 00:00 UTC on every startup for fresh window
-log.info("[STARTUP] S4 Signal Replay Bot starting...")
+log.info("[STARTUP] TestMember1_S4 Signal Replay Bot starting...")
 
 pos = om.get_position()
 if pos.get("success") and pos.get("direction") == "LONG":
@@ -395,6 +381,22 @@ log.info(f"[STARTUP] last_known_ts={last_known_ts} | valid_from={valid_from}")
 signals = load_signals()
 open_lot_size   = LOT_SIZE
 open_entry_price = 0.0
+last_processed_seq = 0
+# FIX: on startup, if the live signal file already points at a timestamp we
+# have already handled (<= last_known_ts), mark it as seen immediately so it
+# is not re-processed as "new" right after a restart.
+try:
+    import re as _re_startup
+    _lf = open(f"logs/live_signal_s{__file__[-4]}.txt").read().strip()
+    _parts = _lf.split("|")
+    if len(_parts) >= 4:
+        _startup_ts  = _parts[1]
+        _startup_seq = int(_parts[3].split("=")[1])
+        if last_known_ts and _startup_ts <= last_known_ts:
+            last_processed_seq = _startup_seq
+            log.info(f"[STARTUP] Signal {_startup_ts} already handled (<= last_known_ts) - marking SEQ={_startup_seq} as seen")
+except Exception as _e_startup:
+    log.warning(f"[STARTUP] Could not pre-check live signal file: {_e_startup}")
 
 # --- Missed Trade Check on Startup ---
 try:
@@ -464,7 +466,11 @@ def read_live_signal(signal_file):
         parts = line.split("|")
         if len(parts) < 3:
             return None
-        return {"type": parts[0], "timestamp": parts[1], "lots": int(parts[2])}
+        seq = 0
+        for p in parts:
+            if p.startswith("SEQ="):
+                seq = int(p.split("=")[1])
+        return {"type": parts[0], "timestamp": parts[1], "lots": int(parts[2]), "seq": seq}
     except Exception:
         return None
 
@@ -480,7 +486,7 @@ log.info("[STARTUP] Entering main loop. Checking every 10 seconds.")
 # Validate API key on startup
 try:
     import requests as _rq_val, time as _t_val, hmac as _hm_val, hashlib as _hs_val
-    _base_val = "https://cdn-ind.testnet.deltaex.org"  # testnet - change to https://api.india.delta.exchange for live
+    _base_val = "https://cdn-ind.testnet.deltaex.org"  # testnet
     _ts_val = str(int(_t_val.time()))
     _path_val = "/v2/profile"
     _msg_val = f"GET{_ts_val}{_path_val}"
@@ -498,27 +504,15 @@ while True:
     try:
         now = now_utc_str()
 
-        # --- CSV Signal Matching (single source of truth) ---
-        _now_min = int(time.time()) // 60
-        if _now_min % 10 == 0 and _now_min != getattr(check_engine_heartbeat, '_last_reload', -1):
-            check_engine_heartbeat._last_reload = _now_min
-            signals = load_signals()
-            log.info(f"[RELOAD] Signal CSV reloaded: {len(signals)} signals")
+        # --- CSV Signal Matching (single source of truth, CSV-only) ---
+        # Reload signals every loop iteration - CSV write is instant (0.05s)
+        signals = load_signals()
 
-        # --- Check logs/live_signal_s4.txt first (1-2 sec from engine) ---
-        _live_sig = read_live_signal("logs/live_signal_s4.txt")
+        # --- Fast live_signal path removed - CSV-only single source of truth ---
+        _live_sig = None
         _live_matched = None
-        if _live_sig and _live_sig.get("timestamp"):
-            _live_ts = _live_sig["timestamp"]
-            _live_type = _live_sig.get("type","")
-            for _row in signals:
-                _et_match = _row["entry_time"][:16] == _live_ts[:16]
-                _xt_match = _row["exit_time"][:16] == _live_ts[:16]
-                if (_et_match or _xt_match) and _row["entry_time"] > last_known_ts:
-                    _live_matched = _row
-                    log.info(f"[LIVE] Signal from engine matched CSV: {_live_ts} type={_live_type}")
-                    break
 
+        # Find current signal from CSV
         _matched = _live_matched
         if not _matched:
             for _row in signals:
@@ -541,6 +535,15 @@ while True:
                     _matched = _row
                     break
 
+        # --- SAFETY OVERRIDE: always re-check current open position's own exit ---
+        # Prevents deadlock when live_signal fast-path grabs a NEW entry row
+        # while the OPEN position's own exit (in CSV) has already resolved+passed
+        if position is not None:
+            for _row in signals:
+                if _row["entry_time"] == last_known_ts and _row["exit_time"] not in ("PENDING", "") and now >= _row["exit_time"]:
+                    _matched = _row
+                    break
+
         if _matched:
             sig_ts = _matched["entry_time"]
             lots   = _matched["lots"]
@@ -552,13 +555,15 @@ while True:
                 log.info(f"[SKIP] Expired signal | entry={sig_ts} exit={_xt} | advancing last_known_ts")
                 save_ts_file(TS_FILE, _xt)
                 last_known_ts = safe_ts(_xt)
+                if _live_sig: last_processed_seq = _live_sig.get("seq", 0)
 
+            # --- EXIT first if position open and exit time reached ---
             elif position is not None and now >= _xt:
                 actual = om.get_position()
                 _ex_size = abs(actual.get("size", 0)) if actual.get("success") else 0
                 if _ex_size == 0:
                     log.info(f"[ORDER] EXIT skipped - exchange already FLAT | ts={_xt}")
-                    _send_live_exit_alert('TM1_S4', _dir, _xt, float(_exit_fill))
+                    _send_live_exit_alert('TM1_S4', dirn, _xt, 0.0)
                     position = None
                     save_ts_file(TS_FILE, _xt)
                     last_known_ts = safe_ts(_xt)
@@ -574,28 +579,30 @@ while True:
                         result = om.close_position(size=close_size, side=side)
                         if result.get("success"):
                             position = None
+                            _entry_price_for_alert = open_entry_price
                             open_entry_price = 0.0
                             log.info(f"[ORDER] EXIT confirmed | position=None")
                             time.sleep(1)
-                            _exit_pos = om.get_position()
-                            _exit_fill_price = _exit_pos.get("exit_price", 0.0) if _exit_pos.get("success") else 0.0
+                            _exit_fill_price = result.get("avg_fill_price", 0.0)
                             if _exit_fill_price == 0.0:
-                                _exit_fill_price = result.get("avg_fill_price", 0.0)
-                            _send_live_exit_alert("TM1_S4", dirn, _xt, _exit_fill_price, open_entry_price, lots)
+                                _exit_pos = om.get_position()
+                                _exit_fill_price = _exit_pos.get("exit_price", 0.0) if _exit_pos.get("success") else 0.0
+                            _send_live_exit_alert("TM1_S4", dirn, _xt, _exit_fill_price, _entry_price_for_alert, lots)
                             _bt_csv2 = _get_csv_bt_row("TM1_S4", sig_ts)
-                            _bt_ep2  = float(_bt_csv2[4]) if _bt_csv2 and len(_bt_csv2) > 4 else 0.0
-                            _bt_xp2  = float(_bt_csv2[5]) if _bt_csv2 and len(_bt_csv2) > 5 else 0.0
-                            if _bt_ep2 > 0 and open_entry_price > 0 and _exit_fill_price > 0:
-                                _send_roundtrip_match_alert("TM1_S4", dirn, open_entry_price, _exit_fill_price, _bt_ep2, _bt_xp2, lots)
+                            _bt_ep2  = float(_bt_csv2[4]) if _bt_csv2 and len(_bt_csv2) > 4 and str(_bt_csv2[4]).strip() not in ("", "PENDING") else 0.0
+                            _bt_xp2  = float(_bt_csv2[5]) if _bt_csv2 and len(_bt_csv2) > 5 and str(_bt_csv2[5]).strip() not in ("", "PENDING") else 0.0
+                            if _bt_ep2 > 0 and _entry_price_for_alert > 0 and _exit_fill_price > 0:
+                                _send_roundtrip_match_alert("TM1_S4", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2, lots)
                         else:
                             log.error(f"[ORDER] EXIT FAILED: {result}")
                             send_alert(f"CTS TM1_S4 EXIT FAILED\nError: {result}")
                             last_known_ts = load_ts_file(TS_FILE)
 
+            # --- ENTRY if no position and exit time not yet reached ---
             elif position is None and now < _xt:
                 direction = dirn
                 side = "buy" if direction == "long" else "sell"
-                log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
+                log.info(f"[ORDER] ENTRY attempt {side} {lots} lots | dir={direction} | ts={sig_ts}")
                 save_ts_file(TS_FILE, sig_ts)
                 last_known_ts = sig_ts
                 if not check_engine_heartbeat():
@@ -605,6 +612,7 @@ while True:
                     if result.get("success"):
                         position = direction
                         open_lot_size = lots
+                        if _live_sig: last_processed_seq = _live_sig.get("seq", 0)
                         time.sleep(1)
                         pos_check = om.get_position()
                         real_entry = pos_check.get("entry_price", 0.0) if pos_check.get("success") else 0.0
@@ -618,25 +626,52 @@ while True:
                                 log.warning(f"[SL] Stop SL FAILED: {sl_result}")
                         _send_live_entry_alert("TM1_S4", direction, sig_ts, real_entry, _sl_price_val, lots)
                         _bt_csv = _get_csv_bt_row("TM1_S4", sig_ts)
-                        _bt_ep  = float(_bt_csv[4]) if _bt_csv and len(_bt_csv) > 4 else 0.0
+                        _bt_ep  = float(_bt_csv[4]) if _bt_csv and len(_bt_csv) > 4 and str(_bt_csv[4]).strip() not in ("", "PENDING") else 0.0
                         _bt_xt  = _bt_csv[1] if _bt_csv else ""
-                        _bt_xp  = float(_bt_csv[5]) if _bt_csv and len(_bt_csv) > 5 else 0.0
+                        _bt_xp  = float(_bt_csv[5]) if _bt_csv and len(_bt_csv) > 5 and str(_bt_csv[5]).strip() not in ("", "PENDING") else 0.0
                         if _bt_ep > 0 and real_entry > 0:
                             _send_entry_match_alert("TM1_S4", direction, sig_ts, _bt_ep, real_entry, _bt_xt, _bt_xp, lots)
                         open_entry_price = real_entry
+                        log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
                         log.info(f"[ORDER] ENTRY confirmed | position={position}")
                     else:
                         log.error(f"[ORDER] ENTRY FAILED: {result}")
                         send_alert(f"CTS TM1_S4 ENTRY FAILED\nError: {result}")
                         last_known_ts = load_ts_file(TS_FILE)
 
+        # Sync position from exchange every 5 minutes
         if int(time.time()) % 300 < 2:
             _exch = om.get_position()
             _exch_size = abs(_exch.get("size", 0)) if _exch.get("success") else -1
             if _exch_size == 0 and position is not None:
+                # FIX: confirm with a second check before declaring flat - prevents
+                # false SL-hit detection from a single transient/empty API response
+                time.sleep(3)
+                _exch2 = om.get_position()
+                _exch_size2 = abs(_exch2.get("size", 0)) if _exch2.get("success") else -1
+                if _exch_size2 != 0:
+                    log.warning(f"[SYNC] False FLAT detected (transient) - exchange size confirmed={_exch_size2} - skipping sync")
+                    _exch_size = _exch_size2
+            if _exch_size == 0 and position is not None:
                 log.warning(f"[SYNC] Exchange FLAT but bot={position} - SL hit or manual close - syncing to FLAT")
+                # FIX: advance last_known_ts past this signal's exit_time so it
+                # is not matched again next loop (prevents duplicate re-entry
+                # after SL hit or manual close from dashboard).
+                _manual_exit_ts = None
+                for _row in signals:
+                    if _row.get("entry_time") == last_known_ts:
+                        _cand_xt = _row.get("exit_time")
+                        if _cand_xt and _cand_xt not in ("PENDING", ""):
+                            _manual_exit_ts = _cand_xt
+                        break
                 position = None
-                save_ts_file(TS_FILE, last_known_ts)
+                if _manual_exit_ts:
+                    save_ts_file(TS_FILE, _manual_exit_ts)
+                    last_known_ts = safe_ts(_manual_exit_ts)
+                    log.info(f"[SYNC] Lock advanced past manually-closed signal to exit_time={_manual_exit_ts}")
+                else:
+                    save_ts_file(TS_FILE, last_known_ts)
+                    log.warning(f"[SYNC] Could not find exit_time for entry={last_known_ts} - lock unchanged, monitor for repeat entry")
                 send_alert(
                     f"CTS SL HIT DETECTED\n"
                     f"Bot: TestMember1_S4\n"
@@ -646,7 +681,7 @@ while True:
             elif _exch_size > 0 and position is None:
                 _exch_side = _exch.get("side","")
                 position = "long" if _exch_side == "buy" else "short"
-                log.warning(f"[SYNC] Exchange has position={position} but bot=None - syncing")
+                log.warning(f"[SYNC] Exchange has position={position} but bot=None - syncing to exchange")
 
         log.info(f"[WAIT] now={now} | position={position} | last_known_ts={last_known_ts}")
 
@@ -654,3 +689,21 @@ while True:
         log.error(f"[ERROR] {e}", exc_info=True)
 
     time.sleep(SLEEP_SEC)
+    
+# Position sync every 60 cycles (60 seconds)
+if hasattr(sys, '_sync_counter'):
+    sys._sync_counter += 1
+else:
+    sys._sync_counter = 0
+if sys._sync_counter >= 60:
+    sys._sync_counter = 0
+    exchange_pos = om.get_position()
+    if exchange_pos['direction'] == 'FLAT' and position is not None:
+        log.warning(f"[SYNC] Exchange is FLAT but bot thinks position={position}. Syncing to FLAT.")
+        position = None
+        open_lot_size = None
+    elif exchange_pos['direction'] != 'FLAT' and position is None:
+        log.warning(f"[SYNC] Exchange has position but bot thinks FLAT. Syncing to {exchange_pos['direction']}.")
+        position = exchange_pos['direction'].lower()
+        open_lot_size = abs(exchange_pos['size'])
+
