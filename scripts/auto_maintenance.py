@@ -107,8 +107,8 @@ def clean_junk_files():
     removed = 0
     for pattern in patterns:
         for f in glob.glob(os.path.join(BASE, pattern), recursive=True):
-            # Never delete log files or .env
-            if '.env' in f or 'logs/' in f:
+            # Never delete log files, .env, or active data lock files
+            if '.env' in f or 'logs/' in f or 'btc_1m_delta.csv.lock' in f:
                 continue
             try:
                 os.remove(f)
