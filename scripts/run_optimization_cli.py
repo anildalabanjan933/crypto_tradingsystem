@@ -76,6 +76,38 @@ PREDEFINED_RANGES = {
         "smiio_shortlen":  {"values": [10, 20]},
         "smiio_longlen":   {"values": [10, 20, 30]},
         "smiio_siglen":    {"values": [3, 7, 9]}
+    },
+    "sma_adx_combined": {
+        "sma_fast_len":        {"values": [10, 20, 30]},
+        "sma_slow_len":        {"values": [50, 100, 200]},
+        "adx_period":          {"values": [10, 14, 20]},
+        "adx_entry_threshold": {"values": [20.0, 25.0, 30.0]},
+        "adx_exit_threshold":  {"values": [15.0, 20.0, 25.0]},
+        "atr_period":          {"values": [10, 14, 20]},
+        "atr_mult":            {"values": [1.5, 2.0, 2.5, 3.0]}
+    },
+    "ema_pullback_combined": {
+        "ema_fast_len":   {"values": [10, 20, 30]},
+        "ema_slow_len":   {"values": [30, 50, 100]},
+        "rsi_period":     {"values": [10, 14, 20]},
+        "swing_lookback": {"values": [3, 5, 10]}
+    },
+    "supertrend_pullback_combined": {
+        "st_atr_period": {"values": [7, 10, 14]},
+        "st_mult":       {"values": [2.0, 3.0, 4.0]},
+        "ema_len":       {"values": [30, 50, 100]}
+    },
+    "range_breakout_combined": {
+        "range_lookback":  {"values": [10, 20, 30]},
+        "atr_period":      {"values": [10, 14, 20]},
+        "atr_ma_period":   {"values": [10, 20, 30]},
+        "atr_trail_mult":  {"values": [2.0, 3.0, 4.0]}
+    },
+    "donchian_breakout_combined": {
+        "donchian_period": {"values": [10, 20, 30]},
+        "adx_period":      {"values": [10, 14, 20]},
+        "adx_threshold":   {"values": [15.0, 20.0, 30.0]},
+        "atr_mult":        {"values": [1.5, 2.0, 3.0]}
     }
 }
 

@@ -5022,7 +5022,7 @@ with _tab_backtest:
             ], key="sec7_strategy")
         with col2:
             opt_group = st.selectbox("Select Group", [
-                "renko", "supertrend", "smiio", "s4v2_combined (Full Mode)", "s4_combined (Full Mode)"
+                "renko", "supertrend", "smiio", "s4v2_combined (Full Mode)", "s4_combined (Full Mode)", "sma_adx_combined (Full Mode)", "ema_pullback_combined (Full Mode)", "supertrend_pullback_combined (Full Mode)", "range_breakout_combined (Full Mode)", "donchian_breakout_combined (Full Mode)"
             ], key="sec7_group")
         with col3:
             opt_lots = st.number_input("Lots", min_value=1, max_value=10000, value=100, key="sec7_lots")
