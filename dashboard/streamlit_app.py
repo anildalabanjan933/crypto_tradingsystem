@@ -6235,8 +6235,42 @@ with _tab_analysis:
                         })
                 except: pass
                 return rows
+            def _get_bt_open_row(csv_label):
+                _csv_map = {"BT S4V2": "logs/signals_s4v2.csv", "BT S4": "logs/signals_s4.csv"}
+                _fpath = _csv_map.get(csv_label)
+                if not _fpath:
+                    return None
+                try:
+                    import datetime as _dtbt
+                    _today_s = _dtbt.datetime.utcnow().strftime('%Y-%m-%d')
+                    _last_pending = None
+                    with open(_fpath) as _f:
+                        for _line in _f:
+                            _parts = _line.strip().split(',')
+                            if len(_parts) < 5:
+                                continue
+                            _et, _xt, _dirv, _lots, _ep = _parts[0], _parts[1], _parts[2], _parts[3], _parts[4]
+                            if _xt == "PENDING" and _et.startswith(_today_s):
+                                _last_pending = (_et, _dirv, _ep)
+                    if _last_pending is None:
+                        return None
+                    _et, _dirv, _ep = _last_pending
+                    return {
+                        'label': csv_label, 'dir': _dirv.upper(),
+                        'entry_ist': _to_ist(_et), 'exit_ist': '-',
+                        'entry_p': float(_ep) if _ep else 0.0, 'exit_p': 0.0,
+                        'pnl_usd': 0.0, 'pnl_inr5': 0.0, 'pnl_inr10': 0.0, 'charges': 0.0,
+                    }
+                except Exception:
+                    return None
             bt2 = _get_bt_rows(df2, "BT S4V2")
+            _bt2_open = _get_bt_open_row("BT S4V2")
+            if _bt2_open:
+                bt2 = [_bt2_open] + bt2
             bt4 = _get_bt_rows(df4, "BT S4")
+            _bt4_open = _get_bt_open_row("BT S4")
+            if _bt4_open:
+                bt4 = [_bt4_open] + bt4
             lv2 = _get_fwd_rows(df2_fwd, "LV S4V2")
             lv4 = _get_fwd_rows(df4_fwd, "LV S4")
             today_str = _dtt.datetime.utcnow().strftime("%d-%b-%Y")
@@ -6309,7 +6343,7 @@ with _tab_analysis:
                     return best_lv
                 for i in range(tc):
                     bt = bt_rows[i] if i < n_bt else None
-                    lv = _closest_lv(bt) if bt is not None else None
+                    lv = _closest_lv(bt) if bt is not None else (lv_rows[i] if i < n_lv and i not in _used_lv else None)
                     _sep = "border-top:3px solid #42A5F5;" if i>0 else ""
                     sno_cell = f'<td rowspan="2" style="{TDN}{_sep}">{i+1}</td>'
                     for ridx, (row, src) in enumerate([(bt, f"BT {strat}"), (lv, f"LV {strat}")]):
@@ -6331,14 +6365,26 @@ with _tab_analysis:
                             tbl += f'<tr style="{_row_sep}">{sno}'
                             tbl += f'<td style="{TD}{bg}font-weight:700;">{src}</td>'
                             tbl += f'<td style="{TD}color:{dc};font-weight:700;">{row["dir"]}</td>'
+                            _is_open = row["exit_ist"] in ("-", "", None)
+                            _oc = "#FF9800"
+                            _exit_ist_v = "OPEN" if _is_open else row["exit_ist"]
+                            _exit_p_v = "-" if _is_open else "${:,.0f}".format(row["exit_p"])
+                            _pnl_usd_v = "OPEN" if _is_open else "${:+,.2f}".format(row["pnl_usd"])
+                            _pnl5_v = "-" if _is_open else "₹{:+,.0f}".format(row["pnl_inr5"])
+                            _pnl10_v = "-" if _is_open else "₹{:+,.0f}".format(row["pnl_inr10"])
+                            _charges_v = "-" if _is_open else "₹{:,.0f}".format(row["charges"])
+                            _pu2 = _oc if _is_open else pu
+                            _pc5b = _oc if _is_open else pc5
+                            _pc10b = _oc if _is_open else pc10
+                            _oc_ist = _oc if _is_open else "inherit"
                             tbl += f'<td style="{TD}{bg}">{row["entry_ist"]}</td>'
-                            tbl += f'<td style="{TD}{bg}">{row["exit_ist"]}</td>'
+                            tbl += f'<td style="{TD}{bg}color:{_oc_ist};font-weight:700;">{_exit_ist_v}</td>'
                             tbl += f'<td style="{TD}{bg}">${row["entry_p"]:,.0f}</td>'
-                            tbl += f'<td style="{TD}{bg}">${row["exit_p"]:,.0f}</td>'
-                            tbl += f'<td style="{TD}color:{pu};font-weight:700;">${row["pnl_usd"]:+,.2f}</td>'
-                            tbl += f'<td style="{TD}color:{pc5};font-weight:700;">₹{row["pnl_inr5"]:+,.0f}</td>'
-                            tbl += f'<td style="{TD}color:{pc10};font-weight:700;">₹{row["pnl_inr10"]:+,.0f}</td>'
-                            tbl += f'<td style="{TD}{bg}">₹{row["charges"]:,.0f}</td>'
+                            tbl += f'<td style="{TD}{bg}">{_exit_p_v}</td>'
+                            tbl += f'<td style="{TD}color:{_pu2};font-weight:700;">{_pnl_usd_v}</td>'
+                            tbl += f'<td style="{TD}color:{_pc5b};font-weight:700;">{_pnl5_v}</td>'
+                            tbl += f'<td style="{TD}color:{_pc10b};font-weight:700;">{_pnl10_v}</td>'
+                            tbl += f'<td style="{TD}{bg}">{_charges_v}</td>'
                             tbl += f'{match_cell}</tr>'
                 tbl += '</tbody></table>'
                 return hdr + tbl
