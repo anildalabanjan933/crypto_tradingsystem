@@ -271,11 +271,12 @@ def check_and_fire(state,is_s4=False):
             except Exception:
                 _ref = state.candles_tf['close'].iloc[0]
             p_with_ref = dict(p, reference_price=_ref); strategy=RenkoSMIIOSupertrendStrategy(data_dict,LOT_SIZE,**p_with_ref)
+        _t_gs0=time.time()
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             with contextlib.redirect_stdout(io.StringIO()):
                 signals=strategy.generate_signals()
-        log.info(f"[{state.label}] Strategy returned {len(signals) if signals else 0} signals")
+        log.info(f"[{state.label}] Strategy returned {len(signals) if signals else 0} signals | gen_signals_took={time.time()-_t_gs0:.2f}s")
         if not signals: return
         now_utc=datetime.now(timezone.utc)
         # Collect ALL new signals after last_signal_ts - oldest first
@@ -518,9 +519,7 @@ if __name__=="__main__":
             except Exception as _e:
                 log.error(f"[WS] Fast append error: {_e}",exc_info=True)
                 return
-            # Background REST sync for CSV file persistence only - does NOT block firing
-            _ws_state["last_dl"]=time.time()
-            threading.Thread(target=update_market_data, daemon=True).start()
+            # Signal-critical work FIRST - no CPU competition from background thread
             _cur_s4v2=_last_closed_tf(30)
             if _cur_s4v2>_ws_state["last_s4v2_tf"]:
                 _ws_state["last_s4v2_tf"]=_cur_s4v2
@@ -531,6 +530,9 @@ if __name__=="__main__":
                 _ws_state["last_s4_tf"]=_cur_s4
                 log.info(f"[WS] New 2H candle closed: {_cur_s4} - checking S4")
                 check_and_fire(s4,is_s4=True)
+            # Background REST sync for CSV file persistence only - runs AFTER signals checked
+            _ws_state["last_dl"]=time.time()
+            threading.Thread(target=update_market_data, daemon=True).start()
         except Exception as e:
             log.error(f"[WS] Message error: {e}")
 

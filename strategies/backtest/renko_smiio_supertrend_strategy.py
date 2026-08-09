@@ -147,9 +147,11 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
         if renko_raw is None or len(renko_raw) == 0:
             raise ValueError("RenkoBuilder produced no bricks")
 
-        renko_raw['timestamp'] = renko_raw['bar_index'].apply(
-            lambda idx: timestamps[idx] if idx < len(timestamps) else timestamps[-1]
-        )
+        _ts_values = timestamps.values if hasattr(timestamps, 'values') else np.asarray(timestamps)
+        _idx_arr = renko_raw['bar_index'].values.copy()
+        _max_idx = len(_ts_values) - 1
+        _idx_arr[_idx_arr > _max_idx] = _max_idx
+        renko_raw['timestamp'] = _ts_values[_idx_arr]
         return renko_raw
 
     # -----------------------------------------------------------------------
@@ -188,8 +190,9 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
         pending_set_bar   = -1
         last_exit_ts      = None
 
+        _ts_strings = [pd.Timestamp(t).strftime('%Y-%m-%dT%H:%M:%S') for t in timestamps]
         for i in range(1, n):
-            ts    = str(pd.Timestamp(timestamps[i]).strftime('%Y-%m-%dT%H:%M:%S'))
+            ts    = _ts_strings[i]
             close = closes[i]
             r_dir = renko_dir[i]
             st    = st_dir[i]
