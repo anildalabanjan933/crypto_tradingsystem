@@ -586,12 +586,12 @@ while True:
                             position = None
                             _entry_price_for_alert = open_entry_price
                             open_entry_price = 0.0
-                            log.info(f"[ORDER] EXIT confirmed | position=None")
                             time.sleep(1)
                             _exit_fill_price = result.get("avg_fill_price", 0.0)
                             if _exit_fill_price == 0.0:
                                 _exit_pos = om.get_position()
                                 _exit_fill_price = _exit_pos.get("exit_price", 0.0) if _exit_pos.get("success") else 0.0
+                            log.info(f"[ORDER] EXIT confirmed | position=None | exit={_exit_fill_price}")
                             _send_live_exit_alert("S4V2", dirn, _xt, _exit_fill_price, _entry_price_for_alert, lots)
                             _bt_csv2 = _get_csv_bt_row("S4V2", sig_ts)
                             _bt_ep2  = float(_bt_csv2[4]) if _bt_csv2 and len(_bt_csv2) > 4 and str(_bt_csv2[4]).strip() not in ("", "PENDING") else 0.0

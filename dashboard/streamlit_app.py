@@ -1068,6 +1068,13 @@ def _parse_log_trades(log_path, log_path_bak=None):
                 last["exit_ts"]    = exit_ts
                 last["exit_log_ts"]= log_ts_x
                 last["open"]       = False
+        elif "[ORDER] EXIT confirmed" in line:
+            m_xp = re.search(r'exit=([\d.]+)', line)
+            if m_xp and entries:
+                for _e in reversed(entries):
+                    if not _e["open"] and _e["exit_price"] == 0.0:
+                        _e["exit_price"] = float(m_xp.group(1))
+                        break
         i += 1
     # Filter to today only
     for e in entries:
