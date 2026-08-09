@@ -6299,20 +6299,27 @@ with _tab_analysis:
             def _dir_color(d): return "#089981" if d=="LONG" else "#F23645"
             def _match(bt, lv):
                 if bt is None or lv is None: return "-"
-                if bt["dir"] != lv["dir"]: return "❌"
-                if abs(bt["entry_p"] - lv["entry_p"]) > 5: return "❌"
-                if bt["exit_p"] and lv["exit_p"] and abs(bt["exit_p"] - lv["exit_p"]) > 5: return "❌"
+                if bt["dir"] != lv["dir"]: return "❌ dir"
+                _pdiff = abs(bt["entry_p"] - lv["entry_p"])
+                if _pdiff > 5: return f"❌ ${_pdiff:.0f} slip"
+                if bt["exit_p"] and lv["exit_p"] and abs(bt["exit_p"] - lv["exit_p"]) > 5:
+                    return f"❌ exit slip"
+                _delay_txt = ""
                 try:
                     _lbl = str(bt.get("label",""))
+                    _tf_min = 30 if "S4V2" in _lbl else 120
                     _tol_min = 150 if "S4" in _lbl and "S4V2" not in _lbl else 45
                     _bt_t = _pd14.to_datetime(str(bt.get("entry_ts_raw","")).replace("T"," "))
                     _lv_t = _pd14.to_datetime(str(lv.get("entry_ts_raw","")).replace("T"," "))
+                    _candle_close = _bt_t + _pd14.Timedelta(minutes=_tf_min)
+                    _delay_sec = (_lv_t - _candle_close).total_seconds()
+                    _delay_txt = f" ({_delay_sec:.0f}s)"
                     _gap_min = abs((_lv_t - _bt_t).total_seconds()) / 60.0
                     if _gap_min > _tol_min:
-                        return "❌"
+                        return f"❌ delay{_delay_txt}"
                 except Exception:
                     pass
-                return "✅"
+                return f"✅{_delay_txt}"
             def _section_html(strat, bt_rows, lv_rows):
                 n_bt = len(bt_rows); n_lv = len(lv_rows)
                 tc = max(n_bt, n_lv)
