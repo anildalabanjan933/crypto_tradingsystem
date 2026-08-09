@@ -1021,7 +1021,7 @@ def _parse_log_trades(log_path, log_path_bak=None):
     i = 0
     while i < len(lines):
         line = lines[i]
-        if "[ORDER] ENTRY" in line and "confirmed" not in line:
+        if "[ORDER] ENTRY" in line and "confirmed" not in line and "attempt" not in line:
             m_dir = re.search(r'dir=(\w+)', line)
             m_ts  = re.search(r'ts=(\S+)', line)
             m_log = re.search(r'^(\d{4}-\d{2}-\d{2} \d{2}:\d{2})', line)
@@ -1035,6 +1035,20 @@ def _parse_log_trades(log_path, log_path_bak=None):
                 if m_ep:
                     entry_price = float(m_ep.group(1))
                     break
+            if entry_price == 0.0 and sig_ts:
+                _csv_map2 = {"logs/live_trading_s4v2.log": "logs/signals_s4v2.csv",
+                             "logs/live_trading_s4.log": "logs/signals_s4.csv"}
+                _csv_path2 = _csv_map2.get(log_path)
+                if _csv_path2:
+                    try:
+                        with open(_csv_path2) as _cf:
+                            for _cl in _cf:
+                                _cp = _cl.strip().split(',')
+                                if len(_cp) >= 5 and _cp[0] == sig_ts:
+                                    entry_price = float(_cp[4])
+                                    break
+                    except Exception:
+                        pass
             entries.append({
                 "direction": direction,
                 "sig_ts": sig_ts,
@@ -1057,8 +1071,9 @@ def _parse_log_trades(log_path, log_path_bak=None):
         i += 1
     # Filter to today only
     for e in entries:
-        log_date = e.get("log_ts","")[:10]
-        if log_date == today:
+        _filter_ts = e.get("sig_ts") or e.get("log_ts","")
+        log_date = _filter_ts[:10]
+        if log_date == today or e.get("open"):
             side = "buy" if e["direction"].lower() == "long" else "sell"
             _ep = e["entry_price"]; _xp = e["exit_price"]
             _qty_btc = 100 * 0.001  # 100 lots = 0.1 BTC
@@ -6194,7 +6209,8 @@ with _tab_analysis:
                         rows.append({
                             'label'    : label,
                             'dir'      : str(r.get('direction','')).upper(),
-                            'entry_ist': _to_ist(r.get('entry_datetime','')),
+                            'entry_ist': _to_ist(str(r.get('entry_datetime','')) if 'S4V2' not in label and 'S4' not in label else (str(_pd_t.to_datetime(r.get('entry_datetime','')) + _pd_t.Timedelta(hours=2 if ('S4' in label and 'S4V2' not in label) else 0, minutes=30 if 'S4V2' in label else 0)))),
+                            'entry_ts_raw': str(r.get('entry_datetime','')),
                             'exit_ist' : _to_ist(r.get('exit_datetime','')),
                             'entry_p'  : float(r.get('entry_price',0)),
                             'exit_p'   : float(r.get('exit_price',0)),
@@ -6225,6 +6241,7 @@ with _tab_analysis:
                             'label'    : label,
                             'dir'      : 'LONG' if side=='buy' else 'SHORT',
                             'entry_ist': _to_ist(entry_ts),
+                            'entry_ts_raw': str(entry_ts),
                             'exit_ist' : _to_ist(exit_ts) if exit_ts != '-' else '-',
                             'entry_p'  : ep,
                             'exit_p'   : xp,
@@ -6241,8 +6258,6 @@ with _tab_analysis:
                 if not _fpath:
                     return None
                 try:
-                    import datetime as _dtbt
-                    _today_s = _dtbt.datetime.utcnow().strftime('%Y-%m-%d')
                     _last_pending = None
                     with open(_fpath) as _f:
                         for _line in _f:
@@ -6250,14 +6265,16 @@ with _tab_analysis:
                             if len(_parts) < 5:
                                 continue
                             _et, _xt, _dirv, _lots, _ep = _parts[0], _parts[1], _parts[2], _parts[3], _parts[4]
-                            if _xt == "PENDING" and _et.startswith(_today_s):
+                            if _xt == "PENDING":
                                 _last_pending = (_et, _dirv, _ep)
                     if _last_pending is None:
                         return None
                     _et, _dirv, _ep = _last_pending
+                    import pandas as _pdopen
+                    _et_close = _pdopen.to_datetime(_et) + _pdopen.Timedelta(hours=2 if ("S4" in csv_label and "S4V2" not in csv_label) else 0, minutes=30 if "S4V2" in csv_label else 0)
                     return {
                         'label': csv_label, 'dir': _dirv.upper(),
-                        'entry_ist': _to_ist(_et), 'exit_ist': '-',
+                        'entry_ist': _to_ist(str(_et_close)), 'entry_ts_raw': str(_et), 'exit_ist': '-',
                         'entry_p': float(_ep) if _ep else 0.0, 'exit_p': 0.0,
                         'pnl_usd': 0.0, 'pnl_inr5': 0.0, 'pnl_inr10': 0.0, 'charges': 0.0,
                     }
@@ -6285,6 +6302,16 @@ with _tab_analysis:
                 if bt["dir"] != lv["dir"]: return "❌"
                 if abs(bt["entry_p"] - lv["entry_p"]) > 5: return "❌"
                 if bt["exit_p"] and lv["exit_p"] and abs(bt["exit_p"] - lv["exit_p"]) > 5: return "❌"
+                try:
+                    _lbl = str(bt.get("label",""))
+                    _tol_min = 150 if "S4" in _lbl and "S4V2" not in _lbl else 45
+                    _bt_t = _pd14.to_datetime(str(bt.get("entry_ts_raw","")).replace("T"," "))
+                    _lv_t = _pd14.to_datetime(str(lv.get("entry_ts_raw","")).replace("T"," "))
+                    _gap_min = abs((_lv_t - _bt_t).total_seconds()) / 60.0
+                    if _gap_min > _tol_min:
+                        return "❌"
+                except Exception:
+                    pass
                 return "✅"
             def _section_html(strat, bt_rows, lv_rows):
                 n_bt = len(bt_rows); n_lv = len(lv_rows)
