@@ -957,7 +957,7 @@ def _fetch_orders_top(api_key, api_secret, base_url, from_ts, to_ts, product_id=
             'side': fills[0].get('side','').upper(),
             'size': total_size,
             'price': wavg,
-            'time': fills[0].get('created_at','')[:16],
+            'time': fills[0].get('created_at',''),
             'commission': order_commission
         })
     return sorted(orders, key=lambda x: x['time'])
@@ -3610,7 +3610,7 @@ with _tab_trading:
                         'side': fills[0]['side'].upper(),
                         'size': total_size,
                         'price': wavg,
-                        'time': fills[0]['created_at'][:16],
+                        'time': fills[0]['created_at'],
                         'fills_count': len(fills),
                         'commission': order_commission
                     })
