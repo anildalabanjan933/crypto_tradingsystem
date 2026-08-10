@@ -90,6 +90,7 @@ class StrategyState:
         self.candles_tf=None  # pre-built 1H or 2H dataframe - built once on startup
         self.current_direction=None; self.last_signal_ts=None; self.last_exit_ts=None
         self.box_size=None
+        self.open_entry_ts=None
 
 
 
@@ -333,13 +334,18 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
                     _w.writerow(r)
                 _w.writerow([ts, exit_ts or "PENDING", direction, 100, round(float(cl),2), ""])
             _os.replace(tmp, sig_csv)
+            state.open_entry_ts = ts
             log.info(f"[{state.label}] INSTANT CSV append: {ts},{exit_ts or 'PENDING'},{direction}")
         elif sig_type=="EXIT":
-            # Find the PENDING row for this trade and fill in the real exit timestamp
+            # Find the PENDING row matching the EXACT open entry (not first PENDING found)
+            # Falls back to first PENDING row only if open_entry_ts unknown (e.g. restart)
             updated = False
             new_rows = []
+            target_ts = state.open_entry_ts
             for r in existing:
-                if len(r)>=2 and r[1]=="PENDING" and not updated:
+                is_pending = len(r)>=2 and r[1]=="PENDING"
+                match = is_pending and not updated and (target_ts is None or r[0]==target_ts)
+                if match:
                     r = list(r)
                     r[1] = ts
                     while len(r) < 6:
@@ -354,9 +360,10 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
                     for r in new_rows:
                         _w.writerow(r)
                 _os.replace(tmp, sig_csv)
-                log.info(f"[{state.label}] CSV exit updated to {ts}")
+                log.info(f"[{state.label}] CSV exit updated to {ts} (matched entry {target_ts})")
             else:
-                log.warning(f"[{state.label}] EXIT fired but no PENDING row found in CSV")
+                log.warning(f"[{state.label}] EXIT fired but no matching PENDING row (target_ts={target_ts})")
+            state.open_entry_ts = None
     except Exception as _e:
         log.error(f"[{state.label}] CSV append failed: {_e}")
     write_signal_file(state.label,sig_type,direction,ts)
