@@ -2180,24 +2180,6 @@ with _tab_monitor:
             except Exception as e:
                 errors.append(f"{bot} error scan failed: {e}")
 
-        # 4. CHECK ALGOTEST WEBHOOK KEYS IN ENV
-        try:
-            from dotenv import load_dotenv
-            load_dotenv()
-            webhook_keys = [
-                'ALGOTEST_WEBHOOK_S2_BUY_ENTRY','ALGOTEST_WEBHOOK_S2_BUY_EXIT',
-                'ALGOTEST_WEBHOOK_S2_SELL_ENTRY','ALGOTEST_WEBHOOK_S2_SELL_EXIT',
-                'ALGOTEST_WEBHOOK_S4_BUY_ENTRY','ALGOTEST_WEBHOOK_S4_BUY_EXIT',
-                'ALGOTEST_WEBHOOK_S4_SELL_ENTRY','ALGOTEST_WEBHOOK_S4_SELL_EXIT'
-            ]
-            missing = [k for k in webhook_keys if not os.getenv(k)]
-            if missing:
-                for m in missing:
-                    errors.append(f"WEBHOOK KEY MISSING in .env: {m}")
-            else:
-                ok.append("All 8 Algotest webhook keys: CONFIGURED")
-        except Exception as e:
-            warnings.append(f"Webhook key check failed: {e}")
 
         # 5. CHECK DISK SPACE
         try:
@@ -2302,7 +2284,7 @@ with _tab_monitor:
                     if os.path.exists(ts_file):
                         valid_from = open(ts_file).read().strip()
                     lines = open(log).readlines()
-                    order_lines = [l for l in lines if '[ORDER]' in l]
+                    order_lines = [l for l in lines if '[ORDER]' in l and 'attempt' not in l]
                     timestamps = []
                     import re
                     for l in order_lines:
@@ -2442,26 +2424,6 @@ with _tab_monitor:
         except Exception as e:
             errors.append(f"VM internet check failed: {e}")
 
-        # 16. CHECK ALGOTEST WEBHOOK URLS REACHABLE (cached 120s - avoid hammering)
-        try:
-            def _check_webhook():
-                from dotenv import load_dotenv
-                load_dotenv()
-                import requests as _rqwh
-                test_url = os.getenv('ALGOTEST_WEBHOOK_S4_BUY_ENTRY')
-                if not test_url:
-                    return None
-                resp = _rqwh.post(test_url, json={"access_token": os.getenv('ALGOTEST_ACCESS_TOKEN', 'n7FJcMHANHN4F8HdqbU5QMDJn5JO79K9'), "alert_name": "ping"}, timeout=5)
-                return resp.status_code
-            _wh_status = _timed('webhook_check', 120, _check_webhook)
-            if _wh_status in [200, 201, 202, 400, 422]:
-                ok.append("Algotest webhook URL: REACHABLE")
-            elif _wh_status is None:
-                errors.append("Algotest webhook URL missing from .env")
-            else:
-                warnings.append(f"Algotest webhook returned {_wh_status} - check signal config")
-        except Exception as e:
-            warnings.append(f"Algotest connectivity check failed: {e}")
 
         # DISPLAY RESULTS
         if errors:
