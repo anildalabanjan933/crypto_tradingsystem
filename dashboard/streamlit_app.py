@@ -6357,6 +6357,9 @@ with _tab_analysis:
                         import datetime as _dtm
                         bt_dt = _dtm.datetime.strptime(bt_row["entry_ist"], "%d-%b %I:%M %p")
                     except: return None
+                    _lbl = str(bt_row.get("label",""))
+                    _tf_min = 30 if "S4V2" in _lbl else 120
+                    _max_sec = (_tf_min + 15) * 60
                     for _prefer_dir in (True, False):
                         best_lv, best_diff, best_idx = None, None, None
                         for j, lv_row in enumerate(lv_rows):
@@ -6366,7 +6369,7 @@ with _tab_analysis:
                                 lv_dt = _dtm.datetime.strptime(lv_row["entry_ist"], "%d-%b %I:%M %p")
                             except: continue
                             diff = abs((lv_dt - bt_dt).total_seconds())
-                            if diff <= 14400 and (best_diff is None or diff < best_diff):
+                            if diff <= _max_sec and (best_diff is None or diff < best_diff):
                                 best_diff, best_lv, best_idx = diff, lv_row, j
                         if best_lv is not None:
                             _used_lv.add(best_idx)
