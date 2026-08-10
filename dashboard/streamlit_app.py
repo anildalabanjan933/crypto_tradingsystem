@@ -1075,7 +1075,7 @@ def _parse_log_trades(log_path, log_path_bak=None):
         i += 1
     # Filter to today only
     for e in entries:
-        _filter_ts = e.get("sig_ts") or e.get("log_ts","")
+        _filter_ts = e.get("log_ts") or e.get("sig_ts","")
         log_date = _filter_ts[:10]
         if log_date == today or e.get("open"):
             side = "buy" if e["direction"].lower() == "long" else "sell"
@@ -6178,6 +6178,7 @@ with _tab_analysis:
                             'entry_ist': _to_ist(str(r.get('entry_datetime','')) if 'S4V2' not in label and 'S4' not in label else (str(_pd_t.to_datetime(r.get('entry_datetime','')) + _pd_t.Timedelta(hours=2 if ('S4' in label and 'S4V2' not in label) else 0, minutes=30 if 'S4V2' in label else 0)))),
                             'entry_ts_raw': str(r.get('entry_datetime','')),
                             'exit_ist' : _to_ist(str(r.get('exit_datetime','')) if 'S4V2' not in label and 'S4' not in label else (str(_pd_t.to_datetime(r.get('exit_datetime','')) + _pd_t.Timedelta(hours=2 if ('S4' in label and 'S4V2' not in label) else 0, minutes=30 if 'S4V2' in label else 0)))),
+                            'exit_ts_raw': str(r.get('exit_datetime','')),
                             'entry_p'  : float(r.get('entry_price',0)),
                             'exit_p'   : float(r.get('exit_price',0)),
                             'pnl_usd'  : float(r.get('net_pnl',0)),
@@ -6209,6 +6210,7 @@ with _tab_analysis:
                             'entry_ist': _to_ist(entry_ts),
                             'entry_ts_raw': str(entry_ts),
                             'exit_ist' : _to_ist(exit_ts) if exit_ts != '-' else '-',
+                            'exit_ts_raw': str(exit_ts) if exit_ts != '-' else '-',
                             'entry_p'  : ep,
                             'exit_p'   : xp,
                             'pnl_usd'  : pnl_net,
@@ -6281,16 +6283,16 @@ with _tab_analysis:
                     pass
                 _tol_min = 150 if "S4" in str(bt.get("label","")) and "S4V2" not in str(bt.get("label","")) else 45
                 # ENTRY line - direction + entry price + entry delay
+                _pdiff = abs(bt["entry_p"] - lv["entry_p"])
                 if bt["dir"] != lv["dir"]:
-                    entry_line = f"❌ dir{_entry_delay_txt}"
+                    entry_line = f"❌ dir | ${_pdiff:.0f} slip{_entry_delay_txt}"
                 else:
-                    _pdiff = abs(bt["entry_p"] - lv["entry_p"])
                     if _pdiff > 5:
                         entry_line = f"❌ ${_pdiff:.0f} slip{_entry_delay_txt}"
                     elif _gap_min is not None and _gap_min > _tol_min:
-                        entry_line = f"❌ delay{_entry_delay_txt}"
+                        entry_line = f"❌ delay | ${_pdiff:.0f} slip{_entry_delay_txt}"
                     else:
-                        entry_line = f"✅ entry{_entry_delay_txt}"
+                        entry_line = f"✅ ${_pdiff:.0f} slip{_entry_delay_txt}"
                 # EXIT line - exit price + exit delay (independent check)
                 _lv_closed = lv.get("exit_ist") not in ("-", "", None)
                 _bt_closed = bt.get("exit_ist") not in ("-", "", None)
@@ -6300,16 +6302,17 @@ with _tab_analysis:
                     exit_line = "⚠️ exit price missing"
                 else:
                     try:
-                        _bt_xt = _pd14.to_datetime(str(bt.get("exit_ist","")))
-                        _lv_xt = _pd14.to_datetime(str(lv.get("exit_ist","")))
+                        _bt_xt = _pd14.to_datetime(str(bt.get("exit_ts_raw","")).replace("T"," "))
+                        _lv_xt = _pd14.to_datetime(str(lv.get("exit_ts_raw","")).replace("T"," "))
                         _exit_delay_sec = (_lv_xt - _bt_xt).total_seconds()
                         _exit_delay_txt = f" ({_exit_delay_sec:.0f}s)"
                     except Exception:
                         pass
-                    if bt["exit_p"] and lv["exit_p"] and abs(bt["exit_p"] - lv["exit_p"]) > 5:
-                        exit_line = f"❌ exit slip{_exit_delay_txt}"
+                    _xpdiff = abs(bt["exit_p"] - lv["exit_p"]) if bt["exit_p"] and lv["exit_p"] else 0
+                    if bt["exit_p"] and lv["exit_p"] and _xpdiff > 5:
+                        exit_line = f"❌ ${_xpdiff:.0f} slip{_exit_delay_txt}"
                     else:
-                        exit_line = f"✅ exit{_exit_delay_txt}"
+                        exit_line = f"✅ ${_xpdiff:.0f} slip{_exit_delay_txt}"
                 return f"Entry: {entry_line}<br>Exit: {exit_line}"
             def _section_html(strat, bt_rows, lv_rows):
                 n_bt = len(bt_rows); n_lv = len(lv_rows)
