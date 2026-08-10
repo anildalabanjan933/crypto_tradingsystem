@@ -439,19 +439,24 @@ if __name__=="__main__":
         _ts_s4v2=open("/home/anildalabanjan933/crypto_trading_system/logs/last_known_ts_s4v2.txt").read().strip() or None
         if _ts_s4v2: log.info(f"[ENGINE] S4V2 lock from bot ts file: {_ts_s4v2}")
     except: _ts_s4v2=None
-    _now_lock=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+    def _floor_to_tf(dt,tf_minutes):
+        floored_min=(dt.minute//tf_minutes)*tf_minutes
+        return dt.replace(minute=floored_min,second=0,microsecond=0).strftime("%Y-%m-%dT%H:%M:%S")
+    _now_dt=datetime.now(timezone.utc)
+    _now_lock_s4=_floor_to_tf(_now_dt,120)
+    _now_lock_s4v2=_floor_to_tf(_now_dt,30)
     if not _ts_s4:
-        _ts_s4=_now_lock
-        log.info(f"[ENGINE] S4 no ts file - lock set to NOW: {_ts_s4}")
+        _ts_s4=_now_lock_s4
+        log.info(f"[ENGINE] S4 no ts file - lock set to floored candle: {_ts_s4}")
     else:
-        _ts_s4=max(_ts_s4,_now_lock)
-        log.info(f"[ENGINE] S4 lock set to max(ts_file,NOW): {_ts_s4}")
+        _ts_s4=max(_ts_s4,_now_lock_s4)
+        log.info(f"[ENGINE] S4 lock set to max(ts_file,floored_candle): {_ts_s4}")
     if not _ts_s4v2:
-        _ts_s4v2=_now_lock
-        log.info(f"[ENGINE] S4V2 no ts file - lock set to NOW: {_ts_s4v2}")
+        _ts_s4v2=_now_lock_s4v2
+        log.info(f"[ENGINE] S4V2 no ts file - lock set to floored candle: {_ts_s4v2}")
     else:
-        _ts_s4v2=max(_ts_s4v2,_now_lock)
-        log.info(f"[ENGINE] S4V2 lock set to max(ts_file,NOW): {_ts_s4v2}")
+        _ts_s4v2=max(_ts_s4v2,_now_lock_s4v2)
+        log.info(f"[ENGINE] S4V2 lock set to max(ts_file,floored_candle): {_ts_s4v2}")
     s4.last_signal_ts=_ts_s4
     log.info(f"[ENGINE] S4 startup lock ts: {_ts_s4}")
     s4v2.last_signal_ts=_ts_s4v2
