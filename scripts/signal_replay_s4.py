@@ -441,10 +441,10 @@ def check_engine_heartbeat():
             return False
         hb_str = open(hb_file).read().strip()
         try:
-            hb_dt = __import__('datetime').datetime.utcfromtimestamp(float(hb_str))
+            hb_dt = __import__('datetime').datetime.fromtimestamp(float(hb_str), __import__('datetime').timezone.utc).replace(tzinfo=None)
         except:
             hb_dt = __import__('datetime').datetime.strptime(hb_str, '%Y-%m-%dT%H:%M:%S')
-        age_min = (__import__('datetime').datetime.utcnow() - hb_dt).total_seconds() / 60
+        age_min = (__import__('datetime').datetime.now(__import__('datetime').timezone.utc).replace(tzinfo=None) - hb_dt).total_seconds() / 60
         if age_min > 15:
             log.warning(f"[ENGINE] Heartbeat stale {int(age_min)}m - engine may be dead - skipping order")
             from engine.telegram_alert import send_alert
