@@ -119,18 +119,23 @@ class OrderManager:
     def _get_avg_fill_price(self, order_id: int) -> float:
         """Fetch real fill price for an order from /v2/fills.
         The order-placement response has NO average_fill_price field
-        (confirmed against official Delta API schema) - must query fills."""
-        resp = self._get("/v2/fills", {"product_ids": str(self.PRODUCT_ID)})
-        if not resp.get("success"):
-            return 0.0
-        fills = [f for f in resp.get("result", []) if str(f.get("order_id")) == str(order_id)]
-        if not fills:
-            return 0.0
-        total_size = sum(float(f["size"]) for f in fills)
-        if total_size == 0:
-            return 0.0
-        weighted = sum(float(f["price"]) * float(f["size"]) for f in fills)
-        return weighted / total_size
+        (confirmed against official Delta API schema) - must query fills.
+        Retries up to 3 times with short delay - fills endpoint can lag
+        a few hundred ms behind order confirmation (race condition fix)."""
+        import time as _t
+        for _attempt in range(6):
+            resp = self._get("/v2/fills", {"product_ids": str(self.PRODUCT_ID), "page_size": 50})
+            if resp.get("success"):
+                fills = [f for f in resp.get("result", []) if str(f.get("order_id")) == str(order_id)]
+                if fills:
+                    total_size = sum(float(f["size"]) for f in fills)
+                    if total_size > 0:
+                        weighted = sum(float(f["price"]) * float(f["size"]) for f in fills)
+                        return weighted / total_size
+            if _attempt < 5:
+                _t.sleep(0.5 * (_attempt + 1))
+        logging.warning(f"[OrderManager] avg_fill_price: no fills found for order_id={order_id} after 6 retries")
+        return 0.0
 
     def place_market_order(self, side: str, size: int, client_order_id: str = None) -> dict:
         """
