@@ -6265,7 +6265,8 @@ with _tab_analysis:
             def _dir_color(d): return "#089981" if d=="LONG" else "#F23645"
             def _match(bt, lv):
                 if bt is None or lv is None: return "-"
-                _delay_txt = ""
+                _entry_delay_txt = ""
+                _exit_delay_txt = ""
                 _gap_min = None
                 try:
                     _lbl = str(bt.get("label",""))
@@ -6274,22 +6275,42 @@ with _tab_analysis:
                     _lv_t = _pd14.to_datetime(str(lv.get("entry_ts_raw","")).replace("T"," "))
                     _candle_close = _bt_t + _pd14.Timedelta(minutes=_tf_min)
                     _delay_sec = (_lv_t - _candle_close).total_seconds()
-                    _delay_txt = f" ({_delay_sec:.0f}s)"
+                    _entry_delay_txt = f" ({_delay_sec:.0f}s)"
                     _gap_min = abs((_lv_t - _bt_t).total_seconds()) / 60.0
                 except Exception:
                     pass
-                if bt["dir"] != lv["dir"]: return f"❌ dir{_delay_txt}"
-                _pdiff = abs(bt["entry_p"] - lv["entry_p"])
-                if _pdiff > 5: return f"❌ ${_pdiff:.0f} slip{_delay_txt}"
-                _lv_closed = lv.get("exit_ist") not in ("-", "", None)
-                if _lv_closed and lv["exit_p"] == 0:
-                    return f"⚠️ exit price missing{_delay_txt}"
-                if bt["exit_p"] and lv["exit_p"] and abs(bt["exit_p"] - lv["exit_p"]) > 5:
-                    return f"❌ exit slip{_delay_txt}"
                 _tol_min = 150 if "S4" in str(bt.get("label","")) and "S4V2" not in str(bt.get("label","")) else 45
-                if _gap_min is not None and _gap_min > _tol_min:
-                    return f"❌ delay{_delay_txt}"
-                return f"✅{_delay_txt}"
+                # ENTRY line - direction + entry price + entry delay
+                if bt["dir"] != lv["dir"]:
+                    entry_line = f"❌ dir{_entry_delay_txt}"
+                else:
+                    _pdiff = abs(bt["entry_p"] - lv["entry_p"])
+                    if _pdiff > 5:
+                        entry_line = f"❌ ${_pdiff:.0f} slip{_entry_delay_txt}"
+                    elif _gap_min is not None and _gap_min > _tol_min:
+                        entry_line = f"❌ delay{_entry_delay_txt}"
+                    else:
+                        entry_line = f"✅ entry{_entry_delay_txt}"
+                # EXIT line - exit price + exit delay (independent check)
+                _lv_closed = lv.get("exit_ist") not in ("-", "", None)
+                _bt_closed = bt.get("exit_ist") not in ("-", "", None)
+                if not _bt_closed or not _lv_closed:
+                    exit_line = "⏳ open"
+                elif _lv_closed and lv["exit_p"] == 0:
+                    exit_line = "⚠️ exit price missing"
+                else:
+                    try:
+                        _bt_xt = _pd14.to_datetime(str(bt.get("exit_ist","")))
+                        _lv_xt = _pd14.to_datetime(str(lv.get("exit_ist","")))
+                        _exit_delay_sec = (_lv_xt - _bt_xt).total_seconds()
+                        _exit_delay_txt = f" ({_exit_delay_sec:.0f}s)"
+                    except Exception:
+                        pass
+                    if bt["exit_p"] and lv["exit_p"] and abs(bt["exit_p"] - lv["exit_p"]) > 5:
+                        exit_line = f"❌ exit slip{_exit_delay_txt}"
+                    else:
+                        exit_line = f"✅ exit{_exit_delay_txt}"
+                return f"Entry: {entry_line}<br>Exit: {exit_line}"
             def _section_html(strat, bt_rows, lv_rows):
                 n_bt = len(bt_rows); n_lv = len(lv_rows)
                 tc = max(n_bt, n_lv)
