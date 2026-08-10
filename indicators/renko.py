@@ -98,14 +98,7 @@ class RenkoBuilder:
                     r_open = r_open if r_dir >= 0 else r_open + box
                     r_close = r_open + box
                     r_dir = 1
-                    records.append({
-                        'bar_index': i,
-                        'renko_open': r_open,
-                        'renko_close': r_close,
-                        'renko_dir': r_dir,
-                        'renko_high': max(r_open, r_close),
-                        'renko_low': min(r_open, r_close),
-                    })
+                    records.append((i, r_open, r_close, r_dir, max(r_open, r_close), min(r_open, r_close)))
                     r_open = r_close
 
             elif close <= dn_thresh:
@@ -115,23 +108,14 @@ class RenkoBuilder:
                     r_open = r_open if r_dir <= 0 else r_open - box
                     r_close = r_open - box
                     r_dir = -1
-                    records.append({
-                        'bar_index': i,
-                        'renko_open': r_open,
-                        'renko_close': r_close,
-                        'renko_dir': r_dir,
-                        'renko_high': max(r_open, r_close),
-                        'renko_low': min(r_open, r_close),
-                    })
+                    records.append((i, r_open, r_close, r_dir, max(r_open, r_close), min(r_open, r_close)))
                     r_open = r_close
 
+        cols = ['bar_index', 'renko_open', 'renko_close', 'renko_dir', 'renko_high', 'renko_low']
         if not records:
-            return pd.DataFrame(columns=[
-                'bar_index', 'renko_open', 'renko_close',
-                'renko_dir', 'renko_high', 'renko_low'
-            ])
+            return pd.DataFrame(columns=cols)
 
-        return pd.DataFrame(records).reset_index(drop=True)
+        return pd.DataFrame.from_records(records, columns=cols)
 
 
 # ---------------------------------------------------------------------------
