@@ -135,3 +135,33 @@ NOTE: Current live S4 uses tf=2h (NOT in top 5). All top-5 switched to 15m/30m
 
 DECISION: PENDING - user to choose #1 (max PnL) or #5 (safer/robust) for S4V2.
 Deploy target: S4RenkoV2 subaccount (not yet created).
+
+----------------------------------------------------------------
+[10-Aug-2026] | Today's Trades BT exit_ist Boundary Fix - CONFIRMED WORKING
+----------------------------------------------------------------
+FILE: dashboard/streamlit_app.py
+
+BUG: BT's exit_ist displayed raw candle-start time while entry_ist
+already used candle-close (+30min S4V2 / +2h S4). LV side was
+already correct (real wall-clock fire time from log). This
+asymmetry caused false pairing/mismatch display for S4V2.
+
+FIX: Applied same candle-close shift to BT's exit_ist that
+entry_ist already had. _closest_lv pairing function untouched.
+
+VERIFIED (screenshot + manual trace, 10-Aug-2026):
+- S4V2 entry_ist + exit_ist now align with LV within 4-12 sec
+  across multiple rows (row2: exact match, row3: 8s, row5: 12s)
+- Remaining flags (dir/price slip $9-$143) are GENUINE mismatches,
+  not display bugs - correctly still shown as mismatch
+
+NOT FIXED (separate issue, flagged only):
+- S4V2 row4: LV exit price = $0 ("exit price missing") - needs
+  own investigation, not touched today
+- S4 table: BT Trades=5 vs LV Trades=3 today - real trade-count
+  deficit causes pairing to force-match 2 BT rows to wrong LV
+  neighbors (shows as false 2-3hr dir mismatch). Confirmed NOT
+  caused by today's fix (entry_ist/_closest_lv untouched for S4).
+  Root cause of the deficit itself (engine/signal issue vs
+  genuinely fewer live signals) NOT YET INVESTIGATED.
+----------------------------------------------------------------
