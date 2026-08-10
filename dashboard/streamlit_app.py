@@ -6350,22 +6350,25 @@ with _tab_analysis:
                 _used_lv = set()
                 def _closest_lv(bt_row):
                     if bt_row is None: return None
-                    best_lv, best_diff = None, None
                     try:
                         import datetime as _dtm
                         bt_dt = _dtm.datetime.strptime(bt_row["entry_ist"], "%d-%b %I:%M %p")
                     except: return None
-                    for j, lv_row in enumerate(lv_rows):
-                        if j in _used_lv: continue
-                        try:
-                            lv_dt = _dtm.datetime.strptime(lv_row["entry_ist"], "%d-%b %I:%M %p")
-                        except: continue
-                        diff = abs((lv_dt - bt_dt).total_seconds())
-                        if diff <= 14400 and (best_diff is None or diff < best_diff):
-                            best_diff, best_lv, best_idx = diff, lv_row, j
-                    if best_lv is not None:
-                        _used_lv.add(best_idx)
-                    return best_lv
+                    for _prefer_dir in (True, False):
+                        best_lv, best_diff, best_idx = None, None, None
+                        for j, lv_row in enumerate(lv_rows):
+                            if j in _used_lv: continue
+                            if _prefer_dir and lv_row.get("dir") != bt_row.get("dir"): continue
+                            try:
+                                lv_dt = _dtm.datetime.strptime(lv_row["entry_ist"], "%d-%b %I:%M %p")
+                            except: continue
+                            diff = abs((lv_dt - bt_dt).total_seconds())
+                            if diff <= 14400 and (best_diff is None or diff < best_diff):
+                                best_diff, best_lv, best_idx = diff, lv_row, j
+                        if best_lv is not None:
+                            _used_lv.add(best_idx)
+                            return best_lv
+                    return None
                 for i in range(tc):
                     bt = bt_rows[i] if i < n_bt else None
                     lv = _closest_lv(bt) if bt is not None else (lv_rows[i] if i < n_lv and i not in _used_lv else None)
