@@ -6177,7 +6177,7 @@ with _tab_analysis:
                             'dir'      : str(r.get('direction','')).upper(),
                             'entry_ist': _to_ist(str(r.get('entry_datetime','')) if 'S4V2' not in label and 'S4' not in label else (str(_pd_t.to_datetime(r.get('entry_datetime','')) + _pd_t.Timedelta(hours=2 if ('S4' in label and 'S4V2' not in label) else 0, minutes=30 if 'S4V2' in label else 0)))),
                             'entry_ts_raw': str(r.get('entry_datetime','')),
-                            'exit_ist' : _to_ist(r.get('exit_datetime','')),
+                            'exit_ist' : _to_ist(str(r.get('exit_datetime','')) if 'S4V2' not in label and 'S4' not in label else (str(_pd_t.to_datetime(r.get('exit_datetime','')) + _pd_t.Timedelta(hours=2 if ('S4' in label and 'S4V2' not in label) else 0, minutes=30 if 'S4V2' in label else 0)))),
                             'entry_p'  : float(r.get('entry_price',0)),
                             'exit_p'   : float(r.get('exit_price',0)),
                             'pnl_usd'  : float(r.get('net_pnl',0)),
@@ -6281,6 +6281,9 @@ with _tab_analysis:
                 if bt["dir"] != lv["dir"]: return f"❌ dir{_delay_txt}"
                 _pdiff = abs(bt["entry_p"] - lv["entry_p"])
                 if _pdiff > 5: return f"❌ ${_pdiff:.0f} slip{_delay_txt}"
+                _lv_closed = lv.get("exit_ist") not in ("-", "", None)
+                if _lv_closed and lv["exit_p"] == 0:
+                    return f"⚠️ exit price missing{_delay_txt}"
                 if bt["exit_p"] and lv["exit_p"] and abs(bt["exit_p"] - lv["exit_p"]) > 5:
                     return f"❌ exit slip{_delay_txt}"
                 _tol_min = 150 if "S4" in str(bt.get("label","")) and "S4V2" not in str(bt.get("label","")) else 45
