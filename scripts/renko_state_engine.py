@@ -472,6 +472,9 @@ if __name__=="__main__":
                 if len(_last)>=3 and (_last[1]=="PENDING" or _last[1]>_now_lock):
                     _st.current_direction=_last[2]
                     log.info(f"[{_st.label}] current_direction restored: {_last[2]}")
+                    if _last[1]=="PENDING":
+                        _st.open_entry_ts=_last[0]
+                        log.info(f"[{_st.label}] open_entry_ts restored: {_last[0]}")
         except Exception as _e:
             log.warning(f"restore current_direction failed: {_e}")
     _last_dl=time.time()
