@@ -39,6 +39,22 @@ if args.no_charges:
     cc.charges_config['funding_rate_annual'] = 0.0
     cc.charges_config['insurance_fund_rate'] = 0.0
 
+_STRAT_TO_REF_SUFFIX = {
+    "RenkoSMIIOSupertrendV2Strategy": "s4v2",
+    "RenkoSMIIOSupertrendStrategy":   "s4",
+    "RenkoReversalStrategy":          "s2",
+}
+strategy_params = {}
+_suffix = _STRAT_TO_REF_SUFFIX.get(args.strategy)
+if _suffix:
+    _ref_path = f"logs/box_ref_price_{_suffix}.txt"
+    if os.path.exists(_ref_path):
+        try:
+            strategy_params["reference_price"] = float(open(_ref_path).read().strip())
+            print(f"Using frozen reference_price={strategy_params['reference_price']} from {_ref_path}")
+        except Exception as _e:
+            print(f"WARNING: could not read {_ref_path}: {_e} - falling back to live recalculation")
+
 result = run_backtest(
     strategy_class=strategy_class,
     symbol=args.symbol,
@@ -46,6 +62,7 @@ result = run_backtest(
     start_date=args.start,
     end_date=args.end,
     csv_path=args.csv,
+    strategy_params=strategy_params or None,
     slippage=args.slippage
 )
 
