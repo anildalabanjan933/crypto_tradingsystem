@@ -229,6 +229,11 @@ def append_new_candles(state):
             cutoff=recomputed_tf["timestamp"].min()
             state.candles_tf=state.candles_tf[state.candles_tf["timestamp"]<cutoff]
             state.candles_tf=pd.concat([state.candles_tf,recomputed_tf],ignore_index=True).reset_index(drop=True)
+        # Trim raw 1m buffer to rolling window (dynamic - scales with renko_timeframe)
+        # Prevents unbounded growth that slows every future scan (root cause of
+        # delay creeping from ~3s toward 17s+ the longer engine runs)
+        _keep_from=window_start-pd.Timedelta(minutes=1440)
+        state.candles_1m=state.candles_1m[state.candles_1m["timestamp"]>=_keep_from].reset_index(drop=True)
         return True
     except Exception as e:
         log.error(f"[{state.label}] append error: {e}",exc_info=True)
@@ -503,6 +508,9 @@ if __name__=="__main__":
             cutoff=recomputed_tf["timestamp"].min()
             state.candles_tf=state.candles_tf[state.candles_tf["timestamp"]<cutoff]
             state.candles_tf=pd.concat([state.candles_tf,recomputed_tf],ignore_index=True).reset_index(drop=True)
+        # Trim raw 1m buffer to rolling window (dynamic - scales with renko_timeframe)
+        _keep_from=window_start-pd.Timedelta(minutes=1440)
+        state.candles_1m=state.candles_1m[state.candles_1m["timestamp"]>=_keep_from].reset_index(drop=True)
 
     def _ws_on_message(ws,message):
         global _ws_last_candle_start,_ws_current_candle
