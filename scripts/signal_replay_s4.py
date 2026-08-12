@@ -584,11 +584,14 @@ while True:
                             position = None
                             _entry_price_for_alert = open_entry_price
                             open_entry_price = 0.0
-                            time.sleep(1)
                             _exit_fill_price = result.get("avg_fill_price", 0.0)
                             if _exit_fill_price == 0.0:
-                                _exit_pos = om.get_position()
-                                _exit_fill_price = _exit_pos.get("exit_price", 0.0) if _exit_pos.get("success") else 0.0
+                                for _i in range(5):
+                                    time.sleep(0.2)
+                                    _exit_pos = om.get_position()
+                                    _exit_fill_price = _exit_pos.get("exit_price", 0.0) if _exit_pos.get("success") else 0.0
+                                    if _exit_fill_price > 0:
+                                        break
                             log.info(f"[ORDER] EXIT confirmed | position=None | exit={_exit_fill_price}")
                             _send_live_exit_alert("S4", dirn, _xt, _exit_fill_price, _entry_price_for_alert, lots)
                             _bt_csv2 = _get_csv_bt_row("S4", sig_ts)
@@ -616,9 +619,13 @@ while True:
                         position = direction
                         open_lot_size = lots
                         if _live_sig: last_processed_seq = _live_sig.get("seq", 0)
-                        time.sleep(1)
-                        pos_check = om.get_position()
-                        real_entry = pos_check.get("entry_price", 0.0) if pos_check.get("success") else 0.0
+                        real_entry = 0.0
+                        for _i in range(5):
+                            time.sleep(0.2)
+                            pos_check = om.get_position()
+                            real_entry = pos_check.get("entry_price", 0.0) if pos_check.get("success") else 0.0
+                            if real_entry > 0:
+                                break
                         open_entry_price = real_entry
                         log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
                         _sl_price_val = 0.0
