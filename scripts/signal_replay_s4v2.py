@@ -298,11 +298,15 @@ def safe_ts(val):
 def now_utc_str():
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
 
+_signals_cache = {"mtime": None, "data": []}
 def load_signals():
     signals = []
     if not os.path.exists(SIGNAL_CSV):
         log.error(f"[REPLAY] Signal CSV not found: {SIGNAL_CSV}")
         return signals
+    _mtime = os.path.getmtime(SIGNAL_CSV)
+    if _signals_cache["mtime"] == _mtime:
+        return _signals_cache["data"]
     with open(SIGNAL_CSV, "r") as f:
         reader = csv.reader(f)
         for row in reader:
@@ -322,6 +326,8 @@ def load_signals():
                     "lots":       lots
                 })
     log.info(f"[REPLAY] Loaded {len(signals)} signals from {SIGNAL_CSV}")
+    _signals_cache["mtime"] = _mtime
+    _signals_cache["data"] = signals
     return signals
 
 SIGNAL_FILE = "logs/live_signal_s4v2.txt"
