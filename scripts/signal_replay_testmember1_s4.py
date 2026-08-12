@@ -371,11 +371,14 @@ if not last_known_ts:
             last_known_ts = _line.split("|")[1]
             log.info(f"[STARTUP] last_known_ts loaded from signal file: {last_known_ts}")
     except: pass
-# Auto-advance last_known_ts to valid_from if behind - zero manual intervention
-if last_known_ts and valid_from and last_known_ts < valid_from:
+# Auto-advance last_known_ts to valid_from if behind - but NEVER if a real
+# position is already open (would break safety-override entry_time match)
+if position is None and last_known_ts and valid_from and last_known_ts < valid_from:
     last_known_ts = valid_from
     save_ts_file(TS_FILE, valid_from)
     log.info(f"[STARTUP] last_known_ts advanced to valid_from={valid_from}")
+elif position is not None and last_known_ts and valid_from and last_known_ts < valid_from:
+    log.info(f"[STARTUP] last_known_ts NOT advanced - position={position} open with entry_ts={last_known_ts}")
 log.info(f"[STARTUP] last_known_ts={last_known_ts} | valid_from={valid_from}")
 
 signals = load_signals()
