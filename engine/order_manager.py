@@ -137,6 +137,45 @@ class OrderManager:
         logging.warning(f"[OrderManager] avg_fill_price: no fills found for order_id={order_id} after 6 retries")
         return 0.0
 
+    def place_limit_order_ioc(self, side: str, size: int, ref_price: float, band: float = 8.0, client_order_id: str = None) -> dict:
+        """Place IOC limit order banded around ref_price to cap slippage.
+        Buy: limit = ref_price + band (won't pay more than that)
+        Sell: limit = ref_price - band (won't sell for less than that)
+        If price has moved beyond band, order is skipped (unfilled) instead
+        of chasing market price - caps worst-case slippage."""
+        limit_price = round(ref_price + band, 1) if side == 'buy' else round(ref_price - band, 1)
+        payload = {
+            "product_symbol": self.PRODUCT_SYMBOL,
+            "product_id":     self.PRODUCT_ID,
+            "side":           side,
+            "size":           size,
+            "order_type":     "limit_order",
+            "limit_price":    str(limit_price),
+            "time_in_force":  "ioc"
+        }
+        if client_order_id:
+            payload["client_order_id"] = client_order_id[:32]
+        logging.info(f"[OrderManager] Placing {side.upper()} IOC limit | size={size} lots | ref={ref_price} band={band} limit={limit_price}")
+        resp = self._post("/v2/orders", payload)
+        if resp.get("success"):
+            result = resp["result"]
+            unfilled = int(result.get("unfilled_size", size))
+            filled = size - unfilled
+            if filled == 0:
+                logging.warning(f"[OrderManager] IOC order id={result.get(chr(105)+chr(100))} FULLY UNFILLED - price moved beyond band, skipped")
+                return {"success": False, "skipped": True, "reason": "unfilled_beyond_band", "order_id": result.get("id")}
+            logging.info(f"[OrderManager] IOC order id={result.get(chr(105)+chr(100))} filled={filled}/{size}")
+            _avg = self._get_avg_fill_price(result["id"])
+            return {
+                "success": True,
+                "order_id": result["id"],
+                "state": result["state"],
+                "filled_size": filled,
+                "unfilled_size": unfilled,
+                "avg_fill_price": _avg
+            }
+        return {"success": False, "error": resp.get("error", resp)}
+
     def place_market_order(self, side: str, size: int, client_order_id: str = None) -> dict:
         """
         Place a market order.
@@ -236,6 +275,16 @@ class OrderManager:
             }
         else:
             return {"success": False, "size": 0, "entry_price": 0.0, "direction": "UNKNOWN"}
+
+    def get_current_price(self) -> float:
+        """Fetch current mark price via public ticker endpoint - used as
+        ref_price for IOC-banded limit orders (caps slippage vs raw market)."""
+        resp = self._get(f"/v2/tickers/{self.PRODUCT_SYMBOL}", {})
+        if resp.get("success"):
+            result = resp.get("result", {})
+            mark = result.get("mark_price") or result.get("close") or 0
+            return float(mark) if mark else 0.0
+        return 0.0
 
     def cancel_all_orders(self) -> dict:
         """Cancel all open orders for BTCUSD."""

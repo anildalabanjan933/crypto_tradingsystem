@@ -612,7 +612,14 @@ while True:
                 if not check_engine_heartbeat():
                     log.warning("[ORDER] ENTRY blocked - engine heartbeat stale")
                 else:
-                    result = om.place_market_order(side=side, size=lots)
+                    _ref_price = om.get_current_price()
+                    if _ref_price > 0:
+                        result = om.place_limit_order_ioc(side=side, size=lots, ref_price=_ref_price, band=8.0)
+                        if result.get('skipped'):
+                            log.warning(f"[ORDER] ENTRY SKIPPED - price moved beyond 8 dollar band | ref={_ref_price}")
+                    else:
+                        log.warning('[ORDER] ENTRY - ref price fetch failed, falling back to market order')
+                        result = om.place_market_order(side=side, size=lots)
                     if result.get("success"):
                         position = direction
                         open_lot_size = lots
