@@ -29,7 +29,7 @@ screen -S live_s4v2 -X quit 2>/dev/null
 screen -S live_s4 -X quit 2>/dev/null
 screen -S dashboard -X quit 2>/dev/null
 screen -S testmember1_s4v2 -X quit 2>/dev/null
-screen -S testmember1_s4 -X quit 2>/dev/null
+# DISABLED (shared account with testmember1_s4v2): screen -S testmember1_s4 -X quit 2>/dev/null
 screen -S today_trades -X quit 2>/dev/null
 screen -S boundary_watcher -X quit 2>/dev/null
 sleep 2
@@ -42,7 +42,7 @@ screen -dmS live_s4 bash -c "cd $REPO && set -a && source $REPO/.env && set +a &
 
 echo "S4V2 and S4 started"
 screen -dmS testmember1_s4v2 bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/signal_replay_testmember1_s4v2.py"
-screen -dmS testmember1_s4 bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/signal_replay_testmember1_s4.py"
+# DISABLED (shared account with testmember1_s4v2): screen -dmS testmember1_s4 bash -c "cd $REPO && set -a && source $REPO/.env && set +a && $REPO/.venv/bin/python3 scripts/signal_replay_testmember1_s4.py"
 screen -S dashboard -dm bash -c "cd $REPO && $REPO/.venv/bin/python -m streamlit run dashboard/streamlit_app.py --server.port 8501 --server.address 0.0.0.0 >> logs/dashboard.log 2>&1"
 screen -S today_trades -dm bash -c "cd $REPO && $REPO/.venv/bin/python -m streamlit run dashboard/today_trades_app.py --server.port 8502 --server.address 0.0.0.0 >> logs/today_trades.log 2>&1"
 # analysis_app.py removed (commit 34ace0a) 

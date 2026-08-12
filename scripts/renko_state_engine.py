@@ -469,7 +469,7 @@ if __name__=="__main__":
                 _rows=list(_csv2.reader(_f))
             if _rows:
                 _last=_rows[-1]
-                if len(_last)>=3 and (_last[1]=="PENDING" or _last[1]>_now_lock):
+                if len(_last)>=3 and (_last[1]=="PENDING" or _last[1]>_st.last_signal_ts):
                     _st.current_direction=_last[2]
                     log.info(f"[{_st.label}] current_direction restored: {_last[2]}")
                     if _last[1]=="PENDING":

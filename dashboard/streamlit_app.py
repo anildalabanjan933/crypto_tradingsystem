@@ -1077,7 +1077,7 @@ def _parse_log_trades(log_path, log_path_bak=None):
     for e in entries:
         _filter_ts = e.get("log_ts") or e.get("sig_ts","")
         log_date = _filter_ts[:10]
-        if log_date == today or e.get("open"):
+        if log_date == today or (e.get("open") and e["entry_price"] > 0):
             side = "buy" if e["direction"].lower() == "long" else "sell"
             _ep = e["entry_price"]; _xp = e["exit_price"]
             _qty_btc = 100 * 0.001  # 100 lots = 0.1 BTC

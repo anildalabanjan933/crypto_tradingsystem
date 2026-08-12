@@ -616,6 +616,8 @@ while True:
                         time.sleep(1)
                         pos_check = om.get_position()
                         real_entry = pos_check.get("entry_price", 0.0) if pos_check.get("success") else 0.0
+                        open_entry_price = real_entry
+                        log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
                         _sl_price_val = 0.0
                         if real_entry > 0:
                             sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=2.0)
@@ -631,8 +633,6 @@ while True:
                         _bt_xp  = float(_bt_csv[5]) if _bt_csv and len(_bt_csv) > 5 and str(_bt_csv[5]).strip() not in ("", "PENDING") else 0.0
                         if _bt_ep > 0 and real_entry > 0:
                             _send_entry_match_alert("S4", direction, sig_ts, _bt_ep, real_entry, _bt_xt, _bt_xp, lots)
-                        open_entry_price = real_entry
-                        log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
                         log.info(f"[ORDER] ENTRY confirmed | position={position}")
                     else:
                         log.error(f"[ORDER] ENTRY FAILED: {result}")
