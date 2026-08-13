@@ -30,7 +30,7 @@ log=logging.getLogger(__name__)
 
 CSV_PATH="data/btc_1m_delta.csv"
 LOT_SIZE=100
-SLEEP_SEC=1
+SLEEP_SEC=0.5
 S4_PARAMS=dict(renko_box_pct=0.001,renko_timeframe="2h",st_atr_length=5,st_factor=2.0,smiio_shortlen=10,smiio_longlen=10,smiio_siglen=3)
 S4V2_PARAMS=dict(renko_box_pct=0.001,renko_timeframe="30m",st_atr_length=5,st_factor=1.5,smiio_shortlen=10,smiio_longlen=20,smiio_siglen=3)
 def _send_bt_signal_alert(strategy_label, direction, entry_ts, exit_ts, entry_price, exit_price, lots=100, slippage=5.0):
