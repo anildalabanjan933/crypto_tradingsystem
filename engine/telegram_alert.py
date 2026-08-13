@@ -11,8 +11,8 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID   = os.getenv("TELEGRAM_CHAT_ID", "")
 
 _RATE_STATE_FILE = "/home/anildalabanjan933/crypto_trading_system/logs/alert_rate_state.json"
-_RATE_MAX_COUNT  = 3
-_RATE_WINDOW_SEC = 900  # 15 minutes
+_RATE_MAX_COUNT  = 1
+_RATE_WINDOW_SEC = 1800  # 30 minutes
 
 def _rate_limited(message: str) -> bool:
     """Return True if this message-type has already hit the alert cap in the current window."""
