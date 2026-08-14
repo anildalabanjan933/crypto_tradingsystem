@@ -414,7 +414,7 @@ last_processed_seq = 0
 # is not re-processed as "new" right after a restart.
 try:
     import re as _re_startup
-    _lf = open(f"logs/live_signal_s{__file__[-4]}.txt").read().strip()
+    _lf = open("logs/live_signal_s4v2.txt").read().strip()
     _parts = _lf.split("|")
     if len(_parts) >= 4:
         _startup_ts  = _parts[1]
@@ -601,11 +601,11 @@ while True:
                     if not check_engine_heartbeat():
                         log.warning("[ORDER] EXIT blocked - engine heartbeat stale")
                     else:
+                        save_ts_file(TS_FILE, _xt)
+                        last_known_ts = safe_ts(_xt)
                         result = om.close_position(size=close_size, side=side)
                         if result.get("success"):
                             position = None
-                            save_ts_file(TS_FILE, _xt)
-                            last_known_ts = safe_ts(_xt)
                             _entry_price_for_alert = open_entry_price
                             open_entry_price = 0.0
                             _exit_fill_price = result.get("avg_fill_price", 0.0)
@@ -706,7 +706,7 @@ while True:
                     log.warning(f"[SYNC] Could not find exit_time for entry={last_known_ts} - lock unchanged, monitor for repeat entry")
                 send_alert(
                     f"CTS SL HIT DETECTED\n"
-                    f"Bot: S4\n"
+                    f"Bot: S4V2\n"
                     f"Action: Position closed by SL on exchange\n"
                     f"Status: Synced to FLAT"
                 )
