@@ -6304,7 +6304,8 @@ with _tab_analysis:
                     try:
                         _bt_xt = _pd14.to_datetime(str(bt.get("exit_ts_raw","")).replace("T"," "))
                         _lv_xt = _pd14.to_datetime(str(lv.get("exit_ts_raw","")).replace("T"," "))
-                        _exit_delay_sec = (_lv_xt - _bt_xt).total_seconds()
+                        _bt_xt_close = _bt_xt + _pd14.Timedelta(minutes=_tf_min)
+                        _exit_delay_sec = (_lv_xt - _bt_xt_close).total_seconds()
                         _exit_delay_txt = f" ({_exit_delay_sec:.0f}s)"
                     except Exception:
                         pass
