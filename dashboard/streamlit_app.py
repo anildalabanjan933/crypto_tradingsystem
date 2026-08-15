@@ -6267,6 +6267,7 @@ with _tab_analysis:
                         if "[ORDER] ENTRY" in line and "confirmed" not in line and "attempt" not in line:
                             m_dir = _re_lv.search(r'dir=(\w+)', line)
                             m_ts  = _re_lv.search(r'ts=(\S+)', line)
+                            m_log = _re_lv.search(r'^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', line)
                             if not (m_dir and m_ts):
                                 continue
                             _ep = 0.0
@@ -6275,7 +6276,8 @@ with _tab_analysis:
                                 if m_ep:
                                     _ep = float(m_ep.group(1))
                                     break
-                            last_entry = {"idx": idx, "dir": m_dir.group(1), "sig_ts": m_ts.group(1), "entry_price": _ep}
+                            last_entry = {"idx": idx, "dir": m_dir.group(1), "sig_ts": m_ts.group(1),
+                                          "entry_price": _ep, "log_ts": m_log.group(1) if m_log else ""}
                         elif "[ORDER] EXIT" in line and "skipped" not in line and "confirmed" not in line:
                             if last_entry is not None and idx > last_entry["idx"]:
                                 last_entry = None
@@ -6302,6 +6304,7 @@ with _tab_analysis:
                         'label': label, 'dir': last_entry["dir"].upper(),
                         'entry_ist': _to_ist(str(_et_close)), 'entry_ts_raw': str(_et), 'exit_ist': '-',
                         'exit_ts_raw': '-',
+                        'entry_fill_ts_raw': last_entry.get("log_ts", ""),
                         'entry_p': last_entry["entry_price"], 'exit_p': 0.0,
                         'pnl_usd': 0.0, 'pnl_inr5': 0.0, 'pnl_inr10': 0.0, 'charges': 0.0,
                     }
@@ -6341,7 +6344,8 @@ with _tab_analysis:
                     _lbl = str(bt.get("label",""))
                     _tf_min = 30 if "S4V2" in _lbl else 120
                     _bt_t = _pd14.to_datetime(str(bt.get("entry_ts_raw","")).replace("T"," "))
-                    _lv_t = _pd14.to_datetime(str(lv.get("entry_ts_raw","")).replace("T"," "))
+                    _lv_fill_raw = lv.get("entry_fill_ts_raw") or lv.get("entry_ts_raw","")
+                    _lv_t = _pd14.to_datetime(str(_lv_fill_raw).replace("T"," "))
                     _candle_close = _bt_t + _pd14.Timedelta(minutes=_tf_min)
                     _delay_sec = (_lv_t - _candle_close).total_seconds()
                     _entry_delay_txt = f" ({_delay_sec:.0f}s)"
