@@ -664,12 +664,15 @@ if __name__=="__main__":
                     def _run_s4_trigger(_dt=_t4_dt):
                         try:
                             for _retry in range(6):
-                                update_market_data()
-                                append_new_candles(s4)
-                                if s4.last_1m_ts is not None and s4.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1):
+                                _caught_up = s4.last_1m_ts is not None and s4.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
+                                if not _caught_up:
+                                    update_market_data()
+                                    append_new_candles(s4)
+                                    _caught_up = s4.last_1m_ts is not None and s4.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
+                                if _caught_up:
                                     break
                                 log.info(f"[ENGINE] S4 data not caught up yet, retry {_retry+1}/6")
-                                time.sleep(10)
+                                time.sleep(2)
                             check_and_fire(s4, is_s4=True)
                         except Exception as _e:
                             log.error(f"[ENGINE] S4 trigger thread error: {_e}", exc_info=True)
@@ -690,12 +693,15 @@ if __name__=="__main__":
                     def _run_s4v2_trigger(_dt=_tv2_dt):
                         try:
                             for _retry in range(6):
-                                update_market_data()
-                                append_new_candles(s4v2)
-                                if s4v2.last_1m_ts is not None and s4v2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1):
+                                _caught_up = s4v2.last_1m_ts is not None and s4v2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
+                                if not _caught_up:
+                                    update_market_data()
+                                    append_new_candles(s4v2)
+                                    _caught_up = s4v2.last_1m_ts is not None and s4v2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
+                                if _caught_up:
                                     break
                                 log.info(f"[ENGINE] S4V2 data not caught up yet, retry {_retry+1}/6")
-                                time.sleep(10)
+                                time.sleep(2)
                             check_and_fire(s4v2, is_s4=False)
                         except Exception as _e:
                             log.error(f"[ENGINE] S4V2 trigger thread error: {_e}", exc_info=True)
