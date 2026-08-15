@@ -178,37 +178,65 @@ class OrderManager:
 
     def place_market_order(self, side: str, size: int, client_order_id: str = None) -> dict:
         """
-        Place a market order.
+        Place a market order, protected by a $250 price-sanity ceiling.
 
-        Parameters
-        ----------
-        side            : "buy" or "sell"
-        size            : number of lots (integer, e.g. 100)
-        client_order_id : optional tag (max 32 chars)
+        Uses an IOC limit order banded at ref_price +/- $250 instead of a
+        raw market order. This band exists ONLY to block catastrophic thin-
+        liquidity fills (e.g. $73,000 vs $64,000 mark) - normal fills
+        ($1-50 slippage per your trade data) are never affected, since they
+        sit well inside a $250 ceiling. Fires and fills in the same 1-3s
+        window as a plain market order - no retry loop, no added delay.
         """
+        _ref_price = self.get_current_price()
+        if _ref_price <= 0:
+            logging.error(f"[OrderManager] ENTRY BLOCKED - no reference price available (get_current_price returned {_ref_price})")
+            send_alert(f"CTS ENTRY BLOCKED\nSide: {side.upper()}\nReason: Could not fetch reference price - order skipped to avoid firing blind")
+            return {"success": False, "error": "no_reference_price"}
+
+        _band = 250.0
+        _limit_price = round(_ref_price + _band, 1) if side == "buy" else round(_ref_price - _band, 1)
         payload = {
             "product_symbol": self.PRODUCT_SYMBOL,
             "product_id":     self.PRODUCT_ID,
             "side":           side,
             "size":           size,
-            "order_type":     "market_order"
+            "order_type":     "limit_order",
+            "limit_price":    str(_limit_price),
+            "time_in_force":  "ioc"
         }
         if client_order_id:
             payload["client_order_id"] = client_order_id[:32]
 
-        logging.info(f"[OrderManager] Placing {side.upper()} market order | size={size} lots")
+        logging.info(f"[OrderManager] Placing {side.upper()} banded order | size={size} lots | ref_price={_ref_price} | band=${_band} | limit={_limit_price}")
         resp = self._post("/v2/orders", payload)
 
         if resp.get("success"):
             result = resp["result"]
-            logging.info(f"[OrderManager] Order placed | id={result['id']} state={result['state']}")
+            _unfilled = int(result.get("unfilled_size", size))
+            _filled   = size - _unfilled
+
+            if _filled == 0:
+                logging.error(f"[OrderManager] ENTRY UNFILLED - price moved beyond $250 band | ref_price={_ref_price} limit={_limit_price}")
+                send_alert(f"CTS ENTRY UNFILLED\nSide: {side.upper()}\nRef price: ${_ref_price:,.1f}\nBand limit: ${_limit_price:,.1f}\nPrice moved beyond $250 band before fill - order skipped")
+                return {"success": False, "error": "unfilled_beyond_band", "order_id": result.get("id")}
+
+            logging.info(f"[OrderManager] Order filled | id={result['id']} state={result['state']} filled={_filled}/{size}")
             _avg = self._get_avg_fill_price(result["id"])
+
+            if _avg and _ref_price > 0:
+                _dev = abs(_avg - _ref_price)
+                if _dev > _band:
+                    logging.critical(f"[OrderManager] BAD FILL DESPITE BAND: ref_price={_ref_price} avg_fill={_avg} dev=${_dev:.1f} - auto-closing")
+                    send_alert(f"CTS BAD FILL DESPITE BAND - AUTO-CLOSING\nSide: {side.upper()}\nRef price: ${_ref_price:,.1f}\nFilled at: ${_avg:,.1f}\nDeviation: ${_dev:.1f}")
+                    _close_side = "sell" if side == "buy" else "buy"
+                    self.close_position(size=_filled, side=_close_side)
+
             return {
                 "success":      True,
                 "order_id":     result["id"],
                 "state":        result["state"],
                 "side":         result["side"],
-                "size":         result["size"],
+                "size":         _filled,
                 "filled_price": result.get("limit_price", "market"),
                 "avg_fill_price": float(_avg) if _avg else 0.0
             }
