@@ -305,8 +305,7 @@ def load_signals():
         log.error(f"[REPLAY] Signal CSV not found: {SIGNAL_CSV}")
         return signals
     _mtime = os.path.getmtime(SIGNAL_CSV)
-    if _signals_cache["mtime"] == _mtime:
-        return _signals_cache["data"]
+    # Caching disabled - always re-read (CSV write is instant, no compute cost)
     with open(SIGNAL_CSV, "r") as f:
         reader = csv.reader(f)
         for row in reader:
