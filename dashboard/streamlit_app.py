@@ -5366,9 +5366,10 @@ with _tab_analysis:
             _VF13 = open("logs/valid_from_baseline.txt").read().strip()
         except:
             _VF13 = "2026-07-14T15:00:00"
-        # Section 13 display window = last 7 days rolling (not VALID_FROM)
+        # Section 13 display window = current calendar month (1st to today, UTC)
         import datetime as _dt13_7
-        _VF13_7D = (_dt13_7.datetime.utcnow() - _dt13_7.timedelta(days=7)).strftime('%Y-%m-%dT%H:%M:%S')
+        _now13_7 = _dt13_7.datetime.utcnow()
+        _VF13_7D = _now13_7.replace(day=1, hour=0, minute=0, second=0, microsecond=0).strftime('%Y-%m-%dT%H:%M:%S')
 
         # ── DYNAMIC INPUT CONTROLS (persist across refresh via session_state) ──
         _c13a, _c13b, _c13c = st.columns(3)
@@ -5665,7 +5666,7 @@ with _tab_analysis:
                       "pnl_year":s2_bt.get("pnl_year",0)+s4_bt.get("pnl_year",0)}
             cb_bt = merged
 
-        st.caption(f"Showing last 7 days | Valid from: {_VF13_7D[:10]} UTC | Auto updates on page load | Testnet")
+        st.caption(f"Showing current month ({_VF13_7D[:7]}) | Valid from: {_VF13_7D[:10]} UTC | Auto updates on page load | Testnet")
 
         st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
 
@@ -5980,18 +5981,18 @@ with _tab_analysis:
 
         _colA, _colB = st.columns(2)
         with _colA:
-            st.markdown(f"<div style='{_HDR13}'>BACKTEST S4V2 - LAST 7 DAYS</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='{_HDR13}'>BACKTEST S4V2 - THIS MONTH</div>", unsafe_allow_html=True)
             st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
         with _colB:
-            st.markdown(f"<div style='{_HDR13}'>BACKTEST S4 - LAST 7 DAYS</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='{_HDR13}'>BACKTEST S4 - THIS MONTH</div>", unsafe_allow_html=True)
             st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv", _VF13_7D, which="s4"), unsafe_allow_html=True)
 
         _colC, _colD = st.columns(2)
         with _colC:
-            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4V2 - LAST 7 DAYS</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4V2 - THIS MONTH</div>", unsafe_allow_html=True)
             st.markdown(_fwd20(s2p_7d), unsafe_allow_html=True)
         with _colD:
-            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4 - LAST 7 DAYS</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4 - THIS MONTH</div>", unsafe_allow_html=True)
             st.markdown(_fwd20(s4p_7d), unsafe_allow_html=True)
 
         # ================================================================
