@@ -165,3 +165,4 @@ NOT FIXED (separate issue, flagged only):
   Root cause of the deficit itself (engine/signal issue vs
   genuinely fewer live signals) NOT YET INVESTIGATED.
 ----------------------------------------------------------------
+[15-Aug-2026] | S4 signal reload lag (mtime cache stale, up to 5.5hr delay) | STATUS: FIXED
