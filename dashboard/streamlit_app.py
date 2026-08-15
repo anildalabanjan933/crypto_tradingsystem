@@ -6248,6 +6248,65 @@ with _tab_analysis:
                     }
                 except Exception:
                     return None
+            def _get_lv_open_row(label):
+                import re as _re_lv
+                log_map = {"LV S4V2": ("logs/live_trading_s4v2.log","logs/live_trading_s4v2.log.1"),
+                           "LV S4": ("logs/live_trading_s4.log","logs/live_trading_s4.log.1")}
+                _csv_map3 = {"LV S4V2": "logs/signals_s4v2.csv", "LV S4": "logs/signals_s4.csv"}
+                log_path, log_bak = log_map.get(label, (None, None))
+                if not log_path:
+                    return None
+                try:
+                    lines = []
+                    if log_bak:
+                        try: lines += open(log_bak).readlines()
+                        except: pass
+                    lines += open(log_path).readlines()
+                    last_entry = None
+                    for idx, line in enumerate(lines):
+                        if "[ORDER] ENTRY" in line and "confirmed" not in line and "attempt" not in line:
+                            m_dir = _re_lv.search(r'dir=(\w+)', line)
+                            m_ts  = _re_lv.search(r'ts=(\S+)', line)
+                            if not (m_dir and m_ts):
+                                continue
+                            _ep = 0.0
+                            for j in range(idx+1, min(idx+5, len(lines))):
+                                m_ep = _re_lv.search(r'entry=([\d.]+)', lines[j])
+                                if m_ep:
+                                    _ep = float(m_ep.group(1))
+                                    break
+                            last_entry = {"idx": idx, "dir": m_dir.group(1), "sig_ts": m_ts.group(1), "entry_price": _ep}
+                        elif "[ORDER] EXIT" in line and "skipped" not in line and "confirmed" not in line:
+                            if last_entry is not None and idx > last_entry["idx"]:
+                                last_entry = None
+                    if last_entry is None:
+                        return None
+                    if last_entry["entry_price"] == 0.0:
+                        _cpath = _csv_map3.get(label)
+                        if _cpath:
+                            try:
+                                with open(_cpath) as _cf:
+                                    for _cl in _cf:
+                                        _cp = _cl.strip().split(',')
+                                        if len(_cp) >= 5 and _cp[0] == last_entry["sig_ts"]:
+                                            last_entry["entry_price"] = float(_cp[4])
+                                            break
+                            except Exception:
+                                pass
+                    import pandas as _pdlv
+                    _et = last_entry["sig_ts"]
+                    _et_close = _pdlv.to_datetime(_et) + _pdlv.Timedelta(
+                        hours=2 if ("S4" in label and "S4V2" not in label) else 0,
+                        minutes=30 if "S4V2" in label else 0)
+                    return {
+                        'label': label, 'dir': last_entry["dir"].upper(),
+                        'entry_ist': _to_ist(str(_et_close)), 'entry_ts_raw': str(_et), 'exit_ist': '-',
+                        'exit_ts_raw': '-',
+                        'entry_p': last_entry["entry_price"], 'exit_p': 0.0,
+                        'pnl_usd': 0.0, 'pnl_inr5': 0.0, 'pnl_inr10': 0.0, 'charges': 0.0,
+                    }
+                except Exception:
+                    return None
             bt2 = _get_bt_rows(df2, "BT S4V2")
             _bt2_open = _get_bt_open_row("BT S4V2")
             if _bt2_open:
@@ -6257,7 +6316,15 @@ with _tab_analysis:
             if _bt4_open:
                 bt4 = [_bt4_open] + bt4
             lv2 = _get_fwd_rows(df2_fwd, "LV S4V2")
+            lv2 = [r for r in lv2 if r.get('exit_ist') not in ('-', '', None)]
+            _lv2_open = _get_lv_open_row("LV S4V2")
+            if _lv2_open:
+                lv2 = [_lv2_open] + lv2
             lv4 = _get_fwd_rows(df4_fwd, "LV S4")
+            lv4 = [r for r in lv4 if r.get('exit_ist') not in ('-', '', None)]
+            _lv4_open = _get_lv_open_row("LV S4")
+            if _lv4_open:
+                lv4 = [_lv4_open] + lv4
             today_str = _dtt.datetime.utcnow().strftime("%d-%b-%Y")
             TH  = "padding:5px 8px;border:1px solid #90CAF9;background:#42A5F5;font-size:10px;font-weight:700;color:#fff;text-align:center;"
             THS = "padding:5px 8px;border:1px solid #90CAF9;background:#42A5F5;font-size:10px;font-weight:700;color:#fff;text-align:center;width:40px;"
