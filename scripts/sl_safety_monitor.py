@@ -55,9 +55,20 @@ def check_bot(bot):
     if not has_sl:
         now = time.time()
         last = _last_alert_ts.get(bot["name"], 0)
+        log.critical(f"[{bot['name']}] OPEN POSITION (size={size}) WITH NO SL ORDER FOUND - AUTO-PLACING SL")
+        direction = pos.get("direction", "UNKNOWN").lower()
+        entry_price = pos.get("entry_price", 0.0)
+        if direction in ("long", "short") and entry_price > 0:
+            sl_result = om.place_stop_loss_order(direction, entry_price)
+        else:
+            sl_result = {"success": False, "error": "invalid_direction_or_entry_price"}
         if now - last > ALERT_COOLDOWN:
-            log.critical(f"[{bot['name']}] OPEN POSITION (size={size}) WITH NO SL ORDER FOUND")
-            send_alert(f"CTS {bot['name']} CRITICAL - NO SL FOUND ON OPEN POSITION\nSize: {size}\nManual check required immediately")
+            if sl_result.get("success"):
+                log.info(f"[{bot['name']}] AUTO-SL PLACED OK | order_id={sl_result.get('order_id')}")
+                send_alert(f"CTS {bot['name']} RECOVERED - SL WAS MISSING, AUTO-PLACED SUCCESSFULLY\nSize: {size}\nOrder ID: {sl_result.get('order_id')}")
+            else:
+                log.critical(f"[{bot['name']}] AUTO-SL PLACEMENT FAILED: {sl_result}")
+                send_alert(f"CTS {bot['name']} CRITICAL - NO SL FOUND AND AUTO-PLACE FAILED\nSize: {size}\nError: {sl_result.get('error')}\nMANUAL CHECK REQUIRED IMMEDIATELY")
             _last_alert_ts[bot["name"]] = now
     else:
         log.info(f"[{bot['name']}] position size={size} - SL confirmed present")
