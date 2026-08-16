@@ -166,3 +166,5 @@ NOT FIXED (separate issue, flagged only):
   genuinely fewer live signals) NOT YET INVESTIGATED.
 ----------------------------------------------------------------
 [15-Aug-2026] | S4 signal reload lag (mtime cache stale, up to 5.5hr delay) | STATUS: FIXED
+[16-Aug-2026] | Dashboard false stale-signal warning (S4/S4V2) | STATUS: FIXED
+Warning suppressed only when position genuinely open (checked via last_known_ts file); stale-with-no-position still alerts normally.

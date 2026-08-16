@@ -2366,10 +2366,17 @@ with _tab_monitor:
                 else:
                     ok.append(f"Engine (renko_state_engine): RUNNING - last update {int(_eng_age_mins)}m ago")
             # Check signal files age
-            for _sf, _label in [("logs/live_signal_s4v2.txt","S4V2 signal"), ("logs/live_signal_s4.txt","S4 signal")]:
+            for _sf, _label, _pos_flag in [("logs/live_signal_s4v2.txt","S4V2 signal","logs/last_known_ts_s4v2.txt"), ("logs/live_signal_s4.txt","S4 signal","logs/last_known_ts_s4.txt")]:
                 if os.path.exists(_sf):
                     _sf_age = (_time_eng.time() - os.path.getmtime(_sf)) / 60
-                    if _sf_age > 30:
+                    _has_open_pos = False
+                    try:
+                        if os.path.exists(_pos_flag):
+                            _ts_content = open(_pos_flag).read().strip()
+                            _has_open_pos = bool(_ts_content)
+                    except Exception:
+                        pass
+                    if _sf_age > 30 and not _has_open_pos:
                         warnings.append(f"{_label} file not updated in {int(_sf_age)}m - engine may not be firing")
                     else:
                         ok.append(f"{_label} file: updated {int(_sf_age)}m ago")
