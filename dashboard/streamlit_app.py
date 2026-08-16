@@ -6163,6 +6163,23 @@ with _tab_analysis:
                     ist = dt + _dtt.timedelta(hours=5, minutes=30)
                     return ist.strftime("%d-%b %I:%M %p")
                 except: return "-"
+            def _load_signals_lookup(label):
+                _sig_map = {"LV S4V2": "logs/signals_s4v2.csv", "BT S4V2": "logs/signals_s4v2.csv",
+                            "LV S4": "logs/signals_s4.csv", "BT S4": "logs/signals_s4.csv"}
+                _path = _sig_map.get(label)
+                _lookup = {}
+                if _path:
+                    try:
+                        with open(_path) as _sf:
+                            for _sl in _sf:
+                                _sp = _sl.strip().split(',')
+                                if len(_sp) >= 6 and _sp[1] != 'PENDING':
+                                    _key = (round(float(_sp[4]),1), _sp[2])
+                                    _lookup[_key] = (_sp[0], _sp[1])
+                    except Exception:
+                        pass
+                return _lookup
+
             def _get_bt_rows(df, label):
                 if df is None: return []
                 rows = []
@@ -6179,14 +6196,25 @@ with _tab_analysis:
                     _today_bt = _dtt_bt.datetime.utcnow().date()
                     dfc = dfc[dfc['entry_datetime'].dt.date == _today_bt]
                     dfc = dfc.sort_values('entry_datetime', ascending=False)
+                    _sig_lookup = _load_signals_lookup(label)
                     for _, r in dfc.iterrows():
+                        _dir_raw = str(r.get('direction','')).lower()
+                        _entry_ts_raw = str(r.get('entry_datetime',''))
+                        _exit_ts_raw = str(r.get('exit_datetime',''))
+                        # Cross-check against signals CSV (live bot's actual source) - override
+                        # timing if it disagrees, since trade_log_*.csv can be regenerated at a
+                        # different data-cutoff than signals_s4v2.csv/signals_s4.csv (root cause
+                        # of false exit-delay mismatches, e.g. 1804s artifact, 16-Aug-2026)
+                        _sig_key = (round(float(r.get('entry_price',0)),1), _dir_raw)
+                        if _sig_key in _sig_lookup:
+                            _entry_ts_raw, _exit_ts_raw = _sig_lookup[_sig_key]
                         rows.append({
                             'label'    : label,
                             'dir'      : str(r.get('direction','')).upper(),
-                            'entry_ist': _to_ist(str(r.get('entry_datetime','')) if 'S4V2' not in label and 'S4' not in label else (str(_pd_t.to_datetime(r.get('entry_datetime','')) + _pd_t.Timedelta(hours=2 if ('S4' in label and 'S4V2' not in label) else 0, minutes=30 if 'S4V2' in label else 0)))),
-                            'entry_ts_raw': str(r.get('entry_datetime','')),
-                            'exit_ist' : _to_ist(str(r.get('exit_datetime','')) if 'S4V2' not in label and 'S4' not in label else (str(_pd_t.to_datetime(r.get('exit_datetime','')) + _pd_t.Timedelta(hours=2 if ('S4' in label and 'S4V2' not in label) else 0, minutes=30 if 'S4V2' in label else 0)))),
-                            'exit_ts_raw': str(r.get('exit_datetime','')),
+                            'entry_ist': _to_ist(_entry_ts_raw if 'S4V2' not in label and 'S4' not in label else (str(_pd_t.to_datetime(_entry_ts_raw) + _pd_t.Timedelta(hours=2 if ('S4' in label and 'S4V2' not in label) else 0, minutes=30 if 'S4V2' in label else 0)))),
+                            'entry_ts_raw': _entry_ts_raw,
+                            'exit_ist' : _to_ist(_exit_ts_raw if 'S4V2' not in label and 'S4' not in label else (str(_pd_t.to_datetime(_exit_ts_raw) + _pd_t.Timedelta(hours=2 if ('S4' in label and 'S4V2' not in label) else 0, minutes=30 if 'S4V2' in label else 0)))) if _exit_ts_raw != 'PENDING' else '-',
+                            'exit_ts_raw': _exit_ts_raw,
                             'entry_p'  : float(r.get('entry_price',0)),
                             'exit_p'   : float(r.get('exit_price',0)),
                             'pnl_usd'  : float(r.get('net_pnl',0)),
