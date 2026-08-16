@@ -172,3 +172,5 @@ Warning suppressed only when position genuinely open (checked via last_known_ts 
 place_stop_loss_order() now fetches actual live position size via get_position() instead of hardcoded 100; falls back to 100 if fetch fails. Prevents future SL/position-size mismatch if entry size ever changes.
 [16-Aug-2026] | SL not placed if entry_price stays 0.0 (up to 5min gap) | STATUS: FIXED
 Retry window extended 1s->10s (20x0.5s) in signal_replay_s4.py and signal_replay_s4v2.py. If entry_price still 0 after 10s, or SL placement fails, now sends explicit Telegram CRITICAL alert instead of silent log-only skip.
+[16-Aug-2026] | Continuous SL-presence monitor (Phase 1, monitor-only) | STATUS: FIXED
+New scripts/sl_safety_monitor.py checks every 60s if every open S4/S4V2 position has a live SL order on exchange; sends Telegram CRITICAL alert if missing. Read-only, no auto-action, does not touch signal/entry/exit logic. Added to start.sh for persistence across restarts.
