@@ -270,6 +270,14 @@ class OrderManager:
 
             if pos_check.get("success") and current_size == 0:
                 logging.info(f"[OrderManager] Close CONFIRMED FLAT | attempt={attempt} | last_order_id={last_order_id}")
+                try:
+                    _cleanup = self._delete("/orders/all", {"product_id": self.PRODUCT_ID, "cancel_stop_orders": "true"})
+                    if _cleanup.get("success"):
+                        logging.info(f"[OrderManager] Stale stop orders cleaned up on confirmed-flat")
+                    else:
+                        logging.warning(f"[OrderManager] Stop order cleanup failed (non-critical): {_cleanup.get('error')}")
+                except Exception as _ce:
+                    logging.warning(f"[OrderManager] Stop order cleanup exception (non-critical): {_ce}")
                 return {
                     "success":        True,
                     "order_id":       last_order_id,
