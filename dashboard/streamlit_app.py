@@ -151,13 +151,20 @@ def _fetch_account_data(api_key, api_secret):
 
     if positions:
         orders_resp = _get('/v2/orders', {'states': 'open,pending', 'order_types': 'stop_market,stop_limit,all_stop'})
-        sl_by_symbol = {}
+        sl_by_symbol_side = {}
         for o in orders_resp.get('result', []):
             if o.get('stop_order_type') == 'stop_loss_order':
                 osym = o.get('product_symbol', '')
-                sl_by_symbol[osym] = o.get('stop_price', o.get('trigger_price', 'N/A'))
+                oside = o.get('side', '')
+                ocreated = o.get('created_at', '')
+                key = (osym, oside)
+                existing = sl_by_symbol_side.get(key)
+                if not existing or ocreated > existing[1]:
+                    sl_by_symbol_side[key] = (o.get('stop_price', o.get('trigger_price', 'N/A')), ocreated)
         for pos in positions:
-            pos['sl_price'] = sl_by_symbol.get(pos['symbol'], None)
+            close_side = 'buy' if pos['side'] == 'SHORT' else 'sell'
+            match = sl_by_symbol_side.get((pos['symbol'], close_side))
+            pos['sl_price'] = match[0] if match else None
 
     return balance_usd, unreal_pnl, positions
 
@@ -266,6 +273,16 @@ def _fetch_delta_full_status():
 # ================================================================
 
 st.set_page_config(page_title="Crypto Trading Dashboard", layout="wide", page_icon="📈")
+st.markdown("""
+<style>
+
+[data-testid="stTable"] table, [data-testid="stDataFrame"] table {
+}
+[data-testid="stTable"] th, [data-testid="stTable"] td,
+[data-testid="stDataFrame"] th, [data-testid="stDataFrame"] td {
+}
+</style>
+""", unsafe_allow_html=True)
 
 st.markdown("""
 <style>
