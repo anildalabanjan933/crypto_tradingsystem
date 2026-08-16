@@ -359,11 +359,19 @@ class OrderManager:
             sl_price = round(entry_price * (1 + sl_pct / 100), 1)
             side = "buy"
 
+        _sl_size = 100
+        try:
+            _pos = self.get_position()
+            if _pos.get("success") and _pos.get("size", 0) != 0:
+                _sl_size = abs(int(_pos["size"]))
+        except Exception as _e:
+            logging.error(f"[OrderManager] SL size fetch failed, using fallback 100: {_e}")
+
         payload = {
             "product_symbol": self.PRODUCT_SYMBOL,
             "product_id":     self.PRODUCT_ID,
             "side":           side,
-            "size":           100,
+            "size":           _sl_size,
             "order_type":     "market_order",
             "stop_order_type": "stop_loss_order",
             "stop_price":     str(sl_price),
