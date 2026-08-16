@@ -168,3 +168,5 @@ NOT FIXED (separate issue, flagged only):
 [15-Aug-2026] | S4 signal reload lag (mtime cache stale, up to 5.5hr delay) | STATUS: FIXED
 [16-Aug-2026] | Dashboard false stale-signal warning (S4/S4V2) | STATUS: FIXED
 Warning suppressed only when position genuinely open (checked via last_known_ts file); stale-with-no-position still alerts normally.
+[16-Aug-2026] | SL order size hardcoded to 100 | STATUS: FIXED
+place_stop_loss_order() now fetches actual live position size via get_position() instead of hardcoded 100; falls back to 100 if fetch fails. Prevents future SL/position-size mismatch if entry size ever changes.
