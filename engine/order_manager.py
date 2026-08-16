@@ -396,13 +396,18 @@ class OrderManager:
         return {"success": False, "error": resp.get("error")}
 
 
-    def place_stop_loss_order(self, direction: str, entry_price: float, sl_pct: float = 2.0) -> dict:
+    def place_stop_loss_order(self, direction: str, entry_price: float, sl_pct: float = 2.0,
+                               max_attempts: int = 5, retry_delay: float = 2.0) -> dict:
         """
-        Place a stop market order as SL on an open position.
+        Place a stop market order as SL on an open position, RETRYING UNTIL
+        CONFIRMED PRESENT on exchange - not just until a single placement
+        call returns success=True.
         Works AFTER position is open - no bracket_order_immediate_execution issue.
-        direction  : "long" or "short"
-        entry_price: actual fill price from get_position()
-        sl_pct     : stop loss % from entry (default 5% - wide safety net only)
+        direction    : "long" or "short"
+        entry_price  : actual fill price from get_position()
+        sl_pct       : stop loss % from entry (default 2% - wide safety net only)
+        max_attempts : max placement attempts before escalating (default 5)
+        retry_delay  : seconds between attempts (default 2.0s)
         """
         if entry_price <= 0:
             logging.error(f"[OrderManager] SL skipped - invalid entry_price={entry_price}")
@@ -423,25 +428,68 @@ class OrderManager:
         except Exception as _e:
             logging.error(f"[OrderManager] SL size fetch failed, using fallback 100: {_e}")
 
-        payload = {
-            "product_symbol": self.PRODUCT_SYMBOL,
-            "product_id":     self.PRODUCT_ID,
-            "side":           side,
-            "size":           _sl_size,
-            "order_type":     "market_order",
-            "stop_order_type": "stop_loss_order",
-            "stop_price":     str(sl_price),
-            "reduce_only":    True,
-            "close_on_trigger": True
-        }
+        last_resp = None
+        last_sl_order_id = None
 
-        logging.info(f"[OrderManager] Placing stop SL | direction={direction} entry={entry_price} sl={sl_price} ({sl_pct}%)")
-        resp = self._post("/v2/orders", payload)
+        for attempt in range(1, max_attempts + 1):
+            check_resp = self._get("/v2/orders", {
+                "product_ids": str(self.PRODUCT_ID),
+                "states": "open,pending",
+                "order_types": "stop_market,stop_limit,all_stop"
+            })
+            if check_resp.get("success"):
+                _orders = check_resp.get("result", [])
+                _existing_sl = next((o for o in _orders if o.get("stop_order_type") == "stop_loss_order"), None)
+                if _existing_sl:
+                    logging.info(f"[OrderManager] SL CONFIRMED PRESENT | attempt={attempt} order_id={_existing_sl.get('id')}")
+                    return {"success": True, "sl_price": sl_price, "order_id": _existing_sl.get("id"), "attempts": attempt}
 
-        if resp.get("success"):
-            result = resp["result"]
-            logging.info(f"[OrderManager] Stop SL placed | sl_price={sl_price} order_id={result.get('id')}")
-            return {"success": True, "sl_price": sl_price, "order_id": result.get("id")}
-        else:
-            logging.error(f"[OrderManager] Stop SL FAILED: {resp.get('error')}")
-            return {"success": False, "error": resp.get("error")}
+            payload = {
+                "product_symbol": self.PRODUCT_SYMBOL,
+                "product_id":     self.PRODUCT_ID,
+                "side":           side,
+                "size":           _sl_size,
+                "order_type":     "market_order",
+                "stop_order_type": "stop_loss_order",
+                "stop_price":     str(sl_price),
+                "reduce_only":    True,
+                "close_on_trigger": True
+            }
+
+            logging.info(f"[OrderManager] SL placement attempt {attempt}/{max_attempts} | direction={direction} entry={entry_price} sl={sl_price} ({sl_pct}%)")
+            resp = self._post("/v2/orders", payload)
+            last_resp = resp
+
+            if resp.get("success"):
+                result = resp["result"]
+                last_sl_order_id = result.get("id")
+                logging.info(f"[OrderManager] Stop SL placed | attempt={attempt} sl_price={sl_price} order_id={last_sl_order_id}")
+                return {"success": True, "sl_price": sl_price, "order_id": last_sl_order_id, "attempts": attempt}
+            else:
+                logging.error(f"[OrderManager] Stop SL placement FAILED | attempt={attempt}/{max_attempts} | error={resp.get('error')}")
+
+            if attempt < max_attempts:
+                time.sleep(retry_delay)
+
+        final_check = self._get("/v2/orders", {
+            "product_ids": str(self.PRODUCT_ID),
+            "states": "open,pending",
+            "order_types": "stop_market,stop_limit,all_stop"
+        })
+        if final_check.get("success"):
+            _orders = final_check.get("result", [])
+            _existing_sl = next((o for o in _orders if o.get("stop_order_type") == "stop_loss_order"), None)
+            if _existing_sl:
+                logging.info(f"[OrderManager] SL CONFIRMED PRESENT on final check | total_attempts={max_attempts}")
+                return {"success": True, "sl_price": sl_price, "order_id": _existing_sl.get("id"), "attempts": max_attempts}
+
+        logging.critical(f"[OrderManager] SL PLACEMENT FAILED AFTER {max_attempts} ATTEMPTS - POSITION UNPROTECTED - MANUAL INTERVENTION REQUIRED")
+        send_alert(
+            f"CTS CRITICAL - SL PLACEMENT FAILED AFTER {max_attempts} ATTEMPTS\n"
+            f"Direction: {direction.upper()}\n"
+            f"Entry price: {entry_price}\n"
+            f"Target SL price: {sl_price}\n"
+            f"Last error: {last_resp.get('error') if last_resp else 'N/A'}\n"
+            f"ACTION REQUIRED: Position is UNPROTECTED - place SL manually on Delta Exchange immediately"
+        )
+        return {"success": False, "error": "sl_placement_failed_after_max_attempts", "attempts": max_attempts}
