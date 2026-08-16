@@ -638,8 +638,8 @@ while True:
                         open_lot_size = lots
                         if _live_sig: last_processed_seq = _live_sig.get("seq", 0)
                         real_entry = 0.0
-                        for _i in range(5):
-                            time.sleep(0.2)
+                        for _i in range(20):
+                            time.sleep(0.5)
                             pos_check = om.get_position()
                             real_entry = pos_check.get("entry_price", 0.0) if pos_check.get("success") else 0.0
                             if real_entry > 0:
@@ -653,7 +653,11 @@ while True:
                                 _sl_price_val = sl_result.get("sl_price", 0.0)
                                 log.info(f"[SL] Stop SL placed | sl_price={_sl_price_val}")
                             else:
-                                log.warning(f"[SL] Stop SL FAILED: {sl_result}")
+                                log.error(f"[SL] Stop SL FAILED: {sl_result}")
+                                send_alert(f"CTS S4 SL PLACEMENT FAILED\nDirection: {direction}\nEntry: {real_entry}\nError: {sl_result}")
+                        else:
+                            log.error(f"[SL] NO SL PLACED - entry_price never populated after 10s")
+                            send_alert(f"CTS S4 CRITICAL - NO SL PLACED\nPosition open but entry_price=0 after 10s retries\nManual check required immediately")
                         _send_live_entry_alert("S4", direction, sig_ts, real_entry, _sl_price_val, lots)
                         _bt_csv = _get_csv_bt_row("S4", sig_ts)
                         _bt_ep  = float(_bt_csv[4]) if _bt_csv and len(_bt_csv) > 4 and str(_bt_csv[4]).strip() not in ("", "PENDING") else 0.0

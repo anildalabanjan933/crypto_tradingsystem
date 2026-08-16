@@ -170,3 +170,5 @@ NOT FIXED (separate issue, flagged only):
 Warning suppressed only when position genuinely open (checked via last_known_ts file); stale-with-no-position still alerts normally.
 [16-Aug-2026] | SL order size hardcoded to 100 | STATUS: FIXED
 place_stop_loss_order() now fetches actual live position size via get_position() instead of hardcoded 100; falls back to 100 if fetch fails. Prevents future SL/position-size mismatch if entry size ever changes.
+[16-Aug-2026] | SL not placed if entry_price stays 0.0 (up to 5min gap) | STATUS: FIXED
+Retry window extended 1s->10s (20x0.5s) in signal_replay_s4.py and signal_replay_s4v2.py. If entry_price still 0 after 10s, or SL placement fails, now sends explicit Telegram CRITICAL alert instead of silent log-only skip.
