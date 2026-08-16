@@ -37,9 +37,13 @@ CHECK_INTERVAL = 30
 ALERT_COOLDOWN = 300  # 5 min between repeat alerts per bot
 _last_alert_ts = {}
 
-# PLACEHOLDER THRESHOLDS - revisit with real data
-WARN_DIST_PCT = 15.0
-CRITICAL_DIST_PCT = 8.0
+# RECALIBRATED THRESHOLDS (16-Aug-2026) - since emergency SL is at 1.5% price move,
+# and normal distance-to-liquidation at entry is ~9-10% for this leverage, these
+# should only fire if price has moved PAST where the emergency SL should have
+# already triggered (i.e. SL malfunction / system-down scenario) - not on every
+# normal healthy trade.
+WARN_DIST_PCT = 6.0
+CRITICAL_DIST_PCT = 4.0
 MIN_BALANCE_MULTIPLE = 1.5
 
 def check_bot(bot):
