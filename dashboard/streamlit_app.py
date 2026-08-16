@@ -129,7 +129,7 @@ def _fetch_account_data(api_key, api_secret):
             qp = path + ('?' + qs if qs else '')
             sig = _hm.new(api_secret.encode(), ('GET'+ts+qp).encode(), _hs.sha256).hexdigest()
             hdrs = {'api-key': api_key, 'timestamp': ts, 'signature': sig, 'Content-Type': 'application/json'}
-            return _rq.get(DELTA_URL+path, params=params, headers=hdrs, timeout=(3,10), verify=False).json()
+            return _rq.get(DELTA_URL+qp, headers=hdrs, timeout=(3,10), verify=False).json()
         except:
             return {}
     bal_resp = _get('/v2/wallet/balances')
@@ -148,6 +148,17 @@ def _fetch_account_data(api_key, api_secret):
             unreal_pnl += unreal
             positions.append({'symbol': symbol, 'side': 'LONG' if size > 0 else 'SHORT',
                 'size': abs(size), 'entry': entry, 'unreal_pnl': unreal})
+
+    if positions:
+        orders_resp = _get('/v2/orders', {'states': 'open,pending', 'order_types': 'stop_market,stop_limit,all_stop'})
+        sl_by_symbol = {}
+        for o in orders_resp.get('result', []):
+            if o.get('stop_order_type') == 'stop_loss_order':
+                osym = o.get('product_symbol', '')
+                sl_by_symbol[osym] = o.get('stop_price', o.get('trigger_price', 'N/A'))
+        for pos in positions:
+            pos['sl_price'] = sl_by_symbol.get(pos['symbol'], None)
+
     return balance_usd, unreal_pnl, positions
 
 def _fetch_vm_health():
@@ -3500,8 +3511,8 @@ with _tab_trading:
         all_pos = [dict(p, account='S4V2') for p in s2_pos] + [dict(p, account='S4') for p in s4_pos]
         if all_pos:
             # Header row
-            hc = st.columns([1,2,1,1,2,2,2])
-            for col, label in zip(hc, ['Account','Symbol','Side','Size','Entry $','Unreal PnL','Action']):
+            hc = st.columns([1,2,1,1,2,2,2,2])
+            for col, label in zip(hc, ['Account','Symbol','Side','Size','Entry $','SL Price','Unreal PnL','Action']):
                 col.markdown(f"<div style='font-size:10px;font-weight:700;color:#555;padding:4px 0;border-bottom:2px solid #C8D0DC;'>{label}</div>", unsafe_allow_html=True)
 
             for p in all_pos:
@@ -3512,14 +3523,17 @@ with _tab_trading:
                 sc   = "#089981" if side == 'LONG' else "#F23645"
                 pc   = "#089981" if p['unreal_pnl'] >= 0 else "#F23645"
                 close_side = 'buy' if side == 'SHORT' else 'sell'
-                rc = st.columns([1,2,1,1,2,2,2])
+                rc = st.columns([1,2,1,1,2,2,2,2])
                 rc[0].markdown(f"<div style='font-size:11px;padding:6px 0;'>{acc}</div>", unsafe_allow_html=True)
                 rc[1].markdown(f"<div style='font-size:11px;padding:6px 0;'>{sym}</div>", unsafe_allow_html=True)
                 rc[2].markdown(f"<div style='font-size:11px;padding:6px 0;color:{sc};font-weight:700;'>{side}</div>", unsafe_allow_html=True)
                 rc[3].markdown(f"<div style='font-size:11px;padding:6px 0;'>{size}</div>", unsafe_allow_html=True)
                 rc[4].markdown(f"<div style='font-size:11px;padding:6px 0;text-align:right;'>${p['entry']:,.1f}</div>", unsafe_allow_html=True)
-                rc[5].markdown(f"<div style='font-size:11px;padding:6px 0;color:{pc};font-weight:600;'>${p['unreal_pnl']:,.2f} | ₹{p['unreal_pnl']*INR_RATE:,.0f}</div>", unsafe_allow_html=True)
-                with rc[6]:
+                _sl_val = p.get('sl_price', None)
+                _sl_disp = f"${float(_sl_val):,.1f}" if _sl_val not in (None, 'N/A') else "<span style='color:#F23645;font-weight:700;'>MISSING</span>"
+                rc[5].markdown(f"<div style='font-size:11px;padding:6px 0;text-align:right;'>{_sl_disp}</div>", unsafe_allow_html=True)
+                rc[6].markdown(f"<div style='font-size:11px;padding:6px 0;color:{pc};font-weight:600;'>${p['unreal_pnl']:,.2f} | ₹{p['unreal_pnl']*INR_RATE:,.0f}</div>", unsafe_allow_html=True)
+                with rc[7]:
                     if st.button(f"Close {acc} {side}", key=f"close_{acc}_{sym}", type="primary"):
                         try:
                             import requests, hashlib, hmac, time
