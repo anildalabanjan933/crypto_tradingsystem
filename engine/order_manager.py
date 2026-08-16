@@ -396,7 +396,7 @@ class OrderManager:
         return {"success": False, "error": resp.get("error")}
 
 
-    def place_stop_loss_order(self, direction: str, entry_price: float, sl_pct: float = 2.0,
+    def place_stop_loss_order(self, direction: str, entry_price: float, sl_pct: float = 1.5,
                                max_attempts: int = 5, retry_delay: float = 2.0) -> dict:
         """
         Place a stop market order as SL on an open position, RETRYING UNTIL
@@ -405,7 +405,7 @@ class OrderManager:
         Works AFTER position is open - no bracket_order_immediate_execution issue.
         direction    : "long" or "short"
         entry_price  : actual fill price from get_position()
-        sl_pct       : stop loss % from entry (default 2% - wide safety net only)
+        sl_pct       : stop loss % from entry (default 1.5% - capped near 2.5x backtest 4000 INR ceiling)
         max_attempts : max placement attempts before escalating (default 5)
         retry_delay  : seconds between attempts (default 2.0s)
         """
