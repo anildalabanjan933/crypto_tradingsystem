@@ -8,6 +8,8 @@ import time
 import requests
 import json
 import logging
+import os
+import fcntl
 from engine.telegram_alert import send_alert
 from datetime import datetime
 
@@ -408,10 +410,28 @@ class OrderManager:
         sl_pct       : stop loss % from entry (default 1.5% - capped near 2.5x backtest 4000 INR ceiling)
         max_attempts : max placement attempts before escalating (default 5)
         retry_delay  : seconds between attempts (default 2.0s)
+
+        LOCK: file lock keyed per api_key ensures only one process (bot OR
+        monitor) can place/check SL for this subaccount at a time - prevents
+        duplicate-SL race condition when both retry around the same moment.
         """
         if entry_price <= 0:
             logging.error(f"[OrderManager] SL skipped - invalid entry_price={entry_price}")
             return {"success": False, "error": "invalid_entry_price"}
+
+        _lock_key = hashlib.md5(self.api_key.encode()).hexdigest()[:12]
+        _lock_path = f"/tmp/cts_sl_lock_{_lock_key}.lock"
+        _lock_fh = open(_lock_path, "a")
+        logging.info(f"[OrderManager] Acquiring SL lock for account (waiting if held by other process)")
+        fcntl.flock(_lock_fh, fcntl.LOCK_EX)
+        try:
+            return self._place_stop_loss_order_locked(direction, entry_price, sl_pct, max_attempts, retry_delay)
+        finally:
+            fcntl.flock(_lock_fh, fcntl.LOCK_UN)
+            _lock_fh.close()
+
+    def _place_stop_loss_order_locked(self, direction: str, entry_price: float, sl_pct: float = 1.5,
+                               max_attempts: int = 5, retry_delay: float = 2.0) -> dict:
 
         if direction == "long":
             sl_price = round(entry_price * (1 - sl_pct / 100), 1)
