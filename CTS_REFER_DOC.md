@@ -174,3 +174,5 @@ place_stop_loss_order() now fetches actual live position size via get_position()
 Retry window extended 1s->10s (20x0.5s) in signal_replay_s4.py and signal_replay_s4v2.py. If entry_price still 0 after 10s, or SL placement fails, now sends explicit Telegram CRITICAL alert instead of silent log-only skip.
 [16-Aug-2026] | Continuous SL-presence monitor (Phase 1, monitor-only) | STATUS: FIXED
 New scripts/sl_safety_monitor.py checks every 60s if every open S4/S4V2 position has a live SL order on exchange; sends Telegram CRITICAL alert if missing. Read-only, no auto-action, does not touch signal/entry/exit logic. Added to start.sh for persistence across restarts.
+[16-Aug-2026] | close_position() single-attempt gap | STATUS: FIXED
+close_position() now retries reduce_only market order up to 8x (1.5s apart, ~12s worst-case) verifying via get_position() until confirmed flat, instead of trusting single order-placement success. Escalates Telegram critical alert if still open after max attempts. Auto-close-on-bad-fill path (place_market_order) inherits fix automatically since it calls close_position().

@@ -244,42 +244,98 @@ class OrderManager:
             logging.error(f"[OrderManager] Order FAILED: {resp.get('error')}")
             return {"success": False, "error": resp.get("error")}
 
-    def close_position(self, size: int, side: str, client_order_id: str = None) -> dict:
+    def close_position(self, size: int, side: str, client_order_id: str = None,
+                        max_attempts: int = 8, retry_delay: float = 1.5) -> dict:
         """
-        Close an open position using a reduce_only market order.
+        Close an open position using reduce_only market orders, RETRYING UNTIL
+        THE POSITION IS CONFIRMED FLAT via get_position() - not just until a
+        single order placement call returns success=True.
 
         Parameters
         ----------
-        size : lots to close (must equal open position size)
-        side : "buy" to close a SHORT, "sell" to close a LONG
+        size         : lots to close (fallback if live size unavailable)
+        side         : "buy" to close a SHORT, "sell" to close a LONG
+        max_attempts : max close attempts before escalating (default 8)
+        retry_delay  : seconds between attempts (default 1.5s)
         """
-        payload = {
-            "product_symbol": self.PRODUCT_SYMBOL,
-            "product_id":     self.PRODUCT_ID,
-            "side":           side,
-            "size":           size,
-            "order_type":     "market_order",
-            "reduce_only":    "true"
-        }
-        if client_order_id:
-            payload["client_order_id"] = client_order_id[:32]
+        last_resp = None
+        last_avg_fill = 0.0
+        last_order_id = None
 
-        logging.info(f"[OrderManager] Closing position | {side.upper()} {size} lots (reduce_only)")
-        resp = self._post("/v2/orders", payload)
+        for attempt in range(1, max_attempts + 1):
+            pos_check = self.get_position()
+            current_size = abs(pos_check.get("size", 0)) if pos_check.get("success") else None
 
-        if resp.get("success"):
-            result = resp["result"]
-            logging.info(f"[OrderManager] Close order placed | id={result['id']} state={result['state']}")
-            _avg2 = self._get_avg_fill_price(result["id"])
-            return {
-                "success":  True,
-                "order_id": result["id"],
-                "state":    result["state"],
-                "avg_fill_price": float(_avg2) if _avg2 else 0.0
+            if pos_check.get("success") and current_size == 0:
+                logging.info(f"[OrderManager] Close CONFIRMED FLAT | attempt={attempt} | last_order_id={last_order_id}")
+                return {
+                    "success":        True,
+                    "order_id":       last_order_id,
+                    "state":          "closed",
+                    "avg_fill_price": last_avg_fill,
+                    "attempts":       attempt
+                }
+
+            close_size = current_size if current_size else size
+
+            payload = {
+                "product_symbol": self.PRODUCT_SYMBOL,
+                "product_id":     self.PRODUCT_ID,
+                "side":           side,
+                "size":           close_size,
+                "order_type":     "market_order",
+                "reduce_only":    "true"
             }
-        else:
-            logging.error(f"[OrderManager] Close FAILED: {resp.get('error')}")
-            return {"success": False, "error": resp.get("error")}
+            if client_order_id:
+                payload["client_order_id"] = f"{client_order_id[:24]}_a{attempt}"
+
+            logging.info(f"[OrderManager] Close attempt {attempt}/{max_attempts} | {side.upper()} {close_size} lots (reduce_only)")
+            resp = self._post("/v2/orders", payload)
+            last_resp = resp
+
+            if resp.get("success"):
+                result = resp["result"]
+                last_order_id = result["id"]
+                logging.info(f"[OrderManager] Close order placed | attempt={attempt} id={result['id']} state={result['state']}")
+                _avg = self._get_avg_fill_price(result["id"])
+                if _avg:
+                    last_avg_fill = float(_avg)
+            else:
+                logging.error(f"[OrderManager] Close order FAILED | attempt={attempt}/{max_attempts} | error={resp.get('error')}")
+
+            if attempt < max_attempts:
+                time.sleep(retry_delay)
+
+        final_check = self.get_position()
+        final_size = abs(final_check.get("size", 0)) if final_check.get("success") else None
+
+        if final_check.get("success") and final_size == 0:
+            logging.info(f"[OrderManager] Close CONFIRMED FLAT on final check | total_attempts={max_attempts}")
+            return {
+                "success":        True,
+                "order_id":       last_order_id,
+                "state":          "closed",
+                "avg_fill_price": last_avg_fill,
+                "attempts":       max_attempts
+            }
+
+        _pos_desc = f"size={final_size}" if final_check.get("success") else "UNKNOWN (position API check itself failed)"
+        logging.critical(f"[OrderManager] CLOSE FAILED AFTER {max_attempts} ATTEMPTS - position still open ({_pos_desc}) - MANUAL INTERVENTION REQUIRED")
+        send_alert(
+            f"CTS CRITICAL - CLOSE FAILED AFTER {max_attempts} ATTEMPTS\n"
+            f"Side requested : {side.upper()}\n"
+            f"Target size    : {size}\n"
+            f"Position now   : {_pos_desc}\n"
+            f"Last error     : {last_resp.get('error') if last_resp else 'N/A'}\n"
+            f"ACTION REQUIRED: Close this position manually on Delta Exchange immediately"
+        )
+        return {
+            "success":             False,
+            "error":               "close_failed_after_max_attempts",
+            "last_error":          last_resp.get("error") if last_resp else None,
+            "attempts":            max_attempts,
+            "position_still_open": True
+        }
 
     def get_position(self) -> dict:
         """
