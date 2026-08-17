@@ -398,6 +398,13 @@ if position is not None:
                 log.warning(f"[SELF-HEAL] last_known_ts mismatch: had={last_known_ts} correct={_row['entry_time']} | correcting")
                 last_known_ts = safe_ts(_row["entry_time"])
                 save_ts_file(TS_FILE, last_known_ts)
+else:
+    for _row in signals:
+        if _row.get("entry_time") == last_known_ts and _row.get("exit_time") == "PENDING":
+            with open("logs/manual_override_s4.txt", "w") as _f:
+                _f.write(f"{int(time.time())}|startup_flat_detected|entry_ts={last_known_ts}")
+            log.warning(f"[STARTUP] Exchange FLAT but signal expected OPEN at entry_ts={last_known_ts} - manual close during downtime detected, override written")
+            break
             break
 
 open_lot_size   = LOT_SIZE
@@ -626,6 +633,14 @@ while True:
             elif position is None and now < _xt:
                 direction = dirn
                 side = "buy" if direction == "long" else "sell"
+                _override_file = "logs/manual_override_s4.txt"
+                if os.path.exists(_override_file):
+                    os.remove(_override_file)
+                    _skip_xt = _xt
+                    last_known_ts = safe_ts(_skip_xt)
+                    save_ts_file(TS_FILE, last_known_ts)
+                    log.info(f"[SKIP] ENTRY blocked - manual_override active (single-shot) | dir={direction} | ts={sig_ts} | advanced past exit={_skip_xt}")
+                    continue
                 log.info(f"[ORDER] ENTRY attempt {side} {lots} lots | dir={direction} | ts={sig_ts}")
                 save_ts_file(TS_FILE, sig_ts)
                 last_known_ts = sig_ts
@@ -704,6 +719,9 @@ while True:
                 else:
                     save_ts_file(TS_FILE, last_known_ts)
                     log.warning(f"[SYNC] Could not find exit_time for entry={last_known_ts} - lock unchanged, monitor for repeat entry")
+                with open("logs/manual_override_s4.txt", "w") as _f:
+                    _f.write(f"{int(time.time())}|synced_flat|entry_ts={last_known_ts}")
+                log.info("[SYNC] manual_override_s4.txt written - next entry signal will be skipped")
                 send_alert(
                     f"CTS SL HIT DETECTED\n"
                     f"Bot: S4\n"
