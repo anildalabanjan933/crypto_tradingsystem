@@ -24,7 +24,7 @@ check_and_start() {
     local script=$2
     local log=$3
     local alert_key=$REPO/logs/watchdog_down_${name}.txt
-    if ! /usr/bin/screen -list 2>/dev/null | grep -q "$name"; then
+    if ! /usr/bin/screen -list 2>/dev/null | grep -qE "[0-9]+\.${name}[[:space:]]"; then
         # Send Telegram alert only once per 30 minutes per screen
         local alert_ts_file=$REPO/logs/watchdog_alert_${name}.txt
         local now_ts=$(date +%s)
