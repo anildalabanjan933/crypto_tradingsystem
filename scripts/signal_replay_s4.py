@@ -687,7 +687,7 @@ while True:
                         else:
                             log.error(f"[SL] NO SL PLACED - entry_price never populated after 10s")
                             send_alert(f"CTS S4 CRITICAL - NO SL PLACED\nPosition open but entry_price=0 after 10s retries\nManual check required immediately")
-                        _send_live_entry_alert("S4", direction, sig_ts, real_entry, _sl_price_val, lots)
+                        _send_live_entry_alert("S4", direction, datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"), real_entry, _sl_price_val, lots)
                         _bt_csv = _get_csv_bt_row("S4", sig_ts)
                         _bt_ep  = float(_bt_csv[4]) if _bt_csv and len(_bt_csv) > 4 and str(_bt_csv[4]).strip() not in ("", "PENDING") else 0.0
                         _bt_xt  = _bt_csv[1] if _bt_csv else ""
