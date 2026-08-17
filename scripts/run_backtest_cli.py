@@ -5,7 +5,7 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from engine.backtest_engine import run_backtest
+from engine.backtest_engine_v2 import run_backtest
 from strategy_registry import strategy_registry
 from backtest_analyzer import BacktestReportGenerator
 from datetime import datetime
@@ -53,7 +53,7 @@ if args.strategy in _STRAT_EXPLICIT_PARAMS:
     strategy_params.update(_STRAT_EXPLICIT_PARAMS[args.strategy])
     print(f"Using explicit live-matched params for {args.strategy}: {strategy_params}")
 _suffix = _STRAT_TO_REF_SUFFIX.get(args.strategy)
-if _suffix:
+if _suffix and args.symbol == "BTCUSD":
     _ref_path = f"logs/box_ref_price_{_suffix}.txt"
     if os.path.exists(_ref_path):
         try:
@@ -61,6 +61,8 @@ if _suffix:
             print(f"Using frozen reference_price={strategy_params['reference_price']} from {_ref_path}")
         except Exception as _e:
             print(f"WARNING: could not read {_ref_path}: {_e} - falling back to live recalculation")
+elif _suffix:
+    print(f"Symbol={args.symbol} != BTCUSD - skipping frozen reference_price, using live first-close recalculation")
 
 result = run_backtest(
     strategy_class=strategy_class,
