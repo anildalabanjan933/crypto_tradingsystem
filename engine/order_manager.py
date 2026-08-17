@@ -438,6 +438,42 @@ class OrderManager:
             fcntl.flock(_lock_fh, fcntl.LOCK_UN)
             _lock_fh.close()
 
+    def _save_active_sl_id(self, order_id):
+        """Persist the confirmed-live SL order_id to a per-account state file,
+        so sl_safety_monitor.py can check this EXACT order later instead of
+        guessing by price/side (which fails when stale same-side orders exist)."""
+        try:
+            key_hash = hashlib.md5(self.api_key.encode()).hexdigest()[:12]
+            path = f"logs/active_sl_id_{key_hash}.txt"
+            with open(path, "w") as f:
+                f.write(str(order_id))
+        except Exception as e:
+            logging.warning(f"[OrderManager] Could not save active_sl_id: {e}")
+
+    def _get_confirmed_sl_via_id_file(self, expected_side):
+        """Check the specific SL order_id saved from last successful placement -
+        avoids side-only matching which can wrongly pick a stale order when
+        multiple same-side stop orders still exist on exchange."""
+        try:
+            key_hash = hashlib.md5(self.api_key.encode()).hexdigest()[:12]
+            id_file = f"logs/active_sl_id_{key_hash}.txt"
+            if not os.path.exists(id_file):
+                return None
+            with open(id_file) as f:
+                saved_id = f.read().strip()
+            if not saved_id:
+                return None
+            chk = self._get(f"/v2/orders/{saved_id}", {})
+            if chk.get("success"):
+                o = chk.get("result", {})
+                if (o.get("stop_order_type") == "stop_loss_order"
+                        and o.get("side") == expected_side
+                        and o.get("state") in ("open", "pending")):
+                    return o
+        except Exception as e:
+            logging.warning(f"[OrderManager] id-file SL check failed: {e}")
+        return None
+
     def _place_stop_loss_order_locked(self, direction: str, entry_price: float, sl_pct: float = 1.5,
                                max_attempts: int = 5, retry_delay: float = 2.0) -> dict:
 
@@ -460,17 +496,11 @@ class OrderManager:
         last_sl_order_id = None
 
         for attempt in range(1, max_attempts + 1):
-            check_resp = self._get("/v2/orders", {
-                "product_ids": str(self.PRODUCT_ID),
-                "states": "open,pending",
-                "order_types": "stop_market,stop_limit,all_stop"
-            })
-            if check_resp.get("success"):
-                _orders = check_resp.get("result", [])
-                _existing_sl = next((o for o in _orders if o.get("stop_order_type") == "stop_loss_order"), None)
-                if _existing_sl:
-                    logging.info(f"[OrderManager] SL CONFIRMED PRESENT | attempt={attempt} order_id={_existing_sl.get('id')}")
-                    return {"success": True, "sl_price": sl_price, "order_id": _existing_sl.get("id"), "attempts": attempt}
+            _existing_sl = self._get_confirmed_sl_via_id_file(side)
+            if _existing_sl:
+                logging.info(f"[OrderManager] SL CONFIRMED PRESENT | attempt={attempt} order_id={_existing_sl.get('id')}")
+                self._save_active_sl_id(_existing_sl.get("id"))
+                return {"success": True, "sl_price": sl_price, "order_id": _existing_sl.get("id"), "attempts": attempt}
 
             payload = {
                 "product_symbol": self.PRODUCT_SYMBOL,
@@ -492,6 +522,7 @@ class OrderManager:
                 result = resp["result"]
                 last_sl_order_id = result.get("id")
                 logging.info(f"[OrderManager] Stop SL placed | attempt={attempt} sl_price={sl_price} order_id={last_sl_order_id}")
+                self._save_active_sl_id(last_sl_order_id)
                 return {"success": True, "sl_price": sl_price, "order_id": last_sl_order_id, "attempts": attempt}
             else:
                 logging.error(f"[OrderManager] Stop SL placement FAILED | attempt={attempt}/{max_attempts} | error={resp.get('error')}")
@@ -499,17 +530,11 @@ class OrderManager:
             if attempt < max_attempts:
                 time.sleep(retry_delay)
 
-        final_check = self._get("/v2/orders", {
-            "product_ids": str(self.PRODUCT_ID),
-            "states": "open,pending",
-            "order_types": "stop_market,stop_limit,all_stop"
-        })
-        if final_check.get("success"):
-            _orders = final_check.get("result", [])
-            _existing_sl = next((o for o in _orders if o.get("stop_order_type") == "stop_loss_order"), None)
-            if _existing_sl:
-                logging.info(f"[OrderManager] SL CONFIRMED PRESENT on final check | total_attempts={max_attempts}")
-                return {"success": True, "sl_price": sl_price, "order_id": _existing_sl.get("id"), "attempts": max_attempts}
+        _existing_sl = self._get_confirmed_sl_via_id_file(side)
+        if _existing_sl:
+            logging.info(f"[OrderManager] SL CONFIRMED PRESENT on final check | total_attempts={max_attempts}")
+            self._save_active_sl_id(_existing_sl.get("id"))
+            return {"success": True, "sl_price": sl_price, "order_id": _existing_sl.get("id"), "attempts": max_attempts}
 
         logging.critical(f"[OrderManager] SL PLACEMENT FAILED AFTER {max_attempts} ATTEMPTS - POSITION UNPROTECTED - MANUAL INTERVENTION REQUIRED")
         send_alert(

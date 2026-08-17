@@ -9,6 +9,7 @@ import os
 import sys
 import time
 import logging
+import hashlib
 sys.path.insert(0, ".")
 from dotenv import load_dotenv
 load_dotenv()
@@ -42,15 +43,22 @@ def check_bot(bot):
     if size == 0:
         return  # flat, nothing to check
 
-    resp = om._get("/v2/orders", {
-        "product_ids": str(om.PRODUCT_ID),
-        "states": "open,pending",
-        "order_types": "stop_market,stop_limit,all_stop"
-    })
+    key_hash = hashlib.md5(bot["api_key"].encode()).hexdigest()[:12]
+    id_file = f"logs/active_sl_id_{key_hash}.txt"
     has_sl = False
-    if resp.get("success"):
-        orders = resp.get("result", [])
-        has_sl = any(o.get("stop_order_type") == "stop_loss_order" for o in orders)
+    saved_id = None
+    if os.path.exists(id_file):
+        try:
+            with open(id_file) as f:
+                saved_id = f.read().strip()
+        except Exception:
+            saved_id = None
+    if saved_id:
+        chk = om._get(f"/v2/orders/{saved_id}", {})
+        if chk.get("success"):
+            o = chk.get("result", {})
+            if o.get("stop_order_type") == "stop_loss_order" and o.get("state") in ("open", "pending"):
+                has_sl = True
 
     if not has_sl:
         now = time.time()
