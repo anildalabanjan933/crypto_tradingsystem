@@ -20,7 +20,7 @@ from engine.telegram_alert import send_alert
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(message)s",
-    handlers=[logging.FileHandler("logs/sl_safety_monitor.log"), logging.StreamHandler()]
+    handlers=[logging.FileHandler("logs/sl_safety_monitor.log")]
 )
 log = logging.getLogger("sl_monitor")
 
