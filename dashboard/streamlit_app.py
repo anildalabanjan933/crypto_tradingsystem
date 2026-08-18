@@ -1388,10 +1388,10 @@ def _reload_all_data():
     _now14 = _dt14.datetime.utcnow()
     _1yr_from = (_now14 - _dt14.timedelta(days=365)).strftime("%Y-%m-%d")
     _full_from = "2024-01-01"
-    _d2_1yr  = _load14("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv", _1yr_from)
-    _d4_1yr  = _load14("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv",   _1yr_from)
-    _d2_full = _load14("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv", _full_from)
-    _d4_full = _load14("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv",   _full_from)
+    _d2_1yr  = _load14("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv", _1yr_from)
+    _d4_1yr  = _load14("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv",   _1yr_from)
+    _d2_full = _load14("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv", _full_from)
+    _d4_full = _load14("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv",   _full_from)
     _1yr_label = f"{(_now14-_dt14.timedelta(days=365)).strftime('%d-%b-%Y')} to {_now14.strftime('%d-%b-%Y')} (1 Year)"
     _full_label= f"2024-01-01 to {_now14.strftime('%d-%b-%Y')} (Full CSV)"
     _s2_key=_os14.getenv("S4V2_API_KEY",""); _s2_sec=_os14.getenv("S4V2_API_SECRET","")
