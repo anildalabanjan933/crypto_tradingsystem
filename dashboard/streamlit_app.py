@@ -5714,6 +5714,32 @@ with _tab_analysis:
         _TR20 = "padding:4px 6px;border:1px solid #BBDEFB;font-size:11px;color:#F23645;font-weight:700;text-align:center;"
         _TY20 = "padding:4px 6px;border:1px solid #BBDEFB;font-size:11px;color:#e07000;font-weight:700;text-align:center;"
 
+        def _fwd_slip_hdr13(pairs):
+            try:
+                closed = [p for p in pairs if not p.get('open', False)]
+                tot = len(pairs)
+                net_pnl_inr = sum(float(p.get('pnl',0)) for p in closed) * _INR13
+                fav_usd, unfav_usd = 0.0, 0.0
+                for p in closed:
+                    slip_act = abs(float(p.get('ep',0)) - float(p.get('xp',0))) * 0.001
+                    diff = slip_act - 5.0
+                    if diff < 0: fav_usd += abs(diff)
+                    elif diff > 0: unfav_usd += diff
+                net_slip_usd = fav_usd - unfav_usd
+                net_slip_inr = net_slip_usd * _INR13
+                _pnlc = "#089981" if net_pnl_inr >= 0 else "#F23645"
+                _slc  = "#089981" if net_slip_usd >= 0 else "#F23645"
+                return (
+                    f"<div style='font-size:11px;margin:2px 0 6px 0;padding:4px 8px;background:#F5F7FA;border-radius:3px;'>"
+                    f"<b>Total Trades:</b> {tot} &nbsp;|&nbsp; "
+                    f"<b>Net PnL:</b> <span style='color:{_pnlc};font-weight:700;'>₹{net_pnl_inr:,.0f}</span> &nbsp;|&nbsp; "
+                    f"<b>Net Slippage:</b> Favorable: +${fav_usd:,.2f} | Unfavorable: -${unfav_usd:,.2f} | "
+                    f"Net: <span style='color:{_slc};font-weight:700;'>{'+' if net_slip_usd>=0 else ''}${net_slip_usd:,.2f} (₹{net_slip_inr:,.0f})</span>"
+                    f"</div>"
+                )
+            except Exception:
+                return ""
+
         def _fwd20(pairs):
             try:
                 if not pairs:
@@ -6028,9 +6054,11 @@ with _tab_analysis:
         _colC, _colD = st.columns(2)
         with _colC:
             st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4V2 - THIS MONTH</div>", unsafe_allow_html=True)
+            st.markdown(_fwd_slip_hdr13(s2p_7d), unsafe_allow_html=True)
             st.markdown(_fwd20(s2p_7d), unsafe_allow_html=True)
         with _colD:
             st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4 - THIS MONTH</div>", unsafe_allow_html=True)
+            st.markdown(_fwd_slip_hdr13(s4p_7d), unsafe_allow_html=True)
             st.markdown(_fwd20(s4p_7d), unsafe_allow_html=True)
 
         # ================================================================
