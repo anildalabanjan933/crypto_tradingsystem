@@ -368,6 +368,12 @@ class OrderManager:
                 "direction":   "LONG" if size > 0 else ("SHORT" if size < 0 else "FLAT")
             }
         else:
+            _err = str(resp.get("error", ""))
+            if "invalid_api_key" in _err.lower() or "InvalidApiKey" in _err:
+                try:
+                    send_alert(f"CTS CRITICAL: invalid_api_key\nBot cannot trade - API key rejected\nCheck key immediately")
+                except Exception:
+                    pass
             return {"success": False, "size": 0, "entry_price": 0.0, "direction": "UNKNOWN"}
 
     def get_current_price(self) -> float:
