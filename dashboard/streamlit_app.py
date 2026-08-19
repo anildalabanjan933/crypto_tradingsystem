@@ -2204,6 +2204,15 @@ with _tab_monitor:
             _of = f"logs/orphan_flag_{_sb}.txt"
             if os.path.exists(_of):
                 st.error(f"ORPHAN POSITION - {_sb}: exchange OPEN but CSV shows closed/missing. Check SL and CSV manually.")
+            _af = f"logs/authfail_flag_{_sb}.txt"
+            if os.path.exists(_af):
+                st.error(f"API FAILURE - {_sb}: API failed 3x in a row. Check key/connectivity.")
+            _lf = f"logs/lowbalance_flag_{_sb}.txt"
+            if os.path.exists(_lf):
+                st.warning(f"LOW BALANCE - {_sb}: available balance below threshold.")
+            _mf = f"logs/mismatch_flag_{_sb}.txt"
+            if os.path.exists(_mf):
+                st.error(f"MISMATCH - {_sb}: CSV vs exchange size/direction differ. Check manually.")
         import subprocess, os, datetime
 
         errors = []
