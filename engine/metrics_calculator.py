@@ -310,6 +310,19 @@ class MetricsCalculator:
             str(k): float(v) for k, v in monthly_pnl.items()
         }
 
+        monthly_trade_count = df_trades.groupby('month')['net_pnl_inr'].count()
+        self.metrics['monthly_trade_count'] = {
+            str(k): int(v) for k, v in monthly_trade_count.items()
+        }
+
+        df_trades['tax_charges_inr'] = (
+            df_trades['gross_pnl'] - df_trades['net_pnl']
+        ) * self.usd_to_inr_rate
+        monthly_tax_charges = df_trades.groupby('month')['tax_charges_inr'].sum()
+        self.metrics['monthly_tax_charges'] = {
+            str(k): float(v) for k, v in monthly_tax_charges.items()
+        }
+
         # ══════════════════════════════════════════════════════════════════════
         # SECTION 16: YEARLY RETURNS (INR primary)
         # ══════════════════════════════════════════════════════════════════════
