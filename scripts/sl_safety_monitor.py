@@ -92,6 +92,76 @@ def check_orphan_position(bot, csv_path):
     except Exception as e:
         log.error(f"[{bot['name']}] check_orphan_position failed: {e}")
 
+
+_fail_count = {}
+
+def check_extra_risks(bot, csv_path):
+    """Isolated checks: API auth failure streak, low balance, size/direction mismatch.
+    Read-only + own API calls - does not touch other logic."""
+    try:
+        om = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
+        pos = om.get_position()
+
+        # 1. API/auth failure streak
+        fail_flag = f"logs/authfail_flag_{bot['name']}.txt"
+        if not pos.get("success"):
+            _fail_count[bot["name"]] = _fail_count.get(bot["name"], 0) + 1
+            if _fail_count[bot["name"]] >= 3 and not os.path.exists(fail_flag):
+                with open(fail_flag, "w") as ff:
+                    ff.write(str(time.time()))
+                log.critical(f"[{bot['name']}] API FAILED 3x IN A ROW - possible invalid key or connectivity issue")
+                send_alert(f"CTS {bot['name']} CRITICAL - API FAILED 3 TIMES IN A ROW\nCheck API key validity and connectivity")
+            return
+        else:
+            _fail_count[bot["name"]] = 0
+            if os.path.exists(fail_flag):
+                os.remove(fail_flag)
+
+        # 2. Low balance check
+        bal_flag = f"logs/lowbalance_flag_{bot['name']}.txt"
+        bal_resp = om._get("/v2/wallet/balances", {})
+        if bal_resp.get("success"):
+            threshold = float(os.getenv("LOW_BALANCE_THRESHOLD", "50"))
+            for w in bal_resp.get("result", []):
+                if w.get("asset_symbol") == "USD":
+                    avail = float(w.get("available_balance", "0") or 0)
+                    if avail < threshold:
+                        if not os.path.exists(bal_flag):
+                            with open(bal_flag, "w") as ff:
+                                ff.write(str(time.time()))
+                            log.critical(f"[{bot['name']}] LOW BALANCE - available={avail}")
+                            send_alert(f"CTS {bot['name']} LOW BALANCE WARNING\nAvailable: {avail}\nCheck margin before next trade")
+                    else:
+                        if os.path.exists(bal_flag):
+                            os.remove(bal_flag)
+
+        # 3. Size/direction mismatch (only when CSV shows open PENDING and exchange has a position)
+        mismatch_flag = f"logs/mismatch_flag_{bot['name']}.txt"
+        with open(csv_path) as cf:
+            rows = cf.readlines()
+        last = rows[-1].strip().split(",") if rows else []
+        csv_pending = len(last) >= 4 and last[1] == "PENDING"
+        size = pos.get("size", 0)
+        if csv_pending and size != 0:
+            csv_dir = last[2].strip().lower()
+            csv_size = abs(float(last[3])) if last[3] else 0
+            exch_dir = pos.get("direction", "").lower()
+            exch_size = abs(size)
+            if csv_dir != exch_dir or csv_size != exch_size:
+                if not os.path.exists(mismatch_flag):
+                    with open(mismatch_flag, "w") as ff:
+                        ff.write(str(time.time()))
+                    log.critical(f"[{bot['name']}] MISMATCH - CSV dir={csv_dir} size={csv_size} vs exchange dir={exch_dir} size={exch_size}")
+                    send_alert(f"CTS {bot['name']} MISMATCH - CSV vs exchange differ\nCSV: {csv_dir} {csv_size}\nExchange: {exch_dir} {exch_size}\nCheck manually")
+            else:
+                if os.path.exists(mismatch_flag):
+                    os.remove(mismatch_flag)
+        else:
+            if os.path.exists(mismatch_flag):
+                os.remove(mismatch_flag)
+    except Exception as e:
+        log.error(f"[{bot['name']}] check_extra_risks failed: {e}")
+
 def check_bot(bot):
     om = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
     pos = om.get_position()
@@ -149,6 +219,7 @@ def main():
                 csv_map = {"S4": "logs/signals_s4.csv", "S4V2": "logs/signals_s4v2.csv"}
                 check_stuck_pending(bot, csv_map[bot["name"]])
                 check_orphan_position(bot, csv_map[bot["name"]])
+                check_extra_risks(bot, csv_map[bot["name"]])
             except Exception as e:
                 log.error(f"[{bot['name']}] Check failed: {e}")
         time.sleep(CHECK_INTERVAL)
