@@ -450,15 +450,35 @@ if __name__=="__main__":
     _now_dt=datetime.now(timezone.utc)
     _now_lock_s4=_floor_to_tf(_now_dt,120)
     _now_lock_s4v2=_floor_to_tf(_now_dt,30)
+    # Check for open PENDING position FIRST - must never advance lock past it
+    import csv as _csv2
+    _s4_open_pending=False
+    _s4v2_open_pending=False
+    for _st,_fn,_flagname in [(s4,"logs/signals_s4.csv","_s4_open_pending"),(s4v2,"logs/signals_s4v2.csv","_s4v2_open_pending")]:
+        try:
+            with open(_fn) as _f:
+                _rows=list(_csv2.reader(_f))
+            if _rows:
+                _last=_rows[-1]
+                if len(_last)>=3 and _last[1]=="PENDING":
+                    if _flagname=="_s4_open_pending": _s4_open_pending=True
+                    else: _s4v2_open_pending=True
+        except Exception as _e:
+            log.warning(f"open-position pre-check failed: {_e}")
+
     if not _ts_s4:
         _ts_s4=_now_lock_s4
         log.info(f"[ENGINE] S4 no ts file - lock set to floored candle: {_ts_s4}")
+    elif _s4_open_pending:
+        log.info(f"[ENGINE] S4 open PENDING position detected - lock NOT advanced past ts_file: {_ts_s4}")
     else:
         _ts_s4=max(_ts_s4,_now_lock_s4)
         log.info(f"[ENGINE] S4 lock set to max(ts_file,floored_candle): {_ts_s4}")
     if not _ts_s4v2:
         _ts_s4v2=_now_lock_s4v2
         log.info(f"[ENGINE] S4V2 no ts file - lock set to floored candle: {_ts_s4v2}")
+    elif _s4v2_open_pending:
+        log.info(f"[ENGINE] S4V2 open PENDING position detected - lock NOT advanced past ts_file: {_ts_s4v2}")
     else:
         _ts_s4v2=max(_ts_s4v2,_now_lock_s4v2)
         log.info(f"[ENGINE] S4V2 lock set to max(ts_file,floored_candle): {_ts_s4v2}")
@@ -467,7 +487,6 @@ if __name__=="__main__":
     s4v2.last_signal_ts=_ts_s4v2
     log.info(f"[ENGINE] S4V2 startup lock ts: {_ts_s4v2}")
     # Restore current_direction from CSV last row (survive restart mid-position)
-    import csv as _csv2
     for _st,_fn in [(s4,"logs/signals_s4.csv"),(s4v2,"logs/signals_s4v2.csv")]:
         try:
             with open(_fn) as _f:
