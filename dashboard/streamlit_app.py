@@ -5486,7 +5486,7 @@ with _tab_analysis:
                     if xts < ets: continue
                     sz  = int(e.get("size",0))
                     # Use actual exchange PnL from exit order meta_data
-                    raw_pnl = float(x.get("meta_data",{}).get("pnl") or 0)
+                    raw_pnl = (xp - ep) * sz * 0.001 * (1 if dir == "LONG" else -1)
                     cm  = float(e.get("paid_commission") or 0)+float(x.get("paid_commission") or 0)
                     pnl = raw_pnl - cm
                     pairs.append({"dir":dir,"ep":ep,"xp":xp,"pnl":pnl,"cm":cm,"ets":ets,"xts":xts,"sz":sz})
