@@ -6162,7 +6162,7 @@ with _tab_analysis:
         try:
             if s2p:
                 _s2sorted = sorted(s2p, key=lambda p: p['xts'] if p.get('xts',0)>0 else p['ets'])
-                _dates = [_dt13.datetime.fromtimestamp(p['xts'] if p.get('xts',0)>0 else p['ets']) for p in _s2sorted]
+                _dates = [_dt13.datetime.fromtimestamp(p['xts'] if p.get('xts',0)>0 else p['ets'], _dt13.timezone.utc) + _dt13.timedelta(hours=5, minutes=30) for p in _s2sorted]
                 _cum = []
                 _run = 0.0
                 for p in _s2sorted:
@@ -6177,7 +6177,7 @@ with _tab_analysis:
         try:
             if s4p:
                 _s4sorted = sorted(s4p, key=lambda p: p['xts'] if p.get('xts',0)>0 else p['ets'])
-                _dates = [_dt13.datetime.fromtimestamp(p['xts'] if p.get('xts',0)>0 else p['ets']) for p in _s4sorted]
+                _dates = [_dt13.datetime.fromtimestamp(p['xts'] if p.get('xts',0)>0 else p['ets'], _dt13.timezone.utc) + _dt13.timedelta(hours=5, minutes=30) for p in _s4sorted]
                 _cum = []
                 _run = 0.0
                 for p in _s4sorted:
