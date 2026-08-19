@@ -2234,6 +2234,22 @@ with _tab_monitor:
             errors.append(f"Screen check failed: {e}")
 
         # 2. CHECK LOG FILES EXIST AND RECENT
+        try:
+            _wf = "logs/maintenance.log"
+            if os.path.exists(_wf):
+                import datetime as _dtw
+                _cutw = _dtw.datetime.utcnow() - _dtw.timedelta(minutes=30)
+                _wlines = open(_wf).readlines()[-200:]
+                for _wl in _wlines:
+                    if "DOWN alert sent for" in _wl:
+                        try:
+                            _wts = _dtw.datetime.strptime(_wl[1:20], '%Y-%m-%dT%H:%M:%S')
+                            if _wts >= _cutw:
+                                st.error(f"WATCHDOG - {_wl.strip()}")
+                        except: pass
+        except Exception:
+            pass
+
         for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log'), ('ENGINE', 'logs/signal_generator.log')]:
             try:
                 if os.path.exists(log):
