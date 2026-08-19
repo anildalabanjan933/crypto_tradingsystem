@@ -226,7 +226,7 @@ class BacktestReportGenerator:
         # ── Monthly returns table ──────────────────────────────────────────
         monthly_returns_html = (
             "<table><thead><tr>"
-            "<th>Month</th><th>Total Trades</th><th>Tax+Charges (₹)</th><th>PnL (₹)</th><th>PnL %</th><th>Return % on Capital (3x DD)</th>"
+            "<th>Month</th><th>Total Trades</th><th>Tax+Charges (₹)</th><th>Net PnL (₹)</th><th>Net PnL %</th><th>Return % on Capital (3x DD)</th>"
             "</tr></thead><tbody>"
         )
         monthly_returns     = self.metrics.get('monthly_returns', {})
