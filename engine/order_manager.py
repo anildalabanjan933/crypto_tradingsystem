@@ -406,7 +406,7 @@ class OrderManager:
         return {"success": False, "error": resp.get("error")}
 
 
-    def place_stop_loss_order(self, direction: str, entry_price: float, sl_pct: float = 1.5,
+    def place_stop_loss_order(self, direction: str, entry_price: float, sl_pct: float = 0.8,
                                max_attempts: int = 5, retry_delay: float = 2.0) -> dict:
         """
         Place a stop market order as SL on an open position, RETRYING UNTIL
@@ -474,7 +474,7 @@ class OrderManager:
             logging.warning(f"[OrderManager] id-file SL check failed: {e}")
         return None
 
-    def _place_stop_loss_order_locked(self, direction: str, entry_price: float, sl_pct: float = 1.5,
+    def _place_stop_loss_order_locked(self, direction: str, entry_price: float, sl_pct: float = 0.8,
                                max_attempts: int = 5, retry_delay: float = 2.0) -> dict:
 
         if direction == "long":
