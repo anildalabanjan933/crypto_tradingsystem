@@ -33,6 +33,38 @@ CHECK_INTERVAL = 60
 _last_alert_ts = {}
 ALERT_COOLDOWN = 300  # don't spam same bot alert more than once per 5 min
 
+def check_stuck_pending(bot, csv_path):
+    """Isolated check: CSV shows open PENDING row but exchange position is flat.
+    This is the exact signature of the startup-lock bug (fixed 19-Aug-2026).
+    Read-only + own API call - does not touch check_bot()/SL logic."""
+    flag_file = f"logs/stuck_flag_{bot['name']}.txt"
+    try:
+        with open(csv_path) as cf:
+            rows = cf.readlines()
+        if not rows:
+            return
+        last = rows[-1].strip().split(",")
+        if len(last) < 2 or last[1] != "PENDING":
+            if os.path.exists(flag_file):
+                os.remove(flag_file)
+            return
+        om = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
+        pos = om.get_position()
+        if not pos.get("success"):
+            return
+        size = pos.get("size", 0)
+        if size == 0:
+            if not os.path.exists(flag_file):
+                with open(flag_file, "w") as ff:
+                    ff.write(str(time.time()))
+                log.critical(f"[{bot['name']}] STUCK PENDING detected - CSV shows open but exchange flat | entry={last[0]}")
+                send_alert(f"CTS {bot['name']} STUCK PENDING - CSV shows open position but exchange is FLAT\nEntry: {last[0]}\nCheck signals CSV and restart signal_generator if needed")
+        else:
+            if os.path.exists(flag_file):
+                os.remove(flag_file)
+    except Exception as e:
+        log.error(f"[{bot['name']}] check_stuck_pending failed: {e}")
+
 def check_bot(bot):
     om = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
     pos = om.get_position()
@@ -87,6 +119,8 @@ def main():
         for bot in BOTS:
             try:
                 check_bot(bot)
+                csv_map = {"S4": "logs/signals_s4.csv", "S4V2": "logs/signals_s4v2.csv"}
+                check_stuck_pending(bot, csv_map[bot["name"]])
             except Exception as e:
                 log.error(f"[{bot['name']}] Check failed: {e}")
         time.sleep(CHECK_INTERVAL)
