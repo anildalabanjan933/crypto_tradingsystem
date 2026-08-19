@@ -5440,10 +5440,11 @@ with _tab_analysis:
             except:
                 return {}
 
-        def _fetch13(k, s):
+        def _fetch13(k, s, vf_override=None):
             orders, after = [], None
             try:
-                vf  = int(_dt13.datetime.strptime(_VF13,"%Y-%m-%dT%H:%M:%S").replace(tzinfo=_dt13.timezone.utc).timestamp())
+                vf_str = vf_override if vf_override else _VF13
+                vf  = int(_dt13.datetime.strptime(vf_str,"%Y-%m-%dT%H:%M:%S").replace(tzinfo=_dt13.timezone.utc).timestamp())
                 now = int(_dt13.datetime.now(_dt13.timezone.utc).timestamp())
                 path= "/v2/orders/history"
                 prm = {"product_id":84,"page_size":100,"start_time":int(vf*1e6),"end_time":int(now*1e6)}
@@ -5671,8 +5672,8 @@ with _tab_analysis:
 
         # ── FETCH LIVE DATA ──────────────────────────────────────
         with st.spinner("Fetching live forward test data..."):
-            s2o = _fetch13(os.environ.get("S4V2_API_KEY",""), os.environ.get("S4V2_API_SECRET",""))
-            s4o = _fetch13(os.environ.get("S4_API_KEY",""), os.environ.get("S4_API_SECRET",""))
+            s2o = _fetch13(os.environ.get("S4V2_API_KEY",""), os.environ.get("S4V2_API_SECRET",""), _VF13_7D)
+            s4o = _fetch13(os.environ.get("S4_API_KEY",""), os.environ.get("S4_API_SECRET",""), _VF13_7D)
         s2p  = _pair13(s2o)
         s4p  = _pair13(s4o)
         s2m  = _calc13(s2p)
