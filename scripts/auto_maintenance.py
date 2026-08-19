@@ -198,6 +198,16 @@ log(f"[MAINTENANCE] Box drift check output: {result2.stdout.strip()}")
 if result2.returncode != 0:
     log(f"[MAINTENANCE] Box drift check FAILED: {result2.stderr[-200:]}")
 
+# ── HEARTBEAT LIVENESS CHECK (isolated, cannot affect other maintenance jobs) ──
+try:
+    result_hb = subprocess.run(
+        [sys.executable, "scripts/check_heartbeat_stale.py"],
+        timeout=30, capture_output=True, text=True
+    )
+    log(f"[MAINTENANCE] Heartbeat check output: {result_hb.stdout.strip()}")
+except Exception as _hb_e:
+    log(f"[MAINTENANCE] Heartbeat check failed (isolated, other jobs unaffected): {_hb_e}")
+
 # Auto restart bots after maintenance
 import subprocess
 subprocess.run(["/bin/bash", "/home/anildalabanjan933/crypto_trading_system/bot_watchdog.sh"])

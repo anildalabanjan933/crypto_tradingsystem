@@ -191,3 +191,9 @@ drift-detection/alert logic. Created new standalone scripts/check_heartbeat_stal
 that alerts via Telegram if heartbeat missing or older than 30h. NOT yet wired into
 auto_maintenance.py cron chain (moderate-risk step, pending separate approval) -
 must be run manually or scheduled separately for now.
+
+[20-Aug-2026] | check_heartbeat_stale.py wired into auto_maintenance.py 3AM chain | STATUS: FIXED
+Added isolated subprocess.run call for check_heartbeat_stale.py right after the
+existing box_size drift check in auto_maintenance.py, wrapped in its own try/except.
+A failure here cannot break bot restart or any other maintenance job. Heartbeat gap
+monitoring (logged 19-Aug-2026) is now fully automatic - no manual run needed.
