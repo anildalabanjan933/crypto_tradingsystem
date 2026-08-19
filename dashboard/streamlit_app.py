@@ -5775,8 +5775,8 @@ with _tab_analysis:
             )
 
         # ── LOAD FORWARD TEST DATA FROM SIGNALS CSV (matches BT engine exactly) ──
-        s2p  = _pair13_csv("logs/signals_s4v2.csv", _VF13)
-        s4p  = _pair13_csv("logs/signals_s4.csv", _VF13)
+        s2p  = _pair13_csv("logs/signals_s4v2.csv", _VF13_7D)
+        s4p  = _pair13_csv("logs/signals_s4.csv", _VF13_7D)
         s2m  = _calc13(s2p)
         s4m  = _calc13(s4p)
         cbm  = _calc13(s2p+s4p)
