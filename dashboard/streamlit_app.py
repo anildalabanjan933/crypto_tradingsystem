@@ -5664,7 +5664,7 @@ with _tab_analysis:
                 + _row("Losses",        _v13(s2m,"los"), _v13(s4m,"los"), _v13(cbm,"los"), _TDR13,_TDR13,_TDR13)
                 + f"<tr><td colspan='4' style='{_SUB13}'>PERFORMANCE</td></tr>"
                 + _row("Win Rate",      _v13(s2m,"wr"),  _v13(s4m,"wr"),  _v13(cbm,"wr"))
-                + _row("Net PnL",       _v13(s2m,"pnl"), _v13(s4m,"pnl"), _v13(cbm,"pnl"), _c13(s2m),_c13(s4m),_c13(cbm))
+                + _row("Net PnL (all charges incl.)", _v13(s2m,"pnl"), _v13(s4m,"pnl"), _v13(cbm,"pnl"), _c13(s2m),_c13(s4m),_c13(cbm))
                 + _row("Avg Win",       _v13(s2m,"aw"),  _v13(s4m,"aw"),  _v13(cbm,"aw"),  _TDG13,_TDG13,_TDG13)
                 + _row("Avg Loss",      _v13(s2m,"al"),  _v13(s4m,"al"),  _v13(cbm,"al"),  _TDR13,_TDR13,_TDR13)
                 + _row("Profit Factor", _v13(s2m,"pf"),  _v13(s4m,"pf"),  _v13(cbm,"pf"))
@@ -6514,8 +6514,8 @@ with _tab_analysis:
                     f'<span>TODAY\'S TRADES ({today_str}) — Backtest {strat} vs Forward Test {strat}</span>'
                     f'<span style="background:#fff;color:#1565C0;border-radius:3px;padding:3px 10px;font-size:12px;font-weight:700;">BT Trades: {n_bt}</span>'
                     f'<span style="background:#e8f5e9;color:#1b5e20;border-radius:3px;padding:3px 10px;font-size:12px;font-weight:700;">LV Trades: {n_lv}</span>'
-                    f'<span style="background:#fff3e0;color:#e65100;border-radius:3px;padding:3px 10px;font-size:12px;">BT PnL $5: <b style="color:{_pc(bt_pnl5)}">{_fmt(bt_pnl5)}</b> | $10: <b style="color:{_pc(bt_pnl10)}">{_fmt(bt_pnl10)}</b></span>'
-                    f'<span style="background:#e3f2fd;color:#0d47a1;border-radius:3px;padding:3px 10px;font-size:12px;">LV PnL $5: <b style="color:{_pc(lv_pnl5)}">{_fmt(lv_pnl5)}</b> | $10: <b style="color:{_pc(lv_pnl10)}">{_fmt(lv_pnl10)}</b></span>'
+                    f'<span style="background:#fff3e0;color:#e65100;border-radius:3px;padding:3px 10px;font-size:12px;">BT Net PnL $5: <b style="color:{_pc(bt_pnl5)}">{_fmt(bt_pnl5)}</b> | $10: <b style="color:{_pc(bt_pnl10)}">{_fmt(bt_pnl10)}</b></span>'
+                    f'<span style="background:#e3f2fd;color:#0d47a1;border-radius:3px;padding:3px 10px;font-size:12px;">LV Net PnL $5: <b style="color:{_pc(lv_pnl5)}">{_fmt(lv_pnl5)}</b> | $10: <b style="color:{_pc(lv_pnl10)}">{_fmt(lv_pnl10)}</b></span>'
                     '</div>'
                 )
                 tbl = '<table style="width:100%;border-collapse:collapse;margin-bottom:4px;">'
