@@ -226,15 +226,21 @@ class BacktestReportGenerator:
         # ── Monthly returns table ──────────────────────────────────────────
         monthly_returns_html = (
             "<table><thead><tr>"
-            "<th>Month</th><th>PnL (₹)</th><th>PnL %</th><th>Return % on Capital (3x DD)</th>"
+            "<th>Month</th><th>Total Trades</th><th>Tax+Charges (₹)</th><th>PnL (₹)</th><th>PnL %</th><th>Return % on Capital (3x DD)</th>"
             "</tr></thead><tbody>"
         )
-        monthly_returns = self.metrics.get('monthly_returns', {})
+        monthly_returns     = self.metrics.get('monthly_returns', {})
+        monthly_trade_count = self.metrics.get('monthly_trade_count', {})
+        monthly_tax_charges = self.metrics.get('monthly_tax_charges', {})
         for month, pnl in sorted(monthly_returns.items()):
-            pnl_pct   = (pnl / self.initial_capital_inr) * 100
-            pnl_class = 'positive' if pnl >= 0 else 'negative'
+            pnl_pct     = (pnl / self.initial_capital_inr) * 100
+            pnl_class   = 'positive' if pnl >= 0 else 'negative'
+            trade_count = monthly_trade_count.get(month, 0)
+            tax_charges = monthly_tax_charges.get(month, 0)
             monthly_returns_html += (
                 f"<tr><td>{month}</td>"
+                f"<td>{trade_count}</td>"
+                f"<td>{format_currency(tax_charges)}</td>"
                 f"<td class='{pnl_class}'>{format_currency(pnl)}</td>"
                 f"<td class='{pnl_class}'>{round_percent(pnl_pct)}%</td><td class='{pnl_class}'>{round_percent((pnl / capital_denom) * 100)}%</td></tr>"
             )
