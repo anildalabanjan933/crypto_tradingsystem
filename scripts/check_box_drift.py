@@ -39,6 +39,15 @@ def get_engine_box_size(label):
     return val
 
 def main():
+
+    # HEARTBEAT: write liveness timestamp (additive only, cannot affect drift logic)
+    try:
+        import datetime as _hb_dt
+        with open("logs/box_drift_heartbeat.txt", "w") as _hb_f:
+            _hb_f.write(_hb_dt.datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%S"))
+    except Exception:
+        pass
+
     issues = []
 
     # S4V2 check: box = round(first_close * 0.001) - 30m timeframe
