@@ -6462,7 +6462,7 @@ with _tab_analysis:
                 if bt["dir"] != lv["dir"]:
                     entry_line = f"❌ dir | {_psign}${_pdiff*100*0.001:.2f} slip{_entry_delay_txt}"
                 else:
-                    if _pdiff > 5:
+                    if _pdiff*100*0.001 > 5:
                         entry_line = f"❌ {_psign}${_pdiff*100*0.001:.2f} slip{_entry_delay_txt}"
                     elif _gap_min is not None and _gap_min > _tol_min:
                         entry_line = f"❌ delay | {_psign}${_pdiff*100*0.001:.2f} slip{_entry_delay_txt}"
@@ -6487,7 +6487,7 @@ with _tab_analysis:
                     _signed_xpdiff = ((lv["exit_p"] - bt["exit_p"]) if bt["dir"] == "LONG" else (bt["exit_p"] - lv["exit_p"])) if bt["exit_p"] and lv["exit_p"] else 0
                     _xpdiff = abs(_signed_xpdiff)
                     _xsign = "+" if _signed_xpdiff >= 0 else "-"
-                    if bt["exit_p"] and lv["exit_p"] and _xpdiff > 5:
+                    if bt["exit_p"] and lv["exit_p"] and _xpdiff*100*0.001 > 5:
                         exit_line = f"❌ {_xsign}${_xpdiff*100*0.001:.2f} slip{_exit_delay_txt}"
                     else:
                         exit_line = f"✅ {_xsign}${_xpdiff*100*0.001:.2f} slip{_exit_delay_txt}"
