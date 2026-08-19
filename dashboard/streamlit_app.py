@@ -1550,6 +1550,63 @@ with _tab_monitor:
     st.markdown(f"""<div style='background:#f0f7ff;border:1px solid #90CAF9;border-radius:6px;padding:10px 16px;margin-bottom:4px;'>{_row1}</div>
 <div style='background:#f0f7ff;border:1px solid #90CAF9;border-radius:6px;padding:10px 16px;margin-bottom:12px;'>{_row2}</div>""", unsafe_allow_html=True)
 
+    # ================================================================
+    # SECTION 1B - BOT CONTROL (STOP / RESTART for S4 and S4V2)
+    # ================================================================
+    st.markdown("<div class='section-title'>SECTION 1B - BOT CONTROL</div>", unsafe_allow_html=True)
+    with st.expander("S4 / S4V2 STOP & RESTART", expanded=False):
+        import subprocess as _sp_bc
+        _REPO_BC = "/home/anildalabanjan933/crypto_trading_system"
+
+        def _bot_running(screen_name):
+            try:
+                out = _sp_bc.run(['screen','-ls'], capture_output=True, text=True, timeout=5).stdout
+                return screen_name in out
+            except Exception:
+                return False
+
+        def _stop_bot(screen_name):
+            _sp_bc.run(['screen','-S',screen_name,'-X','quit'], capture_output=True, timeout=5)
+
+        def _restart_bot(screen_name, script_name):
+            _sp_bc.run(['screen','-S',screen_name,'-X','quit'], capture_output=True, timeout=5)
+            import time as _t_bc; _t_bc.sleep(2)
+            cmd = f'cd {_REPO_BC} && set -a && source {_REPO_BC}/.env && set +a && {_REPO_BC}/.venv/bin/python3 scripts/{script_name}'
+            _sp_bc.run(['screen','-dmS',screen_name,'bash','-c',cmd], capture_output=True, timeout=5)
+
+        st.caption('STOP only pauses new signal entries. Any already-open position stays live on exchange and remains protected by sl_safety_monitor / position_risk_monitor / margin_monitor (unaffected by this control).')
+
+        bc1, bc2 = st.columns(2)
+        with bc1:
+            st.markdown('**S4 BOT**')
+            _s4_run = _bot_running('live_s4')
+            st.success('RUNNING') if _s4_run else st.error('STOPPED')
+            _confirm_s4 = st.checkbox('Confirm STOP S4', key='confirm_stop_s4')
+            if st.button('STOP S4', key='btn_stop_s4'):
+                if _confirm_s4:
+                    _stop_bot('live_s4')
+                    st.warning('S4 bot stop command sent. Refresh in a few seconds to confirm.')
+                else:
+                    st.error('Tick the confirm checkbox first.')
+            if st.button('RESTART S4', key='btn_restart_s4'):
+                _restart_bot('live_s4', 'signal_replay_s4.py')
+                st.info('S4 bot restart command sent. Refresh in a few seconds to confirm.')
+        with bc2:
+            st.markdown('**S4V2 BOT**')
+            _s4v2_run = _bot_running('live_s4v2')
+            st.success('RUNNING') if _s4v2_run else st.error('STOPPED')
+            _confirm_s4v2 = st.checkbox('Confirm STOP S4V2', key='confirm_stop_s4v2')
+            if st.button('STOP S4V2', key='btn_stop_s4v2'):
+                if _confirm_s4v2:
+                    _stop_bot('live_s4v2')
+                    st.warning('S4V2 bot stop command sent. Refresh in a few seconds to confirm.')
+                else:
+                    st.error('Tick the confirm checkbox first.')
+            if st.button('RESTART S4V2', key='btn_restart_s4v2'):
+                _restart_bot('live_s4v2', 'signal_replay_s4v2.py')
+                st.info('S4V2 bot restart command sent. Refresh in a few seconds to confirm.')
+
+
     # ---- PLAIN MESSAGES FOR TOP LAMP ROWS (only show if NOT fully green) ----
     _lamp_msgs = []
     if not _sig_ok:
