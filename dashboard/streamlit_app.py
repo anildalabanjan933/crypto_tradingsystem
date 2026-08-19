@@ -6586,8 +6586,7 @@ with _tab_analysis:
                     _bt_t = _pd14.to_datetime(str(bt.get("entry_ts_raw","")).replace("T"," "))
                     _lv_fill_raw = lv.get("entry_fill_ts_raw") or lv.get("entry_ts_raw","")
                     _lv_t = _pd14.to_datetime(str(_lv_fill_raw).replace("T"," "))
-                    _candle_close = _bt_t + _pd14.Timedelta(minutes=_tf_min)
-                    _delay_sec = (_lv_t - _candle_close).total_seconds()
+                    _delay_sec = (_lv_t - _bt_t).total_seconds()
                     _entry_delay_txt = f" ({_delay_sec:.0f}s)"
                     _gap_min = abs((_lv_t - _bt_t).total_seconds()) / 60.0
                 except Exception:
@@ -6617,8 +6616,7 @@ with _tab_analysis:
                     try:
                         _bt_xt = _pd14.to_datetime(str(bt.get("exit_ts_raw","")).replace("T"," "))
                         _lv_xt = _pd14.to_datetime(str(lv.get("exit_ts_raw","")).replace("T"," "))
-                        _bt_xt_close = _bt_xt + _pd14.Timedelta(minutes=_tf_min)
-                        _exit_delay_sec = (_lv_xt - _bt_xt_close).total_seconds()
+                        _exit_delay_sec = (_lv_xt - _bt_xt).total_seconds()
                         _exit_delay_txt = f" ({_exit_delay_sec:.0f}s)"
                     except Exception:
                         pass
