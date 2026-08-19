@@ -5563,6 +5563,47 @@ with _tab_analysis:
             _fifo_match(shorts_e, shorts_x, "SHORT")
             return sorted(pairs, key=lambda p: p["ets"])
 
+        def _pair13_csv(path, vf_str):
+            import datetime as _dtp13
+            pairs = []
+            try:
+                vf_dt = _dtp13.datetime.strptime(vf_str, "%Y-%m-%dT%H:%M:%S")
+            except Exception:
+                vf_dt = None
+            try:
+                with open(path) as f:
+                    for line in f:
+                        parts = line.strip().split(',')
+                        if len(parts) < 5:
+                            continue
+                        et_raw, xt_raw, dirv, lots, ep_raw = parts[0], parts[1], parts[2], parts[3], parts[4]
+                        xp_raw = parts[5] if len(parts) >= 6 else ""
+                        try:
+                            et_dt = _dtp13.datetime.strptime(et_raw[:19], "%Y-%m-%dT%H:%M:%S")
+                        except Exception:
+                            continue
+                        if vf_dt and et_dt < vf_dt:
+                            continue
+                        ets = int(et_dt.replace(tzinfo=_dtp13.timezone.utc).timestamp())
+                        is_open = (xt_raw == "PENDING" or not xp_raw)
+                        ep = float(ep_raw) if ep_raw else 0.0
+                        dirn = dirv.upper()
+                        sz = int(lots) if lots else 100
+                        if is_open:
+                            pairs.append({"dir":dirn,"ep":ep,"xp":0.0,"pnl":0.0,"cm":0.0,"ets":ets,"xts":0,"sz":sz,"open":True})
+                        else:
+                            try:
+                                xt_dt = _dtp13.datetime.strptime(xt_raw[:19], "%Y-%m-%dT%H:%M:%S")
+                                xts = int(xt_dt.replace(tzinfo=_dtp13.timezone.utc).timestamp())
+                            except Exception:
+                                xts = 0
+                            xp = float(xp_raw) if xp_raw else 0.0
+                            raw_pnl = (xp - ep) * sz * 0.001 * (1 if dirn == "LONG" else -1)
+                            pairs.append({"dir":dirn,"ep":ep,"xp":xp,"pnl":raw_pnl,"cm":0.0,"ets":ets,"xts":xts,"sz":sz,"open":False})
+            except Exception:
+                pass
+            return sorted(pairs, key=lambda p: p["ets"])
+
         def _calc13(pairs):
             if not pairs: return None
             tot = len(pairs)
@@ -5733,12 +5774,9 @@ with _tab_analysis:
                 + "</tbody></table></div>"
             )
 
-        # ── FETCH LIVE DATA ──────────────────────────────────────
-        with st.spinner("Fetching live forward test data..."):
-            s2o = _fetch13(os.environ.get("S4V2_API_KEY",""), os.environ.get("S4V2_API_SECRET",""), _VF13_7D)
-            s4o = _fetch13(os.environ.get("S4_API_KEY",""), os.environ.get("S4_API_SECRET",""), _VF13_7D)
-        s2p  = _pair13(s2o)
-        s4p  = _pair13(s4o)
+        # ── LOAD FORWARD TEST DATA FROM SIGNALS CSV (matches BT engine exactly) ──
+        s2p  = _pair13_csv("logs/signals_s4v2.csv", _VF13)
+        s4p  = _pair13_csv("logs/signals_s4.csv", _VF13)
         s2m  = _calc13(s2p)
         s4m  = _calc13(s4p)
         cbm  = _calc13(s2p+s4p)
