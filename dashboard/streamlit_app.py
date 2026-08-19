@@ -2250,7 +2250,7 @@ with _tab_monitor:
         except Exception:
             pass
 
-        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log'), ('ENGINE', 'logs/signal_generator.log')]:
+        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log'), ('ENGINE', 'logs/renko_state_engine.log')]:
             try:
                 if os.path.exists(log):
                     mtime = os.path.getmtime(log)
@@ -2267,7 +2267,7 @@ with _tab_monitor:
                 errors.append(f"{bot} log check failed: {e}")
 
         # 3. CHECK FOR ERRORS IN LOGS
-        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log')]:
+        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log'), ('ENGINE', 'logs/renko_state_engine.log')]:
             try:
                 if os.path.exists(log):
                     lines = open(log).readlines()
