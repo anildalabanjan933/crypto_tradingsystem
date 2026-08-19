@@ -183,3 +183,11 @@ Root cause: trade_log_*.csv (BT source) and signals_s4v2.csv/signals_s4.csv (liv
 [19-Aug-2026] | Added Total Trades + Tax+Charges columns to Monthly Returns table (backtest_analyzer.py, metrics_calculator.py) | STATUS: FIXED
 [19-Aug-2026] | Renamed Monthly Returns PnL columns to Net PnL (₹) / Net PnL % for clarity | STATUS: FIXED
 [19-Aug-2026] | Section 13 FWD S4/S4V2 entry-exit mismatch fixed by switching from exchange-order FIFO pairing to signals CSV pairing | STATUS: FIXED
+
+[20-Aug-2026] | check_box_drift.py heartbeat gap - liveness check added | STATUS: FIXED
+Added heartbeat timestamp write (logs/box_drift_heartbeat.txt) at start of main() in
+check_box_drift.py, wrapped in try/except - purely additive, zero change to existing
+drift-detection/alert logic. Created new standalone scripts/check_heartbeat_stale.py
+that alerts via Telegram if heartbeat missing or older than 30h. NOT yet wired into
+auto_maintenance.py cron chain (moderate-risk step, pending separate approval) -
+must be run manually or scheduled separately for now.
