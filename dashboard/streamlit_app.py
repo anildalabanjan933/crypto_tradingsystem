@@ -5866,7 +5866,9 @@ with _tab_analysis:
                     mp_style  = _TG20
                     ps        = _TY20 if is_open else (_TG20 if pnl >= 0 else _TR20)
                     ds        = _TG20 if dirv == 'LONG' else _TR20
-                    pnl_disp  = "OPEN" if is_open else f"₹{pnl_inr:,.0f}"
+                    _stuck_f = f"logs/stuck_flag_{'S4V2' if 'S4V2' in title else 'S4'}.txt" if 'title' in dir() else None
+                    _is_stuck = is_open and _stuck_f and os.path.exists(_stuck_f)
+                    pnl_disp  = ("STUCK" if _is_stuck else "OPEN") if is_open else f"₹{pnl_inr:,.0f}"
                     xp_disp   = "-" if is_open else f"${xp_inr:,.0f}"
                     rows += (
                         f"<tr>"

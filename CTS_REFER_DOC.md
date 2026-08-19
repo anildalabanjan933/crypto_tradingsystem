@@ -197,3 +197,10 @@ Added isolated subprocess.run call for check_heartbeat_stale.py right after the
 existing box_size drift check in auto_maintenance.py, wrapped in its own try/except.
 A failure here cannot break bot restart or any other maintenance job. Heartbeat gap
 monitoring (logged 19-Aug-2026) is now fully automatic - no manual run needed.
+
+[19-Aug-2026] | STUCK PENDING detection added - CSV open but exchange flat | STATUS: FIXED
+Added isolated check_stuck_pending() in sl_safety_monitor.py - detects CSV PENDING row
+with exchange position flat (exact signature of pre-fix startup-lock bug), sends
+one-time Telegram alert, writes flag file. Dashboard Section 13 FWD table shows
+"STUCK" (red) instead of "OPEN" (orange) when flag present. Own isolated API call,
+does not touch existing SL-check logic. Both bots restarted clean, verified running.
