@@ -5846,7 +5846,7 @@ with _tab_analysis:
             except Exception:
                 return ""
 
-        def _fwd20(pairs):
+        def _fwd20(pairs, bot_name=""):
             try:
                 if not pairs:
                     return (f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'><table style='width:100%;border-collapse:collapse;'><thead><tr><th style='{_TH20}'>Date</th><th style='{_TH20}'>Dir</th><th style='{_TH20}'>Entry Time</th><th style='{_TH20}'>Exit Time</th><th style='{_TH20}'>Entry (INR)</th><th style='{_TH20}'>Exit (INR)</th><th style='{_TH20}'>Slip Diff vs $5</th><th style='{_TH20}'>Tax+Charges</th><th style='{_TH20}'>PnL</th></tr></thead><tbody><tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>Waiting for first trade</td></tr></tbody></table></div>")
@@ -5870,7 +5870,7 @@ with _tab_analysis:
                     mp_style  = _TG20
                     ps        = _TY20 if is_open else (_TG20 if pnl >= 0 else _TR20)
                     ds        = _TG20 if dirv == 'LONG' else _TR20
-                    _stuck_f = f"logs/stuck_flag_{'S4V2' if 'S4V2' in title else 'S4'}.txt" if 'title' in dir() else None
+                    _stuck_f = f"logs/stuck_flag_{bot_name}.txt" if bot_name else None
                     _is_stuck = is_open and _stuck_f and os.path.exists(_stuck_f)
                     pnl_disp  = ("STUCK" if _is_stuck else "OPEN") if is_open else f"₹{pnl_inr:,.0f}"
                     xp_disp   = "-" if is_open else f"${xp_inr:,.0f}"
@@ -6163,11 +6163,11 @@ with _tab_analysis:
         with _colC:
             st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4V2 - THIS MONTH</div>", unsafe_allow_html=True)
             st.markdown(_fwd_slip_hdr13(s2p_7d), unsafe_allow_html=True)
-            st.markdown(_fwd20(s2p_7d), unsafe_allow_html=True)
+            st.markdown(_fwd20(s2p_7d, bot_name="S4V2"), unsafe_allow_html=True)
         with _colD:
             st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4 - THIS MONTH</div>", unsafe_allow_html=True)
             st.markdown(_fwd_slip_hdr13(s4p_7d), unsafe_allow_html=True)
-            st.markdown(_fwd20(s4p_7d), unsafe_allow_html=True)
+            st.markdown(_fwd20(s4p_7d, bot_name="S4"), unsafe_allow_html=True)
 
         # ================================================================
         # EQUITY CURVE - MONTHLY VIEW (BT + FWD, S4V2 + S4)
