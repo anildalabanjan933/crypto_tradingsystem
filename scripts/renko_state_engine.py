@@ -600,6 +600,7 @@ if __name__=="__main__":
                             _msg = "CTS ENGINE WARNING - WebSocket disconnected " + str(_ws_fail_count[0]) + " times. Engine still running via polling. Check VM if alerts stop."
                             send_alert(_msg)
                         except: pass
+                        log.warning(f"[WS] ENGINE WARNING - disconnected {_ws_fail_count[0]} times")
                         _ws_fail_count[0]=0
             except Exception as e:
                 log.error(f"[WS] Thread error: {e}")

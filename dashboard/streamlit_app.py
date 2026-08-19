@@ -2234,7 +2234,7 @@ with _tab_monitor:
             errors.append(f"Screen check failed: {e}")
 
         # 2. CHECK LOG FILES EXIST AND RECENT
-        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log')]:
+        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log'), ('ENGINE', 'logs/signal_generator.log')]:
             try:
                 if os.path.exists(log):
                     mtime = os.path.getmtime(log)
@@ -2266,7 +2266,7 @@ with _tab_monitor:
                     # no fallback - if nothing in last 30 min, recent stays empty = no errors shown
                     error_lines = [l.strip() for l in recent if 'ERROR' in l]
                     algotest_errors = [l.strip() for l in recent if 'ALGOTEST' in l and ('ERROR' in l or 'WARNING' in l)]
-                    api_errors = [l.strip() for l in recent if any(x in l for x in ['InvalidApiKey','invalid_api_key','insufficient_margin','rate_limit','IP not whitelisted','ENTRY FAILED','EXIT FAILED','CRITICAL','SL HIT DETECTED','MISSED TRADE','ENTRY UNFILLED','BAD FILL DESPITE']) or ('ERROR' in l and any(x in l for x in ['401','403','429']))]
+                    api_errors = [l.strip() for l in recent if any(x in l for x in ['InvalidApiKey','invalid_api_key','insufficient_margin','rate_limit','IP not whitelisted','ENTRY FAILED','EXIT FAILED','CRITICAL','SL HIT DETECTED','MISSED TRADE','ENTRY UNFILLED','BAD FILL DESPITE','ENGINE WARNING']) or ('ERROR' in l and any(x in l for x in ['401','403','429']))]
                     if error_lines:
                         for el in error_lines[-3:]:
                             errors.append(f"{bot} ERROR: {el[-100:]}")
