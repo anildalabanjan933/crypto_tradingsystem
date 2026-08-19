@@ -687,9 +687,9 @@ if __name__=="__main__":
                     _tv2_dt = __import__('datetime').datetime.strptime(_tv2, '%Y-%m-%dT%H:%M:%S')
                 _s4v2_already_caught_up = s4v2.last_1m_ts is not None and s4v2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= (_tv2_dt - __import__('datetime').timedelta(minutes=1))
                 _tv2_dt_engine_label = _tv2_dt - __import__('datetime').timedelta(minutes=30)
-                if _tv2_dt_engine_label > _ws_state["last_s4v2_tf"] and not _s4v2_already_caught_up:
-                    _ws_state["last_s4v2_tf"] = _tv2_dt_engine_label
-                    log.info(f"[ENGINE] Boundary watcher trigger S4V2: {_tv2} - checking S4V2")
+                if not _s4v2_already_caught_up:
+                    _ws_state["last_s4v2_tf"] = max(_ws_state["last_s4v2_tf"], _tv2_dt_engine_label)
+                    log.info(f"[ENGINE] Boundary watcher trigger S4V2: {_tv2} - checking S4V2 (independent retry, decoupled from WS claim)")
                     def _run_s4v2_trigger(_dt=_tv2_dt):
                         try:
                             for _retry in range(6):
