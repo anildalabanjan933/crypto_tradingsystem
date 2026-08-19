@@ -65,6 +65,33 @@ def check_stuck_pending(bot, csv_path):
     except Exception as e:
         log.error(f"[{bot['name']}] check_stuck_pending failed: {e}")
 
+
+def check_orphan_position(bot, csv_path):
+    """Isolated check: exchange shows OPEN position but CSV last row is not PENDING (closed/missing).
+    Reverse of check_stuck_pending. Read-only + own API call - does not touch other logic."""
+    flag_file = f"logs/orphan_flag_{bot['name']}.txt"
+    try:
+        om = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
+        pos = om.get_position()
+        if not pos.get("success"):
+            return
+        size = pos.get("size", 0)
+        with open(csv_path) as cf:
+            rows = cf.readlines()
+        last = rows[-1].strip().split(",") if rows else []
+        csv_pending = len(last) >= 2 and last[1] == "PENDING"
+        if size != 0 and not csv_pending:
+            if not os.path.exists(flag_file):
+                with open(flag_file, "w") as ff:
+                    ff.write(str(time.time()))
+                log.critical(f"[{bot['name']}] ORPHAN POSITION detected - exchange OPEN (size={size}) but CSV shows no PENDING row")
+                send_alert(f"CTS {bot['name']} ORPHAN POSITION - exchange has OPEN position but CSV shows it closed/missing\nSize: {size}\nCheck SL and CSV manually")
+        else:
+            if os.path.exists(flag_file):
+                os.remove(flag_file)
+    except Exception as e:
+        log.error(f"[{bot['name']}] check_orphan_position failed: {e}")
+
 def check_bot(bot):
     om = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
     pos = om.get_position()
@@ -121,6 +148,7 @@ def main():
                 check_bot(bot)
                 csv_map = {"S4": "logs/signals_s4.csv", "S4V2": "logs/signals_s4v2.csv"}
                 check_stuck_pending(bot, csv_map[bot["name"]])
+                check_orphan_position(bot, csv_map[bot["name"]])
             except Exception as e:
                 log.error(f"[{bot['name']}] Check failed: {e}")
         time.sleep(CHECK_INTERVAL)
