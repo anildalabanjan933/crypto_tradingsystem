@@ -5882,8 +5882,8 @@ with _tab_analysis:
                     f"<tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>No backtest trades in this window</td></tr>"
                     f"</tbody></table></div>"
                 )
-                s2_files = sorted(_gb.glob("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv"), reverse=True)
-                s4_files = sorted(_gb.glob("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv"), reverse=True)
+                s2_files = sorted(_gb.glob("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv"), reverse=True)
+                s4_files = sorted(_gb.glob("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"), reverse=True)
                 frames = []
                 vf_dt = _pb.to_datetime(vf_str)
                 _sel_files = s2_files[:1] if which=="s2" else (s4_files[:1] if which=="s4" else s2_files[:1]+s4_files[:1])
