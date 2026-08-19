@@ -6460,14 +6460,14 @@ with _tab_analysis:
                 _pdiff = abs(_signed_pdiff)
                 _psign = "+" if _signed_pdiff >= 0 else "-"
                 if bt["dir"] != lv["dir"]:
-                    entry_line = f"❌ dir | {_psign}${_pdiff:.0f} slip{_entry_delay_txt}"
+                    entry_line = f"❌ dir | {_psign}${_pdiff*100*0.001:.2f} slip{_entry_delay_txt}"
                 else:
                     if _pdiff > 5:
-                        entry_line = f"❌ {_psign}${_pdiff:.0f} slip{_entry_delay_txt}"
+                        entry_line = f"❌ {_psign}${_pdiff*100*0.001:.2f} slip{_entry_delay_txt}"
                     elif _gap_min is not None and _gap_min > _tol_min:
-                        entry_line = f"❌ delay | {_psign}${_pdiff:.0f} slip{_entry_delay_txt}"
+                        entry_line = f"❌ delay | {_psign}${_pdiff*100*0.001:.2f} slip{_entry_delay_txt}"
                     else:
-                        entry_line = f"✅ {_psign}${_pdiff:.0f} slip{_entry_delay_txt}"
+                        entry_line = f"✅ {_psign}${_pdiff*100*0.001:.2f} slip{_entry_delay_txt}"
                 # EXIT line - exit price + exit delay (independent check)
                 _lv_closed = lv.get("exit_ist") not in ("-", "", None)
                 _bt_closed = bt.get("exit_ist") not in ("-", "", None)
@@ -6488,9 +6488,9 @@ with _tab_analysis:
                     _xpdiff = abs(_signed_xpdiff)
                     _xsign = "+" if _signed_xpdiff >= 0 else "-"
                     if bt["exit_p"] and lv["exit_p"] and _xpdiff > 5:
-                        exit_line = f"❌ {_xsign}${_xpdiff:.0f} slip{_exit_delay_txt}"
+                        exit_line = f"❌ {_xsign}${_xpdiff*100*0.001:.2f} slip{_exit_delay_txt}"
                     else:
-                        exit_line = f"✅ {_xsign}${_xpdiff:.0f} slip{_exit_delay_txt}"
+                        exit_line = f"✅ {_xsign}${_xpdiff*100*0.001:.2f} slip{_exit_delay_txt}"
                 return f"Entry: {entry_line}<br>Exit: {exit_line}"
             def _section_html(strat, bt_rows, lv_rows):
                 n_bt = len(bt_rows); n_lv = len(lv_rows)
