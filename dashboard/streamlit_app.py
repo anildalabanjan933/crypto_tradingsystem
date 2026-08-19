@@ -5758,7 +5758,7 @@ with _tab_analysis:
                     et       = (_dfw.datetime.utcfromtimestamp(p.get('ets',0)) + _ist_off1).strftime('%d-%b-%Y %I:%M %p IST')
                     xt       = "-" if is_open else (_dfw.datetime.utcfromtimestamp(p.get('xts',0)) + _ist_off1).strftime('%d-%b-%Y %I:%M %p IST')
                     dirv     = str(p.get('dir','')).upper()
-                    slip_act = 0 if is_open else abs(float(p.get('ep',0)) - float(p.get('xp',0))) * 0.001
+                    slip_act = 0 if is_open else abs(float(p.get('ep',0)) - float(p.get('xp',0))) * 100 * 0.001
                     slip_diff= slip_act - 5.0
                     slip_str = "-" if is_open else (f"+${slip_diff:.2f}" if slip_diff >= 0 else f"-${abs(slip_diff):.2f}")
                     mp_style  = _TG20
@@ -6145,7 +6145,7 @@ with _tab_analysis:
             st.caption(f"BT S4V2 equity curve error: {_e}")
 
         try:
-            _f = sorted(_gl13.glob("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv"))
+            _f = sorted(_gl13.glob("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"))
             if _f:
                 _dfbt4 = _pd13.read_csv(_f[-1])
                 _dfbt4['exit_datetime'] = _pd13.to_datetime(_dfbt4['exit_datetime'])
