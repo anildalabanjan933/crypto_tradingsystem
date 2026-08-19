@@ -6498,7 +6498,7 @@ with _tab_analysis:
                         exit_line = f"❌ {_xsign}${_xpdiff*100*0.001:.2f} slip{_exit_delay_txt}"
                     else:
                         exit_line = f"✅ {_xsign}${_xpdiff*100*0.001:.2f} slip{_exit_delay_txt}"
-                return f"Entry: {entry_line}<br>Exit: {exit_line}"
+                return f"Entry: {entry_line}<br>Exit: {exit_line}<br><span style='font-size:9px;color:#888;'>Note: match check covers entry/exit price only, not funding cost</span>"
             def _section_html(strat, bt_rows, lv_rows):
                 n_bt = len(bt_rows); n_lv = len(lv_rows)
                 tc = max(n_bt, n_lv)
