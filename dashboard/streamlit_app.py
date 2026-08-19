@@ -2201,6 +2201,9 @@ with _tab_monitor:
             _sf = f"logs/stuck_flag_{_sb}.txt"
             if os.path.exists(_sf):
                 st.error(f"STUCK PENDING - {_sb}: CSV shows open position but exchange is FLAT. Check signals CSV / restart signal_generator.")
+            _of = f"logs/orphan_flag_{_sb}.txt"
+            if os.path.exists(_of):
+                st.error(f"ORPHAN POSITION - {_sb}: exchange OPEN but CSV shows closed/missing. Check SL and CSV manually.")
         import subprocess, os, datetime
 
         errors = []
@@ -5871,8 +5874,10 @@ with _tab_analysis:
                     ps        = _TY20 if is_open else (_TG20 if pnl >= 0 else _TR20)
                     ds        = _TG20 if dirv == 'LONG' else _TR20
                     _stuck_f = f"logs/stuck_flag_{bot_name}.txt" if bot_name else None
+                    _orphan_f = f"logs/orphan_flag_{bot_name}.txt" if bot_name else None
                     _is_stuck = is_open and _stuck_f and os.path.exists(_stuck_f)
-                    pnl_disp  = ("STUCK" if _is_stuck else "OPEN") if is_open else f"₹{pnl_inr:,.0f}"
+                    _is_orphan = (not is_open) and _orphan_f and os.path.exists(_orphan_f)
+                    pnl_disp  = ("STUCK" if _is_stuck else "OPEN") if is_open else ("ORPHAN" if _is_orphan else f"₹{pnl_inr:,.0f}")
                     xp_disp   = "-" if is_open else f"${xp_inr:,.0f}"
                     rows += (
                         f"<tr>"
@@ -6452,7 +6457,7 @@ with _tab_analysis:
                     _et_close = _pdopen.to_datetime(_et) + _pdopen.Timedelta(hours=2 if ("S4" in csv_label and "S4V2" not in csv_label) else 0, minutes=30 if "S4V2" in csv_label else 0)
                     return {
                         'label': csv_label, 'dir': _dirv.upper(),
-                        'entry_ist': _to_ist(str(_et_close)), 'entry_ts_raw': str(_et), 'exit_ist': ('STUCK' if os.path.exists(f"logs/stuck_flag_{label.split()[-1]}.txt") else '-'),
+                        'entry_ist': _to_ist(str(_et_close)), 'entry_ts_raw': str(_et), 'exit_ist': ('STUCK' if os.path.exists(f"logs/stuck_flag_{label.split()[-1]}.txt") else ('ORPHAN' if os.path.exists(f"logs/orphan_flag_{label.split()[-1]}.txt") else '-')),
                         'entry_p': float(_ep) if _ep else 0.0, 'exit_p': 0.0,
                         'pnl_usd': 0.0, 'pnl_inr5': 0.0, 'pnl_inr10': 0.0, 'charges': 0.0,
                     }
@@ -6512,7 +6517,7 @@ with _tab_analysis:
                         minutes=30 if "S4V2" in label else 0)
                     return {
                         'label': label, 'dir': last_entry["dir"].upper(),
-                        'entry_ist': _to_ist(str(_et_close)), 'entry_ts_raw': str(_et), 'exit_ist': ('STUCK' if os.path.exists(f"logs/stuck_flag_{label.split()[-1]}.txt") else '-'),
+                        'entry_ist': _to_ist(str(_et_close)), 'entry_ts_raw': str(_et), 'exit_ist': ('STUCK' if os.path.exists(f"logs/stuck_flag_{label.split()[-1]}.txt") else ('ORPHAN' if os.path.exists(f"logs/orphan_flag_{label.split()[-1]}.txt") else '-')),
                         'exit_ts_raw': '-',
                         'entry_fill_ts_raw': last_entry.get("log_ts", ""),
                         'entry_p': last_entry["entry_price"], 'exit_p': 0.0,
