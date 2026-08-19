@@ -5465,40 +5465,46 @@ with _tab_analysis:
             return orders
 
         def _pair13(orders):
-            pairs, used = [], set()
+            # FIFO two-pointer per direction - prevents cross-matching entry with
+            # a distant unrelated future exit (root cause of Aug-2026 S4 -Rs299k
+            # pairing-mismatch bug: old exhaustive-search version could skip over
+            # the correct nearby exit and grab one days later).
+            def _ts(o):
+                return int(_dt13.datetime.strptime(o.get("created_at","1970-01-01T00:00:00")[:19], "%Y-%m-%dT%H:%M:%S").timestamp())
+            def _px(o):
+                return float(o.get("average_fill_price") or o.get("limit_price") or 0)
+
             srt = sorted(orders, key=lambda x: x.get("created_at",""))
-            for i, e in enumerate(srt):
-                if i in used or e.get("state")!="closed": continue
-                # Entry must be reduce_only=False
-                if str(e.get("reduce_only","")).lower() in ["true","1"]: continue
-                es = e.get("side")
-                if es not in ["buy","sell"]: continue
-                xs  = "sell" if es=="buy" else "buy"
-                dir = "LONG" if es=="buy" else "SHORT"
-                ets = int(_dt13.datetime.strptime(e.get("created_at","1970-01-01T00:00:00")[:19], "%Y-%m-%dT%H:%M:%S").timestamp())
-                ep  = float(e.get("average_fill_price") or e.get("limit_price") or 0)
-                for j, x in enumerate(srt):
-                    if j in used or j==i: continue
-                    if x.get("side")!=xs or x.get("state")!="closed": continue
-                    # Exit must be reduce_only=True
-                    if str(x.get("reduce_only","")).lower() not in ["true","1"]: continue
-                    xts = int(_dt13.datetime.strptime(x.get("created_at","1970-01-01T00:00:00")[:19], "%Y-%m-%dT%H:%M:%S").timestamp())
-                    xp  = float(x.get("average_fill_price") or x.get("limit_price") or 0)
-                    if xts < ets: continue
-                    sz  = int(e.get("size",0))
-                    # Use actual exchange PnL from exit order meta_data
-                    raw_pnl = (xp - ep) * sz * 0.001 * (1 if dir == "LONG" else -1)
-                    cm  = float(e.get("paid_commission") or 0)+float(x.get("paid_commission") or 0)
+            longs_e  = [o for o in srt if o.get("side")=="buy"  and o.get("state")=="closed" and str(o.get("reduce_only","")).lower() not in ["true","1"]]
+            longs_x  = [o for o in srt if o.get("side")=="sell" and o.get("state")=="closed" and str(o.get("reduce_only","")).lower() in ["true","1"]]
+            shorts_e = [o for o in srt if o.get("side")=="sell" and o.get("state")=="closed" and str(o.get("reduce_only","")).lower() not in ["true","1"]]
+            shorts_x = [o for o in srt if o.get("side")=="buy"  and o.get("state")=="closed" and str(o.get("reduce_only","")).lower() in ["true","1"]]
+
+            pairs = []
+            def _fifo_match(entries, exits, dirn):
+                ei, xi = 0, 0
+                while ei < len(entries) and xi < len(exits):
+                    e, x = entries[ei], exits[xi]
+                    ets, xts = _ts(e), _ts(x)
+                    if xts < ets:
+                        xi += 1; continue
+                    ep, xp = _px(e), _px(x)
+                    sz = int(e.get("size",0))
+                    raw_pnl = (xp - ep) * sz * 0.001 * (1 if dirn == "LONG" else -1)
+                    cm = float(e.get("paid_commission") or 0)+float(x.get("paid_commission") or 0)
                     pnl = raw_pnl - cm
-                    pairs.append({"dir":dir,"ep":ep,"xp":xp,"pnl":pnl,"cm":cm,"ets":ets,"xts":xts,"sz":sz})
-                    used.add(i); used.add(j); break
-                else:
-                    # No exit found yet - still an OPEN position, show it anyway
-                    sz  = int(e.get("size",0))
+                    pairs.append({"dir":dirn,"ep":ep,"xp":xp,"pnl":pnl,"cm":cm,"ets":ets,"xts":xts,"sz":sz})
+                    ei += 1; xi += 1
+                while ei < len(entries):
+                    e = entries[ei]
+                    sz = int(e.get("size",0))
                     cm_open = float(e.get("paid_commission") or 0)
-                    pairs.append({"dir":dir,"ep":ep,"xp":0,"pnl":0,"cm":cm_open,"ets":ets,"xts":0,"sz":sz,"open":True})
-                    used.add(i)
-            return pairs
+                    pairs.append({"dir":dirn,"ep":_px(e),"xp":0,"pnl":0,"cm":cm_open,"ets":_ts(e),"xts":0,"sz":sz,"open":True})
+                    ei += 1
+
+            _fifo_match(longs_e, longs_x, "LONG")
+            _fifo_match(shorts_e, shorts_x, "SHORT")
+            return sorted(pairs, key=lambda p: p["ets"])
 
         def _calc13(pairs):
             if not pairs: return None
