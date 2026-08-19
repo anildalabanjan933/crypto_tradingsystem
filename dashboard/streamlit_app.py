@@ -6266,7 +6266,14 @@ with _tab_analysis:
                         # of false exit-delay mismatches, e.g. 1804s artifact, 16-Aug-2026)
                         _sig_key = (round(float(r.get('entry_price',0)),1), _dir_raw)
                         if _sig_key in _sig_lookup:
-                            _entry_ts_raw, _exit_ts_raw = _sig_lookup[_sig_key]
+                            _cand_et, _cand_xt = _sig_lookup[_sig_key]
+                            try:
+                                _orig_date = _pd_t.to_datetime(_entry_ts_raw).date()
+                                _cand_date = _pd_t.to_datetime(_cand_et).date()
+                                if _cand_date == _orig_date:
+                                    _entry_ts_raw, _exit_ts_raw = _cand_et, _cand_xt
+                            except Exception:
+                                pass
                         rows.append({
                             'label'    : label,
                             'dir'      : str(r.get('direction','')).upper(),
@@ -6522,32 +6529,52 @@ with _tab_analysis:
                 if tc == 0:
                     tbl += f'<tr><td colspan="12" style="{TD}color:#aaa;">No trades yet</td></tr>'
                 _used_lv = set()
+                def _build_pair_map():
+                    import datetime as _dtm
+                    def _parse(ts):
+                        try: return _dtm.datetime.strptime(ts, "%d-%b %I:%M %p")
+                        except: return None
+                    bt_order = sorted(range(len(bt_rows)), key=lambda i: _parse(bt_rows[i].get("entry_ist","")) or _dtm.datetime.min)
+                    lv_order = sorted(range(len(lv_rows)), key=lambda j: _parse(lv_rows[j].get("entry_ist","")) or _dtm.datetime.min)
+                    pmap = {}
+                    bi, li = 0, 0
+                    while bi < len(bt_order) and li < len(lv_order):
+                        b_i = bt_order[bi]; l_i = lv_order[li]
+                        bt_row = bt_rows[b_i]; lv_row = lv_rows[l_i]
+                        bt_dt = _parse(bt_row.get("entry_ist","")); lv_dt = _parse(lv_row.get("entry_ist",""))
+                        if bt_dt is None: bi += 1; continue
+                        if lv_dt is None: li += 1; continue
+                        _lbl = str(bt_row.get("label","")); _tf_min = 30 if "S4V2" in _lbl else 120
+                        _max_sec = (_tf_min + 15) * 60
+                        diff = (lv_dt - bt_dt).total_seconds()
+                        if bt_row.get("dir") == lv_row.get("dir") and abs(diff) <= _max_sec:
+                            pmap[b_i] = l_i; _used_lv.add(l_i); bi += 1; li += 1
+                        elif diff < 0:
+                            li += 1
+                        else:
+                            bi += 1
+                    return pmap
+                _pair_map = _build_pair_map()
                 def _closest_lv(bt_row):
-                    if bt_row is None: return None
-                    try:
-                        import datetime as _dtm
-                        bt_dt = _dtm.datetime.strptime(bt_row["entry_ist"], "%d-%b %I:%M %p")
-                    except: return None
-                    _lbl = str(bt_row.get("label",""))
-                    _tf_min = 30 if "S4V2" in _lbl else 120
-                    _max_sec = (_tf_min + 15) * 60
-                    best_lv, best_diff, best_idx = None, None, None
-                    for j, lv_row in enumerate(lv_rows):
-                        if j in _used_lv: continue
-                        if lv_row.get("dir") != bt_row.get("dir"): continue
-                        try:
-                            lv_dt = _dtm.datetime.strptime(lv_row["entry_ist"], "%d-%b %I:%M %p")
-                        except: continue
-                        diff = abs((lv_dt - bt_dt).total_seconds())
-                        if diff <= _max_sec and (best_diff is None or diff < best_diff):
-                            best_diff, best_lv, best_idx = diff, lv_row, j
-                    if best_lv is not None:
-                        _used_lv.add(best_idx)
-                        return best_lv
                     return None
+                _slip_fav_usd = 0.0
+                _slip_unfav_usd = 0.0
                 for i in range(tc):
                     bt = bt_rows[i] if i < n_bt else None
-                    lv = _closest_lv(bt) if bt is not None else (lv_rows[i] if i < n_lv and i not in _used_lv else None)
+                    lv = (lv_rows[_pair_map[i]] if bt is not None and i in _pair_map else
+                          (lv_rows[i] if i < n_lv and i not in _used_lv else None))
+                    if bt is not None and lv is not None:
+                        try:
+                            _sd = (bt["entry_p"] - lv["entry_p"]) if bt["dir"] == "LONG" else (lv["entry_p"] - bt["entry_p"])
+                            if _sd >= 0: _slip_fav_usd += _sd*100*0.001
+                            else: _slip_unfav_usd += abs(_sd)*100*0.001
+                        except Exception: pass
+                        try:
+                            if bt.get("exit_ist") not in ("-","",None) and lv.get("exit_ist") not in ("-","",None) and bt.get("exit_p") and lv.get("exit_p"):
+                                _sx = ((lv["exit_p"] - bt["exit_p"]) if bt["dir"]=="LONG" else (bt["exit_p"]-lv["exit_p"]))
+                                if _sx >= 0: _slip_fav_usd += _sx*100*0.001
+                                else: _slip_unfav_usd += abs(_sx)*100*0.001
+                        except Exception: pass
                     _sep = "border-top:3px solid #42A5F5;" if i>0 else ""
                     sno_cell = f'<td rowspan="2" style="{TDN}{_sep}">{i+1}</td>'
                     for ridx, (row, src) in enumerate([(bt, f"BT {strat}"), (lv, f"LV {strat}")]):
@@ -6591,6 +6618,16 @@ with _tab_analysis:
                             tbl += f'<td style="{TD}{bg}">{_charges_v}</td>'
                             tbl += f'{match_cell}</tr>'
                 tbl += '</tbody></table>'
+                _net_slip_usd = _slip_fav_usd - _slip_unfav_usd
+                _net_slip_inr = _net_slip_usd * 84
+                _slip_color = "#089981" if _net_slip_usd >= 0 else "#F23645"
+                _slip_span = (
+                    f'<span style="background:#f3e5f5;color:#4a148c;border-radius:3px;padding:3px 10px;font-size:12px;">'
+                    f'Net Slippage Today: Favorable: +${_slip_fav_usd:,.2f} | Unfavorable: -${_slip_unfav_usd:,.2f} | '
+                    f'Net: <b style="color:{_slip_color}">{"+" if _net_slip_usd>=0 else ""}${_net_slip_usd:,.2f} '
+                    f'(₹{_net_slip_inr:,.0f})</b></span>'
+                )
+                hdr = hdr[:-6] + _slip_span + '</div>'
                 return hdr + tbl
             html = '<div style="overflow-x:auto;margin:8px 0;">'
             html += _section_html("S4V2", bt2, lv2)

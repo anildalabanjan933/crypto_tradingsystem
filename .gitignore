@@ -31,3 +31,4 @@ logs/
 .DS_Store
 desktop.ini
 data/*.tmp
+.env.backup_local_only
