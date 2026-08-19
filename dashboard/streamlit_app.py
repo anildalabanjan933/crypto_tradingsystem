@@ -2197,6 +2197,10 @@ with _tab_monitor:
     st.markdown('<div style="margin-top:-8px;"></div>', unsafe_allow_html=True)
     if 'exp_1b' not in st.session_state: st.session_state['exp_1b'] = False
     with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b', False)):
+        for _sb in ["S4", "S4V2"]:
+            _sf = f"logs/stuck_flag_{_sb}.txt"
+            if os.path.exists(_sf):
+                st.error(f"STUCK PENDING - {_sb}: CSV shows open position but exchange is FLAT. Check signals CSV / restart signal_generator.")
         import subprocess, os, datetime
 
         errors = []
@@ -6448,7 +6452,7 @@ with _tab_analysis:
                     _et_close = _pdopen.to_datetime(_et) + _pdopen.Timedelta(hours=2 if ("S4" in csv_label and "S4V2" not in csv_label) else 0, minutes=30 if "S4V2" in csv_label else 0)
                     return {
                         'label': csv_label, 'dir': _dirv.upper(),
-                        'entry_ist': _to_ist(str(_et_close)), 'entry_ts_raw': str(_et), 'exit_ist': '-',
+                        'entry_ist': _to_ist(str(_et_close)), 'entry_ts_raw': str(_et), 'exit_ist': ('STUCK' if os.path.exists(f"logs/stuck_flag_{label.split()[-1]}.txt") else '-'),
                         'entry_p': float(_ep) if _ep else 0.0, 'exit_p': 0.0,
                         'pnl_usd': 0.0, 'pnl_inr5': 0.0, 'pnl_inr10': 0.0, 'charges': 0.0,
                     }
@@ -6508,7 +6512,7 @@ with _tab_analysis:
                         minutes=30 if "S4V2" in label else 0)
                     return {
                         'label': label, 'dir': last_entry["dir"].upper(),
-                        'entry_ist': _to_ist(str(_et_close)), 'entry_ts_raw': str(_et), 'exit_ist': '-',
+                        'entry_ist': _to_ist(str(_et_close)), 'entry_ts_raw': str(_et), 'exit_ist': ('STUCK' if os.path.exists(f"logs/stuck_flag_{label.split()[-1]}.txt") else '-'),
                         'exit_ts_raw': '-',
                         'entry_fill_ts_raw': last_entry.get("log_ts", ""),
                         'entry_p': last_entry["entry_price"], 'exit_p': 0.0,
