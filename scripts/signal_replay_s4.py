@@ -731,8 +731,40 @@ while True:
                     last_known_ts = safe_ts(_manual_exit_ts)
                     log.info(f"[SYNC] Lock advanced past manually-closed signal to exit_time={_manual_exit_ts}")
                 else:
-                    save_ts_file(TS_FILE, last_known_ts)
-                    log.warning(f"[SYNC] Could not find exit_time for entry={last_known_ts} - lock unchanged, monitor for repeat entry")
+                    # PENDING row with no exit found (SL/manual close on exchange) -
+                    # write real exit into CSV so BT/live comparison does not show
+                    # a stuck PENDING trade forever.
+                    try:
+                        import csv as _csv3, os as _os3
+                        from datetime import datetime as _dt3, timezone as _tz3
+                        _sync_exit_ts = _dt3.now(_tz3.utc).strftime("%Y-%m-%dT%H:%M:%S")
+                        _sync_price = om.get_current_price()
+                        _sig_csv = "logs/signals_s4.csv"
+                        with open(_sig_csv, "r") as _f3:
+                            _rows3 = list(_csv3.reader(_f3))
+                        _updated3 = False
+                        for _r3 in _rows3:
+                            if len(_r3) >= 2 and _r3[0] == last_known_ts and _r3[1] == "PENDING":
+                                while len(_r3) < 6:
+                                    _r3.append("")
+                                _r3[1] = _sync_exit_ts
+                                _r3[5] = round(float(_sync_price), 2) if _sync_price else ""
+                                _updated3 = True
+                                break
+                        if _updated3:
+                            _tmp3 = _sig_csv + ".tmp"
+                            with open(_tmp3, "w", newline="") as _f3:
+                                _w3 = _csv3.writer(_f3)
+                                for _r3 in _rows3:
+                                    _w3.writerow(_r3)
+                            _os3.replace(_tmp3, _sig_csv)
+                            log.info(f"[SYNC] CSV PENDING row exit filled: entry={last_known_ts} exit={_sync_exit_ts} price={_sync_price}")
+                        save_ts_file(TS_FILE, _sync_exit_ts)
+                        last_known_ts = safe_ts(_sync_exit_ts)
+                        log.info(f"[SYNC] Lock advanced past synced-flat signal to exit_time={_sync_exit_ts}")
+                    except Exception as _sync_e:
+                        save_ts_file(TS_FILE, last_known_ts)
+                        log.warning(f"[SYNC] Could not fill PENDING exit ({_sync_e}) - lock unchanged, monitor for repeat entry")
                 with open("logs/manual_override_s4.txt", "w") as _f:
                     _f.write(f"{int(time.time())}|synced_flat|entry_ts={last_known_ts}")
                 log.info("[SYNC] manual_override_s4.txt written - next entry signal will be skipped")
