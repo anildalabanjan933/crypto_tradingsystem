@@ -671,7 +671,7 @@ while True:
                 _override_file = "logs/manual_override_s4v2.txt"
                 if os.path.exists(_override_file):
                     os.remove(_override_file)
-                    last_known_ts = safe_ts(_xt)
+                    last_known_ts = safe_ts(sig_ts)
                     save_ts_file(TS_FILE, last_known_ts)
                     log.info(f"[SKIP] ENTRY blocked - manual_override active (single-shot) | dir={direction} | ts={sig_ts} | advanced past exit={_xt}")
                     continue
