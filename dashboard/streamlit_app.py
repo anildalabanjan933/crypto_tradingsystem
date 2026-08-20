@@ -6652,6 +6652,51 @@ with _tab_analysis:
                             'charges'  : comm*_INR,
                             'sl_hit'   : _is_sl,
                         })
+                    if rows and rows[-1].get('exit_ts_raw') == '-':
+                        try:
+                            import hmac as _hmfw, hashlib as _hsfw, time as _tmfw, requests as _rqfw, datetime as _dtfw
+                            _acc = "S4V2" if "S4V2" in label else "S4"
+                            _k = os.environ.get(f'{_acc}_API_KEY','')
+                            _s = os.environ.get(f'{_acc}_API_SECRET','')
+                            if _k and _s:
+                                _last = rows[-1]
+                                _exit_side = 'sell' if _last['dir']=='LONG' else 'buy'
+                                _entry_dt = _pd14.to_datetime(_last['entry_ts_raw'])
+                                _target_ts = int(_entry_dt.timestamp())
+                                _ts_ep = str(int(_tmfw.time()))
+                                _path = "/v2/fills"
+                                _p = {"product_id":84,"page_size":50,
+                                      "start_time":int(_target_ts*1e6),
+                                      "end_time":int((_target_ts+86400)*1e6)}
+                                _qs = "&".join(f"{a}={b}" for a,b in sorted(_p.items()))
+                                _msg = "GET"+_ts_ep+_path+"?"+_qs
+                                _sig = _hmfw.new(_s.encode(), _msg.encode(), _hsfw.sha256).hexdigest()
+                                _hdr = {"api-key":_k,"timestamp":_ts_ep,"signature":_sig}
+                                _r = _rqfw.get(f"https://cdn-ind.testnet.deltaex.org{_path}?{_qs}", headers=_hdr, timeout=8)
+                                _d = _r.json()
+                                if _d.get("success"):
+                                    for _fl in _d.get("result",[]):
+                                        if _fl.get("side") != _exit_side:
+                                            continue
+                                        if str(_fl.get("meta_data",{}).get("order_type","")) == "":
+                                            pass
+                                        _fts = _dtfw.datetime.strptime(_fl.get("created_at","")[:19], "%Y-%m-%dT%H:%M:%S")
+                                        if _fts <= _entry_dt:
+                                            continue
+                                        _xp2 = float(_fl.get("price",0))
+                                        _comm2 = abs(float(_fl.get("commission",0)))
+                                        _last['exit_p'] = _xp2
+                                        _last['exit_ts_raw'] = _fts.isoformat()
+                                        _last['exit_ist'] = _to_ist(str(_fts))
+                                        _raw2 = (_xp2-_last['entry_p'])*100*0.001 if _last['dir']=='LONG' else (_last['entry_p']-_xp2)*100*0.001
+                                        _pnl2 = _raw2 - _comm2
+                                        _last['pnl_usd'] = _pnl2
+                                        _last['pnl_inr5'] = _pnl2*_INR
+                                        _last['pnl_inr10'] = _pnl2*_INR
+                                        _last['charges'] = _comm2*_INR
+                                        break
+                        except Exception:
+                            pass
                 except: pass
                 return rows
             def _get_bt_open_row(csv_label):
