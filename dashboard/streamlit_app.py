@@ -1112,6 +1112,18 @@ def _parse_log_trades(log_path, log_path_bak=None):
             if not e["open"] and _ep > 0 and _xp > 0:
                 _raw_pnl = (_xp - _ep) * _qty_btc if side == "buy" else (_ep - _xp) * _qty_btc
                 _fees = (_ep + _xp) * _qty_btc * 0.0005
+                _real_fp = "logs/fill_prices_s4v2.csv" if "s4v2" in log_path else "logs/fill_prices_s4.csv"
+                try:
+                    if os.path.exists(_real_fp):
+                        with open(_real_fp) as _rf:
+                            _rf.readline()
+                            for _rl in _rf:
+                                _rp = _rl.strip().split(',')
+                                if len(_rp) >= 9 and _rp[0] == e.get("sig_ts",""):
+                                    _fees = float(_rp[8])
+                                    break
+                except Exception:
+                    pass
                 _net = _raw_pnl - _fees
                 _tax = max(_net, 0) * 0.10
                 _final_pnl = _net - _tax
@@ -5611,6 +5623,47 @@ with _tab_analysis:
                                 _fill_map[_fp[0]] = (_fp[5], _fp[7], _charge)
             except Exception:
                 _fill_map = {}
+
+            _hist_rows = []
+            try:
+                _hist_path = "uploads/delta_order_history_s4v2_aug2026.csv" if "s4v2" in path else "uploads/delta_order_history_s4_aug2026.csv"
+                if os.path.exists(_hist_path):
+                    with open(_hist_path) as _hf:
+                        _hf.readline()
+                        for _hline in _hf:
+                            _hp = _hline.strip().split(',')
+                            if len(_hp) < 14:
+                                continue
+                            _hside = _hp[3]
+                            _hexec = _hp[5]
+                            _hfee = _hp[9]
+                            _hstatus = _hp[13]
+                            if _hstatus != "closed" or not _hexec:
+                                continue
+                            try:
+                                _hdt_str = _hp[0].split("+")[0].strip()
+                                _hdt = _dtp13.datetime.strptime(_hdt_str, "%Y-%m-%d %H:%M:%S.%f")
+                                _hdt_utc = _hdt - _dtp13.timedelta(hours=5, minutes=30)
+                                _hts = int(_hdt_utc.replace(tzinfo=_dtp13.timezone.utc).timestamp())
+                            except Exception:
+                                continue
+                            _hist_rows.append((_hts, _hside, _hexec, _hfee))
+                    _hist_rows.sort(key=lambda r: r[0])
+            except Exception:
+                _hist_rows = []
+
+            def _hist_lookup(target_ts, side_want, tol=8000):
+                best = None
+                best_diff = None
+                for _hts, _hside, _hexec, _hfee in _hist_rows:
+                    if _hside != side_want:
+                        continue
+                    diff = abs(_hts - target_ts)
+                    if diff <= tol and (best_diff is None or diff < best_diff):
+                        best = (_hexec, _hfee)
+                        best_diff = diff
+                return best
+
             try:
                 vf_dt = _dtp13.datetime.strptime(vf_str, "%Y-%m-%dT%H:%M:%S")
             except Exception:
@@ -5641,6 +5694,13 @@ with _tab_analysis:
                                     ep = float(_fm[0])
                                 except Exception:
                                     pass
+                            else:
+                                _hh = _hist_lookup(ets, 'buy' if dirn == 'LONG' else 'sell')
+                                if _hh and _hh[0]:
+                                    try:
+                                        ep = float(_hh[0])
+                                    except Exception:
+                                        pass
                             pairs.append({"dir":dirn,"ep":ep,"xp":0.0,"pnl":0.0,"cm":0.0,"ets":ets,"xts":0,"sz":sz,"open":True})
                         else:
                             try:
@@ -5660,8 +5720,36 @@ with _tab_analysis:
                                         _cm = float(_fm[2])
                                 except Exception:
                                     pass
+                            else:
+                                _entry_side = 'buy' if dirn == 'LONG' else 'sell'
+                                _exit_side  = 'sell' if dirn == 'LONG' else 'buy'
+                                _hh_e = _hist_lookup(ets, _entry_side)
+                                _hh_x = _hist_lookup(xts, _exit_side)
+                                _hfee_sum = 0.0
+                                if _hh_e and _hh_e[0]:
+                                    try:
+                                        ep = float(_hh_e[0])
+                                    except Exception:
+                                        pass
+                                if _hh_e and _hh_e[1]:
+                                    try:
+                                        _hfee_sum += float(_hh_e[1])
+                                    except Exception:
+                                        pass
+                                if _hh_x and _hh_x[0]:
+                                    try:
+                                        xp = float(_hh_x[0])
+                                    except Exception:
+                                        pass
+                                if _hh_x and _hh_x[1]:
+                                    try:
+                                        _hfee_sum += float(_hh_x[1])
+                                    except Exception:
+                                        pass
+                                _cm = _hfee_sum
                             raw_pnl = (xp - ep) * sz * 0.001 * (1 if dirn == "LONG" else -1)
-                            pairs.append({"dir":dirn,"ep":ep,"xp":xp,"pnl":raw_pnl,"cm":_cm,"ets":ets,"xts":xts,"sz":sz,"open":False})
+                            net_pnl = raw_pnl - _cm
+                            pairs.append({"dir":dirn,"ep":ep,"xp":xp,"pnl":net_pnl,"cm":_cm,"ets":ets,"xts":xts,"sz":sz,"open":False})
             except Exception:
                 pass
             return sorted(pairs, key=lambda p: p["ets"])
@@ -5959,7 +6047,7 @@ with _tab_analysis:
                     f"<th style='{_TH20}'>Exit $</th>"
                     f"<th style='{_TH20}'>Slip Diff vs $5</th>"
                     f"<th style='{_TH20}'>Tax+Charges</th>"
-                    f"<th style='{_TH20}'>PnL</th>"
+                    f"<th style='{_TH20}'>Net PnL</th>"
                     f"</tr></thead><tbody>{rows}</tbody></table></div>"
                 )
             except Exception as e:
@@ -6025,7 +6113,7 @@ with _tab_analysis:
                     f"<th style='{_TH20}'>Exit (INR)</th>"
                     f"<th style='{_TH20}'>{_slip_lbl13}</th>"
                     f"<th style='{_TH20}'>Tax+Charges</th>"
-                    f"<th style='{_TH20}'>PnL</th>"
+                    f"<th style='{_TH20}'>Net PnL</th>"
                     f"</tr></thead><tbody>"
                     f"<tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>No backtest trades in this window</td></tr>"
                     f"</tbody></table></div>"
@@ -6098,7 +6186,7 @@ with _tab_analysis:
                     f"<th style='{_TH20}'>Exit (INR)</th>"
                     f"<th style='{_TH20}'>{_slip_lbl13}</th>"
                     f"<th style='{_TH20}'>Tax+Charges</th>"
-                    f"<th style='{_TH20}'>PnL</th>"
+                    f"<th style='{_TH20}'>Net PnL</th>"
                     f"</tr></thead><tbody>{rows}</tbody></table></div>"
                 )
             except Exception as e:
