@@ -6372,7 +6372,7 @@ with _tab_analysis:
                                 _sp = _sl.strip().split(',')
                                 if len(_sp) >= 6 and _sp[1] != 'PENDING':
                                     _key = (round(float(_sp[4]),1), _sp[2])
-                                    _lookup[_key] = (_sp[0], _sp[1])
+                                    _lookup.setdefault(_key, []).append((_sp[0], _sp[1]))
                     except Exception:
                         pass
                 return _lookup
@@ -6403,15 +6403,24 @@ with _tab_analysis:
                         # different data-cutoff than signals_s4v2.csv/signals_s4.csv (root cause
                         # of false exit-delay mismatches, e.g. 1804s artifact, 16-Aug-2026)
                         _sig_key = (round(float(r.get('entry_price',0)),1), _dir_raw)
-                        if _sig_key in _sig_lookup:
-                            _cand_et, _cand_xt = _sig_lookup[_sig_key]
-                            try:
-                                _orig_date = _pd_t.to_datetime(_entry_ts_raw).date()
-                                _cand_date = _pd_t.to_datetime(_cand_et).date()
-                                if _cand_date == _orig_date:
-                                    _entry_ts_raw, _exit_ts_raw = _cand_et, _cand_xt
-                            except Exception:
-                                pass
+                        _candidates = _sig_lookup.get(_sig_key, [])
+                            if _candidates:
+                                try:
+                                    _orig_dt = _pd_t.to_datetime(_entry_ts_raw)
+                                    _best = None
+                                    _best_diff = None
+                                    for _cand_et, _cand_xt in _candidates:
+                                        _cand_dt = _pd_t.to_datetime(_cand_et)
+                                        if _cand_dt.date() != _orig_dt.date():
+                                            continue
+                                        _diff = abs((_cand_dt - _orig_dt).total_seconds())
+                                        if _best_diff is None or _diff < _best_diff:
+                                            _best_diff = _diff
+                                            _best = (_cand_et, _cand_xt)
+                                    if _best is not None:
+                                        _entry_ts_raw, _exit_ts_raw = _best
+                                except Exception:
+                                    pass
                         rows.append({
                             'label'    : label,
                             'dir'      : str(r.get('direction','')).upper(),
