@@ -6652,6 +6652,43 @@ with _tab_analysis:
                             'charges'  : comm*_INR,
                             'sl_hit'   : _is_sl,
                         })
+                    if rows and rows[-1].get('entry_p', 0) == 0:
+                        try:
+                            import hmac as _hmfe, hashlib as _hsfe, time as _tmfe, requests as _rqfe, datetime as _dtfe
+                            _acc_e = "S4V2" if "S4V2" in label else "S4"
+                            _ke = os.environ.get(f'{_acc_e}_API_KEY','')
+                            _se = os.environ.get(f'{_acc_e}_API_SECRET','')
+                            if _ke and _se:
+                                _lastE = rows[-1]
+                                _entry_side2 = 'buy' if _lastE['dir']=='LONG' else 'sell'
+                                _sig_dt = _pd14.to_datetime(_lastE['entry_ts_raw'])
+                                _target_ts2 = int(_sig_dt.timestamp())
+                                _ts_ep2 = str(int(_tmfe.time()))
+                                _path2 = "/v2/fills"
+                                _p2 = {"product_id":84,"page_size":50,
+                                       "start_time":int((_target_ts2-1800)*1e6),
+                                       "end_time":int((_target_ts2+1800)*1e6)}
+                                _qs2 = "&".join(f"{a}={b}" for a,b in sorted(_p2.items()))
+                                _msg2 = "GET"+_ts_ep2+_path2+"?"+_qs2
+                                _sig2 = _hmfe.new(_se.encode(), _msg2.encode(), _hsfe.sha256).hexdigest()
+                                _hdr2 = {"api-key":_ke,"timestamp":_ts_ep2,"signature":_sig2}
+                                _r2 = _rqfe.get(f"https://cdn-ind.testnet.deltaex.org{_path2}?{_qs2}", headers=_hdr2, timeout=8)
+                                _d2 = _r2.json()
+                                if _d2.get("success"):
+                                    _bestE=None; _bestDiffE=None
+                                    for _fl2 in _d2.get("result",[]):
+                                        if _fl2.get("side") != _entry_side2:
+                                            continue
+                                        _fts2 = _dtfe.datetime.strptime(_fl2.get("created_at","")[:19], "%Y-%m-%dT%H:%M:%S")
+                                        _diff2 = abs((_fts2 - _sig_dt).total_seconds())
+                                        if _diff2 <= 1800 and (_bestDiffE is None or _diff2 < _bestDiffE):
+                                            _bestE = (float(_fl2.get("price",0)), _fts2)
+                                            _bestDiffE = _diff2
+                                    if _bestE is not None:
+                                        _lastE['entry_p'] = _bestE[0]
+                                        _lastE['entry_fill_ts_raw'] = _bestE[1].isoformat()
+                        except Exception:
+                            pass
                     if rows and rows[-1].get('exit_ts_raw') == '-':
                         try:
                             import hmac as _hmfw, hashlib as _hsfw, time as _tmfw, requests as _rqfw, datetime as _dtfw
