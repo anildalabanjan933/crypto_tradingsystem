@@ -709,7 +709,7 @@ while True:
                         log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
                         _sl_price_val = 0.0
                         if real_entry > 0:
-                            sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=0.8)
+                            sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=1.7)
                             if sl_result.get("success"):
                                 _sl_price_val = sl_result.get("sl_price", 0.0)
                                 log.info(f"[SL] Stop SL placed | sl_price={_sl_price_val}")

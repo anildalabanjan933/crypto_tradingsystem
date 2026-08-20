@@ -6713,6 +6713,9 @@ with _tab_analysis:
                         elif "[ORDER] EXIT" in line and "skipped" not in line and "confirmed" not in line:
                             if last_entry is not None and idx > last_entry["idx"]:
                                 last_entry = None
+                        elif "SL hit or manual close" in line:
+                            if last_entry is not None and idx > last_entry["idx"]:
+                                last_entry = None
                     if last_entry is None:
                         return None
                     if last_entry["entry_price"] == 0.0:
@@ -6805,6 +6808,8 @@ with _tab_analysis:
                     exit_line = "⏳ open"
                 elif _lv_closed and lv["exit_p"] == 0:
                     exit_line = "⚠️ exit price missing"
+                elif lv.get("sl_hit", False):
+                    exit_line = "🛑 SL HIT - early exit by design, not compared to BT timing"
                 else:
                     try:
                         _bt_xt = _pd14.to_datetime(str(bt.get("exit_ts_raw","")).replace("T"," "))
@@ -6887,6 +6892,78 @@ with _tab_analysis:
                 _pair_map = _build_pair_map()
                 def _closest_lv(bt_row):
                     return None
+                _used_hist_fills = set()
+                def _exchange_fallback(bt_row):
+                    import datetime as _dtfb, pandas as _pdfb
+                    try:
+                        _lbl = str(bt_row.get("label",""))
+                        _hist_fp = "uploads/delta_order_history_s4v2_aug2026.csv" if "S4V2" in _lbl else "uploads/delta_order_history_s4_aug2026.csv"
+                        if not os.path.exists(_hist_fp):
+                            return None
+                        _tf_min = 30 if "S4V2" in _lbl else 120
+                        _entry_target = _pdfb.to_datetime(bt_row.get("entry_ts_raw","")) + _pdfb.Timedelta(minutes=_tf_min)
+                        _bt_exit_raw = bt_row.get("exit_ts_raw","")
+                        _exit_target = None
+                        if _bt_exit_raw and _bt_exit_raw not in ("-","PENDING",None):
+                            try:
+                                _exit_target = _pdfb.to_datetime(_bt_exit_raw) + _pdfb.Timedelta(minutes=_tf_min)
+                            except Exception:
+                                _exit_target = None
+                        _entry_side = "buy" if bt_row.get("dir")=="LONG" else "sell"
+                        _exit_side  = "sell" if bt_row.get("dir")=="LONG" else "buy"
+                        _rows = []
+                        with open(_hist_fp) as _hf:
+                            _hf.readline()
+                            for _hl in _hf:
+                                _hp = _hl.strip().split(',')
+                                if len(_hp) < 14 or _hp[13] != "closed" or not _hp[5]:
+                                    continue
+                                try:
+                                    _hdt_str = _hp[0].split("+")[0].strip()
+                                    _hdt = _dtfb.datetime.strptime(_hdt_str, "%Y-%m-%d %H:%M:%S.%f")
+                                    _hdt_utc = _hdt - _dtfb.timedelta(hours=5, minutes=30)
+                                except Exception:
+                                    continue
+                                _fee = 0.0
+                                try: _fee = abs(float(_hp[9]))
+                                except Exception: pass
+                                _rows.append((_hdt_utc, _hp[3], float(_hp[5]), _fee))
+                        def _nearest(target, side, exclude_key_prefix):
+                            best=None; best_diff=None; best_key=None
+                            for _dt, _sd, _px, _fee in _rows:
+                                if _sd != side: continue
+                                _key = f"{exclude_key_prefix}_{_dt.isoformat()}_{_px}"
+                                if _key in _used_hist_fills: continue
+                                _diff = abs((_dt - target.to_pydatetime()).total_seconds())
+                                if _diff <= 1800 and (best_diff is None or _diff < best_diff):
+                                    best = (_px, _fee); best_diff = _diff; best_key = _key
+                            if best_key: _used_hist_fills.add(best_key)
+                            return best
+                        _e = _nearest(_entry_target, _entry_side, "entry")
+                        if _e is None:
+                            return None
+                        _ep = _e[0]; _fee_e = _e[1]
+                        _xp = 0.0; _fee_x = 0.0; _is_open = True
+                        if _exit_target is not None:
+                            _x = _nearest(_exit_target, _exit_side, "exit")
+                            if _x is not None:
+                                _xp = _x[0]; _fee_x = _x[1]; _is_open = False
+                        _pnl_usd = 0.0; _pnl_inr5 = 0.0; _pnl_inr10 = 0.0; _charges = (_fee_e+_fee_x)*84
+                        if not _is_open:
+                            _raw = (_xp-_ep)*100*0.001 if bt_row.get("dir")=="LONG" else (_ep-_xp)*100*0.001
+                            _pnl_usd = _raw - (_fee_e+_fee_x)
+                            _pnl_inr5 = _pnl_usd*84
+                            _pnl_inr10 = _pnl_usd*84
+                        return {'dir': bt_row.get("dir"), 'entry_ist': bt_row.get("entry_ist"),
+                                'entry_ts_raw': bt_row.get("entry_ts_raw"),
+                                'exit_ist': ('-' if _is_open else bt_row.get("exit_ist")),
+                                'exit_ts_raw': bt_row.get("exit_ts_raw") if not _is_open else '-',
+                                'entry_p': _ep, 'exit_p': _xp,
+                                'pnl_usd': _pnl_usd, 'pnl_inr5': _pnl_inr5, 'pnl_inr10': _pnl_inr10,
+                                'charges': _charges, 'verified_exchange': True}
+                    except Exception:
+                        pass
+                    return None
                 _slip_fav_usd = 0.0
                 _slip_unfav_usd = 0.0
                 for i in range(tc):
@@ -6909,9 +6986,12 @@ with _tab_analysis:
                     sno_cell = f'<td rowspan="2" style="{TDN}{_sep}">{i+1}</td>'
                     for ridx, (row, src) in enumerate([(bt, f"BT {strat}"), (lv, f"LV {strat}")]):
                         is_lv = (ridx == 1)
-                        match_cell = (f'<td style="{TD}font-size:14px;">{_match(bt,lv)}</td>' if is_lv
+                        _fb_note = " <span style=\'color:#1976d2;font-weight:700;\'>[verified via exchange - log gap]</span>" if (is_lv and lv is not None and lv.get("verified_exchange")) else ""
+                        match_cell = (f'<td style="{TD}font-size:14px;">{_match(bt,lv)}{_fb_note}</td>' if is_lv
                                       else f'<td style="{TD}"></td>')
                         sno = sno_cell if not is_lv else ""
+                        if row is None and is_lv and bt is not None:
+                            row = _exchange_fallback(bt)
                         if row is None:
                             _miss_label = "MISSED (no live entry)" if is_lv else "-"
                             tbl += f'<tr>{sno}<td style="{TD}color:#aaa;">{src}</td>'
