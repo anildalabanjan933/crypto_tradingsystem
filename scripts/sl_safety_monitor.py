@@ -33,10 +33,14 @@ CHECK_INTERVAL = 60
 _last_alert_ts = {}
 ALERT_COOLDOWN = 300  # don't spam same bot alert more than once per 5 min
 
+_stuck_candidates = {}  # bot_name -> (first_flat_ts, entry_id)
+
 def check_stuck_pending(bot, csv_path):
     """Isolated check: CSV shows open PENDING row but exchange position is flat.
     This is the exact signature of the startup-lock bug (fixed 19-Aug-2026).
-    Read-only + own API call - does not touch check_bot()/SL logic."""
+    Read-only + own API call - does not touch check_bot()/SL logic.
+    Requires 2 consecutive flat detections (~60s apart) before alerting,
+    to avoid false alarm during normal SL-fill/CSV-write timing race."""
     flag_file = f"logs/stuck_flag_{bot['name']}.txt"
     try:
         with open(csv_path) as cf:
@@ -47,6 +51,7 @@ def check_stuck_pending(bot, csv_path):
         if len(last) < 2 or last[1] != "PENDING":
             if os.path.exists(flag_file):
                 os.remove(flag_file)
+            _stuck_candidates.pop(bot["name"], None)
             return
         om = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
         pos = om.get_position()
@@ -54,6 +59,12 @@ def check_stuck_pending(bot, csv_path):
             return
         size = pos.get("size", 0)
         if size == 0:
+            cand = _stuck_candidates.get(bot["name"])
+            if cand is None or cand[1] != last[0]:
+                _stuck_candidates[bot["name"]] = (time.time(), last[0])
+                return
+            if time.time() - cand[0] < 55:
+                return
             if not os.path.exists(flag_file):
                 with open(flag_file, "w") as ff:
                     ff.write(str(time.time()))
@@ -62,6 +73,7 @@ def check_stuck_pending(bot, csv_path):
         else:
             if os.path.exists(flag_file):
                 os.remove(flag_file)
+            _stuck_candidates.pop(bot["name"], None)
     except Exception as e:
         log.error(f"[{bot['name']}] check_stuck_pending failed: {e}")
 
