@@ -6939,13 +6939,52 @@ with _tab_analysis:
                                     best = (_px, _fee); best_diff = _diff; best_key = _key
                             if best_key: _used_hist_fills.add(best_key)
                             return best
+                        def _live_fill_lookup(_lbl2, _side_want, _target_dt, _tol=1800):
+                            try:
+                                import hmac as _hmlf, hashlib as _hslf, time as _tmlf, requests as _rqlf
+                                _acc = "S4V2" if "S4V2" in _lbl2 else "S4"
+                                _k = os.environ.get(f'{_acc}_API_KEY','')
+                                _s = os.environ.get(f'{_acc}_API_SECRET','')
+                                if not _k or not _s:
+                                    return None
+                                _base = "https://cdn-ind.testnet.deltaex.org"
+                                _ts_ep = str(int(_tmlf.time()))
+                                _path = "/v2/fills"
+                                _target_ts = int(_target_dt.timestamp())
+                                _p = {"product_id":84,"page_size":50,
+                                      "start_time":int((_target_ts-_tol)*1e6),
+                                      "end_time":int((_target_ts+_tol)*1e6)}
+                                _qs = "&".join(f"{a}={b}" for a,b in sorted(_p.items()))
+                                _msg = "GET"+_ts_ep+_path+"?"+_qs
+                                _sig = _hmlf.new(_s.encode(), _msg.encode(), _hslf.sha256).hexdigest()
+                                _hdr = {"api-key":_k,"timestamp":_ts_ep,"signature":_sig}
+                                _r = _rqlf.get(f"{_base}{_path}?{_qs}", headers=_hdr, timeout=8)
+                                _d = _r.json()
+                                if not _d.get("success"):
+                                    return None
+                                _best=None; _best_diff=None
+                                for _fl in _d.get("result",[]):
+                                    if _fl.get("side") != _side_want:
+                                        continue
+                                    _fts = int(_dtfb.datetime.strptime(_fl.get("created_at","")[:19], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=_dtfb.timezone.utc).timestamp())
+                                    _diff = abs(_fts - _target_ts)
+                                    if _diff <= _tol and (_best_diff is None or _diff < _best_diff):
+                                        _best = (float(_fl.get("price",0)), abs(float(_fl.get("commission",0))))
+                                        _best_diff = _diff
+                                return _best
+                            except Exception:
+                                return None
                         _e = _nearest(_entry_target, _entry_side, "entry")
+                        if _e is None:
+                            _e = _live_fill_lookup(_lbl, _entry_side, _entry_target)
                         if _e is None:
                             return None
                         _ep = _e[0]; _fee_e = _e[1]
                         _xp = 0.0; _fee_x = 0.0; _is_open = True
                         if _exit_target is not None:
                             _x = _nearest(_exit_target, _exit_side, "exit")
+                            if _x is None:
+                                _x = _live_fill_lookup(_lbl, _exit_side, _exit_target)
                             if _x is not None:
                                 _xp = _x[0]; _fee_x = _x[1]; _is_open = False
                         _pnl_usd = 0.0; _pnl_inr5 = 0.0; _pnl_inr10 = 0.0; _charges = (_fee_e+_fee_x)*84
