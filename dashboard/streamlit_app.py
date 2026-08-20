@@ -6747,11 +6747,11 @@ with _tab_analysis:
                     return None
             bt2 = _get_bt_rows(df2, "BT S4V2")
             _bt2_open = _get_bt_open_row("BT S4V2")
-            if _bt2_open:
+            if _bt2_open and _bt2_open.get("entry_ts_raw") not in {r.get("entry_ts_raw") for r in bt2}:
                 bt2 = [_bt2_open] + bt2
             bt4 = _get_bt_rows(df4, "BT S4")
             _bt4_open = _get_bt_open_row("BT S4")
-            if _bt4_open:
+            if _bt4_open and _bt4_open.get("entry_ts_raw") not in {r.get("entry_ts_raw") for r in bt4}:
                 bt4 = [_bt4_open] + bt4
             lv2 = _get_fwd_rows(df2_fwd, "LV S4V2")
             lv2 = [r for r in lv2 if r.get('exit_ist') not in ('-', '', None)]
