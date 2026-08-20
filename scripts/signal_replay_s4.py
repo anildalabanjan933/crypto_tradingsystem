@@ -649,12 +649,26 @@ while True:
                 side = "buy" if direction == "long" else "sell"
                 _override_file = "logs/manual_override_s4.txt"
                 if os.path.exists(_override_file):
+                    _skip_this = True
+                    _ov_entry_ts = None
+                    try:
+                        with open(_override_file, "r") as _f_ov:
+                            _ov_content = _f_ov.read().strip()
+                        if "entry_ts=" in _ov_content:
+                            _ov_entry_ts = _ov_content.split("entry_ts=")[-1].strip()
+                            if _ov_entry_ts and sig_ts != _ov_entry_ts:
+                                _skip_this = False
+                    except Exception as _e_ov:
+                        log.warning(f"[SKIP-CHECK] Could not parse override file ({_e_ov}) - defaulting to skip for safety")
                     os.remove(_override_file)
-                    _skip_xt = _xt
-                    last_known_ts = safe_ts(_skip_xt)
-                    save_ts_file(TS_FILE, last_known_ts)
-                    log.info(f"[SKIP] ENTRY blocked - manual_override active (single-shot) | dir={direction} | ts={sig_ts} | advanced past exit={_skip_xt}")
-                    continue
+                    if _skip_this:
+                        _skip_xt = _xt
+                        last_known_ts = safe_ts(_skip_xt)
+                        save_ts_file(TS_FILE, last_known_ts)
+                        log.info(f"[SKIP] ENTRY blocked - manual_override active (single-shot) | dir={direction} | ts={sig_ts} | advanced past exit={_skip_xt}")
+                        continue
+                    else:
+                        log.info(f"[SKIP-CHECK] Override present but for different entry_ts={_ov_entry_ts} (current sig_ts={sig_ts}) - NOT skipping, legitimate new trade")
                 log.info(f"[ORDER] ENTRY attempt {side} {lots} lots | dir={direction} | ts={sig_ts}")
                 save_ts_file(TS_FILE, sig_ts)
                 last_known_ts = sig_ts
