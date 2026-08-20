@@ -1096,6 +1096,39 @@ def _parse_log_trades(log_path, log_path_bak=None):
                 last["exit_ts"]    = exit_ts
                 last["exit_log_ts"]= log_ts_x
                 last["open"]       = False
+        elif "SL hit or manual close" in line and entries and entries[-1]["open"]:
+            m_log = re.search(r'^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', line)
+            log_ts_x = m_log.group(1) if m_log else ""
+            last = entries[-1]
+            last["exit_log_ts"] = log_ts_x
+            last["exit_ts"]     = log_ts_x
+            last["open"]        = False
+            last["sl_hit"]      = True
+            _hist_fp = "uploads/delta_order_history_s4v2_aug2026.csv" if "s4v2" in log_path else "uploads/delta_order_history_s4_aug2026.csv"
+            try:
+                if os.path.exists(_hist_fp):
+                    _want_side = "buy" if last["direction"].lower() == "short" else "sell"
+                    _best = None; _best_diff = None
+                    _log_dt = _dtp.datetime.strptime(log_ts_x, "%Y-%m-%d %H:%M:%S")
+                    with open(_hist_fp) as _hf:
+                        _hf.readline()
+                        for _hl in _hf:
+                            _hp = _hl.strip().split(',')
+                            if len(_hp) < 14 or _hp[3] != _want_side or _hp[13] != "closed" or not _hp[5]:
+                                continue
+                            try:
+                                _hdt_str = _hp[0].split("+")[0].strip()
+                                _hdt = _dtp.datetime.strptime(_hdt_str, "%Y-%m-%d %H:%M:%S.%f")
+                                _hdt_utc = _hdt - _dtp.timedelta(hours=5, minutes=30)
+                            except Exception:
+                                continue
+                            _diff = abs((_hdt_utc - _log_dt).total_seconds())
+                            if _diff <= 1800 and (_best_diff is None or _diff < _best_diff):
+                                _best = float(_hp[5]); _best_diff = _diff
+                    if _best is not None:
+                        last["exit_price"] = _best
+            except Exception:
+                pass
         elif "[ORDER] EXIT confirmed" in line:
             m_xp = re.search(r'exit=([\d.]+)', line)
             if m_xp and entries and not entries[-1]["open"] and entries[-1]["exit_price"] == 0.0:
@@ -1139,7 +1172,8 @@ def _parse_log_trades(log_path, log_path_bak=None):
                 "pnl":         _final_pnl,
                 "comm":        _fees,
                 "side":        side,
-                "open":        e["open"]
+                "open":        e["open"],
+                "sl_hit":      e.get("sl_hit", False)
             })
     return pairs
 
@@ -6616,12 +6650,14 @@ with _tab_analysis:
                         comm    = float(p.get('comm',0))
                         entry_ts = p.get('entry_ts','')
                         exit_ts  = p.get('exit_ts','-')
+                        _is_sl   = bool(p.get('sl_hit', False))
+                        _exit_label = (_to_ist(exit_ts) + " (SL HIT)") if (_is_sl and exit_ts != '-') else (_to_ist(exit_ts) if exit_ts != '-' else '-')
                         rows.append({
                             'label'    : label,
                             'dir'      : 'LONG' if side=='buy' else 'SHORT',
                             'entry_ist': _to_ist(entry_ts),
                             'entry_ts_raw': str(entry_ts),
-                            'exit_ist' : _to_ist(exit_ts) if exit_ts != '-' else '-',
+                            'exit_ist' : _exit_label,
                             'exit_ts_raw': str(exit_ts) if exit_ts != '-' else '-',
                             'entry_p'  : ep,
                             'exit_p'   : xp,
@@ -6629,6 +6665,7 @@ with _tab_analysis:
                             'pnl_inr5' : pnl_net*_INR,
                             'pnl_inr10': pnl_net*_INR,
                             'charges'  : comm*_INR,
+                            'sl_hit'   : _is_sl,
                         })
                 except: pass
                 return rows
