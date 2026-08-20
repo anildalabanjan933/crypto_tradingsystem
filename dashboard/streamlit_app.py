@@ -1,5 +1,7 @@
 
 import streamlit as st
+from dotenv import load_dotenv as _ld_env
+_ld_env()
 try:
     from streamlit_autorefresh import st_autorefresh
     _AR_AVAILABLE = True
