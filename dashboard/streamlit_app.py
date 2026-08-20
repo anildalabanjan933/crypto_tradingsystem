@@ -5935,6 +5935,50 @@ with _tab_analysis:
             except Exception as e:
                 return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
 
+        def _bt_hdr13(csv_pattern, vf_str, which="both"):
+            try:
+                import glob as _gb2, pandas as _pb2
+                s2_files = sorted(_gb2.glob("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv"), reverse=True)
+                s4_files = sorted(_gb2.glob("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"), reverse=True)
+                frames = []
+                vf_dt = _pb2.to_datetime(vf_str)
+                _sel_files = s2_files[:1] if which=="s2" else (s4_files[:1] if which=="s4" else s2_files[:1]+s4_files[:1])
+                for ff in _sel_files:
+                    _df = _pb2.read_csv(ff)
+                    _df['entry_datetime'] = _pb2.to_datetime(_df['entry_datetime'])
+                    _df_vf = _df[_df['entry_datetime'] >= vf_dt]
+                    if not _df_vf.empty:
+                        frames.append(_df_vf)
+                if not frames:
+                    return ""
+                df = _pb2.concat(frames)
+                if df.empty:
+                    return ""
+                tot = len(df)
+                net_pnl_inr = 0.0
+                tax_inr_sum = 0.0
+                for i, r in df.iterrows():
+                    _gross_pnl   = float(r.get('gross_pnl', r.get('net_pnl', 0)))
+                    _old_slip    = float(r.get('slippage_usd', 10.0))
+                    _old_charges = float(r.get('total_charges_usd', 0)) - _old_slip
+                    _sz_ratio    = _LOT_RATIO13
+                    _new_slip    = sec13_slip * 2 * _sz_ratio
+                    _new_charges = (_old_charges * _sz_ratio) if sec13_charges else 0.0
+                    pnl          = (_gross_pnl * _sz_ratio) - _new_slip - _new_charges
+                    net_pnl_inr += pnl * _INR13
+                    tax_inr_sum += _new_charges * _INR13
+                _pnlc = "#089981" if net_pnl_inr >= 0 else "#F23645"
+                return (
+                    f"<div style='font-size:11px;color:#333;padding:3px 6px;background:#F5F5F5;"
+                    f"border:1px solid #ddd;margin-bottom:2px;'>"
+                    f"Total Trades: {tot} &nbsp;|&nbsp; "
+                    f"Net PnL: <span style='color:{_pnlc};font-weight:700;'>&#8377;{net_pnl_inr:,.0f}</span> &nbsp;|&nbsp; "
+                    f"Tax &amp; Charges: &#8377;{tax_inr_sum:,.0f}"
+                    f"</div>"
+                )
+            except Exception as e:
+                return f"<p style='color:red;font-size:10px'>BT Header Error: {e}</p>"
+
         def _bt20(csv_pattern, vf_str, which="both"):
             try:
                 import glob as _gb, pandas as _pb
@@ -6184,9 +6228,11 @@ with _tab_analysis:
         _colA, _colB = st.columns(2)
         with _colA:
             st.markdown(f"<div style='{_HDR13}'>BACKTEST S4V2 - THIS MONTH</div>", unsafe_allow_html=True)
+            st.markdown(_bt_hdr13("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
             st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
         with _colB:
             st.markdown(f"<div style='{_HDR13}'>BACKTEST S4 - THIS MONTH</div>", unsafe_allow_html=True)
+            st.markdown(_bt_hdr13("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv", _VF13_7D, which="s4"), unsafe_allow_html=True)
             st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv", _VF13_7D, which="s4"), unsafe_allow_html=True)
 
         _colC, _colD = st.columns(2)
