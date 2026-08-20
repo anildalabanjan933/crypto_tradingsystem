@@ -139,6 +139,20 @@ class OrderManager:
         logging.warning(f"[OrderManager] avg_fill_price: no fills found for order_id={order_id} after 6 retries")
         return 0.0
 
+    def _get_order_commission(self, order_id: int) -> float:
+        """Fetch total commission paid for an order from /v2/fills.
+        Standalone read-only method - does not modify _get_avg_fill_price
+        or any existing order logic. Returns 0.0 on any failure (safe default)."""
+        try:
+            resp = self._get("/v2/fills", {"product_ids": str(self.PRODUCT_ID), "page_size": 50})
+            if resp.get("success"):
+                fills = [f for f in resp.get("result", []) if str(f.get("order_id")) == str(order_id)]
+                if fills:
+                    return sum(float(f.get("commission", 0.0)) for f in fills)
+        except Exception as _e:
+            logging.warning(f"[OrderManager] _get_order_commission failed for order_id={order_id}: {_e}")
+        return 0.0
+
     def place_limit_order_ioc(self, side: str, size: int, ref_price: float, band: float = 8.0, client_order_id: str = None) -> dict:
         """Place IOC limit order banded around ref_price to cap slippage.
         Buy: limit = ref_price + band (won't pay more than that)
@@ -233,6 +247,7 @@ class OrderManager:
                     _close_side = "sell" if side == "buy" else "buy"
                     self.close_position(size=_filled, side=_close_side)
 
+            _comm = self._get_order_commission(result["id"])
             return {
                 "success":      True,
                 "order_id":     result["id"],
@@ -240,7 +255,8 @@ class OrderManager:
                 "side":         result["side"],
                 "size":         _filled,
                 "filled_price": result.get("limit_price", "market"),
-                "avg_fill_price": float(_avg) if _avg else 0.0
+                "avg_fill_price": float(_avg) if _avg else 0.0,
+                "commission": float(_comm) if _comm else 0.0
             }
         else:
             logging.error(f"[OrderManager] Order FAILED: {resp.get('error')}")
@@ -262,6 +278,7 @@ class OrderManager:
         """
         last_resp = None
         last_avg_fill = 0.0
+        last_commission = 0.0
         last_order_id = None
 
         for attempt in range(1, max_attempts + 1):
@@ -283,7 +300,8 @@ class OrderManager:
                     "order_id":       last_order_id,
                     "state":          "closed",
                     "avg_fill_price": last_avg_fill,
-                    "attempts":       attempt
+                    "attempts":       attempt,
+                    "commission":     last_commission
                 }
 
             close_size = current_size if current_size else size
@@ -310,6 +328,9 @@ class OrderManager:
                 _avg = self._get_avg_fill_price(result["id"])
                 if _avg:
                     last_avg_fill = float(_avg)
+                _comm = self._get_order_commission(result["id"])
+                if _comm:
+                    last_commission += float(_comm)
             else:
                 logging.error(f"[OrderManager] Close order FAILED | attempt={attempt}/{max_attempts} | error={resp.get('error')}")
 

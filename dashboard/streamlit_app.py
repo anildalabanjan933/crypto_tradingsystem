@@ -5598,6 +5598,19 @@ with _tab_analysis:
         def _pair13_csv(path, vf_str):
             import datetime as _dtp13
             pairs = []
+            _fill_map = {}
+            try:
+                _fill_path = "logs/fill_prices_s4v2.csv" if "s4v2" in path else "logs/fill_prices_s4.csv"
+                if os.path.exists(_fill_path):
+                    with open(_fill_path) as _ff:
+                        _ff.readline()
+                        for _fline in _ff:
+                            _fp = _fline.strip().split(',')
+                            if len(_fp) >= 8:
+                                _charge = _fp[8] if len(_fp) >= 9 else "0.0"
+                                _fill_map[_fp[0]] = (_fp[5], _fp[7], _charge)
+            except Exception:
+                _fill_map = {}
             try:
                 vf_dt = _dtp13.datetime.strptime(vf_str, "%Y-%m-%dT%H:%M:%S")
             except Exception:
@@ -5621,7 +5634,13 @@ with _tab_analysis:
                         ep = float(ep_raw) if ep_raw else 0.0
                         dirn = dirv.upper()
                         sz = int(lots) if lots else 100
+                        _fm = _fill_map.get(et_raw[:19])
                         if is_open:
+                            if _fm and _fm[0]:
+                                try:
+                                    ep = float(_fm[0])
+                                except Exception:
+                                    pass
                             pairs.append({"dir":dirn,"ep":ep,"xp":0.0,"pnl":0.0,"cm":0.0,"ets":ets,"xts":0,"sz":sz,"open":True})
                         else:
                             try:
@@ -5630,8 +5649,19 @@ with _tab_analysis:
                             except Exception:
                                 xts = 0
                             xp = float(xp_raw) if xp_raw else 0.0
+                            _cm = 0.0
+                            if _fm:
+                                try:
+                                    if _fm[0]:
+                                        ep = float(_fm[0])
+                                    if _fm[1]:
+                                        xp = float(_fm[1])
+                                    if len(_fm) >= 3 and _fm[2]:
+                                        _cm = float(_fm[2])
+                                except Exception:
+                                    pass
                             raw_pnl = (xp - ep) * sz * 0.001 * (1 if dirn == "LONG" else -1)
-                            pairs.append({"dir":dirn,"ep":ep,"xp":xp,"pnl":raw_pnl,"cm":0.0,"ets":ets,"xts":xts,"sz":sz,"open":False})
+                            pairs.append({"dir":dirn,"ep":ep,"xp":xp,"pnl":raw_pnl,"cm":_cm,"ets":ets,"xts":xts,"sz":sz,"open":False})
             except Exception:
                 pass
             return sorted(pairs, key=lambda p: p["ets"])

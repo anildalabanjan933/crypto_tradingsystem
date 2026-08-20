@@ -149,15 +149,15 @@ def _send_entry_match_alert(label, direction, entry_ts, bt_entry_price, lv_fill_
         pass
 
 
-def _append_fill_log(csv_path, entry_ts, exit_ts, direction, lots, bt_ep, lv_ep, bt_xp, lv_xp):
+def _append_fill_log(csv_path, entry_ts, exit_ts, direction, lots, bt_ep, lv_ep, bt_xp, lv_xp, total_charges=0.0):
     import csv as _csv_fl, os as _os_fl
     try:
         file_exists = _os_fl.path.exists(csv_path)
         with open(csv_path, "a", newline="") as _f:
             _w = _csv_fl.writer(_f)
             if not file_exists:
-                _w.writerow(["entry_ts","exit_ts","dir","lots","bt_entry","lv_entry","bt_exit","lv_exit"])
-            _w.writerow([entry_ts, exit_ts, direction, lots, bt_ep, lv_ep, bt_xp, lv_xp])
+                _w.writerow(["entry_ts","exit_ts","dir","lots","bt_entry","lv_entry","bt_exit","lv_exit","total_charges"])
+            _w.writerow([entry_ts, exit_ts, direction, lots, bt_ep, lv_ep, bt_xp, lv_xp, total_charges])
     except Exception as _e:
         log.warning(f'[FILL-LOG] Could not write fill log: {_e}')
 
@@ -635,6 +635,7 @@ while True:
                         if result.get("success"):
                             position = None
                             _entry_price_for_alert = open_entry_price
+                            _entry_commission_for_log = _entry_commission if '_entry_commission' in dir() else 0.0
                             open_entry_price = 0.0
                             _exit_fill_price = result.get("avg_fill_price", 0.0)
                             if _exit_fill_price == 0.0:
@@ -651,7 +652,9 @@ while True:
                             _bt_xp2  = float(_bt_csv2[5]) if _bt_csv2 and len(_bt_csv2) > 5 and str(_bt_csv2[5]).strip() not in ("", "PENDING") else 0.0
                             if _bt_ep2 > 0 and _entry_price_for_alert > 0 and _exit_fill_price > 0:
                                 _send_roundtrip_match_alert("S4", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2, lots)
-                                _append_fill_log("logs/fill_prices_s4.csv", sig_ts, _xt, dirn, lots, _bt_ep2, _entry_price_for_alert, _bt_xp2, _exit_fill_price)
+                                _exit_commission = result.get("commission", 0.0)
+                                _total_charges = float(_entry_commission_for_log) + float(_exit_commission)
+                                _append_fill_log("logs/fill_prices_s4.csv", sig_ts, _xt, dirn, lots, _bt_ep2, _entry_price_for_alert, _bt_xp2, _exit_fill_price, _total_charges)
                         else:
                             log.error(f"[ORDER] EXIT FAILED: {result}")
                             send_alert(f"CTS S4 EXIT FAILED\nError: {result}")
@@ -702,6 +705,7 @@ while True:
                             if real_entry > 0:
                                 break
                         open_entry_price = real_entry
+                        _entry_commission = result.get("commission", 0.0)
                         log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
                         _sl_price_val = 0.0
                         if real_entry > 0:
