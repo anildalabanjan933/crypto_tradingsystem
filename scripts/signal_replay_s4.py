@@ -680,7 +680,7 @@ while True:
                     os.remove(_override_file)
                     if _skip_this:
                         _skip_xt = _xt
-                        last_known_ts = safe_ts(_skip_xt)
+                        last_known_ts = safe_ts(sig_ts)
                         save_ts_file(TS_FILE, last_known_ts)
                         log.info(f"[SKIP] ENTRY blocked - manual_override active (single-shot) | dir={direction} | ts={sig_ts} | advanced past exit={_skip_xt}")
                         continue
