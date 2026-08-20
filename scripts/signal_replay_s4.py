@@ -148,6 +148,19 @@ def _send_entry_match_alert(label, direction, entry_ts, bt_entry_price, lv_fill_
     except Exception as e:
         pass
 
+
+def _append_fill_log(csv_path, entry_ts, exit_ts, direction, lots, bt_ep, lv_ep, bt_xp, lv_xp):
+    import csv as _csv_fl, os as _os_fl
+    try:
+        file_exists = _os_fl.path.exists(csv_path)
+        with open(csv_path, "a", newline="") as _f:
+            _w = _csv_fl.writer(_f)
+            if not file_exists:
+                _w.writerow(["entry_ts","exit_ts","dir","lots","bt_entry","lv_entry","bt_exit","lv_exit"])
+            _w.writerow([entry_ts, exit_ts, direction, lots, bt_ep, lv_ep, bt_xp, lv_xp])
+    except Exception as _e:
+        log.warning(f'[FILL-LOG] Could not write fill log: {_e}')
+
 def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
                                  bt_entry_price, bt_exit_price, lots=100):
     try:
@@ -638,6 +651,7 @@ while True:
                             _bt_xp2  = float(_bt_csv2[5]) if _bt_csv2 and len(_bt_csv2) > 5 and str(_bt_csv2[5]).strip() not in ("", "PENDING") else 0.0
                             if _bt_ep2 > 0 and _entry_price_for_alert > 0 and _exit_fill_price > 0:
                                 _send_roundtrip_match_alert("S4", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2, lots)
+                                _append_fill_log("logs/fill_prices_s4.csv", sig_ts, _xt, dirn, lots, _bt_ep2, _entry_price_for_alert, _bt_xp2, _exit_fill_price)
                         else:
                             log.error(f"[ORDER] EXIT FAILED: {result}")
                             send_alert(f"CTS S4 EXIT FAILED\nError: {result}")
