@@ -6039,7 +6039,7 @@ with _tab_analysis:
         def _fwd_slip_hdr13(pairs, bot_name=""):
             try:
                 closed = [p for p in pairs if not p.get('open', False)]
-                tot = len(pairs)
+                tot = len(closed)
                 net_pnl_inr = sum(float(p.get('pnl',0)) for p in closed) * _INR13
                 _bt_lu13h = _bt_lookup13(bot_name, vf_str=_VF13_7D) if bot_name else {"LONG":[],"SHORT":[]}
                 _lv_closed13h = [q for q in closed]
