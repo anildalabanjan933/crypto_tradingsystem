@@ -6135,6 +6135,31 @@ with _tab_analysis:
                              "SHORT": [q for q in _lv_asc13 if str(q.get("dir","")).upper()=="SHORT" and not q.get("open",False)]}
                 _lv_pos13 = {"LONG": {id(x): i for i, x in enumerate(_lv_idx13["LONG"])},
                              "SHORT": {id(x): i for i, x in enumerate(_lv_idx13["SHORT"])}}
+                # Scan bot log once for critical issue timestamps (bad-fill-auto-closed,
+                # SL placement failed, no SL placed) so each trade row can be flagged.
+                _issue_ts13 = {"badfill": [], "slfail": [], "nosl": []}
+                try:
+                    _lg13 = f"logs/live_trading_{bot_name.lower()}.log" if bot_name else None
+                    if _lg13 and os.path.exists(_lg13):
+                        import re as _relog13, datetime as _dtlog13
+                        with open(_lg13) as _lf13:
+                            for _ln13 in _lf13:
+                                _m13 = _relog13.match(r'^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', _ln13)
+                                if not _m13: continue
+                                try:
+                                    _tsv13 = _dtlog13.datetime.strptime(_m13.group(1), "%Y-%m-%d %H:%M:%S").replace(tzinfo=_dtlog13.timezone.utc).timestamp()
+                                except Exception:
+                                    continue
+                                if "BAD FILL DESPITE BAND" in _ln13:
+                                    _issue_ts13["badfill"].append(_tsv13)
+                                elif "SL PLACEMENT FAILED" in _ln13:
+                                    _issue_ts13["slfail"].append(_tsv13)
+                                elif "NO SL PLACED" in _ln13:
+                                    _issue_ts13["nosl"].append(_tsv13)
+                except Exception:
+                    pass
+                def _near_issue13(ets, key, tol=120):
+                    return any(abs(ets - t) <= tol for t in _issue_ts13.get(key, []))
                 rows = ""
                 for p in last20:
                     pnl      = float(p.get('pnl', 0))
@@ -6161,9 +6186,22 @@ with _tab_analysis:
                     _is_stuck = is_open and _stuck_f and os.path.exists(_stuck_f)
                     _is_orphan = (not is_open) and _orphan_f and os.path.exists(_orphan_f)
                     _sl_hit20 = bool(p.get('sl_hit', False))
+                    _msg_style20 = ""
                     if is_open:
                         _match20 = "-"
                         _msg20 = "Trade running now"
+                    elif _near_issue13(p.get('ets',0), "badfill"):
+                        _match20 = "-"
+                        _msg20 = "Price jumped too much - bot auto-closed this trade for safety"
+                        _msg_style20 = "color:#F23645;font-weight:700;"
+                    elif _near_issue13(p.get('ets',0), "nosl"):
+                        _match20 = "-"
+                        _msg20 = "WARNING: No stop-loss was placed on this trade - checked manually"
+                        _msg_style20 = "color:#F23645;font-weight:700;"
+                    elif _near_issue13(p.get('ets',0), "slfail"):
+                        _match20 = "-"
+                        _msg20 = "Stop-loss order failed to place - had to fix manually"
+                        _msg_style20 = "color:#F23645;font-weight:700;"
                     elif _is_stuck:
                         _match20 = "-"
                         _msg20 = "Bot thinks open, but exchange shows closed - check manually"
@@ -6209,7 +6247,7 @@ with _tab_analysis:
                         f"<td style='{_TR20}'>₹{cm_inr:,.0f}</td>"
                         f"<td style='{ps}'>{pnl_disp}</td>"
                         f"<td style='{_TD20}'>{_match20}</td>"
-                        f"<td style='{_TD20};text-align:left;'>{_msg20}</td>"
+                        f"<td style='{_TD20};text-align:left;{_msg_style20}'>{_msg20}</td>"
                         f"</tr>"
                     )
                 return (
