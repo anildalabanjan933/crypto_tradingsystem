@@ -6382,12 +6382,63 @@ with _tab_analysis:
                     _df_vf = _df[_df['entry_datetime'] >= vf_dt]
                     if not _df_vf.empty:
                         frames.append(_df_vf)
+                _open_row_html = ""
+                try:
+                    _csv_map_bt20 = {"s2": "logs/signals_s4v2.csv", "s4": "logs/signals_s4.csv"}
+                    _sig_path_bt20 = _csv_map_bt20.get(which)
+                    if _sig_path_bt20 and os.path.exists(_sig_path_bt20):
+                        _last_pending_bt20 = None
+                        with open(_sig_path_bt20) as _fbt20:
+                            for _lbt20 in _fbt20:
+                                _pbt20 = _lbt20.strip().split(',')
+                                if len(_pbt20) < 5:
+                                    continue
+                                if _pbt20[1] == "PENDING":
+                                    _last_pending_bt20 = (_pbt20[0], _pbt20[2], _pbt20[4])
+                        if _last_pending_bt20:
+                            import datetime as _dob20
+                            _ist_ob20 = _dob20.timedelta(hours=5, minutes=30)
+                            _et_ob20, _dir_ob20, _ep_ob20 = _last_pending_bt20
+                            _et_dt_ob20 = _dob20.datetime.strptime(_et_ob20[:19].replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_ob20
+                            _et_disp_ob20 = _et_dt_ob20.strftime('%d-%b-%Y %I:%M %p IST')
+                            _ds_ob20 = _TG20 if _dir_ob20.upper() == 'LONG' else _TR20
+                            _open_row_html = (
+                                f"<tr style='background:#E3F2FD;'>"
+                                f"<td style='{_TD20}'>{_et_disp_ob20[:11].strip()}</td>"
+                                f"<td style='{_ds_ob20}'>{_dir_ob20.upper()}</td>"
+                                f"<td style='{_TD20}'>{_et_disp_ob20[12:]}</td>"
+                                f"<td style='{_TD20}'>OPEN</td>"
+                                f"<td style='{_TD20}'>${float(_ep_ob20):,.0f}</td>"
+                                f"<td style='{_TD20}'>-</td>"
+                                f"<td style='{_TD20}'>-</td>"
+                                f"<td style='{_TD20}'>-</td>"
+                                f"<td style='{_TD20}'>-</td>"
+                                f"</tr>"
+                            )
+                except Exception:
+                    _open_row_html = ""
                 if not frames:
+                    if _open_row_html:
+                        return (
+                            f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
+                            f"<table style='width:100%;border-collapse:collapse;'>"
+                            f"<thead><tr>"
+                            f"<th style='{_TH20}'>Date</th>"
+                            f"<th style='{_TH20}'>Dir</th>"
+                            f"<th style='{_TH20}'>Entry Time (IST)</th>"
+                            f"<th style='{_TH20}'>Exit Time (IST)</th>"
+                            f"<th style='{_TH20}'>Entry (INR)</th>"
+                            f"<th style='{_TH20}'>Exit (INR)</th>"
+                            f"<th style='{_TH20}'>{_slip_lbl13}</th>"
+                            f"<th style='{_TH20}'>Tax+Charges</th>"
+                            f"<th style='{_TH20}'>Net PnL</th>"
+                            f"</tr></thead><tbody>{_open_row_html}</tbody></table></div>"
+                        )
                     return _WAIT_BT
                 df = _pb.concat(frames).sort_values('entry_datetime').iloc[::-1].reset_index(drop=True)
                 if df.empty:
                     return _WAIT_BT
-                rows = ""
+                rows = _open_row_html
                 for i, r in df.iterrows():
                     _gross_pnl   = float(r.get('gross_pnl', r.get('net_pnl', 0)))
                     _old_slip    = float(r.get('slippage_usd', 10.0))
