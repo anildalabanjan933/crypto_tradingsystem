@@ -6583,25 +6583,58 @@ with _tab_analysis:
         s2p_7d = [p for p in s2p if p.get('ets',0) >= _vf7_ts]
         s4p_7d = [p for p in s4p if p.get('ets',0) >= _vf7_ts]
 
+        def _dl13_csv(pairs, label, key):
+            try:
+                import pandas as _pddl13, datetime as _dtdl13
+                rows13 = []
+                for p in pairs:
+                    _et13 = _dtdl13.datetime.utcfromtimestamp(p.get('ets',0)).strftime('%Y-%m-%d %H:%M:%S') if p.get('ets') else ""
+                    _xt13 = _dtdl13.datetime.utcfromtimestamp(p.get('xts',0)).strftime('%Y-%m-%d %H:%M:%S') if p.get('xts') else ""
+                    rows13.append({"direction":p.get('dir',''), "lot":p.get('sz',0), "entry_time_utc":_et13,
+                                   "exit_time_utc":_xt13, "entry_price":p.get('ep',0), "exit_price":p.get('xp',0),
+                                   "net_pnl_usd":p.get('pnl',0), "charges_usd":p.get('cm',0), "status":"OPEN" if p.get('open') else "CLOSED"})
+                _csvdata13 = _pddl13.DataFrame(rows13).to_csv(index=False)
+                st.download_button(f"Download {label} CSV", _csvdata13, file_name=f"{label.replace(' ','_')}.csv", mime="text/csv", key=key)
+            except Exception as _edl13:
+                st.caption(f"Download unavailable: {_edl13}")
+
+        def _dl13_bt_csv(csv_pattern, vf_str, label, key):
+            try:
+                files13 = sorted(_gl13.glob(csv_pattern), reverse=True)
+                if files13:
+                    _dfdl13 = _pd13.read_csv(files13[0])
+                    if 'entry_datetime' in _dfdl13.columns:
+                        _dfdl13['entry_datetime'] = _pd13.to_datetime(_dfdl13['entry_datetime'])
+                        _dfdl13 = _dfdl13[_dfdl13['entry_datetime'] >= _pd13.to_datetime(vf_str)]
+                    st.download_button(f"Download {label} CSV", _dfdl13.to_csv(index=False), file_name=f"{label.replace(' ','_')}.csv", mime="text/csv", key=key)
+                else:
+                    st.caption("No backtest file found")
+            except Exception as _edl13b:
+                st.caption(f"Download unavailable: {_edl13b}")
+
         _colA, _colB = st.columns(2)
         with _colA:
             st.markdown(f"<div style='{_HDR13}'>BACKTEST S4V2 - THIS MONTH</div>", unsafe_allow_html=True)
             st.markdown(_bt_hdr13("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
             st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
+            _dl13_bt_csv("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv", _VF13_7D, "BT_S4V2_ThisMonth", "dl_bt_s2")
         with _colB:
             st.markdown(f"<div style='{_HDR13}'>BACKTEST S4 - THIS MONTH</div>", unsafe_allow_html=True)
             st.markdown(_bt_hdr13("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv", _VF13_7D, which="s4"), unsafe_allow_html=True)
             st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv", _VF13_7D, which="s4"), unsafe_allow_html=True)
+            _dl13_bt_csv("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv", _VF13_7D, "BT_S4_ThisMonth", "dl_bt_s4")
 
         _colC, _colD = st.columns(2)
         with _colC:
             st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4V2 - THIS MONTH</div>", unsafe_allow_html=True)
             st.markdown(_fwd_slip_hdr13(s2p_7d, bot_name="S4V2"), unsafe_allow_html=True)
             st.markdown(_fwd20(s2p_7d, bot_name="S4V2"), unsafe_allow_html=True)
+            _dl13_csv(s2p_7d, "LV_S4V2_ThisMonth", "dl_lv_s2")
         with _colD:
             st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4 - THIS MONTH</div>", unsafe_allow_html=True)
             st.markdown(_fwd_slip_hdr13(s4p_7d, bot_name="S4"), unsafe_allow_html=True)
             st.markdown(_fwd20(s4p_7d, bot_name="S4"), unsafe_allow_html=True)
+            _dl13_csv(s4p_7d, "LV_S4_ThisMonth", "dl_lv_s4")
 
         # ================================================================
         # EQUITY CURVE - MONTHLY VIEW (BT + FWD, S4V2 + S4)
