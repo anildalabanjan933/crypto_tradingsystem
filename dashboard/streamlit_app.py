@@ -6135,6 +6135,22 @@ with _tab_analysis:
                              "SHORT": [q for q in _lv_asc13 if str(q.get("dir","")).upper()=="SHORT" and not q.get("open",False)]}
                 _lv_pos13 = {"LONG": {id(x): i for i, x in enumerate(_lv_idx13["LONG"])},
                              "SHORT": {id(x): i for i, x in enumerate(_lv_idx13["SHORT"])}}
+                # Cosmetic-only cross-check: confirm OPEN row's direction matches the
+                # real live position on Delta right now, so a stale/orphan leftover
+                # entry (no real position) is not mislabeled "Trade running now".
+                _live_dir13 = None
+                try:
+                    _lk13 = os.getenv("S4V2_API_KEY") if bot_name=="S4V2" else os.getenv("S4_API_KEY")
+                    _ls13 = os.getenv("S4V2_API_SECRET") if bot_name=="S4V2" else os.getenv("S4_API_SECRET")
+                    _lts13 = str(int(_t13.time())); _lqs13 = "product_id=84"; _lpth13 = "/v2/positions"
+                    _lsig13 = _hm13.new(_ls13.encode(), f"GET{_lts13}{_lpth13}?{_lqs13}".encode(), _hs13.sha256).hexdigest()
+                    _lh13 = {"api-key":_lk13,"timestamp":_lts13,"signature":_lsig13}
+                    _lr13 = _rq13.get(f"{_BASE13}{_lpth13}?{_lqs13}", headers=_lh13, timeout=5).json()
+                    if _lr13.get("success"):
+                        _lsz13 = int(_lr13.get("result",{}).get("size",0) or 0)
+                        _live_dir13 = "LONG" if _lsz13>0 else "SHORT" if _lsz13<0 else None
+                except Exception:
+                    pass
                 # Scan bot log once for critical issue timestamps (bad-fill-auto-closed,
                 # SL placement failed, no SL placed) so each trade row can be flagged.
                 _issue_ts13 = {"badfill": [], "slfail": [], "nosl": []}
@@ -6187,7 +6203,11 @@ with _tab_analysis:
                     _is_orphan = (not is_open) and _orphan_f and os.path.exists(_orphan_f)
                     _sl_hit20 = bool(p.get('sl_hit', False))
                     _msg_style20 = ""
-                    if is_open:
+                    if is_open and _live_dir13 is not None and dirv != _live_dir13:
+                        _match20 = "-"
+                        _msg20 = "Old leftover order, not a real open trade - can ignore"
+                        _msg_style20 = "color:#999;font-style:italic;"
+                    elif is_open:
                         _match20 = "-"
                         _msg20 = "Trade running now"
                     elif _near_issue13(p.get('ets',0), "badfill"):
