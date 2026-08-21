@@ -5608,28 +5608,26 @@ with _tab_analysis:
                 return False
 
             srt = sorted(orders, key=lambda x: x.get("created_at",""))
-            def _dedupe_retry_spam(entries, exits):
+            def _dedupe_retry_spam(entries, tol_sec=600):
                 # Root cause fix: pre-21-Aug entry-retry-spam bug placed multiple
-                # real duplicate entry orders before cooldown fix existed. If two
-                # entries occur back-to-back with NO exit between them, the first
-                # was never a real terminal position - only the entry immediately
-                # before the next real exit is genuine. Drop all superseded ones.
+                # real duplicate entry orders (1-5min apart, same direction) before
+                # cooldown fix existed. These have no matching exit, desyncing FIFO
+                # 1:1 pairing for every trade after them. Keep only the LAST order
+                # in each tight cluster (closest to actual intended entry).
                 if not entries: return entries
-                exit_ts_sorted = sorted(_ts(x) for x in exits)
-                out = []
-                for i, o in enumerate(entries):
-                    cur_ts = _ts(o)
-                    if i + 1 < len(entries):
-                        next_ts = _ts(entries[i+1])
-                        has_exit_between = any(cur_ts <= xt < next_ts for xt in exit_ts_sorted)
-                        if not has_exit_between:
-                            continue
-                    out.append(o)
+                out = [entries[0]]
+                for o in entries[1:]:
+                    prev_ts = _ts(out[-1])
+                    cur_ts  = _ts(o)
+                    if cur_ts - prev_ts <= tol_sec:
+                        out[-1] = o
+                    else:
+                        out.append(o)
                 return out
+            longs_e  = _dedupe_retry_spam([o for o in srt if o.get("side")=="buy"  and _has_fill(o) and str(o.get("reduce_only","")).lower() not in ["true","1"]])
             longs_x  = [o for o in srt if o.get("side")=="sell" and _has_fill(o) and str(o.get("reduce_only","")).lower() in ["true","1"]]
+            shorts_e = _dedupe_retry_spam([o for o in srt if o.get("side")=="sell" and _has_fill(o) and str(o.get("reduce_only","")).lower() not in ["true","1"]])
             shorts_x = [o for o in srt if o.get("side")=="buy"  and _has_fill(o) and str(o.get("reduce_only","")).lower() in ["true","1"]]
-            longs_e  = _dedupe_retry_spam([o for o in srt if o.get("side")=="buy"  and _has_fill(o) and str(o.get("reduce_only","")).lower() not in ["true","1"]], longs_x)
-            shorts_e = _dedupe_retry_spam([o for o in srt if o.get("side")=="sell" and _has_fill(o) and str(o.get("reduce_only","")).lower() not in ["true","1"]], shorts_x)
 
             pairs = []
             def _fifo_match(entries, exits, dirn):
