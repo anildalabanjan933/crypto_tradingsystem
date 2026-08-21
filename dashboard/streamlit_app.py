@@ -6592,7 +6592,7 @@ with _tab_analysis:
                     _xt13 = _dtdl13.datetime.utcfromtimestamp(p.get('xts',0)).strftime('%Y-%m-%d %H:%M:%S') if p.get('xts') else ""
                     rows13.append({"direction":p.get('dir',''), "lot":p.get('sz',0), "entry_time_utc":_et13,
                                    "exit_time_utc":_xt13, "entry_price":p.get('ep',0), "exit_price":p.get('xp',0),
-                                   "net_pnl_usd":p.get('pnl',0), "charges_usd":p.get('cm',0), "status":"OPEN" if p.get('open') else "CLOSED"})
+                                   "net_pnl_usd":p.get('pnl',0), "net_pnl_inr":round(p.get('pnl',0)*_INR13,2), "charges_usd":p.get('cm',0), "status":"OPEN" if p.get('open') else "CLOSED"})
                 _csvdata13 = _pddl13.DataFrame(rows13).to_csv(index=False)
                 st.download_button(f"Download {label} CSV", _csvdata13, file_name=f"{label.replace(' ','_')}.csv", mime="text/csv", key=key)
             except Exception as _edl13:
