@@ -5700,15 +5700,29 @@ with _tab_analysis:
                                 _hts = int(_hdt_utc.replace(tzinfo=_dtp13.timezone.utc).timestamp())
                             except Exception:
                                 continue
-                            _hist_rows.append((_hts, _hside, _hexec, _hfee))
+                            try:
+                                _hqty = int(float(_hp[2]))
+                            except Exception:
+                                _hqty = None
+                            _hist_rows.append((_hts, _hside, _hexec, _hfee, _hqty))
                     _hist_rows.sort(key=lambda r: r[0])
             except Exception:
                 _hist_rows = []
 
-            def _hist_lookup(target_ts, side_want, tol=8000):
+            def _hist_lookup(target_ts, side_want, want_sz=None, tol=8000):
                 best = None
                 best_diff = None
-                for _hts, _hside, _hexec, _hfee in _hist_rows:
+                if want_sz is not None:
+                    for _hts, _hside, _hexec, _hfee, _hqty in _hist_rows:
+                        if _hside != side_want or _hqty != want_sz:
+                            continue
+                        diff = abs(_hts - target_ts)
+                        if diff <= tol and (best_diff is None or diff < best_diff):
+                            best = (_hexec, _hfee)
+                            best_diff = diff
+                    if best:
+                        return best
+                for _hts, _hside, _hexec, _hfee, _hqty in _hist_rows:
                     if _hside != side_want:
                         continue
                     diff = abs(_hts - target_ts)
@@ -5748,7 +5762,7 @@ with _tab_analysis:
                                 except Exception:
                                     pass
                             else:
-                                _hh = _hist_lookup(ets, 'buy' if dirn == 'LONG' else 'sell')
+                                _hh = _hist_lookup(ets, 'buy' if dirn == 'LONG' else 'sell', sz)
                                 if _hh and _hh[0]:
                                     try:
                                         ep = float(_hh[0])
@@ -5779,8 +5793,8 @@ with _tab_analysis:
                             else:
                                 _entry_side = 'buy' if dirn == 'LONG' else 'sell'
                                 _exit_side  = 'sell' if dirn == 'LONG' else 'buy'
-                                _hh_e = _hist_lookup(ets, _entry_side)
-                                _hh_x = _hist_lookup(xts, _exit_side)
+                                _hh_e = _hist_lookup(ets, _entry_side, sz)
+                                _hh_x = _hist_lookup(xts, _exit_side, sz)
                                 _hfee_sum = 0.0
                                 if _hh_e and _hh_e[0]:
                                     try:
