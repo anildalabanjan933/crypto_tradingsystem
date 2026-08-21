@@ -5629,12 +5629,16 @@ with _tab_analysis:
                     _sl_hit = str(x.get("stop_order_type","")) == "stop_loss_order"
                     pairs.append({"dir":dirn,"ep":ep,"xp":xp,"pnl":pnl,"cm":cm,"ets":ets,"xts":xts,"sz":sz,"sl_hit":_sl_hit})
                     ei += 1; xi += 1
-                while ei < len(entries):
-                    e = entries[ei]
+                # Only the single most-recent unmatched entry is a real open
+                # position. Earlier unmatched entries are stale retry-spam
+                # duplicates (from the historical entry-retry bug) with no
+                # matching exit - they are not real trades, so drop them
+                # instead of falsely showing every one as OPEN.
+                if ei < len(entries):
+                    e = entries[len(entries) - 1]
                     sz = _filled_sz(e)
                     cm_open = float(e.get("paid_commission") or 0)
                     pairs.append({"dir":dirn,"ep":_px(e),"xp":0,"pnl":0,"cm":cm_open,"ets":_ts(e),"xts":0,"sz":sz,"open":True,"sl_hit":False})
-                    ei += 1
 
             _fifo_match(longs_e, longs_x, "LONG")
             _fifo_match(shorts_e, shorts_x, "SHORT")
