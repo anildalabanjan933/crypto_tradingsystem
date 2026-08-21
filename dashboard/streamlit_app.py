@@ -6163,16 +6163,16 @@ with _tab_analysis:
                     _sl_hit20 = bool(p.get('sl_hit', False))
                     if is_open:
                         _match20 = "-"
-                        _msg20 = "OPEN - trade in progress"
+                        _msg20 = "Trade running now"
                     elif _is_stuck:
                         _match20 = "-"
-                        _msg20 = "STUCK - CSV shows open, exchange flat - check logs"
+                        _msg20 = "Bot thinks open, but exchange shows closed - check manually"
                     elif _is_orphan:
                         _match20 = "-"
-                        _msg20 = "ORPHAN - exchange position untracked - check SL manually"
+                        _msg20 = "Position open on exchange but bot lost track - check SL manually"
                     elif _sl_hit20:
                         _match20 = "-"
-                        _msg20 = "SL HIT - stop-loss triggered, early exit by design"
+                        _msg20 = "Stop-loss hit - closed early, this is normal"
                     else:
                         _bt_m13 = None
                         if dirv in _lv_pos13 and id(p) in _lv_pos13[dirv]:
@@ -6193,7 +6193,7 @@ with _tab_analysis:
                                         f"|X:<span style='color:{_xc13}'>{_xsg13}{_xsl13:.2f}</span>")
                         else:
                             _match20 = "-"
-                        _msg20 = "Normal exit - closed as expected"
+                        _msg20 = "Closed normally, as planned"
                     pnl_disp  = ("STUCK" if _is_stuck else "OPEN") if is_open else ("ORPHAN" if _is_orphan else f"₹{pnl_inr:,.0f}")
                     xp_disp   = "-" if is_open else f"${xp_inr:,.0f}"
                     rows += (
