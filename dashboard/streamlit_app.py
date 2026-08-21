@@ -6206,7 +6206,7 @@ with _tab_analysis:
                     if is_open and _live_dir13 is not None and dirv != _live_dir13:
                         _match20 = "-"
                         _msg20 = "Old leftover order, not a real open trade - can ignore"
-                        _msg_style20 = "color:#999;font-style:italic;"
+                        _msg_style20 = "color:#131722;font-weight:700;"
                     elif is_open:
                         _match20 = "-"
                         _msg20 = "Trade running now"
