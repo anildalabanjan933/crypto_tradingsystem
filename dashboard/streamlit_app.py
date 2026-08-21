@@ -6615,14 +6615,14 @@ with _tab_analysis:
         _colA, _colB = st.columns(2)
         with _colA:
             st.markdown(f"<div style='{_HDR13}'>BACKTEST S4V2 - THIS MONTH</div>", unsafe_allow_html=True)
-            st.markdown(_bt_hdr13("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
-            st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
-            _dl13_bt_csv("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv", _VF13_7D, "BT_S4V2_ThisMonth", "dl_bt_s2")
+            st.markdown(_bt_hdr13("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
+            st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
+            _dl13_bt_csv("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv", _VF13_7D, "BT_S4V2_ThisMonth", "dl_bt_s2")
         with _colB:
             st.markdown(f"<div style='{_HDR13}'>BACKTEST S4 - THIS MONTH</div>", unsafe_allow_html=True)
-            st.markdown(_bt_hdr13("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv", _VF13_7D, which="s4"), unsafe_allow_html=True)
-            st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv", _VF13_7D, which="s4"), unsafe_allow_html=True)
-            _dl13_bt_csv("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv", _VF13_7D, "BT_S4_ThisMonth", "dl_bt_s4")
+            st.markdown(_bt_hdr13("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv", _VF13_7D, which="s4"), unsafe_allow_html=True)
+            st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv", _VF13_7D, which="s4"), unsafe_allow_html=True)
+            _dl13_bt_csv("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv", _VF13_7D, "BT_S4_ThisMonth", "dl_bt_s4")
 
         _colC, _colD = st.columns(2)
         with _colC:
