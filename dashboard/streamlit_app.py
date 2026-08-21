@@ -5584,7 +5584,20 @@ with _tab_analysis:
                 pass
             return orders
 
-        def _pair13(orders):
+        def _live_pos13(k, s):
+            try:
+                ts = str(int(_t13.time())); qs = "product_id=84"; pth = "/v2/positions"
+                sig = _hm13.new(s.encode(), f"GET{ts}{pth}?{qs}".encode(), _hs13.sha256).hexdigest()
+                h = {"api-key":k,"timestamp":ts,"signature":sig}
+                r = _rq13.get(f"{_BASE13}{pth}?{qs}", headers=h, timeout=5).json()
+                if r.get("success"):
+                    sz = int(r.get("result",{}).get("size",0) or 0)
+                    return ("LONG" if sz>0 else "SHORT" if sz<0 else None), abs(sz)
+            except Exception:
+                pass
+            return None, 0
+
+        def _pair13(orders, live_dir=None, live_sz=0):
             # FIFO two-pointer per direction - prevents cross-matching entry with
             # a distant unrelated future exit (root cause of Aug-2026 S4 -Rs299k
             # pairing-mismatch bug: old exhaustive-search version could skip over
@@ -5629,14 +5642,13 @@ with _tab_analysis:
                     _sl_hit = str(x.get("stop_order_type","")) == "stop_loss_order"
                     pairs.append({"dir":dirn,"ep":ep,"xp":xp,"pnl":pnl,"cm":cm,"ets":ets,"xts":xts,"sz":sz,"sl_hit":_sl_hit})
                     ei += 1; xi += 1
-                # Only the single most-recent unmatched entry is a real open
-                # position. Earlier unmatched entries are stale retry-spam
-                # duplicates (from the historical entry-retry bug) with no
-                # matching exit - they are not real trades, so drop them
-                # instead of falsely showing every one as OPEN.
-                if ei < len(entries):
+                # Only show OPEN if this direction matches the actual live
+                # position on Delta right now. Earlier unmatched entries are
+                # stale retry-spam duplicates (from the historical entry-retry
+                # bug) with no matching exit - not real trades, so drop them.
+                if ei < len(entries) and live_dir == dirn:
                     e = entries[len(entries) - 1]
-                    sz = _filled_sz(e)
+                    sz = live_sz if live_sz > 0 else _filled_sz(e)
                     cm_open = float(e.get("paid_commission") or 0)
                     pairs.append({"dir":dirn,"ep":_px(e),"xp":0,"pnl":0,"cm":cm_open,"ets":_ts(e),"xts":0,"sz":sz,"open":True,"sl_hit":False})
 
