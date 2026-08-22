@@ -5824,6 +5824,94 @@ with _tab_analysis:
                 pass
             return sorted(pairs, key=lambda p: p["ets"])
 
+        def _pair13_fills(k, s, vf_str):
+            import datetime as _dtf13
+            pairs = []
+            try:
+                vf  = int(_dtf13.datetime.strptime(vf_str,"%Y-%m-%dT%H:%M:%S").replace(tzinfo=_dtf13.timezone.utc).timestamp())
+                now = int(_dtf13.datetime.now(_dtf13.timezone.utc).timestamp())
+                path = "/v2/fills"
+                after = None
+                fills = []
+                for _ in range(200):
+                    prm = {"start_time":int(vf*1e6),"end_time":int(now*1e6),"page_size":50}
+                    if after: prm["after"] = after
+                    qs = "&".join(f"{a}={b}" for a,b in sorted(prm.items()))
+                    h = _auth13(k, s, path, qs)
+                    r = _rq13.get(f"{_BASE13}{path}?{qs}", headers=h, timeout=10)
+                    d = r.json()
+                    if not d.get("success"): break
+                    batch = d.get("result",[])
+                    fills += batch
+                    after = d.get("meta",{}).get("after")
+                    if not after or not batch: break
+                fills = sorted(fills, key=lambda x: x.get("created_at",""))
+
+                def _pts(ts_str):
+                    return int(_dtf13.datetime.strptime(ts_str[:19], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=_dtf13.timezone.utc).timestamp())
+
+                entry_ts = None; entry_px = None; entry_side = None
+                prev_size = 0; cum_cm = 0.0; cum_pnl = 0.0; max_sz = 0
+
+                for f in fills:
+                    meta = f.get("meta_data", {}) or {}
+                    npos = meta.get("new_position", {}) or {}
+                    size = npos.get("size")
+                    if size is None:
+                        continue
+                    side = f.get("side")
+                    px   = float(f.get("price") or 0)
+                    cm_fill = float(f.get("commission") or 0)
+                    realized = float(npos.get("realized_pnl") or 0)
+
+                    if entry_ts is None and prev_size == 0 and size != 0:
+                        entry_ts   = f.get("created_at")
+                        entry_px   = px
+                        entry_side = side
+                        max_sz = abs(size)
+
+                    cum_cm += cm_fill
+                    if entry_ts is not None:
+                        max_sz = max(max_sz, abs(size))
+
+                    # A trade only closes when position hits exactly flat (0),
+                    # OR the signed position crosses zero in one single fill
+                    # (true reversal). Partial reduces toward 0 (e.g. -100 -> -79
+                    # -> ... -> 0) must NOT be treated as separate closed trades -
+                    # that was the root cause of inflated trade counts (186/103
+                    # instead of real ~124/73) in the first version of this fix.
+                    crossed_flip = (prev_size > 0 and size < 0) or (prev_size < 0 and size > 0)
+                    is_flat = size == 0
+
+                    if entry_ts is not None and (is_flat or crossed_flip):
+                        cum_pnl += realized
+                        dirn = "LONG" if entry_side == "buy" else "SHORT"
+                        pairs.append({
+                            "dir": dirn, "ep": entry_px, "xp": px,
+                            "pnl": cum_pnl, "cm": cum_cm,
+                            "ets": _pts(entry_ts), "xts": _pts(f.get("created_at")),
+                            "sz": max_sz, "open": False, "sl_hit": False
+                        })
+                        cum_pnl = 0.0; cum_cm = 0.0
+                        if is_flat:
+                            entry_ts = None; entry_px = None; entry_side = None; max_sz = 0
+                        else:
+                            entry_ts = f.get("created_at"); entry_px = px; entry_side = side
+                            max_sz = abs(size)
+                    prev_size = size
+
+                if entry_ts is not None:
+                    dirn = "LONG" if entry_side == "buy" else "SHORT"
+                    pairs.append({
+                        "dir": dirn, "ep": entry_px, "xp": 0.0,
+                        "pnl": 0.0, "cm": cum_cm,
+                        "ets": _pts(entry_ts), "xts": 0,
+                        "sz": max_sz, "open": True, "sl_hit": False
+                    })
+            except Exception:
+                pass
+            return sorted(pairs, key=lambda p: p["ets"])
+
         def _calc13(pairs):
             if not pairs: return None
             tot = len(pairs)
@@ -5995,8 +6083,8 @@ with _tab_analysis:
             )
 
         # ── LOAD FORWARD TEST DATA FROM SIGNALS CSV (matches BT engine exactly) ──
-        s2p  = _pair13(_fetch13(os.getenv("S4V2_API_KEY"), os.getenv("S4V2_API_SECRET"), _VF13_7D))
-        s4p  = _pair13(_fetch13(os.getenv("S4_API_KEY"), os.getenv("S4_API_SECRET"), _VF13_7D))
+        s2p  = _pair13_fills(os.getenv("S4V2_API_KEY"), os.getenv("S4V2_API_SECRET"), _VF13_7D)
+        s4p  = _pair13_fills(os.getenv("S4_API_KEY"), os.getenv("S4_API_SECRET"), _VF13_7D)
         s2m  = _calc13(s2p)
         s4m  = _calc13(s4p)
         cbm  = _calc13(s2p+s4p)
