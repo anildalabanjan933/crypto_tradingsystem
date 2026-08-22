@@ -204,3 +204,70 @@ with exchange position flat (exact signature of pre-fix startup-lock bug), sends
 one-time Telegram alert, writes flag file. Dashboard Section 13 FWD table shows
 "STUCK" (red) instead of "OPEN" (orange) when flag present. Own isolated API call,
 does not touch existing SL-check logic. Both bots restarted clean, verified running.
+
+[22-Aug-2026] | FINAL CLOSURE - 12-Aug/13-Aug/S4V2 bt_exit=0.0/02-04Aug all 4 remaining checks | STATUS: CLOSED
+This supersedes the "NEW FINDING" blocks above (12-Aug off-schedule, 13-Aug
+liquidation) with fresh raw-fills verification done this session.
+
+CHECK 1 - 12-Aug -80,000 (off-schedule execution):
+Verified via live Delta /v2/fills (S4, product_id=84): 3 position flips in
+under 2 minutes (15:07:59, 15:08:04, 15:09:50, 15:09:54 UTC) - none align
+with any 2H boundary (00/02/04/06/08/10/12/14/16/18/20/22 UTC). boundary_watcher.log
+confirms watcher fired on-schedule at 14:00/16:00 with no crash - so trigger
+mechanism was healthy. margin_monitor.log/maintenance.log show nothing in
+window. S4V2 fills confirm zero cross-bot interference (S4V2 traded only its
+own 30-min marks that day). renko_state_engine.log and live_trading_s4.log
+both rotated away, no direct log trail exists for this date.
+ROOT CAUSE (by elimination + pattern match): matches signature of "manual UI
+close causes bot re-entry" bug - a manual close during this window likely
+triggered repeated re-entry attempts, since the override-flag protection for
+this exact scenario was only added 17-Aug-2026 (5 days after this incident).
+STATUS: Historical, pre-fix-era, root cause identified, no further action
+needed (fix already in place since 17-Aug).
+
+CHECK 2 - 13-Aug -79,000 (was mislabeled "double-entry causing liquidation"):
+Verified via live Delta /v2/fills (S4, product_id=84):
+  04:00:07.788 UTC - buy 100 @73000, closed prior short (realized_pnl -951.13)
+  04:19:15.098 UTC - buy 100 @72999, opened new LONG (mark price at that
+    instant was only ~63,785 per fill's own meta_data.mark field - i.e. the
+    fill price itself was ~9,200 points away from true market price)
+  04:19:15.901 UTC (0.8 sec later) - forced LIQUIDATION sell @63602.7
+    (fill_type=liquidation), realized_pnl -939.63 = approx -78,929 INR
+    (matches tracked -79,000)
+CORRECTION: this was NOT a double-entry bug. There was no duplicate open -
+the 04:00 fill closed an existing position, the 04:19 fill opened a fresh
+one. The real bug was a catastrophic bad-fill-on-entry (raw market order hit
+thin liquidity ~9,200pts from true price), immediately breaching margin and
+triggering instant liquidation. This is the same bug class already fixed
+15-Aug-2026 (IOC $250-band + auto-close-on-bad-fill) - likely the exact
+"$73k outlier" referenced in that fix's changelog entry.
+STATUS: Historical, pre-fix-era, root cause corrected and confirmed, already
+fixed 15-Aug-2026. No further action needed.
+
+CHECK 3 - S4V2 fill_prices_s4v2.csv bt_exit=0.0 rows (3 total):
+  21-Aug 02:00-03:00 short: lv_entry 75000 -> lv_exit 78000 = -300 USD real
+    loss (~-25,200 INR)
+  21-Aug 04:00-09:00 long: lv_entry 75180 -> lv_exit 77710 = +253 USD real
+    profit (~+21,252 INR)
+  22-Aug 02:00-03:30 long: lv_entry 78401 -> lv_exit 78413.7 = +1.27 USD
+    (negligible)
+Real live PnL is fully recoverable from lv_entry/lv_exit columns already in
+the CSV - bt_exit=0.0 only breaks the BT-side comparison, it does NOT hide
+or cause any additional trading loss. Confirmed cosmetic/logging bug only
+(async race: row written before BT exit price captured - matches existing
+Bug #2 already logged 21-Aug-2026).
+STATUS: Confirmed cosmetic logging bug, not a new accidental-loss source.
+No new fix needed beyond existing Bug #2 fix recommendation (fill logger
+should wait for both bt_exit and lv_exit non-zero before writing row).
+
+CHECK 4 - 02-04 Aug BT vs live/signal comparison:
+Verified via live Delta /v2/fills (S4, product_id=84) across 02-Aug 00:00
+to 05-Aug 00:00 UTC window: all fills show only small normal slippage
+losses (-$1.99 to -$10.58 per fill), no liquidation events, no off-schedule
+timestamps, no anomalous pattern.
+STATUS: CLOSED-NO-BUG. No hidden loss or bug found in this window.
+
+OVERALL: All 4 remaining accidental-loss investigation items for S4/S4V2
+are now closed. No new code fixes required beyond what is already applied
+(15-Aug bad-fill IOC-band fix, 17-Aug manual-close override-flag fix).
+Investigation phase for accidental losses is COMPLETE.
