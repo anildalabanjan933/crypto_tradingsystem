@@ -572,4 +572,25 @@ class OrderManager:
             f"Last error: {last_resp.get('error') if last_resp else 'N/A'}\n"
             f"ACTION REQUIRED: Position is UNPROTECTED - place SL manually on Delta Exchange immediately"
         )
-        return {"success": False, "error": "sl_placement_failed_after_max_attempts", "attempts": max_attempts}
+        logging.critical(f"[OrderManager] SL PLACEMENT FAILED AFTER {max_attempts} ATTEMPTS - initiating emergency close")
+        try:
+            _emergency = self.close_position(size=_sl_size, side=side, max_attempts=8, retry_delay=1.5)
+            if _emergency.get("success"):
+                send_alert(
+                    f"CTS CRITICAL - SL FAILED, EMERGENCY CLOSE SUCCEEDED\n"
+                    f"Direction: {direction.upper()}\n"
+                    f"Entry: {entry_price}\n"
+                    f"Closed at: {_emergency.get('avg_fill_price')}"
+                )
+            else:
+                send_alert(
+                    f"CTS CRITICAL - SL FAILED AND EMERGENCY CLOSE ALSO FAILED\n"
+                    f"Direction: {direction.upper()}\n"
+                    f"Entry: {entry_price}\n"
+                    f"MANUAL INTERVENTION REQUIRED IMMEDIATELY - POSITION FULLY UNPROTECTED"
+                )
+        except Exception as _ee:
+            logging.critical(f"[OrderManager] Emergency close exception: {_ee}")
+            _emergency = {"success": False, "error": str(_ee)}
+
+        return {"success": False, "error": "sl_placement_failed_emergency_closed", "attempts": max_attempts, "emergency_close": _emergency}
