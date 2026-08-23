@@ -341,6 +341,11 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
             _os.replace(tmp, sig_csv)
             state.open_entry_ts = ts
             log.info(f"[{state.label}] INSTANT CSV append: {ts},{exit_ts or 'PENDING'},{direction}")
+            try:
+                from scripts.bt_snapshot_verify import save_snapshot
+                save_snapshot(state.label, state.candles_1m.copy(), ts, direction, sig_type)
+            except Exception as _e:
+                log.error(f"[{state.label}] snapshot-verify skipped (non-critical): {_e}")
         elif sig_type=="EXIT":
             # Find the PENDING row matching the EXACT open entry (not first PENDING found)
             # Falls back to first PENDING row only if open_entry_ts unknown (e.g. restart)
@@ -366,6 +371,11 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
                         _w.writerow(r)
                 _os.replace(tmp, sig_csv)
                 log.info(f"[{state.label}] CSV exit updated to {ts} (matched entry {target_ts})")
+                try:
+                    from scripts.bt_snapshot_verify import save_snapshot
+                    save_snapshot(state.label, state.candles_1m.copy(), ts, direction, "EXIT")
+                except Exception as _e:
+                    log.error(f"[{state.label}] snapshot-verify skipped (non-critical): {_e}")
             else:
                 log.warning(f"[{state.label}] EXIT fired but no matching PENDING row (target_ts={target_ts})")
             state.open_entry_ts = None
