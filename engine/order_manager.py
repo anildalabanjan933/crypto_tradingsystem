@@ -5,6 +5,7 @@
 import hashlib
 import hmac
 import time
+import threading
 import requests
 import json
 import logging
@@ -306,14 +307,30 @@ class OrderManager:
 
             close_size = current_size if current_size else size
 
-            payload = {
-                "product_symbol": self.PRODUCT_SYMBOL,
-                "product_id":     self.PRODUCT_ID,
-                "side":           side,
-                "size":           close_size,
-                "order_type":     "market_order",
-                "reduce_only":    "true"
-            }
+            ref_price = self.get_current_price()
+            if ref_price and ref_price > 0:
+                limit_price = round(ref_price - 150, 1) if side == "sell" else round(ref_price + 150, 1)
+                payload = {
+                    "product_symbol": self.PRODUCT_SYMBOL,
+                    "product_id":     self.PRODUCT_ID,
+                    "side":           side,
+                    "size":           close_size,
+                    "order_type":     "limit_order",
+                    "limit_price":    str(limit_price),
+                    "time_in_force":  "ioc",
+                    "reduce_only":    "true"
+                }
+                logging.info(f"[OrderManager] Close using IOC-banded limit | ref_price={ref_price} limit_price={limit_price}")
+            else:
+                payload = {
+                    "product_symbol": self.PRODUCT_SYMBOL,
+                    "product_id":     self.PRODUCT_ID,
+                    "side":           side,
+                    "size":           close_size,
+                    "order_type":     "market_order",
+                    "reduce_only":    "true"
+                }
+                logging.warning("[OrderManager] Could not fetch ref_price, falling back to market_order for close")
             if client_order_id:
                 payload["client_order_id"] = f"{client_order_id[:24]}_a{attempt}"
 
@@ -529,14 +546,17 @@ class OrderManager:
                 self._save_active_sl_id(_existing_sl.get("id"))
                 return {"success": True, "sl_price": sl_price, "order_id": _existing_sl.get("id"), "attempts": attempt}
 
+            limit_price = round(sl_price - 150, 1) if side == "sell" else round(sl_price + 150, 1)
+
             payload = {
                 "product_symbol": self.PRODUCT_SYMBOL,
                 "product_id":     self.PRODUCT_ID,
                 "side":           side,
                 "size":           _sl_size,
-                "order_type":     "market_order",
+                "order_type":     "limit_order",
                 "stop_order_type": "stop_loss_order",
                 "stop_price":     str(sl_price),
+                "limit_price":    str(limit_price),
                 "reduce_only":    True,
                 "close_on_trigger": True
             }
@@ -548,8 +568,9 @@ class OrderManager:
             if resp.get("success"):
                 result = resp["result"]
                 last_sl_order_id = result.get("id")
-                logging.info(f"[OrderManager] Stop SL placed | attempt={attempt} sl_price={sl_price} order_id={last_sl_order_id}")
+                logging.info(f"[OrderManager] Stop-limit SL placed | attempt={attempt} sl_price={sl_price} limit_price={limit_price} order_id={last_sl_order_id}")
                 self._save_active_sl_id(last_sl_order_id)
+                self._start_sl_gap_watchdog(last_sl_order_id, side, _sl_size, sl_price)
                 return {"success": True, "sl_price": sl_price, "order_id": last_sl_order_id, "attempts": attempt}
             else:
                 logging.error(f"[OrderManager] Stop SL placement FAILED | attempt={attempt}/{max_attempts} | error={resp.get('error')}")
@@ -594,3 +615,79 @@ class OrderManager:
             _emergency = {"success": False, "error": str(_ee)}
 
         return {"success": False, "error": "sl_placement_failed_emergency_closed", "attempts": max_attempts, "emergency_close": _emergency}
+
+    def _start_sl_gap_watchdog(self, order_id, side, size, sl_price, timeout=45.0, poll_interval=5.0):
+        _t = threading.Thread(
+            target=self._sl_gap_watchdog_worker,
+            args=(order_id, side, size, sl_price, timeout, poll_interval),
+            daemon=True
+        )
+        _t.start()
+        logging.info("[OrderManager] SL gap watchdog started | order_id=" + str(order_id) + " timeout=" + str(timeout) + "s poll=" + str(poll_interval) + "s")
+
+    def _sl_gap_watchdog_worker(self, order_id, side, size, sl_price, timeout, poll_interval):
+        elapsed = 0.0
+        while elapsed < timeout:
+            time.sleep(poll_interval)
+            elapsed += poll_interval
+            try:
+                resp = self._get("/v2/orders/" + str(order_id), {})
+            except Exception as _e:
+                logging.error("[OrderManager] SL gap watchdog GET failed | order_id=" + str(order_id) + " err=" + str(_e))
+                continue
+
+            if not resp.get("success"):
+                logging.error("[OrderManager] SL gap watchdog GET error | order_id=" + str(order_id) + " error=" + str(resp.get("error")))
+                continue
+
+            result = resp.get("result", {})
+            state = result.get("state")
+            unfilled_size = result.get("unfilled_size", size)
+
+            if state == "closed":
+                logging.info("[OrderManager] SL gap watchdog | order_id=" + str(order_id) + " FILLED - watchdog exiting")
+                return
+            if state == "cancelled":
+                logging.warning("[OrderManager] SL gap watchdog | order_id=" + str(order_id) + " CANCELLED externally - watchdog exiting")
+                return
+            if state == "pending":
+                continue
+
+        try:
+            resp = self._get("/v2/orders/" + str(order_id), {})
+            result = resp.get("result", {}) if resp.get("success") else {}
+            state = result.get("state")
+            unfilled_size = result.get("unfilled_size", size)
+        except Exception as _e:
+            logging.critical("[OrderManager] SL gap watchdog final check failed | order_id=" + str(order_id) + " err=" + str(_e))
+            state = None
+            unfilled_size = size
+
+        if state in ("open", "pending") and unfilled_size and unfilled_size > 0:
+            logging.critical("[OrderManager] SL GAP DETECTED - order_id=" + str(order_id) + " stuck unfilled after " + str(timeout) + "s - forcing emergency close")
+            try:
+                _cancel = self._delete("/v2/orders", {"id": order_id, "product_id": self.PRODUCT_ID})
+                logging.info("[OrderManager] SL gap watchdog cancel response: " + str(_cancel))
+            except Exception as _e:
+                logging.error("[OrderManager] SL gap watchdog cancel failed | order_id=" + str(order_id) + " err=" + str(_e))
+
+            try:
+                _emergency = self.close_position(size=unfilled_size, side=side, max_attempts=8, retry_delay=1.5)
+                if _emergency.get("success"):
+                    send_alert(
+                        "CTS WARNING - SL GAP DETECTED, EMERGENCY MARKET CLOSE SUCCEEDED\n"
+                        "order_id=" + str(order_id) + "\n"
+                        "sl_price=" + str(sl_price) + "\n"
+                        "Closed at: " + str(_emergency.get("avg_fill_price"))
+                    )
+                else:
+                    send_alert(
+                        "CTS CRITICAL - SL GAP DETECTED, EMERGENCY MARKET CLOSE FAILED\n"
+                        "order_id=" + str(order_id) + "\n"
+                        "sl_price=" + str(sl_price) + "\n"
+                        "MANUAL INTERVENTION REQUIRED IMMEDIATELY"
+                    )
+            except Exception as _ee:
+                logging.critical("[OrderManager] SL gap watchdog emergency close exception: " + str(_ee))
+        else:
+            logging.info("[OrderManager] SL gap watchdog | order_id=" + str(order_id) + " final state=" + str(state) + " unfilled=" + str(unfilled_size) + " - no action needed")
