@@ -652,9 +652,17 @@ while True:
                                         break
                             log.info(f"[ORDER] EXIT confirmed | position=None | exit={_exit_fill_price}")
                             _send_live_exit_alert("S4V2", dirn, _xt, _exit_fill_price, _entry_price_for_alert, lots)
-                            _bt_csv2 = _get_csv_bt_row("S4V2", sig_ts)
-                            _bt_ep2  = float(_bt_csv2[4]) if _bt_csv2 and len(_bt_csv2) > 4 and str(_bt_csv2[4]).strip() not in ("", "PENDING") else 0.0
-                            _bt_xp2  = float(_bt_csv2[5]) if _bt_csv2 and len(_bt_csv2) > 5 and str(_bt_csv2[5]).strip() not in ("", "PENDING") else 0.0
+                            _bt_ep2 = 0.0
+                            _bt_xp2 = 0.0
+                            for _retry_bt2 in range(5):
+                                _bt_csv2 = _get_csv_bt_row("S4V2", sig_ts)
+                                _bt_ep2  = float(_bt_csv2[4]) if _bt_csv2 and len(_bt_csv2) > 4 and str(_bt_csv2[4]).strip() not in ("", "PENDING") else 0.0
+                                _bt_xp2  = float(_bt_csv2[5]) if _bt_csv2 and len(_bt_csv2) > 5 and str(_bt_csv2[5]).strip() not in ("", "PENDING") else 0.0
+                                if _bt_ep2 > 0 and _bt_xp2 > 0:
+                                    break
+                                time.sleep(0.5)
+                            if _bt_xp2 == 0.0:
+                                log.warning(f"[FILL-LOG] bt_exit still 0.0 after 5 retries (2.5s) for sig_ts={sig_ts} - engine CSV write race unresolved, logging with bt_exit=0.0")
                             if _bt_ep2 > 0 and _entry_price_for_alert > 0 and _exit_fill_price > 0:
                                 _send_roundtrip_match_alert("S4V2", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2, lots)
                                 _exit_commission = result.get("commission", 0.0)
@@ -695,7 +703,7 @@ while True:
                                 break
                         _sl_price_val = 0.0
                         if real_entry > 0:
-                            sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=0.8)
+                            sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=0.75)
                             if sl_result.get("success"):
                                 _sl_price_val = sl_result.get("sl_price", 0.0)
                                 log.info(f"[SL] Stop SL placed | sl_price={_sl_price_val}")

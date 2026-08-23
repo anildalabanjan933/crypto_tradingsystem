@@ -518,6 +518,8 @@ if __name__=="__main__":
     _ws_last_candle_start=None
     _ws_current_candle=None
     _ws_lock=threading.Lock()
+    _ws_last_heartbeat=[time.time()]
+    _ws_current_instance=[None]
 
     def _append_ws_candle(state,candle_start_us,o,h,l,c,v):
         import pandas as pd
@@ -545,6 +547,9 @@ if __name__=="__main__":
         global _ws_last_candle_start,_ws_current_candle
         try:
             data=json.loads(message)
+            if data.get("type")=="heartbeat":
+                _ws_last_heartbeat[0]=time.time()
+                return
             if data.get("type")!="candlestick_1m": return
             candle_start=data.get("candle_start_time",0)
             if candle_start==0: return
@@ -592,6 +597,9 @@ if __name__=="__main__":
     def _ws_on_close(ws,*a): log.warning("[WS] Closed - polling fallback active")
     def _ws_on_open(ws):
         log.info("[WS] Connected - instant candle detection active")
+        _ws_current_instance[0]=ws
+        _ws_last_heartbeat[0]=time.time()
+        ws.send(json.dumps({"type":"enable_heartbeat"}))
         ws.send(json.dumps({"type":"subscribe","payload":{"channels":[{"name":"candlestick_1m","symbols":["BTCUSD"]}]}}))
 
     _ws_fail_count=[0]
@@ -617,10 +625,25 @@ if __name__=="__main__":
             log.warning("[WS] Reconnecting in 5s...")
             time.sleep(5)
 
+    def _ws_heartbeat_watchdog():
+        while True:
+            time.sleep(5)
+            _age=time.time()-_ws_last_heartbeat[0]
+            if _age>35:
+                log.warning(f"[WS] Heartbeat timeout ({_age:.0f}s) - forcing reconnect")
+                try:
+                    if _ws_current_instance[0] is not None:
+                        _ws_current_instance[0].close()
+                except Exception as e:
+                    log.error(f"[WS] Force close failed: {e}")
+                _ws_last_heartbeat[0]=time.time()
+
     if WS_AVAILABLE:
         _t=threading.Thread(target=_ws_thread,daemon=True)
         _t.start()
-        log.info("[ENGINE] WebSocket thread started - instant candle detection")
+        _t_hb=threading.Thread(target=_ws_heartbeat_watchdog,daemon=True)
+        _t_hb.start()
+        log.info("[ENGINE] WebSocket thread + heartbeat watchdog started")
     else:
         log.warning("[ENGINE] websocket-client not installed - polling only")
 
