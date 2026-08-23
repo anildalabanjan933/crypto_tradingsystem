@@ -1121,7 +1121,7 @@ def _parse_log_trades(log_path, log_path_bak=None):
         i += 1
     # Filter to today only
     for e in entries:
-        _filter_ts = e.get("log_ts") or e.get("sig_ts","")
+        _filter_ts = e.get("sig_ts") or e.get("log_ts","")
         log_date = _filter_ts[:10]
         if log_date == today or (e.get("open") and e["entry_price"] > 0):
             side = "buy" if e["direction"].lower() == "long" else "sell"
@@ -1471,10 +1471,6 @@ with _tab_monitor:
         _eng_warn = not _eng_ok and (_hb_age < 30 or _eng_log_age < 30)
     except: _eng_ok = False; _eng_warn = False
 
-    # TM1 S4V2
-    try: _tm1s2_ok = _log_age_min("logs/live_trading_testmember1_s4v2.log") < 2
-    except: _tm1s2_ok = False
-
     # TM1 S4
     try: _tm1s4_ok = _log_age_min("logs/live_trading_testmember1_s4.log") < 2
     except: _tm1s4_ok = False
@@ -1570,7 +1566,6 @@ with _tab_monitor:
         _lamp("DELTA API", _api_ok)
     )
     _row2 = (
-        _lamp("TM1 S4V2", _tm1s2_ok) +
         _lamp("TM1 S4", _tm1s4_ok) +
         _lamp("BOUNDARY", _bw_ok) +
         _lamp("LAST ORDER", _last_order_ok, _last_order_warn) +
@@ -1646,8 +1641,6 @@ with _tab_monitor:
         _lamp_msgs.append(("yellow" if _ws_warn else "red", "WEBSOCKET: Live price connection lost or never connected."))
     if not _csv_ok:
         _lamp_msgs.append(("yellow" if _csv_warn else "red", "CSV: Signal file not updated recently. New trades may be missed."))
-    if not _tm1s2_ok:
-        _lamp_msgs.append(("red", "TM1 S4V2: TestMember1 S4V2 bot log stuck or missing."))
     if not _tm1s4_ok:
         _lamp_msgs.append(("red", "TM1 S4: TestMember1 S4 bot log stuck or missing."))
     if not _bw_ok:
@@ -1691,12 +1684,6 @@ with _tab_monitor:
         _eng_ok = _hb_age < 15
         _eng_warn = 2 < _hb_age < 15
     except: _eng_ok = False; _eng_warn = False
-
-    # TM1 S4V2
-    try:
-        _tm1s2l = _os_lamps.path.getmtime("logs/live_trading_testmember1_s4v2.log")
-        _tm1s2_ok = ((_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(_tm1s2l)).total_seconds() / 60) < 2
-    except: _tm1s2_ok = False
 
     # TM1 S4
     try:
@@ -7335,6 +7322,19 @@ with _tab_analysis:
                                 continue
                             if _window_start <= _line_ts <= _window_end:
                                 _issues.append("Brief connection drop near this trade - auto-reconnected within 5s")
+                    _bot_log_path = f"logs/live_trading_{_bot_tag.lower()}.log"
+                    if _os_ti.path.exists(_bot_log_path):
+                        _bot_log_mtime = _os_ti.path.getmtime(_bot_log_path)
+                        for _line in _read_log_lines_cached(_bot_log_path, _bot_log_mtime):
+                            if "[STARTUP]" not in _line or "Bot starting" not in _line:
+                                continue
+                            try:
+                                _ts_str = _line.split(" INFO")[0].strip()
+                                _line_ts = _pd14.to_datetime(_ts_str, format="%Y-%m-%d %H:%M:%S,%f")
+                            except Exception:
+                                continue
+                            if _window_start <= _line_ts <= _window_end:
+                                _issues.append(f"Bot restarted near this trade's time ({_line_ts.strftime('%H:%M:%S')} UTC) - possible cause of miss/delay")
                 except Exception:
                     pass
                 return list(dict.fromkeys(_issues))
@@ -7611,6 +7611,19 @@ with _tab_analysis:
                             row = _exchange_fallback(bt)
                         if row is None:
                             _miss_label = "MISSED (no live entry)" if is_lv else "-"
+                            if is_lv:
+                                try:
+                                    _miss_lbl2 = str(bt.get("label","")) if bt is not None else ""
+                                    _tf_min2 = 30 if "S4V2" in _miss_lbl2 else 120
+                                    _bt_entry2 = _pd14.to_datetime(str(bt.get("entry_ts_raw","")).replace("T"," ")) if bt is not None else None
+                                    _exit_dt2 = (_bt_entry2 + _pd14.Timedelta(minutes=_tf_min2)) if _bt_entry2 is not None else None
+                                    _miss_issues2 = _get_trade_issues(_miss_lbl2, _bt_entry2, _exit_dt2) if _bt_entry2 is not None else []
+                                except Exception:
+                                    _miss_issues2 = []
+                                if _miss_issues2:
+                                    _miss_label += "<br>" + "<br>".join([f"<span style='font-size:11px;color:#e67e22;font-weight:700;'>⚠ {m}</span>" for m in _miss_issues2])
+                                else:
+                                    _miss_label += "<br><span style='font-size:10px;color:#999;'>no reason found in logs - check manually</span>"
                             tbl += f'<tr>{sno}<td style="{TD}color:#aaa;">{src}</td>'
                             tbl += f'<td style="{TD}color:#e65100;font-weight:700;">{_miss_label}</td>'
                             tbl += (f'<td style="{TD}color:#aaa;">-</td>' * 8)
@@ -7844,6 +7857,13 @@ def _month_trades_html(df2, df4, df2_fwd, df4_fwd):
                     try: _lt = _pdm.to_datetime(_line.split(" IST")[0].strip(), format="%d-%b-%Y %I:%M:%S %p")
                     except Exception: continue
                     if _ws <= _lt <= _we: _issues.append("Brief connection drop near this trade - auto-reconnected within 5s")
+            _blp = f"logs/live_trading_{_bt_tag.lower()}.log"
+            if _osm.path.exists(_blp):
+                for _line in _rll_m(_blp, _osm.path.getmtime(_blp)):
+                    if "[STARTUP]" not in _line or "Bot starting" not in _line: continue
+                    try: _lt = _pdm.to_datetime(_line.split(" INFO")[0].strip(), format="%Y-%m-%d %H:%M:%S,%f")
+                    except Exception: continue
+                    if _ws <= _lt <= _we: _issues.append(f"Bot restarted near this trade's time ({_lt.strftime('%H:%M:%S')} UTC) - possible cause of miss/delay")
         except Exception:
             pass
         _issues = list(dict.fromkeys(_issues))
@@ -8114,6 +8134,17 @@ def _month_trades_html(df2, df4, df2_fwd, df4_fwd):
                 match_cell = f"<td style='{_TDm}text-align:left;font-size:12px;'>{_match_html}</td>" if is_lv else f"<td style='{_TDm}'></td>"
                 if r is None:
                     _miss = "MISSED (no live entry)" if is_lv else "-"
+                    if is_lv:
+                        try:
+                            _bt_entry3 = _pdm.to_datetime(str(bt.get("entry_ts_raw","")).replace("T"," ")) if bt is not None else None
+                            _exit_dt3 = (_bt_entry3 + _pdm.Timedelta(minutes=_tf_min_m)) if _bt_entry3 is not None else None
+                            _miss_issues3 = _issues_m(_lbl_ref, _bt_entry3, _exit_dt3) if _bt_entry3 is not None else []
+                        except Exception:
+                            _miss_issues3 = []
+                        if _miss_issues3:
+                            _miss += "<br>" + "<br>".join([f"<span style='font-size:10px;color:#e67e22;font-weight:700;'>⚠ {m}</span>" for m in _miss_issues3])
+                        else:
+                            _miss += "<br><span style='font-size:9px;color:#999;'>no reason found in logs - check manually</span>"
                     parts.append(f"<tr>{sno}<td style='{_TDm}{_sep if not is_lv else ""}'>{src}</td><td style='{_TDm}color:#e65100;font-weight:700;'>{_miss}</td>" + (f"<td style='{_TDm}color:#aaa;'>-</td>"*6) + match_cell + "</tr>")
                     continue
                 _pc = "#089981" if r['pnl_usd']>=0 else "#F23645"
