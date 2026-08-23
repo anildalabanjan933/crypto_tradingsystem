@@ -44,8 +44,8 @@ check_and_start() {
 
 check_and_start live_s4v2 scripts/signal_replay_s4v2.py logs/live_trading_s4v2.log
 check_and_start live_s4 scripts/signal_replay_s4.py logs/live_trading_s4.log
-check_and_start testmember1_s4v2 scripts/signal_replay_testmember1_s4v2.py logs/live_trading_testmember1_s4v2.log
-# DISABLED (shared account with testmember1_s4v2): check_and_start testmember1_s4 scripts/signal_replay_testmember1_s4.py logs/live_trading_testmember1_s4.log
+# DISABLED (24-Aug-2026, replaced by testmember1_s4, shared account rule): check_and_start testmember1_s4v2 scripts/signal_replay_testmember1_s4v2.py logs/live_trading_testmember1_s4v2.log
+check_and_start testmember1_s4 scripts/signal_replay_testmember1_s4.py logs/live_trading_testmember1_s4.log
 check_and_start signal_generator scripts/renko_state_engine.py logs/renko_state_engine.log
 check_and_start boundary_watcher scripts/boundary_watcher.py logs/boundary_watcher.log
 check_and_start sl_safety_monitor scripts/sl_safety_monitor.py logs/sl_safety_monitor.log
