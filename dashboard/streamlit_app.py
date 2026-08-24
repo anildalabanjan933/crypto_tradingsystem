@@ -5821,7 +5821,7 @@ with _tab_analysis:
                 after = None
                 fills = []
                 for _ in range(200):
-                    prm = {"start_time":int(vf*1e6),"end_time":int(now*1e6),"page_size":50}
+                    prm = {"product_id":84,"start_time":int(vf*1e6),"end_time":int(now*1e6),"page_size":50}
                     if after: prm["after"] = after
                     qs = "&".join(f"{a}={b}" for a,b in sorted(prm.items()))
                     h = _auth13(k, s, path, qs)
@@ -7884,7 +7884,7 @@ def _month_trades_html(df2, df4, df2_fwd, df4_fwd):
             after = None
             fills = []
             for _ in range(200):
-                prm = {"start_time":int(vf*1e6),"end_time":int(now*1e6),"page_size":50}
+                prm = {"product_id":84,"start_time":int(vf*1e6),"end_time":int(now*1e6),"page_size":50}
                 if after: prm["after"] = after
                 qs = "&".join(f"{a}={b}" for a,b in sorted(prm.items()))
                 ts = str(int(_tmm.time()))
