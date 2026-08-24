@@ -7335,6 +7335,25 @@ with _tab_analysis:
                                 continue
                             if _window_start <= _line_ts <= _window_end:
                                 _issues.append(f"Bot restarted near this trade's time ({_line_ts.strftime('%H:%M:%S')} UTC) - possible cause of miss/delay")
+                    if _os_ti.path.exists(_bot_log_path):
+                        for _line in _read_log_lines_cached(_bot_log_path, _bot_log_mtime):
+                            _ts_raw = _line[:23]
+                            try:
+                                _line_ts2 = _pd14.to_datetime(_ts_raw, format="%Y-%m-%d %H:%M:%S,%f")
+                            except Exception:
+                                continue
+                            if not (_window_start <= _line_ts2 <= _window_end):
+                                continue
+                            if "unfilled_beyond_band" in _line and "ENTRY FAILED" in _line:
+                                _issues.append("Entry order rejected - price moved outside safety band (protects against bad fills during sharp BTC price spikes)")
+                            elif "ENTRY FAILED" in _line:
+                                _issues.append("Entry order failed - exchange rejected the order, bot logged error and moved on")
+                            elif "ENTRY ABANDONED" in _line:
+                                _issues.append("Entry abandoned after 5 failed attempts - bot gave up on this signal to avoid infinite retry loop")
+                            elif "ENTRY blocked - manual_override active" in _line:
+                                _issues.append("Entry skipped - manual override was active on your account at signal time")
+                            elif "ENTRY blocked - engine heartbeat stale" in _line:
+                                _issues.append("Entry blocked - engine heartbeat was stale (engine possibly frozen/disconnected)")
                 except Exception:
                     pass
                 return list(dict.fromkeys(_issues))
@@ -7864,6 +7883,22 @@ def _month_trades_html(df2, df4, df2_fwd, df4_fwd):
                     try: _lt = _pdm.to_datetime(_line.split(" INFO")[0].strip(), format="%Y-%m-%d %H:%M:%S,%f")
                     except Exception: continue
                     if _ws <= _lt <= _we: _issues.append(f"Bot restarted near this trade's time ({_lt.strftime('%H:%M:%S')} UTC) - possible cause of miss/delay")
+            if _osm.path.exists(_blp):
+                for _line in _rll_m(_blp, _osm.path.getmtime(_blp)):
+                    _ts_raw2 = _line[:23]
+                    try: _lt2 = _pdm.to_datetime(_ts_raw2, format="%Y-%m-%d %H:%M:%S,%f")
+                    except Exception: continue
+                    if not (_ws <= _lt2 <= _we): continue
+                    if "unfilled_beyond_band" in _line and "ENTRY FAILED" in _line:
+                        _issues.append("Entry order rejected - price moved outside safety band (protects against bad fills during sharp BTC price spikes)")
+                    elif "ENTRY FAILED" in _line:
+                        _issues.append("Entry order failed - exchange rejected the order, bot logged error and moved on")
+                    elif "ENTRY ABANDONED" in _line:
+                        _issues.append("Entry abandoned after 5 failed attempts - bot gave up on this signal to avoid infinite retry loop")
+                    elif "ENTRY blocked - manual_override active" in _line:
+                        _issues.append("Entry skipped - manual override was active on your account at signal time")
+                    elif "ENTRY blocked - engine heartbeat stale" in _line:
+                        _issues.append("Entry blocked - engine heartbeat was stale (engine possibly frozen/disconnected)")
         except Exception:
             pass
         _issues = list(dict.fromkeys(_issues))
