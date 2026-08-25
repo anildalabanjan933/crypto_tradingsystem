@@ -782,7 +782,7 @@ while True:
                             _entry_retry_state["count"] += 1
 
         # Sync position from exchange every 5 minutes
-        if int(time.time()) % 300 < 2:
+        if int(time.time()) % 30 < 2:
             _exch = om.get_position()
             _exch_size = abs(_exch.get("size", 0)) if _exch.get("success") else -1
             if _exch_size == 0 and position is not None:
