@@ -708,6 +708,26 @@ while True:
                             _skip_advance_ts = now_utc_str()
                     last_known_ts = safe_ts(_skip_advance_ts)
                     save_ts_file(TS_FILE, last_known_ts)
+                    try:
+                        import csv as _csv_sk, os as _os_sk
+                        _sig_csv_sk = "logs/signals_s4v2.csv"
+                        with open(_sig_csv_sk, "r") as _f_sk:
+                            _rows_sk = list(_csv_sk.reader(_f_sk))
+                        _upd_sk = False
+                        for _r_sk in _rows_sk:
+                            if len(_r_sk) >= 2 and _r_sk[0] == sig_ts and _r_sk[1] == "PENDING":
+                                _r_sk[1] = "SKIPPED_MANUAL_OVERRIDE"
+                                _upd_sk = True
+                                break
+                        if _upd_sk:
+                            _tmp_sk = _sig_csv_sk + ".tmp"
+                            with open(_tmp_sk, "w", newline="") as _f_sk:
+                                _w_sk = _csv_sk.writer(_f_sk)
+                                for _r_sk in _rows_sk:
+                                    _w_sk.writerow(_r_sk)
+                            _os_sk.replace(_tmp_sk, _sig_csv_sk)
+                    except Exception as _e_sk:
+                        log.warning(f"[SKIP-CSV-FIX] Could not mark CSV row skipped: {_e_sk}")
                     log.info(f"[SKIP] ENTRY blocked - manual_override active (single-shot) | dir={direction} | ts={sig_ts} | advanced past exit={last_known_ts}")
                     continue
                 _now_epoch = time.time()
