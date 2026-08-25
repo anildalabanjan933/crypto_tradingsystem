@@ -42,9 +42,15 @@ _last_alert_ts = {}
 # should only fire if price has moved PAST where the emergency SL should have
 # already triggered (i.e. SL malfunction / system-down scenario) - not on every
 # normal healthy trade.
-WARN_DIST_PCT = 6.0
-CRITICAL_DIST_PCT = 4.0
+WARN_DIST_PCT = 10.0
+CRITICAL_DIST_PCT = 7.0
 MIN_BALANCE_MULTIPLE = 1.5
+
+# TIER 1 - Speed filter (25-Aug-2026): sized from real 2-month replay data
+# (S4 max=3.56%/min, S4V2 max=3.56%/min, zero trades in 2mo crossed 4%/min).
+# Set at 5%/min - never fires on normal trading, only genuine fast crashes.
+SPEED_THRESHOLD_PCT_PER_MIN = 5.0
+_price_history = {}  # bot_name -> list of (timestamp, price)
 
 def check_bot(bot):
     om = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
@@ -62,6 +68,7 @@ def check_bot(bot):
         size = p.get("size", 0)
         if size == 0:
             continue
+        now_ts = time.time()
 
         liq_price = float(p.get("liquidation_price") or 0)
         margin    = float(p.get("margin") or 0)
@@ -72,6 +79,27 @@ def check_bot(bot):
             continue
 
         dist_pct = abs(mark_price - liq_price) / mark_price * 100
+
+        # TIER 1 - speed check using rolling price history (no extra API call)
+        _hist = _price_history.setdefault(bot["name"], [])
+        _hist.append((now_ts, mark_price))
+        _hist[:] = [(t, p) for t, p in _hist if now_ts - t <= 65]
+        if len(_hist) >= 2:
+            _oldest_t, _oldest_p = _hist[0]
+            _elapsed_min = (now_ts - _oldest_t) / 60.0
+            if _elapsed_min > 0 and _oldest_p > 0:
+                _speed_pct_per_min = abs(mark_price - _oldest_p) / _oldest_p * 100 / _elapsed_min
+                if _speed_pct_per_min >= SPEED_THRESHOLD_PCT_PER_MIN:
+                    log.critical(f"[{bot['name']}] TIER 1 SPEED ALERT | {_speed_pct_per_min:.2f}%/min move detected - emergency closing")
+                    _close_side = "sell" if size > 0 else "buy"
+                    _speed_close = om.close_position(size=abs(size), side=_close_side)
+                    send_alert(
+                        f"CTS {bot['name']} CRITICAL - TIER 1 SPEED FILTER TRIGGERED\n"
+                        f"Speed: {_speed_pct_per_min:.2f}%/min (threshold {SPEED_THRESHOLD_PCT_PER_MIN}%/min)\n"
+                        f"Price moved ${_oldest_p:,.1f} -> ${mark_price:,.1f} in {_elapsed_min:.1f}min\n"
+                        f"Emergency close: success={_speed_close.get('success')} avg_fill={_speed_close.get('avg_fill_price')}"
+                    )
+                    _hist.clear()
 
         bal_resp = om._get("/v2/wallet/balances", {})
         available_balance = 0.0
@@ -89,6 +117,8 @@ def check_bot(bot):
 
         if dist_pct <= CRITICAL_DIST_PCT or bal_ratio <= 1.0:
             log.critical(f"[{bot['name']}] LIQUIDATION RISK CRITICAL | dist_to_liq={dist_pct:.1f}% mark={mark_price} liq={liq_price} bal_ratio={bal_ratio:.2f}")
+            close_side = "sell" if size > 0 else "buy"
+            close_result = om.close_position(size=abs(size), side=close_side)
             if cooldown_ok:
                 send_alert(
                     f"CTS {bot['name']} CRITICAL - LIQUIDATION RISK\n"
@@ -96,7 +126,7 @@ def check_bot(bot):
                     f"Liquidation price: ${liq_price:,.1f}\n"
                     f"Distance: {dist_pct:.1f}%\n"
                     f"Available balance / margin ratio: {bal_ratio:.2f}\n"
-                    f"ACTION: Check position manually, consider adding margin or closing"
+                    f"Position closed at avg_fill={close_result.get('avg_fill_price')} | success={close_result.get('success')}"
                 )
                 _last_alert_ts[bot["name"]] = now
         elif dist_pct <= WARN_DIST_PCT or bal_ratio <= MIN_BALANCE_MULTIPLE:
