@@ -745,7 +745,7 @@ while True:
                                     break
                             _sl_price_val = 0.0
                             if real_entry > 0:
-                                sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=0.75)
+                                sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=10.0)
                                 if sl_result.get("success"):
                                     _sl_price_val = sl_result.get("sl_price", 0.0)
                                     log.info(f"[SL] Stop SL placed | sl_price={_sl_price_val}")

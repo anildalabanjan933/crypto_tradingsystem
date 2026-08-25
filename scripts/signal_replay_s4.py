@@ -693,10 +693,30 @@ while True:
                         log.warning(f"[SKIP-CHECK] Could not parse override file ({_e_ov}) - defaulting to skip for safety")
                     os.remove(_override_file)
                     if _skip_this:
-                        _skip_xt = _xt
-                        last_known_ts = safe_ts(sig_ts)
+                        # FIX (24-Aug-2026, Bug2): advance last_known_ts PAST this
+                        # signal's real exit_time, NOT just to sig_ts (same root
+                        # cause / same fix as signal_replay_s4v2.py, same date).
+                        _skip_advance_ts = _xt if _xt and _xt != "PENDING" else None
+                        if not _skip_advance_ts:
+                            try:
+                                _fresh_signals = load_signals()
+                                for _frow in _fresh_signals:
+                                    if _frow.get("entry_time") == sig_ts:
+                                        _cand = _frow.get("exit_time")
+                                        if _cand and _cand != "PENDING":
+                                            _skip_advance_ts = _cand
+                                        break
+                            except Exception as _e_fresh:
+                                log.warning(f"[SKIP-CHECK] Could not re-read signals for exit_time ({_e_fresh})")
+                        if not _skip_advance_ts:
+                            from datetime import datetime as _dt_sk, timedelta as _td_sk
+                            try:
+                                _skip_advance_ts = (_dt_sk.strptime(sig_ts, "%Y-%m-%dT%H:%M:%S") + _td_sk(seconds=1)).strftime("%Y-%m-%dT%H:%M:%S")
+                            except Exception:
+                                _skip_advance_ts = now_utc_str()
+                        last_known_ts = safe_ts(_skip_advance_ts)
                         save_ts_file(TS_FILE, last_known_ts)
-                        log.info(f"[SKIP] ENTRY blocked - manual_override active (single-shot) | dir={direction} | ts={sig_ts} | advanced past exit={_skip_xt}")
+                        log.info(f"[SKIP] ENTRY blocked - manual_override active (single-shot) | dir={direction} | ts={sig_ts} | advanced past exit={last_known_ts}")
                         continue
                     else:
                         log.info(f"[SKIP-CHECK] Override present but for different entry_ts={_ov_entry_ts} (current sig_ts={sig_ts}) - NOT skipping, legitimate new trade")
@@ -738,7 +758,7 @@ while True:
                             log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
                             _sl_price_val = 0.0
                             if real_entry > 0:
-                                sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=0.75)
+                                sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=10.0)
                                 if sl_result.get("success"):
                                     _sl_price_val = sl_result.get("sl_price", 0.0)
                                     log.info(f"[SL] Stop SL placed | sl_price={_sl_price_val}")
