@@ -611,6 +611,14 @@ while True:
                 direction = dirn
                 side = "buy" if direction == "long" else "sell"
                 log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
+                _pre_bal_resp = om._get("/v2/wallet/balances", {})
+                _pre_avail = 0.0
+                if _pre_bal_resp.get("success"):
+                    for _pb in _pre_bal_resp.get("result", []):
+                        if _pb.get("asset_symbol") == "USD":
+                            _pre_avail = float(_pb.get("available_balance") or 0)
+                            break
+                log.info(f"[ORDER] Pre-entry available_balance=${_pre_avail:.2f}")
                 save_ts_file(TS_FILE, sig_ts)
                 last_known_ts = sig_ts
                 if not check_engine_heartbeat():

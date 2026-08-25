@@ -503,6 +503,12 @@ try:
         log.error(f"[CRITICAL] API key validation FAILED: {_d_val.get('error')} - check API key and testnet setting")
 except Exception as _e_val:
     log.error(f"[CRITICAL] API key validation error: {_e_val}")
+
+# Entry retry cooldown/cap state - prevents retry-spam on repeated entry failure
+_entry_retry_state = {"ts": None, "count": 0, "last_attempt": 0}
+_ENTRY_MAX_ATTEMPTS = 5
+_ENTRY_RETRY_COOLDOWN_SEC = 5
+
 while True:
     try:
         now = now_utc_str()
@@ -605,42 +611,60 @@ while True:
             elif position is None and now < _xt:
                 direction = dirn
                 side = "buy" if direction == "long" else "sell"
-                log.info(f"[ORDER] ENTRY attempt {side} {lots} lots | dir={direction} | ts={sig_ts}")
-                save_ts_file(TS_FILE, sig_ts)
-                last_known_ts = sig_ts
-                if not check_engine_heartbeat():
-                    log.warning("[ORDER] ENTRY blocked - engine heartbeat stale")
+                _now_epoch = time.time()
+                if _entry_retry_state["ts"] != sig_ts:
+                    _entry_retry_state["ts"] = sig_ts
+                    _entry_retry_state["count"] = 0
+                    _entry_retry_state["last_attempt"] = 0
+                if _entry_retry_state["count"] >= _ENTRY_MAX_ATTEMPTS:
+                    log.error(f"[ORDER] ENTRY ABANDONED - {_ENTRY_MAX_ATTEMPTS} failed attempts | dir={direction} | ts={sig_ts} | advancing past exit={_xt}")
+                    send_alert(f"CTS TM1_S4 ENTRY ABANDONED\nDirection: {direction}\nSignal ts: {sig_ts}\nFailed {_ENTRY_MAX_ATTEMPTS}x - advancing past this signal")
+                    save_ts_file(TS_FILE, _xt)
+                    last_known_ts = safe_ts(_xt)
+                    _entry_retry_state["ts"] = None
+                elif (_now_epoch - _entry_retry_state["last_attempt"]) < _ENTRY_RETRY_COOLDOWN_SEC:
+                    pass
                 else:
-                    result = om.place_market_order(side=side, size=lots)
-                    if result.get("success"):
-                        position = direction
-                        open_lot_size = lots
-                        if _live_sig: last_processed_seq = _live_sig.get("seq", 0)
-                        time.sleep(1)
-                        pos_check = om.get_position()
-                        real_entry = pos_check.get("entry_price", 0.0) if pos_check.get("success") else 0.0
-                        _sl_price_val = 0.0
-                        if real_entry > 0:
-                            sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=2.0)
-                            if sl_result.get("success"):
-                                _sl_price_val = sl_result.get("sl_price", 0.0)
-                                log.info(f"[SL] Stop SL placed | sl_price={_sl_price_val}")
-                            else:
-                                log.warning(f"[SL] Stop SL FAILED: {sl_result}")
-                        _send_live_entry_alert("TM1_S4", direction, sig_ts, real_entry, _sl_price_val, lots)
-                        _bt_csv = _get_csv_bt_row("TM1_S4", sig_ts)
-                        _bt_ep  = float(_bt_csv[4]) if _bt_csv and len(_bt_csv) > 4 and str(_bt_csv[4]).strip() not in ("", "PENDING") else 0.0
-                        _bt_xt  = _bt_csv[1] if _bt_csv else ""
-                        _bt_xp  = float(_bt_csv[5]) if _bt_csv and len(_bt_csv) > 5 and str(_bt_csv[5]).strip() not in ("", "PENDING") else 0.0
-                        if _bt_ep > 0 and real_entry > 0:
-                            _send_entry_match_alert("TM1_S4", direction, sig_ts, _bt_ep, real_entry, _bt_xt, _bt_xp, lots)
-                        open_entry_price = real_entry
-                        log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
-                        log.info(f"[ORDER] ENTRY confirmed | position={position}")
+                    _entry_retry_state["last_attempt"] = _now_epoch
+                    log.info(f"[ORDER] ENTRY attempt {side} {lots} lots | dir={direction} | ts={sig_ts} | attempt={_entry_retry_state['count']+1}/{_ENTRY_MAX_ATTEMPTS}")
+                    save_ts_file(TS_FILE, sig_ts)
+                    last_known_ts = sig_ts
+                    if not check_engine_heartbeat():
+                        log.warning("[ORDER] ENTRY blocked - engine heartbeat stale")
                     else:
-                        log.error(f"[ORDER] ENTRY FAILED: {result}")
-                        send_alert(f"CTS TM1_S4 ENTRY FAILED\nError: {result}")
-                        last_known_ts = load_ts_file(TS_FILE)
+                        result = om.place_market_order(side=side, size=lots)
+                        if result.get("success"):
+                            position = direction
+                            open_lot_size = lots
+                            if _live_sig: last_processed_seq = _live_sig.get("seq", 0)
+                            time.sleep(1)
+                            pos_check = om.get_position()
+                            real_entry = pos_check.get("entry_price", 0.0) if pos_check.get("success") else 0.0
+                            _sl_price_val = 0.0
+                            if real_entry > 0:
+                                sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=10.0)
+                                if sl_result.get("success"):
+                                    _sl_price_val = sl_result.get("sl_price", 0.0)
+                                    log.info(f"[SL] Stop SL placed | sl_price={_sl_price_val}")
+                                else:
+                                    log.warning(f"[SL] Stop SL FAILED: {sl_result}")
+                            _send_live_entry_alert("TM1_S4", direction, sig_ts, real_entry, _sl_price_val, lots)
+                            _bt_csv = _get_csv_bt_row("TM1_S4", sig_ts)
+                            _bt_ep  = float(_bt_csv[4]) if _bt_csv and len(_bt_csv) > 4 and str(_bt_csv[4]).strip() not in ("", "PENDING") else 0.0
+                            _bt_xt  = _bt_csv[1] if _bt_csv else ""
+                            _bt_xp  = float(_bt_csv[5]) if _bt_csv and len(_bt_csv) > 5 and str(_bt_csv[5]).strip() not in ("", "PENDING") else 0.0
+                            if _bt_ep > 0 and real_entry > 0:
+                                _send_entry_match_alert("TM1_S4", direction, sig_ts, _bt_ep, real_entry, _bt_xt, _bt_xp, lots)
+                            open_entry_price = real_entry
+                            log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
+                            log.info(f"[ORDER] ENTRY confirmed | position={position}")
+                            _entry_retry_state["ts"] = None
+                            _entry_retry_state["count"] = 0
+                        else:
+                            log.error(f"[ORDER] ENTRY FAILED: {result}")
+                            send_alert(f"CTS TM1_S4 ENTRY FAILED\nError: {result}")
+                            last_known_ts = load_ts_file(TS_FILE)
+                            _entry_retry_state["count"] += 1
 
         # Sync position from exchange every 5 minutes
         if int(time.time()) % 300 < 2:
