@@ -139,7 +139,7 @@ def check_bot(bot):
         last = _last_alert_ts.get(bot["name"], 0)
         cooldown_ok = (now - last) > ALERT_COOLDOWN
 
-        if dist_pct <= CRITICAL_DIST_PCT or bal_ratio <= 1.0:
+        if dist_pct <= CRITICAL_DIST_PCT:
             log.critical(f"[{bot['name']}] LIQUIDATION RISK CRITICAL | dist_to_liq={dist_pct:.1f}% mark={mark_price} liq={liq_price} bal_ratio={bal_ratio:.2f}")
             close_side = "sell" if size > 0 else "buy"
             close_result = om.close_position(size=abs(size), side=close_side)
@@ -153,7 +153,7 @@ def check_bot(bot):
                     f"Position closed at avg_fill={close_result.get('avg_fill_price')} | success={close_result.get('success')}"
                 )
                 _last_alert_ts[bot["name"]] = now
-        elif dist_pct <= WARN_DIST_PCT or bal_ratio <= MIN_BALANCE_MULTIPLE:
+        elif dist_pct <= WARN_DIST_PCT:
             log.warning(f"[{bot['name']}] Liquidation risk warning | dist_to_liq={dist_pct:.1f}% bal_ratio={bal_ratio:.2f}")
             if cooldown_ok:
                 send_alert(
