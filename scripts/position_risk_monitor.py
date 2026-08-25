@@ -144,23 +144,23 @@ def check_bot(bot):
             close_side = "sell" if size > 0 else "buy"
             close_result = om.close_position(size=abs(size), side=close_side)
             if cooldown_ok:
-                send_alert(
-                    f"CTS {bot['name']} CRITICAL - LIQUIDATION RISK\n"
-                    f"Mark price: ${mark_price:,.1f}\n"
-                    f"Liquidation price: ${liq_price:,.1f}\n"
-                    f"Distance: {dist_pct:.1f}%\n"
-                    f"Available balance / margin ratio: {bal_ratio:.2f}\n"
-                    f"Position closed at avg_fill={close_result.get('avg_fill_price')} | success={close_result.get('success')}"
-                )
+#                send_alert(
+#                    f"CTS {bot['name']} CRITICAL - LIQUIDATION RISK\n"
+#                    f"Mark price: ${mark_price:,.1f}\n"
+#                    f"Liquidation price: ${liq_price:,.1f}\n"
+#                    f"Distance: {dist_pct:.1f}%\n"
+#                    f"Available balance / margin ratio: {bal_ratio:.2f}\n"
+#                    f"Position closed at avg_fill={close_result.get('avg_fill_price')} | success={close_result.get('success')}"
+#                )
                 _last_alert_ts[bot["name"]] = now
         elif dist_pct <= WARN_DIST_PCT:
             log.warning(f"[{bot['name']}] Liquidation risk warning | dist_to_liq={dist_pct:.1f}% bal_ratio={bal_ratio:.2f}")
             if cooldown_ok:
-                send_alert(
-                    f"CTS {bot['name']} WARNING - Liquidation risk rising\n"
-                    f"Distance to liquidation: {dist_pct:.1f}%\n"
-                    f"Balance/margin ratio: {bal_ratio:.2f}"
-                )
+#                send_alert(
+#                    f"CTS {bot['name']} WARNING - Liquidation risk rising\n"
+#                    f"Distance to liquidation: {dist_pct:.1f}%\n"
+#                    f"Balance/margin ratio: {bal_ratio:.2f}"
+#                )
                 _last_alert_ts[bot["name"]] = now
         else:
             log.info(f"[{bot['name']}] size={size} dist_to_liq={dist_pct:.1f}% bal_ratio={bal_ratio:.2f} - healthy")
