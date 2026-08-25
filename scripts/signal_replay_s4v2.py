@@ -726,6 +726,14 @@ while True:
                 else:
                     _entry_retry_state["last_attempt"] = _now_epoch
                     log.info(f"[ORDER] ENTRY attempt {side} {lots} lots | dir={direction} | ts={sig_ts} | attempt={_entry_retry_state['count']+1}/{_ENTRY_MAX_ATTEMPTS}")
+                    _pre_bal_resp = om._get("/v2/wallet/balances", {})
+                    _pre_avail = 0.0
+                    if _pre_bal_resp.get("success"):
+                        for _pb in _pre_bal_resp.get("result", []):
+                            if _pb.get("asset_symbol") == "USD":
+                                _pre_avail = float(_pb.get("available_balance") or 0)
+                                break
+                    log.info(f"[ORDER] Pre-entry available_balance=${_pre_avail:.2f}")
                     save_ts_file(TS_FILE, sig_ts)
                     last_known_ts = sig_ts
                     if not check_engine_heartbeat():

@@ -9,10 +9,21 @@ signal logic - read-only checks only, same pattern as sl_safety_monitor.py.
 THRESHOLDS BELOW ARE PLACEHOLDERS (per Claude's design note, 16-Aug-2026) -
 no confirmed real liquidation event data was available to calibrate these.
 Revisit once real margin-ratio data near a genuine liquidation is available.
+
+FIX (25-Aug-2026): Added heartbeat file + hard per-check timeout via
+SIGALRM. Root cause investigation of the 24-Aug-2026 S4V2 trade flood
+(121 live orders vs 22 BT trades) traced back to this process hanging
+silently between 16:02 and 17:09 on 24-Aug, with no exception/crash and
+no restart until 10:41 the next day - a 17.5hr window with zero Tier1/
+Tier2 protection. This fix ensures a stuck check_bot() call is forcibly
+aborted after CHECK_TIME_BUDGET_SEC instead of hanging indefinitely, and
+writes a heartbeat file every cycle so external watchdogs can detect a
+stall within seconds instead of relying on log-silence alone.
 """
 import os
 import sys
 import time
+import signal
 import logging
 sys.path.insert(0, ".")
 from dotenv import load_dotenv
@@ -31,11 +42,15 @@ log = logging.getLogger("risk_monitor")
 BOTS = [
     {"name": "S4",   "api_key": os.getenv("S4_API_KEY", ""),   "api_secret": os.getenv("S4_API_SECRET", "")},
     {"name": "S4V2", "api_key": os.getenv("S4V2_API_KEY", ""), "api_secret": os.getenv("S4V2_API_SECRET", "")},
+    {"name": "TM1",  "api_key": os.getenv("TESTMEMBER1_S4V2_API_KEY", ""), "api_secret": os.getenv("TESTMEMBER1_S4V2_API_SECRET", "")},
 ]
 
 CHECK_INTERVAL = 30
 ALERT_COOLDOWN = 300  # 5 min between repeat alerts per bot
 _last_alert_ts = {}
+
+HEARTBEAT_FILE = "logs/position_risk_monitor_heartbeat.txt"
+CHECK_TIME_BUDGET_SEC = 45  # hard ceiling per bot check (fix 25-Aug-2026)
 
 # RECALIBRATED THRESHOLDS (16-Aug-2026) - since emergency SL is at 1.5% price move,
 # and normal distance-to-liquidation at entry is ~9-10% for this leverage, these
@@ -51,6 +66,15 @@ MIN_BALANCE_MULTIPLE = 1.5
 # Set at 5%/min - never fires on normal trading, only genuine fast crashes.
 SPEED_THRESHOLD_PCT_PER_MIN = 5.0
 _price_history = {}  # bot_name -> list of (timestamp, price)
+
+
+class _CheckTimeout(Exception):
+    pass
+
+
+def _timeout_handler(signum, frame):
+    raise _CheckTimeout("check_bot exceeded time budget")
+
 
 def check_bot(bot):
     om = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
@@ -141,14 +165,26 @@ def check_bot(bot):
         else:
             log.info(f"[{bot['name']}] size={size} dist_to_liq={dist_pct:.1f}% bal_ratio={bal_ratio:.2f} - healthy")
 
+
 def main():
     log.info("Position Risk Monitor started - monitor-only, no auto-action")
+    signal.signal(signal.SIGALRM, _timeout_handler)
     while True:
         for bot in BOTS:
             try:
+                with open(HEARTBEAT_FILE, "w") as _hb:
+                    _hb.write(str(time.time()))
+            except Exception as _hbe:
+                log.warning(f"Heartbeat write failed: {_hbe}")
+            try:
+                signal.alarm(CHECK_TIME_BUDGET_SEC)
                 check_bot(bot)
+            except _CheckTimeout:
+                log.error(f"[{bot['name']}] Check TIMED OUT after {CHECK_TIME_BUDGET_SEC}s - aborting this cycle (fix for 24-Aug-2026 17.5hr blind window)")
             except Exception as e:
                 log.error(f"[{bot['name']}] Check failed: {e}")
+            finally:
+                signal.alarm(0)
         time.sleep(CHECK_INTERVAL)
 
 if __name__ == "__main__":
