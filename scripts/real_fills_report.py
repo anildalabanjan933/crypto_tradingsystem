@@ -2,6 +2,7 @@ import hmac, hashlib, time, requests, csv, glob, sys
 from datetime import datetime, timezone, timedelta
 
 TF_MIN = {"s4": 120, "s4v2": 30}
+WINDOW_SEC = {"s4": 150*60, "s4v2": 45*60}
 
 def load_env(bot):
     env = {}
@@ -169,14 +170,29 @@ def main():
         for r in bt_rows:
             bt_entry_t = dt(r["entry_datetime"].replace("Z","")).replace(tzinfo=timezone.utc)
             bt_entry_close = bt_entry_t + timedelta(seconds=tf_sec)
-            best, best_diff = None, None
+            bt_xt_check = dt(r["exit_datetime"].replace("Z","")).replace(tzinfo=timezone.utc)
+            bt_exit_close_check = bt_xt_check + timedelta(seconds=tf_sec)
+            best, best_key = None, None
+            window_sec = WINDOW_SEC.get(bot, 3*3600)
             for lv in matched_lv:
                 if lv["direction"] != r["direction"]:
                     continue
                 lv_entry_t = dt(lv["entry_time"])
                 diff = abs((lv_entry_t - bt_entry_t).total_seconds())
-                if diff < 3*3600 and (best_diff is None or diff < best_diff):
-                    best, best_diff = lv, diff
+                if diff >= window_sec:
+                    continue
+                # ADDITIVE FIX (26-Aug-2026): require exit side to also be
+                # plausible - rejects short-lived unrelated trades whose entry
+                # coincidentally lands in-window but whose exit is nowhere near
+                # BT's expected exit (root cause of -43140s type false matches).
+                lv_exit_t = dt(lv["exit_time"])
+                exit_diff = abs((lv_exit_t - bt_exit_close_check).total_seconds())
+                if exit_diff >= window_sec:
+                    continue
+                price_diff = abs(lv["entry_price"] - float(r["entry_price"]))
+                key = (diff, price_diff)
+                if best is None or key < best_key:
+                    best, best_key = lv, key
             date = r["entry_datetime"][:10]
             if best:
                 matched_lv.remove(best)
@@ -202,6 +218,14 @@ def main():
                 report[date][bot]["rows"].append(
                     f"| {r['direction']} | {bt_entry_close.strftime('%H:%M')}/{r['entry_price']} vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |"
                 )
+
+        for lv in matched_lv:
+            date = lv["entry_time"][:10]
+            report.setdefault(date, {"s4": {"bt": 0, "lv": 0, "rows": []},
+                                      "s4v2": {"bt": 0, "lv": 0, "rows": []}})
+            report[date][bot]["rows"].append(
+                f"| {lv['direction']} | NO_BT_SIGNAL vs {lv['entry_time'][11:16]}/{lv['entry_price']} | - | - | - | - | UNMATCHED_LV_TRADE |"
+            )
 
     out_lines = [f"REAL DELTA FILLS-BASED REPORT: {start_date} to {end_dt.date()} (UTC)"]
     for date in sorted(report):
