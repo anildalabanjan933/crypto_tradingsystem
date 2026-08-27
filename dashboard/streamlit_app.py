@@ -1415,6 +1415,7 @@ def _tbl14(d2, d4, label, period_str, df2=None, df4=None):
 # Load data - defined as function so every tab reloads fresh on page load
 import glob as _gl14, pandas as _pd14, datetime as _dt14, numpy as _npf14, os as _os14
 
+@st.cache_data(ttl=30)
 def _reload_all_data():
     _now14 = _dt14.datetime.utcnow()
     _1yr_from = (_now14 - _dt14.timedelta(days=365)).strftime("%Y-%m-%d")
@@ -1443,12 +1444,53 @@ with _tab_monitor:
 
     # STATUS LAMPS ROW - full pro implementation
     import datetime as _dt_lamps, os as _os_lamps
+    def _age_min(path):
+        try:
+            return (_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(
+                _os_lamps.path.getmtime(path))).total_seconds()/60
+        except Exception:
+            return None
+
     def _lamp(label, ok, warn=False):
         dot = "🟢" if ok else ("🟡" if warn else "🔴")
         return f"<span style='font-size:13px;font-weight:bold;margin-right:18px;'>{dot} {label}</span>"
     def _log_age_min(path):
         return (_dt_lamps.datetime.utcnow() - _dt_lamps.datetime.utcfromtimestamp(
             _os_lamps.path.getmtime(path))).total_seconds()/60
+
+    # Incremental tail-cache: reads only NEW bytes appended since last load.
+    # Keeps a rolling buffer per file in st.session_state - never re-reads
+    # the full file. Falls back to fresh tail-read if file rotated/shrunk.
+    def _tail_cached_lines(path, max_lines=2000):
+        _cache_key = f"_tailcache_{path}"
+        try:
+            _size = _os_lamps.path.getsize(path)
+        except Exception:
+            return []
+        _entry = st.session_state.get(_cache_key)
+        if _entry is None or _entry.get("size", -1) > _size:
+            # first load OR file rotated/shrunk - do one bounded tail read
+            with open(path, encoding="utf-8", errors="ignore") as _f:
+                _f.seek(0, 2)
+                _end = _f.tell()
+                _read_from = max(0, _end - 2_000_000)  # cap initial read to ~2MB
+                _f.seek(_read_from)
+                _lines = _f.read().splitlines(keepends=True)
+            _lines = _lines[-max_lines:]
+            st.session_state[_cache_key] = {"size": _size, "lines": _lines}
+            return _lines
+        elif _entry["size"] < _size:
+            # file grew - read only the new appended bytes
+            with open(path, encoding="utf-8", errors="ignore") as _f:
+                _f.seek(_entry["size"])
+                _new_data = _f.read()
+            _new_lines = _new_data.splitlines(keepends=True)
+            _lines = (_entry["lines"] + _new_lines)[-max_lines:]
+            st.session_state[_cache_key] = {"size": _size, "lines": _lines}
+            return _lines
+        else:
+            # unchanged - return cached lines instantly, zero disk read
+            return _entry["lines"]
 
     # S4V2 BOT
     try: _s2_ok = _log_age_min("logs/live_trading_s4v2.log") < 2
@@ -1470,6 +1512,26 @@ with _tab_monitor:
         _eng_ok = _hb_age < 15 and _eng_log_age < 15
         _eng_warn = not _eng_ok and (_hb_age < 30 or _eng_log_age < 30)
     except: _eng_ok = False; _eng_warn = False
+
+    # SL SAFETY MONITOR
+    _slm_proc = _os_lamps.popen if False else None
+    import subprocess as _sp_lamps
+    _slm_running = _sp_lamps.run(["bash","-c","screen -ls | grep -qE '[0-9]+\\.sl_safety_monitor[[:space:]]'"]).returncode==0
+    _slm_age = _age_min("logs/sl_safety_monitor.log")
+    _slm_ok = _slm_running and (_slm_age is not None and _slm_age < 2)
+    _slm_warn = _slm_running and not _slm_ok
+
+    # POSITION RISK MONITOR
+    _prm_running = _sp_lamps.run(["bash","-c","screen -ls | grep -qE '[0-9]+\\.position_risk_monitor[[:space:]]'"]).returncode==0
+    _prm_age = _age_min("logs/position_risk_monitor_heartbeat.txt")
+    _prm_ok = _prm_running and (_prm_age is not None and _prm_age < 1)
+    _prm_warn = _prm_running and not _prm_ok
+
+    # MARGIN MONITOR
+    _mgm_running = _sp_lamps.run(["bash","-c","screen -ls | grep -qE '[0-9]+\\.margin_monitor[[:space:]]'"]).returncode==0
+    _mgm_age = _age_min("logs/margin_monitor.log")
+    _mgm_ok = _mgm_running and (_mgm_age is not None and _mgm_age < 35)
+    _mgm_warn = _mgm_running and not _mgm_ok
 
     # TM1 S4
     try: _tm1s4_ok = _log_age_min("logs/live_trading_testmember1_s4.log") < 2
@@ -1520,7 +1582,7 @@ with _tab_monitor:
 
     # WEBSOCKET - check engine log for recent WS connected line
     try:
-        _ws_lines = open("logs/renko_state_engine.log").readlines()[-100:]
+        _ws_lines = _tail_cached_lines("logs/renko_state_engine.log", max_lines=100)
         _ws_ok = any("WS] Connected" in l or "Websocket connected" in l or "WS] Completed" in l
                      for l in _ws_lines[-20:])
         _ws_warn = not _ws_ok and any("WS]" in l for l in _ws_lines)
@@ -1528,8 +1590,8 @@ with _tab_monitor:
 
     # LAST ORDER - check if any order placed in last 7 days (not stuck)
     try:
-        _s2_log_lines = open("logs/live_trading_s4v2.log").readlines()
-        _s4_log_lines = open("logs/live_trading_s4.log").readlines()
+        _s2_log_lines = _tail_cached_lines("logs/live_trading_s4v2.log", max_lines=2000)
+        _s4_log_lines = _tail_cached_lines("logs/live_trading_s4.log", max_lines=2000)
         _all_lines = _s2_log_lines + _s4_log_lines
         _order_lines = [l for l in _all_lines if "[ORDER] ENTRY" in l or "[ORDER] EXIT" in l]
         _last_order_ok = len(_order_lines) > 0
@@ -1538,8 +1600,8 @@ with _tab_monitor:
 
     # POSITION SYNC - no ghost position (check last startup reconciliation)
     try:
-        _pos_lines = open("logs/live_trading_s4v2.log").readlines()[-200:]
-        _pos_lines += open("logs/live_trading_s4.log").readlines()[-200:]
+        _pos_lines = _tail_cached_lines("logs/live_trading_s4v2.log", max_lines=2000)[-200:]
+        _pos_lines += _tail_cached_lines("logs/live_trading_s4.log", max_lines=2000)[-200:]
         _ghost_found = any("Position mismatch" in l for l in _pos_lines)
         _pos_ok = not _ghost_found
         _pos_warn = _ghost_found
@@ -1547,8 +1609,8 @@ with _tab_monitor:
 
     # ENTRY TIMING - check if last entry was stale signal skip
     try:
-        _s2_recent = open("logs/live_trading_s4v2.log").readlines()[-500:]
-        _s4_recent = open("logs/live_trading_s4.log").readlines()[-500:]
+        _s2_recent = _tail_cached_lines("logs/live_trading_s4v2.log", max_lines=2000)[-500:]
+        _s4_recent = _tail_cached_lines("logs/live_trading_s4.log", max_lines=2000)[-500:]
         _stale_s2 = any("STALE" in l or "signal too old" in l for l in _s2_recent)
         _stale_s4 = any("STALE" in l or "signal too old" in l for l in _s4_recent)
         _timing_ok = not (_stale_s2 or _stale_s4)
@@ -1571,7 +1633,10 @@ with _tab_monitor:
         _lamp("LAST ORDER", _last_order_ok, _last_order_warn) +
         _lamp("POSITION", _pos_ok, _pos_warn) +
         _lamp("ENTRY TIMING", _timing_ok, _timing_warn) +
-        _lamp("DISK", _disk_ok, _disk_warn if not _disk_ok else False)
+        _lamp("DISK", _disk_ok, _disk_warn if not _disk_ok else False) +
+        _lamp("SL MONITOR", _slm_ok, _slm_warn) +
+        _lamp("RISK MONITOR", _prm_ok, _prm_warn) +
+        _lamp("MARGIN MONITOR", _mgm_ok, _mgm_warn)
     )
     st.markdown(f"""<div style='background:#f0f7ff;border:1px solid #90CAF9;border-radius:6px;padding:10px 16px;margin-bottom:4px;'>{_row1}</div>
 <div style='background:#f0f7ff;border:1px solid #90CAF9;border-radius:6px;padding:10px 16px;margin-bottom:12px;'>{_row2}</div>""", unsafe_allow_html=True)
@@ -2500,6 +2565,36 @@ with _tab_monitor:
                     warnings.append(f"ENGINE SLOW - last update {int(_eng_age_mins)}m ago - may be stuck")
                 else:
                     ok.append(f"Engine (renko_state_engine): RUNNING - last update {int(_eng_age_mins)}m ago")
+
+                import subprocess as _sp_al
+                def _proc_up(name):
+                    return _sp_al.run(["bash","-c",f"screen -ls | grep -qE '[0-9]+\\.{name}[[:space:]]'"]).returncode==0
+                def _log_age(path):
+                    try:
+                        return (time.time() - os.path.getmtime(path))/60
+                    except Exception:
+                        return None
+
+                _slm_up = _proc_up("sl_safety_monitor")
+                _slm_a = _log_age("logs/sl_safety_monitor.log")
+                if not _slm_up:
+                    errors.append("SL MONITOR DEAD - stop-loss auto-repair offline - restart sl_safety_monitor IMMEDIATELY")
+                elif _slm_a is not None and _slm_a > 2:
+                    warnings.append(f"SL MONITOR STALE - no update in {int(_slm_a)}m")
+
+                _prm_up = _proc_up("position_risk_monitor")
+                _prm_a = _log_age("logs/position_risk_monitor_heartbeat.txt")
+                if not _prm_up:
+                    errors.append("RISK MONITOR DEAD - liquidation-distance protection offline - restart position_risk_monitor IMMEDIATELY")
+                elif _prm_a is not None and _prm_a > 1:
+                    warnings.append(f"RISK MONITOR STALE - no heartbeat in {int(_prm_a)}m")
+
+                _mgm_up = _proc_up("margin_monitor")
+                _mgm_a = _log_age("logs/margin_monitor.log")
+                if not _mgm_up:
+                    errors.append("MARGIN MONITOR DEAD - balance/equity alerts offline - restart margin_monitor IMMEDIATELY")
+                elif _mgm_a is not None and _mgm_a > 35:
+                    warnings.append(f"MARGIN MONITOR STALE - no update in {int(_mgm_a)}m")
             # Check signal files age
             for _sf, _label, _pos_flag in [("logs/live_signal_s4v2.txt","S4V2 signal","logs/last_known_ts_s4v2.txt"), ("logs/live_signal_s4.txt","S4 signal","logs/last_known_ts_s4.txt")]:
                 if os.path.exists(_sf):
@@ -7016,6 +7111,7 @@ with _tab_analysis:
                         })
                 except: pass
                 return rows
+            @st.cache_data(ttl=30)
             def _get_fwd_rows(df_fwd, label):
                 rows = []
                 try:
