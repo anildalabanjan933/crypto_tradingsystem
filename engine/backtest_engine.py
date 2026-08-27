@@ -81,10 +81,16 @@ class BacktestEngine:
         timeframe_map = {
             '1m': aggregator.get_1m_data,
             '5m': aggregator.get_5m_data,
+            '10m': aggregator.get_10m_data,
             '15m': aggregator.get_15m_data,
+            '20m': aggregator.get_20m_data,
             '30m': aggregator.get_30m_data,
+            '45m': aggregator.get_45m_data,
             '1h': aggregator.get_1h_data,
+            '1h30m': aggregator.get_1h30m_data,
             '2h': aggregator.get_2h_data,
+            '2h30m': aggregator.get_2h30m_data,
+            '3h': aggregator.get_3h_data,
             '4h': aggregator.get_4h_data,
             'daily': aggregator.get_daily_data,
         }

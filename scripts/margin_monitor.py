@@ -40,6 +40,10 @@ ACCOUNTS = {
     "TM1":  ("TESTMEMBER1_S4V2_API_KEY", "TESTMEMBER1_S4V2_API_SECRET", 3075.0),
 }
 
+ALERT_COOLDOWN_SEC = 4 * 3600  # 4 hours - avoid repeat spam while still below threshold
+_last_alert_ts = {}   # label -> last time a LOW MARGIN alert was sent
+_was_below = {}        # label -> bool, was balance below threshold last check
+
 def get_usd_balance(api_key, api_secret):
     path = "/v2/wallet/balances"
     timestamp = str(int(time.time()))
@@ -54,31 +58,44 @@ def get_usd_balance(api_key, api_secret):
     resp = requests.get(BASE_URL + path, headers=headers, timeout=(3, 15))
     data = resp.json()
     if not data.get("success"):
-        return None, data.get("error")
+        return None, None, data.get("error")
     for w in data.get("result", []):
         if w.get("asset_symbol") == "USD":
-            return float(w.get("available_balance", 0)), None
-    return None, "USD wallet not found"
+            return float(w.get("balance", 0)), float(w.get("available_balance", 0)), None
+    return None, None, "USD wallet not found"
 
 def check_all():
+    now = time.time()
     for label, (key_env, secret_env, threshold) in ACCOUNTS.items():
         api_key = os.getenv(key_env, "")
         api_secret = os.getenv(secret_env, "")
         if not api_key or not api_secret:
             log.warning(f"[{label}] API key/secret not configured - skipping")
             continue
-        bal, err = get_usd_balance(api_key, api_secret)
+        bal, avail_bal, err = get_usd_balance(api_key, api_secret)
         if err:
             log.warning(f"[{label}] Balance check failed: {err}")
             continue
-        log.info(f"[{label}] available_balance=${bal:.2f} | threshold=${threshold:.2f}")
+        log.info(f"[{label}] balance(equity)=${bal:.2f} | available_balance=${avail_bal:.2f} | threshold=${threshold:.2f}")
         if bal < threshold:
-            send_alert(
-                f"LOW MARGIN WARNING - {label}\n"
-                f"Available balance: ${bal:.2f}\n"
-                f"Safe threshold: ${threshold:.2f}\n"
-                f"Action: Top up this subaccount before next signal fires"
-            )
+            last_sent = _last_alert_ts.get(label, 0)
+            if now - last_sent >= ALERT_COOLDOWN_SEC:
+                send_alert(
+                    f"LOW MARGIN WARNING - {label}\n"
+                    f"Available balance: ${bal:.2f}\n"
+                    f"Safe threshold: ${threshold:.2f}\n"
+                    f"Action: Top up this subaccount before next signal fires\n"
+                    f"(repeats every {ALERT_COOLDOWN_SEC//3600}h while still low, not spam)"
+                )
+                _last_alert_ts[label] = now
+            _was_below[label] = True
+        else:
+            if _was_below.get(label):
+                send_alert(
+                    f"MARGIN RECOVERED - {label}\n"
+                    f"Available balance: ${bal:.2f} (back above ${threshold:.2f})"
+                )
+            _was_below[label] = False
 
 if __name__ == "__main__":
     log.info("[STARTUP] Margin monitor started (read-only, no order actions)")
