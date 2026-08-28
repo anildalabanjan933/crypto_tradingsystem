@@ -17,6 +17,7 @@ from data.download_market_data import download_or_update
 from strategies.backtest.renko_reversal_strategy import RenkoReversalStrategy
 from strategies.backtest.renko_smiio_supertrend_strategy import RenkoSMIIOSupertrendStrategy
 from strategies.backtest.renko_smiio_supertrend_v2_strategy import RenkoSMIIOSupertrendV2Strategy
+from strategies.backtest.renko_smiio_cross_v3_strategy import RenkoSMIIOCrossV3Strategy
 
 import datetime as _logdt
 class _ISTFormatter(logging.Formatter):
@@ -33,6 +34,7 @@ LOT_SIZE=100
 SLEEP_SEC=0.5
 S4_PARAMS=dict(renko_box_pct=0.001,renko_timeframe="2h",st_atr_length=5,st_factor=2.0,smiio_shortlen=10,smiio_longlen=10,smiio_siglen=3)
 S4V2_PARAMS=dict(renko_box_pct=0.001,renko_timeframe="30m",st_atr_length=5,st_factor=1.5,smiio_shortlen=10,smiio_longlen=20,smiio_siglen=3)
+S4V3_PARAMS=dict(renko_box_pct=0.001,renko_timeframe="4h",smiio_shortlen=5,smiio_longlen=10,smiio_siglen=3)
 def _send_bt_signal_alert(strategy_label, direction, entry_ts, exit_ts, entry_price, exit_price, lots=100, slippage=5.0):
     """Send Telegram alert when backtest signal fires."""
     try:
@@ -98,6 +100,7 @@ def get_trade_csv(label):
     import glob
     if label=="S2": p="output/trade_log_RenkoReversalStrategy_BTCUSD_*.csv"
     elif label=="S4V2": p="output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv"
+    elif label=="S4V3": p="output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv"
     else: p="output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"
     files=sorted(glob.glob(p),reverse=True)
     return files[0] if files else None
@@ -127,7 +130,7 @@ def write_signal_file(label,sig_type,direction,sig_ts):
     import os, time
     seq = str(int(time.time()))
     sig_line=f"{sig_type}_{direction.upper()}|{sig_ts}|100|SEQ={seq}"
-    _sig_suffix={"S2":"2","S4":"4","S4V2":"4v2"}.get(label,"4")
+    _sig_suffix={"S2":"2","S4":"4","S4V2":"4v2","S4V3":"4v3"}.get(label,"4")
     sf=f"logs/live_signal_s{_sig_suffix}.txt"
     tmp=sf+".tmp"; open(tmp,"w").write(sig_line); os.replace(tmp,sf)
 
@@ -270,6 +273,13 @@ def check_and_fire(state,is_s4=False):
             except Exception:
                 _ref = state.candles_tf['close'].iloc[0]
             p_with_ref = dict(p, reference_price=_ref); strategy=RenkoSMIIOSupertrendV2Strategy(data_dict,LOT_SIZE,**p_with_ref)
+        elif state.label=="S4V3":
+            _ref = None
+            try:
+                _ref = float(open("logs/box_ref_price_s4v3.txt").read().strip())
+            except Exception:
+                _ref = state.candles_tf['close'].iloc[0]
+            p_with_ref = dict(p, reference_price=_ref); strategy=RenkoSMIIOCrossV3Strategy(data_dict,LOT_SIZE,**p_with_ref)
         else:
             _ref = None
             try:
