@@ -7844,9 +7844,22 @@ with _tab_analysis:
         _d3_full_t = _load14("output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv", "2024-01-01")
         st.markdown(_today_trades_html(_d2_full, _d4_full, _df2_fwd, _df4_fwd, df3=_d3_full_t, df3_fwd=None), unsafe_allow_html=True)
         st.markdown("---")
-        st.markdown(_tbl14(_d2_1yr,_d4_1yr,"1-YEAR BACKTEST",_1yr_label,_df2_fwd,_df4_fwd),unsafe_allow_html=True)
+
+        # S4 always shown fixed; dropdown picks S4V2 or S4V3 for second slot (additive, default=S4V2 preserves old behavior)
+        _sec14_choice = st.selectbox("Compare S4 against:", ["S4V2","S4V3"], key="sec14_cmp_dd")
+        if _sec14_choice == "S4V3":
+            _1yr_from_14 = (_dt14.datetime.utcnow() - _dt14.timedelta(days=365)).strftime("%Y-%m-%d")
+            _d2_1yr_sel  = _load14("output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv", _1yr_from_14)
+            _d2_full_sel = _d3_full_t
+            _df2_fwd_sel = None
+        else:
+            _d2_1yr_sel  = _d2_1yr
+            _d2_full_sel = _d2_full
+            _df2_fwd_sel = _df2_fwd
+
+        st.markdown(_tbl14(_d2_1yr_sel,_d4_1yr,"1-YEAR BACKTEST",_1yr_label,_df2_fwd_sel,_df4_fwd),unsafe_allow_html=True)
         st.markdown("---")
-        st.markdown(_tbl14(_d2_full,_d4_full,"FULL CSV BACKTEST",_full_label,_df2_fwd,_df4_fwd),unsafe_allow_html=True)
+        st.markdown(_tbl14(_d2_full_sel,_d4_full,"FULL CSV BACKTEST",_full_label,_df2_fwd_sel,_df4_fwd),unsafe_allow_html=True)
         st.markdown("---")
 
         # DEPLOYMENT PLAN SECTION
