@@ -7046,7 +7046,7 @@ with _tab_analysis:
 
         # TODAY'S TRADES TABLE AT TOP
         @st.cache_data(ttl=30)
-        def _today_trades_html(df2, df4, df2_fwd, df4_fwd):
+        def _today_trades_html(df2, df4, df2_fwd, df4_fwd, df3=None, df3_fwd=None):
             import datetime as _dtt
             _INR = 84.0
             _SLIP10_EXTRA = 10.0
@@ -7364,6 +7364,9 @@ with _tab_analysis:
             _lv4_open = _get_lv_open_row("LV S4")
             if _lv4_open:
                 lv4 = [_lv4_open] + lv4
+            bt3 = _get_bt_rows(df3, "BT S4V3") if df3 is not None else []
+            lv3 = _get_fwd_rows(df3_fwd, "LV S4V3") if df3_fwd is not None else []
+            lv3 = [r for r in lv3 if r.get('exit_ist') not in ('-', '', None)]
             today_str = _dtt.datetime.utcnow().strftime("%d-%b-%Y")
             TH  = "padding:5px 8px;border:1px solid #90CAF9;background:#42A5F5;font-size:10px;font-weight:700;color:#fff;text-align:center;"
             THS = "padding:5px 8px;border:1px solid #90CAF9;background:#42A5F5;font-size:10px;font-weight:700;color:#fff;text-align:center;width:40px;"
@@ -7814,10 +7817,14 @@ with _tab_analysis:
             html += _section_html("S4V2", bt2, lv2)
             html += '<div style="height:14px;"></div>'
             html += _section_html("S4", bt4, lv4)
+            if df3 is not None:
+                html += '<div style="height:14px;"></div>'
+                html += _section_html("S4V3", bt3, lv3)
             html += '</div>'
             return html
         _d2_1yr,_d4_1yr,_d2_full,_d4_full,_1yr_label,_full_label,_df2_fwd,_df4_fwd = _reload_all_data()
-        st.markdown(_today_trades_html(_d2_full, _d4_full, _df2_fwd, _df4_fwd), unsafe_allow_html=True)
+        _d3_full_t = _load14("output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv", "2024-01-01")
+        st.markdown(_today_trades_html(_d2_full, _d4_full, _df2_fwd, _df4_fwd, df3=_d3_full_t, df3_fwd=None), unsafe_allow_html=True)
         st.markdown("---")
         st.markdown(_tbl14(_d2_1yr,_d4_1yr,"1-YEAR BACKTEST",_1yr_label,_df2_fwd,_df4_fwd),unsafe_allow_html=True)
         st.markdown("---")
@@ -8346,7 +8353,8 @@ with _tab_today:
         st.caption('Live comparison of today\'s backtest signals vs forward test execution')
         try:
             _d2_1yr,_d4_1yr,_d2_full,_d4_full,_1yr_label,_full_label,_df2_fwd,_df4_fwd = _reload_all_data()
-            st.markdown(_today_trades_html(_d2_full, _d4_full, _df2_fwd, _df4_fwd), unsafe_allow_html=True)
+            _d3_full_t2 = _load14("output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv", "2024-01-01")
+            st.markdown(_today_trades_html(_d2_full, _d4_full, _df2_fwd, _df4_fwd, df3=_d3_full_t2, df3_fwd=None), unsafe_allow_html=True)
         except Exception as _e_today:
             st.error(f'Today trades load error: {_e_today}')
 
