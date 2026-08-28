@@ -6896,6 +6896,24 @@ with _tab_analysis:
             st.markdown(_fwd20(s4p_7d, bot_name="S4"), unsafe_allow_html=True)
             _dl13_csv(s4p_7d, "LV_S4_ThisMonth", "dl_lv_s4")
 
+        # ── S4V3 - additive block, gated on API key presence (blank key = safe no-op) ──
+        if os.getenv("S4V3_API_KEY"):
+            _colE, _colF = st.columns(2)
+            with _colE:
+                st.markdown(f"<div style='{_HDR13}'>BACKTEST S4V3 - THIS MONTH</div>", unsafe_allow_html=True)
+                st.markdown(_bt_hdr13("output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
+                st.markdown(_bt20("output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
+                _dl13_bt_csv("output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv", _VF13_7D, "BT_S4V3_ThisMonth", "dl_bt_s4v3")
+            with _colF:
+                s4v3p = _pair13_fills(os.getenv("S4V3_API_KEY"), os.getenv("S4V3_API_SECRET"), _VF13_7D)
+                s4v3p_7d = [p for p in s4v3p if p.get('ets',0) >= _vf7_ts]
+                st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4V3 - THIS MONTH</div>", unsafe_allow_html=True)
+                st.markdown(_fwd_slip_hdr13(s4v3p_7d, bot_name="S4V3"), unsafe_allow_html=True)
+                st.markdown(_fwd20(s4v3p_7d, bot_name="S4V3"), unsafe_allow_html=True)
+                _dl13_csv(s4v3p_7d, "LV_S4V3_ThisMonth", "dl_lv_s4v3")
+        else:
+            st.caption("S4V3 forward-test block hidden - pending subaccount/API key (ticket #TICKET-457563)")
+
         # ================================================================
         # EQUITY CURVE - MONTHLY VIEW (BT + FWD, S4V2 + S4)
         # ================================================================
