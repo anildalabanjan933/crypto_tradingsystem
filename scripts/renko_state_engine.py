@@ -721,6 +721,7 @@ if __name__=="__main__":
                 log.info(f"[ENGINE] New candle: {csv_last}")
                 append_new_candles(s4)
                 append_new_candles(s4v2)
+                append_new_candles(s4v3)
 
                 # S4V2: fire only on new closed 30m candle (shared state with WS)
                 cur_s4v2_tf=_last_closed_tf(30)
@@ -735,6 +736,13 @@ if __name__=="__main__":
                     _ws_state["last_s4_tf"]=cur_s4_tf
                     log.info(f"[ENGINE] New 2H candle closed: {cur_s4_tf} - checking S4")
                     check_and_fire(s4,is_s4=True)
+
+                # S4V3: fire only on new closed 4H candle (shared state with WS)
+                cur_s4v3_tf=_last_closed_tf(240)
+                if cur_s4v3_tf>_ws_state["last_s4v3_tf"]:
+                    _ws_state["last_s4v3_tf"]=cur_s4v3_tf
+                    log.info(f"[ENGINE] New 4H candle closed: {cur_s4v3_tf} - checking S4V3")
+                    check_and_fire(s4v3,is_s4=False)
 
             # Boundary watcher trigger - fires if watcher detected missed boundary
             _trig_s4 = "logs/boundary_trigger_s4.txt"
@@ -799,6 +807,7 @@ if __name__=="__main__":
             touch_signal_file("S2")
             touch_signal_file("S4")
             touch_signal_file("S4V2")
+            touch_signal_file("S4V3")
 
             # Periodic CSV regeneration removed - instant append handles all new signals
             # Full regeneration runs daily at 3AM UTC via systemd timer (generate_signals.py)
