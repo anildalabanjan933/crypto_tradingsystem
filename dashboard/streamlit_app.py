@@ -7761,6 +7761,8 @@ with _tab_analysis:
                     bt = bt_rows[i] if i < n_bt else None
                     lv = (lv_rows[_pair_map[i]] if bt is not None and i in _pair_map else
                           (lv_rows[i] if i < n_lv and i not in _used_lv else None))
+                    if lv is None and bt is not None:
+                        lv = _exchange_fallback(bt)
                     if bt is not None and lv is not None:
                         try:
                             _sd = (bt["entry_p"] - lv["entry_p"]) if bt["dir"] == "LONG" else (lv["entry_p"] - bt["entry_p"])
