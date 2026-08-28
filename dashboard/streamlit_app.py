@@ -251,7 +251,7 @@ def _fetch_delta_full_status():
         if not pos.get('success', False):
             return ("RED", "Bot cannot log in to Delta. Check API key or secret.")
         _found = None
-        for _logf in ["logs/live_trading_s4v2.log", "logs/live_trading_s4.log"]:
+        for _logf in ["logs/live_trading_s4v2.log", "logs/live_trading_s4.log", "logs/live_trading_s4v3.log"]:
             try:
                 _lines = open(_logf).readlines()[-150:]
             except:
@@ -1592,7 +1592,8 @@ with _tab_monitor:
     try:
         _s2_log_lines = _tail_cached_lines("logs/live_trading_s4v2.log", max_lines=2000)
         _s4_log_lines = _tail_cached_lines("logs/live_trading_s4.log", max_lines=2000)
-        _all_lines = _s2_log_lines + _s4_log_lines
+        _s4v3_log_lines = _tail_cached_lines("logs/live_trading_s4v3.log", max_lines=2000)
+        _all_lines = _s2_log_lines + _s4_log_lines + _s4v3_log_lines
         _order_lines = [l for l in _all_lines if "[ORDER] ENTRY" in l or "[ORDER] EXIT" in l]
         _last_order_ok = len(_order_lines) > 0
         _last_order_warn = not _last_order_ok
@@ -1602,6 +1603,7 @@ with _tab_monitor:
     try:
         _pos_lines = _tail_cached_lines("logs/live_trading_s4v2.log", max_lines=2000)[-200:]
         _pos_lines += _tail_cached_lines("logs/live_trading_s4.log", max_lines=2000)[-200:]
+        _pos_lines += _tail_cached_lines("logs/live_trading_s4v3.log", max_lines=2000)[-200:]
         _ghost_found = any("Position mismatch" in l for l in _pos_lines)
         _pos_ok = not _ghost_found
         _pos_warn = _ghost_found
@@ -1611,16 +1613,23 @@ with _tab_monitor:
     try:
         _s2_recent = _tail_cached_lines("logs/live_trading_s4v2.log", max_lines=2000)[-500:]
         _s4_recent = _tail_cached_lines("logs/live_trading_s4.log", max_lines=2000)[-500:]
+        _s4v3_recent = _tail_cached_lines("logs/live_trading_s4v3.log", max_lines=2000)[-500:]
         _stale_s2 = any("STALE" in l or "signal too old" in l for l in _s2_recent)
         _stale_s4 = any("STALE" in l or "signal too old" in l for l in _s4_recent)
-        _timing_ok = not (_stale_s2 or _stale_s4)
-        _timing_warn = _stale_s2 or _stale_s4
+        _stale_s4v3 = any("STALE" in l or "signal too old" in l for l in _s4v3_recent)
+        _timing_ok = not (_stale_s2 or _stale_s4 or _stale_s4v3)
+        _timing_warn = _stale_s2 or _stale_s4 or _stale_s4v3
     except: _timing_ok = True; _timing_warn = False
+
+    # S4V3 BOT (Phase 4 pending - ticket #TICKET-457563, expected RED until live_s4v3 launches)
+    try: _s4v3_ok = _log_age_min("logs/live_trading_s4v3.log") < 2
+    except: _s4v3_ok = False
 
     # Build 2 rows of lamps
     _row1 = (
         _lamp("S4V2 BOT", _s2_ok) +
         _lamp("S4 BOT", _s4_ok) +
+        _lamp("S4V3 BOT", _s4v3_ok) +
         _lamp("ENGINE", _eng_ok, _eng_warn) +
         _lamp("SIGNAL", _sig_ok, _sig_warn) +
         _lamp("WEBSOCKET", _ws_ok, _ws_warn) +
@@ -1667,7 +1676,7 @@ with _tab_monitor:
 
         st.caption('STOP only pauses new signal entries. Any already-open position stays live on exchange and remains protected by sl_safety_monitor / position_risk_monitor / margin_monitor (unaffected by this control).')
 
-        bc1, bc2 = st.columns(2)
+        bc1, bc2, bc3 = st.columns(3)
         with bc1:
             st.markdown('**S4 BOT**')
             _s4_run = _bot_running('live_s4')
@@ -1696,6 +1705,20 @@ with _tab_monitor:
             if st.button('RESTART S4V2', key='btn_restart_s4v2'):
                 _restart_bot('live_s4v2', 'signal_replay_s4v2.py')
                 st.info('S4V2 bot restart command sent. Refresh in a few seconds to confirm.')
+        with bc3:
+            st.markdown('**S4V3 BOT**')
+            _s4v3_run = _bot_running('live_s4v3')
+            st.success('RUNNING') if _s4v3_run else st.error('STOPPED')
+            _confirm_s4v3 = st.checkbox('Confirm STOP S4V3', key='confirm_stop_s4v3')
+            if st.button('STOP S4V3', key='btn_stop_s4v3'):
+                if _confirm_s4v3:
+                    _stop_bot('live_s4v3')
+                    st.warning('S4V3 bot stop command sent. Refresh in a few seconds to confirm.')
+                else:
+                    st.error('Tick the confirm checkbox first.')
+            if st.button('RESTART S4V3', key='btn_restart_s4v3'):
+                _restart_bot('live_s4v3', 'signal_replay_s4v3.py')
+                st.info('S4V3 bot restart command sent. Refresh in a few seconds to confirm.')
 
 
     # ---- PLAIN MESSAGES FOR TOP LAMP ROWS (only show if NOT fully green) ----
@@ -1888,15 +1911,16 @@ with _tab_monitor:
         try:
             _s2_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4v2.log")) / 60 if os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4v2.log") else 999
             _s4_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4.log")) / 60 if os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4.log") else 999
+            _s4v3_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4v3.log")) / 60 if os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4v3.log") else 999
             _eng_log = "/home/anildalabanjan933/crypto_trading_system/logs/renko_state_engine.log"
             _eng_age = (_t_cards.time() - os.path.getmtime(_eng_log)) / 60 if os.path.exists(_eng_log) else 999
             st.markdown("**BOT LOG**")
-            if _s2_log_age > 10 or _s4_log_age > 10:
+            if _s2_log_age > 10 or _s4_log_age > 10 or (os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4v3.log") and _s4v3_log_age > 10):
                 st.error("INACTIVE")
-                st.caption(f"S4V2: {int(_s2_log_age)}m | S4: {int(_s4_log_age)}m no update")
+                st.caption(f"S4V2: {int(_s2_log_age)}m | S4: {int(_s4_log_age)}m | S4V3: {int(_s4v3_log_age)}m no update")
             else:
                 st.success("ACTIVE")
-                st.caption(f"S4V2: {int(_s2_log_age)}m ago | S4: {int(_s4_log_age)}m ago")
+                st.caption(f"S4V2: {int(_s2_log_age)}m ago | S4: {int(_s4_log_age)}m ago | S4V3: {int(_s4v3_log_age)}m ago")
             st.markdown("**ENGINE**")
             if _eng_age > 10:
                 st.error(f"DEAD - {int(_eng_age)}m no update")
@@ -2280,7 +2304,7 @@ with _tab_monitor:
     st.markdown('<div style="margin-top:-8px;"></div>', unsafe_allow_html=True)
     if 'exp_1b' not in st.session_state: st.session_state['exp_1b'] = False
     with st.expander("SYSTEM ERROR MONITOR", expanded=st.session_state.get('exp_1b', False)):
-        for _sb in ["S4", "S4V2"]:
+        for _sb in ["S4", "S4V2", "S4V3"]:
             _sf = f"logs/stuck_flag_{_sb}.txt"
             if os.path.exists(_sf):
                 st.error(f"STUCK PENDING - {_sb}: CSV shows open position but exchange is FLAT. Check signals CSV / restart signal_generator.")
@@ -2400,7 +2424,7 @@ with _tab_monitor:
         pass
 
         # 7. CHECK RECENT ALGOTEST SUCCESS
-        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log')]:
+        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log'), ('S4V3', 'logs/live_trading_s4v3.log')]:
             try:
                 if os.path.exists(log):
                     lines = open(log).readlines()
@@ -2424,7 +2448,7 @@ with _tab_monitor:
 
 
         # 8. CHECK OPEN POSITION > 24H (orphan position risk)
-        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log')]:
+        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log'), ('S4V3', 'logs/live_trading_s4v3.log')]:
             try:
                 if os.path.exists(log):
                     lines = open(log).readlines()
@@ -2452,7 +2476,7 @@ with _tab_monitor:
                 warnings.append(f"{bot} position check failed: {e}")
 
         # 9. CHECK NO ORDERS IN LAST 48H (bot alive but not trading)
-        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log')]:
+        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log'), ('S4V3', 'logs/live_trading_s4v3.log')]:
             try:
                 if os.path.exists(log):
                     lines = open(log).readlines()
@@ -2511,7 +2535,7 @@ with _tab_monitor:
 
 
         # 11. CHECK BOT CYCLING HEALTH (last [SIGNALS] line timestamp)
-        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log')]:
+        for bot, log in [('S4V2', 'logs/live_trading_s4v2.log'), ('S4', 'logs/live_trading_s4.log'), ('S4V3', 'logs/live_trading_s4v3.log')]:
             try:
                 if os.path.exists(log):
                     lines = open(log).readlines()
