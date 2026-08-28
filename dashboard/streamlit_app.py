@@ -7400,9 +7400,9 @@ with _tab_analysis:
             lv3 = _get_fwd_rows(df3_fwd, "LV S4V3") if df3_fwd is not None else []
             lv3 = [r for r in lv3 if r.get('exit_ist') not in ('-', '', None)]
             today_str = _dtt.datetime.utcnow().strftime("%d-%b-%Y")
-            TH  = "padding:5px 8px;border:1px solid #90CAF9;background:#42A5F5;font-size:10px;font-weight:700;color:#fff;text-align:center;"
-            THS = "padding:5px 8px;border:1px solid #90CAF9;background:#42A5F5;font-size:10px;font-weight:700;color:#fff;text-align:center;width:40px;"
-            TD  = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;text-align:center;"
+            TH  = "padding:3px 6px;border:1px solid #90CAF9;background:#42A5F5;font-size:10px;font-weight:700;color:#fff;text-align:center;vertical-align:middle;"
+            THS = "padding:3px 6px;border:1px solid #90CAF9;background:#42A5F5;font-size:10px;font-weight:700;color:#fff;text-align:center;width:40px;vertical-align:middle;"
+            TD  = "padding:3px 6px;border:1px solid #BBDEFB;font-size:10px;text-align:center;vertical-align:top;line-height:1.25;"
             TDN = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;text-align:center;background:#f7f9fc;font-weight:700;color:#555;vertical-align:middle;"
             def _pnl_color(v): return "#089981" if v>=0 else "#F23645"
             def _dir_color(d): return "#089981" if d=="LONG" else "#F23645"
@@ -7514,7 +7514,7 @@ with _tab_analysis:
                 return list(dict.fromkeys(_issues))
 
             def _match(bt, lv):
-                if bt is None or lv is None: return "-"
+                if bt is None or lv is None: return ("-", "-")
                 _entry_delay_txt = ""
                 _exit_delay_txt = ""
                 _gap_min = None
@@ -7577,8 +7577,10 @@ with _tab_analysis:
                     pass
                 _issue_html = ""
                 if _issue_msgs:
-                    _issue_html = "<br>" + "<br>".join([f"<span style='font-size:13px;color:#e67e22;font-weight:700;'>⚠ {m}</span>" for m in _issue_msgs])
-                return f"Entry: {entry_line}<br>Exit: {exit_line}<br><span style='font-size:9px;color:#888;'>Note: match check covers entry/exit price only, not funding cost</span>{_issue_html}"
+                    _issue_html = "<br>" + "<br>".join([f"<span style='font-size:9px;color:#e67e22;font-weight:700;'>⚠ {m}</span>" for m in _issue_msgs])
+                _match_only = f"Entry: {entry_line}<br>Exit: {exit_line}<br><span style='font-size:9px;color:#888;'>Note: match check covers entry/exit price only, not funding cost</span>"
+                _message_only = _issue_html.replace("<br>", "", 1) if _issue_html else "-"
+                return (_match_only, _message_only)
             def _section_html(strat, bt_rows, lv_rows):
                 n_bt = len(bt_rows); n_lv = len(lv_rows)
                 tc = max(n_bt, n_lv)
@@ -7598,23 +7600,24 @@ with _tab_analysis:
                     f'<span style="background:#e3f2fd;color:#0d47a1;border-radius:3px;padding:3px 10px;font-size:12px;">LV Net PnL $5: <b style="color:{_pc(lv_pnl5)}">{_fmt(lv_pnl5)}</b> | $10: <b style="color:{_pc(lv_pnl10)}">{_fmt(lv_pnl10)}</b></span>'
                     '</div>'
                 )
-                tbl = '<table style="width:100%;border-collapse:collapse;margin-bottom:4px;">'
+                tbl = '<table style="width:100%;border-collapse:collapse;margin-bottom:4px;table-layout:fixed;">'
                 tbl += '<thead><tr>'
-                tbl += f'<th style="{THS}">S.No</th>'
-                tbl += f'<th style="{TH}">Source</th>'
-                tbl += f'<th style="{TH}">Dir</th>'
-                tbl += f'<th style="{TH}">Entry IST</th>'
-                tbl += f'<th style="{TH}">Exit IST</th>'
-                tbl += f'<th style="{TH}">Entry $</th>'
-                tbl += f'<th style="{TH}">Exit $</th>'
-                tbl += f'<th style="{TH}">PnL $</th>'
-                tbl += f'<th style="{TH}">Net PnL ₹ ($5/side)</th>'
-                tbl += f'<th style="{TH}">Net PnL ₹ ($10/side)</th>'
-                tbl += f'<th style="{TH}">Charges ₹</th>'
-                tbl += f'<th style="{TH}">Match</th>'
+                tbl += f'<th style="{THS}width:5%;">S.No</th>'
+                tbl += f'<th style="{TH}width:8%;">Source</th>'
+                tbl += f'<th style="{TH}width:6%;">Dir</th>'
+                tbl += f'<th style="{TH}width:12%;">Entry IST</th>'
+                tbl += f'<th style="{TH}width:12%;">Exit IST</th>'
+                tbl += f'<th style="{TH}width:8%;">Entry $</th>'
+                tbl += f'<th style="{TH}width:8%;">Exit $</th>'
+                tbl += f'<th style="{TH}width:7%;">PnL $</th>'
+                tbl += f'<th style="{TH}width:11%;">Net PnL ₹ ($5/side)</th>'
+                tbl += f'<th style="{TH}width:11%;">Net PnL ₹ ($10/side)</th>'
+                tbl += f'<th style="{TH}width:6%;">Charges ₹</th>'
+                tbl += f'<th style="{TH}width:16%;">Match</th>'
+                tbl += f'<th style="{TH}width:14%;">Message</th>'
                 tbl += '</tr></thead><tbody>'
                 if tc == 0:
-                    tbl += f'<tr><td colspan="12" style="{TD}color:#aaa;">No trades yet</td></tr>'
+                    tbl += f'<tr><td colspan="13" style="{TD}color:#aaa;">No trades yet</td></tr>'
                 _used_lv = set()
                 def _build_pair_map():
                     import datetime as _dtm
@@ -7780,7 +7783,10 @@ with _tab_analysis:
                     for ridx, (row, src) in enumerate([(bt, f"BT {strat}"), (lv, f"LV {strat}")]):
                         is_lv = (ridx == 1)
                         _fb_note = " <span style=\'color:#1976d2;font-weight:700;\'>[verified via exchange - log gap]</span>" if (is_lv and lv is not None and lv.get("verified_exchange")) else ""
-                        match_cell = (f'<td style="{TD}font-size:14px;">{_match(bt,lv)}{_fb_note}</td>' if is_lv
+                        _match_html, _message_html = _match(bt,lv) if is_lv else ("", "")
+                        match_cell = (f'<td style="{TD}font-size:11px;text-align:left;line-height:1.3;">{_match_html}{_fb_note}</td>' if is_lv
+                                      else f'<td style="{TD}"></td>')
+                        message_cell = (f'<td style="{TD}font-size:10px;text-align:left;line-height:1.3;color:#e67e22;font-weight:600;">{_message_html}</td>' if is_lv
                                       else f'<td style="{TD}"></td>')
                         sno = sno_cell if not is_lv else ""
                         if row is None and is_lv and bt is not None:
@@ -7803,7 +7809,7 @@ with _tab_analysis:
                             tbl += f'<tr>{sno}<td style="{TD}color:#aaa;">{src}</td>'
                             tbl += f'<td style="{TD}color:#e65100;font-weight:700;">{_miss_label}</td>'
                             tbl += (f'<td style="{TD}color:#aaa;">-</td>' * 8)
-                            tbl += f'{match_cell}</tr>'
+                            tbl += f'{match_cell}{message_cell}</tr>'
                         else:
                             dc  = _dir_color(row["dir"])
                             pc5 = _pnl_color(row["pnl_inr5"])
@@ -7834,7 +7840,7 @@ with _tab_analysis:
                             tbl += f'<td style="{TD}color:{_pc5b};font-weight:700;">{_pnl5_v}</td>'
                             tbl += f'<td style="{TD}color:{_pc10b};font-weight:700;">{_pnl10_v}</td>'
                             tbl += f'<td style="{TD}{bg}">{_charges_v}</td>'
-                            tbl += f'{match_cell}</tr>'
+                            tbl += f'{match_cell}{message_cell}</tr>'
                 tbl += '</tbody></table>'
                 _net_slip_usd = _slip_fav_usd - _slip_unfav_usd
                 _net_slip_inr = _net_slip_usd * 84
@@ -8335,7 +8341,7 @@ def _month_trades_html(df2, df4, df2_fwd, df4_fwd):
         )]
         parts.append("<div style='overflow-x:auto;max-height:400px;overflow-y:auto;'><table style='width:100%;border-collapse:collapse;'>")
         parts.append("<tr>" + "".join(f"<th style='padding:5px 8px;border:1px solid #90CAF9;background:#607D8B;font-size:10px;font-weight:700;color:#fff;'>{h}</th>" for h in ["#","Source","Dir","Entry IST","Exit IST","Entry $","Exit $","PnL $","PnL ₹","Match"]) + "</tr>")
-        _TDm = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;text-align:center;"
+        _TDm = "padding:3px 6px;border:1px solid #BBDEFB;font-size:10px;text-align:center;vertical-align:top;line-height:1.25;"
         for i, (bt, lv) in enumerate(pairs):
             _sep = "border-top:3px solid #607D8B;" if i>0 else ""
             sno_cell = f"<td rowspan='2' style='{_TDm}{_sep}'>{i+1}</td>"
@@ -8343,7 +8349,7 @@ def _month_trades_html(df2, df4, df2_fwd, df4_fwd):
             for ridx, (src, r) in enumerate((("BT", bt), ("LV", lv))):
                 is_lv = (ridx == 1)
                 sno = "" if is_lv else sno_cell
-                match_cell = f"<td style='{_TDm}text-align:left;font-size:12px;'>{_match_html}</td>" if is_lv else f"<td style='{_TDm}'></td>"
+                match_cell = f"<td style='{_TDm}text-align:left;font-size:10px;'>{_match_html}</td>" if is_lv else f"<td style='{_TDm}'></td>"
                 if r is None:
                     _miss = "MISSED (no live entry)" if is_lv else "-"
                     if is_lv:
