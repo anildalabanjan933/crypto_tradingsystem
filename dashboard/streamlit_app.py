@@ -3627,6 +3627,16 @@ with _tab_trading:
     with b6:
         if st.button("ADD NEW ALGO", key="sec2_add"):
             st.session_state['show_add_algo'] = True
+    if os.getenv("S4V3_API_KEY"):
+        b7 = st.columns(1)[0]
+        with b7:
+            if st.button("RESTART S4V3", key="sec2_restart_s3"):
+                try:
+                    import subprocess
+                    subprocess.Popen(['bash','-c','screen -S live_s4v3 -X quit; sleep 2; screen -dmS live_s4v3 bash -c "cd /home/anildalabanjan933/crypto_trading_system && .venv/bin/python3 scripts/signal_replay_s4v3.py >> logs/live_trading_s4v3.log 2>&1"'])
+                    st.success("S4V3 restarting...")
+                except Exception as e:
+                    st.error(str(e))
 
     if st.session_state.get('show_add_algo', False):
         st.markdown("**Add New Algo**")
@@ -3718,7 +3728,7 @@ with _tab_trading:
 
         # Load members
         members_cfg_file = 'dashboard/members_config.json'
-        all_accounts = [{'name': 'My Account', 's2_key': os.getenv('S4V2_API_KEY',''), 's2_secret': os.getenv('S4V2_API_SECRET',''), 's4_key': os.getenv('S4_API_KEY',''), 's4_secret': os.getenv('S4_API_SECRET','')}]
+        all_accounts = [{'name': 'My Account', 's2_key': os.getenv('S4V2_API_KEY',''), 's2_secret': os.getenv('S4V2_API_SECRET',''), 's4_key': os.getenv('S4_API_KEY',''), 's4_secret': os.getenv('S4_API_SECRET',''), 's3_key': os.getenv('S4V3_API_KEY',''), 's3_secret': os.getenv('S4V3_API_SECRET','')}]
         if os.path.exists(members_cfg_file):
             mcfg = _json.load(open(members_cfg_file))
             all_accounts += mcfg.get('members', [])
@@ -3738,20 +3748,26 @@ with _tab_trading:
         if not s2_bal: s2_bal, s2_unreal, s2_pos = 0.0, 0.0, []
         if not s4_bal: s4_bal, s4_unreal, s4_pos = 0.0, 0.0, []
 
-        total_bal   = s2_bal + s4_bal
-        total_unreal = s2_unreal + s4_unreal
+        s3_bal, s3_unreal, s3_pos = (0.0, 0.0, [])
+        if acct.get('s3_key'):
+            s3_bal, s3_unreal, s3_pos = _timed('s3_acct_'+_acct_key, 30, _fetch_account_data, acct.get('s3_key',''), acct.get('s3_secret',''))
+            if not s3_bal: s3_bal, s3_unreal, s3_pos = 0.0, 0.0, []
+
+        total_bal   = s2_bal + s4_bal + s3_bal
+        total_unreal = s2_unreal + s4_unreal + s3_unreal
 
         # Summary row
         st.markdown(f"**{selected_acct} - Live Account Summary**")
-        c1, c2, c3, c4 = st.columns(4)
+        c1, c2, c3, c4, c5 = st.columns(5)
         c1.metric("Total Balance", f"${total_bal:,.2f}", f"₹{total_bal*INR_RATE:,.0f}")
         c2.metric("Unrealised PnL", f"${total_unreal:,.2f}", f"₹{total_unreal*INR_RATE:,.0f}")
         c3.metric("S4V2 Balance", f"${s2_bal:,.2f}")
         c4.metric("S4 Balance", f"${s4_bal:,.2f}")
+        c5.metric("S4V3 Balance", f"${s3_bal:,.2f}" if acct.get('s3_key') else "pending API key")
 
         # Open positions
         st.markdown("**Open Positions**")
-        all_pos = [dict(p, account='S4V2') for p in s2_pos] + [dict(p, account='S4') for p in s4_pos]
+        all_pos = [dict(p, account='S4V2') for p in s2_pos] + [dict(p, account='S4') for p in s4_pos] + [dict(p, account='S4V3') for p in s3_pos]
         if all_pos:
             # Header row
             hc = st.columns([1,2,1,1,2,2,2,2])
@@ -3773,7 +3789,14 @@ with _tab_trading:
                 rc[3].markdown(f"<div style='font-size:11px;padding:6px 0;'>{size}</div>", unsafe_allow_html=True)
                 rc[4].markdown(f"<div style='font-size:11px;padding:6px 0;text-align:right;'>${p['entry']:,.1f}</div>", unsafe_allow_html=True)
                 _sl_val = p.get('sl_price', None)
-                _sl_disp = f"${float(_sl_val):,.1f}" if _sl_val not in (None, 'N/A') else "<span style='color:#F23645;font-weight:700;'>MISSING</span>"
+                if _sl_val not in (None, 'N/A'):
+                    try:
+                        _sl_pct = abs(float(_sl_val) - p['entry']) / p['entry'] * 100 if p['entry'] else 0
+                        _sl_disp = f"${float(_sl_val):,.1f} ({_sl_pct:.1f}%)"
+                    except Exception:
+                        _sl_disp = f"${float(_sl_val):,.1f}"
+                else:
+                    _sl_disp = "<span style='color:#F23645;font-weight:700;'>MISSING</span>"
                 rc[5].markdown(f"<div style='font-size:11px;padding:6px 0;text-align:right;'>{_sl_disp}</div>", unsafe_allow_html=True)
                 rc[6].markdown(f"<div style='font-size:11px;padding:6px 0;color:{pc};font-weight:600;'>${p['unreal_pnl']:,.2f} | ₹{p['unreal_pnl']*INR_RATE:,.0f}</div>", unsafe_allow_html=True)
                 with rc[7]:
