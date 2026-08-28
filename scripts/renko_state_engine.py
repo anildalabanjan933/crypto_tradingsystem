@@ -803,6 +803,35 @@ if __name__=="__main__":
                         except Exception as _e:
                             log.error(f"[ENGINE] S4V2 trigger thread error: {_e}", exc_info=True)
                     threading.Thread(target=_run_s4v2_trigger, daemon=True).start()
+            _trig_s4v3 = "logs/boundary_trigger_s4v3.txt"
+            if os.path.exists(_trig_s4v3):
+                _tv3 = open(_trig_s4v3).read().strip()
+                os.remove(_trig_s4v3)
+                try:
+                    _tv3_dt = __import__('datetime').datetime.strptime(_tv3, '%Y-%m-%d %H:%M:%S')
+                except:
+                    _tv3_dt = __import__('datetime').datetime.strptime(_tv3, '%Y-%m-%dT%H:%M:%S')
+                _s4v3_already_caught_up = s4v3.last_1m_ts is not None and s4v3.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= (_tv3_dt - __import__('datetime').timedelta(minutes=1))
+                _tv3_dt_engine_label = _tv3_dt - __import__('datetime').timedelta(minutes=240)
+                if not _s4v3_already_caught_up:
+                    _ws_state["last_s4v3_tf"] = max(_ws_state["last_s4v3_tf"], _tv3_dt_engine_label)
+                    log.info(f"[ENGINE] Boundary watcher trigger S4V3: {_tv3} - checking S4V3 (independent retry, decoupled from WS claim)")
+                    def _run_s4v3_trigger(_dt=_tv3_dt):
+                        try:
+                            for _retry in range(6):
+                                _caught_up = s4v3.last_1m_ts is not None and s4v3.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
+                                if not _caught_up:
+                                    update_market_data()
+                                    append_new_candles(s4v3)
+                                    _caught_up = s4v3.last_1m_ts is not None and s4v3.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
+                                if _caught_up:
+                                    break
+                                log.info(f"[ENGINE] S4V3 data not caught up yet, retry {_retry+1}/6")
+                                time.sleep(2)
+                            check_and_fire(s4v3, is_s4=False)
+                        except Exception as _e:
+                            log.error(f"[ENGINE] S4V3 trigger thread error: {_e}", exc_info=True)
+                    threading.Thread(target=_run_s4v3_trigger, daemon=True).start()
 
             touch_signal_file("S2")
             touch_signal_file("S4")
