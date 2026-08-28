@@ -99,6 +99,7 @@ def _fetch_disk():
     total, used, free = _sh2.disk_usage(".")
     return int(used / total * 100), round(free / 1024**3, 1)
 
+@st.cache_data(ttl=60)
 def _fetch_git():
     r = subprocess.run(["git","log","--oneline","-1"], capture_output=True, text=True)
     return r.stdout.strip()[:10] if r.stdout else "unknown"
@@ -805,7 +806,7 @@ def _load14(csv_pattern, from_dt=None):
         if not files: return None
         df = _pd14.read_csv(files[0])
         if 'entry_datetime' not in df.columns: return None
-        df['entry_datetime'] = _pd14.to_datetime(df['entry_datetime'])
+        df['entry_datetime'] = _pd14.to_datetime(df['entry_datetime'], format='%Y-%m-%dT%H:%M:%S', errors='coerce')
         if from_dt:
             df = df[df['entry_datetime'] >= _pd14.to_datetime(from_dt)]
         if df.empty: return None
@@ -1414,6 +1415,24 @@ def _tbl14(d2, d4, label, period_str, df2=None, df4=None, d2_label="S4V2"):
 
 # Load data - defined as function so every tab reloads fresh on page load
 import glob as _gl14, pandas as _pd14, datetime as _dt14, numpy as _npf14, os as _os14
+
+@st.cache_data(ttl=30)
+def _load_signals_lookup(label):
+    _sig_map = {"LV S4V2": "logs/signals_s4v2.csv", "BT S4V2": "logs/signals_s4v2.csv",
+                "LV S4": "logs/signals_s4.csv", "BT S4": "logs/signals_s4.csv"}
+    _path = _sig_map.get(label)
+    _lookup = {}
+    if _path:
+        try:
+            with open(_path) as _sf:
+                for _sl in _sf:
+                    _sp = _sl.strip().split(',')
+                    if len(_sp) >= 6 and _sp[1] != 'PENDING':
+                        _key = (round(float(_sp[4]),1), _sp[2])
+                        _lookup.setdefault(_key, []).append((_sp[0], _sp[1]))
+        except Exception:
+            pass
+    return _lookup
 
 @st.cache_data(ttl=30)
 def _reload_all_data():
@@ -5953,7 +5972,7 @@ with _tab_analysis:
                 pass
             return sorted(pairs, key=lambda p: p["ets"])
 
-        @st.cache_data(ttl=30)
+        @st.cache_data(ttl=300)
         def _pair13_fills(k, s, vf_str):
             import datetime as _dtf13
             pairs = []
@@ -7113,23 +7132,6 @@ with _tab_analysis:
                     ist = dt + _dtt.timedelta(hours=5, minutes=30)
                     return ist.strftime("%d-%b %I:%M %p")
                 except: return "-"
-            def _load_signals_lookup(label):
-                _sig_map = {"LV S4V2": "logs/signals_s4v2.csv", "BT S4V2": "logs/signals_s4v2.csv",
-                            "LV S4": "logs/signals_s4.csv", "BT S4": "logs/signals_s4.csv"}
-                _path = _sig_map.get(label)
-                _lookup = {}
-                if _path:
-                    try:
-                        with open(_path) as _sf:
-                            for _sl in _sf:
-                                _sp = _sl.strip().split(',')
-                                if len(_sp) >= 6 and _sp[1] != 'PENDING':
-                                    _key = (round(float(_sp[4]),1), _sp[2])
-                                    _lookup.setdefault(_key, []).append((_sp[0], _sp[1]))
-                    except Exception:
-                        pass
-                return _lookup
-
             def _get_bt_rows(df, label):
                 if df is None: return []
                 rows = []
@@ -7448,6 +7450,7 @@ with _tab_analysis:
                         return _pd14.DataFrame()
                 return _pd14.DataFrame()
 
+            @st.cache_data(ttl=30)
             def _get_trade_issues(_lbl, _entry_dt, _exit_dt=None):
                 _issues = []
                 try:
@@ -7474,7 +7477,7 @@ with _tab_analysis:
                                 continue
                             try:
                                 _ts_str = _line.split(",")[0].strip()
-                                _line_ts = _pd14.to_datetime(_ts_str)
+                                _line_ts = _pd14.to_datetime(_ts_str, format="%Y-%m-%d %H:%M:%S,%f")
                             except Exception:
                                 continue
                             if not (_window_start <= _line_ts <= _window_end):
@@ -7717,31 +7720,42 @@ with _tab_analysis:
                                     best = (_px, _fee); best_diff = _diff; best_key = _key
                             if best_key: _used_hist_fills.add(best_key)
                             return best
-                        def _live_fill_lookup(_lbl2, _side_want, _target_dt, _tol=1800):
+                        @st.cache_data(ttl=30)
+                        def _fetch_account_fills_cached(_acc, _product_id=84, _window_hours=48):
+                            import hmac as _hmlf, hashlib as _hslf, time as _tmlf, requests as _rqlf
+                            _k = os.environ.get(f'{_acc}_API_KEY','')
+                            _s = os.environ.get(f'{_acc}_API_SECRET','')
+                            if not _k or not _s:
+                                return []
+                            _base = "https://cdn-ind.testnet.deltaex.org"
+                            _ts_ep = str(int(_tmlf.time()))
+                            _path = "/v2/fills"
+                            _now = int(_tmlf.time())
+                            _p = {"product_id":_product_id,"page_size":200,
+                                  "start_time":int((_now-_window_hours*3600)*1e6),
+                                  "end_time":int((_now+300)*1e6)}
+                            _qs = "&".join(f"{a}={b}" for a,b in sorted(_p.items()))
+                            _msg = "GET"+_ts_ep+_path+"?"+_qs
+                            _sig = _hmlf.new(_s.encode(), _msg.encode(), _hslf.sha256).hexdigest()
+                            _hdr = {"api-key":_k,"timestamp":_ts_ep,"signature":_sig}
                             try:
-                                import hmac as _hmlf, hashlib as _hslf, time as _tmlf, requests as _rqlf
-                                _acc = "S4V2" if "S4V2" in _lbl2 else "S4"
-                                _k = os.environ.get(f'{_acc}_API_KEY','')
-                                _s = os.environ.get(f'{_acc}_API_SECRET','')
-                                if not _k or not _s:
-                                    return None
-                                _base = "https://cdn-ind.testnet.deltaex.org"
-                                _ts_ep = str(int(_tmlf.time()))
-                                _path = "/v2/fills"
-                                _target_ts = int(_target_dt.timestamp())
-                                _p = {"product_id":84,"page_size":50,
-                                      "start_time":int((_target_ts-_tol)*1e6),
-                                      "end_time":int((_target_ts+_tol)*1e6)}
-                                _qs = "&".join(f"{a}={b}" for a,b in sorted(_p.items()))
-                                _msg = "GET"+_ts_ep+_path+"?"+_qs
-                                _sig = _hmlf.new(_s.encode(), _msg.encode(), _hslf.sha256).hexdigest()
-                                _hdr = {"api-key":_k,"timestamp":_ts_ep,"signature":_sig}
                                 _r = _rqlf.get(f"{_base}{_path}?{_qs}", headers=_hdr, timeout=8)
                                 _d = _r.json()
                                 if not _d.get("success"):
+                                    return []
+                                return _d.get("result", [])
+                            except Exception:
+                                return []
+
+                        def _live_fill_lookup(_lbl2, _side_want, _target_dt, _tol=1800):
+                            try:
+                                _acc = "S4V2" if "S4V2" in _lbl2 else "S4"
+                                _fills = _fetch_account_fills_cached(_acc)
+                                if not _fills:
                                     return None
+                                _target_ts = int(_target_dt.timestamp())
                                 _best=None; _best_diff=None
-                                for _fl in _d.get("result",[]):
+                                for _fl in _fills:
                                     if _fl.get("side") != _side_want:
                                         continue
                                     _fts = int(_dtfb.datetime.strptime(_fl.get("created_at","")[:19], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=_dtfb.timezone.utc).timestamp())
@@ -7816,19 +7830,6 @@ with _tab_analysis:
                             row = _exchange_fallback(bt)
                         if row is None:
                             _miss_label = "MISSED (no live entry)" if is_lv else "-"
-                            if is_lv:
-                                try:
-                                    _miss_lbl2 = str(bt.get("label","")) if bt is not None else ""
-                                    _tf_min2 = 30 if "S4V2" in _miss_lbl2 else 120
-                                    _bt_entry2 = _pd14.to_datetime(str(bt.get("entry_ts_raw","")).replace("T"," ")) if bt is not None else None
-                                    _exit_dt2 = (_bt_entry2 + _pd14.Timedelta(minutes=_tf_min2)) if _bt_entry2 is not None else None
-                                    _miss_issues2 = _get_trade_issues(_miss_lbl2, _bt_entry2, _exit_dt2) if _bt_entry2 is not None else []
-                                except Exception:
-                                    _miss_issues2 = []
-                                if _miss_issues2:
-                                    _miss_label += "<br>" + "<br>".join([f"<span style='font-size:11px;color:#e67e22;font-weight:700;'>⚠ {m}</span>" for m in _miss_issues2])
-                                else:
-                                    _miss_label += "<br><span style='font-size:10px;color:#999;'>no reason found in logs - check manually</span>"
                             tbl += f'<tr>{sno}<td style="{TD}color:#aaa;">{src}</td>'
                             tbl += f'<td style="{TD}color:#e65100;font-weight:700;">{_miss_label}</td>'
                             tbl += (f'<td style="{TD}color:#aaa;">-</td>' * 8)
@@ -8437,13 +8438,4 @@ with _tab_today:
         except Exception as _e_today:
             st.error(f'Today trades load error: {_e_today}')
 
-    st.markdown("---")
-    st.markdown('<div style="background:#FFF3CD;border:2px solid #FFB300;padding:8px;font-size:14px;font-weight:700;color:#7A4A00;margin:6px 0;text-align:center;">SCROLL DOWN FOR MONTHLY HISTORY</div>', unsafe_allow_html=True)
-    with st.expander("THIS MONTH - CLOSED TRADES (all history, with issue tracking)", expanded=False):
-        try:
-            _d2_1yr_m,_d4_1yr_m,_d2_full_m,_d4_full_m,_l1_m,_l2_m,_df2_fwd_m,_df4_fwd_m = _reload_all_data()
-            _month_html, _lv2m, _lv4m = _month_trades_html(_d2_full_m, _d4_full_m, _df2_fwd_m, _df4_fwd_m)
-            st.markdown(_month_html, unsafe_allow_html=True)
-            _month_csv_download(_lv2m, _lv4m)
-        except Exception as _e_month:
-            st.error(f"This month trades load error: {_e_month}")
+
