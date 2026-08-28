@@ -6872,47 +6872,50 @@ with _tab_analysis:
             except Exception as _edl13b:
                 st.caption(f"Download unavailable: {_edl13b}")
 
+        # S4 always shown fixed; dropdown picks S4V2 or S4V3 for second slot (corrected pattern, matches Section 14)
+        _sec13_choice = st.selectbox("Compare S4 against:", ["S4V2","S4V3"], key="sec13_cmp_dd")
+
         _colA, _colB = st.columns(2)
         with _colA:
-            st.markdown(f"<div style='{_HDR13}'>BACKTEST S4V2 - THIS MONTH</div>", unsafe_allow_html=True)
-            st.markdown(_bt_hdr13("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
-            st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
-            _dl13_bt_csv("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv", _VF13_7D, "BT_S4V2_ThisMonth", "dl_bt_s2")
-        with _colB:
             st.markdown(f"<div style='{_HDR13}'>BACKTEST S4 - THIS MONTH</div>", unsafe_allow_html=True)
             st.markdown(_bt_hdr13("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv", _VF13_7D, which="s4"), unsafe_allow_html=True)
             st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv", _VF13_7D, which="s4"), unsafe_allow_html=True)
             _dl13_bt_csv("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv", _VF13_7D, "BT_S4_ThisMonth", "dl_bt_s4")
-
-        _colC, _colD = st.columns(2)
-        with _colC:
-            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4V2 - THIS MONTH</div>", unsafe_allow_html=True)
-            st.markdown(_fwd_slip_hdr13(s2p_7d, bot_name="S4V2"), unsafe_allow_html=True)
-            st.markdown(_fwd20(s2p_7d, bot_name="S4V2"), unsafe_allow_html=True)
-            _dl13_csv(s2p_7d, "LV_S4V2_ThisMonth", "dl_lv_s2")
-        with _colD:
-            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4 - THIS MONTH</div>", unsafe_allow_html=True)
-            st.markdown(_fwd_slip_hdr13(s4p_7d, bot_name="S4"), unsafe_allow_html=True)
-            st.markdown(_fwd20(s4p_7d, bot_name="S4"), unsafe_allow_html=True)
-            _dl13_csv(s4p_7d, "LV_S4_ThisMonth", "dl_lv_s4")
-
-        # ── S4V3 - additive block, gated on API key presence (blank key = safe no-op) ──
-        if os.getenv("S4V3_API_KEY"):
-            _colE, _colF = st.columns(2)
-            with _colE:
+        with _colB:
+            if _sec13_choice == "S4V2":
+                st.markdown(f"<div style='{_HDR13}'>BACKTEST S4V2 - THIS MONTH</div>", unsafe_allow_html=True)
+                st.markdown(_bt_hdr13("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
+                st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
+                _dl13_bt_csv("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv", _VF13_7D, "BT_S4V2_ThisMonth", "dl_bt_s2")
+            else:
                 st.markdown(f"<div style='{_HDR13}'>BACKTEST S4V3 - THIS MONTH</div>", unsafe_allow_html=True)
                 st.markdown(_bt_hdr13("output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
                 st.markdown(_bt20("output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
                 _dl13_bt_csv("output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv", _VF13_7D, "BT_S4V3_ThisMonth", "dl_bt_s4v3")
-            with _colF:
-                s4v3p = _pair13_fills(os.getenv("S4V3_API_KEY"), os.getenv("S4V3_API_SECRET"), _VF13_7D)
-                s4v3p_7d = [p for p in s4v3p if p.get('ets',0) >= _vf7_ts]
-                st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4V3 - THIS MONTH</div>", unsafe_allow_html=True)
-                st.markdown(_fwd_slip_hdr13(s4v3p_7d, bot_name="S4V3"), unsafe_allow_html=True)
-                st.markdown(_fwd20(s4v3p_7d, bot_name="S4V3"), unsafe_allow_html=True)
-                _dl13_csv(s4v3p_7d, "LV_S4V3_ThisMonth", "dl_lv_s4v3")
-        else:
-            st.caption("S4V3 forward-test block hidden - pending subaccount/API key (ticket #TICKET-457563)")
+
+        _colC, _colD = st.columns(2)
+        with _colC:
+            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4 - THIS MONTH</div>", unsafe_allow_html=True)
+            st.markdown(_fwd_slip_hdr13(s4p_7d, bot_name="S4"), unsafe_allow_html=True)
+            st.markdown(_fwd20(s4p_7d, bot_name="S4"), unsafe_allow_html=True)
+            _dl13_csv(s4p_7d, "LV_S4_ThisMonth", "dl_lv_s4")
+        with _colD:
+            if _sec13_choice == "S4V2":
+                st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4V2 - THIS MONTH</div>", unsafe_allow_html=True)
+                st.markdown(_fwd_slip_hdr13(s2p_7d, bot_name="S4V2"), unsafe_allow_html=True)
+                st.markdown(_fwd20(s2p_7d, bot_name="S4V2"), unsafe_allow_html=True)
+                _dl13_csv(s2p_7d, "LV_S4V2_ThisMonth", "dl_lv_s2")
+            else:
+                if os.getenv("S4V3_API_KEY"):
+                    s4v3p = _pair13_fills(os.getenv("S4V3_API_KEY"), os.getenv("S4V3_API_SECRET"), _VF13_7D)
+                    s4v3p_7d = [p for p in s4v3p if p.get('ets',0) >= _vf7_ts]
+                    st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4V3 - THIS MONTH</div>", unsafe_allow_html=True)
+                    st.markdown(_fwd_slip_hdr13(s4v3p_7d, bot_name="S4V3"), unsafe_allow_html=True)
+                    st.markdown(_fwd20(s4v3p_7d, bot_name="S4V3"), unsafe_allow_html=True)
+                    _dl13_csv(s4v3p_7d, "LV_S4V3_ThisMonth", "dl_lv_s4v3")
+                else:
+                    st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4V3 - THIS MONTH</div>", unsafe_allow_html=True)
+                    st.caption("S4V3 forward-test hidden - pending subaccount/API key (ticket #TICKET-457563)")
 
         # ================================================================
         # EQUITY CURVE - MONTHLY VIEW (BT + FWD, S4V2 + S4)
