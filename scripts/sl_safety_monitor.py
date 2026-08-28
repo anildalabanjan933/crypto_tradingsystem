@@ -27,6 +27,7 @@ log = logging.getLogger("sl_monitor")
 BOTS = [
     {"name": "S4",   "api_key": os.getenv("S4_API_KEY", ""),   "api_secret": os.getenv("S4_API_SECRET", "")},
     {"name": "S4V2", "api_key": os.getenv("S4V2_API_KEY", ""), "api_secret": os.getenv("S4V2_API_SECRET", "")},
+    {"name": "S4V3", "api_key": os.getenv("S4V3_API_KEY", ""), "api_secret": os.getenv("S4V3_API_SECRET", "")},
 ]
 
 CHECK_INTERVAL = 60
@@ -226,9 +227,11 @@ def main():
     log.info("SL Safety Monitor started - monitor-only, no auto-action")
     while True:
         for bot in BOTS:
+            if not bot["api_key"] or not bot["api_secret"]:
+                continue  # keys not provisioned yet (e.g. S4V3 pending ticket) - skip silently, no spam
             try:
                 check_bot(bot)
-                csv_map = {"S4": "logs/signals_s4.csv", "S4V2": "logs/signals_s4v2.csv"}
+                csv_map = {"S4": "logs/signals_s4.csv", "S4V2": "logs/signals_s4v2.csv", "S4V3": "logs/signals_s4v3.csv"}
                 check_stuck_pending(bot, csv_map[bot["name"]])
                 check_orphan_position(bot, csv_map[bot["name"]])
                 check_extra_risks(bot, csv_map[bot["name"]])
