@@ -5930,6 +5930,7 @@ with _tab_analysis:
                 pass
             return sorted(pairs, key=lambda p: p["ets"])
 
+        @st.cache_data(ttl=30)
         def _pair13_fills(k, s, vf_str):
             import datetime as _dtf13
             pairs = []
