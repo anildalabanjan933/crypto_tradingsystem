@@ -43,6 +43,28 @@
       "backtest_dd_pct": 0.28,
       "backtest_sharpe": 6.92,
       "backtest_slippage": 5.0
+    },
+    {
+      "name": "S4V3",
+      "file": "scripts/signal_replay_s4v3.py",
+      "strategy": "RenkoSMIIOCrossV3Strategy",
+      "symbol": "BTCUSD",
+      "lots": 100,
+      "direction": "BOTH",
+      "active": false,
+      "delta_url": "https://cdn-ind.testnet.deltaex.org",
+      "delta_api_key_env": "S4V3_API_KEY",
+      "delta_api_secret_env": "S4V3_API_SECRET",
+      "delta_product_id": 84,
+      "backtest_html": "output/backtest_report_RenkoSMIIOCrossV3Strategy_BTCUSD_*.html",
+      "backtest_csv": "output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv",
+      "log_path": "logs/live_trading_s4v3.log",
+      "backtest_trades": 1261,
+      "backtest_winrate": 70.26,
+      "backtest_pnl_inr": 7197849,
+      "backtest_dd_pct": 16.84,
+      "backtest_sharpe": null,
+      "backtest_slippage": 10.0
     }
   ],
   "contracts": [
