@@ -43,6 +43,7 @@ BOTS = [
     {"name": "S4",   "api_key": os.getenv("S4_API_KEY", ""),   "api_secret": os.getenv("S4_API_SECRET", "")},
     {"name": "S4V2", "api_key": os.getenv("S4V2_API_KEY", ""), "api_secret": os.getenv("S4V2_API_SECRET", "")},
     {"name": "TM1",  "api_key": os.getenv("TESTMEMBER1_S4V2_API_KEY", ""), "api_secret": os.getenv("TESTMEMBER1_S4V2_API_SECRET", "")},
+    {"name": "S4V3", "api_key": os.getenv("S4V3_API_KEY", ""), "api_secret": os.getenv("S4V3_API_SECRET", "")},
 ]
 
 CHECK_INTERVAL = 30
@@ -171,6 +172,8 @@ def main():
     signal.signal(signal.SIGALRM, _timeout_handler)
     while True:
         for bot in BOTS:
+            if not bot["api_key"] or not bot["api_secret"]:
+                continue  # keys not provisioned yet (e.g. S4V3 pending ticket) - skip silently, no spam
             try:
                 with open(HEARTBEAT_FILE, "w") as _hb:
                     _hb.write(str(time.time()))
