@@ -1234,7 +1234,7 @@ def _load14_fwd(product_id, api_key, api_secret, base_url):
     except Exception as _ef14:
         return None
 
-def _tbl14(d2, d4, label, period_str, df2=None, df4=None):
+def _tbl14(d2, d4, label, period_str, df2=None, df4=None, d2_label="S4V2"):
     if not d2 and not d4:
         return f"<p style='color:#aaa;font-size:11px;'>No data available for {label}</p>"
     def _g(d, k): return d[k] if d and k in d else 0
@@ -1362,9 +1362,9 @@ def _tbl14(d2, d4, label, period_str, df2=None, df4=None):
       <th style="{_THFW14}" colspan="3">Forward Test (Live)</th>
     </tr>
     <tr>
-      <th style="{_THGR14}">S4V2</th><th style="{_THGR14}">S4</th><th style="{_THGR14}">Portfolio</th>
-      <th style="{_THOG14}">S4V2</th><th style="{_THOG14}">S4</th><th style="{_THOG14}">Portfolio</th>
-      <th style="{_THFW14}">S4V2</th><th style="{_THFW14}">S4</th><th style="{_THFW14}">Portfolio</th>
+      <th style="{_THGR14}">{d2_label}</th><th style="{_THGR14}">S4</th><th style="{_THGR14}">Portfolio</th>
+      <th style="{_THOG14}">{d2_label}</th><th style="{_THOG14}">S4</th><th style="{_THOG14}">Portfolio</th>
+      <th style="{_THFW14}">{d2_label}</th><th style="{_THFW14}">S4</th><th style="{_THFW14}">Portfolio</th>
     </tr>
     </thead>
     <tbody>
@@ -6873,7 +6873,10 @@ with _tab_analysis:
                 st.caption(f"Download unavailable: {_edl13b}")
 
         # S4 always shown fixed; dropdown picks S4V2 or S4V3 for second slot (corrected pattern, matches Section 14)
-        _sec13_choice = st.selectbox("Compare S4 against:", ["S4V2","S4V3"], key="sec13_cmp_dd")
+        _qp13_default = st.query_params.get("sec13_cmp", "S4V2")
+        _sec13_idx = 0 if _qp13_default == "S4V2" else 1
+        _sec13_choice = st.selectbox("Compare S4 against:", ["S4V2","S4V3"], index=_sec13_idx, key="sec13_cmp_dd")
+        st.query_params["sec13_cmp"] = _sec13_choice
 
         _colA, _colB = st.columns(2)
         with _colA:
@@ -6986,7 +6989,8 @@ with _tab_analysis:
         st.markdown(f"<div style='{_HDR13}'>EQUITY CURVE - MONTHLY VIEW</div>", unsafe_allow_html=True)
 
         try:
-            _f = sorted(_gl13.glob("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv"))
+            _bt_glob_sel = "output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv" if _sec13_choice=="S4V2" else "output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv"
+            _f = sorted(_gl13.glob(_bt_glob_sel))
             if _f:
                 _dfbt2 = _pd13.read_csv(_f[-1])
                 _dfbt2['exit_datetime'] = _pd13.to_datetime(_dfbt2['exit_datetime'])
@@ -6996,9 +7000,11 @@ with _tab_analysis:
                 _ochg2   = _dfbt2.get('total_charges_usd', 0.0) - _oslip2
                 _npnl2   = (_gpnl2 * _LOT_RATIO13) - (sec13_slip*2*_LOT_RATIO13) - ((_ochg2*_LOT_RATIO13) if sec13_charges else 0.0)
                 _cum2_inr = list((_npnl2 * _INR13).cumsum())
-                _eq_render13(list(_dfbt2['exit_datetime']), _cum2_inr, "s2bt", "BACKTEST S4V2", reset_monthly=True)
+                _eq_render13(list(_dfbt2['exit_datetime']), _cum2_inr, "s2bt", f"BACKTEST {_sec13_choice}", reset_monthly=True)
+            else:
+                st.caption(f"BACKTEST {_sec13_choice}: no data yet")
         except Exception as _e:
-            st.caption(f"BT S4V2 equity curve error: {_e}")
+            st.caption(f"BT {_sec13_choice} equity curve error: {_e}")
 
         try:
             _f = sorted(_gl13.glob("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"))
@@ -7016,19 +7022,23 @@ with _tab_analysis:
             st.caption(f"BT S4 equity curve error: {_e}")
 
         try:
-            if s2p:
-                _s2sorted = sorted(s2p, key=lambda p: p['xts'] if p.get('xts',0)>0 else p['ets'])
+            if _sec13_choice == "S4V2":
+                _fwd_pairs_sel = s2p
+            else:
+                _fwd_pairs_sel = _pair13_fills(os.getenv("S4V3_API_KEY",""), os.getenv("S4V3_API_SECRET",""), _VF13_7D) if os.getenv("S4V3_API_KEY") else []
+            if _fwd_pairs_sel:
+                _s2sorted = sorted(_fwd_pairs_sel, key=lambda p: p['xts'] if p.get('xts',0)>0 else p['ets'])
                 _dates = [_dt13.datetime.fromtimestamp(p['xts'] if p.get('xts',0)>0 else p['ets'], _dt13.timezone.utc) + _dt13.timedelta(hours=5, minutes=30) for p in _s2sorted]
                 _cum = []
                 _run = 0.0
                 for p in _s2sorted:
                     _run += p['pnl']*_INR13
                     _cum.append(_run)
-                _eq_render13(_dates, _cum, "s2fwd", "FORWARD TEST S4V2")
+                _eq_render13(_dates, _cum, "s2fwd", f"FORWARD TEST {_sec13_choice}")
             else:
-                st.caption("FORWARD TEST S4V2: no trades yet")
+                st.caption(f"FORWARD TEST {_sec13_choice}: no trades yet")
         except Exception as _e:
-            st.caption(f"FWD S4V2 equity curve error: {_e}")
+            st.caption(f"FWD {_sec13_choice} equity curve error: {_e}")
 
         try:
             if s4p:
@@ -7849,7 +7859,10 @@ with _tab_analysis:
         st.markdown("---")
 
         # S4 always shown fixed; dropdown picks S4V2 or S4V3 for second slot (additive, default=S4V2 preserves old behavior)
-        _sec14_choice = st.selectbox("Compare S4 against:", ["S4V2","S4V3"], key="sec14_cmp_dd")
+        _qp14_default = st.query_params.get("sec14_cmp", "S4V2")
+        _sec14_idx = 0 if _qp14_default == "S4V2" else 1
+        _sec14_choice = st.selectbox("Compare S4 against:", ["S4V2","S4V3"], index=_sec14_idx, key="sec14_cmp_dd")
+        st.query_params["sec14_cmp"] = _sec14_choice
         if _sec14_choice == "S4V3":
             _1yr_from_14 = (_dt14.datetime.utcnow() - _dt14.timedelta(days=365)).strftime("%Y-%m-%d")
             _d2_1yr_sel  = _load14("output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv", _1yr_from_14)
@@ -7860,9 +7873,9 @@ with _tab_analysis:
             _d2_full_sel = _d2_full
             _df2_fwd_sel = _df2_fwd
 
-        st.markdown(_tbl14(_d2_1yr_sel,_d4_1yr,"1-YEAR BACKTEST",_1yr_label,_df2_fwd_sel,_df4_fwd),unsafe_allow_html=True)
+        st.markdown(_tbl14(_d2_1yr_sel,_d4_1yr,"1-YEAR BACKTEST",_1yr_label,_df2_fwd_sel,_df4_fwd,d2_label=_sec14_choice),unsafe_allow_html=True)
         st.markdown("---")
-        st.markdown(_tbl14(_d2_full_sel,_d4_full,"FULL CSV BACKTEST",_full_label,_df2_fwd_sel,_df4_fwd),unsafe_allow_html=True)
+        st.markdown(_tbl14(_d2_full_sel,_d4_full,"FULL CSV BACKTEST",_full_label,_df2_fwd_sel,_df4_fwd,d2_label=_sec14_choice),unsafe_allow_html=True)
         st.markdown("---")
 
         # DEPLOYMENT PLAN SECTION
