@@ -431,8 +431,10 @@ if __name__=="__main__":
 
     s4=StrategyState("S4",S4_PARAMS)
     s4v2=StrategyState("S4V2",S4V2_PARAMS)
+    s4v3=StrategyState("S4V3",S4V3_PARAMS)
     load_history(s4)
     load_history(s4v2)
+    load_history(s4v3)
     # Lock last_signal_ts BEFORE startup check - use last SIGNAL ts not market CSV ts
     def _get_signal_ts(path):
         try:
@@ -464,17 +466,23 @@ if __name__=="__main__":
         _ts_s4v2=open("/home/anildalabanjan933/crypto_trading_system/logs/last_known_ts_s4v2.txt").read().strip() or None
         if _ts_s4v2: log.info(f"[ENGINE] S4V2 lock from bot ts file: {_ts_s4v2}")
     except: _ts_s4v2=None
+    try:
+        _ts_s4v3=open("/home/anildalabanjan933/crypto_trading_system/logs/last_known_ts_s4v3.txt").read().strip() or None
+        if _ts_s4v3: log.info(f"[ENGINE] S4V3 lock from bot ts file: {_ts_s4v3}")
+    except: _ts_s4v3=None
     def _floor_to_tf(dt,tf_minutes):
         floored_min=(dt.minute//tf_minutes)*tf_minutes
         return dt.replace(minute=floored_min,second=0,microsecond=0).strftime("%Y-%m-%dT%H:%M:%S")
     _now_dt=datetime.now(timezone.utc)
     _now_lock_s4=_floor_to_tf(_now_dt,120)
     _now_lock_s4v2=_floor_to_tf(_now_dt,30)
+    _now_lock_s4v3=_floor_to_tf(_now_dt,240)
     # Check for open PENDING position FIRST - must never advance lock past it
     import csv as _csv2
     _s4_open_pending=False
     _s4v2_open_pending=False
-    for _st,_fn,_flagname in [(s4,"logs/signals_s4.csv","_s4_open_pending"),(s4v2,"logs/signals_s4v2.csv","_s4v2_open_pending")]:
+    _s4v3_open_pending=False
+    for _st,_fn,_flagname in [(s4,"logs/signals_s4.csv","_s4_open_pending"),(s4v2,"logs/signals_s4v2.csv","_s4v2_open_pending"),(s4v3,"logs/signals_s4v3.csv","_s4v3_open_pending")]:
         try:
             with open(_fn) as _f:
                 _rows=list(_csv2.reader(_f))
@@ -482,7 +490,8 @@ if __name__=="__main__":
                 _last=_rows[-1]
                 if len(_last)>=3 and _last[1]=="PENDING":
                     if _flagname=="_s4_open_pending": _s4_open_pending=True
-                    else: _s4v2_open_pending=True
+                    elif _flagname=="_s4v2_open_pending": _s4v2_open_pending=True
+                    else: _s4v3_open_pending=True
         except Exception as _e:
             log.warning(f"open-position pre-check failed: {_e}")
 
@@ -502,12 +511,22 @@ if __name__=="__main__":
     else:
         _ts_s4v2=max(_ts_s4v2,_now_lock_s4v2)
         log.info(f"[ENGINE] S4V2 lock set to max(ts_file,floored_candle): {_ts_s4v2}")
+    if not _ts_s4v3:
+        _ts_s4v3=_now_lock_s4v3
+        log.info(f"[ENGINE] S4V3 no ts file - lock set to floored candle: {_ts_s4v3}")
+    elif _s4v3_open_pending:
+        log.info(f"[ENGINE] S4V3 open PENDING position detected - lock NOT advanced past ts_file: {_ts_s4v3}")
+    else:
+        _ts_s4v3=max(_ts_s4v3,_now_lock_s4v3)
+        log.info(f"[ENGINE] S4V3 lock set to max(ts_file,floored_candle): {_ts_s4v3}")
     s4.last_signal_ts=_ts_s4
     log.info(f"[ENGINE] S4 startup lock ts: {_ts_s4}")
     s4v2.last_signal_ts=_ts_s4v2
     log.info(f"[ENGINE] S4V2 startup lock ts: {_ts_s4v2}")
+    s4v3.last_signal_ts=_ts_s4v3
+    log.info(f"[ENGINE] S4V3 startup lock ts: {_ts_s4v3}")
     # Restore current_direction from CSV last row (survive restart mid-position)
-    for _st,_fn in [(s4,"logs/signals_s4.csv"),(s4v2,"logs/signals_s4v2.csv")]:
+    for _st,_fn in [(s4,"logs/signals_s4.csv"),(s4v2,"logs/signals_s4v2.csv"),(s4v3,"logs/signals_s4v3.csv")]:
         try:
             with open(_fn) as _f:
                 _rows=list(_csv2.reader(_f))
