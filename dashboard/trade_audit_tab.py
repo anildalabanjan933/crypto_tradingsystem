@@ -190,6 +190,9 @@ def _pair_fills_audit(fills):
         new_pos = meta.get("new_position", {}) or {}
         raw_cumulative = float(new_pos.get("realized_pnl", 0) or 0)
         pos_size_after = new_pos.get("size", None)
+        _fill_order_id = str(f.get("order_id", ""))
+        _fill_order_unfilled = float(meta.get("order_unfilled_size", 0) or 0)
+        _fill_order_closed = _fill_order_unfilled <= 1e-9
 
         # Corrected per-fill PnL: delta against lifecycle baseline, not raw cumulative value
         realized_pnl = raw_cumulative - baseline
@@ -215,6 +218,8 @@ def _pair_fills_audit(fills):
                 "lot": match_size,
                 "charges": chunk_exit_comm + chunk_entry_comm,
                 "pnl_usd": chunk_pnl,  # GROSS pnl (matches CSV "Realised P&L" convention); charges tracked separately
+                "exit_order_id": _fill_order_id,
+                "exit_order_closed": _fill_order_closed,
             })
             head["remaining"] -= match_size
             remaining_to_close -= match_size
@@ -250,8 +255,8 @@ def _get_live_rows_audit(strat_label, from_date, to_date, fetch_fills_fn, inr_ra
 
         pairs = _pair_fills_audit(fills)
 
-        _cum_pnl = 0.0
-        _trade_no = 0
+        # Filter to date range first (same logic as before)
+        _filtered = []
         for p in pairs:
             try:
                 _entry_dt = _pd_audit.to_datetime(str(p["entry_ts_raw"]).replace("T", " "))
@@ -262,28 +267,69 @@ def _get_live_rows_audit(strat_label, from_date, to_date, fetch_fills_fn, inr_ra
                 _in_range = (from_date <= _entry_dt.date() <= to_date) or (from_date <= _exit_dt_chk.date() <= to_date)
             except Exception:
                 _in_range = (from_date <= _entry_dt.date() <= to_date)
-            if not _in_range:
+            if _in_range:
+                _filtered.append(p)
+
+        # Aggregate FIFO chunks by exit_order_id so ONE Delta order = ONE trade row,
+        # matching Delta's own order-level "closed" definition (order_unfilled_size == 0)
+        # instead of counting per FIFO-matched chunk. This is what makes trade_no match
+        # the CSV order-level trade count permanently (verified in
+        # scripts/audit_delta_issue_tracker.py).
+        _order_groups = {}
+        _order_seq = []
+        for p in _filtered:
+            oid = p.get("exit_order_id", "")
+            if oid not in _order_groups:
+                _order_groups[oid] = {
+                    "dir": p["dir"],
+                    "entry_ts_raw": p["entry_ts_raw"],
+                    "exit_ts_raw": p["exit_ts_raw"],
+                    "entry_p_num": 0.0,
+                    "exit_p": p["exit_p"],
+                    "lot": 0.0,
+                    "charges": 0.0,
+                    "pnl_usd": 0.0,
+                    "exit_order_closed": p.get("exit_order_closed", False),
+                }
+                _order_seq.append(oid)
+            g = _order_groups[oid]
+            g["lot"] += p["lot"]
+            g["charges"] += p["charges"]
+            g["pnl_usd"] += p["pnl_usd"]
+            g["entry_p_num"] += p["entry_p"] * p["lot"]
+            if str(p["entry_ts_raw"]) < str(g["entry_ts_raw"]):
+                g["entry_ts_raw"] = p["entry_ts_raw"]
+            g["exit_order_closed"] = g["exit_order_closed"] or p.get("exit_order_closed", False)
+
+        _cum_pnl = 0.0
+        _trade_no = 0
+        for oid in _order_seq:
+            g = _order_groups[oid]
+            if not g["exit_order_closed"]:
+                # Order not yet fully filled - not a completed trade by Delta's own
+                # order-state definition; exclude from trade count (matches CSV).
                 continue
 
             _trade_no += 1
-            _net_pnl_inr = (p["pnl_usd"] - p["charges"]) * inr_rate  # gross pnl minus charges = true net
+            _entry_p = (g["entry_p_num"] / g["lot"]) if g["lot"] else 0.0
+            _net_pnl_inr = (g["pnl_usd"] - g["charges"]) * inr_rate  # gross pnl minus charges = true net
             _cum_pnl += _net_pnl_inr
 
             rows.append({
                 "trade_no"     : _trade_no,
                 "label"        : strat_label,
-                "dir"          : p["dir"],
-                "date"         : str(p["entry_ts_raw"])[:10],
+                "dir"          : g["dir"],
+                "date"         : str(g["entry_ts_raw"])[:10],
                 "symbol"       : "BTCUSD",
-                "entry_ts_raw" : p["entry_ts_raw"],
-                "exit_ts_raw"  : p["exit_ts_raw"],
-                "entry_ist"    : _to_ist_audit(p["entry_ts_raw"]),
-                "exit_ist"     : _to_ist_audit(p["exit_ts_raw"]),
-                "entry_p"      : p["entry_p"],
-                "exit_p"       : p["exit_p"],
-                "lot"          : p["lot"],
-                "charges"      : p["charges"] * inr_rate,
-                "pnl_usd"      : p["pnl_usd"],
+                "entry_ts_raw" : g["entry_ts_raw"],
+                "exit_ts_raw"  : g["exit_ts_raw"],
+                "entry_ist"    : _to_ist_audit(g["entry_ts_raw"]),
+                "exit_ist"     : _to_ist_audit(g["exit_ts_raw"]),
+                "entry_p"      : _entry_p,
+                "exit_p"       : g["exit_p"],
+                "lot"          : g["lot"],
+                "charges"      : g["charges"] * inr_rate,
+                "pnl_usd"      : g["pnl_usd"],
                 "net_pnl_inr"  : _net_pnl_inr,
                 "cum_pnl_inr"  : _cum_pnl,
             })
