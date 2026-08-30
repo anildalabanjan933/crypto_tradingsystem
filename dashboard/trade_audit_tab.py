@@ -436,7 +436,7 @@ def _get_trade_issues_audit(strat_label, entry_dt, exit_dt=None, read_log_fn=Non
                 continue
             try:
                 _ts_str = _line.split(",")[0].strip()
-                _line_ts = _pd_audit.to_datetime(_ts_str, format="%Y-%m-%d %H:%M:%S,%f")
+                _line_ts = __import__("datetime").datetime.strptime(_ts_str, "%Y-%m-%d %H:%M:%S,%f")
             except Exception:
                 continue
             if not (_window_start <= _line_ts <= _window_end):
@@ -457,7 +457,7 @@ def _get_trade_issues_audit(strat_label, entry_dt, exit_dt=None, read_log_fn=Non
                 continue
             try:
                 _ts_str = _line.split(" IST")[0].strip()
-                _line_ts = _pd_audit.to_datetime(_ts_str, format="%d-%b-%Y %I:%M:%S %p")
+                _line_ts = __import__("datetime").datetime.strptime(_ts_str, "%d-%b-%Y %I:%M:%S %p")
             except Exception:
                 continue
             if _window_start <= _line_ts <= _window_end:
@@ -469,7 +469,7 @@ def _get_trade_issues_audit(strat_label, entry_dt, exit_dt=None, read_log_fn=Non
         for _line in _bot_lines:
             _ts_raw = _line[:23]
             try:
-                _line_ts2 = _pd_audit.to_datetime(_ts_raw, format="%Y-%m-%d %H:%M:%S,%f")
+                _line_ts2 = __import__("datetime").datetime.strptime(_ts_raw, "%Y-%m-%d %H:%M:%S,%f")
             except Exception:
                 continue
             if not (_window_start <= _line_ts2 <= _window_end):
@@ -526,7 +526,7 @@ def _get_trade_issues_audit_full(strat_label, entry_dt, exit_dt=None, read_log_f
                     continue
                 try:
                     _ts_str = _line.split(",")[0].strip()
-                    _line_ts = _pd_audit.to_datetime(_ts_str, format="%Y-%m-%d %H:%M:%S,%f")
+                    _line_ts = __import__("datetime").datetime.strptime(_ts_str, "%Y-%m-%d %H:%M:%S,%f")
                 except Exception:
                     continue
                 if not (_window_start <= _line_ts <= _window_end):
@@ -843,7 +843,7 @@ def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn,
             for _line in _bot_lines:
                 _ts_raw = _line[:23]
                 try:
-                    _line_ts = _pd_audit.to_datetime(_ts_raw, format="%Y-%m-%d %H:%M:%S,%f")
+                    _line_ts = __import__("datetime").datetime.strptime(_ts_raw, "%Y-%m-%d %H:%M:%S,%f")
                 except Exception:
                     continue
                 if not (from_date <= _line_ts.date() <= to_date):
