@@ -16,11 +16,25 @@ TH_AUDIT  = "padding:3px 6px;border:1px solid #90CAF9;background:#42A5F5;font-si
 TD_AUDIT  = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;text-align:center;vertical-align:middle;"
 TDN_AUDIT = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;text-align:center;background:#f7f9fc;font-weight:700;color:#555;vertical-align:middle;"
 
+def _fast_parse_ts_audit(raw):
+    # PERF FIX (30-Aug-2026): avoid pd.to_datetime() regex format-guessing
+    # (confirmed via cProfile: _guess_datetime_format_for_array was 69-72%
+    # of _to_ist_audit's time). Tries fromisoformat first; falls back to
+    # pd.to_datetime for any format it can't handle, so behavior is unchanged.
+    try:
+        s = str(raw).strip()
+        if s.endswith("Z"):
+            s = s[:-1]
+        s = s.replace("T", " ", 1)
+        return _pd_audit.Timestamp(_dt_audit.datetime.fromisoformat(s))
+    except Exception:
+        return _pd_audit.to_datetime(raw)
+
 def _to_ist_audit(ts):
     if ts in (None, "", "-", "PENDING"):
         return "-"
     try:
-        _t = _pd_audit.to_datetime(str(ts).replace("T", " "))
+        _t = _fast_parse_ts_audit(str(ts).replace("T", " "))
         _t_ist = _t + _pd_audit.Timedelta(hours=5, minutes=30)
         return _t_ist.strftime("%d-%b %I:%M %p")
     except Exception:
