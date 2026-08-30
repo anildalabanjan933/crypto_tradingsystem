@@ -255,18 +255,33 @@ def _get_live_rows_audit(strat_label, from_date, to_date, fetch_fills_fn, inr_ra
 
         pairs = _pair_fills_audit(fills)
 
-        # Filter to date range first (same logic as before)
+        # Filter to date range first (same logic as before).
+        # PERF FIX (30-Aug-2026): pd.to_datetime() re-guesses timestamp format on
+        # EVERY call via regex (confirmed via cProfile: 96% of 1-month load time was
+        # spent in pandas _guess_datetime_format_for_array, not real work). Replaced
+        # with direct datetime.fromisoformat (no format-guessing) - only used here
+        # for .date() comparison, so precision loss vs pandas is irrelevant.
+        def _fast_date_audit(raw):
+            s = str(raw).strip()
+            if s.endswith("Z"):
+                s = s[:-1]
+            s = s.replace("T", " ", 1)
+            try:
+                return _dt_audit.datetime.fromisoformat(s).date()
+            except Exception:
+                return _pd_audit.to_datetime(s).date()  # rare fallback, old slow path
+
         _filtered = []
         for p in pairs:
             try:
-                _entry_dt = _pd_audit.to_datetime(str(p["entry_ts_raw"]).replace("T", " "))
+                _entry_date = _fast_date_audit(p["entry_ts_raw"])
             except Exception:
                 continue
             try:
-                _exit_dt_chk = _pd_audit.to_datetime(str(p.get("exit_ts_raw","")).replace("T"," "))
-                _in_range = (from_date <= _entry_dt.date() <= to_date) or (from_date <= _exit_dt_chk.date() <= to_date)
+                _exit_date = _fast_date_audit(p.get("exit_ts_raw", ""))
+                _in_range = (from_date <= _entry_date <= to_date) or (from_date <= _exit_date <= to_date)
             except Exception:
-                _in_range = (from_date <= _entry_dt.date() <= to_date)
+                _in_range = (from_date <= _entry_date <= to_date)
             if _in_range:
                 _filtered.append(p)
 
