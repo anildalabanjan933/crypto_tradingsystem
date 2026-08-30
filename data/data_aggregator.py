@@ -31,6 +31,12 @@ class DataAggregator:
         self.data_2h    = None
         self.data_4h    = None
         self.data_daily = None
+        self.data_10m   = None
+        self.data_20m   = None
+        self.data_45m   = None
+        self.data_1h30m = None
+        self.data_2h30m = None
+        self.data_3h    = None
 
         # Pre-aggregate all timeframes
         self._aggregate_all()
@@ -45,6 +51,12 @@ class DataAggregator:
         self.data_2h    = self._resample('2h',    '2H')
         self.data_4h    = self._resample('4h',    '4H')
         self.data_daily = self._resample('1D',    'Daily')
+        self.data_10m   = self._resample('10min', '10M')
+        self.data_20m   = self._resample('20min', '20M')
+        self.data_45m   = self._resample('45min', '45M')
+        self.data_1h30m = self._resample('90min', '1H30M')
+        self.data_2h30m = self._resample('150min','2H30M')
+        self.data_3h    = self._resample('3h',    '3H')
 
     def _resample(self, freq, label):
         """
@@ -114,6 +126,30 @@ class DataAggregator:
         """Get Daily data."""
         return self.data_daily
 
+    def get_10m_data(self):
+        """Get 10M data."""
+        return self.data_10m
+
+    def get_20m_data(self):
+        """Get 20M data."""
+        return self.data_20m
+
+    def get_45m_data(self):
+        """Get 45M data."""
+        return self.data_45m
+
+    def get_1h30m_data(self):
+        """Get 1H30M data."""
+        return self.data_1h30m
+
+    def get_2h30m_data(self):
+        """Get 2H30M data."""
+        return self.data_2h30m
+
+    def get_3h_data(self):
+        """Get 3H data."""
+        return self.data_3h
+
     def validate_continuity(self, data, timeframe):
         """
         Validate data continuity for a timeframe.
@@ -141,6 +177,12 @@ class DataAggregator:
                 '2H'   : pd.Timedelta(hours=2),
                 '4H'   : pd.Timedelta(hours=4),
                 'Daily': pd.Timedelta(days=1),
+                '10M'   : pd.Timedelta(minutes=10),
+                '20M'   : pd.Timedelta(minutes=20),
+                '45M'   : pd.Timedelta(minutes=45),
+                '1H30M' : pd.Timedelta(hours=1, minutes=30),
+                '2H30M' : pd.Timedelta(hours=2, minutes=30),
+                '3H'    : pd.Timedelta(hours=3),
             }
 
             expected_freq = freq_map.get(timeframe, pd.Timedelta(hours=1))

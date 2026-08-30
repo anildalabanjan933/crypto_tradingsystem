@@ -1,5 +1,7 @@
-# run_backtest_cli.py
-# CLI wrapper for run_single_strategy.py - used by dashboard
+# scripts/backtest_s4_smiiocross.py
+# STANDALONE backtest runner for S4V3 (SMIIO-CROSS TEST VARIANT)
+# Isolated file - does NOT modify run_backtest_cli.py or any S4/S4V2 file.
+# Uses the SAME engine + SAME HTML report generator as the original CLI.
 
 import sys
 import os
@@ -8,11 +10,10 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from engine.backtest_engine_v2 import run_backtest
 from strategy_registry import strategy_registry
 from backtest_analyzer import BacktestReportGenerator
-from datetime import datetime
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--strategy', required=True)
+parser.add_argument('--strategy', default='RenkoSMIIOCrossV3Strategy')
 parser.add_argument('--lots', type=int, default=100)
 parser.add_argument('--start', required=True)
 parser.add_argument('--end', required=True)
@@ -22,7 +23,7 @@ parser.add_argument('--csv', default='data/btc_1m_delta.csv')
 parser.add_argument('--no-charges', action='store_true', default=False)
 args = parser.parse_args()
 
-print(f"Running backtest: {args.strategy} | Lots: {args.lots} | {args.start} to {args.end}")
+print(f"Running S4V3 (SMIIO-CROSS) backtest: {args.strategy} | Lots: {args.lots} | {args.start} to {args.end}")
 
 available = strategy_registry.get_all_strategies()
 if args.strategy not in available:
@@ -39,32 +40,26 @@ if args.no_charges:
     cc.charges_config['funding_rate_annual'] = 0.0
     cc.charges_config['insurance_fund_rate'] = 0.0
 
-_STRAT_TO_REF_SUFFIX = {
-    "RenkoSMIIOSupertrendV2Strategy": "s4v2",
-    "RenkoSMIIOSupertrendStrategy":   "s4",
-    "RenkoReversalStrategy":          "s2",
-    "RenkoSMIIOCrossV3Strategy":      "s4v3",
-}
-strategy_params = {}
-_STRAT_EXPLICIT_PARAMS = {
-    "RenkoSMIIOSupertrendStrategy": dict(renko_box_pct=0.001, renko_timeframe="2h", st_atr_length=5, st_factor=2.0, smiio_shortlen=10, smiio_longlen=10, smiio_siglen=3),
-    "RenkoSMIIOSupertrendV2Strategy": dict(renko_box_pct=0.001, renko_timeframe="30m", st_atr_length=5, st_factor=1.5, smiio_shortlen=10, smiio_longlen=20, smiio_siglen=3),
-    "RenkoSMIIOCrossV3Strategy": dict(renko_box_pct=0.001, renko_timeframe="4h", smiio_shortlen=5, smiio_longlen=10, smiio_siglen=3),
-}
-if args.strategy in _STRAT_EXPLICIT_PARAMS:
-    strategy_params.update(_STRAT_EXPLICIT_PARAMS[args.strategy])
-    print(f"Using explicit live-matched params for {args.strategy}: {strategy_params}")
-_suffix = _STRAT_TO_REF_SUFFIX.get(args.strategy)
-if _suffix and args.symbol == "BTCUSD":
-    _ref_path = f"logs/box_ref_price_{_suffix}.txt"
+# Explicit params - SAME Renko/SMIIO params as live-matched S4 (box_pct=0.001, 2h, smiio 10/10/3)
+# Supertrend params intentionally NOT included - not used by this strategy.
+strategy_params = dict(
+    renko_box_pct=0.001,
+    renko_timeframe="2h",
+    smiio_shortlen=10,
+    smiio_longlen=10,
+    smiio_siglen=3,
+)
+print(f"Using S4V3 params (SMIIO-cross, Renko/SMIIO identical to S4): {strategy_params}")
+
+# Frozen reference_price support (isolated file, own suffix s4v3, won't clash with s4/s4v2)
+if args.symbol == "BTCUSD":
+    _ref_path = "logs/box_ref_price_s4v3.txt"
     if os.path.exists(_ref_path):
         try:
             strategy_params["reference_price"] = float(open(_ref_path).read().strip())
             print(f"Using frozen reference_price={strategy_params['reference_price']} from {_ref_path}")
         except Exception as _e:
             print(f"WARNING: could not read {_ref_path}: {_e} - falling back to live recalculation")
-elif _suffix:
-    print(f"Symbol={args.symbol} != BTCUSD - skipping frozen reference_price, using live first-close recalculation")
 
 result = run_backtest(
     strategy_class=strategy_class,
@@ -80,7 +75,7 @@ result = run_backtest(
 if result:
     print("Backtest complete")
     metrics = result.get('metrics', {})
-    skip_keys = ['equity_curve','equity_curve_inr','drawdown_series']
+    skip_keys = ['equity_curve', 'equity_curve_inr', 'drawdown_series']
     for k, v in metrics.items():
         if k not in skip_keys:
             print(f"{k}: {v}")
