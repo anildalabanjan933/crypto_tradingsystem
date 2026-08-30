@@ -144,61 +144,91 @@ def _fetch_fills_audit(fetch_fills_fn, acc_label, product_id=84, window_hours=48
 
 def _pair_fills_audit(fills):
     """
-    Groups raw fills into orders (weighted avg price per order_id),
-    then sequentially pairs entry/exit orders (opposite side, in time order).
-    Returns list of pair dicts: entry_price, exit_price, entry_ts, exit_ts,
-    side, size, commission, pnl_usd.
+    Uses Delta's own per-fill realized PnL (meta_data.new_position.realized_pnl)
+    as the authoritative PnL source, instead of reconstructing PnL from raw
+    price differences via order pairing.
+
+    IMPORTANT (fixed): meta_data.new_position.realized_pnl is a CUMULATIVE
+    snapshot - "Net realized pnl since the position was opened" per Delta's
+    own /positions API doc wording - NOT the isolated PnL of that single fill.
+    Using it directly (as a prior version of this function did) double/triple
+    counts PnL for every multi-fill position. The correct extraction is a
+    baseline-delta: this fill's true PnL = raw_cumulative - baseline, where
+    baseline is the cumulative value observed just before this fill, and
+    baseline resets to 0 whenever the position returns to size == 0 (a new
+    position lifecycle). Verified against live CSV reconciliation in
+    scripts/audit_delta_issue_tracker.py (S4: 0.00 diff on PnL/charges/trades;
+    S4V2 residuals fully explained by CSV export-lag, not calculation error).
+
+    For each fill, we determine how much of its size actually CLOSES existing
+    opposite-side queue lots (closed_qty = min(fill_size, opposite_qty_available)).
+    The corrected fill_pnl corresponds entirely to that closed_qty (not the
+    full fill size) - critical for position-flip fills that both close an old
+    position and open a new opposite one in a single fill. Any leftover size
+    beyond closed_qty is a fresh opening lot pushed onto the FIFO queue.
+
+    Total PnL always sums to sum(all fills corrected fill_pnl) - sum(all
+    fills commission), i.e. exactly Delta's own accounting, for any date
+    range, any account, permanently (no CSV dependency).
     """
-    from collections import defaultdict
-    import pandas as _pdf
+    fills_sorted = sorted(fills, key=lambda f: f.get("created_at", ""))
 
-    order_fills = defaultdict(list)
-    for f in fills:
-        order_fills[f.get("order_id", "")].append(f)
-
-    orders = []
-    for oid, flist in order_fills.items():
-        total_size = sum(float(f.get("size", 0)) for f in flist)
-        if total_size <= 0:
-            continue
-        wavg = sum(float(f.get("price", 0) or 0) * float(f.get("size", 0)) for f in flist) / total_size
-        commission = sum(abs(float(f.get("commission", 0))) for f in flist)
-        orders.append({
-            "order_id": oid,
-            "side": str(flist[0].get("side", "")).upper(),
-            "size": total_size,
-            "price": wavg,
-            "time": flist[0].get("created_at", ""),
-            "commission": commission,
-        })
-    orders_sorted = sorted(orders, key=lambda x: x["time"])
-
+    queue = []  # each: dict(remaining, price, time, side, comm_per_unit)
     pairs = []
-    used = set()
-    for i, entry_o in enumerate(orders_sorted):
-        if i in used:
+    baseline = 0.0  # cumulative realized_pnl at start of current position lifecycle
+
+    for f in fills_sorted:
+        side = str(f.get("side", "")).upper()
+        size = float(f.get("size", 0) or 0)
+        if size <= 0:
             continue
-        exit_side = "SELL" if entry_o["side"] == "BUY" else "BUY"
-        for j in range(i + 1, len(orders_sorted)):
-            if j in used:
-                continue
-            exit_o = orders_sorted[j]
-            if exit_o["side"] == exit_side:
-                used.add(i); used.add(j)
-                _dir = "LONG" if entry_o["side"] == "BUY" else "SHORT"
-                _raw_diff = (exit_o["price"] - entry_o["price"]) if _dir == "LONG" else (entry_o["price"] - exit_o["price"])
-                _pnl_usd = (_raw_diff * entry_o["size"] * 0.001) - (entry_o["commission"] + exit_o["commission"])
-                pairs.append({
-                    "dir": _dir,
-                    "entry_ts_raw": entry_o["time"],
-                    "exit_ts_raw": exit_o["time"],
-                    "entry_p": entry_o["price"],
-                    "exit_p": exit_o["price"],
-                    "lot": entry_o["size"],
-                    "charges": entry_o["commission"] + exit_o["commission"],
-                    "pnl_usd": _pnl_usd,
-                })
-                break
+        price = float(f.get("price", 0) or 0)
+        time = f.get("created_at", "")
+        commission = abs(float(f.get("commission", 0) or 0))
+        comm_per_unit = commission / size if size else 0.0
+        meta = f.get("meta_data", {}) or {}
+        new_pos = meta.get("new_position", {}) or {}
+        raw_cumulative = float(new_pos.get("realized_pnl", 0) or 0)
+        pos_size_after = new_pos.get("size", None)
+
+        # Corrected per-fill PnL: delta against lifecycle baseline, not raw cumulative value
+        realized_pnl = raw_cumulative - baseline
+
+        avail_opposite = sum(q["remaining"] for q in queue if q["side"] != side)
+        closed_qty = min(size, avail_opposite)
+        remaining_to_close = closed_qty
+
+        while remaining_to_close > 1e-9 and queue and queue[0]["side"] != side:
+            head = queue[0]
+            match_size = min(remaining_to_close, head["remaining"])
+            frac = (match_size / closed_qty) if closed_qty > 1e-9 else 0.0
+            chunk_pnl = realized_pnl * frac
+            chunk_exit_comm = comm_per_unit * match_size
+            chunk_entry_comm = head["comm_per_unit"] * match_size
+            _dir = "LONG" if head["side"] == "BUY" else "SHORT"
+            pairs.append({
+                "dir": _dir,
+                "entry_ts_raw": head["time"],
+                "exit_ts_raw": time,
+                "entry_p": head["price"],
+                "exit_p": price,
+                "lot": match_size,
+                "charges": chunk_exit_comm + chunk_entry_comm,
+                "pnl_usd": chunk_pnl,  # GROSS pnl (matches CSV "Realised P&L" convention); charges tracked separately
+            })
+            head["remaining"] -= match_size
+            remaining_to_close -= match_size
+            if head["remaining"] <= 1e-9:
+                queue.pop(0)
+
+        opening_qty = size - closed_qty
+        if opening_qty > 1e-9:
+            queue.append({"remaining": opening_qty, "price": price, "time": time,
+                          "side": side, "comm_per_unit": comm_per_unit})
+
+        # Reset baseline when position returns to flat; a new lifecycle begins
+        baseline = 0.0 if pos_size_after == 0 else raw_cumulative
+
     return pairs
 
 
@@ -236,7 +266,7 @@ def _get_live_rows_audit(strat_label, from_date, to_date, fetch_fills_fn, inr_ra
                 continue
 
             _trade_no += 1
-            _net_pnl_inr = p["pnl_usd"] * inr_rate
+            _net_pnl_inr = (p["pnl_usd"] - p["charges"]) * inr_rate  # gross pnl minus charges = true net
             _cum_pnl += _net_pnl_inr
 
             rows.append({
