@@ -43,11 +43,13 @@ _STRAT_TO_REF_SUFFIX = {
     "RenkoSMIIOSupertrendV2Strategy": "s4v2",
     "RenkoSMIIOSupertrendStrategy":   "s4",
     "RenkoReversalStrategy":          "s2",
+    "RenkoSMIIOCrossV3Strategy":      "s4v3",
 }
 strategy_params = {}
 _STRAT_EXPLICIT_PARAMS = {
     "RenkoSMIIOSupertrendStrategy": dict(renko_box_pct=0.001, renko_timeframe="2h", st_atr_length=5, st_factor=2.0, smiio_shortlen=10, smiio_longlen=10, smiio_siglen=3),
     "RenkoSMIIOSupertrendV2Strategy": dict(renko_box_pct=0.001, renko_timeframe="30m", st_atr_length=5, st_factor=1.5, smiio_shortlen=10, smiio_longlen=20, smiio_siglen=3),
+    "RenkoSMIIOCrossV3Strategy": dict(renko_box_pct=0.001, renko_timeframe="4h", smiio_shortlen=5, smiio_longlen=10, smiio_siglen=3),
 }
 if args.strategy in _STRAT_EXPLICIT_PARAMS:
     strategy_params.update(_STRAT_EXPLICIT_PARAMS[args.strategy])
