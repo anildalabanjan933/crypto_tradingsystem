@@ -226,6 +226,10 @@ def check_bot(bot):
 def main():
     log.info("SL Safety Monitor started - monitor-only, no auto-action")
     while True:
+        try:
+            open('logs/sl_safety_monitor_heartbeat.txt','w').write(str(__import__('time').time()))
+        except Exception:
+            pass
         for bot in BOTS:
             if not bot["api_key"] or not bot["api_secret"]:
                 continue  # keys not provisioned yet (e.g. S4V3 pending ticket) - skip silently, no spam

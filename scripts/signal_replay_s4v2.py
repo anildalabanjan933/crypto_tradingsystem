@@ -565,6 +565,10 @@ except Exception as _e_val:
     log.error(f"[CRITICAL] API key validation error: {_e_val}")
 while True:
     try:
+        open('logs/heartbeat_s4v2.txt','w').write(str(__import__('time').time()))
+    except Exception:
+        pass
+    try:
         now = now_utc_str()
 
         # --- CSV Signal Matching (single source of truth, CSV-only) ---
