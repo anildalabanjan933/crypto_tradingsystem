@@ -7480,7 +7480,7 @@ with _tab_analysis:
                     with open(_hist_p) as _hf:
                         for _line in _hf:
                             _parts = _line.strip().split(",")
-                            if len(_parts) == 4 and _parts[1] == _bot_lower and _parts[2] == _key and _parts[0] < _today_date:
+                            if len(_parts) == 4 and _parts[1] == _bot_lower and _key in _parts[2] and _parts[0] < _today_date:
                                 _earlier.append(_parts[0])
                     if _earlier:
                         return f" [REPEATED ISSUE - also seen on {_fmt_short(sorted(_earlier)[-1])}]"
@@ -8121,7 +8121,7 @@ def _month_trades_html(df2, df4, df2_fwd, df4_fwd):
             with open(_hist_p2) as _hf2:
                 for _line2 in _hf2:
                     _parts2 = _line2.strip().split(",")
-                    if len(_parts2) == 4 and _parts2[1] == _bot_lower and _parts2[2] == _key and _parts2[0] < _today_date:
+                    if len(_parts2) == 4 and _parts2[1] == _bot_lower and _key in _parts2[2] and _parts2[0] < _today_date:
                         _earlier2.append(_parts2[0])
             if _earlier2:
                 return f" [REPEATED ISSUE - also seen on {_fmt_short2(sorted(_earlier2)[-1])}]"
