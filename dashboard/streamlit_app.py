@@ -7463,14 +7463,40 @@ with _tab_analysis:
                 return _pd14.DataFrame()
 
             @st.cache_data(ttl=30)
+            def _dash_repeat_tag(_bot_lower, _key, _today_date):
+                try:
+                    import os as _os_rpt, re as _re_rpt
+                    _months_h = ["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+                    def _fmt_short(d):
+                        try:
+                            y,m,dd = d.split("-")
+                            return f"{dd}-{_months_h[int(m)]}"
+                        except Exception:
+                            return d
+                    _hist_p = "logs/issue_history.csv"
+                    if not _os_rpt.path.exists(_hist_p):
+                        return ""
+                    _earlier = []
+                    with open(_hist_p) as _hf:
+                        for _line in _hf:
+                            _parts = _line.strip().split(",")
+                            if len(_parts) == 4 and _parts[1] == _bot_lower and _parts[2] == _key and _parts[0] < _today_date:
+                                _earlier.append(_parts[0])
+                    if _earlier:
+                        return f" [REPEATED ISSUE - also seen on {_fmt_short(sorted(_earlier)[-1])}]"
+                except Exception:
+                    pass
+                return ""
             def _get_trade_issues(_lbl, _entry_dt, _exit_dt=None, _entry_delay_sec=None, _exit_delay_sec=None, _net_slip_usd=None):
                 _issues = []
+                _bot_l = "s4v2" if "S4V2" in _lbl else "s4"
+                _today_s = str(_entry_dt)[:10]
                 if _entry_delay_sec is not None and abs(_entry_delay_sec) > 15:
-                    _issues.append(f"[DELTA EXCHANGE SIDE] Entry delayed {_entry_delay_sec:.0f}s from signal candle close - order latency/market movement, not a bot bug")
+                    _issues.append(f"[DELTA EXCHANGE SIDE] Entry delayed {_entry_delay_sec:.0f}s from signal candle close - order latency/market movement, not a bot bug" + _dash_repeat_tag(_bot_l, "ENTRY_DELAY_s", _today_s))
                 if _exit_delay_sec is not None and abs(_exit_delay_sec) > 15:
-                    _issues.append(f"[DELTA EXCHANGE SIDE] Exit delayed {_exit_delay_sec:.0f}s from signal candle close - order latency/market movement, not a bot bug")
+                    _issues.append(f"[DELTA EXCHANGE SIDE] Exit delayed {_exit_delay_sec:.0f}s from signal candle close - order latency/market movement, not a bot bug" + _dash_repeat_tag(_bot_l, "EXIT_DELAY_s", _today_s))
                 if _net_slip_usd is not None and abs(_net_slip_usd) > 10:
-                    _issues.append(f"[DELTA EXCHANGE SIDE] High slippage Rs{_net_slip_usd*84.0:,.0f} - price movement/order latency, not a bot bug")
+                    _issues.append(f"[DELTA EXCHANGE SIDE] High slippage Rs{_net_slip_usd*84.0:,.0f} - price movement/order latency, not a bot bug" + _dash_repeat_tag(_bot_l, "HIGH_SLIPPAGE_Rs", _today_s))
                 try:
                     import os as _os_ti
                     _window_start = _entry_dt - _pd14.Timedelta(minutes=10)
@@ -8078,10 +8104,36 @@ def _month_trades_html(df2, df4, df2_fwd, df4_fwd):
             pass
         return _found
 
+    def _dash_repeat_tag_m(_bot_lower, _key, _today_date):
+        try:
+            import os as _os_rpt2
+            _months_h2 = ["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+            def _fmt_short2(d):
+                try:
+                    y,m,dd = d.split("-")
+                    return f"{dd}-{_months_h2[int(m)]}"
+                except Exception:
+                    return d
+            _hist_p2 = "logs/issue_history.csv"
+            if not _os_rpt2.path.exists(_hist_p2):
+                return ""
+            _earlier2 = []
+            with open(_hist_p2) as _hf2:
+                for _line2 in _hf2:
+                    _parts2 = _line2.strip().split(",")
+                    if len(_parts2) == 4 and _parts2[1] == _bot_lower and _parts2[2] == _key and _parts2[0] < _today_date:
+                        _earlier2.append(_parts2[0])
+            if _earlier2:
+                return f" [REPEATED ISSUE - also seen on {_fmt_short2(sorted(_earlier2)[-1])}]"
+        except Exception:
+            pass
+        return ""
     def _issues_m(_lbl, _entry_dt, _exit_dt=None, _net_slip_usd=None):
         _issues = _load_persisted_issues_m(_lbl, _entry_dt)
         if _net_slip_usd is not None and abs(_net_slip_usd) > 10:
-            _issues.append(f"[DELTA EXCHANGE SIDE] High slippage Rs{_net_slip_usd*84.0:,.0f} - price movement/order latency, not a bot bug")
+            _bot_l_m = "s4v2" if "S4V2" in _lbl else "s4"
+            _today_s_m = str(_entry_dt)[:10]
+            _issues.append(f"[DELTA EXCHANGE SIDE] High slippage Rs{_net_slip_usd*84.0:,.0f} - price movement/order latency, not a bot bug" + _dash_repeat_tag_m(_bot_l_m, "HIGH_SLIPPAGE_Rs", _today_s_m))
         try:
             _ws = _entry_dt - _pdm.Timedelta(minutes=10)
             _we = (_exit_dt if _exit_dt is not None else _entry_dt) + _pdm.Timedelta(minutes=10)
