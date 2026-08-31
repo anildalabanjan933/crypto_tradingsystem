@@ -109,6 +109,29 @@ def reconstruct_trades(fills):
             entry_time = f["created_at"]; entry_notional = price * size; entry_size = size
     return trades
 
+def get_open_entry(fills):
+    fills = sorted(fills, key=lambda f: f["created_at"])
+    pos = 0.0; entry_notional = 0.0; entry_size = 0.0; entry_time = None
+    for f in fills:
+        side = f["side"]; size = float(f["size"]); price = float(f["price"])
+        signed = size if side == "buy" else -size
+        prev_pos = pos; pos += signed
+        if prev_pos == 0 and pos != 0:
+            entry_time = f["created_at"]; entry_notional = price * size; entry_size = size
+        elif prev_pos != 0 and pos == 0:
+            entry_time = None; entry_notional = 0.0; entry_size = 0.0
+        elif prev_pos != 0 and pos != 0 and (prev_pos > 0) != (pos > 0):
+            entry_time = f["created_at"]; entry_notional = price * abs(pos); entry_size = abs(pos)
+        elif prev_pos != 0 and pos != 0 and (prev_pos > 0) == (pos > 0):
+            entry_notional += price * size; entry_size += size
+        else:
+            entry_time = f["created_at"]; entry_notional = price * size; entry_size = size
+    if pos != 0 and entry_time:
+        avg_entry = entry_notional / entry_size if entry_size else 0
+        return {"direction": "long" if pos > 0 else "short", "entry_time": entry_time,
+                "entry_price": round(avg_entry, 2), "size": abs(pos)}
+    return None
+
 def load_bt(bot, start_date):
     files = sorted(glob.glob(BT_GLOB[bot]))
     if not files: return []
@@ -253,6 +276,7 @@ def build_report(start_date, end_date):
         raw_fills = get_fills(api_key, api_secret, base_url, start_us, end_us)
         agg_fills = aggregate_by_order(raw_fills)
         real_trades = reconstruct_trades(agg_fills)
+        open_entry = get_open_entry(agg_fills)
         seed_pos = get_seed_position(api_key, api_secret, base_url, start_us, bot)
         bt_rows = load_bt(bot, start_date)
         tf_sec = TF_MIN[bot] * 60
@@ -306,6 +330,14 @@ def build_report(start_date, end_date):
                     "entry_slip": entry_slip, "exit_slip": exit_slip, "net_slip_usd": net_slip_usd,
                     "lv_pnl_usd": lv_pnl_usd, "bt_pnl_usd": bt_pnl_usd,
                     "issue": _explain_issue(bot, bt_entry_close, bt_exit_close, _issue_code)
+                })
+            elif (open_entry and open_entry["direction"] == r["direction"]
+                  and abs((dt(open_entry["entry_time"]) - bt_entry_t).total_seconds()) < window_sec):
+                report[date][bot]["pairs"].append({
+                    "bt": r, "lv": open_entry, "entry_delay": None, "exit_delay": None,
+                    "entry_slip": None, "exit_slip": None, "net_slip_usd": None,
+                    "lv_pnl_usd": None, "bt_pnl_usd": bt_pnl_usd,
+                    "issue": "OPEN_LIVE_TRADE - entry filled, position still open (not missed) - entry_price=" + str(open_entry["entry_price"])
                 })
             else:
                 report[date][bot]["pairs"].append({
@@ -410,10 +442,16 @@ def render_html(report, accidental, start_date, end_date):
                         match_str = (f"E:{'+' if p['entry_slip']>=0 else ''}{p['entry_slip']:.1f} "
                                      f"X:{'+' if p['exit_slip']>=0 else ''}{p['exit_slip']:.1f} "
                                      f"| ED:{p['entry_delay']}s XD:{p['exit_delay']}s")
-                    html.append(f"<tr class='lv-row'><td></td><td>FWD</td><td>{lv['direction'].upper()}</td>"
-                                f"<td>{fmt_dt(lv['entry_time'])}</td><td>{fmt_dt(lv['exit_time'])}</td>"
-                                f"<td>Rs{lv['entry_price']*INR_RATE:,.0f}</td><td>Rs{lv['exit_price']*INR_RATE:,.0f}</td>"
-                                f"<td>Rs{(p['lv_pnl_usd'] or 0)*INR_RATE:,.0f}</td><td>{match_str}</td></tr>")
+                    if 'exit_time' not in lv:
+                        html.append(f"<tr class='lv-row'><td></td><td>FWD</td><td>{lv['direction'].upper()}</td>"
+                                    f"<td>{fmt_dt(lv['entry_time'])}</td><td>OPEN</td>"
+                                    f"<td>Rs{lv['entry_price']*INR_RATE:,.0f}</td><td>-</td>"
+                                    f"<td>-</td><td>OPEN_LIVE_TRADE (position still open, not missed)</td></tr>")
+                    else:
+                        html.append(f"<tr class='lv-row'><td></td><td>FWD</td><td>{lv['direction'].upper()}</td>"
+                                    f"<td>{fmt_dt(lv['entry_time'])}</td><td>{fmt_dt(lv['exit_time'])}</td>"
+                                    f"<td>Rs{lv['entry_price']*INR_RATE:,.0f}</td><td>Rs{lv['exit_price']*INR_RATE:,.0f}</td>"
+                                    f"<td>Rs{(p['lv_pnl_usd'] or 0)*INR_RATE:,.0f}</td><td>{match_str}</td></tr>")
                 else:
                     html.append(f"<tr class='lv-row'><td></td><td>FWD</td><td colspan='6' class='miss'>MISSED (no live entry)</td><td>-</td></tr>")
             html.append("</table>")
