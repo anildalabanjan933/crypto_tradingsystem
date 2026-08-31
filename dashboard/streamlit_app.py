@@ -7463,8 +7463,14 @@ with _tab_analysis:
                 return _pd14.DataFrame()
 
             @st.cache_data(ttl=30)
-            def _get_trade_issues(_lbl, _entry_dt, _exit_dt=None):
+            def _get_trade_issues(_lbl, _entry_dt, _exit_dt=None, _entry_delay_sec=None, _exit_delay_sec=None, _net_slip_usd=None):
                 _issues = []
+                if _entry_delay_sec is not None and abs(_entry_delay_sec) > 15:
+                    _issues.append(f"[DELTA EXCHANGE SIDE] Entry delayed {_entry_delay_sec:.0f}s from signal candle close - order latency/market movement, not a bot bug")
+                if _exit_delay_sec is not None and abs(_exit_delay_sec) > 15:
+                    _issues.append(f"[DELTA EXCHANGE SIDE] Exit delayed {_exit_delay_sec:.0f}s from signal candle close - order latency/market movement, not a bot bug")
+                if _net_slip_usd is not None and abs(_net_slip_usd) > 10:
+                    _issues.append(f"[DELTA EXCHANGE SIDE] High slippage Rs{_net_slip_usd*84.0:,.0f} - price movement/order latency, not a bot bug")
                 try:
                     import os as _os_ti
                     _window_start = _entry_dt - _pd14.Timedelta(minutes=10)
@@ -7610,12 +7616,25 @@ with _tab_analysis:
                 _issue_msgs = []
                 try:
                     _exit_dt_for_issues = _bt_t + _pd14.Timedelta(minutes=_tf_min) if '_bt_t' in dir() else None
-                    _issue_msgs = _get_trade_issues(_lbl, _bt_t, _exit_dt_for_issues)
+                    _net_slip_for_issues = None
+                    try:
+                        _net_slip_for_issues = (_signed_pdiff*100*0.001) + (_signed_xpdiff*100*0.001)
+                    except Exception:
+                        try:
+                            _net_slip_for_issues = _signed_pdiff*100*0.001
+                        except Exception:
+                            _net_slip_for_issues = None
+                    _issue_msgs = _get_trade_issues(_lbl, _bt_t, _exit_dt_for_issues,
+                                                     _entry_delay_sec=locals().get('_delay_sec'),
+                                                     _exit_delay_sec=locals().get('_exit_delay_sec'),
+                                                     _net_slip_usd=_net_slip_for_issues)
                 except Exception:
                     pass
                 _issue_html = ""
                 if _issue_msgs:
-                    _issue_html = "<br>" + "<br>".join([f"<span style='font-size:9px;color:#e67e22;font-weight:700;'>⚠ [CDS SYSTEM SIDE] {m}</span>" for m in _issue_msgs])
+                    def _tag_or_default(_m):
+                        return _m if _m.strip().startswith("[") else f"[CDS SYSTEM SIDE] {_m}"
+                    _issue_html = "<br>" + "<br>".join([f"<span style='font-size:9px;color:#e67e22;font-weight:700;'>⚠ {_tag_or_default(m)}</span>" for m in _issue_msgs])
                 _match_only = f"Entry: {entry_line}<br>Exit: {exit_line}<br><span style='font-size:9px;color:#888;'>Note: match check covers entry/exit price only, not funding cost</span>"
                 _message_only = _issue_html.replace("<br>", "", 1) if _issue_html else "-"
                 return (_match_only, _message_only)
@@ -8059,8 +8078,10 @@ def _month_trades_html(df2, df4, df2_fwd, df4_fwd):
             pass
         return _found
 
-    def _issues_m(_lbl, _entry_dt, _exit_dt=None):
+    def _issues_m(_lbl, _entry_dt, _exit_dt=None, _net_slip_usd=None):
         _issues = _load_persisted_issues_m(_lbl, _entry_dt)
+        if _net_slip_usd is not None and abs(_net_slip_usd) > 10:
+            _issues.append(f"[DELTA EXCHANGE SIDE] High slippage Rs{_net_slip_usd*84.0:,.0f} - price movement/order latency, not a bot bug")
         try:
             _ws = _entry_dt - _pdm.Timedelta(minutes=10)
             _we = (_exit_dt if _exit_dt is not None else _entry_dt) + _pdm.Timedelta(minutes=10)
@@ -8336,7 +8357,15 @@ def _month_trades_html(df2, df4, df2_fwd, df4_fwd):
         try:
             if _bt_t is not None:
                 _exit_dt_ii = _bt_t + _pdm.Timedelta(minutes=tf_min)
-                _issue_msgs = _issues_m(str(lv.get("label","")), _bt_t, _exit_dt_ii)
+                _net_slip_for_issues_m = None
+                try:
+                    _net_slip_for_issues_m = (_signed_pdiff*100*0.001) + (_signed_xpdiff*100*0.001)
+                except Exception:
+                    try:
+                        _net_slip_for_issues_m = _signed_pdiff*100*0.001
+                    except Exception:
+                        _net_slip_for_issues_m = None
+                _issue_msgs = _issues_m(str(lv.get("label","")), _bt_t, _exit_dt_ii, _net_slip_usd=_net_slip_for_issues_m)
         except Exception:
             pass
         _issue_html = ""
