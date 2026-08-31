@@ -3,6 +3,43 @@ from datetime import datetime, timezone, timedelta
 
 TF_MIN = {"s4": 120, "s4v2": 30}
 WINDOW_SEC = {"s4": 150*60, "s4v2": 45*60}
+
+import os as _os_hist, re as _re_hist
+HISTORY_CSV = "logs/issue_history.csv"
+_MONTHS_H = ["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+
+def _fmt_date_short(d):
+    try:
+        y,m,dd = d.split("-")
+        return f"{dd}-{_MONTHS_H[int(m)]}"
+    except Exception:
+        return d
+
+def _normalize_key(code):
+    return _re_hist.sub(r'[\d,.]+', '', code).strip('_')
+
+def _load_issue_history():
+    rows = []
+    if _os_hist.path.exists(HISTORY_CSV):
+        with open(HISTORY_CSV) as fh:
+            for line in fh:
+                parts = line.strip().split(",")
+                if len(parts) == 4:
+                    rows.append(tuple(parts))
+    return rows
+
+def _repeat_tag(date, bot, key):
+    hist = _load_issue_history()
+    earlier = sorted(set(d for d,b,k in [(x[0],x[1],x[2]) for x in hist] if b==bot and k==key and d < date))
+    entry_line = f"{date},{bot},{key},1\n"
+    existing = {(d,b,k) for d,b,k,_ in hist}
+    if (date,bot,key) not in existing:
+        with open(HISTORY_CSV, "a") as fh:
+            fh.write(entry_line)
+    if earlier:
+        return f" [REPEATED ISSUE - also seen on {_fmt_date_short(earlier[-1])}]"
+    return ""
+
 INR_RATE = 84.0
 
 BT_GLOB = {
@@ -329,7 +366,7 @@ def build_report(start_date, end_date):
                     "bt": r, "lv": best, "entry_delay": entry_delay, "exit_delay": exit_delay,
                     "entry_slip": entry_slip, "exit_slip": exit_slip, "net_slip_usd": net_slip_usd,
                     "lv_pnl_usd": lv_pnl_usd, "bt_pnl_usd": bt_pnl_usd,
-                    "issue": _explain_issue(bot, bt_entry_close, bt_exit_close, _issue_code)
+                    "issue": _explain_issue(bot, bt_entry_close, bt_exit_close, _issue_code) + (_repeat_tag(date, bot, _normalize_key(_issue_code)) if _issue_code != "OK" else "")
                 })
             elif (open_entry and open_entry["direction"] == r["direction"]
                   and abs((dt(open_entry["entry_time"]) - bt_entry_t).total_seconds()) < window_sec):
@@ -337,14 +374,14 @@ def build_report(start_date, end_date):
                     "bt": r, "lv": open_entry, "entry_delay": None, "exit_delay": None,
                     "entry_slip": None, "exit_slip": None, "net_slip_usd": None,
                     "lv_pnl_usd": None, "bt_pnl_usd": bt_pnl_usd,
-                    "issue": "OPEN_LIVE_TRADE - entry filled, position still open (not missed) - entry_price=" + str(open_entry["entry_price"])
+                    "issue": "OPEN_LIVE_TRADE - entry filled, position still open (not missed) - entry_price=" + str(open_entry["entry_price"]) + _repeat_tag(date, bot, "OPEN_LIVE_TRADE")
                 })
             else:
                 report[date][bot]["pairs"].append({
                     "bt": r, "lv": None, "entry_delay": None, "exit_delay": None,
                     "entry_slip": None, "exit_slip": None, "net_slip_usd": None,
                     "lv_pnl_usd": None, "bt_pnl_usd": bt_pnl_usd,
-                    "issue": _explain_issue(bot, bt_entry_t, bt_exit_close, "MISSED_NO_LIVE_FILL")
+                    "issue": _explain_issue(bot, bt_entry_t, bt_exit_close, "MISSED_NO_LIVE_FILL") + _repeat_tag(date, bot, "MISSED_NO_LIVE_FILL")
                 })
 
         _sorted_unmatched = sorted(matched_lv, key=lambda x: x["entry_time"])
@@ -366,7 +403,7 @@ def build_report(start_date, end_date):
                 "bt": None, "lv": lv, "entry_delay": None, "exit_delay": None,
                 "entry_slip": None, "exit_slip": None, "net_slip_usd": None,
                 "lv_pnl_usd": lv_pnl_usd, "bt_pnl_usd": None,
-                "issue": _explain_issue(bot, _lv_et, _lv_xt, _tag)
+                "issue": _explain_issue(bot, _lv_et, _lv_xt, _tag) + _repeat_tag(date, bot, _tag)
             })
 
     return report, accidental
