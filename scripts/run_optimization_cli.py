@@ -111,6 +111,14 @@ PREDEFINED_RANGES = {
     }
 }
 
+PREDEFINED_RANGES["s4v3_smiio_all"] = {
+    "renko_box_pct":   {"values": [0.002, 0.0025, 0.003, 0.0035, 0.004, 0.005, 0.006, 0.0075]},
+    "renko_timeframe": {"values": ["1m"]},
+    "smiio_shortlen":  {"values": [10, 14, 20, 30]},
+    "smiio_longlen":   {"values": [10, 20, 30, 40]},
+    "smiio_siglen":    {"values": [3, 5, 7, 9]}
+}
+
 if args.group not in PREDEFINED_RANGES:
     print(f"ERROR: Group {args.group} not found")
     print(f"Available groups: {list(PREDEFINED_RANGES.keys())}")
