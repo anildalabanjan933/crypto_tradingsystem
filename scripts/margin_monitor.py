@@ -101,6 +101,10 @@ if __name__ == "__main__":
     log.info("[STARTUP] Margin monitor started (read-only, no order actions)")
     while True:
         try:
+            open('logs/margin_monitor_heartbeat.txt','w').write(str(__import__('time').time()))
+        except Exception:
+            pass
+        try:
             check_all()
         except Exception as e:
             log.error(f"[ERROR] {e}", exc_info=True)

@@ -35,6 +35,10 @@ except Exception as e:
 
 while True:
     try:
+        open('logs/boundary_watcher_heartbeat.txt','w').write(str(__import__('time').time()))
+    except Exception:
+        pass
+    try:
         cur_s4 = last_closed_tf(120)
         cur_s4v2 = last_closed_tf(30)
         cur_s4v3 = last_closed_tf(240)

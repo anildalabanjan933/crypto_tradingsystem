@@ -563,6 +563,10 @@ _ENTRY_RETRY_COOLDOWN_SEC = 5
 
 while True:
     try:
+        open('logs/heartbeat_s4.txt','w').write(str(__import__('time').time()))
+    except Exception:
+        pass
+    try:
         now = now_utc_str()
 
         # --- CSV Signal Matching (single source of truth, CSV-only) ---
