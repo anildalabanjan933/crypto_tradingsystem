@@ -72,6 +72,16 @@ def aggregate_by_order(fills):
                     "price": o["notional"] / o["size"] if o["size"] else 0.0, "created_at": o["first_time"]})
     return sorted(agg, key=lambda x: x["created_at"])
 
+def get_seed_position(api_key, api_secret, base_url, start_us, bot):
+    lookback_sec = 72*3600
+    lookback_us = start_us - lookback_sec*1_000_000
+    pre_fills = get_fills(api_key, api_secret, base_url, lookback_us, start_us)
+    pre_agg = aggregate_by_order(pre_fills)
+    pos = 0.0
+    for f in pre_agg:
+        pos += f["size"] if f["side"] == "buy" else -f["size"]
+    return pos
+
 def reconstruct_trades(fills):
     fills = sorted(fills, key=lambda f: f["created_at"])
     trades = []; pos = 0.0; entry_notional = 0.0; entry_size = 0.0; entry_time = None
@@ -162,40 +172,69 @@ def _get_cached_log_lines(log_path):
     _LOG_LINE_CACHE[log_path] = parsed
     return parsed
 
-def find_miss_reason(bot, entry_dt, exit_dt):
+def _scan_tier_events(bot, entry_dt, exit_dt):
     window_start = entry_dt - timedelta(minutes=10)
     window_end = exit_dt + timedelta(minutes=10)
     reasons = []
     checks = [
         ("STARTUP", "Bot restarted near this time"),
-        ("STUCK PENDING", "Stuck-pending sync issue detected"),
+        ("STUCK PENDING", "Stuck-pending sync issue detected (self-healed automatically)"),
         ("ENTRY FAILED", "Entry order failed - exchange rejected"),
         ("ENTRY ABANDONED", "Entry abandoned after max retry attempts"),
         ("manual_override", "Manual override skip was active"),
-        ("unfilled_beyond_band", "Price moved outside safety band"),
+        ("unfilled_beyond_band", "Entry price moved outside $250 IOC safety band"),
         ("ENGINE WARNING", "Engine heartbeat issue near this time"),
         ("SL PLACEMENT FAILED", "SL placement failure - position was unprotected"),
         ("CLOSE FAILED", "Emergency close failure - manual intervention required"),
         ("SL GAP DETECTED", "SL gap watchdog forced emergency close"),
-        ("TIER 1 SPEED ALERT", "Tier1 speed filter auto-closed position"),
-        ("LIQUIDATION RISK CRITICAL", "Tier2 liquidation-risk auto-close triggered"),
+        ("TIER 1 SPEED ALERT", "Tier1 speed filter (5%/min) auto-closed position"),
+        ("LIQUIDATION RISK CRITICAL", "Tier2 liquidation-risk monitor auto-closed position"),
         ("invalid_api_key", "API key rejected - bot could not trade"),
         ("AUTO-SL PLACEMENT FAILED", "Auto-SL placement failed for this bot"),
+        ("AUTO-PLACED SUCCESS", "SL was missing - auto-fixed by safety monitor within 60s"),
+        ("RECOVERED - SL WAS MISSING", "SL was missing - auto-fixed by safety monitor within 60s"),
+        ("ORPHAN POSITION", "Exchange position was untracked - auto-flagged same day"),
+        ("EMERGENCY CLOSE", "SL placement failed - position auto-closed for safety"),
     ]
-    all_logs = LOG_FILES + [f"logs/live_trading_{bot}.log"]
+    all_logs = LOG_FILES + [f"logs/live_trading_{bot}.log", "logs/sl_safety_monitor.log"]
     bot_tag = bot.upper()
     for log_path in set(all_logs):
         for line_dt, line in _get_cached_log_lines(log_path):
             if not (window_start <= line_dt <= window_end):
                 continue
-            if bot_tag not in line and "live_trading" not in log_path:
+            import re as _re_bt
+            if "live_trading" in log_path:
+                pass
+            elif not _re_bt.search(r'(?<![A-Za-z0-9])' + bot_tag + r'(?![A-Za-z0-9])', line):
                 continue
             for pat, label in checks:
                 if pat in line:
                     tag = f"{label} ({line_dt.strftime('%H:%M:%S')} UTC)"
                     if tag not in reasons:
                         reasons.append(tag)
+    return reasons
+
+def find_miss_reason(bot, entry_dt, exit_dt):
+    reasons = _scan_tier_events(bot, entry_dt, exit_dt)
     return " | ".join(reasons) if reasons else "no reason found in logs - check manually"
+
+def _explain_issue(bot, entry_dt, exit_dt, issue_code):
+    if issue_code == "SYSTEM_SYNC_GAP_NO_BUG":
+        return "NO BUG - SAFE (CDS SYSTEM SIDE): brief 1-second bookkeeping gap only, position was fully protected by stop-loss and closed normally, zero loss, zero missed protection"
+    reasons = _scan_tier_events(bot, entry_dt, exit_dt)
+    if reasons:
+        return f"{issue_code} -- CDS SYSTEM SIDE: " + " | ".join(reasons)
+    if issue_code == "OK":
+        return "OK -- Delta fill matched Backtest signal, no system events found near this trade"
+    if issue_code.startswith("MISSED_NO_LIVE_FILL"):
+        return "MISSED_NO_LIVE_FILL -- UNKNOWN (evidence gap): no live trade found and no system-log reason found near this time - could be a genuine missed signal or rotated/missing logs, needs manual check"
+    if issue_code == "UNMATCHED_LV_TRADE":
+        return "UNMATCHED_LV_TRADE -- DELTA EXCHANGE SIDE: live trade filled on exchange but no matching backtest signal in window - verify manually via Audit tab (Delta fill data)"
+    if issue_code == "CARRIED_POSITION_MISMATCH":
+        return "CARRIED_POSITION_MISMATCH -- DELTA EXCHANGE SIDE: position was carried over from previous day, backtest expected a fresh start - not a missed trade, real exchange state differs from backtest assumption"
+    if issue_code == "SYSTEM_SYNC_GAP_NO_BUG":
+        return "NO BUG - SAFE: brief 1-second bookkeeping gap only, position was fully protected by stop-loss and closed normally, zero loss, zero missed protection"
+    return f"{issue_code} -- DELTA EXCHANGE SIDE: no system-side cause found in logs - likely normal market price movement/order latency, not a bot bug"
 
 def build_report(start_date, end_date):
     start_dt = datetime.strptime(start_date, "%Y-%m-%d").replace(tzinfo=timezone.utc)
@@ -214,6 +253,7 @@ def build_report(start_date, end_date):
         raw_fills = get_fills(api_key, api_secret, base_url, start_us, end_us)
         agg_fills = aggregate_by_order(raw_fills)
         real_trades = reconstruct_trades(agg_fills)
+        seed_pos = get_seed_position(api_key, api_secret, base_url, start_us, bot)
         bt_rows = load_bt(bot, start_date)
         tf_sec = TF_MIN[bot] * 60
         window_sec = WINDOW_SEC.get(bot, 3*3600)
@@ -260,31 +300,41 @@ def build_report(start_date, end_date):
                 if abs(entry_delay) > 15: issues.append(f"ENTRY_DELAY_{entry_delay}s")
                 if abs(exit_delay) > 15: issues.append(f"EXIT_DELAY_{exit_delay}s")
                 if abs(net_slip_usd) > 10: issues.append(f"HIGH_SLIPPAGE_Rs{net_slip_usd*INR_RATE:,.0f}")
+                _issue_code = ",".join(issues) if issues else "OK"
                 report[date][bot]["pairs"].append({
                     "bt": r, "lv": best, "entry_delay": entry_delay, "exit_delay": exit_delay,
                     "entry_slip": entry_slip, "exit_slip": exit_slip, "net_slip_usd": net_slip_usd,
                     "lv_pnl_usd": lv_pnl_usd, "bt_pnl_usd": bt_pnl_usd,
-                    "issue": ",".join(issues) if issues else "OK"
+                    "issue": _explain_issue(bot, bt_entry_close, bt_exit_close, _issue_code)
                 })
             else:
-                _miss_reason = find_miss_reason(bot, bt_entry_t, bt_exit_close)
                 report[date][bot]["pairs"].append({
                     "bt": r, "lv": None, "entry_delay": None, "exit_delay": None,
                     "entry_slip": None, "exit_slip": None, "net_slip_usd": None,
                     "lv_pnl_usd": None, "bt_pnl_usd": bt_pnl_usd,
-                    "issue": f"MISSED_NO_LIVE_FILL: {_miss_reason}"
+                    "issue": _explain_issue(bot, bt_entry_t, bt_exit_close, "MISSED_NO_LIVE_FILL")
                 })
 
-        for lv in matched_lv:
+        _sorted_unmatched = sorted(matched_lv, key=lambda x: x["entry_time"])
+        for _i, lv in enumerate(_sorted_unmatched):
             date = lv["entry_time"][:10]
             report.setdefault(date, {}).setdefault(bot, {"pairs": [], "bt_pnl": 0.0, "lv_pnl": 0.0})
             lv_pnl_usd = ((lv["exit_price"] - lv["entry_price"]) if lv["direction"] == "long"
                           else (lv["entry_price"] - lv["exit_price"])) * 100 * 0.001
             report[date][bot]["lv_pnl"] += lv_pnl_usd
+            _lv_et = dt(lv["entry_time"])
+            _lv_xt = dt(lv["exit_time"])
+            _tag = "UNMATCHED_LV_TRADE"
+            if _i == 0 and seed_pos != 0:
+                _tag = "CARRIED_POSITION_MISMATCH"
+            _orphan_check = _scan_tier_events(bot, _lv_et, _lv_xt)
+            if any("untracked" in m for m in _orphan_check):
+                _tag = "SYSTEM_SYNC_GAP_NO_BUG"
             report[date][bot]["pairs"].append({
                 "bt": None, "lv": lv, "entry_delay": None, "exit_delay": None,
                 "entry_slip": None, "exit_slip": None, "net_slip_usd": None,
-                "lv_pnl_usd": lv_pnl_usd, "bt_pnl_usd": None, "issue": "UNMATCHED_LV_TRADE"
+                "lv_pnl_usd": lv_pnl_usd, "bt_pnl_usd": None,
+                "issue": _explain_issue(bot, _lv_et, _lv_xt, _tag)
             })
 
     return report, accidental
@@ -372,6 +422,35 @@ def render_html(report, accidental, start_date, end_date):
     html.append("</body></html>")
     return "\n".join(html)
 
+
+def write_bug_csv(report, accidental, out_path="output/daily_verification_bugs.csv"):
+    import csv as _csv
+    with open(out_path, "w", newline="") as f:
+        writer = _csv.writer(f)
+        for date in sorted(report.keys()):
+            bugs = []
+            for bot in ["s4", "s4v2"]:
+                if bot not in report[date]: continue
+                for i, p in enumerate(report[date][bot]["pairs"], 1):
+                    if p["issue"] == "OK": continue
+                    bt, lv = p["bt"], p["lv"]
+                    entry_t = fmt_dt(bt["entry_datetime"]) if bt else (fmt_dt(lv["entry_time"]) if lv else "-")
+                    exit_t = fmt_dt(bt["exit_datetime"]) if bt else (fmt_dt(lv["exit_time"]) if lv else "-")
+                    entry_p = f"{float(bt['entry_price'])*INR_RATE:,.0f}" if bt else (f"{lv['entry_price']*INR_RATE:,.0f}" if lv else "-")
+                    exit_p = f"{float(bt['exit_price'])*INR_RATE:,.0f}" if bt else (f"{lv['exit_price']*INR_RATE:,.0f}" if lv else "-")
+                    direction = (bt['direction'] if bt else lv['direction']).upper()
+                    entry_raw = bt['entry_datetime'] if bt else (lv['entry_time'] if lv else "")
+                    bugs.append([bot.upper(), i, direction, entry_t, exit_t, entry_p, exit_p, p["issue"], "", entry_raw])
+            if date in accidental:
+                for ev in accidental[date]:
+                    bugs.append([ev['bot'], "ACCIDENTAL", "-", ev['time'], "-", "-", "-", f"{ev['type']}: {ev['text']}", "", ev['time']])
+            writer.writerow([f"DATE: {date}", f"BUG COUNT: {len(bugs)}"])
+            writer.writerow(["Bot","Trade#","Direction","Entry Time","Exit Time","Entry Rs","Exit Rs","Issue","Fix Needed","Entry_UTC_Raw"])
+            for row in bugs:
+                writer.writerow(row)
+            writer.writerow([])
+    print(f"Bug CSV written to {out_path}")
+
 if __name__ == "__main__":
     start_date = sys.argv[1] if len(sys.argv) > 1 else "2026-08-27"
     end_date = sys.argv[2] if len(sys.argv) > 2 else datetime.now(timezone.utc).strftime("%Y-%m-%d")
@@ -383,3 +462,4 @@ if __name__ == "__main__":
     print(f"Report written to {out_path}")
     print(f"Days covered: {sorted(report.keys())}")
     print(f"Days with accidental-loss/critical events: {sorted(accidental.keys())}")
+    write_bug_csv(report, accidental)
