@@ -7348,9 +7348,14 @@ with _tab_analysis:
                     _et, _dirv, _ep = _last_pending
                     import pandas as _pdopen
                     _et_close = _pdopen.to_datetime(_et) + _pdopen.Timedelta(hours=2 if ("S4" in csv_label and "S4V2" not in csv_label) else 0, minutes=30 if "S4V2" in csv_label else 0)
+                    _now_utc_bt = _pdopen.Timestamp.utcnow().tz_localize(None)
+                    # Renko can fire before the nominal candle-close boundary (documented,
+                    # expected behavior) - if projected close time is still in the future,
+                    # show real signal time instead so we never display a not-yet-happened time
+                    _display_et_bt = str(_et) if _et_close > _now_utc_bt else str(_et_close)
                     return {
                         'label': csv_label, 'dir': _dirv.upper(),
-                        'entry_ist': _to_ist(str(_et_close)), 'entry_ts_raw': str(_et), 'exit_ist': ('STUCK' if os.path.exists(f"logs/stuck_flag_{label.split()[-1]}.txt") else ('ORPHAN' if os.path.exists(f"logs/orphan_flag_{label.split()[-1]}.txt") else '-')),
+                        'entry_ist': _to_ist(_display_et_bt), 'entry_ts_raw': str(_et), 'exit_ist': ('STUCK' if os.path.exists(f"logs/stuck_flag_{label.split()[-1]}.txt") else ('ORPHAN' if os.path.exists(f"logs/orphan_flag_{label.split()[-1]}.txt") else '-')),
                         'entry_p': float(_ep) if _ep else 0.0, 'exit_p': 0.0,
                         'pnl_usd': 0.0, 'pnl_inr5': 0.0, 'pnl_inr10': 0.0, 'charges': 0.0,
                     }
@@ -7411,9 +7416,14 @@ with _tab_analysis:
                     _et_close = _pdlv.to_datetime(_et) + _pdlv.Timedelta(
                         hours=2 if ("S4" in label and "S4V2" not in label) else 0,
                         minutes=30 if "S4V2" in label else 0)
+                    _now_utc_lv = _pdlv.Timestamp.utcnow().tz_localize(None)
+                    # Renko can fire before the nominal candle-close boundary (documented,
+                    # expected behavior) - if the projected close time is still in the future,
+                    # display the real fill time instead so we never show a not-yet-happened time
+                    _display_et = last_entry.get("log_ts") or str(_et) if _et_close > _now_utc_lv else str(_et_close)
                     return {
                         'label': label, 'dir': last_entry["dir"].upper(),
-                        'entry_ist': _to_ist(str(_et_close)), 'entry_ts_raw': str(_et), 'exit_ist': ('STUCK' if os.path.exists(f"logs/stuck_flag_{label.split()[-1]}.txt") else ('ORPHAN' if os.path.exists(f"logs/orphan_flag_{label.split()[-1]}.txt") else '-')),
+                        'entry_ist': _to_ist(_display_et), 'entry_ts_raw': str(_et), 'exit_ist': ('STUCK' if os.path.exists(f"logs/stuck_flag_{label.split()[-1]}.txt") else ('ORPHAN' if os.path.exists(f"logs/orphan_flag_{label.split()[-1]}.txt") else '-')),
                         'exit_ts_raw': '-',
                         'entry_fill_ts_raw': last_entry.get("log_ts", ""),
                         'exit_fill_ts_raw': last_exit.get("log_ts", "") if 'last_exit' in dir() else "",
@@ -7499,9 +7509,15 @@ with _tab_analysis:
                 _bot_l = "s4v2" if "S4V2" in _lbl else "s4"
                 _today_s = str(_entry_dt)[:10]
                 if _entry_delay_sec is not None and abs(_entry_delay_sec) > 15:
-                    _issues.append(f"[DELTA EXCHANGE SIDE] Entry was {_entry_delay_sec:.0f}s slow to fill. Normal delay, not a bug." + _dash_repeat_tag(_bot_l, "ENTRY_DELAY_s", _today_s))
+                    if abs(_entry_delay_sec) > 900:
+                        _issues.append(f"[DELTA EXCHANGE SIDE] Entry was {_entry_delay_sec:.0f}s slow to fill. Large delay, needs manual check." + _dash_repeat_tag(_bot_l, "ENTRY_DELAY_s", _today_s))
+                    else:
+                        _issues.append(f"[DELTA EXCHANGE SIDE] Entry was {_entry_delay_sec:.0f}s slow to fill. Normal delay, not a bug." + _dash_repeat_tag(_bot_l, "ENTRY_DELAY_s", _today_s))
                 if _exit_delay_sec is not None and abs(_exit_delay_sec) > 15:
-                    _issues.append(f"[DELTA EXCHANGE SIDE] Exit was {_exit_delay_sec:.0f}s slow to fill. Normal delay, not a bug." + _dash_repeat_tag(_bot_l, "EXIT_DELAY_s", _today_s))
+                    if abs(_exit_delay_sec) > 900:
+                        _issues.append(f"[DELTA EXCHANGE SIDE] Exit was {_exit_delay_sec:.0f}s slow to fill. Large delay, needs manual check." + _dash_repeat_tag(_bot_l, "EXIT_DELAY_s", _today_s))
+                    else:
+                        _issues.append(f"[DELTA EXCHANGE SIDE] Exit was {_exit_delay_sec:.0f}s slow to fill. Normal delay, not a bug." + _dash_repeat_tag(_bot_l, "EXIT_DELAY_s", _today_s))
                 if _net_slip_usd is not None and abs(_net_slip_usd) > 10:
                     _issues.append(f"[DELTA EXCHANGE SIDE] Price moved Rs{_net_slip_usd*84.0:,.0f} - thin testnet order book (same as 13-Aug big loss, already fixed)." + _dash_repeat_tag(_bot_l, "HIGH_SLIPPAGE_Rs", _today_s))
                 try:
