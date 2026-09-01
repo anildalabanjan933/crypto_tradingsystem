@@ -306,8 +306,10 @@ def _get_live_rows_audit(strat_label, from_date, to_date, fetch_fills_fn, inr_ra
         # scripts/audit_delta_issue_tracker.py).
         _order_groups = {}
         _order_seq = []
-        for p in _filtered:
-            oid = p.get("exit_order_id", "")
+        for _oi, p in enumerate(_filtered):
+            # fall back to a unique per-trade key when exit_order_id is missing,
+            # so trades without an order id don't collapse into one merged row
+            oid = p.get("exit_order_id", "") or f"_no_exit_oid_{_oi}"
             if oid not in _order_groups:
                 _order_groups[oid] = {
                     "dir": p["dir"],
