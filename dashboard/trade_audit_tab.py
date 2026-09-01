@@ -592,10 +592,12 @@ def _get_trade_issues_audit_full(strat_label, entry_dt, exit_dt=None, read_log_f
 
 def _get_open_live_rows_audit(strat_label, from_date, to_date, fetch_fills_fn, product_id=84):
     """
-    Detects entry orders with no matching exit yet (open positions).
-    Independent re-scan of raw fills - does not touch _pair_fills_audit.
+    Detects the current open position (if any) using Delta's own
+    meta_data.new_position.size ledger from fills - same trusted field
+    already used for PnL in _pair_fills_audit. Does not touch pairing logic.
+    Finds the fill that started the current non-zero lifecycle (the fill
+    right after the most recent size==0 reset) and uses it as the open row.
     """
-    from collections import defaultdict
     rows = []
     try:
         acc_map = {"S4": "S4", "S4V2": "S4V2", "S4V3": "S4V3"}
@@ -608,64 +610,54 @@ def _get_open_live_rows_audit(strat_label, from_date, to_date, fetch_fills_fn, p
         if not fills:
             return []
 
-        order_fills = defaultdict(list)
-        for f in fills:
-            order_fills[f.get("order_id", "")].append(f)
+        fills_sorted = sorted(fills, key=lambda f: f.get("created_at", ""))
 
-        orders = []
-        for oid, flist in order_fills.items():
-            total_size = sum(float(f.get("size", 0)) for f in flist)
-            if total_size <= 0:
-                continue
-            wavg = sum(float(f.get("price", 0) or 0) * float(f.get("size", 0)) for f in flist) / total_size
-            commission = sum(abs(float(f.get("commission", 0))) for f in flist)
-            orders.append({
-                "order_id": oid,
-                "side": str(flist[0].get("side", "")).upper(),
-                "size": total_size,
-                "price": wavg,
-                "time": flist[0].get("created_at", ""),
-                "commission": commission,
-            })
-        orders_sorted = sorted(orders, key=lambda x: x["time"])
+        last_zero_idx = -1
+        for idx, f in enumerate(fills_sorted):
+            meta = f.get("meta_data", {}) or {}
+            new_pos = meta.get("new_position", {}) or {}
+            pos_size_after = new_pos.get("size", None)
+            if pos_size_after == 0:
+                last_zero_idx = idx
 
-        used = set()
-        for i, entry_o in enumerate(orders_sorted):
-            exit_side = "SELL" if entry_o["side"] == "BUY" else "BUY"
-            for j in range(i + 1, len(orders_sorted)):
-                if orders_sorted[j]["side"] == exit_side and j not in used:
-                    used.add(i); used.add(j)
-                    break
+        lifecycle_start_idx = last_zero_idx + 1
+        if lifecycle_start_idx >= len(fills_sorted):
+            return []
 
-        for i, entry_o in enumerate(orders_sorted):
-            if i in used:
-                continue
-            try:
-                _entry_dt = _pd_audit.to_datetime(str(entry_o["time"]).replace("T", " "))
-            except Exception:
-                continue
-            try:
-                _exit_dt_chk = _pd_audit.to_datetime(str(p.get("exit_ts_raw","")).replace("T"," "))
-                _in_range = (from_date <= _entry_dt.date() <= to_date) or (from_date <= _exit_dt_chk.date() <= to_date)
-            except Exception:
-                _in_range = (from_date <= _entry_dt.date() <= to_date)
-            if not _in_range:
-                continue
+        final_meta = fills_sorted[-1].get("meta_data", {}) or {}
+        final_new_pos = final_meta.get("new_position", {}) or {}
+        final_size = final_new_pos.get("size", 0)
+        if not final_size:
+            return []
 
-            _dir = "LONG" if entry_o["side"] == "BUY" else "SHORT"
-            rows.append({
-                "trade_no": None, "label": strat_label, "dir": _dir,
-                "date": str(entry_o["time"])[:10], "symbol": "BTCUSD",
-                "entry_ts_raw": entry_o["time"], "exit_ts_raw": None,
-                "entry_ist": _to_ist_audit(entry_o["time"]), "exit_ist": "OPEN",
-                "entry_p": entry_o["price"], "exit_p": None,
-                "lot": entry_o["size"], "charges": entry_o["commission"],
-                "pnl_usd": None, "net_pnl_inr": None, "cum_pnl_inr": None,
-                "is_open": True,
-            })
+        entry_f = fills_sorted[lifecycle_start_idx]
+        entry_time = entry_f.get("created_at", "")
+        entry_side = str(entry_f.get("side", "")).upper()
+        entry_price = float(entry_f.get("price", 0) or 0)
+
+        try:
+            _entry_dt = _pd_audit.to_datetime(str(entry_time).replace("T", " "))
+        except Exception:
+            return []
+
+        if not (from_date <= _entry_dt.date() <= to_date):
+            return []
+
+        _dir = "LONG" if entry_side == "BUY" else "SHORT"
+        rows.append({
+            "trade_no": None, "label": strat_label, "dir": _dir,
+            "date": str(entry_time)[:10], "symbol": "BTCUSD",
+            "entry_ts_raw": entry_time, "exit_ts_raw": None,
+            "entry_ist": _to_ist_audit(entry_time), "exit_ist": "OPEN",
+            "entry_p": entry_price, "exit_p": None,
+            "lot": abs(float(final_size)), "charges": 0.0,
+            "pnl_usd": None, "net_pnl_inr": None, "cum_pnl_inr": None,
+            "is_open": True,
+        })
     except Exception:
         pass
     return rows
+
 
 # ============================================================
 # TRADE AUDIT TAB - CHUNK 5: Independent Tables + Main UI
