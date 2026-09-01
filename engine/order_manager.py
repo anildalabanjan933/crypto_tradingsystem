@@ -327,15 +327,14 @@ class OrderManager:
                 }
                 logging.info(f"[OrderManager] Close using IOC-banded limit | ref_price={ref_price} limit_price={limit_price}")
             else:
-                payload = {
-                    "product_symbol": self.PRODUCT_SYMBOL,
-                    "product_id":     self.PRODUCT_ID,
-                    "side":           side,
-                    "size":           close_size,
-                    "order_type":     "market_order",
-                    "reduce_only":    "true"
-                }
-                logging.warning("[OrderManager] Could not fetch ref_price, falling back to market_order for close")
+                logging.warning(f"[OrderManager] Close attempt {attempt}/{max_attempts} SKIPPED - ref_price fetch failed after 3 retries, retrying next cycle (Tier 0 emergency SL remains active)")
+                try:
+                    send_alert(f"CTS WARNING - {self.PRODUCT_SYMBOL}\nPrice fetch failed on close attempt {attempt}/{max_attempts}, skipping this attempt (Tier 0 emergency SL is protecting the position)\nSide: {side.upper()} | Size: {close_size} lots")
+                except Exception:
+                    pass
+                if attempt < max_attempts:
+                    time.sleep(retry_delay)
+                continue
             if client_order_id:
                 payload["client_order_id"] = f"{client_order_id[:24]}_a{attempt}"
 

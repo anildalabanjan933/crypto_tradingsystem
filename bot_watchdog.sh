@@ -53,7 +53,9 @@ check_heartbeat_stale() {
             local age=$((now_ts - hb_ts))
             if [ $age -gt $max_age ]; then
                 echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] $name heartbeat STALE (${age}s > ${max_age}s) - force killing for restart" >> logs/maintenance.log
-                /usr/bin/screen -S "$name" -X quit 2>/dev/null
+                for _pid in $(/usr/bin/screen -list 2>/dev/null | grep -E "[0-9]+\.${name}[[:space:]]" | awk '{print $1}' | cut -d. -f1); do
+                    /usr/bin/screen -S "${_pid}.${name}" -X quit 2>/dev/null
+                done
                 sleep 1
             fi
         fi
@@ -77,5 +79,7 @@ check_heartbeat_stale sl_safety_monitor logs/sl_safety_monitor_heartbeat.txt 300
 check_and_start sl_safety_monitor scripts/sl_safety_monitor.py logs/sl_safety_monitor.log
 check_heartbeat_stale position_risk_monitor logs/position_risk_monitor_heartbeat.txt 180
 check_and_start position_risk_monitor scripts/position_risk_monitor.py logs/position_risk_monitor.log
-check_heartbeat_stale margin_monitor logs/margin_monitor_heartbeat.txt 300
+check_heartbeat_stale margin_monitor logs/margin_monitor_heartbeat.txt 2100
 check_and_start margin_monitor scripts/margin_monitor.py logs/margin_monitor.log
+check_heartbeat_stale maintenance_watcher logs/maintenance_watcher_heartbeat.txt 180
+check_and_start maintenance_watcher scripts/maintenance_watcher.py logs/maintenance_watcher.log

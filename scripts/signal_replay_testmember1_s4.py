@@ -10,6 +10,7 @@ import time, sys, time, csv, logging, re
 from datetime import datetime, timezone
 sys.path.insert(0, ".")
 from engine.order_manager import OrderManager
+from engine.maintenance_flag import check_maintenance_flag
 from engine.telegram_alert import send_alert
 
 def _utc_to_ist(ts_str):
@@ -613,6 +614,9 @@ while True:
 
             # --- ENTRY if no position and exit time not yet reached ---
             elif position is None and now < _xt:
+                if check_maintenance_flag():
+                    log.info(f"[SKIP] ENTRY blocked - exchange maintenance active | dir={dirn} | ts={sig_ts}")
+                    continue
                 direction = dirn
                 side = "buy" if direction == "long" else "sell"
                 _now_epoch = time.time()
