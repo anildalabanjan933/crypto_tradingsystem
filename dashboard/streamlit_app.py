@@ -1513,7 +1513,13 @@ with _tab_monitor:
                 _f.seek(_entry["size"])
                 _new_data = _f.read()
             _new_lines = _new_data.splitlines(keepends=True)
-            _lines = (_entry["lines"] + _new_lines)[-max_lines:]
+            _prev_lines = _entry["lines"]
+            if _prev_lines and _new_lines and not _prev_lines[-1].endswith("\n"):
+                # last cached line was a partial write - merge with its continuation
+                # so the CSV row is not split/missed across two tail-cache reads
+                _prev_lines = _prev_lines[:-1] + [_prev_lines[-1] + _new_lines[0]]
+                _new_lines = _new_lines[1:]
+            _lines = (_prev_lines + _new_lines)[-max_lines:]
             st.session_state[_cache_key] = {"size": _size, "lines": _lines}
             return _lines
         else:
@@ -7410,6 +7416,7 @@ with _tab_analysis:
                         'entry_ist': _to_ist(str(_et_close)), 'entry_ts_raw': str(_et), 'exit_ist': ('STUCK' if os.path.exists(f"logs/stuck_flag_{label.split()[-1]}.txt") else ('ORPHAN' if os.path.exists(f"logs/orphan_flag_{label.split()[-1]}.txt") else '-')),
                         'exit_ts_raw': '-',
                         'entry_fill_ts_raw': last_entry.get("log_ts", ""),
+                        'exit_fill_ts_raw': last_exit.get("log_ts", "") if 'last_exit' in dir() else "",
                         'entry_p': last_entry["entry_price"], 'exit_p': 0.0,
                         'pnl_usd': 0.0, 'pnl_inr5': 0.0, 'pnl_inr10': 0.0, 'charges': 0.0,
                     }
@@ -7626,7 +7633,8 @@ with _tab_analysis:
                 else:
                     try:
                         _bt_xt = _pd14.to_datetime(str(bt.get("exit_ts_raw","")).replace("T"," "))
-                        _lv_xt = _pd14.to_datetime(str(lv.get("exit_ts_raw","")).replace("T"," "))
+                        _lv_exit_fill_raw = lv.get("exit_fill_ts_raw") or lv.get("exit_ts_raw","")
+                        _lv_xt = _pd14.to_datetime(str(_lv_exit_fill_raw).replace("T"," "))
                         _bt_xt_close = _bt_xt + _pd14.Timedelta(minutes=_tf_min)
                         _exit_delay_sec = (_lv_xt - _bt_xt_close).total_seconds()
                         _exit_delay_txt = f" ({_exit_delay_sec:.0f}s)"
