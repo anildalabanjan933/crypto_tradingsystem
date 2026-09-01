@@ -7492,11 +7492,11 @@ with _tab_analysis:
                 _bot_l = "s4v2" if "S4V2" in _lbl else "s4"
                 _today_s = str(_entry_dt)[:10]
                 if _entry_delay_sec is not None and abs(_entry_delay_sec) > 15:
-                    _issues.append(f"[DELTA EXCHANGE SIDE] Entry delayed {_entry_delay_sec:.0f}s from signal candle close - order latency/market movement, not a bot bug" + _dash_repeat_tag(_bot_l, "ENTRY_DELAY_s", _today_s))
+                    _issues.append(f"[DELTA EXCHANGE SIDE] Entry was {_entry_delay_sec:.0f}s slow to fill. Normal delay, not a bug." + _dash_repeat_tag(_bot_l, "ENTRY_DELAY_s", _today_s))
                 if _exit_delay_sec is not None and abs(_exit_delay_sec) > 15:
-                    _issues.append(f"[DELTA EXCHANGE SIDE] Exit delayed {_exit_delay_sec:.0f}s from signal candle close - order latency/market movement, not a bot bug" + _dash_repeat_tag(_bot_l, "EXIT_DELAY_s", _today_s))
+                    _issues.append(f"[DELTA EXCHANGE SIDE] Exit was {_exit_delay_sec:.0f}s slow to fill. Normal delay, not a bug." + _dash_repeat_tag(_bot_l, "EXIT_DELAY_s", _today_s))
                 if _net_slip_usd is not None and abs(_net_slip_usd) > 10:
-                    _issues.append(f"[DELTA EXCHANGE SIDE] High slippage Rs{_net_slip_usd*84.0:,.0f} - price movement/order latency, not a bot bug" + _dash_repeat_tag(_bot_l, "HIGH_SLIPPAGE_Rs", _today_s))
+                    _issues.append(f"[DELTA EXCHANGE SIDE] Price moved Rs{_net_slip_usd*84.0:,.0f} while filling. Normal market move." + _dash_repeat_tag(_bot_l, "HIGH_SLIPPAGE_Rs", _today_s))
                 try:
                     import os as _os_ti
                     _window_start = _entry_dt - _pd14.Timedelta(minutes=10)
@@ -7527,13 +7527,13 @@ with _tab_analysis:
                             if not (_window_start <= _line_ts <= _window_end):
                                 continue
                             if "AUTO-PLACED SUCCESS" in _line or "RECOVERED - SL WAS MISSING" in _line:
-                                _issues.append("[CDS SYSTEM SIDE] SL was missing - auto-fixed by safety monitor within 60s, position was protected")
+                                _issues.append("[CDS SYSTEM SIDE] SL was missing, auto-fixed within 60s. Trade stayed safe.")
                             elif "ORPHAN POSITION" in _line:
-                                _issues.append("[CDS SYSTEM SIDE] Exchange position was untracked - flagged, already auto-fixed same day it occurred")
+                                _issues.append("[CDS SYSTEM SIDE] Position was untracked, already auto-fixed same day.")
                             elif "STUCK PENDING" in _line:
-                                _issues.append("[CDS SYSTEM SIDE] Position sync delay detected - self-healed automatically, no action needed")
+                                _issues.append("[CDS SYSTEM SIDE] Sync was briefly delayed, fixed itself. No action needed.")
                             elif "EMERGENCY CLOSE" in _line:
-                                _issues.append("[CDS SYSTEM SIDE] SL placement failed - position auto-closed for safety, fixed 22-Aug")
+                                _issues.append("[CDS SYSTEM SIDE] SL failed to place, trade auto-closed for safety.")
                     _eng_path = "logs/renko_state_engine.log"
                     if _os_ti.path.exists(_eng_path):
                         _eng_mtime = _os_ti.path.getmtime(_eng_path)
@@ -7546,7 +7546,7 @@ with _tab_analysis:
                             except Exception:
                                 continue
                             if _window_start <= _line_ts <= _window_end:
-                                _issues.append("Brief connection drop near this trade - auto-reconnected within 5s")
+                                _issues.append("Short connection drop, reconnected in 5s. No real issue.")
                     _bot_log_path = f"logs/live_trading_{_bot_tag.lower()}.log"
                     if _os_ti.path.exists(_bot_log_path):
                         _bot_log_mtime = _os_ti.path.getmtime(_bot_log_path)
@@ -7559,7 +7559,7 @@ with _tab_analysis:
                             except Exception:
                                 continue
                             if _window_start <= _line_ts <= _window_end:
-                                _issues.append(f"Bot restarted near this trade's time ({_line_ts.strftime('%H:%M:%S')} UTC) - possible cause of miss/delay")
+                                _issues.append(f"Bot restarted around {_line_ts.strftime('%H:%M:%S')} UTC. May have caused delay/miss.")
                     if _os_ti.path.exists(_bot_log_path):
                         for _line in _read_log_lines_cached(_bot_log_path, _bot_log_mtime):
                             _ts_raw = _line[:23]
@@ -7660,7 +7660,7 @@ with _tab_analysis:
                 if _issue_msgs:
                     def _tag_or_default(_m):
                         return _m if _m.strip().startswith("[") else f"[CDS SYSTEM SIDE] {_m}"
-                    _issue_html = "<br>" + "<br>".join([f"<span style='font-size:9px;color:#e67e22;font-weight:700;'>⚠ {_tag_or_default(m)}</span>" for m in _issue_msgs])
+                    _issue_html = "<br>" + "<br>".join([f"<span style='font-size:9px;color:#000;font-weight:400;'>⚠ {_tag_or_default(m)}</span>" for m in _issue_msgs])
                 _match_only = f"Entry: {entry_line}<br>Exit: {exit_line}<br><span style='font-size:9px;color:#888;'>Note: match check covers entry/exit price only, not funding cost</span>"
                 _message_only = _issue_html.replace("<br>", "", 1) if _issue_html else "-"
                 return (_match_only, _message_only)
@@ -7883,7 +7883,7 @@ with _tab_analysis:
                         _match_html, _message_html = _match(bt,lv) if is_lv else ("", "")
                         match_cell = (f'<td style="{TD}font-size:11px;text-align:left;line-height:1.3;"><div style="max-height:110px;overflow-y:auto;">{_match_html}{_fb_note}</div></td>' if is_lv
                                       else f'<td style="{TD}"></td>')
-                        message_cell = (f'<td style="{TD}font-size:10px;text-align:left;line-height:1.3;color:#e67e22;font-weight:600;"><div style="max-height:110px;overflow-y:auto;">{_message_html}</div></td>' if is_lv
+                        message_cell = (f'<td style="{TD}font-size:10px;text-align:left;line-height:1.3;color:#000;font-weight:400;"><div style="max-height:110px;overflow-y:auto;">{_message_html}</div></td>' if is_lv
                                       else f'<td style="{TD}"></td>')
                         sno = sno_cell if not is_lv else ""
                         if row is None and is_lv and bt is not None:
@@ -8143,7 +8143,7 @@ def _month_trades_html(df2, df4, df2_fwd, df4_fwd):
         if _net_slip_usd is not None and abs(_net_slip_usd) > 10:
             _bot_l_m = "s4v2" if "S4V2" in _lbl else "s4"
             _today_s_m = str(_entry_dt)[:10]
-            _issues.append(f"[DELTA EXCHANGE SIDE] High slippage Rs{_net_slip_usd*84.0:,.0f} - price movement/order latency, not a bot bug" + _dash_repeat_tag_m(_bot_l_m, "HIGH_SLIPPAGE_Rs", _today_s_m))
+            _issues.append(f"[DELTA EXCHANGE SIDE] Price moved Rs{_net_slip_usd*84.0:,.0f} while filling. Normal market move." + _dash_repeat_tag_m(_bot_l_m, "HIGH_SLIPPAGE_Rs", _today_s_m))
         try:
             _ws = _entry_dt - _pdm.Timedelta(minutes=10)
             _we = (_exit_dt if _exit_dt is not None else _entry_dt) + _pdm.Timedelta(minutes=10)
@@ -8164,20 +8164,20 @@ def _month_trades_html(df2, df4, df2_fwd, df4_fwd):
                     except Exception: continue
                     if not (_ws <= _lt <= _we): continue
                     if "AUTO-PLACED SUCCESS" in _line or "RECOVERED - SL WAS MISSING" in _line:
-                        _issues.append("[CDS SYSTEM SIDE] SL was missing - auto-fixed by safety monitor within 60s, position was protected")
+                        _issues.append("[CDS SYSTEM SIDE] SL was missing, auto-fixed within 60s. Trade stayed safe.")
                     elif "ORPHAN POSITION" in _line:
-                        _issues.append("[CDS SYSTEM SIDE] Exchange position was untracked - flagged, already auto-fixed same day it occurred")
+                        _issues.append("[CDS SYSTEM SIDE] Position was untracked, already auto-fixed same day.")
                     elif "STUCK PENDING" in _line:
-                        _issues.append("[CDS SYSTEM SIDE] Position sync delay detected - self-healed automatically, no action needed")
+                        _issues.append("[CDS SYSTEM SIDE] Sync was briefly delayed, fixed itself. No action needed.")
                     elif "EMERGENCY CLOSE" in _line:
-                        _issues.append("[CDS SYSTEM SIDE] SL placement failed - position auto-closed for safety, fixed 22-Aug")
+                        _issues.append("[CDS SYSTEM SIDE] SL failed to place, trade auto-closed for safety.")
             _enp = "logs/renko_state_engine.log"
             if _osm.path.exists(_enp):
                 for _line in _rll_m(_enp, _osm.path.getmtime(_enp)):
                     if "[WS] Reconnecting" not in _line: continue
                     try: _lt = _pdm.to_datetime(_line.split(" IST")[0].strip(), format="%d-%b-%Y %I:%M:%S %p")
                     except Exception: continue
-                    if _ws <= _lt <= _we: _issues.append("Brief connection drop near this trade - auto-reconnected within 5s")
+                    if _ws <= _lt <= _we: _issues.append("Short connection drop, reconnected in 5s. No real issue.")
             _blp = f"logs/live_trading_{_bt_tag.lower()}.log"
             if _osm.path.exists(_blp):
                 for _line in _rll_m(_blp, _osm.path.getmtime(_blp)):
@@ -8432,7 +8432,7 @@ def _month_trades_html(df2, df4, df2_fwd, df4_fwd):
             pass
         _issue_html = ""
         if _issue_msgs:
-            _issue_html = "<br>" + "<br>".join([f"<span style='font-size:11px;color:#e67e22;font-weight:700;'>⚠ {m}</span>" for m in _issue_msgs])
+            _issue_html = "<br>" + "<br>".join([f"<span style='font-size:11px;color:#000;font-weight:400;'>⚠ {m}</span>" for m in _issue_msgs])
         return f"Entry: {entry_line}<br>Exit: {exit_line}{_issue_html}"
 
     def _row_html_m(bt_list, lv_list, title):
@@ -8487,7 +8487,7 @@ def _month_trades_html(df2, df4, df2_fwd, df4_fwd):
                         except Exception:
                             _miss_issues3 = []
                         if _miss_issues3:
-                            _miss += "<br>" + "<br>".join([f"<span style='font-size:10px;color:#e67e22;font-weight:700;'>⚠ {m}</span>" for m in _miss_issues3])
+                            _miss += "<br>" + "<br>".join([f"<span style='font-size:10px;color:#000;font-weight:400;'>⚠ {m}</span>" for m in _miss_issues3])
                         else:
                             _miss += "<br><span style='font-size:9px;color:#999;'>[UNKNOWN - evidence gap] no reason found in logs - check manually</span>"
                     parts.append(f"<tr>{sno}<td style='{_TDm}{_sep if not is_lv else ""}'>{src}</td><td style='{_TDm}color:#e65100;font-weight:700;'>{_miss}</td>" + (f"<td style='{_TDm}color:#aaa;'>-</td>"*6) + match_cell + "</tr>")
