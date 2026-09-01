@@ -7881,9 +7881,9 @@ with _tab_analysis:
                         is_lv = (ridx == 1)
                         _fb_note = " <span style=\'color:#1976d2;font-weight:700;\'>[verified via exchange - log gap]</span>" if (is_lv and lv is not None and lv.get("verified_exchange")) else ""
                         _match_html, _message_html = _match(bt,lv) if is_lv else ("", "")
-                        match_cell = (f'<td style="{TD}font-size:11px;text-align:left;line-height:1.3;"><div style="max-height:110px;overflow-y:auto;">{_match_html}{_fb_note}</div></td>' if is_lv
+                        match_cell = (f'<td style="{TD}font-size:11px;text-align:left;line-height:1.3;"><div style="max-height:70px;overflow-y:auto;">{_match_html}{_fb_note}</div></td>' if is_lv
                                       else f'<td style="{TD}"></td>')
-                        message_cell = (f'<td style="{TD}font-size:10px;text-align:left;line-height:1.3;color:#000;font-weight:400;"><div style="max-height:110px;overflow-y:auto;">{_message_html}</div></td>' if is_lv
+                        message_cell = (f'<td style="{TD}font-size:10px;text-align:left;line-height:1.3;color:#000;font-weight:400;"><div style="max-height:70px;overflow-y:auto;">{_message_html}</div></td>' if is_lv
                                       else f'<td style="{TD}"></td>')
                         sno = sno_cell if not is_lv else ""
                         if row is None and is_lv and bt is not None:
