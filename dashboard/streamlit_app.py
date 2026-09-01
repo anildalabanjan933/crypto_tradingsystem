@@ -7666,6 +7666,9 @@ with _tab_analysis:
                 return (_match_only, _message_only)
             def _section_html(strat, bt_rows, lv_rows):
                 n_bt = len(bt_rows); n_lv = len(lv_rows)
+                _n_lv_shown = [0]
+                _lv_pnl5_shown = [0.0]
+                _lv_pnl10_shown = [0.0]
                 tc = max(n_bt, n_lv)
                 bt_pnl5  = sum(r["pnl_inr5"]  for r in bt_rows)
                 bt_pnl10 = sum(r["pnl_inr10"] for r in bt_rows)
@@ -7678,9 +7681,9 @@ with _tab_analysis:
                     'background:#42A5F5;padding:6px 10px;border-radius:4px 4px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:6px;">'
                     f'<span>TODAY\'S TRADES ({today_str}) — Backtest {strat} vs Forward Test {strat}</span>'
                     f'<span style="background:#fff;color:#1565C0;border-radius:3px;padding:3px 10px;font-size:12px;font-weight:700;">BT Trades: {n_bt}</span>'
-                    f'<span style="background:#e8f5e9;color:#1b5e20;border-radius:3px;padding:3px 10px;font-size:12px;font-weight:700;">LV Trades: {n_lv}</span>'
+                    f'<span style="background:#e8f5e9;color:#1b5e20;border-radius:3px;padding:3px 10px;font-size:12px;font-weight:700;">LV Trades: __LV_PLACEHOLDER__</span>'
                     f'<span style="background:#fff3e0;color:#e65100;border-radius:3px;padding:3px 10px;font-size:12px;">BT Net PnL $5: <b style="color:{_pc(bt_pnl5)}">{_fmt(bt_pnl5)}</b> | $10: <b style="color:{_pc(bt_pnl10)}">{_fmt(bt_pnl10)}</b></span>'
-                    f'<span style="background:#e3f2fd;color:#0d47a1;border-radius:3px;padding:3px 10px;font-size:12px;">LV Net PnL $5: <b style="color:{_pc(lv_pnl5)}">{_fmt(lv_pnl5)}</b> | $10: <b style="color:{_pc(lv_pnl10)}">{_fmt(lv_pnl10)}</b></span>'
+                    f'<span style="background:#e3f2fd;color:#0d47a1;border-radius:3px;padding:3px 10px;font-size:12px;">LV Net PnL $5: <b>__LVPNL5__</b> | $10: <b>__LVPNL10__</b></span>'
                     '</div>'
                 )
                 tbl = '<table style="width:100%;border-collapse:collapse;margin-bottom:4px;table-layout:fixed;">'
@@ -7878,13 +7881,17 @@ with _tab_analysis:
                         is_lv = (ridx == 1)
                         _fb_note = " <span style=\'color:#1976d2;font-weight:700;\'>[verified via exchange - log gap]</span>" if (is_lv and lv is not None and lv.get("verified_exchange")) else ""
                         _match_html, _message_html = _match(bt,lv) if is_lv else ("", "")
-                        match_cell = (f'<td style="{TD}font-size:11px;text-align:left;line-height:1.3;">{_match_html}{_fb_note}</td>' if is_lv
+                        match_cell = (f'<td style="{TD}font-size:11px;text-align:left;line-height:1.3;"><div style="max-height:110px;overflow-y:auto;">{_match_html}{_fb_note}</div></td>' if is_lv
                                       else f'<td style="{TD}"></td>')
-                        message_cell = (f'<td style="{TD}font-size:10px;text-align:left;line-height:1.3;color:#e67e22;font-weight:600;">{_message_html}</td>' if is_lv
+                        message_cell = (f'<td style="{TD}font-size:10px;text-align:left;line-height:1.3;color:#e67e22;font-weight:600;"><div style="max-height:110px;overflow-y:auto;">{_message_html}</div></td>' if is_lv
                                       else f'<td style="{TD}"></td>')
                         sno = sno_cell if not is_lv else ""
                         if row is None and is_lv and bt is not None:
                             row = _exchange_fallback(bt)
+                        if is_lv and row is not None:
+                            _n_lv_shown[0] += 1
+                            _lv_pnl5_shown[0] += row.get('pnl_inr5',0.0)
+                            _lv_pnl10_shown[0] += row.get('pnl_inr10',0.0)
                         if row is None:
                             _miss_label = "MISSED (no live entry)" if is_lv else "-"
                             tbl += f'<tr>{sno}<td style="{TD}color:#aaa;">{src}</td>'
@@ -7932,6 +7939,9 @@ with _tab_analysis:
                     f'Net: <b style="color:{_slip_color}">{"+" if _net_slip_usd>=0 else ""}${_net_slip_usd:,.2f} '
                     f'(₹{_net_slip_inr:,.0f})</b></span>'
                 )
+                hdr = hdr.replace('__LV_PLACEHOLDER__', str(_n_lv_shown[0]))
+                hdr = hdr.replace('__LVPNL5__', f'<span style="color:{_pc(_lv_pnl5_shown[0])}">{_fmt(_lv_pnl5_shown[0])}</span>')
+                hdr = hdr.replace('__LVPNL10__', f'<span style="color:{_pc(_lv_pnl10_shown[0])}">{_fmt(_lv_pnl10_shown[0])}</span>')
                 hdr = hdr[:-6] + _slip_span + '</div>'
                 return hdr + tbl
             html = '<div style="overflow-x:auto;margin:8px 0;">'

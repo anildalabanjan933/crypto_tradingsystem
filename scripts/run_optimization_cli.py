@@ -119,6 +119,67 @@ PREDEFINED_RANGES["s4v3_smiio_all"] = {
     "smiio_siglen":    {"values": [3, 5, 7, 9]}
 }
 
+
+PREDEFINED_RANGES["s4_full_grid_box1"] = {
+    "renko_box_pct":   {"values": [0.002]},
+    "renko_timeframe": {"values": ["1m"]},
+    "st_atr_length":   {"values": [7, 10, 14]},
+    "st_factor":       {"values": [2.0, 2.5, 3.0]},
+    "smiio_shortlen":  {"values": [10, 14, 20, 30]},
+    "smiio_longlen":   {"values": [10, 20, 30, 40]},
+    "smiio_siglen":    {"values": [3, 5, 7, 9]}
+}
+
+PREDEFINED_RANGES["s4_full_grid_box2"] = {
+    "renko_box_pct":   {"values": [0.0025]},
+    "renko_timeframe": {"values": ["1m"]},
+    "st_atr_length":   {"values": [7, 10, 14]},
+    "st_factor":       {"values": [2.0, 2.5, 3.0]},
+    "smiio_shortlen":  {"values": [10, 14, 20, 30]},
+    "smiio_longlen":   {"values": [10, 20, 30, 40]},
+    "smiio_siglen":    {"values": [3, 5, 7, 9]}
+}
+
+PREDEFINED_RANGES["s4_full_grid_box3"] = {
+    "renko_box_pct":   {"values": [0.003]},
+    "renko_timeframe": {"values": ["1m"]},
+    "st_atr_length":   {"values": [7, 10, 14]},
+    "st_factor":       {"values": [2.0, 2.5, 3.0]},
+    "smiio_shortlen":  {"values": [10, 14, 20, 30]},
+    "smiio_longlen":   {"values": [10, 20, 30, 40]},
+    "smiio_siglen":    {"values": [3, 5, 7, 9]}
+}
+
+PREDEFINED_RANGES["s4_full_grid_box4"] = {
+    "renko_box_pct":   {"values": [0.0035]},
+    "renko_timeframe": {"values": ["1m"]},
+    "st_atr_length":   {"values": [7, 10, 14]},
+    "st_factor":       {"values": [2.0, 2.5, 3.0]},
+    "smiio_shortlen":  {"values": [10, 14, 20, 30]},
+    "smiio_longlen":   {"values": [10, 20, 30, 40]},
+    "smiio_siglen":    {"values": [3, 5, 7, 9]}
+}
+
+PREDEFINED_RANGES["s4_full_grid_box5"] = {
+    "renko_box_pct":   {"values": [0.004]},
+    "renko_timeframe": {"values": ["1m"]},
+    "st_atr_length":   {"values": [7, 10, 14]},
+    "st_factor":       {"values": [2.0, 2.5, 3.0]},
+    "smiio_shortlen":  {"values": [10, 14, 20, 30]},
+    "smiio_longlen":   {"values": [10, 20, 30, 40]},
+    "smiio_siglen":    {"values": [3, 5, 7, 9]}
+}
+
+PREDEFINED_RANGES["s4_full_grid_box6"] = {
+    "renko_box_pct":   {"values": [0.005]},
+    "renko_timeframe": {"values": ["1m"]},
+    "st_atr_length":   {"values": [7, 10, 14]},
+    "st_factor":       {"values": [2.0, 2.5, 3.0]},
+    "smiio_shortlen":  {"values": [10, 14, 20, 30]},
+    "smiio_longlen":   {"values": [10, 20, 30, 40]},
+    "smiio_siglen":    {"values": [3, 5, 7, 9]}
+}
+
 if args.group not in PREDEFINED_RANGES:
     print(f"ERROR: Group {args.group} not found")
     print(f"Available groups: {list(PREDEFINED_RANGES.keys())}")
