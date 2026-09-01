@@ -294,6 +294,8 @@ def _explain_issue(bot, entry_dt, exit_dt, issue_code):
         return "CARRIED_POSITION_MISMATCH -- DELTA EXCHANGE SIDE: position was carried over from previous day, backtest expected a fresh start - not a missed trade, real exchange state differs from backtest assumption"
     if issue_code == "SYSTEM_SYNC_GAP_NO_BUG":
         return "NO BUG - SAFE: brief 1-second bookkeeping gap only, position was fully protected by stop-loss and closed normally, zero loss, zero missed protection"
+    if issue_code.startswith("HIGH_SLIPPAGE"):
+        return f"{issue_code} -- DELTA EXCHANGE SIDE: testnet order book was thin, price slipped filling this order (same cause as 13-Aug big loss, already fixed - IOC band caps it now)"
     return f"{issue_code} -- DELTA EXCHANGE SIDE: no system-side cause found in logs - likely normal market price movement/order latency, not a bot bug"
 
 def build_report(start_date, end_date):

@@ -324,6 +324,7 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
     # Append only new signal row directly to signals CSV
     try:
         import csv as _csv, os as _os
+        already = False
         sig_label = {"S2":"2","S4":"4","S4V2":"4v2"}.get(state.label,"4")
         sig_csv = f"logs/signals_s{sig_label}.csv"
         # Read existing signals
@@ -392,7 +393,7 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
     except Exception as _e:
         log.error(f"[{state.label}] CSV append failed: {_e}")
     write_signal_file(state.label,sig_type,direction,ts)
-    if sig_type == "ENTRY":
+    if sig_type == "ENTRY" and not already:
         try:
             _ep = float(cl) if cl else 0.0
             _exit_ts_alert = exit_ts if exit_ts else ""
