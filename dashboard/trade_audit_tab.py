@@ -860,7 +860,7 @@ def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn,
     lv_open_rows = _load_audit_lv_open_cached(fetch_fills_fn, strat_label, from_date, to_date)
 
     bt_rows = _apply_bt_adjustments_audit(bt_rows_raw, bt_lot_input, bt_slippage_input, inr_rate)
-    lv_all_rows = lv_rows + lv_open_rows
+    lv_all_rows = lv_open_rows + lv_rows
 
     col_lv, col_bt = st.columns(2)
 
