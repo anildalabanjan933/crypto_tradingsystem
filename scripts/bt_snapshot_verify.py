@@ -109,7 +109,7 @@ def _run_verify(meta_path):
         elif str(bt_last_dir).upper() == str(direction).upper():
             message = "Normal - live matched backtest, no issue"
         else:
-            message = "Direction differs from backtest - EXPECTED (short 24h cold-start compare, not a live issue, see 23-Aug-2026 doc)"
+            message = "Direction differs - expected, cold-start compare only"
 
     except Exception as e:
         message = f"Check skipped - internal error ({str(e)[:80]})"
