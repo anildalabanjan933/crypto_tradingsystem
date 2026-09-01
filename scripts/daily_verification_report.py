@@ -243,6 +243,7 @@ def _scan_tier_events(bot, entry_dt, exit_dt):
         ("ENTRY ABANDONED", "Entry abandoned after max retry attempts"),
         ("manual_override", "Manual override skip was active"),
         ("unfilled_beyond_band", "Entry price moved outside $250 IOC safety band"),
+        ("ref_price fetch failed after 3 retries, retrying next cycle", "Close attempt skipped due to price fetch failure - retried next cycle (Tier 0 SL active)"),
         ("ENGINE WARNING", "Engine heartbeat issue near this time"),
         ("SL PLACEMENT FAILED", "SL placement failure - position was unprotected"),
         ("CLOSE FAILED", "Emergency close failure - manual intervention required"),
