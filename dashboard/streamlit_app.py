@@ -7496,7 +7496,7 @@ with _tab_analysis:
                 if _exit_delay_sec is not None and abs(_exit_delay_sec) > 15:
                     _issues.append(f"[DELTA EXCHANGE SIDE] Exit was {_exit_delay_sec:.0f}s slow to fill. Normal delay, not a bug." + _dash_repeat_tag(_bot_l, "EXIT_DELAY_s", _today_s))
                 if _net_slip_usd is not None and abs(_net_slip_usd) > 10:
-                    _issues.append(f"[DELTA EXCHANGE SIDE] Price moved Rs{_net_slip_usd*84.0:,.0f} while filling. Normal market move." + _dash_repeat_tag(_bot_l, "HIGH_SLIPPAGE_Rs", _today_s))
+                    _issues.append(f"[DELTA EXCHANGE SIDE] Price moved Rs{_net_slip_usd*84.0:,.0f} - thin testnet order book (same as 13-Aug big loss, already fixed)." + _dash_repeat_tag(_bot_l, "HIGH_SLIPPAGE_Rs", _today_s))
                 try:
                     import os as _os_ti
                     _window_start = _entry_dt - _pd14.Timedelta(minutes=10)
@@ -8143,7 +8143,7 @@ def _month_trades_html(df2, df4, df2_fwd, df4_fwd):
         if _net_slip_usd is not None and abs(_net_slip_usd) > 10:
             _bot_l_m = "s4v2" if "S4V2" in _lbl else "s4"
             _today_s_m = str(_entry_dt)[:10]
-            _issues.append(f"[DELTA EXCHANGE SIDE] Price moved Rs{_net_slip_usd*84.0:,.0f} while filling. Normal market move." + _dash_repeat_tag_m(_bot_l_m, "HIGH_SLIPPAGE_Rs", _today_s_m))
+            _issues.append(f"[DELTA EXCHANGE SIDE] Price moved Rs{_net_slip_usd*84.0:,.0f} - thin testnet order book (same as 13-Aug big loss, already fixed)." + _dash_repeat_tag_m(_bot_l_m, "HIGH_SLIPPAGE_Rs", _today_s_m))
         try:
             _ws = _entry_dt - _pdm.Timedelta(minutes=10)
             _we = (_exit_dt if _exit_dt is not None else _entry_dt) + _pdm.Timedelta(minutes=10)
