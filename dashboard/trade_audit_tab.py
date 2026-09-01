@@ -75,7 +75,9 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
         if not _csv_pattern:
             return []
 
-        _df_container = load14_fn(_csv_pattern, str(from_date))
+        _load_buffer_days = 3  # covers trades whose entry is before from_date but exit falls inside range
+        _load_from = from_date - _dt_audit.timedelta(days=_load_buffer_days)
+        _df_container = load14_fn(_csv_pattern, str(_load_from))
         if _df_container is None:
             return []
 
@@ -133,6 +135,47 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                 "net_pnl_inr"  : _net_pnl_inr,
                 "cum_pnl_inr"  : _cum_pnl,
             })
+
+        # Dynamic open-trade fallback: static trade_log CSV may not yet include
+        # today's still-open signal (regenerated on its own schedule). Check the
+        # live signals CSV (same source Today's Trades tab already reads dynamically)
+        # for a PENDING row, so BT side reflects the real open trade every page load.
+        _sig_csv_map = {"S4": "logs/signals_s4.csv", "S4V2": "logs/signals_s4v2.csv", "S4V3": "logs/signals_s4v3.csv"}
+        _sig_path = _sig_csv_map.get(strat_label)
+        _today_end = _dt_audit.date.today()
+        if _sig_path and from_date <= _today_end <= to_date:
+            try:
+                with open(_sig_path) as _sf:
+                    _last_pending = None
+                    for _sl in _sf:
+                        _sp = _sl.strip().split(',')
+                        if len(_sp) >= 5 and _sp[1] == "PENDING":
+                            _last_pending = _sp
+                    if _last_pending:
+                        _p_et, _p_xt, _p_dir, _p_lots, _p_ep = _last_pending[:5]
+                        _already_present = any(str(r["entry_ts_raw"]) == _p_et for r in rows)
+                        if not _already_present:
+                            _trade_no += 1
+                            rows.insert(0, {
+                                "trade_no"     : _trade_no,
+                                "label"        : strat_label,
+                                "dir"          : _p_dir.upper(),
+                                "date"         : _p_et[:10],
+                                "symbol"       : "BTCUSD",
+                                "entry_ts_raw" : _p_et,
+                                "exit_ts_raw"  : "PENDING",
+                                "entry_ist"    : _to_ist_audit(_p_et),
+                                "exit_ist"     : "-",
+                                "entry_p"      : float(_p_ep) if _p_ep else 0.0,
+                                "exit_p"       : 0.0,
+                                "lot"          : 1,
+                                "charges"      : 0.0,
+                                "pnl_usd"      : 0.0,
+                                "net_pnl_inr"  : 0.0,
+                                "cum_pnl_inr"  : _cum_pnl,
+                            })
+            except Exception:
+                pass
     except Exception:
         pass
     return rows
@@ -366,6 +409,12 @@ def _get_live_rows_audit(strat_label, from_date, to_date, fetch_fills_fn, inr_ra
             })
     except Exception:
         pass
+    # Sort newest-first to match BT table's row order (dfc.sort_values(ascending=False)),
+    # so row N (LV) and row N (BT) represent the same time-position, not a coincidental
+    # count-match with different actual trades
+    rows.sort(key=lambda r: str(r["entry_ts_raw"]), reverse=True)
+    for _i, _r in enumerate(rows):
+        _r["trade_no"] = _i + 1
     return rows
 
 # ============================================================
