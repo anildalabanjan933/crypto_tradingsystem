@@ -307,7 +307,12 @@ class OrderManager:
 
             close_size = current_size if current_size else size
 
-            ref_price = self.get_current_price()
+            ref_price = 0.0
+            for _pf in range(3):
+                ref_price = self.get_current_price()
+                if ref_price and ref_price > 0:
+                    break
+                time.sleep(0.3)
             if ref_price and ref_price > 0:
                 limit_price = round(ref_price - 150, 1) if side == "sell" else round(ref_price + 150, 1)
                 payload = {
