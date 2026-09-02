@@ -113,15 +113,24 @@ def get_seed_position(api_key, api_secret, base_url, start_us, bot):
     lookback_sec = 72*3600
     lookback_us = start_us - lookback_sec*1_000_000
     pre_fills = get_fills(api_key, api_secret, base_url, lookback_us, start_us)
-    pre_agg = aggregate_by_order(pre_fills)
-    pos = 0.0
+    pre_agg = sorted(aggregate_by_order(pre_fills), key=lambda f: f["created_at"])
+    pos = 0.0; entry_time = None; entry_notional = 0.0; entry_size = 0.0
     for f in pre_agg:
-        pos += f["size"] if f["side"] == "buy" else -f["size"]
-    return pos
+        side = f["side"]; size = float(f["size"]); price = float(f["price"])
+        signed = size if side == "buy" else -size
+        prev_pos = pos; pos += signed
+        if prev_pos == 0 and pos != 0:
+            entry_time = f["created_at"]; entry_notional = price*size; entry_size = size
+        elif prev_pos != 0 and pos == 0:
+            entry_time = None; entry_notional = 0.0; entry_size = 0.0
+    seed_entry_price = (entry_notional/entry_size) if entry_size else None
+    return pos, entry_time, seed_entry_price
 
-def reconstruct_trades(fills):
+def reconstruct_trades(fills, seed_pos=0.0, seed_entry_time=None, seed_entry_price=None):
     fills = sorted(fills, key=lambda f: f["created_at"])
-    trades = []; pos = 0.0; entry_notional = 0.0; entry_size = 0.0; entry_time = None
+    trades = []; pos = seed_pos; entry_time = seed_entry_time
+    entry_size = abs(seed_pos) if seed_pos else 0.0
+    entry_notional = (seed_entry_price*entry_size) if (seed_entry_price is not None and entry_size) else 0.0
     for f in fills:
         side = f["side"]; size = float(f["size"]); price = float(f["price"])
         signed = size if side == "buy" else -size
@@ -257,7 +266,7 @@ def _scan_tier_events(bot, entry_dt, exit_dt):
         ("ORPHAN POSITION", "Exchange position was untracked - auto-flagged same day"),
         ("EMERGENCY CLOSE", "SL placement failed - position auto-closed for safety"),
     ]
-    all_logs = LOG_FILES + [f"logs/live_trading_{bot}.log", "logs/sl_safety_monitor.log"]
+    all_logs = LOG_FILES + [f"logs/live_trading_{bot}.log", f"logs/live_trading_{bot}.log.1", "logs/sl_safety_monitor.log"]
     bot_tag = bot.upper()
     for log_path in set(all_logs):
         for line_dt, line in _get_cached_log_lines(log_path):
@@ -315,9 +324,9 @@ def build_report(start_date, end_date):
             continue
         raw_fills = get_fills(api_key, api_secret, base_url, start_us, end_us)
         agg_fills = aggregate_by_order(raw_fills)
-        real_trades = reconstruct_trades(agg_fills)
+        seed_pos, seed_entry_time, seed_entry_price = get_seed_position(api_key, api_secret, base_url, start_us, bot)
+        real_trades = reconstruct_trades(agg_fills, seed_pos, seed_entry_time, seed_entry_price)
         open_entry = get_open_entry(agg_fills)
-        seed_pos = get_seed_position(api_key, api_secret, base_url, start_us, bot)
         bt_rows = load_bt(bot, start_date)
         tf_sec = TF_MIN[bot] * 60
         window_sec = WINDOW_SEC.get(bot, 3*3600)

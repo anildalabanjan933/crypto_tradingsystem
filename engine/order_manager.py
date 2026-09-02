@@ -96,6 +96,17 @@ class OrderManager:
         resp    = self.session.delete(url, data=body, headers=headers, timeout=(3, 27))
         return resp.json()
 
+    def _get_order_by_client_id(self, client_order_id: str):
+        try:
+            resp = self._get(f"/v2/orders/client_order_id/{client_order_id}", {}, retries=2)
+            if resp.get("success"):
+                result = resp.get("result")
+                if result and result.get("id"):
+                    return result
+        except Exception as e:
+            logging.warning(f"[OrderManager] _get_order_by_client_id failed for cid={client_order_id}: {e}")
+        return None
+
     def _get(self, path: str, params: dict = None, retries: int = 3) -> dict:
         params     = params or {}
         sorted_items = sorted(params.items())
@@ -210,6 +221,25 @@ class OrderManager:
             send_alert(f"CTS ENTRY BLOCKED\nSide: {side.upper()}\nReason: Could not fetch reference price - order skipped to avoid firing blind")
             return {"success": False, "error": "no_reference_price"}
 
+        if client_order_id:
+            client_order_id = client_order_id[:32]
+            _existing = self._get_order_by_client_id(client_order_id)
+            if _existing:
+                logging.warning(f"[OrderManager] client_order_id={client_order_id} ALREADY EXISTS (id={_existing.get('id')}) - reusing, NOT placing new order")
+                _unfilled_e = int(_existing.get("unfilled_size", size))
+                _filled_e = int(_existing.get("size", size)) - _unfilled_e
+                if _filled_e == 0:
+                    return {"success": False, "error": "unfilled_beyond_band", "order_id": _existing.get("id")}
+                _avg_e = self._get_avg_fill_price(_existing["id"])
+                _comm_e = self._get_order_commission(_existing["id"])
+                return {
+                    "success": True, "order_id": _existing["id"], "state": _existing.get("state"),
+                    "side": _existing.get("side"), "size": _filled_e,
+                    "filled_price": _existing.get("limit_price", "market"),
+                    "avg_fill_price": float(_avg_e) if _avg_e else 0.0,
+                    "commission": float(_comm_e) if _comm_e else 0.0,
+                }
+
         _band = 250.0
         _limit_price = round(_ref_price + _band, 1) if side == "buy" else round(_ref_price - _band, 1)
         payload = {
@@ -222,10 +252,19 @@ class OrderManager:
             "time_in_force":  "ioc"
         }
         if client_order_id:
-            payload["client_order_id"] = client_order_id[:32]
+            payload["client_order_id"] = client_order_id
 
-        logging.info(f"[OrderManager] Placing {side.upper()} banded order | size={size} lots | ref_price={_ref_price} | band=${_band} | limit={_limit_price}")
-        resp = self._post("/v2/orders", payload)
+        logging.info(f"[OrderManager] Placing {side.upper()} banded order | size={size} lots | ref_price={_ref_price} | band=${_band} | limit={_limit_price} | cid={client_order_id}")
+        resp = self._post("/v2/orders", payload, retries=1)
+
+        if not resp.get("success") and client_order_id:
+            logging.warning(f"[OrderManager] Initial POST failed for cid={client_order_id} - verifying before resubmit")
+            _existing2 = self._get_order_by_client_id(client_order_id)
+            if _existing2:
+                logging.warning(f"[OrderManager] Order DID reach exchange (cid={client_order_id}, id={_existing2.get('id')}) - using it")
+                resp = {"success": True, "result": _existing2}
+            else:
+                resp = self._post("/v2/orders", payload, retries=1)
 
         if resp.get("success"):
             result = resp["result"]
