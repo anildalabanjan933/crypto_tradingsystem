@@ -299,7 +299,7 @@ def _pair_fills_audit(fills):
                 queue.pop(0)
 
         opening_qty = size - closed_qty
-        if opening_qty > 1e-9:
+        if opening_qty > 1e-9 and pos_size_after != 0:
             queue.append({"remaining": opening_qty, "price": price, "time": time,
                           "side": side, "comm_per_unit": comm_per_unit})
 
