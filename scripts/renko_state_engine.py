@@ -756,9 +756,9 @@ if __name__=="__main__":
                     _t4_dt = __import__('datetime').datetime.strptime(_t4, '%Y-%m-%dT%H:%M:%S')
                 _s4_already_caught_up = s4.last_1m_ts is not None and s4.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= (_t4_dt - __import__('datetime').timedelta(minutes=1))
                 _t4_dt_engine_label = _t4_dt - __import__('datetime').timedelta(minutes=120)
-                if _t4_dt_engine_label > _ws_state["last_s4_tf"] and not _s4_already_caught_up:
-                    _ws_state["last_s4_tf"] = _t4_dt_engine_label
-                    log.info(f"[ENGINE] Boundary watcher trigger S4: {_t4} - checking S4")
+                if not _s4_already_caught_up:
+                    _ws_state["last_s4_tf"] = max(_ws_state["last_s4_tf"], _t4_dt_engine_label)
+                    log.info(f"[ENGINE] Boundary watcher trigger S4: {_t4} - checking S4 (independent retry, decoupled from WS claim)")
                     def _run_s4_trigger(_dt=_t4_dt):
                         try:
                             for _retry in range(6):
