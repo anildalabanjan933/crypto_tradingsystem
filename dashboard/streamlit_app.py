@@ -7619,7 +7619,11 @@ with _tab_analysis:
                     _lv_t = _pd14.to_datetime(str(_lv_fill_raw).replace("T"," "))
                     _candle_close = _bt_t + _pd14.Timedelta(minutes=_tf_min)
                     _delay_sec = (_lv_t - _candle_close).total_seconds()
-                    _entry_delay_txt = f" ({_delay_sec:.0f}s)"
+                    if abs(_delay_sec + _tf_min*60) < 1:
+                        _delay_sec = None
+                        _entry_delay_txt = " (delay unverified)"
+                    else:
+                        _entry_delay_txt = f" ({_delay_sec:.0f}s)"
                     _gap_min = abs((_lv_t - _bt_t).total_seconds()) / 60.0
                 except Exception:
                     pass
@@ -7653,7 +7657,11 @@ with _tab_analysis:
                         _lv_xt = _pd14.to_datetime(str(_lv_exit_fill_raw).replace("T"," "))
                         _bt_xt_close = _bt_xt + _pd14.Timedelta(minutes=_tf_min)
                         _exit_delay_sec = (_lv_xt - _bt_xt_close).total_seconds()
-                        _exit_delay_txt = f" ({_exit_delay_sec:.0f}s)"
+                        if abs(_exit_delay_sec + _tf_min*60) < 1:
+                            _exit_delay_sec = None
+                            _exit_delay_txt = " (delay unverified)"
+                        else:
+                            _exit_delay_txt = f" ({_exit_delay_sec:.0f}s)"
                     except Exception:
                         pass
                     _signed_xpdiff = ((lv["exit_p"] - bt["exit_p"]) if bt["dir"] == "LONG" else (bt["exit_p"] - lv["exit_p"])) if bt["exit_p"] and lv["exit_p"] else 0
