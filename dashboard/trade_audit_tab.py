@@ -36,7 +36,7 @@ def _to_ist_audit(ts):
     try:
         _t = _fast_parse_ts_audit(str(ts).replace("T", " "))
         _t_ist = _t + _pd_audit.Timedelta(hours=5, minutes=30)
-        return _t_ist.strftime("%d-%b %I:%M %p")
+        return _t_ist.strftime("%d-%b %I:%M:%S %p")
     except Exception:
         return str(ts)
 
@@ -55,6 +55,7 @@ def _get_date_range_audit(range_choice, custom_start=None, custom_end=None):
     return _today, _today
 
 _CONTRACT_MULT_AUDIT = 100 * 0.001
+TF_MIN_AUDIT = {"S4": 120, "S4V2": 30, "S4V3": 240}
 
 # ============================================================
 # TRADE AUDIT TAB - CHUNK 2: Backtest Row Builder
@@ -67,6 +68,20 @@ _BT_CSV_PATTERN_AUDIT = {
     "S4V2": "output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv",
     "S4V3": "output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv",
 }
+
+def _offset_ts_audit(raw, strat_label):
+    try:
+        tf = TF_MIN_AUDIT.get(strat_label, 0)
+        s = str(raw).strip()
+        if s.endswith("Z"): s = s[:-1]
+        s = s.replace("T", " ", 1)
+        t = _dt_audit.datetime.fromisoformat(s)
+        t_off = t + _dt_audit.timedelta(minutes=tf)
+        if t_off > _dt_audit.datetime.utcnow():
+            return raw
+        return t_off.isoformat()
+    except Exception:
+        return raw
 
 def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
     rows = []
@@ -125,8 +140,8 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                 "symbol"       : "BTCUSD",
                 "entry_ts_raw" : _entry_ts_raw,
                 "exit_ts_raw"  : _exit_ts_raw,
-                "entry_ist"    : _to_ist_audit(_entry_ts_raw),
-                "exit_ist"     : _to_ist_audit(_exit_ts_raw) if _exit_ts_raw not in ("", "PENDING", "nan") else "-",
+                "entry_ist"    : _to_ist_audit(_offset_ts_audit(_entry_ts_raw, strat_label)),
+                "exit_ist"     : _to_ist_audit(_offset_ts_audit(_exit_ts_raw, strat_label)) if _exit_ts_raw not in ("", "PENDING", "nan") else "-",
                 "entry_p"      : _entry_p,
                 "exit_p"       : _exit_p,
                 "lot"          : 1,
@@ -164,7 +179,7 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                                 "symbol"       : "BTCUSD",
                                 "entry_ts_raw" : _p_et,
                                 "exit_ts_raw"  : "PENDING",
-                                "entry_ist"    : _to_ist_audit(_p_et),
+                                "entry_ist"    : _to_ist_audit(_offset_ts_audit(_p_et, strat_label)),
                                 "exit_ist"     : "-",
                                 "entry_p"      : float(_p_ep) if _p_ep else 0.0,
                                 "exit_p"       : 0.0,

@@ -771,7 +771,8 @@ while True:
                     if not check_engine_heartbeat():
                         log.warning("[ORDER] ENTRY blocked - engine heartbeat stale")
                     else:
-                        result = om.place_market_order(side=side, size=lots)
+                        _cid = 'S4V3E' + sig_ts.replace('-','').replace(':','')
+                        result = om.place_market_order(side=side, size=lots, client_order_id=_cid)
                         if result.get("success"):
                             position = direction
                             open_lot_size = lots
