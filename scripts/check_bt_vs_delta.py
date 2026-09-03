@@ -110,6 +110,18 @@ def analyze_live_trades(lv_rows, bot):
             r['entry_delay_sec'] = round(delay_sec, 1)
         except Exception:
             r['entry_delay_sec'] = None
+        try:
+            exit_dt = datetime.fromisoformat(r['exit_ts_raw'].replace('Z', '+00:00'))
+            minute = exit_dt.minute
+            hour = exit_dt.hour
+            total_min = hour * 60 + minute
+            nearest_boundary_min = round(total_min / tf_min) * tf_min
+            boundary_dt = exit_dt.replace(hour=0, minute=0, second=0, microsecond=0) + \
+                __import__('datetime').timedelta(minutes=nearest_boundary_min)
+            exit_delay_sec = (exit_dt - boundary_dt).total_seconds()
+            r['exit_delay_sec'] = round(exit_delay_sec, 1)
+        except Exception:
+            r['exit_delay_sec'] = None
         r['big_loss_flag'] = r.get('pnl_usd', 0) < -BIG_LOSS_USD
     return lv_rows
 
@@ -134,10 +146,12 @@ def main():
     if not lv_rows:
         print("No live trades found for this date.")
     for i, r in enumerate(lv_rows, 1):
-        _delay = r.get('entry_delay_sec')
-        _delay_str = f"{_delay}s" if _delay is not None else "N/A"
+        _edelay = r.get('entry_delay_sec')
+        _edelay_str = f"{_edelay}s" if _edelay is not None else "N/A"
+        _xdelay = r.get('exit_delay_sec')
+        _xdelay_str = f"{_xdelay}s" if _xdelay is not None else "N/A"
         _loss_flag = "  !! BIG LOSS !!" if r.get('big_loss_flag') else ""
-        print(f"{i}. {r['dir']} | entry={r['entry_ts_raw']} @ {r['entry_p']} (delay={_delay_str}) | exit={r['exit_ts_raw']} @ {r['exit_p']} | pnl=${r['pnl_usd']:.2f}{_loss_flag}")
+        print(f"{i}. {r['dir']} | entry={r['entry_ts_raw']} @ {r['entry_p']} (entry_delay={_edelay_str}) | exit={r['exit_ts_raw']} @ {r['exit_p']} (exit_delay={_xdelay_str}) | pnl=${r['pnl_usd']:.2f}{_loss_flag}")
     print(f"LIVE TOTAL TRADES: {len(lv_rows)}")
 
     print(f"\n========== SUMMARY (manual compare - no auto-pairing) ==========")
