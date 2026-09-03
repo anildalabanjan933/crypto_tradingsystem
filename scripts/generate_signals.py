@@ -118,9 +118,16 @@ def merge_signal_csv(new_trades, csv_path):
                         "entry_price": row[4] if len(row) > 4 else "",
                         "exit_price": row[5] if len(row) > 5 else "",
                     }
+    # PERMANENT FIX (03-Sep-2026): append-only guard.
+    # Never rewrite/duplicate any row at or before the current last existing
+    # entry_datetime - only add genuinely new trades beyond that point.
+    # Prevents daily full-history rebuild from re-injecting stale/duplicate
+    # rows (differing price formatting) for periods already locked in by
+    # the live engine.
+    cutoff = max(merged.keys()) if merged else None
     for t in new_trades:
         key = str(t.get("entry_datetime",""))
-        if key:
+        if key and (cutoff is None or key > cutoff):
             merged[key] = t
     return [merged[k] for k in sorted(merged.keys())]
 
