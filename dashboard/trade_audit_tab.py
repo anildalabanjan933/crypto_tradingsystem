@@ -179,7 +179,7 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                                 "symbol"       : "BTCUSD",
                                 "entry_ts_raw" : _p_et,
                                 "exit_ts_raw"  : "PENDING",
-                                "entry_ist"    : _to_ist_audit(_p_et),
+                                "entry_ist"    : _to_ist_audit(_offset_ts_audit(_p_et, strat_label)),
                                 "exit_ist"     : "-",
                                 "entry_p"      : float(_p_ep) if _p_ep else 0.0,
                                 "exit_p"       : 0.0,
