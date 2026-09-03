@@ -556,11 +556,12 @@ try:
     import requests as _rq_val, time as _t_val, hmac as _hm_val, hashlib as _hs_val
     _base_val = "https://cdn-ind.testnet.deltaex.org"  # testnet
     _ts_val = str(int(_t_val.time()))
-    _path_val = "/v2/profile"
-    _msg_val = f"GET{_ts_val}{_path_val}"
+    _path_val = "/v2/orders"
+    _qs_val = "?product_id=27&state=open"
+    _msg_val = f"GET{_ts_val}{_path_val}{_qs_val}"
     _sig_val = _hm_val.new(API_SECRET.encode(), _msg_val.encode(), _hs_val.sha256).hexdigest()
     _hdrs_val = {"api-key": API_KEY, "timestamp": _ts_val, "signature": _sig_val}
-    _r_val = _rq_val.get(f"{_base_val}{_path_val}", headers=_hdrs_val, timeout=5)
+    _r_val = _rq_val.get(f"{_base_val}{_path_val}{_qs_val}", headers=_hdrs_val, timeout=5)
     _d_val = _r_val.json()
     if _d_val.get("success"):
         log.info("[STARTUP] API key validated successfully")
@@ -777,13 +778,14 @@ while True:
                             position = direction
                             open_lot_size = lots
                             if _live_sig: last_processed_seq = _live_sig.get("seq", 0)
-                            real_entry = 0.0
-                            for _i in range(20):
-                                time.sleep(0.5)
-                                pos_check = om.get_position()
-                                real_entry = pos_check.get("entry_price", 0.0) if pos_check.get("success") else 0.0
-                                if real_entry > 0:
-                                    break
+                            real_entry = result.get("avg_fill_price", 0.0)
+                            if not real_entry or real_entry <= 0:
+                                for _i in range(5):
+                                    time.sleep(0.2)
+                                    pos_check = om.get_position()
+                                    real_entry = pos_check.get("entry_price", 0.0) if pos_check.get("success") else 0.0
+                                    if real_entry > 0:
+                                        break
                             _sl_price_val = 0.0
                             if real_entry > 0:
                                 sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=10.0)

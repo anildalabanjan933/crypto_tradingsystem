@@ -637,6 +637,7 @@ if __name__=="__main__":
         _ws_last_heartbeat[0]=time.time()
         ws.send(json.dumps({"type":"enable_heartbeat"}))
         ws.send(json.dumps({"type":"subscribe","payload":{"channels":[{"name":"candlestick_1m","symbols":["BTCUSD"]}]}}))
+        threading.Thread(target=update_market_data, daemon=True).start()
 
     _ws_fail_count=[0]
     def _ws_thread():
@@ -665,7 +666,7 @@ if __name__=="__main__":
         while True:
             time.sleep(5)
             _age=time.time()-_ws_last_heartbeat[0]
-            if _age>35:
+            if _age>15:
                 log.warning(f"[WS] Heartbeat timeout ({_age:.0f}s) - forcing reconnect")
                 try:
                     if _ws_current_instance[0] is not None:
@@ -761,7 +762,7 @@ if __name__=="__main__":
                     log.info(f"[ENGINE] Boundary watcher trigger S4: {_t4} - checking S4 (independent retry, decoupled from WS claim)")
                     def _run_s4_trigger(_dt=_t4_dt):
                         try:
-                            for _retry in range(6):
+                            for _retry in range(4):
                                 _caught_up = s4.last_1m_ts is not None and s4.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
                                 if not _caught_up:
                                     update_market_data()
@@ -769,8 +770,8 @@ if __name__=="__main__":
                                     _caught_up = s4.last_1m_ts is not None and s4.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
                                 if _caught_up:
                                     break
-                                log.info(f"[ENGINE] S4 data not caught up yet, retry {_retry+1}/6")
-                                time.sleep(2)
+                                log.info(f"[ENGINE] S4 data not caught up yet, retry {_retry+1}/4")
+                                time.sleep(1)
                             check_and_fire(s4, is_s4=True)
                         except Exception as _e:
                             log.error(f"[ENGINE] S4 trigger thread error: {_e}", exc_info=True)
@@ -790,7 +791,7 @@ if __name__=="__main__":
                     log.info(f"[ENGINE] Boundary watcher trigger S4V2: {_tv2} - checking S4V2 (independent retry, decoupled from WS claim)")
                     def _run_s4v2_trigger(_dt=_tv2_dt):
                         try:
-                            for _retry in range(6):
+                            for _retry in range(4):
                                 _caught_up = s4v2.last_1m_ts is not None and s4v2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
                                 if not _caught_up:
                                     update_market_data()
@@ -798,8 +799,8 @@ if __name__=="__main__":
                                     _caught_up = s4v2.last_1m_ts is not None and s4v2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
                                 if _caught_up:
                                     break
-                                log.info(f"[ENGINE] S4V2 data not caught up yet, retry {_retry+1}/6")
-                                time.sleep(2)
+                                log.info(f"[ENGINE] S4V2 data not caught up yet, retry {_retry+1}/4")
+                                time.sleep(1)
                             check_and_fire(s4v2, is_s4=False)
                         except Exception as _e:
                             log.error(f"[ENGINE] S4V2 trigger thread error: {_e}", exc_info=True)
@@ -819,7 +820,7 @@ if __name__=="__main__":
                     log.info(f"[ENGINE] Boundary watcher trigger S4V3: {_tv3} - checking S4V3 (independent retry, decoupled from WS claim)")
                     def _run_s4v3_trigger(_dt=_tv3_dt):
                         try:
-                            for _retry in range(6):
+                            for _retry in range(4):
                                 _caught_up = s4v3.last_1m_ts is not None and s4v3.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
                                 if not _caught_up:
                                     update_market_data()
@@ -827,8 +828,8 @@ if __name__=="__main__":
                                     _caught_up = s4v3.last_1m_ts is not None and s4v3.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
                                 if _caught_up:
                                     break
-                                log.info(f"[ENGINE] S4V3 data not caught up yet, retry {_retry+1}/6")
-                                time.sleep(2)
+                                log.info(f"[ENGINE] S4V3 data not caught up yet, retry {_retry+1}/4")
+                                time.sleep(1)
                             check_and_fire(s4v3, is_s4=False)
                         except Exception as _e:
                             log.error(f"[ENGINE] S4V3 trigger thread error: {_e}", exc_info=True)
