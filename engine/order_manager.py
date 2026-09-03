@@ -388,6 +388,13 @@ class OrderManager:
                 _avg = self._get_avg_fill_price(result["id"])
                 if _avg:
                     last_avg_fill = float(_avg)
+                    try:
+                        _post_close_ref = self.get_current_price()
+                        if _post_close_ref and abs(last_avg_fill - _post_close_ref) > 250:
+                            logging.critical(f"[OrderManager] CLOSE FILL FAR FROM MARK: fill={last_avg_fill} ref={_post_close_ref} dev=${abs(last_avg_fill-_post_close_ref):.1f}")
+                            send_alert(f"CTS WARNING - Close fill deviated ${abs(last_avg_fill-_post_close_ref):.1f} from mark\nFill: ${last_avg_fill:,.1f}\nMark: ${_post_close_ref:,.1f}\nCheck for stale resting orders on this account")
+                    except Exception as _dce:
+                        logging.warning(f"[OrderManager] Close-fill deviation check failed (non-critical): {_dce}")
                 _comm = self._get_order_commission(result["id"])
                 if _comm:
                     last_commission += float(_comm)
@@ -563,6 +570,16 @@ class OrderManager:
 
     def _place_stop_loss_order_locked(self, direction: str, entry_price: float, sl_pct: float = 10.0,
                                max_attempts: int = 5, retry_delay: float = 2.0) -> dict:
+
+        try:
+            _fresh_pos = self.get_position()
+            if _fresh_pos.get("success") and _fresh_pos.get("entry_price", 0) > 0:
+                _fresh_entry = _fresh_pos["entry_price"]
+                if entry_price <= 0 or abs(_fresh_entry - entry_price) > 50:
+                    logging.warning(f"[OrderManager] SL entry_price mismatch: passed={entry_price} fresh={_fresh_entry} - using fresh value")
+                    entry_price = _fresh_entry
+        except Exception as _e:
+            logging.warning(f"[OrderManager] Fresh entry_price check failed, using passed value: {_e}")
 
         if direction == "long":
             sl_price = round(entry_price * (1 - sl_pct / 100), 1)

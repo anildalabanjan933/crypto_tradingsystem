@@ -492,11 +492,12 @@ try:
     import requests as _rq_val, time as _t_val, hmac as _hm_val, hashlib as _hs_val
     _base_val = "https://cdn-ind.testnet.deltaex.org"  # testnet
     _ts_val = str(int(_t_val.time()))
-    _path_val = "/v2/profile"
-    _msg_val = f"GET{_ts_val}{_path_val}"
+    _path_val = "/v2/orders"
+    _qs_val = "?product_id=27&state=open"
+    _msg_val = f"GET{_ts_val}{_path_val}{_qs_val}"
     _sig_val = _hm_val.new(API_SECRET.encode(), _msg_val.encode(), _hs_val.sha256).hexdigest()
     _hdrs_val = {"api-key": API_KEY, "timestamp": _ts_val, "signature": _sig_val}
-    _r_val = _rq_val.get(f"{_base_val}{_path_val}", headers=_hdrs_val, timeout=5)
+    _r_val = _rq_val.get(f"{_base_val}{_path_val}{_qs_val}", headers=_hdrs_val, timeout=5)
     _d_val = _r_val.json()
     if _d_val.get("success"):
         log.info("[STARTUP] API key validated successfully")
@@ -619,6 +620,21 @@ while True:
                     continue
                 direction = dirn
                 side = "buy" if direction == "long" else "sell"
+                _override_file = "logs/manual_override_tm1_s4.txt"
+                if os.path.exists(_override_file):
+                    _ov_entry_ts = None
+                    try:
+                        with open(_override_file, "r") as _f_ov:
+                            _ov_content = _f_ov.read().strip()
+                        _ov_entry_ts = _ov_content.split("entry_ts=")[-1] if "entry_ts=" in _ov_content else None
+                    except Exception:
+                        pass
+                    if _ov_entry_ts is None or _ov_entry_ts == last_known_ts:
+                        os.remove(_override_file)
+                        log.info(f"[SKIP] ENTRY blocked - manual_override active (single-shot) | dir={direction} | ts={sig_ts} | advanced past exit={last_known_ts}")
+                        continue
+                    else:
+                        log.info(f"[SKIP-CHECK] Override present but for different entry_ts={_ov_entry_ts} (current sig_ts={sig_ts}) - NOT skipping, legitimate new trade")
                 _now_epoch = time.time()
                 if _entry_retry_state["ts"] != sig_ts:
                     _entry_retry_state["ts"] = sig_ts
@@ -646,9 +662,14 @@ while True:
                             position = direction
                             open_lot_size = lots
                             if _live_sig: last_processed_seq = _live_sig.get("seq", 0)
-                            time.sleep(1)
-                            pos_check = om.get_position()
-                            real_entry = pos_check.get("entry_price", 0.0) if pos_check.get("success") else 0.0
+                            real_entry = result.get("avg_fill_price", 0.0)
+                            if not real_entry or real_entry <= 0:
+                                for _i in range(5):
+                                    time.sleep(0.2)
+                                    pos_check = om.get_position()
+                                    real_entry = pos_check.get("entry_price", 0.0) if pos_check.get("success") else 0.0
+                                    if real_entry > 0:
+                                        break
                             _sl_price_val = 0.0
                             if real_entry > 0:
                                 sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=10.0)
@@ -708,6 +729,9 @@ while True:
                 else:
                     save_ts_file(TS_FILE, last_known_ts)
                     log.warning(f"[SYNC] Could not find exit_time for entry={last_known_ts} - lock unchanged, monitor for repeat entry")
+                with open("logs/manual_override_tm1_s4.txt", "w") as _f:
+                    _f.write(f"{int(time.time())}|synced_flat|entry_ts={last_known_ts}")
+                log.info("[SYNC] manual_override_tm1_s4.txt written - next entry signal will be skipped")
                 send_alert(
                     f"CTS SL HIT DETECTED\n"
                     f"Bot: TestMember1_S4\n"
