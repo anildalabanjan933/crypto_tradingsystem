@@ -663,7 +663,7 @@ while True:
                             _send_live_exit_alert("S4V2", dirn, _xt, _exit_fill_price, _entry_price_for_alert, lots)
                             _bt_ep2 = 0.0
                             _bt_xp2 = 0.0
-                            for _retry_bt2 in range(5):
+                            for _retry_bt2 in range(8):
                                 _bt_csv2 = _get_csv_bt_row("S4V2", sig_ts)
                                 _bt_ep2  = float(_bt_csv2[4]) if _bt_csv2 and len(_bt_csv2) > 4 and str(_bt_csv2[4]).strip() not in ("", "PENDING") else 0.0
                                 _bt_xp2  = float(_bt_csv2[5]) if _bt_csv2 and len(_bt_csv2) > 5 and str(_bt_csv2[5]).strip() not in ("", "PENDING") else 0.0
