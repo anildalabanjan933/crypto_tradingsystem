@@ -77,12 +77,16 @@ def get_bt_rows(bot, date_str):
     target = date(y, m, d)
     df = df[(df['entry_datetime'].dt.date == target) | (df['exit_datetime'].dt.date == target)]
     df = df.sort_values('entry_datetime')
+    tf_min = 120 if bot == 's4' else 30
+    if bot == 's4v3':
+        tf_min = 240
+    _off = pd.Timedelta(minutes=tf_min)
     rows = []
     for _, r in df.iterrows():
         rows.append({
             'dir': str(r.get('direction', '')).upper(),
-            'entry_ts': str(r.get('entry_datetime', '')),
-            'exit_ts': str(r.get('exit_datetime', '')),
+            'entry_ts': str(r.get('entry_datetime', pd.NaT) + _off),
+            'exit_ts': str(r.get('exit_datetime', pd.NaT) + _off),
             'entry_p': float(r.get('entry_price', 0)),
             'exit_p': float(r.get('exit_price', 0)),
             'net_pnl_usd': float(r.get('net_pnl', 0)),
