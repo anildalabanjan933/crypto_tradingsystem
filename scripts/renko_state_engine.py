@@ -244,6 +244,65 @@ def append_new_candles(state):
 
 
 
+def _fetch_rest_candles_window(window_start_dt, window_end_dt, timeout_sec=3.0):
+    import requests, pandas as pd
+    try:
+        start_sec = int(window_start_dt.timestamp())
+        end_sec = int(window_end_dt.timestamp())
+        r = requests.get(
+            "https://api.india.delta.exchange/v2/history/candles",
+            params={"symbol": "BTCUSD", "resolution": "1m", "start": start_sec, "end": end_sec},
+            timeout=timeout_sec
+        )
+        d = r.json()
+        if not d.get("success"):
+            return None
+        rows = d.get("result", [])
+        if not rows:
+            return None
+        recs=[]
+        for row in rows:
+            ts = pd.to_datetime(int(row["time"]), unit="s", utc=True).tz_localize(None)
+            recs.append({"timestamp": ts, "Open": float(row["open"]), "High": float(row["high"]),
+                         "Low": float(row["low"]), "Close": float(row["close"])})
+        return pd.DataFrame(recs).sort_values("timestamp").reset_index(drop=True)
+    except Exception as e:
+        log.warning(f"[WS] REST window reconcile fetch failed (using WS-built buffer as fallback): {e}")
+        return None
+
+def _reconcile_window_from_rest(state, tf_minutes):
+    import pandas as pd
+    if state.candles_1m is None or state.candles_1m.empty:
+        return
+    window_start = (state.last_1m_ts - pd.Timedelta(minutes=tf_minutes*3)).floor(f"{tf_minutes}min")
+    window_end   = state.last_1m_ts + pd.Timedelta(minutes=1)
+    rest_df = _fetch_rest_candles_window(window_start, window_end)
+    if rest_df is None or rest_df.empty:
+        log.warning(f"[{state.label}] REST reconcile unavailable for window {window_start}..{window_end} - using WS-built buffer as-is")
+        return
+    mismatches = 0
+    rest_indexed = rest_df.set_index("timestamp")
+    mask = (state.candles_1m["timestamp"] >= window_start) & (state.candles_1m["timestamp"] < window_end)
+    for idx in state.candles_1m[mask].index:
+        ts = state.candles_1m.at[idx, "timestamp"]
+        if ts in rest_indexed.index:
+            r = rest_indexed.loc[ts]
+            if abs(state.candles_1m.at[idx, "Close"] - r["Close"]) > 0.01:
+                mismatches += 1
+            state.candles_1m.at[idx, "Open"]  = r["Open"]
+            state.candles_1m.at[idx, "High"]  = r["High"]
+            state.candles_1m.at[idx, "Low"]   = r["Low"]
+            state.candles_1m.at[idx, "Close"] = r["Close"]
+    log.info(f"[{state.label}] REST reconcile OK window {window_start}..{window_end} mismatches={mismatches}")
+    if mismatches:
+        log.warning(f"[{state.label}] REST reconcile corrected {mismatches} candle(s) with WS/REST drift in window {window_start}..{window_end}")
+    recent_1m = state.candles_1m[state.candles_1m["timestamp"] >= window_start]
+    recomputed_tf = resample_to_tf(recent_1m, state.params["renko_timeframe"])
+    if recomputed_tf is not None and not recomputed_tf.empty:
+        cutoff = recomputed_tf["timestamp"].min()
+        state.candles_tf = state.candles_tf[state.candles_tf["timestamp"] < cutoff]
+        state.candles_tf = pd.concat([state.candles_tf, recomputed_tf], ignore_index=True).reset_index(drop=True)
+
 def check_and_fire(state,is_s4=False):
     import pandas as pd
     from datetime import datetime,timezone
@@ -301,7 +360,7 @@ def check_and_fire(state,is_s4=False):
             ts=sig.get("timestamp","")
             if not ts: continue
             if state.last_signal_ts and ts<=state.last_signal_ts: continue
-            if ts==state.last_exit_ts: continue
+            if sig.get("signal_type","")=="EXIT" and ts==state.last_exit_ts: continue
             new_sigs.append(sig)
         if not new_sigs: return
         # Fire ONE signal at a time - EXIT before ENTRY - oldest first
@@ -612,16 +671,19 @@ if __name__=="__main__":
             if _cur_s4v2>_ws_state["last_s4v2_tf"]:
                 _ws_state["last_s4v2_tf"]=_cur_s4v2
                 log.info(f"[WS] New 30m candle closed: {_cur_s4v2} - checking S4V2")
+                _reconcile_window_from_rest(s4v2, 30)
                 check_and_fire(s4v2,is_s4=False)
             _cur_s4=_last_closed_tf(120)
             if _cur_s4>_ws_state["last_s4_tf"]:
                 _ws_state["last_s4_tf"]=_cur_s4
                 log.info(f"[WS] New 2H candle closed: {_cur_s4} - checking S4")
+                _reconcile_window_from_rest(s4, 120)
                 check_and_fire(s4,is_s4=True)
             _cur_s4v3=_last_closed_tf(240)
             if _cur_s4v3>_ws_state["last_s4v3_tf"]:
                 _ws_state["last_s4v3_tf"]=_cur_s4v3
                 log.info(f"[WS] New 4H candle closed: {_cur_s4v3} - checking S4V3")
+                _reconcile_window_from_rest(s4v3, 240)
                 check_and_fire(s4v3,is_s4=False)
             # Background REST sync for CSV file persistence only - runs AFTER signals checked
             _ws_state["last_dl"]=time.time()
@@ -730,6 +792,7 @@ if __name__=="__main__":
                 if cur_s4v2_tf>_ws_state["last_s4v2_tf"]:
                     _ws_state["last_s4v2_tf"]=cur_s4v2_tf
                     log.info(f"[ENGINE] New 30m candle closed: {cur_s4v2_tf} - checking S4V2")
+                    _reconcile_window_from_rest(s4v2, 30)
                     check_and_fire(s4v2,is_s4=False)
 
                 # S4: fire only on new closed 2H candle (shared state with WS)
@@ -737,6 +800,7 @@ if __name__=="__main__":
                 if cur_s4_tf>_ws_state["last_s4_tf"]:
                     _ws_state["last_s4_tf"]=cur_s4_tf
                     log.info(f"[ENGINE] New 2H candle closed: {cur_s4_tf} - checking S4")
+                    _reconcile_window_from_rest(s4, 120)
                     check_and_fire(s4,is_s4=True)
 
                 # S4V3: fire only on new closed 4H candle (shared state with WS)
@@ -744,6 +808,7 @@ if __name__=="__main__":
                 if cur_s4v3_tf>_ws_state["last_s4v3_tf"]:
                     _ws_state["last_s4v3_tf"]=cur_s4v3_tf
                     log.info(f"[ENGINE] New 4H candle closed: {cur_s4v3_tf} - checking S4V3")
+                    _reconcile_window_from_rest(s4v3, 240)
                     check_and_fire(s4v3,is_s4=False)
 
             # Boundary watcher trigger - fires if watcher detected missed boundary
@@ -772,6 +837,7 @@ if __name__=="__main__":
                                     break
                                 log.info(f"[ENGINE] S4 data not caught up yet, retry {_retry+1}/4")
                                 time.sleep(1)
+                            _reconcile_window_from_rest(s4, 120)
                             check_and_fire(s4, is_s4=True)
                         except Exception as _e:
                             log.error(f"[ENGINE] S4 trigger thread error: {_e}", exc_info=True)
@@ -801,6 +867,7 @@ if __name__=="__main__":
                                     break
                                 log.info(f"[ENGINE] S4V2 data not caught up yet, retry {_retry+1}/4")
                                 time.sleep(1)
+                            _reconcile_window_from_rest(s4v2, 30)
                             check_and_fire(s4v2, is_s4=False)
                         except Exception as _e:
                             log.error(f"[ENGINE] S4V2 trigger thread error: {_e}", exc_info=True)
@@ -830,6 +897,7 @@ if __name__=="__main__":
                                     break
                                 log.info(f"[ENGINE] S4V3 data not caught up yet, retry {_retry+1}/4")
                                 time.sleep(1)
+                            _reconcile_window_from_rest(s4v3, 240)
                             check_and_fire(s4v3, is_s4=False)
                         except Exception as _e:
                             log.error(f"[ENGINE] S4V3 trigger thread error: {_e}", exc_info=True)

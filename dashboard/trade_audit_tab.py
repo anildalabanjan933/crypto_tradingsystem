@@ -989,7 +989,7 @@ def render_trade_audit_tab(load14_fn, fetch_fills_fn, read_log_fn, inr_rate=_INR
     with c3:
         bt_lot_input = st.number_input("BT Lot", min_value=1, value=100, step=1, key="audit_bt_lot")
     with c4:
-        bt_slippage_input = st.selectbox("BT Slip($)", [0, 5, 10, 15], index=1, key="audit_bt_slip")
+        bt_slippage_input = st.selectbox("BT Slip($)", [0, 5, 10, 15], index=0, key="audit_bt_slip")
     custom_start, custom_end = None, None
     with c5:
         if range_choice == "Custom":
