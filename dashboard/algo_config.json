@@ -51,7 +51,7 @@
       "symbol": "BTCUSD",
       "lots": 100,
       "direction": "BOTH",
-      "active": false,
+      "active": true,
       "delta_url": "https://cdn-ind.testnet.deltaex.org",
       "delta_api_key_env": "S4V3_API_KEY",
       "delta_api_secret_env": "S4V3_API_SECRET",
