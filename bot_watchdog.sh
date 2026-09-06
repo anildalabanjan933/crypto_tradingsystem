@@ -49,7 +49,7 @@ check_heartbeat_stale() {
     if [ -f "$REPO/$hb_file" ]; then
         local hb_ts=$(cat "$REPO/$hb_file" 2>/dev/null | cut -d. -f1)
         local now_ts=$(date +%s)
-        if [ -n "$hb_ts" ] && [ "$hb_ts" -gt 0 ] 2>/dev/null; then
+        if [ -n "$hb_ts" ] && printf '%d' "$hb_ts" >/dev/null 2>&1 && [ "$(printf '%d' "$hb_ts" 2>/dev/null)" -gt 0 ]; then
             local age=$((now_ts - hb_ts))
             if [ $age -gt $max_age ]; then
                 echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] $name heartbeat STALE (${age}s > ${max_age}s) - force killing for restart" >> logs/maintenance.log
