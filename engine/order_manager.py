@@ -302,46 +302,115 @@ class OrderManager:
             logging.error(f"[OrderManager] Order FAILED: {resp.get('error')}")
             return {"success": False, "error": resp.get("error")}
 
+    def _get_close_retry_state_path(self):
+        key_hash = hashlib.md5(self.api_key.encode()).hexdigest()[:12]
+        return f"logs/close_retry_state_{key_hash}.json"
+
+    def _load_close_retry_state(self):
+        path = self._get_close_retry_state_path()
+        try:
+            if os.path.exists(path):
+                with open(path) as f:
+                    return json.load(f)
+        except Exception as e:
+            logging.warning(f"[OrderManager] Could not load close_retry_state: {e}")
+        return {}
+
+    def _save_close_retry_state(self, state):
+        path = self._get_close_retry_state_path()
+        try:
+            with open(path, "w") as f:
+                json.dump(state, f)
+        except Exception as e:
+            logging.warning(f"[OrderManager] Could not save close_retry_state: {e}")
+
+    def _clear_close_retry_state(self):
+        path = self._get_close_retry_state_path()
+        try:
+            if os.path.exists(path):
+                os.remove(path)
+        except Exception:
+            pass
+
     def close_position(self, size: int, side: str, client_order_id: str = None,
                         max_attempts: int = 8, retry_delay: float = 1.5) -> dict:
         """
-        Close an open position using reduce_only market orders, RETRYING UNTIL
-        THE POSITION IS CONFIRMED FLAT via get_position() - not just until a
-        single order placement call returns success=True.
+        Close an open position using reduce_only orders, RETRYING UNTIL THE
+        POSITION IS CONFIRMED FLAT via get_position().
 
-        Parameters
-        ----------
-        size         : lots to close (fallback if live size unavailable)
-        side         : "buy" to close a SHORT, "sell" to close a LONG
-        max_attempts : max close attempts before escalating (default 8)
-        retry_delay  : seconds between attempts (default 1.5s)
+        THIN-LIQUIDITY PROTECTION (final, 3-mechanism design):
+        1. Price-source fallback: /v2/positions mark_price used if /v2/tickers fails.
+        2. Wall-clock cap persisted across repeated EXTERNAL calls (file-based,
+           per-api_key-hash) - NOT just attempts within one call:
+             0-15s  : IOC limit, $150 band
+             15-60s : IOC limit, escalating $100 steps, capped $500
+        3. >=60s  : LOSS-CAPPED FINAL STAGE - a RESTING (GTC) reduce-only limit
+           order at a fixed $1000 max deviation (never higher, never a market
+           order), polled for up to 10s per attempt to give the book time to
+           trade into it, then cancelled and retried if unfilled. This improves
+           fill probability over IOC at the IDENTICAL bounded price - it cannot
+           ever produce a worse fill than IOC would have.
+
+        NOTE (accepted, documented tradeoff): a bounded-price order can only fill
+        if a counterparty exists within that band. True 100% avoidance of Tier 0
+        is not mathematically possible without an uncapped price walk, which is
+        explicitly disallowed (reintroduces the Aug 12-13 / Aug 20-21 failure
+        patterns). If NO counterparty appears within $1000 of last-known price
+        for the entire window, this IS operationally equivalent to a market/
+        system-level failure, and Tier 0 (10%, resting independently on the
+        exchange since entry) is the correct, intentional final backstop for
+        exactly that residual case only.
         """
         last_resp = None
         last_avg_fill = 0.0
         last_commission = 0.0
         last_order_id = None
 
+        _retry_state = self._load_close_retry_state()
+        _now_wall = time.time()
+        _STALE_STATE_SEC = 6 * 3600
+        if _retry_state.get("first_failure_ts") and (_now_wall - _retry_state["first_failure_ts"]) > _STALE_STATE_SEC:
+            logging.warning(f"[OrderManager] close_retry_state stale (>{_STALE_STATE_SEC}s old) - resetting as new incident")
+            _retry_state = {}
+        if not _retry_state.get("first_failure_ts"):
+            _retry_state["first_failure_ts"] = _now_wall
+            self._save_close_retry_state(_retry_state)
+        _elapsed_total = _now_wall - _retry_state["first_failure_ts"]
+
+        _BAND_STEP_SEC   = 15.0
+        _BASE_BAND       = 150.0
+        _ESCALATED_MAX   = 500.0
+        _TIME_CAP_SEC    = 60.0
+        _LOSS_CAP_BAND   = 1000.0
+        _REST_POLL_SEC   = 2.0
+        _REST_POLLS      = 5
+
+        _final_cap_active = _elapsed_total >= _TIME_CAP_SEC
+        if _final_cap_active:
+            _current_band = _LOSS_CAP_BAND
+            logging.critical(f"[OrderManager] CLOSE TIME CAP EXCEEDED ({_elapsed_total:.0f}s >= {_TIME_CAP_SEC:.0f}s) - "
+                              f"using LOSS-CAPPED RESTING order (${_LOSS_CAP_BAND:.0f} max, never a raw market order)")
+        else:
+            _escalation_steps = int(_elapsed_total // _BAND_STEP_SEC)
+            _current_band = min(_BASE_BAND + _escalation_steps * 100.0, _ESCALATED_MAX)
+
         for attempt in range(1, max_attempts + 1):
             pos_check = self.get_position()
             current_size = abs(pos_check.get("size", 0)) if pos_check.get("success") else None
+            pos_mark_price = pos_check.get("exit_price", 0.0) if pos_check.get("success") else 0.0
 
             if pos_check.get("success") and current_size == 0:
                 logging.info(f"[OrderManager] Close CONFIRMED FLAT | attempt={attempt} | last_order_id={last_order_id}")
+                self._clear_close_retry_state()
                 try:
                     _cleanup = self._delete("/orders/all", {"product_id": self.PRODUCT_ID, "cancel_stop_orders": "true"})
-                    if _cleanup.get("success"):
-                        logging.info(f"[OrderManager] Stale stop orders cleaned up on confirmed-flat")
-                    else:
+                    if not _cleanup.get("success"):
                         logging.warning(f"[OrderManager] Stop order cleanup failed (non-critical): {_cleanup.get('error')}")
                 except Exception as _ce:
                     logging.warning(f"[OrderManager] Stop order cleanup exception (non-critical): {_ce}")
                 return {
-                    "success":        True,
-                    "order_id":       last_order_id,
-                    "state":          "closed",
-                    "avg_fill_price": last_avg_fill,
-                    "attempts":       attempt,
-                    "commission":     last_commission
+                    "success": True, "order_id": last_order_id, "state": "closed",
+                    "avg_fill_price": last_avg_fill, "attempts": attempt, "commission": last_commission
                 }
 
             close_size = current_size if current_size else size
@@ -352,8 +421,70 @@ class OrderManager:
                 if ref_price and ref_price > 0:
                     break
                 time.sleep(0.3)
-            if ref_price and ref_price > 0:
-                limit_price = round(ref_price - 150, 1) if side == "sell" else round(ref_price + 150, 1)
+            if not ref_price or ref_price <= 0:
+                if pos_mark_price and pos_mark_price > 0:
+                    ref_price = pos_mark_price
+                    logging.warning(f"[OrderManager] Close attempt {attempt}/{max_attempts} - ticker failed, using /v2/positions mark_price={ref_price} as fallback")
+
+            if not ref_price or ref_price <= 0:
+                logging.warning(f"[OrderManager] Close attempt {attempt}/{max_attempts} SKIPPED - both price sources failed | elapsed={_elapsed_total:.0f}s")
+                try:
+                    send_alert(f"CTS WARNING - {self.PRODUCT_SYMBOL}\nBoth price sources failed on close attempt {attempt}/{max_attempts}\nElapsed: {_elapsed_total:.0f}s\nSide: {side.upper()} | Size: {close_size} lots\nTier 0 emergency SL remains the active backstop")
+                except Exception:
+                    pass
+                if attempt < max_attempts:
+                    time.sleep(retry_delay)
+                continue
+
+            limit_price = round(ref_price - _current_band, 1) if side == "sell" else round(ref_price + _current_band, 1)
+
+            if _final_cap_active:
+                payload = {
+                    "product_symbol": self.PRODUCT_SYMBOL,
+                    "product_id":     self.PRODUCT_ID,
+                    "side":           side,
+                    "size":           close_size,
+                    "order_type":     "limit_order",
+                    "limit_price":    str(limit_price),
+                    "reduce_only":    "true"
+                }
+                if client_order_id:
+                    payload["client_order_id"] = f"{client_order_id[:24]}_a{attempt}"
+                logging.critical(f"[OrderManager] Close attempt {attempt}/{max_attempts} | LOSS-CAPPED RESTING order | {side.upper()} {close_size} lots @ {limit_price} (band=${_current_band:.0f}, elapsed={_elapsed_total:.0f}s)")
+                resp = self._post("/v2/orders", payload)
+                last_resp = resp
+
+                if resp.get("success"):
+                    _rest_id = resp["result"]["id"]
+                    last_order_id = _rest_id
+                    _filled_this_order = False
+                    for _poll in range(_REST_POLLS):
+                        time.sleep(_REST_POLL_SEC)
+                        _chk = self._get(f"/v2/orders/{_rest_id}", {})
+                        if _chk.get("success"):
+                            _state = _chk.get("result", {}).get("state")
+                            if _state == "closed":
+                                _filled_this_order = True
+                                break
+                            if _state == "cancelled":
+                                break
+                    if _filled_this_order:
+                        _avg = self._get_avg_fill_price(_rest_id)
+                        if _avg:
+                            last_avg_fill = float(_avg)
+                        _comm = self._get_order_commission(_rest_id)
+                        if _comm:
+                            last_commission += float(_comm)
+                        logging.info(f"[OrderManager] LOSS-CAPPED resting order FILLED | id={_rest_id} avg_fill={last_avg_fill}")
+                    else:
+                        try:
+                            self._delete("/v2/orders", {"id": _rest_id, "product_id": self.PRODUCT_ID})
+                        except Exception as _cane:
+                            logging.warning(f"[OrderManager] Cancel of unfilled resting order failed: {_cane}")
+                        logging.warning(f"[OrderManager] LOSS-CAPPED resting order id={_rest_id} did NOT fill within {_REST_POLLS*_REST_POLL_SEC:.0f}s - cancelled, retrying")
+                else:
+                    logging.error(f"[OrderManager] LOSS-CAPPED resting order placement FAILED | attempt={attempt}/{max_attempts} | error={resp.get('error')}")
+            else:
                 payload = {
                     "product_symbol": self.PRODUCT_SYMBOL,
                     "product_id":     self.PRODUCT_ID,
@@ -364,42 +495,31 @@ class OrderManager:
                     "time_in_force":  "ioc",
                     "reduce_only":    "true"
                 }
-                logging.info(f"[OrderManager] Close using IOC-banded limit | ref_price={ref_price} limit_price={limit_price}")
-            else:
-                logging.warning(f"[OrderManager] Close attempt {attempt}/{max_attempts} SKIPPED - ref_price fetch failed after 3 retries, retrying next cycle (Tier 0 emergency SL remains active)")
-                try:
-                    send_alert(f"CTS WARNING - {self.PRODUCT_SYMBOL}\nPrice fetch failed on close attempt {attempt}/{max_attempts}, skipping this attempt (Tier 0 emergency SL is protecting the position)\nSide: {side.upper()} | Size: {close_size} lots")
-                except Exception:
-                    pass
-                if attempt < max_attempts:
-                    time.sleep(retry_delay)
-                continue
-            if client_order_id:
-                payload["client_order_id"] = f"{client_order_id[:24]}_a{attempt}"
+                if client_order_id:
+                    payload["client_order_id"] = f"{client_order_id[:24]}_a{attempt}"
+                logging.info(f"[OrderManager] Close using IOC-banded limit | ref_price={ref_price} limit_price={limit_price} band=${_current_band:.0f} (elapsed={_elapsed_total:.0f}s)")
+                resp = self._post("/v2/orders", payload)
+                last_resp = resp
 
-            logging.info(f"[OrderManager] Close attempt {attempt}/{max_attempts} | {side.upper()} {close_size} lots (reduce_only)")
-            resp = self._post("/v2/orders", payload)
-            last_resp = resp
-
-            if resp.get("success"):
-                result = resp["result"]
-                last_order_id = result["id"]
-                logging.info(f"[OrderManager] Close order placed | attempt={attempt} id={result['id']} state={result['state']}")
-                _avg = self._get_avg_fill_price(result["id"])
-                if _avg:
-                    last_avg_fill = float(_avg)
-                    try:
-                        _post_close_ref = self.get_current_price()
-                        if _post_close_ref and abs(last_avg_fill - _post_close_ref) > 250:
-                            logging.critical(f"[OrderManager] CLOSE FILL FAR FROM MARK: fill={last_avg_fill} ref={_post_close_ref} dev=${abs(last_avg_fill-_post_close_ref):.1f}")
-                            send_alert(f"CTS WARNING - Close fill deviated ${abs(last_avg_fill-_post_close_ref):.1f} from mark\nFill: ${last_avg_fill:,.1f}\nMark: ${_post_close_ref:,.1f}\nCheck for stale resting orders on this account")
-                    except Exception as _dce:
-                        logging.warning(f"[OrderManager] Close-fill deviation check failed (non-critical): {_dce}")
-                _comm = self._get_order_commission(result["id"])
-                if _comm:
-                    last_commission += float(_comm)
-            else:
-                logging.error(f"[OrderManager] Close order FAILED | attempt={attempt}/{max_attempts} | error={resp.get('error')}")
+                if resp.get("success"):
+                    result = resp["result"]
+                    last_order_id = result["id"]
+                    logging.info(f"[OrderManager] Close order placed | attempt={attempt} id={result['id']} state={result['state']}")
+                    _avg = self._get_avg_fill_price(result["id"])
+                    if _avg:
+                        last_avg_fill = float(_avg)
+                        try:
+                            _post_close_ref = self.get_current_price()
+                            if _post_close_ref and abs(last_avg_fill - _post_close_ref) > 250:
+                                logging.critical(f"[OrderManager] CLOSE FILL FAR FROM MARK: fill={last_avg_fill} ref={_post_close_ref} dev=${abs(last_avg_fill-_post_close_ref):.1f}")
+                                send_alert(f"CTS WARNING - Close fill deviated ${abs(last_avg_fill-_post_close_ref):.1f} from mark\nFill: ${last_avg_fill:,.1f}\nMark: ${_post_close_ref:,.1f}")
+                        except Exception as _dce:
+                            logging.warning(f"[OrderManager] Close-fill deviation check failed (non-critical): {_dce}")
+                    _comm = self._get_order_commission(result["id"])
+                    if _comm:
+                        last_commission += float(_comm)
+                else:
+                    logging.error(f"[OrderManager] Close order FAILED | attempt={attempt}/{max_attempts} | error={resp.get('error')}")
 
             if attempt < max_attempts:
                 time.sleep(retry_delay)
@@ -409,31 +529,27 @@ class OrderManager:
 
         if final_check.get("success") and final_size == 0:
             logging.info(f"[OrderManager] Close CONFIRMED FLAT on final check | total_attempts={max_attempts}")
-            return {
-                "success":        True,
-                "order_id":       last_order_id,
-                "state":          "closed",
-                "avg_fill_price": last_avg_fill,
-                "attempts":       max_attempts
-            }
+            self._clear_close_retry_state()
+            return {"success": True, "order_id": last_order_id, "state": "closed",
+                    "avg_fill_price": last_avg_fill, "attempts": max_attempts}
 
-        _pos_desc = f"size={final_size}" if final_check.get("success") else "UNKNOWN (position API check itself failed)"
-        logging.critical(f"[OrderManager] CLOSE FAILED AFTER {max_attempts} ATTEMPTS - position still open ({_pos_desc}) - MANUAL INTERVENTION REQUIRED")
+        _pos_desc = f"size={final_size}" if final_check.get("success") else "UNKNOWN (position API check failed)"
+        logging.critical(f"[OrderManager] CLOSE FAILED AFTER {max_attempts} ATTEMPTS - position still open ({_pos_desc}) - elapsed={_elapsed_total:.0f}s - MANUAL INTERVENTION REQUIRED")
         send_alert(
             f"CTS CRITICAL - CLOSE FAILED AFTER {max_attempts} ATTEMPTS\n"
             f"Side requested : {side.upper()}\n"
             f"Target size    : {size}\n"
             f"Position now   : {_pos_desc}\n"
+            f"Elapsed        : {_elapsed_total:.0f}s since first failure\n"
             f"Last error     : {last_resp.get('error') if last_resp else 'N/A'}\n"
-            f"ACTION REQUIRED: Close this position manually on Delta Exchange immediately"
+            f"ACTION REQUIRED: Close manually on Delta Exchange immediately.\n"
+            f"$1000 loss-capped resting order also failed to fill - genuine extreme "
+            f"illiquidity or platform-level issue. Tier 0 (10%) is the only remaining "
+            f"automated protection."
         )
-        return {
-            "success":             False,
-            "error":               "close_failed_after_max_attempts",
-            "last_error":          last_resp.get("error") if last_resp else None,
-            "attempts":            max_attempts,
-            "position_still_open": True
-        }
+        return {"success": False, "error": "close_failed_after_max_attempts",
+                "last_error": last_resp.get("error") if last_resp else None,
+                "attempts": max_attempts, "position_still_open": True}
 
     def get_position(self) -> dict:
         """
