@@ -5681,1440 +5681,1437 @@ with _tab_analysis:
     # ================================================================
     if 'exp_13s' not in st.session_state: st.session_state['exp_13s'] = False
     with st.expander("SECTION 13 - LIVE FORWARD TEST PERFORMANCE", expanded=st.session_state.get('exp_13s', False)):
-        if not st.session_state.get('exp_13s', False):
-            st.caption("Collapsed - expand to load live forward-test performance data")
-        else:
-            import time as _t13, hmac as _hm13, hashlib as _hs13, requests as _rq13, datetime as _dt13, glob as _gl13, pandas as _pd13, re as _re13
+        import time as _t13, hmac as _hm13, hashlib as _hs13, requests as _rq13, datetime as _dt13, glob as _gl13, pandas as _pd13, re as _re13
 
+        try:
+            _VF13 = open("logs/valid_from_baseline.txt").read().strip()
+        except:
+            _VF13 = "2026-07-14T15:00:00"
+        # Section 13 display window = current calendar month (1st to today, UTC)
+        import datetime as _dt13_7
+        _now13_7 = _dt13_7.datetime.utcnow()
+        _VF13_7D = _now13_7.replace(day=1, hour=0, minute=0, second=0, microsecond=0).strftime('%Y-%m-%dT%H:%M:%S')
+
+        # ── DYNAMIC INPUT CONTROLS (persist across refresh via session_state) ──
+        _c13a, _c13b, _c13c = st.columns(3)
+        with _c13a:
+            sec13_slip = st.number_input("Slippage/side ($)", min_value=0.0, value=st.session_state.get("sec13_slip", 5.0), key="sec13_slip")
+        with _c13b:
+            sec13_charges = st.checkbox("Include Tax & All Charges", value=st.session_state.get("sec13_charges", True), key="sec13_charges")
+        with _c13c:
+            sec13_lots = st.number_input("Lots", min_value=1, max_value=10000, value=st.session_state.get("sec13_lots", 100), key="sec13_lots")
+        _BASE_LOTS13 = 100.0
+        _LOT_RATIO13 = float(sec13_lots) / _BASE_LOTS13
+        _INR13 = 84.0
+        _BASE13= "https://cdn-ind.testnet.deltaex.org"
+        _TH13  = "padding:5px 8px;border:1px solid #90CAF9;background:#E3F2FD;font-size:11px;font-weight:700;color:#333;text-align:center;"
+        _TD13  = "padding:6px 8px;border:1px solid #BBDEFB;font-size:13px;color:#131722;font-weight:600;"
+        _TDN13 = "padding:6px 8px;border:1px solid #BBDEFB;font-size:13px;color:#131722;text-align:center;font-weight:500;"
+        _TDG13 = "padding:5px 8px;border:1px solid #BBDEFB;font-size:12px;color:#089981;font-weight:700;text-align:center;"
+        _TDR13 = "padding:5px 8px;border:1px solid #BBDEFB;font-size:12px;color:#F23645;font-weight:700;text-align:center;"
+        _TDB13 = "padding:5px 8px;border:1px solid #BBDEFB;font-size:12px;color:#2962FF;font-weight:700;text-align:center;"
+        _SUB13 = "padding:4px 8px;border:1px solid #90CAF9;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
+        _HDR13 = "padding:6px 12px;background:#1E3A5F;font-size:11px;font-weight:700;color:#ffffff;margin:8px 0 4px 0;border-left:4px solid #2962FF;"
+
+        def _auth13(k, s, path, qs=""):
             try:
-                _VF13 = open("logs/valid_from_baseline.txt").read().strip()
+                ts  = str(int(_t13.time()))
+                qp  = f"?{qs}" if qs else ""
+                msg = f"GET{ts}{path}{qp}"
+                sig = _hm13.new(s.encode(), msg.encode(), _hs13.sha256).hexdigest()
+                return {"api-key":k,"timestamp":ts,"signature":sig,"Content-Type":"application/json"}
             except:
-                _VF13 = "2026-07-14T15:00:00"
-            # Section 13 display window = current calendar month (1st to today, UTC)
-            import datetime as _dt13_7
-            _now13_7 = _dt13_7.datetime.utcnow()
-            _VF13_7D = _now13_7.replace(day=1, hour=0, minute=0, second=0, microsecond=0).strftime('%Y-%m-%dT%H:%M:%S')
+                return {}
 
-            # ── DYNAMIC INPUT CONTROLS (persist across refresh via session_state) ──
-            _c13a, _c13b, _c13c = st.columns(3)
-            with _c13a:
-                sec13_slip = st.number_input("Slippage/side ($)", min_value=0.0, value=st.session_state.get("sec13_slip", 5.0), key="sec13_slip")
-            with _c13b:
-                sec13_charges = st.checkbox("Include Tax & All Charges", value=st.session_state.get("sec13_charges", True), key="sec13_charges")
-            with _c13c:
-                sec13_lots = st.number_input("Lots", min_value=1, max_value=10000, value=st.session_state.get("sec13_lots", 100), key="sec13_lots")
-            _BASE_LOTS13 = 100.0
-            _LOT_RATIO13 = float(sec13_lots) / _BASE_LOTS13
-            _INR13 = 84.0
-            _BASE13= "https://cdn-ind.testnet.deltaex.org"
-            _TH13  = "padding:5px 8px;border:1px solid #90CAF9;background:#E3F2FD;font-size:11px;font-weight:700;color:#333;text-align:center;"
-            _TD13  = "padding:6px 8px;border:1px solid #BBDEFB;font-size:13px;color:#131722;font-weight:600;"
-            _TDN13 = "padding:6px 8px;border:1px solid #BBDEFB;font-size:13px;color:#131722;text-align:center;font-weight:500;"
-            _TDG13 = "padding:5px 8px;border:1px solid #BBDEFB;font-size:12px;color:#089981;font-weight:700;text-align:center;"
-            _TDR13 = "padding:5px 8px;border:1px solid #BBDEFB;font-size:12px;color:#F23645;font-weight:700;text-align:center;"
-            _TDB13 = "padding:5px 8px;border:1px solid #BBDEFB;font-size:12px;color:#2962FF;font-weight:700;text-align:center;"
-            _SUB13 = "padding:4px 8px;border:1px solid #90CAF9;background:#E8ECF2;font-size:10px;font-weight:700;color:#131722;"
-            _HDR13 = "padding:6px 12px;background:#1E3A5F;font-size:11px;font-weight:700;color:#ffffff;margin:8px 0 4px 0;border-left:4px solid #2962FF;"
+        def _fetch13(k, s, vf_override=None):
+            orders, after = [], None
+            try:
+                vf_str = vf_override if vf_override else _VF13
+                vf  = int(_dt13.datetime.strptime(vf_str,"%Y-%m-%dT%H:%M:%S").replace(tzinfo=_dt13.timezone.utc).timestamp())
+                now = int(_dt13.datetime.now(_dt13.timezone.utc).timestamp())
+                path= "/v2/orders/history"
+                prm = {"product_id":84,"page_size":100,"start_time":int(vf*1e6),"end_time":int(now*1e6)}
+                for _ in range(50):
+                    p = dict(prm)
+                    if after: p["after"] = after
+                    qs = "&".join(f"{a}={b}" for a,b in sorted(p.items()))
+                    h = _auth13(k, s, path, qs)
+                    r = _rq13.get(f"{_BASE13}{path}?{qs}", headers=h, timeout=10)
+                    d = r.json()
+                    if not d.get("success"): break
+                    batch = d.get("result",[])
+                    orders += batch
+                    after  = d.get("meta",{}).get("after")
+                    if not after or not batch: break
+            except:
+                pass
+            return orders
 
-            def _auth13(k, s, path, qs=""):
-                try:
-                    ts  = str(int(_t13.time()))
-                    qp  = f"?{qs}" if qs else ""
-                    msg = f"GET{ts}{path}{qp}"
-                    sig = _hm13.new(s.encode(), msg.encode(), _hs13.sha256).hexdigest()
-                    return {"api-key":k,"timestamp":ts,"signature":sig,"Content-Type":"application/json"}
-                except:
-                    return {}
+        def _pair13(orders):
+            # FIFO two-pointer per direction - prevents cross-matching entry with
+            # a distant unrelated future exit (root cause of Aug-2026 S4 -Rs299k
+            # pairing-mismatch bug: old exhaustive-search version could skip over
+            # the correct nearby exit and grab one days later).
+            def _ts(o):
+                return int(_dt13.datetime.strptime(o.get("created_at","1970-01-01T00:00:00")[:19], "%Y-%m-%dT%H:%M:%S").timestamp())
+            def _px(o):
+                return float(o.get("average_fill_price") or o.get("limit_price") or 0)
+            def _filled_sz(o):
+                return int(o.get("size",0)) - int(o.get("unfilled_size",0) or 0)
+            def _has_fill(o):
+                # Include fully-closed orders AND partial-fill-then-cancelled orders
+                # (state=cancelled but some size was actually filled before cancel).
+                # Root cause fix: IOC/retry orders that get partially filled then
+                # cancelled were previously ignored entirely, causing wrong lot size
+                # and wrong entry price in Section 13 vs real Delta position.
+                if o.get("state")=="closed":
+                    return True
+                if o.get("state")=="cancelled" and _filled_sz(o) > 0 and o.get("average_fill_price"):
+                    return True
+                return False
 
-            def _fetch13(k, s, vf_override=None):
-                orders, after = [], None
-                try:
-                    vf_str = vf_override if vf_override else _VF13
-                    vf  = int(_dt13.datetime.strptime(vf_str,"%Y-%m-%dT%H:%M:%S").replace(tzinfo=_dt13.timezone.utc).timestamp())
-                    now = int(_dt13.datetime.now(_dt13.timezone.utc).timestamp())
-                    path= "/v2/orders/history"
-                    prm = {"product_id":84,"page_size":100,"start_time":int(vf*1e6),"end_time":int(now*1e6)}
-                    for _ in range(50):
-                        p = dict(prm)
-                        if after: p["after"] = after
-                        qs = "&".join(f"{a}={b}" for a,b in sorted(p.items()))
-                        h = _auth13(k, s, path, qs)
-                        r = _rq13.get(f"{_BASE13}{path}?{qs}", headers=h, timeout=10)
-                        d = r.json()
-                        if not d.get("success"): break
-                        batch = d.get("result",[])
-                        orders += batch
-                        after  = d.get("meta",{}).get("after")
-                        if not after or not batch: break
-                except:
-                    pass
-                return orders
+            srt = sorted(orders, key=lambda x: x.get("created_at",""))
+            longs_e  = [o for o in srt if o.get("side")=="buy"  and _has_fill(o) and str(o.get("reduce_only","")).lower() not in ["true","1"]]
+            longs_x  = [o for o in srt if o.get("side")=="sell" and _has_fill(o) and str(o.get("reduce_only","")).lower() in ["true","1"]]
+            shorts_e = [o for o in srt if o.get("side")=="sell" and _has_fill(o) and str(o.get("reduce_only","")).lower() not in ["true","1"]]
+            shorts_x = [o for o in srt if o.get("side")=="buy"  and _has_fill(o) and str(o.get("reduce_only","")).lower() in ["true","1"]]
 
-            def _pair13(orders):
-                # FIFO two-pointer per direction - prevents cross-matching entry with
-                # a distant unrelated future exit (root cause of Aug-2026 S4 -Rs299k
-                # pairing-mismatch bug: old exhaustive-search version could skip over
-                # the correct nearby exit and grab one days later).
-                def _ts(o):
-                    return int(_dt13.datetime.strptime(o.get("created_at","1970-01-01T00:00:00")[:19], "%Y-%m-%dT%H:%M:%S").timestamp())
-                def _px(o):
-                    return float(o.get("average_fill_price") or o.get("limit_price") or 0)
-                def _filled_sz(o):
-                    return int(o.get("size",0)) - int(o.get("unfilled_size",0) or 0)
-                def _has_fill(o):
-                    # Include fully-closed orders AND partial-fill-then-cancelled orders
-                    # (state=cancelled but some size was actually filled before cancel).
-                    # Root cause fix: IOC/retry orders that get partially filled then
-                    # cancelled were previously ignored entirely, causing wrong lot size
-                    # and wrong entry price in Section 13 vs real Delta position.
-                    if o.get("state")=="closed":
-                        return True
-                    if o.get("state")=="cancelled" and _filled_sz(o) > 0 and o.get("average_fill_price"):
-                        return True
-                    return False
+            pairs = []
+            def _fifo_match(entries, exits, dirn):
+                ei, xi = 0, 0
+                while ei < len(entries) and xi < len(exits):
+                    e, x = entries[ei], exits[xi]
+                    ets, xts = _ts(e), _ts(x)
+                    if xts < ets:
+                        xi += 1; continue
+                    ep, xp = _px(e), _px(x)
+                    sz = _filled_sz(e)
+                    raw_pnl = (xp - ep) * sz * 0.001 * (1 if dirn == "LONG" else -1)
+                    cm = float(e.get("paid_commission") or 0)+float(x.get("paid_commission") or 0)
+                    pnl = raw_pnl - cm
+                    _sl_hit = str(x.get("stop_order_type","")) == "stop_loss_order"
+                    pairs.append({"dir":dirn,"ep":ep,"xp":xp,"pnl":pnl,"cm":cm,"ets":ets,"xts":xts,"sz":sz,"sl_hit":_sl_hit})
+                    ei += 1; xi += 1
+                # Only the single most-recent unmatched entry is a real open
+                # position. Earlier unmatched entries are stale retry-spam
+                # duplicates (from the historical entry-retry bug) with no
+                # matching exit - they are not real trades, so drop them
+                # instead of falsely showing every one as OPEN.
+                if ei < len(entries):
+                    e = entries[len(entries) - 1]
+                    sz = _filled_sz(e)
+                    cm_open = float(e.get("paid_commission") or 0)
+                    pairs.append({"dir":dirn,"ep":_px(e),"xp":0,"pnl":0,"cm":cm_open,"ets":_ts(e),"xts":0,"sz":sz,"open":True,"sl_hit":False})
 
-                srt = sorted(orders, key=lambda x: x.get("created_at",""))
-                longs_e  = [o for o in srt if o.get("side")=="buy"  and _has_fill(o) and str(o.get("reduce_only","")).lower() not in ["true","1"]]
-                longs_x  = [o for o in srt if o.get("side")=="sell" and _has_fill(o) and str(o.get("reduce_only","")).lower() in ["true","1"]]
-                shorts_e = [o for o in srt if o.get("side")=="sell" and _has_fill(o) and str(o.get("reduce_only","")).lower() not in ["true","1"]]
-                shorts_x = [o for o in srt if o.get("side")=="buy"  and _has_fill(o) and str(o.get("reduce_only","")).lower() in ["true","1"]]
+            _fifo_match(longs_e, longs_x, "LONG")
+            _fifo_match(shorts_e, shorts_x, "SHORT")
+            return sorted(pairs, key=lambda p: p["ets"])
 
-                pairs = []
-                def _fifo_match(entries, exits, dirn):
-                    ei, xi = 0, 0
-                    while ei < len(entries) and xi < len(exits):
-                        e, x = entries[ei], exits[xi]
-                        ets, xts = _ts(e), _ts(x)
-                        if xts < ets:
-                            xi += 1; continue
-                        ep, xp = _px(e), _px(x)
-                        sz = _filled_sz(e)
-                        raw_pnl = (xp - ep) * sz * 0.001 * (1 if dirn == "LONG" else -1)
-                        cm = float(e.get("paid_commission") or 0)+float(x.get("paid_commission") or 0)
-                        pnl = raw_pnl - cm
-                        _sl_hit = str(x.get("stop_order_type","")) == "stop_loss_order"
-                        pairs.append({"dir":dirn,"ep":ep,"xp":xp,"pnl":pnl,"cm":cm,"ets":ets,"xts":xts,"sz":sz,"sl_hit":_sl_hit})
-                        ei += 1; xi += 1
-                    # Only the single most-recent unmatched entry is a real open
-                    # position. Earlier unmatched entries are stale retry-spam
-                    # duplicates (from the historical entry-retry bug) with no
-                    # matching exit - they are not real trades, so drop them
-                    # instead of falsely showing every one as OPEN.
-                    if ei < len(entries):
-                        e = entries[len(entries) - 1]
-                        sz = _filled_sz(e)
-                        cm_open = float(e.get("paid_commission") or 0)
-                        pairs.append({"dir":dirn,"ep":_px(e),"xp":0,"pnl":0,"cm":cm_open,"ets":_ts(e),"xts":0,"sz":sz,"open":True,"sl_hit":False})
+        def _live_pos_sz13(path):
+            try:
+                import os as _osl13, time as _tl13, hmac as _hml13, hashlib as _hsl13, requests as _rql13
+                k = _osl13.getenv("S4V2_API_KEY") if "s4v2" in path else _osl13.getenv("S4_API_KEY")
+                s = _osl13.getenv("S4V2_API_SECRET") if "s4v2" in path else _osl13.getenv("S4_API_SECRET")
+                ts = str(int(_tl13.time()))
+                qs = "product_id=84"
+                pth = "/v2/positions"
+                sig = _hml13.new(s.encode(), f"GET{ts}{pth}?{qs}".encode(), _hsl13.sha256).hexdigest()
+                h = {"api-key":k,"timestamp":ts,"signature":sig}
+                r = _rql13.get(f"https://cdn-ind.testnet.deltaex.org{pth}?{qs}", headers=h, timeout=5).json()
+                if r.get("success"):
+                    return abs(int(r.get("result",{}).get("size",0) or 0))
+            except Exception:
+                pass
+            return None
 
-                _fifo_match(longs_e, longs_x, "LONG")
-                _fifo_match(shorts_e, shorts_x, "SHORT")
-                return sorted(pairs, key=lambda p: p["ets"])
-
-            def _live_pos_sz13(path):
-                try:
-                    import os as _osl13, time as _tl13, hmac as _hml13, hashlib as _hsl13, requests as _rql13
-                    k = _osl13.getenv("S4V2_API_KEY") if "s4v2" in path else _osl13.getenv("S4_API_KEY")
-                    s = _osl13.getenv("S4V2_API_SECRET") if "s4v2" in path else _osl13.getenv("S4_API_SECRET")
-                    ts = str(int(_tl13.time()))
-                    qs = "product_id=84"
-                    pth = "/v2/positions"
-                    sig = _hml13.new(s.encode(), f"GET{ts}{pth}?{qs}".encode(), _hsl13.sha256).hexdigest()
-                    h = {"api-key":k,"timestamp":ts,"signature":sig}
-                    r = _rql13.get(f"https://cdn-ind.testnet.deltaex.org{pth}?{qs}", headers=h, timeout=5).json()
-                    if r.get("success"):
-                        return abs(int(r.get("result",{}).get("size",0) or 0))
-                except Exception:
-                    pass
-                return None
-
-            def _pair13_csv(path, vf_str):
-                import datetime as _dtp13
-                pairs = []
+        def _pair13_csv(path, vf_str):
+            import datetime as _dtp13
+            pairs = []
+            _fill_map = {}
+            try:
+                _fill_path = "logs/fill_prices_s4v2.csv" if "s4v2" in path else "logs/fill_prices_s4.csv"
+                if os.path.exists(_fill_path):
+                    with open(_fill_path) as _ff:
+                        _ff.readline()
+                        for _fline in _ff:
+                            _fp = _fline.strip().split(',')
+                            if len(_fp) >= 8:
+                                _charge = _fp[8] if len(_fp) >= 9 else "0.0"
+                                _fill_map[_fp[0]] = (_fp[5], _fp[7], _charge)
+            except Exception:
                 _fill_map = {}
-                try:
-                    _fill_path = "logs/fill_prices_s4v2.csv" if "s4v2" in path else "logs/fill_prices_s4.csv"
-                    if os.path.exists(_fill_path):
-                        with open(_fill_path) as _ff:
-                            _ff.readline()
-                            for _fline in _ff:
-                                _fp = _fline.strip().split(',')
-                                if len(_fp) >= 8:
-                                    _charge = _fp[8] if len(_fp) >= 9 else "0.0"
-                                    _fill_map[_fp[0]] = (_fp[5], _fp[7], _charge)
-                except Exception:
-                    _fill_map = {}
-                _hist_rows = []
-                try:
-                    _hist_path = "uploads/delta_order_history_s4v2_aug2026.csv" if "s4v2" in path else "uploads/delta_order_history_s4_aug2026.csv"
-                    if os.path.exists(_hist_path):
-                        with open(_hist_path) as _hf:
-                            _hf.readline()
-                            for _hline in _hf:
-                                _hp = _hline.strip().split(',')
-                                if len(_hp) < 14:
-                                    continue
-                                _hside = _hp[3]
-                                _hexec = _hp[5]
-                                _hfee = _hp[9]
-                                _hstatus = _hp[13]
-                                if _hstatus != "closed" or not _hexec:
-                                    continue
-                                try:
-                                    _hdt_str = _hp[0].split("+")[0].strip()
-                                    _hdt = _dtp13.datetime.strptime(_hdt_str, "%Y-%m-%d %H:%M:%S.%f")
-                                    _hdt_utc = _hdt - _dtp13.timedelta(hours=5, minutes=30)
-                                    _hts = int(_hdt_utc.replace(tzinfo=_dtp13.timezone.utc).timestamp())
-                                except Exception:
-                                    continue
-                                try:
-                                    _hqty = int(float(_hp[2]))
-                                except Exception:
-                                    _hqty = None
-                                _hist_rows.append((_hts, _hside, _hexec, _hfee, _hqty))
-                        _hist_rows.sort(key=lambda r: r[0])
-                except Exception:
-                    _hist_rows = []
-
-                def _hist_lookup(target_ts, side_want, want_sz=None, tol=8000):
-                    best = None
-                    best_diff = None
-                    if want_sz is not None:
-                        for _hts, _hside, _hexec, _hfee, _hqty in _hist_rows:
-                            if _hside != side_want or _hqty != want_sz:
+            _hist_rows = []
+            try:
+                _hist_path = "uploads/delta_order_history_s4v2_aug2026.csv" if "s4v2" in path else "uploads/delta_order_history_s4_aug2026.csv"
+                if os.path.exists(_hist_path):
+                    with open(_hist_path) as _hf:
+                        _hf.readline()
+                        for _hline in _hf:
+                            _hp = _hline.strip().split(',')
+                            if len(_hp) < 14:
                                 continue
-                            diff = abs(_hts - target_ts)
-                            if diff <= tol and (best_diff is None or diff < best_diff):
-                                best = (_hexec, _hfee)
-                                best_diff = diff
-                        if best:
-                            return best
+                            _hside = _hp[3]
+                            _hexec = _hp[5]
+                            _hfee = _hp[9]
+                            _hstatus = _hp[13]
+                            if _hstatus != "closed" or not _hexec:
+                                continue
+                            try:
+                                _hdt_str = _hp[0].split("+")[0].strip()
+                                _hdt = _dtp13.datetime.strptime(_hdt_str, "%Y-%m-%d %H:%M:%S.%f")
+                                _hdt_utc = _hdt - _dtp13.timedelta(hours=5, minutes=30)
+                                _hts = int(_hdt_utc.replace(tzinfo=_dtp13.timezone.utc).timestamp())
+                            except Exception:
+                                continue
+                            try:
+                                _hqty = int(float(_hp[2]))
+                            except Exception:
+                                _hqty = None
+                            _hist_rows.append((_hts, _hside, _hexec, _hfee, _hqty))
+                    _hist_rows.sort(key=lambda r: r[0])
+            except Exception:
+                _hist_rows = []
+
+            def _hist_lookup(target_ts, side_want, want_sz=None, tol=8000):
+                best = None
+                best_diff = None
+                if want_sz is not None:
                     for _hts, _hside, _hexec, _hfee, _hqty in _hist_rows:
-                        if _hside != side_want:
+                        if _hside != side_want or _hqty != want_sz:
                             continue
                         diff = abs(_hts - target_ts)
                         if diff <= tol and (best_diff is None or diff < best_diff):
                             best = (_hexec, _hfee)
                             best_diff = diff
-                    return best
+                    if best:
+                        return best
+                for _hts, _hside, _hexec, _hfee, _hqty in _hist_rows:
+                    if _hside != side_want:
+                        continue
+                    diff = abs(_hts - target_ts)
+                    if diff <= tol and (best_diff is None or diff < best_diff):
+                        best = (_hexec, _hfee)
+                        best_diff = diff
+                return best
 
-                try:
-                    vf_dt = _dtp13.datetime.strptime(vf_str, "%Y-%m-%dT%H:%M:%S")
-                except Exception:
-                    vf_dt = None
-                try:
-                    with open(path) as f:
-                        for line in f:
-                            parts = line.strip().split(',')
-                            if len(parts) < 5:
-                                continue
-                            et_raw, xt_raw, dirv, lots, ep_raw = parts[0], parts[1], parts[2], parts[3], parts[4]
-                            xp_raw = parts[5] if len(parts) >= 6 else ""
-                            try:
-                                et_dt = _dtp13.datetime.strptime(et_raw[:19], "%Y-%m-%dT%H:%M:%S")
-                            except Exception:
-                                continue
-                            if vf_dt and et_dt < vf_dt:
-                                continue
-                            ets = int(et_dt.replace(tzinfo=_dtp13.timezone.utc).timestamp())
-                            is_open = (xt_raw == "PENDING" or not xp_raw)
-                            ep = float(ep_raw) if ep_raw else 0.0
-                            dirn = dirv.upper()
-                            sz = int(lots) if lots else 100
-                            _fm = _fill_map.get(et_raw[:19])
-                            if is_open:
-                                if _fm and _fm[0]:
-                                    try:
-                                        ep = float(_fm[0])
-                                    except Exception:
-                                        pass
-                                else:
-                                    _hh = _hist_lookup(ets, 'buy' if dirn == 'LONG' else 'sell', sz)
-                                    if _hh and _hh[0]:
-                                        try:
-                                            ep = float(_hh[0])
-                                        except Exception:
-                                            pass
-                                _live_sz = _live_pos_sz13(path)
-                                if _live_sz and _live_sz > 0:
-                                    sz = _live_sz
-                                pairs.append({"dir":dirn,"ep":ep,"xp":0.0,"pnl":0.0,"cm":0.0,"ets":ets,"xts":0,"sz":sz,"open":True})
-                            else:
-                                try:
-                                    xt_dt = _dtp13.datetime.strptime(xt_raw[:19], "%Y-%m-%dT%H:%M:%S")
-                                    xts = int(xt_dt.replace(tzinfo=_dtp13.timezone.utc).timestamp())
-                                except Exception:
-                                    xts = 0
-                                xp = float(xp_raw) if xp_raw else 0.0
-                                _cm = 0.0
-                                if _fm:
-                                    try:
-                                        if _fm[0]:
-                                            ep = float(_fm[0])
-                                        if _fm[1]:
-                                            xp = float(_fm[1])
-                                        if len(_fm) >= 3 and _fm[2]:
-                                            _cm = float(_fm[2])
-                                    except Exception:
-                                        pass
-                                else:
-                                    _entry_side = 'buy' if dirn == 'LONG' else 'sell'
-                                    _exit_side  = 'sell' if dirn == 'LONG' else 'buy'
-                                    _hh_e = _hist_lookup(ets, _entry_side, sz)
-                                    _hh_x = _hist_lookup(xts, _exit_side, sz)
-                                    _hfee_sum = 0.0
-                                    if _hh_e and _hh_e[0]:
-                                        try:
-                                            ep = float(_hh_e[0])
-                                        except Exception:
-                                            pass
-                                    if _hh_e and _hh_e[1]:
-                                        try:
-                                            _hfee_sum += float(_hh_e[1])
-                                        except Exception:
-                                            pass
-                                    if _hh_x and _hh_x[0]:
-                                        try:
-                                            xp = float(_hh_x[0])
-                                        except Exception:
-                                            pass
-                                    if _hh_x and _hh_x[1]:
-                                        try:
-                                            _hfee_sum += float(_hh_x[1])
-                                        except Exception:
-                                            pass
-                                    _cm = _hfee_sum
-                                raw_pnl = (xp - ep) * sz * 0.001 * (1 if dirn == "LONG" else -1)
-                                net_pnl = raw_pnl - _cm
-                                pairs.append({"dir":dirn,"ep":ep,"xp":xp,"pnl":net_pnl,"cm":_cm,"ets":ets,"xts":xts,"sz":sz,"open":False})
-                except Exception:
-                    pass
-                return sorted(pairs, key=lambda p: p["ets"])
-
-            @st.cache_data(ttl=300)
-            def _pair13_fills(k, s, vf_str):
-                import datetime as _dtf13
-                pairs = []
-                try:
-                    vf  = int(_dtf13.datetime.strptime(vf_str,"%Y-%m-%dT%H:%M:%S").replace(tzinfo=_dtf13.timezone.utc).timestamp())
-                    now = int(_dtf13.datetime.now(_dtf13.timezone.utc).timestamp())
-                    path = "/v2/fills"
-                    after = None
-                    fills = []
-                    for _ in range(200):
-                        prm = {"product_id":84,"start_time":int(vf*1e6),"end_time":int(now*1e6),"page_size":50}
-                        if after: prm["after"] = after
-                        qs = "&".join(f"{a}={b}" for a,b in sorted(prm.items()))
-                        h = _auth13(k, s, path, qs)
-                        r = _rq13.get(f"{_BASE13}{path}?{qs}", headers=h, timeout=10)
-                        d = r.json()
-                        if not d.get("success"): break
-                        batch = d.get("result",[])
-                        fills += batch
-                        after = d.get("meta",{}).get("after")
-                        if not after or not batch: break
-                    fills = sorted(fills, key=lambda x: x.get("created_at",""))
-
-                    def _pts(ts_str):
-                        return int(_dtf13.datetime.strptime(ts_str[:19], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=_dtf13.timezone.utc).timestamp())
-
-                    entry_ts = None; entry_px = None; entry_side = None
-                    prev_size = 0; cum_cm = 0.0; cum_pnl = 0.0; max_sz = 0
-
-                    for f in fills:
-                        meta = f.get("meta_data", {}) or {}
-                        npos = meta.get("new_position", {}) or {}
-                        size = npos.get("size")
-                        if size is None:
+            try:
+                vf_dt = _dtp13.datetime.strptime(vf_str, "%Y-%m-%dT%H:%M:%S")
+            except Exception:
+                vf_dt = None
+            try:
+                with open(path) as f:
+                    for line in f:
+                        parts = line.strip().split(',')
+                        if len(parts) < 5:
                             continue
-                        side = f.get("side")
-                        px   = float(f.get("price") or 0)
-                        cm_fill = float(f.get("commission") or 0)
-                        realized = float(npos.get("realized_pnl") or 0)
-
-                        if entry_ts is None and prev_size == 0 and size != 0:
-                            entry_ts   = f.get("created_at")
-                            entry_px   = px
-                            entry_side = side
-                            max_sz = abs(size)
-
-                        cum_cm += cm_fill
-                        if entry_ts is not None:
-                            max_sz = max(max_sz, abs(size))
-
-                        # A trade only closes when position hits exactly flat (0),
-                        # OR the signed position crosses zero in one single fill
-                        # (true reversal). Partial reduces toward 0 (e.g. -100 -> -79
-                        # -> ... -> 0) must NOT be treated as separate closed trades -
-                        # that was the root cause of inflated trade counts (186/103
-                        # instead of real ~124/73) in the first version of this fix.
-                        crossed_flip = (prev_size > 0 and size < 0) or (prev_size < 0 and size > 0)
-                        is_flat = size == 0
-
-                        if entry_ts is not None and (is_flat or crossed_flip):
-                            cum_pnl += realized
-                            dirn = "LONG" if entry_side == "buy" else "SHORT"
-                            pairs.append({
-                                "dir": dirn, "ep": entry_px, "xp": px,
-                                "pnl": cum_pnl, "cm": cum_cm,
-                                "ets": _pts(entry_ts), "xts": _pts(f.get("created_at")),
-                                "sz": max_sz, "open": False, "sl_hit": False
-                            })
-                            cum_pnl = 0.0; cum_cm = 0.0
-                            if is_flat:
-                                entry_ts = None; entry_px = None; entry_side = None; max_sz = 0
+                        et_raw, xt_raw, dirv, lots, ep_raw = parts[0], parts[1], parts[2], parts[3], parts[4]
+                        xp_raw = parts[5] if len(parts) >= 6 else ""
+                        try:
+                            et_dt = _dtp13.datetime.strptime(et_raw[:19], "%Y-%m-%dT%H:%M:%S")
+                        except Exception:
+                            continue
+                        if vf_dt and et_dt < vf_dt:
+                            continue
+                        ets = int(et_dt.replace(tzinfo=_dtp13.timezone.utc).timestamp())
+                        is_open = (xt_raw == "PENDING" or not xp_raw)
+                        ep = float(ep_raw) if ep_raw else 0.0
+                        dirn = dirv.upper()
+                        sz = int(lots) if lots else 100
+                        _fm = _fill_map.get(et_raw[:19])
+                        if is_open:
+                            if _fm and _fm[0]:
+                                try:
+                                    ep = float(_fm[0])
+                                except Exception:
+                                    pass
                             else:
-                                entry_ts = f.get("created_at"); entry_px = px; entry_side = side
-                                max_sz = abs(size)
-                        prev_size = size
+                                _hh = _hist_lookup(ets, 'buy' if dirn == 'LONG' else 'sell', sz)
+                                if _hh and _hh[0]:
+                                    try:
+                                        ep = float(_hh[0])
+                                    except Exception:
+                                        pass
+                            _live_sz = _live_pos_sz13(path)
+                            if _live_sz and _live_sz > 0:
+                                sz = _live_sz
+                            pairs.append({"dir":dirn,"ep":ep,"xp":0.0,"pnl":0.0,"cm":0.0,"ets":ets,"xts":0,"sz":sz,"open":True})
+                        else:
+                            try:
+                                xt_dt = _dtp13.datetime.strptime(xt_raw[:19], "%Y-%m-%dT%H:%M:%S")
+                                xts = int(xt_dt.replace(tzinfo=_dtp13.timezone.utc).timestamp())
+                            except Exception:
+                                xts = 0
+                            xp = float(xp_raw) if xp_raw else 0.0
+                            _cm = 0.0
+                            if _fm:
+                                try:
+                                    if _fm[0]:
+                                        ep = float(_fm[0])
+                                    if _fm[1]:
+                                        xp = float(_fm[1])
+                                    if len(_fm) >= 3 and _fm[2]:
+                                        _cm = float(_fm[2])
+                                except Exception:
+                                    pass
+                            else:
+                                _entry_side = 'buy' if dirn == 'LONG' else 'sell'
+                                _exit_side  = 'sell' if dirn == 'LONG' else 'buy'
+                                _hh_e = _hist_lookup(ets, _entry_side, sz)
+                                _hh_x = _hist_lookup(xts, _exit_side, sz)
+                                _hfee_sum = 0.0
+                                if _hh_e and _hh_e[0]:
+                                    try:
+                                        ep = float(_hh_e[0])
+                                    except Exception:
+                                        pass
+                                if _hh_e and _hh_e[1]:
+                                    try:
+                                        _hfee_sum += float(_hh_e[1])
+                                    except Exception:
+                                        pass
+                                if _hh_x and _hh_x[0]:
+                                    try:
+                                        xp = float(_hh_x[0])
+                                    except Exception:
+                                        pass
+                                if _hh_x and _hh_x[1]:
+                                    try:
+                                        _hfee_sum += float(_hh_x[1])
+                                    except Exception:
+                                        pass
+                                _cm = _hfee_sum
+                            raw_pnl = (xp - ep) * sz * 0.001 * (1 if dirn == "LONG" else -1)
+                            net_pnl = raw_pnl - _cm
+                            pairs.append({"dir":dirn,"ep":ep,"xp":xp,"pnl":net_pnl,"cm":_cm,"ets":ets,"xts":xts,"sz":sz,"open":False})
+            except Exception:
+                pass
+            return sorted(pairs, key=lambda p: p["ets"])
 
+        @st.cache_data(ttl=300)
+        def _pair13_fills(k, s, vf_str):
+            import datetime as _dtf13
+            pairs = []
+            try:
+                vf  = int(_dtf13.datetime.strptime(vf_str,"%Y-%m-%dT%H:%M:%S").replace(tzinfo=_dtf13.timezone.utc).timestamp())
+                now = int(_dtf13.datetime.now(_dtf13.timezone.utc).timestamp())
+                path = "/v2/fills"
+                after = None
+                fills = []
+                for _ in range(200):
+                    prm = {"product_id":84,"start_time":int(vf*1e6),"end_time":int(now*1e6),"page_size":50}
+                    if after: prm["after"] = after
+                    qs = "&".join(f"{a}={b}" for a,b in sorted(prm.items()))
+                    h = _auth13(k, s, path, qs)
+                    r = _rq13.get(f"{_BASE13}{path}?{qs}", headers=h, timeout=10)
+                    d = r.json()
+                    if not d.get("success"): break
+                    batch = d.get("result",[])
+                    fills += batch
+                    after = d.get("meta",{}).get("after")
+                    if not after or not batch: break
+                fills = sorted(fills, key=lambda x: x.get("created_at",""))
+
+                def _pts(ts_str):
+                    return int(_dtf13.datetime.strptime(ts_str[:19], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=_dtf13.timezone.utc).timestamp())
+
+                entry_ts = None; entry_px = None; entry_side = None
+                prev_size = 0; cum_cm = 0.0; cum_pnl = 0.0; max_sz = 0
+
+                for f in fills:
+                    meta = f.get("meta_data", {}) or {}
+                    npos = meta.get("new_position", {}) or {}
+                    size = npos.get("size")
+                    if size is None:
+                        continue
+                    side = f.get("side")
+                    px   = float(f.get("price") or 0)
+                    cm_fill = float(f.get("commission") or 0)
+                    realized = float(npos.get("realized_pnl") or 0)
+
+                    if entry_ts is None and prev_size == 0 and size != 0:
+                        entry_ts   = f.get("created_at")
+                        entry_px   = px
+                        entry_side = side
+                        max_sz = abs(size)
+
+                    cum_cm += cm_fill
                     if entry_ts is not None:
+                        max_sz = max(max_sz, abs(size))
+
+                    # A trade only closes when position hits exactly flat (0),
+                    # OR the signed position crosses zero in one single fill
+                    # (true reversal). Partial reduces toward 0 (e.g. -100 -> -79
+                    # -> ... -> 0) must NOT be treated as separate closed trades -
+                    # that was the root cause of inflated trade counts (186/103
+                    # instead of real ~124/73) in the first version of this fix.
+                    crossed_flip = (prev_size > 0 and size < 0) or (prev_size < 0 and size > 0)
+                    is_flat = size == 0
+
+                    if entry_ts is not None and (is_flat or crossed_flip):
+                        cum_pnl += realized
                         dirn = "LONG" if entry_side == "buy" else "SHORT"
                         pairs.append({
-                            "dir": dirn, "ep": entry_px, "xp": 0.0,
-                            "pnl": 0.0, "cm": cum_cm,
-                            "ets": _pts(entry_ts), "xts": 0,
-                            "sz": max_sz, "open": True, "sl_hit": False
+                            "dir": dirn, "ep": entry_px, "xp": px,
+                            "pnl": cum_pnl, "cm": cum_cm,
+                            "ets": _pts(entry_ts), "xts": _pts(f.get("created_at")),
+                            "sz": max_sz, "open": False, "sl_hit": False
                         })
-                except Exception:
-                    pass
-                return sorted(pairs, key=lambda p: p["ets"])
+                        cum_pnl = 0.0; cum_cm = 0.0
+                        if is_flat:
+                            entry_ts = None; entry_px = None; entry_side = None; max_sz = 0
+                        else:
+                            entry_ts = f.get("created_at"); entry_px = px; entry_side = side
+                            max_sz = abs(size)
+                    prev_size = size
 
-            def _calc13(pairs):
-                if not pairs: return None
-                tot = len(pairs)
-                win = sum(1 for p in pairs if p["pnl"]>0)
-                los = tot-win
+                if entry_ts is not None:
+                    dirn = "LONG" if entry_side == "buy" else "SHORT"
+                    pairs.append({
+                        "dir": dirn, "ep": entry_px, "xp": 0.0,
+                        "pnl": 0.0, "cm": cum_cm,
+                        "ets": _pts(entry_ts), "xts": 0,
+                        "sz": max_sz, "open": True, "sl_hit": False
+                    })
+            except Exception:
+                pass
+            return sorted(pairs, key=lambda p: p["ets"])
+
+        def _calc13(pairs):
+            if not pairs: return None
+            tot = len(pairs)
+            win = sum(1 for p in pairs if p["pnl"]>0)
+            los = tot-win
+            wr  = win/tot*100
+            nu  = sum(p["pnl"] for p in pairs)
+            ni  = nu*_INR13
+            cm  = sum(p["cm"] for p in pairs)
+            pls = [p["pnl"] for p in pairs]
+            cum,pk,dd = 0,0,0
+            for v in pls:
+                cum+=v
+                if cum>pk: pk=cum
+                drop = pk - cum
+                if drop > dd: dd = drop
+            aw = sum(v for v in pls if v>0)/win if win>0 else 0
+            al = sum(v for v in pls if v<0)/los if los>0 else 0
+            pf = abs(sum(v for v in pls if v>0)/sum(v for v in pls if v<0)) if los>0 and sum(v for v in pls if v<0)!=0 else 0
+            import datetime as _dt_c
+            now_c = _dt_c.datetime.utcnow()
+            today_start = now_c.replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
+            week_start  = (now_c - _dt_c.timedelta(days=now_c.weekday())).replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
+            month_start = now_c.replace(day=1,hour=0,minute=0,second=0,microsecond=0).timestamp()
+            year_start  = now_c.replace(month=1,day=1,hour=0,minute=0,second=0,microsecond=0).timestamp()
+            pnl_today   = sum(p["pnl"] for p in pairs if p.get("xts",0) >= today_start)
+            pnl_week    = sum(p["pnl"] for p in pairs if p.get("xts",0) >= week_start)
+            pnl_month   = sum(p["pnl"] for p in pairs if p.get("xts",0) >= month_start)
+            pnl_year    = sum(p["pnl"] for p in pairs if p.get("xts",0) >= year_start)
+            avg_slip    = sum(abs(p.get("ep",0)-p.get("xp",0))*0.001 for p in pairs)/tot if tot>0 else 5.0
+            return {"tot":tot,"win":win,"los":los,"wr":wr,"nu":nu,"ni":ni,"cm":cm,"dd":dd,"aw":aw,"al":al,"pf":pf,
+                    "pnl_today":pnl_today,"pnl_week":pnl_week,"pnl_month":pnl_month,"pnl_year":pnl_year,"avg_slip":avg_slip}
+
+        def _bt_calc13(csv_pattern, vf_str):
+            try:
+                files = sorted(_gl13.glob(csv_pattern), reverse=True)
+                if not files: return None
+                df = _pd13.read_csv(files[0])
+                if 'entry_datetime' not in df.columns: return None
+                df['entry_datetime'] = _pd13.to_datetime(df['entry_datetime'])
+                vf_dt = _pd13.to_datetime(vf_str)
+                df = df[df['entry_datetime'] >= vf_dt]
+                if df.empty: return None
+                tot = len(df)
+                win = (df['net_pnl'] > 0).sum()
+                los = tot - win
                 wr  = win/tot*100
-                nu  = sum(p["pnl"] for p in pairs)
-                ni  = nu*_INR13
-                cm  = sum(p["cm"] for p in pairs)
-                pls = [p["pnl"] for p in pairs]
+                nu  = df['net_pnl'].sum()
+                ni_pretax = df['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else nu*_INR13
+                _win_inr13 = df[df['net_pnl_inr']>0]['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else 0
+                ni = ni_pretax - _win_inr13*0.10
+                cm  = df['total_charges_usd'].sum() if 'total_charges_usd' in df.columns else (df['charges'].sum() if 'charges' in df.columns else 0)
+                pls = df['net_pnl'].tolist()
                 cum,pk,dd = 0,0,0
                 for v in pls:
                     cum+=v
                     if cum>pk: pk=cum
                     drop = pk - cum
                     if drop > dd: dd = drop
-                aw = sum(v for v in pls if v>0)/win if win>0 else 0
-                al = sum(v for v in pls if v<0)/los if los>0 else 0
-                pf = abs(sum(v for v in pls if v>0)/sum(v for v in pls if v<0)) if los>0 and sum(v for v in pls if v<0)!=0 else 0
-                import datetime as _dt_c
-                now_c = _dt_c.datetime.utcnow()
-                today_start = now_c.replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
-                week_start  = (now_c - _dt_c.timedelta(days=now_c.weekday())).replace(hour=0,minute=0,second=0,microsecond=0).timestamp()
-                month_start = now_c.replace(day=1,hour=0,minute=0,second=0,microsecond=0).timestamp()
-                year_start  = now_c.replace(month=1,day=1,hour=0,minute=0,second=0,microsecond=0).timestamp()
-                pnl_today   = sum(p["pnl"] for p in pairs if p.get("xts",0) >= today_start)
-                pnl_week    = sum(p["pnl"] for p in pairs if p.get("xts",0) >= week_start)
-                pnl_month   = sum(p["pnl"] for p in pairs if p.get("xts",0) >= month_start)
-                pnl_year    = sum(p["pnl"] for p in pairs if p.get("xts",0) >= year_start)
-                avg_slip    = sum(abs(p.get("ep",0)-p.get("xp",0))*0.001 for p in pairs)/tot if tot>0 else 5.0
-                return {"tot":tot,"win":win,"los":los,"wr":wr,"nu":nu,"ni":ni,"cm":cm,"dd":dd,"aw":aw,"al":al,"pf":pf,
+                aw = df[df['net_pnl']>0]['net_pnl'].mean() if win>0 else 0
+                al = df[df['net_pnl']<0]['net_pnl'].mean() if los>0 else 0
+                pf_n = df[df['net_pnl']>0]['net_pnl'].sum()
+                pf_d = abs(df[df['net_pnl']<0]['net_pnl'].sum())
+                pf = pf_n/pf_d if pf_d>0 else 0
+                import datetime as _dt_bt
+                now_bt = _dt_bt.datetime.utcnow()
+                today_s = now_bt.replace(hour=0,minute=0,second=0,microsecond=0)
+                week_s  = (now_bt - _dt_bt.timedelta(days=now_bt.weekday())).replace(hour=0,minute=0,second=0,microsecond=0)
+                month_s = now_bt.replace(day=1,hour=0,minute=0,second=0,microsecond=0)
+                year_s  = now_bt.replace(month=1,day=1,hour=0,minute=0,second=0,microsecond=0)
+                if 'entry_datetime' in df.columns:
+                    df['entry_dt'] = _pd13.to_datetime(df['entry_datetime'])
+                    pnl_today = df[df['entry_dt'].dt.date == today_s.date()]['net_pnl'].sum()
+                    pnl_week  = df[df['entry_dt'] >= _pd13.Timestamp(week_s)]['net_pnl'].sum()
+                    pnl_month = df[df['entry_dt'] >= _pd13.Timestamp(month_s)]['net_pnl'].sum()
+                    pnl_year  = df[df['entry_dt'] >= _pd13.Timestamp(year_s)]['net_pnl'].sum()
+                else:
+                    pnl_today = pnl_week = pnl_month = pnl_year = 0
+                avg_slip = df['slippage_usd'].mean() if 'slippage_usd' in df.columns else 5.0
+                return {"tot":tot,"win":int(win),"los":int(los),"wr":wr,"nu":nu,"ni":ni,"cm":cm,"dd":dd,"aw":aw,"al":al,"pf":pf,
                         "pnl_today":pnl_today,"pnl_week":pnl_week,"pnl_month":pnl_month,"pnl_year":pnl_year,"avg_slip":avg_slip}
+            except:
+                return None
 
-            def _bt_calc13(csv_pattern, vf_str):
-                try:
-                    files = sorted(_gl13.glob(csv_pattern), reverse=True)
-                    if not files: return None
-                    df = _pd13.read_csv(files[0])
-                    if 'entry_datetime' not in df.columns: return None
-                    df['entry_datetime'] = _pd13.to_datetime(df['entry_datetime'])
-                    vf_dt = _pd13.to_datetime(vf_str)
-                    df = df[df['entry_datetime'] >= vf_dt]
-                    if df.empty: return None
-                    tot = len(df)
-                    win = (df['net_pnl'] > 0).sum()
-                    los = tot - win
-                    wr  = win/tot*100
-                    nu  = df['net_pnl'].sum()
-                    ni_pretax = df['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else nu*_INR13
-                    _win_inr13 = df[df['net_pnl_inr']>0]['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else 0
-                    ni = ni_pretax - _win_inr13*0.10
-                    cm  = df['total_charges_usd'].sum() if 'total_charges_usd' in df.columns else (df['charges'].sum() if 'charges' in df.columns else 0)
-                    pls = df['net_pnl'].tolist()
-                    cum,pk,dd = 0,0,0
-                    for v in pls:
-                        cum+=v
-                        if cum>pk: pk=cum
-                        drop = pk - cum
-                        if drop > dd: dd = drop
-                    aw = df[df['net_pnl']>0]['net_pnl'].mean() if win>0 else 0
-                    al = df[df['net_pnl']<0]['net_pnl'].mean() if los>0 else 0
-                    pf_n = df[df['net_pnl']>0]['net_pnl'].sum()
-                    pf_d = abs(df[df['net_pnl']<0]['net_pnl'].sum())
-                    pf = pf_n/pf_d if pf_d>0 else 0
-                    import datetime as _dt_bt
-                    now_bt = _dt_bt.datetime.utcnow()
-                    today_s = now_bt.replace(hour=0,minute=0,second=0,microsecond=0)
-                    week_s  = (now_bt - _dt_bt.timedelta(days=now_bt.weekday())).replace(hour=0,minute=0,second=0,microsecond=0)
-                    month_s = now_bt.replace(day=1,hour=0,minute=0,second=0,microsecond=0)
-                    year_s  = now_bt.replace(month=1,day=1,hour=0,minute=0,second=0,microsecond=0)
-                    if 'entry_datetime' in df.columns:
-                        df['entry_dt'] = _pd13.to_datetime(df['entry_datetime'])
-                        pnl_today = df[df['entry_dt'].dt.date == today_s.date()]['net_pnl'].sum()
-                        pnl_week  = df[df['entry_dt'] >= _pd13.Timestamp(week_s)]['net_pnl'].sum()
-                        pnl_month = df[df['entry_dt'] >= _pd13.Timestamp(month_s)]['net_pnl'].sum()
-                        pnl_year  = df[df['entry_dt'] >= _pd13.Timestamp(year_s)]['net_pnl'].sum()
-                    else:
-                        pnl_today = pnl_week = pnl_month = pnl_year = 0
-                    avg_slip = df['slippage_usd'].mean() if 'slippage_usd' in df.columns else 5.0
-                    return {"tot":tot,"win":int(win),"los":int(los),"wr":wr,"nu":nu,"ni":ni,"cm":cm,"dd":dd,"aw":aw,"al":al,"pf":pf,
-                            "pnl_today":pnl_today,"pnl_week":pnl_week,"pnl_month":pnl_month,"pnl_year":pnl_year,"avg_slip":avg_slip}
-                except:
-                    return None
+        def _v13(m, t):
+            if m is None: return "N/A"
+            if t=="tot":  return str(m["tot"])
+            if t=="win":  return str(m["win"])
+            if t=="los":  return str(m["los"])
+            if t=="wr":   return f"{m['wr']:.2f}%"
+            if t=="pnl":  return f"${m['nu']:,.2f} / \u20b9{m['ni']:,.0f}"
+            if t=="aw":   return f"${m['aw']:,.2f}"
+            if t=="al":   return f"${m['al']:,.2f}"
+            if t=="pf":   return f"{m['pf']:.2f}"
+            if t=="dd":   return f"-₹{m['dd']*84:,.0f}" if m['dd']>0 else "₹0"
+            if t=="cm":      return f"${m['cm']:,.2f} / \u20b9{m['cm']*_INR13:,.0f}"
+            if t=="cap":     return f"\u20b9{1816*_INR13:,.0f}"
+            if t=="today":   return f"\u20b9{m.get('pnl_today',0)*_INR13:,.0f}"
+            if t=="week":    return f"\u20b9{m.get('pnl_week',0)*_INR13:,.0f}"
+            if t=="month":   return f"\u20b9{m.get('pnl_month',0)*_INR13:,.0f}"
+            if t=="year":    return f"\u20b9{m.get('pnl_year',0)*_INR13:,.0f}"
+            if t=="slip":    return f"${m.get('avg_slip',0):,.2f}/side"
+            if t=="slipdiff":
+                diff = m.get("avg_slip", 5.0) - 5.0
+                sign = "+" if diff > 0 else ""
+                return f"{sign}${diff:,.2f} vs $5.00"
+            return "N/A"
 
-            def _v13(m, t):
-                if m is None: return "N/A"
-                if t=="tot":  return str(m["tot"])
-                if t=="win":  return str(m["win"])
-                if t=="los":  return str(m["los"])
-                if t=="wr":   return f"{m['wr']:.2f}%"
-                if t=="pnl":  return f"${m['nu']:,.2f} / \u20b9{m['ni']:,.0f}"
-                if t=="aw":   return f"${m['aw']:,.2f}"
-                if t=="al":   return f"${m['al']:,.2f}"
-                if t=="pf":   return f"{m['pf']:.2f}"
-                if t=="dd":   return f"-₹{m['dd']*84:,.0f}" if m['dd']>0 else "₹0"
-                if t=="cm":      return f"${m['cm']:,.2f} / \u20b9{m['cm']*_INR13:,.0f}"
-                if t=="cap":     return f"\u20b9{1816*_INR13:,.0f}"
-                if t=="today":   return f"\u20b9{m.get('pnl_today',0)*_INR13:,.0f}"
-                if t=="week":    return f"\u20b9{m.get('pnl_week',0)*_INR13:,.0f}"
-                if t=="month":   return f"\u20b9{m.get('pnl_month',0)*_INR13:,.0f}"
-                if t=="year":    return f"\u20b9{m.get('pnl_year',0)*_INR13:,.0f}"
-                if t=="slip":    return f"${m.get('avg_slip',0):,.2f}/side"
-                if t=="slipdiff":
-                    diff = m.get("avg_slip", 5.0) - 5.0
-                    sign = "+" if diff > 0 else ""
-                    return f"{sign}${diff:,.2f} vs $5.00"
-                return "N/A"
+        def _c13(m, pos=True):
+            if m is None: return _TDN13
+            if pos: return _TDG13 if m.get("nu",0)>=0 else _TDR13
+            return _TDR13
 
-            def _c13(m, pos=True):
-                if m is None: return _TDN13
-                if pos: return _TDG13 if m.get("nu",0)>=0 else _TDR13
-                return _TDR13
-
-            def _build_tbl13(s2m, s4m, cbm):
-                def _row(lbl, v2, v4, vc, c2=None, c4=None, cc=None):
-                    # S4V2/S4 columns: grey if N/A
-                    _c2 = _TDN13 if str(v2)=='N/A' else (c2 or _TDN13)
-                    _c4 = _TDN13 if str(v4)=='N/A' else (c4 or _TDN13)
-                    # Combined column: green/red/grey based on value
-                    # Always override color for N/A regardless of passed cc
-                    _vc = str(vc)
-                    if _vc == 'N/A':
+        def _build_tbl13(s2m, s4m, cbm):
+            def _row(lbl, v2, v4, vc, c2=None, c4=None, cc=None):
+                # S4V2/S4 columns: grey if N/A
+                _c2 = _TDN13 if str(v2)=='N/A' else (c2 or _TDN13)
+                _c4 = _TDN13 if str(v4)=='N/A' else (c4 or _TDN13)
+                # Combined column: green/red/grey based on value
+                # Always override color for N/A regardless of passed cc
+                _vc = str(vc)
+                if _vc == 'N/A':
+                    cc = _TDN13
+                elif cc is None:
+                    if _vc.startswith('-') or _vc.startswith('$-') or _vc.startswith('₹-'):
+                        cc = _TDR13
+                    elif _vc in ['0','0.00%','$0.00','₹0','0.00','0.00%']:
                         cc = _TDN13
-                    elif cc is None:
-                        if _vc.startswith('-') or _vc.startswith('$-') or _vc.startswith('₹-'):
-                            cc = _TDR13
-                        elif _vc in ['0','0.00%','$0.00','₹0','0.00','0.00%']:
-                            cc = _TDN13
-                        else:
-                            cc = _TDG13
-                    return (f"<tr><td style='{_TD13}'>{lbl}</td>"
-                            f"<td style='{_c2}'>{v2}</td>"
-                            f"<td style='{_c4}'>{v4}</td>"
-                            f"<td style='{cc}'>{vc}</td></tr>")
+                    else:
+                        cc = _TDG13
+                return (f"<tr><td style='{_TD13}'>{lbl}</td>"
+                        f"<td style='{_c2}'>{v2}</td>"
+                        f"<td style='{_c4}'>{v4}</td>"
+                        f"<td style='{cc}'>{vc}</td></tr>")
+            return (
+                f"<div style='overflow-x:auto;margin:4px 0;'>"
+                f"<table style='width:100%;border-collapse:collapse;'>"
+                f"<thead><tr>"
+                f"<th style='{_TH13}'>Metric</th>"
+                f"<th style='{_TH13}'>S4V2</th>"
+                f"<th style='{_TH13}'>S4</th>"
+                f"<th style='{_TH13}'>Combined</th>"
+                f"</tr></thead><tbody>"
+                f"<tr><td colspan='4' style='{_SUB13}'>CAPITAL</td></tr>"
+                + _row("Total Capital Required", _v13(s2m,"cap"), _v13(s4m,"cap"), f"\u20b9{int(1816*_INR13):,}")
+                + f"<tr><td colspan='4' style='{_SUB13}'>CUMULATIVE PnL</td></tr>"
+                + _row("Today PnL",   _v13(s2m,"today"), _v13(s4m,"today"), _v13(cbm,"today"), _c13(s2m,True) if s2m and s2m.get("pnl_today",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_today",0)>=0 else _TDR13, _c13(cbm,True) if cbm and cbm.get("pnl_today",0)>=0 else _TDR13)
+                + _row("Weekly PnL",  _v13(s2m,"week"),  _v13(s4m,"week"),  _v13(cbm,"week"),  _c13(s2m,True) if s2m and s2m.get("pnl_week",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_week",0)>=0 else _TDR13,  _c13(cbm,True) if cbm and cbm.get("pnl_week",0)>=0 else _TDR13)
+                + _row("Monthly PnL", _v13(s2m,"month"), _v13(s4m,"month"), _v13(cbm,"month"), _c13(s2m,True) if s2m and s2m.get("pnl_month",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_month",0)>=0 else _TDR13, _c13(cbm,True) if cbm and cbm.get("pnl_month",0)>=0 else _TDR13)
+                + _row("Yearly PnL",  _v13(s2m,"year"),  _v13(s4m,"year"),  _v13(cbm,"year"),  _c13(s2m,True) if s2m and s2m.get("pnl_year",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_year",0)>=0 else _TDR13,  _c13(cbm,True) if cbm and cbm.get("pnl_year",0)>=0 else _TDR13)
+                + f"<tr><td colspan='4' style='{_SUB13}'>CHARGES</td></tr>"
+                + _row("Total Charges", _v13(s2m,"cm"),  _v13(s4m,"cm"),  _v13(cbm,"cm"),  _TDR13,_TDR13,_TDR13)
+                + f"<tr><td colspan='4' style='{_SUB13}'>TRADE COUNT</td></tr>"
+                + _row("Total Trades",  _v13(s2m,"tot"), _v13(s4m,"tot"), _v13(cbm,"tot"))
+                + _row("Wins",          _v13(s2m,"win"), _v13(s4m,"win"), _v13(cbm,"win"), _TDG13,_TDG13,_TDG13)
+                + _row("Losses",        _v13(s2m,"los"), _v13(s4m,"los"), _v13(cbm,"los"), _TDR13,_TDR13,_TDR13)
+                + f"<tr><td colspan='4' style='{_SUB13}'>PERFORMANCE</td></tr>"
+                + _row("Win Rate",      _v13(s2m,"wr"),  _v13(s4m,"wr"),  _v13(cbm,"wr"))
+                + _row("Net PnL (all charges incl.)", _v13(s2m,"pnl"), _v13(s4m,"pnl"), _v13(cbm,"pnl"), _c13(s2m),_c13(s4m),_c13(cbm))
+                + _row("Avg Win",       _v13(s2m,"aw"),  _v13(s4m,"aw"),  _v13(cbm,"aw"),  _TDG13,_TDG13,_TDG13)
+                + _row("Avg Loss",      _v13(s2m,"al"),  _v13(s4m,"al"),  _v13(cbm,"al"),  _TDR13,_TDR13,_TDR13)
+                + _row("Profit Factor", _v13(s2m,"pf"),  _v13(s4m,"pf"),  _v13(cbm,"pf"))
+                + f"<tr><td colspan='4' style='{_SUB13}'>RISK</td></tr>"
+                + _row("Max Drawdown",  _v13(s2m,"dd"),  _v13(s4m,"dd"),  _v13(cbm,"dd"),  _TDR13,_TDR13,_TDR13)
+                + f"<tr><td colspan='4' style='{_SUB13}'>SLIPPAGE</td></tr>"
+                + _row("Avg Slippage/side", _v13(s2m,"slip"), _v13(s4m,"slip"), _v13(cbm,"slip"), _TDR13,_TDR13,_TDR13)
+                + _row("vs Backtest ($5/side)", _v13(s2m,"slipdiff"), _v13(s4m,"slipdiff"), _v13(cbm,"slipdiff"), _TDG13 if s2m and s2m.get("avg_slip",5)<=5 else _TDR13, _TDG13 if s4m and s4m.get("avg_slip",5)<=5 else _TDR13, _TDB13)
+                + "</tbody></table></div>"
+            )
+
+        # ── LOAD FORWARD TEST DATA FROM SIGNALS CSV (matches BT engine exactly) ──
+        s2p  = _pair13_fills(os.getenv("S4V2_API_KEY"), os.getenv("S4V2_API_SECRET"), _VF13_7D)
+        s4p  = _pair13_fills(os.getenv("S4_API_KEY"), os.getenv("S4_API_SECRET"), _VF13_7D)
+        s2m  = _calc13(s2p)
+        s4m  = _calc13(s4p)
+        cbm  = _calc13(s2p+s4p)
+
+        # ── FETCH BACKTEST DATA (same date range) ────────────────
+        s2_bt = _bt_calc13("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv", _VF13_7D)
+        s4_bt = _bt_calc13("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv", _VF13_7D)
+        cb_bt_pairs = []
+        if s2_bt: cb_bt_pairs.append(s2_bt)
+        if s4_bt: cb_bt_pairs.append(s4_bt)
+        cb_bt = None
+        if s2_bt and s4_bt:
+            merged = {"tot":s2_bt["tot"]+s4_bt["tot"],
+                      "win":s2_bt["win"]+s4_bt["win"],
+                      "los":s2_bt["los"]+s4_bt["los"],
+                      "wr":(s2_bt["win"]+s4_bt["win"])/(s2_bt["tot"]+s4_bt["tot"])*100,
+                      "nu":s2_bt["nu"]+s4_bt["nu"],
+                      "ni":s2_bt["ni"]+s4_bt["ni"],
+                      "cm":s2_bt["cm"]+s4_bt["cm"],
+                      "dd":max(s2_bt["dd"],s4_bt["dd"]),
+                      "aw":(s2_bt["aw"]*s2_bt["win"]+s4_bt["aw"]*s4_bt["win"])/(s2_bt["win"]+s4_bt["win"]) if (s2_bt["win"]+s4_bt["win"])>0 else 0,
+                      "al":(s2_bt["al"]*s2_bt["los"]+s4_bt["al"]*s4_bt["los"])/(s2_bt["los"]+s4_bt["los"]) if (s2_bt["los"]+s4_bt["los"])>0 else 0,
+                      "pf":abs((s2_bt["aw"]*s2_bt["win"]+s4_bt["aw"]*s4_bt["win"])/(s2_bt["al"]*s2_bt["los"]+s4_bt["al"]*s4_bt["los"])) if (s2_bt["los"]+s4_bt["los"])>0 and (s2_bt["al"]*s2_bt["los"]+s4_bt["al"]*s4_bt["los"])!=0 else 0,
+                      "pnl_today":s2_bt.get("pnl_today",0)+s4_bt.get("pnl_today",0),
+                      "pnl_week":s2_bt.get("pnl_week",0)+s4_bt.get("pnl_week",0),
+                      "pnl_month":s2_bt.get("pnl_month",0)+s4_bt.get("pnl_month",0),
+                      "pnl_year":s2_bt.get("pnl_year",0)+s4_bt.get("pnl_year",0)}
+            cb_bt = merged
+
+        st.caption(f"Showing current month ({_VF13_7D[:7]}) | Valid from: {_VF13_7D[:10]} UTC | Auto updates on page load | Testnet")
+
+        st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
+
+        _TH20 = "padding:4px 6px;border:1px solid #90CAF9;background:#E3F2FD;font-size:10px;font-weight:700;color:#333;text-align:center;white-space:nowrap;"
+        _TD20 = "padding:4px 6px;border:1px solid #BBDEFB;font-size:11px;color:#131722;text-align:center;white-space:nowrap;"
+        _TG20 = "padding:4px 6px;border:1px solid #BBDEFB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
+        _TR20 = "padding:4px 6px;border:1px solid #BBDEFB;font-size:11px;color:#F23645;font-weight:700;text-align:center;"
+        _TY20 = "padding:4px 6px;border:1px solid #BBDEFB;font-size:11px;color:#e07000;font-weight:700;text-align:center;"
+
+        def _fwd_slip_hdr13(pairs, bot_name=""):
+            try:
+                closed = [p for p in pairs if not p.get('open', False)]
+                tot = len(closed)
+                net_pnl_inr = sum(float(p.get('pnl',0)) for p in closed) * _INR13
+                _bt_lu13h = _bt_lookup13(bot_name, vf_str=_VF13_7D) if bot_name else {"LONG":[],"SHORT":[]}
+                _lv_closed13h = [q for q in closed]
+                _lv_pos13h = {"LONG": {id(x): i for i, x in enumerate([q for q in _lv_closed13h if str(q.get("dir","")).upper()=="LONG"])},
+                              "SHORT": {id(x): i for i, x in enumerate([q for q in _lv_closed13h if str(q.get("dir","")).upper()=="SHORT"])}}
+                fav_usd, unfav_usd = 0.0, 0.0
+                for p in closed:
+                    _dv13 = str(p.get("dir","")).upper()
+                    _bm13 = None
+                    if _dv13 in _lv_pos13h and id(p) in _lv_pos13h[_dv13]:
+                        _sidx13h = _lv_pos13h[_dv13][id(p)]
+                        if _sidx13h < len(_bt_lu13h.get(_dv13, [])):
+                            _bm13 = _bt_lu13h[_dv13][_sidx13h]
+                    if not _bm13:
+                        continue
+                    _sge13h = (_bm13["ep"] - float(p.get("ep",0))) if _dv13=="LONG" else (float(p.get("ep",0)) - _bm13["ep"])
+                    _sgx13h = (float(p.get("xp",0)) - _bm13["xp"]) if _dv13=="LONG" else (_bm13["xp"] - float(p.get("xp",0)))
+                    for _sg13h in (_sge13h, _sgx13h):
+                        _val13h = abs(_sg13h) * 0.1
+                        if _sg13h >= 0: fav_usd += _val13h
+                        else: unfav_usd += _val13h
+                net_slip_usd = fav_usd - unfav_usd
+                net_slip_inr = net_slip_usd * _INR13
+                import datetime as _dth13
+                _ist_off13 = _dth13.timedelta(hours=5, minutes=30)
+                _today_ist13 = (_dth13.datetime.utcnow() + _ist_off13).strftime("%d-%b-%Y")
+                fav_t, unfav_t, cnt_t = 0.0, 0.0, 0
+                for p in closed:
+                    _dts13 = (_dth13.datetime.utcfromtimestamp(p.get("xts",0)) + _ist_off13).strftime("%d-%b-%Y")
+                    if _dts13 != _today_ist13:
+                        continue
+                    _dv13t = str(p.get("dir","")).upper()
+                    _bm13t = None
+                    if _dv13t in _lv_pos13h and id(p) in _lv_pos13h[_dv13t]:
+                        _sidx13t = _lv_pos13h[_dv13t][id(p)]
+                        if _sidx13t < len(_bt_lu13h.get(_dv13t, [])):
+                            _bm13t = _bt_lu13h[_dv13t][_sidx13t]
+                    if not _bm13t:
+                        continue
+                    cnt_t += 1
+                    _sge13t = (_bm13t["ep"] - float(p.get("ep",0))) if _dv13t=="LONG" else (float(p.get("ep",0)) - _bm13t["ep"])
+                    _sgx13t = (float(p.get("xp",0)) - _bm13t["xp"]) if _dv13t=="LONG" else (_bm13t["xp"] - float(p.get("xp",0)))
+                    for _sg13t in (_sge13t, _sgx13t):
+                        _val13t = abs(_sg13t) * 0.1
+                        if _sg13t >= 0: fav_t += _val13t
+                        else: unfav_t += _val13t
+                net_t = fav_t - unfav_t
+                _tlc = "#089981" if net_t >= 0 else "#F23645"
+                _pnlc = "#089981" if net_pnl_inr >= 0 else "#F23645"
+                _slc  = "#089981" if net_slip_usd >= 0 else "#F23645"
                 return (
-                    f"<div style='overflow-x:auto;margin:4px 0;'>"
-                    f"<table style='width:100%;border-collapse:collapse;'>"
-                    f"<thead><tr>"
-                    f"<th style='{_TH13}'>Metric</th>"
-                    f"<th style='{_TH13}'>S4V2</th>"
-                    f"<th style='{_TH13}'>S4</th>"
-                    f"<th style='{_TH13}'>Combined</th>"
-                    f"</tr></thead><tbody>"
-                    f"<tr><td colspan='4' style='{_SUB13}'>CAPITAL</td></tr>"
-                    + _row("Total Capital Required", _v13(s2m,"cap"), _v13(s4m,"cap"), f"\u20b9{int(1816*_INR13):,}")
-                    + f"<tr><td colspan='4' style='{_SUB13}'>CUMULATIVE PnL</td></tr>"
-                    + _row("Today PnL",   _v13(s2m,"today"), _v13(s4m,"today"), _v13(cbm,"today"), _c13(s2m,True) if s2m and s2m.get("pnl_today",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_today",0)>=0 else _TDR13, _c13(cbm,True) if cbm and cbm.get("pnl_today",0)>=0 else _TDR13)
-                    + _row("Weekly PnL",  _v13(s2m,"week"),  _v13(s4m,"week"),  _v13(cbm,"week"),  _c13(s2m,True) if s2m and s2m.get("pnl_week",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_week",0)>=0 else _TDR13,  _c13(cbm,True) if cbm and cbm.get("pnl_week",0)>=0 else _TDR13)
-                    + _row("Monthly PnL", _v13(s2m,"month"), _v13(s4m,"month"), _v13(cbm,"month"), _c13(s2m,True) if s2m and s2m.get("pnl_month",0)>=0 else _TDR13, _c13(s4m,True) if s4m and s4m.get("pnl_month",0)>=0 else _TDR13, _c13(cbm,True) if cbm and cbm.get("pnl_month",0)>=0 else _TDR13)
-                    + _row("Yearly PnL",  _v13(s2m,"year"),  _v13(s4m,"year"),  _v13(cbm,"year"),  _c13(s2m,True) if s2m and s2m.get("pnl_year",0)>=0 else _TDR13,  _c13(s4m,True) if s4m and s4m.get("pnl_year",0)>=0 else _TDR13,  _c13(cbm,True) if cbm and cbm.get("pnl_year",0)>=0 else _TDR13)
-                    + f"<tr><td colspan='4' style='{_SUB13}'>CHARGES</td></tr>"
-                    + _row("Total Charges", _v13(s2m,"cm"),  _v13(s4m,"cm"),  _v13(cbm,"cm"),  _TDR13,_TDR13,_TDR13)
-                    + f"<tr><td colspan='4' style='{_SUB13}'>TRADE COUNT</td></tr>"
-                    + _row("Total Trades",  _v13(s2m,"tot"), _v13(s4m,"tot"), _v13(cbm,"tot"))
-                    + _row("Wins",          _v13(s2m,"win"), _v13(s4m,"win"), _v13(cbm,"win"), _TDG13,_TDG13,_TDG13)
-                    + _row("Losses",        _v13(s2m,"los"), _v13(s4m,"los"), _v13(cbm,"los"), _TDR13,_TDR13,_TDR13)
-                    + f"<tr><td colspan='4' style='{_SUB13}'>PERFORMANCE</td></tr>"
-                    + _row("Win Rate",      _v13(s2m,"wr"),  _v13(s4m,"wr"),  _v13(cbm,"wr"))
-                    + _row("Net PnL (all charges incl.)", _v13(s2m,"pnl"), _v13(s4m,"pnl"), _v13(cbm,"pnl"), _c13(s2m),_c13(s4m),_c13(cbm))
-                    + _row("Avg Win",       _v13(s2m,"aw"),  _v13(s4m,"aw"),  _v13(cbm,"aw"),  _TDG13,_TDG13,_TDG13)
-                    + _row("Avg Loss",      _v13(s2m,"al"),  _v13(s4m,"al"),  _v13(cbm,"al"),  _TDR13,_TDR13,_TDR13)
-                    + _row("Profit Factor", _v13(s2m,"pf"),  _v13(s4m,"pf"),  _v13(cbm,"pf"))
-                    + f"<tr><td colspan='4' style='{_SUB13}'>RISK</td></tr>"
-                    + _row("Max Drawdown",  _v13(s2m,"dd"),  _v13(s4m,"dd"),  _v13(cbm,"dd"),  _TDR13,_TDR13,_TDR13)
-                    + f"<tr><td colspan='4' style='{_SUB13}'>SLIPPAGE</td></tr>"
-                    + _row("Avg Slippage/side", _v13(s2m,"slip"), _v13(s4m,"slip"), _v13(cbm,"slip"), _TDR13,_TDR13,_TDR13)
-                    + _row("vs Backtest ($5/side)", _v13(s2m,"slipdiff"), _v13(s4m,"slipdiff"), _v13(cbm,"slipdiff"), _TDG13 if s2m and s2m.get("avg_slip",5)<=5 else _TDR13, _TDG13 if s4m and s4m.get("avg_slip",5)<=5 else _TDR13, _TDB13)
-                    + "</tbody></table></div>"
+                    f"<div style='font-size:11px;margin:2px 0 6px 0;padding:4px 8px;background:#F5F7FA;border-radius:3px;'>"
+                    f"<b>Total Trades:</b> {tot} &nbsp;|&nbsp; "
+                    f"<b>Net PnL:</b> <span style='color:{_pnlc};font-weight:700;'>₹{net_pnl_inr:,.0f}</span> &nbsp;|&nbsp; "
+                    f"<b>Net Slippage:</b> Favorable: +${fav_usd:,.2f} | Unfavorable: -${unfav_usd:,.2f} | "
+                    f"Net: <span style='color:{_slc};font-weight:700;'>{'+' if net_slip_usd>=0 else ''}${net_slip_usd:,.2f} (₹{net_slip_inr:,.0f})</span><br>"
+                    f"<b>Today's Slippage:</b> {cnt_t} trades | Favorable: +${fav_t:,.2f} | Unfavorable: -${unfav_t:,.2f} | "
+                    f"Net: <span style='color:{_tlc};font-weight:700;'>{'+' if net_t>=0 else ''}${net_t:,.2f}</span>"
+                    f"</div>"
                 )
+            except Exception:
+                return ""
 
-            # ── LOAD FORWARD TEST DATA FROM SIGNALS CSV (matches BT engine exactly) ──
-            s2p  = _pair13_fills(os.getenv("S4V2_API_KEY"), os.getenv("S4V2_API_SECRET"), _VF13_7D)
-            s4p  = _pair13_fills(os.getenv("S4_API_KEY"), os.getenv("S4_API_SECRET"), _VF13_7D)
-            s2m  = _calc13(s2p)
-            s4m  = _calc13(s4p)
-            cbm  = _calc13(s2p+s4p)
+        def _bt_lookup13(bot_name, vf_str=None):
+            # Exact-trade key = (rounded entry_price, direction) - same method as
+            # _load_signals_lookup() used in Today's Trades tab, guarantees correct
+            # trade pairing instead of approximate timestamp-proximity matching.
+            # Sequential same-direction index matching: Nth LONG BT trade pairs with
+            # Nth LONG LV trade (both sorted ascending by entry time). Bot fires off
+            # the same signals as backtest, so same-index = same real trade. Price
+            # keys cannot be used here since price DIFFERENCE is the slippage itself.
+            _lu = {"LONG": [], "SHORT": []}
+            try:
+                import glob as _gb13m, pandas as _pb13m
+                _pat = "output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv" if bot_name=="S4V2" else "output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"
+                _files = sorted(_gb13m.glob(_pat), reverse=True)
+                if _files:
+                    _dfl = _pb13m.read_csv(_files[0])
+                    _dfl["entry_datetime"] = _pb13m.to_datetime(_dfl["entry_datetime"])
+                    _dfl["exit_datetime"] = _pb13m.to_datetime(_dfl["exit_datetime"])
+                    if vf_str:
+                        _dfl = _dfl[_dfl["entry_datetime"] >= _pb13m.to_datetime(vf_str)]
+                    _dfl = _dfl.sort_values("entry_datetime")
+                    for _, _rl in _dfl.iterrows():
+                        _dvv = str(_rl.get("direction","")).upper()
+                        if _dvv not in _lu: continue
+                        _lu[_dvv].append({
+                            "ets": _rl["entry_datetime"].timestamp(),
+                            "xts": _rl["exit_datetime"].timestamp(),
+                            "ep": float(_rl.get("entry_price",0)),
+                            "xp": float(_rl.get("exit_price",0)),
+                            "dir": _dvv
+                        })
+            except Exception:
+                pass
+            return _lu
 
-            # ── FETCH BACKTEST DATA (same date range) ────────────────
-            s2_bt = _bt_calc13("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv", _VF13_7D)
-            s4_bt = _bt_calc13("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv", _VF13_7D)
-            cb_bt_pairs = []
-            if s2_bt: cb_bt_pairs.append(s2_bt)
-            if s4_bt: cb_bt_pairs.append(s4_bt)
-            cb_bt = None
-            if s2_bt and s4_bt:
-                merged = {"tot":s2_bt["tot"]+s4_bt["tot"],
-                          "win":s2_bt["win"]+s4_bt["win"],
-                          "los":s2_bt["los"]+s4_bt["los"],
-                          "wr":(s2_bt["win"]+s4_bt["win"])/(s2_bt["tot"]+s4_bt["tot"])*100,
-                          "nu":s2_bt["nu"]+s4_bt["nu"],
-                          "ni":s2_bt["ni"]+s4_bt["ni"],
-                          "cm":s2_bt["cm"]+s4_bt["cm"],
-                          "dd":max(s2_bt["dd"],s4_bt["dd"]),
-                          "aw":(s2_bt["aw"]*s2_bt["win"]+s4_bt["aw"]*s4_bt["win"])/(s2_bt["win"]+s4_bt["win"]) if (s2_bt["win"]+s4_bt["win"])>0 else 0,
-                          "al":(s2_bt["al"]*s2_bt["los"]+s4_bt["al"]*s4_bt["los"])/(s2_bt["los"]+s4_bt["los"]) if (s2_bt["los"]+s4_bt["los"])>0 else 0,
-                          "pf":abs((s2_bt["aw"]*s2_bt["win"]+s4_bt["aw"]*s4_bt["win"])/(s2_bt["al"]*s2_bt["los"]+s4_bt["al"]*s4_bt["los"])) if (s2_bt["los"]+s4_bt["los"])>0 and (s2_bt["al"]*s2_bt["los"]+s4_bt["al"]*s4_bt["los"])!=0 else 0,
-                          "pnl_today":s2_bt.get("pnl_today",0)+s4_bt.get("pnl_today",0),
-                          "pnl_week":s2_bt.get("pnl_week",0)+s4_bt.get("pnl_week",0),
-                          "pnl_month":s2_bt.get("pnl_month",0)+s4_bt.get("pnl_month",0),
-                          "pnl_year":s2_bt.get("pnl_year",0)+s4_bt.get("pnl_year",0)}
-                cb_bt = merged
-
-            st.caption(f"Showing current month ({_VF13_7D[:7]}) | Valid from: {_VF13_7D[:10]} UTC | Auto updates on page load | Testnet")
-
-            st.markdown("<div style='height:10px'></div>", unsafe_allow_html=True)
-
-            _TH20 = "padding:4px 6px;border:1px solid #90CAF9;background:#E3F2FD;font-size:10px;font-weight:700;color:#333;text-align:center;white-space:nowrap;"
-            _TD20 = "padding:4px 6px;border:1px solid #BBDEFB;font-size:11px;color:#131722;text-align:center;white-space:nowrap;"
-            _TG20 = "padding:4px 6px;border:1px solid #BBDEFB;font-size:11px;color:#089981;font-weight:700;text-align:center;"
-            _TR20 = "padding:4px 6px;border:1px solid #BBDEFB;font-size:11px;color:#F23645;font-weight:700;text-align:center;"
-            _TY20 = "padding:4px 6px;border:1px solid #BBDEFB;font-size:11px;color:#e07000;font-weight:700;text-align:center;"
-
-            def _fwd_slip_hdr13(pairs, bot_name=""):
+        def _fwd20(pairs, bot_name=""):
+            try:
+                if not pairs:
+                    return (f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'><table style='width:100%;border-collapse:collapse;'><thead><tr><th style='{_TH20}'>Date</th><th style='{_TH20}'>Dir</th><th style='{_TH20}'>Lot</th><th style='{_TH20}'>Entry Time</th><th style='{_TH20}'>Exit Time</th><th style='{_TH20}'>Entry (INR)</th><th style='{_TH20}'>Exit (INR)</th><th style='{_TH20}'>Slip Diff vs $5</th><th style='{_TH20}'>Tax+Charges</th><th style='{_TH20}'>PnL</th><th style='{_TH20}'>Match</th><th style='{_TH20}'>Message</th></tr></thead><tbody><tr><td colspan='12' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>Waiting for first trade</td></tr></tbody></table></div>")
+                import datetime as _dfw
+                last20 = pairs[::-1]
+                _bt_lu13 = _bt_lookup13(bot_name, vf_str=_VF13_7D) if bot_name else {"LONG":[],"SHORT":[]}
+                _lv_asc13 = pairs  # pairs already sorted ascending by ets (see _pair13/_pair13_csv)
+                _lv_idx13 = {"LONG": [q for q in _lv_asc13 if str(q.get("dir","")).upper()=="LONG" and not q.get("open",False)],
+                             "SHORT": [q for q in _lv_asc13 if str(q.get("dir","")).upper()=="SHORT" and not q.get("open",False)]}
+                _lv_pos13 = {"LONG": {id(x): i for i, x in enumerate(_lv_idx13["LONG"])},
+                             "SHORT": {id(x): i for i, x in enumerate(_lv_idx13["SHORT"])}}
+                # Cosmetic-only cross-check: confirm OPEN row's direction matches the
+                # real live position on Delta right now, so a stale/orphan leftover
+                # entry (no real position) is not mislabeled "Trade running now".
+                _live_dir13 = None
                 try:
-                    closed = [p for p in pairs if not p.get('open', False)]
-                    tot = len(closed)
-                    net_pnl_inr = sum(float(p.get('pnl',0)) for p in closed) * _INR13
-                    _bt_lu13h = _bt_lookup13(bot_name, vf_str=_VF13_7D) if bot_name else {"LONG":[],"SHORT":[]}
-                    _lv_closed13h = [q for q in closed]
-                    _lv_pos13h = {"LONG": {id(x): i for i, x in enumerate([q for q in _lv_closed13h if str(q.get("dir","")).upper()=="LONG"])},
-                                  "SHORT": {id(x): i for i, x in enumerate([q for q in _lv_closed13h if str(q.get("dir","")).upper()=="SHORT"])}}
-                    fav_usd, unfav_usd = 0.0, 0.0
-                    for p in closed:
-                        _dv13 = str(p.get("dir","")).upper()
-                        _bm13 = None
-                        if _dv13 in _lv_pos13h and id(p) in _lv_pos13h[_dv13]:
-                            _sidx13h = _lv_pos13h[_dv13][id(p)]
-                            if _sidx13h < len(_bt_lu13h.get(_dv13, [])):
-                                _bm13 = _bt_lu13h[_dv13][_sidx13h]
-                        if not _bm13:
-                            continue
-                        _sge13h = (_bm13["ep"] - float(p.get("ep",0))) if _dv13=="LONG" else (float(p.get("ep",0)) - _bm13["ep"])
-                        _sgx13h = (float(p.get("xp",0)) - _bm13["xp"]) if _dv13=="LONG" else (_bm13["xp"] - float(p.get("xp",0)))
-                        for _sg13h in (_sge13h, _sgx13h):
-                            _val13h = abs(_sg13h) * 0.1
-                            if _sg13h >= 0: fav_usd += _val13h
-                            else: unfav_usd += _val13h
-                    net_slip_usd = fav_usd - unfav_usd
-                    net_slip_inr = net_slip_usd * _INR13
-                    import datetime as _dth13
-                    _ist_off13 = _dth13.timedelta(hours=5, minutes=30)
-                    _today_ist13 = (_dth13.datetime.utcnow() + _ist_off13).strftime("%d-%b-%Y")
-                    fav_t, unfav_t, cnt_t = 0.0, 0.0, 0
-                    for p in closed:
-                        _dts13 = (_dth13.datetime.utcfromtimestamp(p.get("xts",0)) + _ist_off13).strftime("%d-%b-%Y")
-                        if _dts13 != _today_ist13:
-                            continue
-                        _dv13t = str(p.get("dir","")).upper()
-                        _bm13t = None
-                        if _dv13t in _lv_pos13h and id(p) in _lv_pos13h[_dv13t]:
-                            _sidx13t = _lv_pos13h[_dv13t][id(p)]
-                            if _sidx13t < len(_bt_lu13h.get(_dv13t, [])):
-                                _bm13t = _bt_lu13h[_dv13t][_sidx13t]
-                        if not _bm13t:
-                            continue
-                        cnt_t += 1
-                        _sge13t = (_bm13t["ep"] - float(p.get("ep",0))) if _dv13t=="LONG" else (float(p.get("ep",0)) - _bm13t["ep"])
-                        _sgx13t = (float(p.get("xp",0)) - _bm13t["xp"]) if _dv13t=="LONG" else (_bm13t["xp"] - float(p.get("xp",0)))
-                        for _sg13t in (_sge13t, _sgx13t):
-                            _val13t = abs(_sg13t) * 0.1
-                            if _sg13t >= 0: fav_t += _val13t
-                            else: unfav_t += _val13t
-                    net_t = fav_t - unfav_t
-                    _tlc = "#089981" if net_t >= 0 else "#F23645"
-                    _pnlc = "#089981" if net_pnl_inr >= 0 else "#F23645"
-                    _slc  = "#089981" if net_slip_usd >= 0 else "#F23645"
-                    return (
-                        f"<div style='font-size:11px;margin:2px 0 6px 0;padding:4px 8px;background:#F5F7FA;border-radius:3px;'>"
-                        f"<b>Total Trades:</b> {tot} &nbsp;|&nbsp; "
-                        f"<b>Net PnL:</b> <span style='color:{_pnlc};font-weight:700;'>₹{net_pnl_inr:,.0f}</span> &nbsp;|&nbsp; "
-                        f"<b>Net Slippage:</b> Favorable: +${fav_usd:,.2f} | Unfavorable: -${unfav_usd:,.2f} | "
-                        f"Net: <span style='color:{_slc};font-weight:700;'>{'+' if net_slip_usd>=0 else ''}${net_slip_usd:,.2f} (₹{net_slip_inr:,.0f})</span><br>"
-                        f"<b>Today's Slippage:</b> {cnt_t} trades | Favorable: +${fav_t:,.2f} | Unfavorable: -${unfav_t:,.2f} | "
-                        f"Net: <span style='color:{_tlc};font-weight:700;'>{'+' if net_t>=0 else ''}${net_t:,.2f}</span>"
-                        f"</div>"
-                    )
-                except Exception:
-                    return ""
-
-            def _bt_lookup13(bot_name, vf_str=None):
-                # Exact-trade key = (rounded entry_price, direction) - same method as
-                # _load_signals_lookup() used in Today's Trades tab, guarantees correct
-                # trade pairing instead of approximate timestamp-proximity matching.
-                # Sequential same-direction index matching: Nth LONG BT trade pairs with
-                # Nth LONG LV trade (both sorted ascending by entry time). Bot fires off
-                # the same signals as backtest, so same-index = same real trade. Price
-                # keys cannot be used here since price DIFFERENCE is the slippage itself.
-                _lu = {"LONG": [], "SHORT": []}
-                try:
-                    import glob as _gb13m, pandas as _pb13m
-                    _pat = "output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv" if bot_name=="S4V2" else "output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"
-                    _files = sorted(_gb13m.glob(_pat), reverse=True)
-                    if _files:
-                        _dfl = _pb13m.read_csv(_files[0])
-                        _dfl["entry_datetime"] = _pb13m.to_datetime(_dfl["entry_datetime"])
-                        _dfl["exit_datetime"] = _pb13m.to_datetime(_dfl["exit_datetime"])
-                        if vf_str:
-                            _dfl = _dfl[_dfl["entry_datetime"] >= _pb13m.to_datetime(vf_str)]
-                        _dfl = _dfl.sort_values("entry_datetime")
-                        for _, _rl in _dfl.iterrows():
-                            _dvv = str(_rl.get("direction","")).upper()
-                            if _dvv not in _lu: continue
-                            _lu[_dvv].append({
-                                "ets": _rl["entry_datetime"].timestamp(),
-                                "xts": _rl["exit_datetime"].timestamp(),
-                                "ep": float(_rl.get("entry_price",0)),
-                                "xp": float(_rl.get("exit_price",0)),
-                                "dir": _dvv
-                            })
+                    _lk13 = os.getenv("S4V2_API_KEY") if bot_name=="S4V2" else os.getenv("S4_API_KEY")
+                    _ls13 = os.getenv("S4V2_API_SECRET") if bot_name=="S4V2" else os.getenv("S4_API_SECRET")
+                    _lts13 = str(int(_t13.time())); _lqs13 = "product_id=84"; _lpth13 = "/v2/positions"
+                    _lsig13 = _hm13.new(_ls13.encode(), f"GET{_lts13}{_lpth13}?{_lqs13}".encode(), _hs13.sha256).hexdigest()
+                    _lh13 = {"api-key":_lk13,"timestamp":_lts13,"signature":_lsig13}
+                    _lr13 = _rq13.get(f"{_BASE13}{_lpth13}?{_lqs13}", headers=_lh13, timeout=5).json()
+                    if _lr13.get("success"):
+                        _lsz13 = int(_lr13.get("result",{}).get("size",0) or 0)
+                        _live_dir13 = "LONG" if _lsz13>0 else "SHORT" if _lsz13<0 else None
                 except Exception:
                     pass
-                return _lu
-
-            def _fwd20(pairs, bot_name=""):
+                # Scan bot log once for critical issue timestamps (bad-fill-auto-closed,
+                # SL placement failed, no SL placed) so each trade row can be flagged.
+                _issue_ts13 = {"badfill": [], "slfail": [], "nosl": []}
                 try:
-                    if not pairs:
-                        return (f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'><table style='width:100%;border-collapse:collapse;'><thead><tr><th style='{_TH20}'>Date</th><th style='{_TH20}'>Dir</th><th style='{_TH20}'>Lot</th><th style='{_TH20}'>Entry Time</th><th style='{_TH20}'>Exit Time</th><th style='{_TH20}'>Entry (INR)</th><th style='{_TH20}'>Exit (INR)</th><th style='{_TH20}'>Slip Diff vs $5</th><th style='{_TH20}'>Tax+Charges</th><th style='{_TH20}'>PnL</th><th style='{_TH20}'>Match</th><th style='{_TH20}'>Message</th></tr></thead><tbody><tr><td colspan='12' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>Waiting for first trade</td></tr></tbody></table></div>")
-                    import datetime as _dfw
-                    last20 = pairs[::-1]
-                    _bt_lu13 = _bt_lookup13(bot_name, vf_str=_VF13_7D) if bot_name else {"LONG":[],"SHORT":[]}
-                    _lv_asc13 = pairs  # pairs already sorted ascending by ets (see _pair13/_pair13_csv)
-                    _lv_idx13 = {"LONG": [q for q in _lv_asc13 if str(q.get("dir","")).upper()=="LONG" and not q.get("open",False)],
-                                 "SHORT": [q for q in _lv_asc13 if str(q.get("dir","")).upper()=="SHORT" and not q.get("open",False)]}
-                    _lv_pos13 = {"LONG": {id(x): i for i, x in enumerate(_lv_idx13["LONG"])},
-                                 "SHORT": {id(x): i for i, x in enumerate(_lv_idx13["SHORT"])}}
-                    # Cosmetic-only cross-check: confirm OPEN row's direction matches the
-                    # real live position on Delta right now, so a stale/orphan leftover
-                    # entry (no real position) is not mislabeled "Trade running now".
-                    _live_dir13 = None
-                    try:
-                        _lk13 = os.getenv("S4V2_API_KEY") if bot_name=="S4V2" else os.getenv("S4_API_KEY")
-                        _ls13 = os.getenv("S4V2_API_SECRET") if bot_name=="S4V2" else os.getenv("S4_API_SECRET")
-                        _lts13 = str(int(_t13.time())); _lqs13 = "product_id=84"; _lpth13 = "/v2/positions"
-                        _lsig13 = _hm13.new(_ls13.encode(), f"GET{_lts13}{_lpth13}?{_lqs13}".encode(), _hs13.sha256).hexdigest()
-                        _lh13 = {"api-key":_lk13,"timestamp":_lts13,"signature":_lsig13}
-                        _lr13 = _rq13.get(f"{_BASE13}{_lpth13}?{_lqs13}", headers=_lh13, timeout=5).json()
-                        if _lr13.get("success"):
-                            _lsz13 = int(_lr13.get("result",{}).get("size",0) or 0)
-                            _live_dir13 = "LONG" if _lsz13>0 else "SHORT" if _lsz13<0 else None
-                    except Exception:
-                        pass
-                    # Scan bot log once for critical issue timestamps (bad-fill-auto-closed,
-                    # SL placement failed, no SL placed) so each trade row can be flagged.
-                    _issue_ts13 = {"badfill": [], "slfail": [], "nosl": []}
-                    try:
-                        _lg13 = f"logs/live_trading_{bot_name.lower()}.log" if bot_name else None
-                        if _lg13 and os.path.exists(_lg13):
-                            import re as _relog13, datetime as _dtlog13
-                            with open(_lg13) as _lf13:
-                                for _ln13 in _lf13:
-                                    _m13 = _relog13.match(r'^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', _ln13)
-                                    if not _m13: continue
-                                    try:
-                                        _tsv13 = _dtlog13.datetime.strptime(_m13.group(1), "%Y-%m-%d %H:%M:%S").replace(tzinfo=_dtlog13.timezone.utc).timestamp()
-                                    except Exception:
-                                        continue
-                                    if "BAD FILL DESPITE BAND" in _ln13:
-                                        _issue_ts13["badfill"].append(_tsv13)
-                                    elif "SL PLACEMENT FAILED" in _ln13:
-                                        _issue_ts13["slfail"].append(_tsv13)
-                                    elif "NO SL PLACED" in _ln13:
-                                        _issue_ts13["nosl"].append(_tsv13)
-                    except Exception:
-                        pass
-                    def _near_issue13(ets, key, tol=120):
-                        return any(abs(ets - t) <= tol for t in _issue_ts13.get(key, []))
-                    rows = ""
-                    for p in last20:
-                        pnl      = float(p.get('pnl', 0))
-                        pnl_inr  = pnl * _INR13
-                        ep_inr   = float(p.get('ep', 0))
-                        xp_inr   = float(p.get('xp', 0))
-                        cm_inr   = float(p.get('cm', 0)) * _INR13
-                        _ist_off1 = _dfw.timedelta(hours=5, minutes=30)
-                        is_open  = bool(p.get('open', False))
-                        et       = (_dfw.datetime.utcfromtimestamp(p.get('ets',0)) + _ist_off1).strftime('%d-%b-%Y %I:%M %p IST')
-                        xt       = "-" if is_open else (_dfw.datetime.utcfromtimestamp(p.get('xts',0)) + _ist_off1).strftime('%d-%b-%Y %I:%M %p IST')
-                        dirv     = str(p.get('dir','')).upper()
-                        import datetime as _dth20
-                        _today20 = (_dth20.datetime.utcnow() + _dth20.timedelta(hours=5,minutes=30)).strftime('%d-%b-%Y')
-                        _row_bg20 = "background:#FFFDE7;" if et[:11].strip() == _today20 else ""
-                        slip_act = 0 if is_open else abs(float(p.get('ep',0)) - float(p.get('xp',0))) * 100 * 0.001
-                        slip_diff= slip_act - 5.0
-                        slip_str = "-" if is_open else (f"+${slip_diff:.2f}" if slip_diff >= 0 else f"-${abs(slip_diff):.2f}")
-                        mp_style  = _TG20
-                        ps        = _TY20 if is_open else (_TG20 if pnl >= 0 else _TR20)
-                        ds        = _TG20 if dirv == 'LONG' else _TR20
-                        _stuck_f = f"logs/stuck_flag_{bot_name}.txt" if bot_name else None
-                        _orphan_f = f"logs/orphan_flag_{bot_name}.txt" if bot_name else None
-                        _is_stuck = is_open and _stuck_f and os.path.exists(_stuck_f)
-                        _is_orphan = (not is_open) and _orphan_f and os.path.exists(_orphan_f)
-                        _sl_hit20 = bool(p.get('sl_hit', False))
-                        _msg_style20 = ""
-                        if is_open and _live_dir13 is not None and dirv != _live_dir13:
-                            _match20 = "-"
-                            _msg20 = "Old leftover order, not a real open trade - can ignore"
-                            _msg_style20 = "color:#131722;font-weight:700;"
-                        elif is_open:
-                            _match20 = "-"
-                            _msg20 = "Trade running now"
-                        elif _near_issue13(p.get('ets',0), "badfill"):
-                            _match20 = "-"
-                            _msg20 = "Price jumped too much - bot auto-closed this trade for safety"
-                            _msg_style20 = "color:#F23645;font-weight:700;"
-                        elif _near_issue13(p.get('ets',0), "nosl"):
-                            _match20 = "-"
-                            _msg20 = "WARNING: No stop-loss was placed on this trade - checked manually"
-                            _msg_style20 = "color:#F23645;font-weight:700;"
-                        elif _near_issue13(p.get('ets',0), "slfail"):
-                            _match20 = "-"
-                            _msg20 = "Stop-loss order failed to place - had to fix manually"
-                            _msg_style20 = "color:#F23645;font-weight:700;"
-                        elif _is_stuck:
-                            _match20 = "-"
-                            _msg20 = "Bot thinks open, but exchange shows closed - check manually"
-                        elif _is_orphan:
-                            _match20 = "-"
-                            _msg20 = "Position open on exchange but bot lost track - check SL manually"
-                        elif _sl_hit20:
-                            _match20 = "-"
-                            _msg20 = "Stop-loss hit - closed early, this is normal"
-                        else:
-                            _bt_m13 = None
-                            if dirv in _lv_pos13 and id(p) in _lv_pos13[dirv]:
-                                _sidx13 = _lv_pos13[dirv][id(p)]
-                                if _sidx13 < len(_bt_lu13.get(dirv, [])):
-                                    _bt_m13 = _bt_lu13[dirv][_sidx13]
-                            if _bt_m13:
-                                _sge13 = (_bt_m13["ep"] - ep_inr) if dirv=="LONG" else (ep_inr - _bt_m13["ep"])
-                                _esl13 = abs(_sge13)*100*0.001
-                                _esg13 = "+" if _sge13 >= 0 else "-"
-                                _sgx13 = (xp_inr - _bt_m13["xp"]) if dirv=="LONG" else (_bt_m13["xp"] - xp_inr)
-                                _xsl13 = abs(_sgx13)*100*0.001
-                                _xsg13 = "+" if _sgx13 >= 0 else "-"
-                                _dl13 = "L" if dirv=="LONG" else "S"
-                                _ec13 = "#089981" if _esg13=="+" else "#F23645"
-                                _xc13 = "#089981" if _xsg13=="+" else "#F23645"
-                                _match20 = (f"{_dl13} E:<span style='color:{_ec13}'>{_esg13}{_esl13:.2f}</span>"
-                                            f"|X:<span style='color:{_xc13}'>{_xsg13}{_xsl13:.2f}</span>")
-                            else:
-                                _match20 = "-"
-                            _msg20 = "Closed normally, as planned"
-                        p['_msg13_csv'] = _msg20
-                        pnl_disp  = ("STUCK" if _is_stuck else "OPEN") if is_open else ("ORPHAN" if _is_orphan else f"₹{pnl_inr:,.0f}")
-                        xp_disp   = "-" if is_open else f"${xp_inr:,.0f}"
-                        rows += (
-                            f"<tr style='{_row_bg20}'>"
-                            f"<td style='{_TD20}'>{et[:11].strip()}</td>"
-                            f"<td style='{ds}'>{dirv}</td>"
-                            f"<td style='{_TD20}'>{int(p.get('sz',0))}</td>"
-                            f"<td style='{_TD20}'>{et[12:] if len(et)>12 else et}</td>"
-                            f"<td style='{_TD20}'>{xt[12:] if len(xt)>12 and xt!='-' else xt}</td>"
-                            f"<td style='{_TD20}'>${ep_inr:,.0f}</td>"
-                            f"<td style='{_TD20}'>{xp_disp}</td>"
-                            f"<td style='{_TR20}'>{slip_str}</td>"
-                            f"<td style='{_TR20}'>₹{cm_inr:,.0f}</td>"
-                            f"<td style='{ps}'>{pnl_disp}</td>"
-                            f"<td style='{_TD20}'>{_match20}</td>"
-                            f"<td style='{_TD20};text-align:left;{_msg_style20}'>{_msg20}</td>"
-                            f"</tr>"
-                        )
-                    return (
-                        f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
-                        f"<table style='width:100%;border-collapse:collapse;'>"
-                        f"<thead><tr>"
-                        f"<th style='{_TH20}'>Date</th>"
-                        f"<th style='{_TH20}'>Dir</th>"
-                        f"<th style='{_TH20}'>Lot</th>"
-                        f"<th style='{_TH20}'>Entry Time</th>"
-                        f"<th style='{_TH20}'>Exit Time</th>"
-                        f"<th style='{_TH20}'>Entry $</th>"
-                        f"<th style='{_TH20}'>Exit $</th>"
-                        f"<th style='{_TH20}'>Slip Diff vs $5</th>"
-                        f"<th style='{_TH20}'>Tax+Charges</th>"
-                        f"<th style='{_TH20}'>Net PnL</th>"
-                        f"<th style='{_TH20}'>Match</th>"
-                        f"<th style='{_TH20}'>Message</th>"
-                        f"</tr></thead><tbody>{rows}</tbody></table></div>"
-                    )
-                except Exception as e:
-                    return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
-
-            def _bt_hdr13(csv_pattern, vf_str, which="both"):
-                try:
-                    import glob as _gb2, pandas as _pb2
-                    s2_files = sorted(_gb2.glob("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv"), reverse=True)
-                    s4_files = sorted(_gb2.glob("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"), reverse=True)
-                    frames = []
-                    vf_dt = _pb2.to_datetime(vf_str)
-                    _sel_files = s2_files[:1] if which=="s2" else (s4_files[:1] if which=="s4" else s2_files[:1]+s4_files[:1])
-                    for ff in _sel_files:
-                        _df = _pb2.read_csv(ff)
-                        _df['entry_datetime'] = _pb2.to_datetime(_df['entry_datetime'])
-                        _df_vf = _df[_df['entry_datetime'] >= vf_dt]
-                        if not _df_vf.empty:
-                            frames.append(_df_vf)
-                    if not frames:
-                        return ""
-                    df = _pb2.concat(frames)
-                    if df.empty:
-                        return ""
-                    tot = len(df)
-                    net_pnl_inr = 0.0
-                    tax_inr_sum = 0.0
-                    for i, r in df.iterrows():
-                        _gross_pnl   = float(r.get('gross_pnl', r.get('net_pnl', 0)))
-                        _old_slip    = float(r.get('slippage_usd', 10.0))
-                        _old_charges = float(r.get('total_charges_usd', 0)) - _old_slip
-                        _sz_ratio    = _LOT_RATIO13
-                        _new_slip    = sec13_slip * 2 * _sz_ratio
-                        _new_charges = (_old_charges * _sz_ratio) if sec13_charges else 0.0
-                        pnl          = (_gross_pnl * _sz_ratio) - _new_slip - _new_charges
-                        net_pnl_inr += pnl * _INR13
-                        tax_inr_sum += _new_charges * _INR13
-                    _pnlc = "#089981" if net_pnl_inr >= 0 else "#F23645"
-                    return (
-                        f"<div style='font-size:11px;color:#333;padding:3px 6px;background:#F5F5F5;"
-                        f"border:1px solid #ddd;margin-bottom:2px;'>"
-                        f"Total Trades: {tot} &nbsp;|&nbsp; "
-                        f"Net PnL: <span style='color:{_pnlc};font-weight:700;'>&#8377;{net_pnl_inr:,.0f}</span> &nbsp;|&nbsp; "
-                        f"Tax &amp; Charges: &#8377;{tax_inr_sum:,.0f}"
-                        f"</div>"
-                    )
-                except Exception as e:
-                    return f"<p style='color:red;font-size:10px'>BT Header Error: {e}</p>"
-
-            def _bt20(csv_pattern, vf_str, which="both"):
-                try:
-                    import glob as _gb, pandas as _pb
-                    _slip_lbl13 = f"Slip ${sec13_slip:g}"
-                    _WAIT_BT = (
-                        f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
-                        f"<table style='width:100%;border-collapse:collapse;'>"
-                        f"<thead><tr>"
-                        f"<th style='{_TH20}'>Date</th>"
-                        f"<th style='{_TH20}'>Dir</th>"
-                        f"<th style='{_TH20}'>Entry Time (IST)</th>"
-                        f"<th style='{_TH20}'>Exit Time (IST)</th>"
-                        f"<th style='{_TH20}'>Entry (INR)</th>"
-                        f"<th style='{_TH20}'>Exit (INR)</th>"
-                        f"<th style='{_TH20}'>{_slip_lbl13}</th>"
-                        f"<th style='{_TH20}'>Tax+Charges</th>"
-                        f"<th style='{_TH20}'>Net PnL</th>"
-                        f"</tr></thead><tbody>"
-                        f"<tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>No backtest trades in this window</td></tr>"
-                        f"</tbody></table></div>"
-                    )
-                    s2_files = sorted(_gb.glob("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv"), reverse=True)
-                    s4_files = sorted(_gb.glob("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"), reverse=True)
-                    frames = []
-                    vf_dt = _pb.to_datetime(vf_str)
-                    _sel_files = s2_files[:1] if which=="s2" else (s4_files[:1] if which=="s4" else s2_files[:1]+s4_files[:1])
-                    for ff in _sel_files:
-                        _df = _pb.read_csv(ff)
-                        _df['entry_datetime'] = _pb.to_datetime(_df['entry_datetime'])
-                        _df_vf = _df[_df['entry_datetime'] >= vf_dt]
-                        if not _df_vf.empty:
-                            frames.append(_df_vf)
-                    _open_row_html = ""
-                    try:
-                        _csv_map_bt20 = {"s2": "logs/signals_s4v2.csv", "s4": "logs/signals_s4.csv"}
-                        _sig_path_bt20 = _csv_map_bt20.get(which)
-                        if _sig_path_bt20 and os.path.exists(_sig_path_bt20):
-                            _last_pending_bt20 = None
-                            with open(_sig_path_bt20) as _fbt20:
-                                for _lbt20 in _fbt20:
-                                    _pbt20 = _lbt20.strip().split(',')
-                                    if len(_pbt20) < 5:
-                                        continue
-                                    if _pbt20[1] == "PENDING":
-                                        _last_pending_bt20 = (_pbt20[0], _pbt20[2], _pbt20[4])
-                            if _last_pending_bt20:
-                                import datetime as _dob20
-                                _ist_ob20 = _dob20.timedelta(hours=5, minutes=30)
-                                _et_ob20, _dir_ob20, _ep_ob20 = _last_pending_bt20
-                                _et_dt_ob20 = _dob20.datetime.strptime(_et_ob20[:19].replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_ob20
-                                _et_disp_ob20 = _et_dt_ob20.strftime('%d-%b-%Y %I:%M %p IST')
-                                _ds_ob20 = _TG20 if _dir_ob20.upper() == 'LONG' else _TR20
-                                _open_row_html = (
-                                    f"<tr style='background:#E3F2FD;'>"
-                                    f"<td style='{_TD20}'>{_et_disp_ob20[:11].strip()}</td>"
-                                    f"<td style='{_ds_ob20}'>{_dir_ob20.upper()}</td>"
-                                    f"<td style='{_TD20}'>{_et_disp_ob20[12:]}</td>"
-                                    f"<td style='{_TD20}'>OPEN</td>"
-                                    f"<td style='{_TD20}'>${float(_ep_ob20):,.0f}</td>"
-                                    f"<td style='{_TD20}'>-</td>"
-                                    f"<td style='{_TD20}'>-</td>"
-                                    f"<td style='{_TD20}'>-</td>"
-                                    f"<td style='{_TD20}'>-</td>"
-                                    f"</tr>"
-                                )
-                    except Exception:
-                        _open_row_html = ""
-                    if not frames:
-                        if _open_row_html:
-                            return (
-                                f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
-                                f"<table style='width:100%;border-collapse:collapse;'>"
-                                f"<thead><tr>"
-                                f"<th style='{_TH20}'>Date</th>"
-                                f"<th style='{_TH20}'>Dir</th>"
-                                f"<th style='{_TH20}'>Entry Time (IST)</th>"
-                                f"<th style='{_TH20}'>Exit Time (IST)</th>"
-                                f"<th style='{_TH20}'>Entry (INR)</th>"
-                                f"<th style='{_TH20}'>Exit (INR)</th>"
-                                f"<th style='{_TH20}'>{_slip_lbl13}</th>"
-                                f"<th style='{_TH20}'>Tax+Charges</th>"
-                                f"<th style='{_TH20}'>Net PnL</th>"
-                                f"</tr></thead><tbody>{_open_row_html}</tbody></table></div>"
-                            )
-                        return _WAIT_BT
-                    df = _pb.concat(frames).sort_values('entry_datetime').iloc[::-1].reset_index(drop=True)
-                    if df.empty:
-                        return _WAIT_BT
-                    rows = _open_row_html
-                    for i, r in df.iterrows():
-                        _gross_pnl   = float(r.get('gross_pnl', r.get('net_pnl', 0)))
-                        _old_slip    = float(r.get('slippage_usd', 10.0))
-                        _old_charges = float(r.get('total_charges_usd', 0)) - _old_slip
-                        _sz_ratio    = _LOT_RATIO13
-                        _new_slip    = sec13_slip * 2 * _sz_ratio
-                        _new_charges = (_old_charges * _sz_ratio) if sec13_charges else 0.0
-                        pnl          = (_gross_pnl * _sz_ratio) - _new_slip - _new_charges
-                        pnl_inr      = pnl * _INR13
-                        ep_inr  = float(r.get('entry_price', 0))
-                        xp_inr  = float(r.get('exit_price',  0))
-                        slip    = sec13_slip
-                        tax_inr = _new_charges * _INR13
-                        import datetime as _dfw
-                        _ist_off2 = _dfw.timedelta(hours=5, minutes=30)
-                        _et_raw = str(r.get('entry_datetime',''))[:19]
-                        _xt_raw = str(r.get('exit_datetime', ''))[:19]
-                        try:
-                            et = (_dfw.datetime.strptime(_et_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_off2).strftime('%d-%b-%Y %I:%M %p IST')
-                            xt = (_dfw.datetime.strptime(_xt_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_off2).strftime('%d-%b-%Y %I:%M %p IST')
-                        except:
-                            et = _et_raw
-                            xt = _xt_raw
-                        dirv    = str(r.get('direction','')).upper()
-                        ps      = _TG20 if pnl >= 0 else _TR20
-                        ds      = _TG20 if dirv == 'LONG' else _TR20
-                        _today_bt20 = (_dfw.datetime.utcnow() + _ist_off2).strftime('%d-%b-%Y')
-                        _row_bg_bt20 = "background:#FFFDE7;" if et[:11].strip() == _today_bt20 else ""
-                        rows += (
-                            f"<tr style='{_row_bg_bt20}'>"
-                            f"<td style='{_TD20}'>{et[:11].strip()}</td>"
-                            f"<td style='{ds}'>{dirv}</td>"
-                            f"<td style='{_TD20}'>{et[12:] if len(et)>12 else et}</td>"
-                            f"<td style='{_TD20}'>{xt[12:] if len(xt)>12 else xt}</td>"
-                            f"<td style='{_TD20}'>${ep_inr:,.0f}</td>"
-                            f"<td style='{_TD20}'>${xp_inr:,.0f}</td>"
-                            f"<td style='{_TR20}'>${slip:.2f}</td>"
-                            f"<td style='{_TR20}'>₹{tax_inr:,.0f}</td>"
-                            f"<td style='{ps}'>₹{pnl_inr:,.0f}</td>"
-                            f"</tr>"
-                        )
-                    return (
-                        f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
-                        f"<table style='width:100%;border-collapse:collapse;'>"
-                        f"<thead><tr>"
-                        f"<th style='{_TH20}'>Date</th>"
-                        f"<th style='{_TH20}'>Dir</th>"
-                        f"<th style='{_TH20}'>Entry Time (IST)</th>"
-                        f"<th style='{_TH20}'>Exit Time (IST)</th>"
-                        f"<th style='{_TH20}'>Entry (INR)</th>"
-                        f"<th style='{_TH20}'>Exit (INR)</th>"
-                        f"<th style='{_TH20}'>{_slip_lbl13}</th>"
-                        f"<th style='{_TH20}'>Tax+Charges</th>"
-                        f"<th style='{_TH20}'>Net PnL</th>"
-                        f"</tr></thead><tbody>{rows}</tbody></table></div>"
-                    )
-                except Exception as e:
-                    return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
-
-            def _cmp20(csv_pattern, fwd_pairs, vf_str):
-                try:
-                    import glob as _gc, pandas as _pc, datetime as _dc
-                    files = sorted(_gc.glob(csv_pattern), reverse=True)
-                    s2_ff = sorted(_gc.glob("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv"), reverse=True)
-                    s4_ff = sorted(_gc.glob("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv"), reverse=True)
-                    _frames = []
-                    vf_dt = _pc.to_datetime(vf_str)
-                    for _ff in (s2_ff[:1] + s4_ff[:1]):
-                        _dff = _pc.read_csv(_ff)
-                        _dff['entry_datetime'] = _pc.to_datetime(_dff['entry_datetime'])
-                        _dff_vf = _dff[_dff['entry_datetime'] >= vf_dt]
-                        if not _dff_vf.empty:
-                            _frames.append(_dff_vf)
-                    if not _frames:
-                        return "<p style='color:#aaa;font-size:12px;padding:8px'>No backtest trades in this window yet</p>"
-                    df = _pc.concat(_frames).sort_values('entry_datetime').tail(20).iloc[::-1].reset_index(drop=True)
-                    if df.empty:
-                        return "<p style='color:#aaa;font-size:12px;padding:8px'>No backtest trades in this window yet</p>"
-                    last20 = (fwd_pairs or [])[-20:][::-1]
-                    used_fwd = set()
-                    max_rows = len(df)
-                    rows = ""
-                    for i in range(max_rows):
-                        bt  = df.iloc[i]
-                        # Match forward test trade by closest entry time not by position
-                        fwd = None
-                        bt_et_raw = str(bt.get('entry_datetime',''))[:19]
-                        try:
-                            import datetime as _dmatch
-                            bt_et_dt = _dmatch.datetime.strptime(bt_et_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S')
-                            best_diff = None
-                            for _fp in last20:
+                    _lg13 = f"logs/live_trading_{bot_name.lower()}.log" if bot_name else None
+                    if _lg13 and os.path.exists(_lg13):
+                        import re as _relog13, datetime as _dtlog13
+                        with open(_lg13) as _lf13:
+                            for _ln13 in _lf13:
+                                _m13 = _relog13.match(r'^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', _ln13)
+                                if not _m13: continue
                                 try:
-                                    _fp_et = _dmatch.datetime.utcfromtimestamp(_fp.get('ets', 0))
-                                    _diff = abs((_fp_et - bt_et_dt).total_seconds())
-                                    if best_diff is None or _diff < best_diff:
-                                        best_diff = _diff
-                                        fwd = _fp
-                                except:
-                                    pass
-                            # Only match if within 4 hours
-                            if best_diff is not None and best_diff > 14400:
-                                fwd = None
-                            # Skip already matched fwd trades
-                            if fwd is not None:
-                                fwd_key = fwd.get('ets', 0)
-                                if fwd_key in used_fwd:
-                                    fwd = None
-                                else:
-                                    used_fwd.add(fwd_key)
-                        except:
-                            fwd = last20[i] if i < len(last20) else None
-                        bt_ep   = float(bt.get('entry_price', 0))
-                        bt_xp   = float(bt.get('exit_price',  0))
-                        bt_pnl  = float(bt.get('net_pnl_inr', float(bt.get('net_pnl',0)) * _INR13))
-                        bt_dir  = str(bt.get('direction','')).upper()
-                        import datetime as _dbt
-                        _ist_bt = _dbt.timedelta(hours=5, minutes=30)
-                        _bt_et_raw = str(bt.get('entry_datetime',''))[:19]
-                        _bt_xt_raw = str(bt.get('exit_datetime', ''))[:19]
-                        try:
-                            bt_et = (_dbt.datetime.strptime(_bt_et_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_bt).strftime('%d-%b-%Y %I:%M %p IST')
-                            bt_xt = (_dbt.datetime.strptime(_bt_xt_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_bt).strftime('%d-%b-%Y %I:%M %p IST')
-                        except:
-                            bt_et = _bt_et_raw
-                            bt_xt = _bt_xt_raw
-                        if fwd is None:
-                            # No live trade yet - show PENDING
-                            _pnd = "background:#fff8e1;color:#b8860b;font-weight:bold;padding:4px 6px;font-size:11px;"
-                            _ds2 = _TG20 if bt_dir == "LONG" else _TR20
-                            rows += (
-                                f"<tr>"
-                                f"<td style='{_pnd}'>PENDING</td>"
-                                f"<td style='{_TD20}'>{bt_et[:11].strip()}</td>"
-                                f"<td style='{_ds2}'>{bt_dir}</td>"
-                                f"<td style='{_TD20}'>{bt_et[12:] if len(bt_et)>12 else bt_et}</td>"
+                                    _tsv13 = _dtlog13.datetime.strptime(_m13.group(1), "%Y-%m-%d %H:%M:%S").replace(tzinfo=_dtlog13.timezone.utc).timestamp()
+                                except Exception:
+                                    continue
+                                if "BAD FILL DESPITE BAND" in _ln13:
+                                    _issue_ts13["badfill"].append(_tsv13)
+                                elif "SL PLACEMENT FAILED" in _ln13:
+                                    _issue_ts13["slfail"].append(_tsv13)
+                                elif "NO SL PLACED" in _ln13:
+                                    _issue_ts13["nosl"].append(_tsv13)
+                except Exception:
+                    pass
+                def _near_issue13(ets, key, tol=120):
+                    return any(abs(ets - t) <= tol for t in _issue_ts13.get(key, []))
+                rows = ""
+                for p in last20:
+                    pnl      = float(p.get('pnl', 0))
+                    pnl_inr  = pnl * _INR13
+                    ep_inr   = float(p.get('ep', 0))
+                    xp_inr   = float(p.get('xp', 0))
+                    cm_inr   = float(p.get('cm', 0)) * _INR13
+                    _ist_off1 = _dfw.timedelta(hours=5, minutes=30)
+                    is_open  = bool(p.get('open', False))
+                    et       = (_dfw.datetime.utcfromtimestamp(p.get('ets',0)) + _ist_off1).strftime('%d-%b-%Y %I:%M %p IST')
+                    xt       = "-" if is_open else (_dfw.datetime.utcfromtimestamp(p.get('xts',0)) + _ist_off1).strftime('%d-%b-%Y %I:%M %p IST')
+                    dirv     = str(p.get('dir','')).upper()
+                    import datetime as _dth20
+                    _today20 = (_dth20.datetime.utcnow() + _dth20.timedelta(hours=5,minutes=30)).strftime('%d-%b-%Y')
+                    _row_bg20 = "background:#FFFDE7;" if et[:11].strip() == _today20 else ""
+                    slip_act = 0 if is_open else abs(float(p.get('ep',0)) - float(p.get('xp',0))) * 100 * 0.001
+                    slip_diff= slip_act - 5.0
+                    slip_str = "-" if is_open else (f"+${slip_diff:.2f}" if slip_diff >= 0 else f"-${abs(slip_diff):.2f}")
+                    mp_style  = _TG20
+                    ps        = _TY20 if is_open else (_TG20 if pnl >= 0 else _TR20)
+                    ds        = _TG20 if dirv == 'LONG' else _TR20
+                    _stuck_f = f"logs/stuck_flag_{bot_name}.txt" if bot_name else None
+                    _orphan_f = f"logs/orphan_flag_{bot_name}.txt" if bot_name else None
+                    _is_stuck = is_open and _stuck_f and os.path.exists(_stuck_f)
+                    _is_orphan = (not is_open) and _orphan_f and os.path.exists(_orphan_f)
+                    _sl_hit20 = bool(p.get('sl_hit', False))
+                    _msg_style20 = ""
+                    if is_open and _live_dir13 is not None and dirv != _live_dir13:
+                        _match20 = "-"
+                        _msg20 = "Old leftover order, not a real open trade - can ignore"
+                        _msg_style20 = "color:#131722;font-weight:700;"
+                    elif is_open:
+                        _match20 = "-"
+                        _msg20 = "Trade running now"
+                    elif _near_issue13(p.get('ets',0), "badfill"):
+                        _match20 = "-"
+                        _msg20 = "Price jumped too much - bot auto-closed this trade for safety"
+                        _msg_style20 = "color:#F23645;font-weight:700;"
+                    elif _near_issue13(p.get('ets',0), "nosl"):
+                        _match20 = "-"
+                        _msg20 = "WARNING: No stop-loss was placed on this trade - checked manually"
+                        _msg_style20 = "color:#F23645;font-weight:700;"
+                    elif _near_issue13(p.get('ets',0), "slfail"):
+                        _match20 = "-"
+                        _msg20 = "Stop-loss order failed to place - had to fix manually"
+                        _msg_style20 = "color:#F23645;font-weight:700;"
+                    elif _is_stuck:
+                        _match20 = "-"
+                        _msg20 = "Bot thinks open, but exchange shows closed - check manually"
+                    elif _is_orphan:
+                        _match20 = "-"
+                        _msg20 = "Position open on exchange but bot lost track - check SL manually"
+                    elif _sl_hit20:
+                        _match20 = "-"
+                        _msg20 = "Stop-loss hit - closed early, this is normal"
+                    else:
+                        _bt_m13 = None
+                        if dirv in _lv_pos13 and id(p) in _lv_pos13[dirv]:
+                            _sidx13 = _lv_pos13[dirv][id(p)]
+                            if _sidx13 < len(_bt_lu13.get(dirv, [])):
+                                _bt_m13 = _bt_lu13[dirv][_sidx13]
+                        if _bt_m13:
+                            _sge13 = (_bt_m13["ep"] - ep_inr) if dirv=="LONG" else (ep_inr - _bt_m13["ep"])
+                            _esl13 = abs(_sge13)*100*0.001
+                            _esg13 = "+" if _sge13 >= 0 else "-"
+                            _sgx13 = (xp_inr - _bt_m13["xp"]) if dirv=="LONG" else (_bt_m13["xp"] - xp_inr)
+                            _xsl13 = abs(_sgx13)*100*0.001
+                            _xsg13 = "+" if _sgx13 >= 0 else "-"
+                            _dl13 = "L" if dirv=="LONG" else "S"
+                            _ec13 = "#089981" if _esg13=="+" else "#F23645"
+                            _xc13 = "#089981" if _xsg13=="+" else "#F23645"
+                            _match20 = (f"{_dl13} E:<span style='color:{_ec13}'>{_esg13}{_esl13:.2f}</span>"
+                                        f"|X:<span style='color:{_xc13}'>{_xsg13}{_xsl13:.2f}</span>")
+                        else:
+                            _match20 = "-"
+                        _msg20 = "Closed normally, as planned"
+                    p['_msg13_csv'] = _msg20
+                    pnl_disp  = ("STUCK" if _is_stuck else "OPEN") if is_open else ("ORPHAN" if _is_orphan else f"₹{pnl_inr:,.0f}")
+                    xp_disp   = "-" if is_open else f"${xp_inr:,.0f}"
+                    rows += (
+                        f"<tr style='{_row_bg20}'>"
+                        f"<td style='{_TD20}'>{et[:11].strip()}</td>"
+                        f"<td style='{ds}'>{dirv}</td>"
+                        f"<td style='{_TD20}'>{int(p.get('sz',0))}</td>"
+                        f"<td style='{_TD20}'>{et[12:] if len(et)>12 else et}</td>"
+                        f"<td style='{_TD20}'>{xt[12:] if len(xt)>12 and xt!='-' else xt}</td>"
+                        f"<td style='{_TD20}'>${ep_inr:,.0f}</td>"
+                        f"<td style='{_TD20}'>{xp_disp}</td>"
+                        f"<td style='{_TR20}'>{slip_str}</td>"
+                        f"<td style='{_TR20}'>₹{cm_inr:,.0f}</td>"
+                        f"<td style='{ps}'>{pnl_disp}</td>"
+                        f"<td style='{_TD20}'>{_match20}</td>"
+                        f"<td style='{_TD20};text-align:left;{_msg_style20}'>{_msg20}</td>"
+                        f"</tr>"
+                    )
+                return (
+                    f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
+                    f"<table style='width:100%;border-collapse:collapse;'>"
+                    f"<thead><tr>"
+                    f"<th style='{_TH20}'>Date</th>"
+                    f"<th style='{_TH20}'>Dir</th>"
+                    f"<th style='{_TH20}'>Lot</th>"
+                    f"<th style='{_TH20}'>Entry Time</th>"
+                    f"<th style='{_TH20}'>Exit Time</th>"
+                    f"<th style='{_TH20}'>Entry $</th>"
+                    f"<th style='{_TH20}'>Exit $</th>"
+                    f"<th style='{_TH20}'>Slip Diff vs $5</th>"
+                    f"<th style='{_TH20}'>Tax+Charges</th>"
+                    f"<th style='{_TH20}'>Net PnL</th>"
+                    f"<th style='{_TH20}'>Match</th>"
+                    f"<th style='{_TH20}'>Message</th>"
+                    f"</tr></thead><tbody>{rows}</tbody></table></div>"
+                )
+            except Exception as e:
+                return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
+
+        def _bt_hdr13(csv_pattern, vf_str, which="both"):
+            try:
+                import glob as _gb2, pandas as _pb2
+                s2_files = sorted(_gb2.glob("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv"), reverse=True)
+                s4_files = sorted(_gb2.glob("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"), reverse=True)
+                frames = []
+                vf_dt = _pb2.to_datetime(vf_str)
+                _sel_files = s2_files[:1] if which=="s2" else (s4_files[:1] if which=="s4" else s2_files[:1]+s4_files[:1])
+                for ff in _sel_files:
+                    _df = _pb2.read_csv(ff)
+                    _df['entry_datetime'] = _pb2.to_datetime(_df['entry_datetime'])
+                    _df_vf = _df[_df['entry_datetime'] >= vf_dt]
+                    if not _df_vf.empty:
+                        frames.append(_df_vf)
+                if not frames:
+                    return ""
+                df = _pb2.concat(frames)
+                if df.empty:
+                    return ""
+                tot = len(df)
+                net_pnl_inr = 0.0
+                tax_inr_sum = 0.0
+                for i, r in df.iterrows():
+                    _gross_pnl   = float(r.get('gross_pnl', r.get('net_pnl', 0)))
+                    _old_slip    = float(r.get('slippage_usd', 10.0))
+                    _old_charges = float(r.get('total_charges_usd', 0)) - _old_slip
+                    _sz_ratio    = _LOT_RATIO13
+                    _new_slip    = sec13_slip * 2 * _sz_ratio
+                    _new_charges = (_old_charges * _sz_ratio) if sec13_charges else 0.0
+                    pnl          = (_gross_pnl * _sz_ratio) - _new_slip - _new_charges
+                    net_pnl_inr += pnl * _INR13
+                    tax_inr_sum += _new_charges * _INR13
+                _pnlc = "#089981" if net_pnl_inr >= 0 else "#F23645"
+                return (
+                    f"<div style='font-size:11px;color:#333;padding:3px 6px;background:#F5F5F5;"
+                    f"border:1px solid #ddd;margin-bottom:2px;'>"
+                    f"Total Trades: {tot} &nbsp;|&nbsp; "
+                    f"Net PnL: <span style='color:{_pnlc};font-weight:700;'>&#8377;{net_pnl_inr:,.0f}</span> &nbsp;|&nbsp; "
+                    f"Tax &amp; Charges: &#8377;{tax_inr_sum:,.0f}"
+                    f"</div>"
+                )
+            except Exception as e:
+                return f"<p style='color:red;font-size:10px'>BT Header Error: {e}</p>"
+
+        def _bt20(csv_pattern, vf_str, which="both"):
+            try:
+                import glob as _gb, pandas as _pb
+                _slip_lbl13 = f"Slip ${sec13_slip:g}"
+                _WAIT_BT = (
+                    f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
+                    f"<table style='width:100%;border-collapse:collapse;'>"
+                    f"<thead><tr>"
+                    f"<th style='{_TH20}'>Date</th>"
+                    f"<th style='{_TH20}'>Dir</th>"
+                    f"<th style='{_TH20}'>Entry Time (IST)</th>"
+                    f"<th style='{_TH20}'>Exit Time (IST)</th>"
+                    f"<th style='{_TH20}'>Entry (INR)</th>"
+                    f"<th style='{_TH20}'>Exit (INR)</th>"
+                    f"<th style='{_TH20}'>{_slip_lbl13}</th>"
+                    f"<th style='{_TH20}'>Tax+Charges</th>"
+                    f"<th style='{_TH20}'>Net PnL</th>"
+                    f"</tr></thead><tbody>"
+                    f"<tr><td colspan='9' style='text-align:center;color:#aaa;padding:12px;font-size:12px;'>No backtest trades in this window</td></tr>"
+                    f"</tbody></table></div>"
+                )
+                s2_files = sorted(_gb.glob("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv"), reverse=True)
+                s4_files = sorted(_gb.glob("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"), reverse=True)
+                frames = []
+                vf_dt = _pb.to_datetime(vf_str)
+                _sel_files = s2_files[:1] if which=="s2" else (s4_files[:1] if which=="s4" else s2_files[:1]+s4_files[:1])
+                for ff in _sel_files:
+                    _df = _pb.read_csv(ff)
+                    _df['entry_datetime'] = _pb.to_datetime(_df['entry_datetime'])
+                    _df_vf = _df[_df['entry_datetime'] >= vf_dt]
+                    if not _df_vf.empty:
+                        frames.append(_df_vf)
+                _open_row_html = ""
+                try:
+                    _csv_map_bt20 = {"s2": "logs/signals_s4v2.csv", "s4": "logs/signals_s4.csv"}
+                    _sig_path_bt20 = _csv_map_bt20.get(which)
+                    if _sig_path_bt20 and os.path.exists(_sig_path_bt20):
+                        _last_pending_bt20 = None
+                        with open(_sig_path_bt20) as _fbt20:
+                            for _lbt20 in _fbt20:
+                                _pbt20 = _lbt20.strip().split(',')
+                                if len(_pbt20) < 5:
+                                    continue
+                                if _pbt20[1] == "PENDING":
+                                    _last_pending_bt20 = (_pbt20[0], _pbt20[2], _pbt20[4])
+                        if _last_pending_bt20:
+                            import datetime as _dob20
+                            _ist_ob20 = _dob20.timedelta(hours=5, minutes=30)
+                            _et_ob20, _dir_ob20, _ep_ob20 = _last_pending_bt20
+                            _et_dt_ob20 = _dob20.datetime.strptime(_et_ob20[:19].replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_ob20
+                            _et_disp_ob20 = _et_dt_ob20.strftime('%d-%b-%Y %I:%M %p IST')
+                            _ds_ob20 = _TG20 if _dir_ob20.upper() == 'LONG' else _TR20
+                            _open_row_html = (
+                                f"<tr style='background:#E3F2FD;'>"
+                                f"<td style='{_TD20}'>{_et_disp_ob20[:11].strip()}</td>"
+                                f"<td style='{_ds_ob20}'>{_dir_ob20.upper()}</td>"
+                                f"<td style='{_TD20}'>{_et_disp_ob20[12:]}</td>"
+                                f"<td style='{_TD20}'>OPEN</td>"
+                                f"<td style='{_TD20}'>${float(_ep_ob20):,.0f}</td>"
                                 f"<td style='{_TD20}'>-</td>"
-                                f"<td style='{_TD20}'>₹{bt_ep:,.0f}</td>"
                                 f"<td style='{_TD20}'>-</td>"
-                                f"<td style='{_TD20}'>₹{bt_xp:,.0f}</td>"
                                 f"<td style='{_TD20}'>-</td>"
-                                f"<td style='{_TG20 if bt_pnl>=0 else _TR20}'>₹{bt_pnl:,.0f}</td>"
                                 f"<td style='{_TD20}'>-</td>"
-                                f"<td style='{_pnd}'>Waiting live</td>"
                                 f"</tr>"
                             )
-                            continue
-                        fwd_ep  = float(fwd.get('ep', 0))
-                        fwd_xp  = float(fwd.get('xp', 0))
-                        fwd_pnl = float(fwd.get('pnl', 0)) * _INR13
-                        fwd_dir = str(fwd.get('dir','')).upper()
-                        _ist_cmp = _dc.timedelta(hours=5, minutes=30)
-                        fwd_et  = (_dc.datetime.utcfromtimestamp(fwd.get('ets',0)) + _ist_cmp).strftime('%d-%b-%Y %I:%M %p IST')
-                        fwd_xt  = (_dc.datetime.utcfromtimestamp(fwd.get('xts',0)) + _ist_cmp).strftime('%d-%b-%Y %I:%M %p IST')
-                        pnl_diff  = abs(bt_pnl - fwd_pnl)
-                        pnl_pct   = (pnl_diff / abs(bt_pnl) * 100) if bt_pnl != 0 else 0
-                        dir_match = bt_dir == fwd_dir
-                        match_pct = 100.0
-                        if not dir_match:  match_pct -= 50
-                        if pnl_pct > 10:   match_pct -= 30
-                        elif pnl_pct > 5:  match_pct -= 10
-                        mp_style  = _TG20 if match_pct >= 95 else (_TY20 if match_pct >= 80 else _TR20)
-                        ds        = _TG20 if dir_match else _TR20
-                        pd_style  = _TG20 if pnl_pct <= 5 else (_TY20 if pnl_pct <= 10 else _TR20)
+                except Exception:
+                    _open_row_html = ""
+                if not frames:
+                    if _open_row_html:
+                        return (
+                            f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
+                            f"<table style='width:100%;border-collapse:collapse;'>"
+                            f"<thead><tr>"
+                            f"<th style='{_TH20}'>Date</th>"
+                            f"<th style='{_TH20}'>Dir</th>"
+                            f"<th style='{_TH20}'>Entry Time (IST)</th>"
+                            f"<th style='{_TH20}'>Exit Time (IST)</th>"
+                            f"<th style='{_TH20}'>Entry (INR)</th>"
+                            f"<th style='{_TH20}'>Exit (INR)</th>"
+                            f"<th style='{_TH20}'>{_slip_lbl13}</th>"
+                            f"<th style='{_TH20}'>Tax+Charges</th>"
+                            f"<th style='{_TH20}'>Net PnL</th>"
+                            f"</tr></thead><tbody>{_open_row_html}</tbody></table></div>"
+                        )
+                    return _WAIT_BT
+                df = _pb.concat(frames).sort_values('entry_datetime').iloc[::-1].reset_index(drop=True)
+                if df.empty:
+                    return _WAIT_BT
+                rows = _open_row_html
+                for i, r in df.iterrows():
+                    _gross_pnl   = float(r.get('gross_pnl', r.get('net_pnl', 0)))
+                    _old_slip    = float(r.get('slippage_usd', 10.0))
+                    _old_charges = float(r.get('total_charges_usd', 0)) - _old_slip
+                    _sz_ratio    = _LOT_RATIO13
+                    _new_slip    = sec13_slip * 2 * _sz_ratio
+                    _new_charges = (_old_charges * _sz_ratio) if sec13_charges else 0.0
+                    pnl          = (_gross_pnl * _sz_ratio) - _new_slip - _new_charges
+                    pnl_inr      = pnl * _INR13
+                    ep_inr  = float(r.get('entry_price', 0))
+                    xp_inr  = float(r.get('exit_price',  0))
+                    slip    = sec13_slip
+                    tax_inr = _new_charges * _INR13
+                    import datetime as _dfw
+                    _ist_off2 = _dfw.timedelta(hours=5, minutes=30)
+                    _et_raw = str(r.get('entry_datetime',''))[:19]
+                    _xt_raw = str(r.get('exit_datetime', ''))[:19]
+                    try:
+                        et = (_dfw.datetime.strptime(_et_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_off2).strftime('%d-%b-%Y %I:%M %p IST')
+                        xt = (_dfw.datetime.strptime(_xt_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_off2).strftime('%d-%b-%Y %I:%M %p IST')
+                    except:
+                        et = _et_raw
+                        xt = _xt_raw
+                    dirv    = str(r.get('direction','')).upper()
+                    ps      = _TG20 if pnl >= 0 else _TR20
+                    ds      = _TG20 if dirv == 'LONG' else _TR20
+                    _today_bt20 = (_dfw.datetime.utcnow() + _ist_off2).strftime('%d-%b-%Y')
+                    _row_bg_bt20 = "background:#FFFDE7;" if et[:11].strip() == _today_bt20 else ""
+                    rows += (
+                        f"<tr style='{_row_bg_bt20}'>"
+                        f"<td style='{_TD20}'>{et[:11].strip()}</td>"
+                        f"<td style='{ds}'>{dirv}</td>"
+                        f"<td style='{_TD20}'>{et[12:] if len(et)>12 else et}</td>"
+                        f"<td style='{_TD20}'>{xt[12:] if len(xt)>12 else xt}</td>"
+                        f"<td style='{_TD20}'>${ep_inr:,.0f}</td>"
+                        f"<td style='{_TD20}'>${xp_inr:,.0f}</td>"
+                        f"<td style='{_TR20}'>${slip:.2f}</td>"
+                        f"<td style='{_TR20}'>₹{tax_inr:,.0f}</td>"
+                        f"<td style='{ps}'>₹{pnl_inr:,.0f}</td>"
+                        f"</tr>"
+                    )
+                return (
+                    f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
+                    f"<table style='width:100%;border-collapse:collapse;'>"
+                    f"<thead><tr>"
+                    f"<th style='{_TH20}'>Date</th>"
+                    f"<th style='{_TH20}'>Dir</th>"
+                    f"<th style='{_TH20}'>Entry Time (IST)</th>"
+                    f"<th style='{_TH20}'>Exit Time (IST)</th>"
+                    f"<th style='{_TH20}'>Entry (INR)</th>"
+                    f"<th style='{_TH20}'>Exit (INR)</th>"
+                    f"<th style='{_TH20}'>{_slip_lbl13}</th>"
+                    f"<th style='{_TH20}'>Tax+Charges</th>"
+                    f"<th style='{_TH20}'>Net PnL</th>"
+                    f"</tr></thead><tbody>{rows}</tbody></table></div>"
+                )
+            except Exception as e:
+                return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
+
+        def _cmp20(csv_pattern, fwd_pairs, vf_str):
+            try:
+                import glob as _gc, pandas as _pc, datetime as _dc
+                files = sorted(_gc.glob(csv_pattern), reverse=True)
+                s2_ff = sorted(_gc.glob("output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv"), reverse=True)
+                s4_ff = sorted(_gc.glob("output/trade_log_RenkoSMIIOSupertrendStrategy*.csv"), reverse=True)
+                _frames = []
+                vf_dt = _pc.to_datetime(vf_str)
+                for _ff in (s2_ff[:1] + s4_ff[:1]):
+                    _dff = _pc.read_csv(_ff)
+                    _dff['entry_datetime'] = _pc.to_datetime(_dff['entry_datetime'])
+                    _dff_vf = _dff[_dff['entry_datetime'] >= vf_dt]
+                    if not _dff_vf.empty:
+                        _frames.append(_dff_vf)
+                if not _frames:
+                    return "<p style='color:#aaa;font-size:12px;padding:8px'>No backtest trades in this window yet</p>"
+                df = _pc.concat(_frames).sort_values('entry_datetime').tail(20).iloc[::-1].reset_index(drop=True)
+                if df.empty:
+                    return "<p style='color:#aaa;font-size:12px;padding:8px'>No backtest trades in this window yet</p>"
+                last20 = (fwd_pairs or [])[-20:][::-1]
+                used_fwd = set()
+                max_rows = len(df)
+                rows = ""
+                for i in range(max_rows):
+                    bt  = df.iloc[i]
+                    # Match forward test trade by closest entry time not by position
+                    fwd = None
+                    bt_et_raw = str(bt.get('entry_datetime',''))[:19]
+                    try:
+                        import datetime as _dmatch
+                        bt_et_dt = _dmatch.datetime.strptime(bt_et_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S')
+                        best_diff = None
+                        for _fp in last20:
+                            try:
+                                _fp_et = _dmatch.datetime.utcfromtimestamp(_fp.get('ets', 0))
+                                _diff = abs((_fp_et - bt_et_dt).total_seconds())
+                                if best_diff is None or _diff < best_diff:
+                                    best_diff = _diff
+                                    fwd = _fp
+                            except:
+                                pass
+                        # Only match if within 4 hours
+                        if best_diff is not None and best_diff > 14400:
+                            fwd = None
+                        # Skip already matched fwd trades
+                        if fwd is not None:
+                            fwd_key = fwd.get('ets', 0)
+                            if fwd_key in used_fwd:
+                                fwd = None
+                            else:
+                                used_fwd.add(fwd_key)
+                    except:
+                        fwd = last20[i] if i < len(last20) else None
+                    bt_ep   = float(bt.get('entry_price', 0))
+                    bt_xp   = float(bt.get('exit_price',  0))
+                    bt_pnl  = float(bt.get('net_pnl_inr', float(bt.get('net_pnl',0)) * _INR13))
+                    bt_dir  = str(bt.get('direction','')).upper()
+                    import datetime as _dbt
+                    _ist_bt = _dbt.timedelta(hours=5, minutes=30)
+                    _bt_et_raw = str(bt.get('entry_datetime',''))[:19]
+                    _bt_xt_raw = str(bt.get('exit_datetime', ''))[:19]
+                    try:
+                        bt_et = (_dbt.datetime.strptime(_bt_et_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_bt).strftime('%d-%b-%Y %I:%M %p IST')
+                        bt_xt = (_dbt.datetime.strptime(_bt_xt_raw.replace('T',' '), '%Y-%m-%d %H:%M:%S') + _ist_bt).strftime('%d-%b-%Y %I:%M %p IST')
+                    except:
+                        bt_et = _bt_et_raw
+                        bt_xt = _bt_xt_raw
+                    if fwd is None:
+                        # No live trade yet - show PENDING
+                        _pnd = "background:#fff8e1;color:#b8860b;font-weight:bold;padding:4px 6px;font-size:11px;"
+                        _ds2 = _TG20 if bt_dir == "LONG" else _TR20
                         rows += (
                             f"<tr>"
-                            f"<td style='{mp_style}'>{match_pct:.0f}%</td>"
+                            f"<td style='{_pnd}'>PENDING</td>"
                             f"<td style='{_TD20}'>{bt_et[:11].strip()}</td>"
-                            f"<td style='{ds}'>{bt_dir}</td>"
+                            f"<td style='{_ds2}'>{bt_dir}</td>"
                             f"<td style='{_TD20}'>{bt_et[12:] if len(bt_et)>12 else bt_et}</td>"
-                            f"<td style='{_TD20}'>{fwd_et[12:] if len(fwd_et)>12 else fwd_et}</td>"
-                            f"<td style='{_TD20}'>{bt_xt[12:] if len(bt_xt)>12 else bt_xt}</td>"
-                            f"<td style='{_TD20}'>{fwd_xt[12:] if len(fwd_xt)>12 else fwd_xt}</td>"
-                            f"<td style='{_TD20}'>${bt_ep:,.0f}</td>"
-                            f"<td style='{_TD20}'>${fwd_ep:,.0f}</td>"
-                            f"<td style='{_TD20}'>${bt_xp:,.0f}</td>"
-                            f"<td style='{_TD20}'>${fwd_xp:,.0f}</td>"
-                            f"<td style='{_TG20}'>₹{bt_pnl:,.0f}</td>"
-                            f"<td style='{_TG20 if fwd_pnl>=0 else _TR20}'>₹{fwd_pnl:,.0f}</td>"
-                            f"<td style='{pd_style}'>₹{pnl_diff:,.0f} ({pnl_pct:.1f}%)</td>"
+                            f"<td style='{_TD20}'>-</td>"
+                            f"<td style='{_TD20}'>₹{bt_ep:,.0f}</td>"
+                            f"<td style='{_TD20}'>-</td>"
+                            f"<td style='{_TD20}'>₹{bt_xp:,.0f}</td>"
+                            f"<td style='{_TD20}'>-</td>"
+                            f"<td style='{_TG20 if bt_pnl>=0 else _TR20}'>₹{bt_pnl:,.0f}</td>"
+                            f"<td style='{_TD20}'>-</td>"
+                            f"<td style='{_pnd}'>Waiting live</td>"
                             f"</tr>"
                         )
-                    return (
-                        f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
-                        f"<table style='width:100%;border-collapse:collapse;'>"
-                        f"<thead><tr>"
-                        f"<th style='{_TH20}'>Match%</th>"
-                        f"<th style='{_TH20}'>Date</th>"
-                        f"<th style='{_TH20}'>Dir</th>"
-                        f"<th style='{_TH20}'>BT Entry T</th>"
-                        f"<th style='{_TH20}'>FT Entry T</th>"
-                        f"<th style='{_TH20}'>BT Exit T</th>"
-                        f"<th style='{_TH20}'>FT Exit T</th>"
-                        f"<th style='{_TH20}'>BT Entry ₹</th>"
-                        f"<th style='{_TH20}'>FT Entry ₹</th>"
-                        f"<th style='{_TH20}'>BT Exit ₹</th>"
-                        f"<th style='{_TH20}'>FT Exit ₹</th>"
-                        f"<th style='{_TH20}'>BT PnL</th>"
-                        f"<th style='{_TH20}'>FT PnL</th>"
-                        f"<th style='{_TH20}'>PnL Diff</th>"
-                        f"</tr></thead><tbody>{rows}</tbody></table></div>"
+                        continue
+                    fwd_ep  = float(fwd.get('ep', 0))
+                    fwd_xp  = float(fwd.get('xp', 0))
+                    fwd_pnl = float(fwd.get('pnl', 0)) * _INR13
+                    fwd_dir = str(fwd.get('dir','')).upper()
+                    _ist_cmp = _dc.timedelta(hours=5, minutes=30)
+                    fwd_et  = (_dc.datetime.utcfromtimestamp(fwd.get('ets',0)) + _ist_cmp).strftime('%d-%b-%Y %I:%M %p IST')
+                    fwd_xt  = (_dc.datetime.utcfromtimestamp(fwd.get('xts',0)) + _ist_cmp).strftime('%d-%b-%Y %I:%M %p IST')
+                    pnl_diff  = abs(bt_pnl - fwd_pnl)
+                    pnl_pct   = (pnl_diff / abs(bt_pnl) * 100) if bt_pnl != 0 else 0
+                    dir_match = bt_dir == fwd_dir
+                    match_pct = 100.0
+                    if not dir_match:  match_pct -= 50
+                    if pnl_pct > 10:   match_pct -= 30
+                    elif pnl_pct > 5:  match_pct -= 10
+                    mp_style  = _TG20 if match_pct >= 95 else (_TY20 if match_pct >= 80 else _TR20)
+                    ds        = _TG20 if dir_match else _TR20
+                    pd_style  = _TG20 if pnl_pct <= 5 else (_TY20 if pnl_pct <= 10 else _TR20)
+                    rows += (
+                        f"<tr>"
+                        f"<td style='{mp_style}'>{match_pct:.0f}%</td>"
+                        f"<td style='{_TD20}'>{bt_et[:11].strip()}</td>"
+                        f"<td style='{ds}'>{bt_dir}</td>"
+                        f"<td style='{_TD20}'>{bt_et[12:] if len(bt_et)>12 else bt_et}</td>"
+                        f"<td style='{_TD20}'>{fwd_et[12:] if len(fwd_et)>12 else fwd_et}</td>"
+                        f"<td style='{_TD20}'>{bt_xt[12:] if len(bt_xt)>12 else bt_xt}</td>"
+                        f"<td style='{_TD20}'>{fwd_xt[12:] if len(fwd_xt)>12 else fwd_xt}</td>"
+                        f"<td style='{_TD20}'>${bt_ep:,.0f}</td>"
+                        f"<td style='{_TD20}'>${fwd_ep:,.0f}</td>"
+                        f"<td style='{_TD20}'>${bt_xp:,.0f}</td>"
+                        f"<td style='{_TD20}'>${fwd_xp:,.0f}</td>"
+                        f"<td style='{_TG20}'>₹{bt_pnl:,.0f}</td>"
+                        f"<td style='{_TG20 if fwd_pnl>=0 else _TR20}'>₹{fwd_pnl:,.0f}</td>"
+                        f"<td style='{pd_style}'>₹{pnl_diff:,.0f} ({pnl_pct:.1f}%)</td>"
+                        f"</tr>"
                     )
-                except Exception as e:
-                    return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
+                return (
+                    f"<div style='overflow-x:auto;max-height:350px;overflow-y:auto;'>"
+                    f"<table style='width:100%;border-collapse:collapse;'>"
+                    f"<thead><tr>"
+                    f"<th style='{_TH20}'>Match%</th>"
+                    f"<th style='{_TH20}'>Date</th>"
+                    f"<th style='{_TH20}'>Dir</th>"
+                    f"<th style='{_TH20}'>BT Entry T</th>"
+                    f"<th style='{_TH20}'>FT Entry T</th>"
+                    f"<th style='{_TH20}'>BT Exit T</th>"
+                    f"<th style='{_TH20}'>FT Exit T</th>"
+                    f"<th style='{_TH20}'>BT Entry ₹</th>"
+                    f"<th style='{_TH20}'>FT Entry ₹</th>"
+                    f"<th style='{_TH20}'>BT Exit ₹</th>"
+                    f"<th style='{_TH20}'>FT Exit ₹</th>"
+                    f"<th style='{_TH20}'>BT PnL</th>"
+                    f"<th style='{_TH20}'>FT PnL</th>"
+                    f"<th style='{_TH20}'>PnL Diff</th>"
+                    f"</tr></thead><tbody>{rows}</tbody></table></div>"
+                )
+            except Exception as e:
+                return f"<p style='color:red;font-size:11px'>Error: {e}</p>"
 
-            # ── RENDER: BT S4V2 | BT S4 | FWD S4V2 | FWD S4 (last 7 days, separate) ──
-            _vf7_ts = _pd13.to_datetime(_VF13_7D).timestamp()
-            s2p_7d = [p for p in s2p if p.get('ets',0) >= _vf7_ts]
-            s4p_7d = [p for p in s4p if p.get('ets',0) >= _vf7_ts]
+        # ── RENDER: BT S4V2 | BT S4 | FWD S4V2 | FWD S4 (last 7 days, separate) ──
+        _vf7_ts = _pd13.to_datetime(_VF13_7D).timestamp()
+        s2p_7d = [p for p in s2p if p.get('ets',0) >= _vf7_ts]
+        s4p_7d = [p for p in s4p if p.get('ets',0) >= _vf7_ts]
 
-            def _dl13_csv(pairs, label, key):
-                try:
-                    import pandas as _pddl13, datetime as _dtdl13
-                    rows13 = []
-                    for p in pairs:
-                        _et13 = _dtdl13.datetime.utcfromtimestamp(p.get('ets',0)).strftime('%Y-%m-%d %H:%M:%S') if p.get('ets') else ""
-                        _xt13 = _dtdl13.datetime.utcfromtimestamp(p.get('xts',0)).strftime('%Y-%m-%d %H:%M:%S') if p.get('xts') else ""
-                        rows13.append({"direction":p.get('dir',''), "lot":p.get('sz',0), "entry_time_utc":_et13,
-                                       "exit_time_utc":_xt13, "entry_price":p.get('ep',0), "exit_price":p.get('xp',0),
-                                       "net_pnl_usd":p.get('pnl',0), "net_pnl_inr":round(p.get('pnl',0)*_INR13,2), "charges_usd":p.get('cm',0), "status":"OPEN" if p.get('open') else "CLOSED", "message":p.get('_msg13_csv','')})
-                    _csvdata13 = _pddl13.DataFrame(rows13).to_csv(index=False)
-                    st.download_button(f"Download {label} CSV", _csvdata13, file_name=f"{label.replace(' ','_')}.csv", mime="text/csv", key=key)
-                except Exception as _edl13:
-                    st.caption(f"Download unavailable: {_edl13}")
+        def _dl13_csv(pairs, label, key):
+            try:
+                import pandas as _pddl13, datetime as _dtdl13
+                rows13 = []
+                for p in pairs:
+                    _et13 = _dtdl13.datetime.utcfromtimestamp(p.get('ets',0)).strftime('%Y-%m-%d %H:%M:%S') if p.get('ets') else ""
+                    _xt13 = _dtdl13.datetime.utcfromtimestamp(p.get('xts',0)).strftime('%Y-%m-%d %H:%M:%S') if p.get('xts') else ""
+                    rows13.append({"direction":p.get('dir',''), "lot":p.get('sz',0), "entry_time_utc":_et13,
+                                   "exit_time_utc":_xt13, "entry_price":p.get('ep',0), "exit_price":p.get('xp',0),
+                                   "net_pnl_usd":p.get('pnl',0), "net_pnl_inr":round(p.get('pnl',0)*_INR13,2), "charges_usd":p.get('cm',0), "status":"OPEN" if p.get('open') else "CLOSED", "message":p.get('_msg13_csv','')})
+                _csvdata13 = _pddl13.DataFrame(rows13).to_csv(index=False)
+                st.download_button(f"Download {label} CSV", _csvdata13, file_name=f"{label.replace(' ','_')}.csv", mime="text/csv", key=key)
+            except Exception as _edl13:
+                st.caption(f"Download unavailable: {_edl13}")
 
-            def _dl13_bt_csv(csv_pattern, vf_str, label, key):
-                try:
-                    files13 = sorted(_gl13.glob(csv_pattern), reverse=True)
-                    if files13:
-                        _dfdl13 = _pd13.read_csv(files13[0])
-                        if 'entry_datetime' in _dfdl13.columns:
-                            _dfdl13['entry_datetime'] = _pd13.to_datetime(_dfdl13['entry_datetime'])
-                            _dfdl13 = _dfdl13[_dfdl13['entry_datetime'] >= _pd13.to_datetime(vf_str)]
-                        st.download_button(f"Download {label} CSV", _dfdl13.to_csv(index=False), file_name=f"{label.replace(' ','_')}.csv", mime="text/csv", key=key)
+        def _dl13_bt_csv(csv_pattern, vf_str, label, key):
+            try:
+                files13 = sorted(_gl13.glob(csv_pattern), reverse=True)
+                if files13:
+                    _dfdl13 = _pd13.read_csv(files13[0])
+                    if 'entry_datetime' in _dfdl13.columns:
+                        _dfdl13['entry_datetime'] = _pd13.to_datetime(_dfdl13['entry_datetime'])
+                        _dfdl13 = _dfdl13[_dfdl13['entry_datetime'] >= _pd13.to_datetime(vf_str)]
+                    st.download_button(f"Download {label} CSV", _dfdl13.to_csv(index=False), file_name=f"{label.replace(' ','_')}.csv", mime="text/csv", key=key)
+                else:
+                    st.caption("No backtest file found")
+            except Exception as _edl13b:
+                st.caption(f"Download unavailable: {_edl13b}")
+
+        # S4 always shown fixed; dropdown picks S4V2 or S4V3 for second slot (corrected pattern, matches Section 14)
+        _qp13_default = st.query_params.get("sec13_cmp", "S4V2")
+        _sec13_idx = 0 if _qp13_default == "S4V2" else 1
+        _sec13_choice = st.selectbox("Compare S4 against:", ["S4V2","S4V3"], index=_sec13_idx, key="sec13_cmp_dd")
+        st.query_params["sec13_cmp"] = _sec13_choice
+
+        _colA, _colB = st.columns(2)
+        with _colA:
+            st.markdown(f"<div style='{_HDR13}'>BACKTEST S4 - THIS MONTH</div>", unsafe_allow_html=True)
+            st.markdown(_bt_hdr13("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv", _VF13_7D, which="s4"), unsafe_allow_html=True)
+            st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv", _VF13_7D, which="s4"), unsafe_allow_html=True)
+            _dl13_bt_csv("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv", _VF13_7D, "BT_S4_ThisMonth", "dl_bt_s4")
+        with _colB:
+            if _sec13_choice == "S4V2":
+                st.markdown(f"<div style='{_HDR13}'>BACKTEST S4V2 - THIS MONTH</div>", unsafe_allow_html=True)
+                st.markdown(_bt_hdr13("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
+                st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
+                _dl13_bt_csv("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv", _VF13_7D, "BT_S4V2_ThisMonth", "dl_bt_s2")
+            else:
+                st.markdown(f"<div style='{_HDR13}'>BACKTEST S4V3 - THIS MONTH</div>", unsafe_allow_html=True)
+                st.markdown(_bt_hdr13("output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
+                st.markdown(_bt20("output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
+                _dl13_bt_csv("output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv", _VF13_7D, "BT_S4V3_ThisMonth", "dl_bt_s4v3")
+
+        _colC, _colD = st.columns(2)
+        with _colC:
+            st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4 - THIS MONTH</div>", unsafe_allow_html=True)
+            st.markdown(_fwd_slip_hdr13(s4p_7d, bot_name="S4"), unsafe_allow_html=True)
+            st.markdown(_fwd20(s4p_7d, bot_name="S4"), unsafe_allow_html=True)
+            _dl13_csv(s4p_7d, "LV_S4_ThisMonth", "dl_lv_s4")
+        with _colD:
+            if _sec13_choice == "S4V2":
+                st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4V2 - THIS MONTH</div>", unsafe_allow_html=True)
+                st.markdown(_fwd_slip_hdr13(s2p_7d, bot_name="S4V2"), unsafe_allow_html=True)
+                st.markdown(_fwd20(s2p_7d, bot_name="S4V2"), unsafe_allow_html=True)
+                _dl13_csv(s2p_7d, "LV_S4V2_ThisMonth", "dl_lv_s2")
+            else:
+                if os.getenv("S4V3_API_KEY"):
+                    s4v3p = _pair13_fills(os.getenv("S4V3_API_KEY"), os.getenv("S4V3_API_SECRET"), _VF13_7D)
+                    s4v3p_7d = [p for p in s4v3p if p.get('ets',0) >= _vf7_ts]
+                    st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4V3 - THIS MONTH</div>", unsafe_allow_html=True)
+                    st.markdown(_fwd_slip_hdr13(s4v3p_7d, bot_name="S4V3"), unsafe_allow_html=True)
+                    st.markdown(_fwd20(s4v3p_7d, bot_name="S4V3"), unsafe_allow_html=True)
+                    _dl13_csv(s4v3p_7d, "LV_S4V3_ThisMonth", "dl_lv_s4v3")
+                else:
+                    st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4V3 - THIS MONTH</div>", unsafe_allow_html=True)
+                    st.caption("S4V3 forward-test hidden - pending subaccount/API key (ticket #TICKET-457563)")
+
+        # ================================================================
+        # EQUITY CURVE - MONTHLY VIEW (BT + FWD, S4V2 + S4)
+        # ================================================================
+        import plotly.graph_objects as _go13
+
+        def _eq_render13(dates_all, cum_inr_all, key_prefix, title, reset_monthly=False):
+            if not dates_all:
+                st.caption(f"{title}: no data yet")
+                return
+            months = sorted(set(d.strftime("%Y-%m") for d in dates_all))
+            skey = f"eq13_{key_prefix}_idx"
+            if skey not in st.session_state:
+                st.session_state[skey] = len(months) - 1
+            st.session_state[skey] = max(0, min(st.session_state[skey], len(months)-1))
+            c1, c2, c3 = st.columns([1,3,1])
+            with c1:
+                if st.button("< Prev", key=f"{key_prefix}_prev"):
+                    st.session_state[skey] = max(0, st.session_state[skey]-1)
+            with c3:
+                if st.button("Next >", key=f"{key_prefix}_next"):
+                    st.session_state[skey] = min(len(months)-1, st.session_state[skey]+1)
+            sel_month = months[st.session_state[skey]]
+            with c2:
+                st.markdown(f"<div style='text-align:center;font-weight:700;'>{title} - {sel_month}</div>", unsafe_allow_html=True)
+
+            idxs = [i for i,d in enumerate(dates_all) if d.strftime("%Y-%m")==sel_month]
+            if not idxs:
+                st.caption("No trades this month")
+                return
+            m_dates = [dates_all[i] for i in idxs]
+            if len(m_dates) == 1:
+                import datetime as _dt13sp
+                m_dates = [m_dates[0] - _dt13sp.timedelta(hours=1), m_dates[0]]
+                idxs = [idxs[0], idxs[0]]
+            if reset_monthly:
+                deltas = []
+                for i in idxs:
+                    if i == 0:
+                        deltas.append(cum_inr_all[i])
                     else:
-                        st.caption("No backtest file found")
-                except Exception as _edl13b:
-                    st.caption(f"Download unavailable: {_edl13b}")
+                        deltas.append(cum_inr_all[i] - cum_inr_all[i-1])
+                m_cum = []
+                _run = 0.0
+                for d in deltas:
+                    _run += d
+                    m_cum.append(_run)
+            else:
+                m_cum = [cum_inr_all[i] for i in idxs]
 
-            # S4 always shown fixed; dropdown picks S4V2 or S4V3 for second slot (corrected pattern, matches Section 14)
-            _qp13_default = st.query_params.get("sec13_cmp", "S4V2")
-            _sec13_idx = 0 if _qp13_default == "S4V2" else 1
-            _sec13_choice = st.selectbox("Compare S4 against:", ["S4V2","S4V3"], index=_sec13_idx, key="sec13_cmp_dd")
-            st.query_params["sec13_cmp"] = _sec13_choice
+            _pos = [v if v>=0 else 0 for v in m_cum]
+            _neg = [v if v<0 else 0 for v in m_cum]
+            fig = _go13.Figure(data=[
+                _go13.Scatter(x=m_dates, y=_pos, fill='tozeroy', fillcolor='rgba(39,174,96,0.2)',
+                              line=dict(width=0), mode='lines', showlegend=False, hoverinfo='skip'),
+                _go13.Scatter(x=m_dates, y=_neg, fill='tozeroy', fillcolor='rgba(231,76,60,0.2)',
+                              line=dict(width=0), mode='lines', showlegend=False, hoverinfo='skip'),
+                _go13.Scatter(x=m_dates, y=m_cum, line=dict(color='#2c3e50', width=2),
+                              mode='lines', name='Cumulative PnL')
+            ])
+            fig.update_layout(title=f'Equity Curve (Rs) - {sel_month}', xaxis_title='Date',
+                               yaxis_title='Cumulative PnL (Rs)', hovermode='x unified', height=350,
+                               margin=dict(l=40,r=20,t=40,b=30),
+                               hoverlabel=dict(bgcolor='#2c3e50', font=dict(color='white', size=13)))
+            st.plotly_chart(fig, use_container_width=True, key=f"{key_prefix}_chart")
 
-            _colA, _colB = st.columns(2)
-            with _colA:
-                st.markdown(f"<div style='{_HDR13}'>BACKTEST S4 - THIS MONTH</div>", unsafe_allow_html=True)
-                st.markdown(_bt_hdr13("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv", _VF13_7D, which="s4"), unsafe_allow_html=True)
-                st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv", _VF13_7D, which="s4"), unsafe_allow_html=True)
-                _dl13_bt_csv("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv", _VF13_7D, "BT_S4_ThisMonth", "dl_bt_s4")
-            with _colB:
-                if _sec13_choice == "S4V2":
-                    st.markdown(f"<div style='{_HDR13}'>BACKTEST S4V2 - THIS MONTH</div>", unsafe_allow_html=True)
-                    st.markdown(_bt_hdr13("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
-                    st.markdown(_bt20("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
-                    _dl13_bt_csv("output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv", _VF13_7D, "BT_S4V2_ThisMonth", "dl_bt_s2")
-                else:
-                    st.markdown(f"<div style='{_HDR13}'>BACKTEST S4V3 - THIS MONTH</div>", unsafe_allow_html=True)
-                    st.markdown(_bt_hdr13("output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
-                    st.markdown(_bt20("output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv", _VF13_7D, which="s2"), unsafe_allow_html=True)
-                    _dl13_bt_csv("output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv", _VF13_7D, "BT_S4V3_ThisMonth", "dl_bt_s4v3")
+        st.markdown("<hr style='margin:10px 0;'>", unsafe_allow_html=True)
+        st.markdown(f"<div style='{_HDR13}'>EQUITY CURVE - MONTHLY VIEW</div>", unsafe_allow_html=True)
 
-            _colC, _colD = st.columns(2)
-            with _colC:
-                st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4 - THIS MONTH</div>", unsafe_allow_html=True)
-                st.markdown(_fwd_slip_hdr13(s4p_7d, bot_name="S4"), unsafe_allow_html=True)
-                st.markdown(_fwd20(s4p_7d, bot_name="S4"), unsafe_allow_html=True)
-                _dl13_csv(s4p_7d, "LV_S4_ThisMonth", "dl_lv_s4")
-            with _colD:
-                if _sec13_choice == "S4V2":
-                    st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4V2 - THIS MONTH</div>", unsafe_allow_html=True)
-                    st.markdown(_fwd_slip_hdr13(s2p_7d, bot_name="S4V2"), unsafe_allow_html=True)
-                    st.markdown(_fwd20(s2p_7d, bot_name="S4V2"), unsafe_allow_html=True)
-                    _dl13_csv(s2p_7d, "LV_S4V2_ThisMonth", "dl_lv_s2")
-                else:
-                    if os.getenv("S4V3_API_KEY"):
-                        s4v3p = _pair13_fills(os.getenv("S4V3_API_KEY"), os.getenv("S4V3_API_SECRET"), _VF13_7D)
-                        s4v3p_7d = [p for p in s4v3p if p.get('ets',0) >= _vf7_ts]
-                        st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4V3 - THIS MONTH</div>", unsafe_allow_html=True)
-                        st.markdown(_fwd_slip_hdr13(s4v3p_7d, bot_name="S4V3"), unsafe_allow_html=True)
-                        st.markdown(_fwd20(s4v3p_7d, bot_name="S4V3"), unsafe_allow_html=True)
-                        _dl13_csv(s4v3p_7d, "LV_S4V3_ThisMonth", "dl_lv_s4v3")
-                    else:
-                        st.markdown(f"<div style='{_HDR13}'>FORWARD TEST S4V3 - THIS MONTH</div>", unsafe_allow_html=True)
-                        st.caption("S4V3 forward-test hidden - pending subaccount/API key (ticket #TICKET-457563)")
+        try:
+            _bt_glob_sel = "output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv" if _sec13_choice=="S4V2" else "output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv"
+            _f = sorted(_gl13.glob(_bt_glob_sel))
+            if _f:
+                _dfbt2 = _pd13.read_csv(_f[-1])
+                _dfbt2['exit_datetime'] = _pd13.to_datetime(_dfbt2['exit_datetime'])
+                _dfbt2 = _dfbt2.sort_values('exit_datetime')
+                _gpnl2   = _dfbt2.get('gross_pnl', _dfbt2['net_pnl'])
+                _oslip2  = _dfbt2.get('slippage_usd', 10.0)
+                _ochg2   = _dfbt2.get('total_charges_usd', 0.0) - _oslip2
+                _npnl2   = (_gpnl2 * _LOT_RATIO13) - (sec13_slip*2*_LOT_RATIO13) - ((_ochg2*_LOT_RATIO13) if sec13_charges else 0.0)
+                _cum2_inr = list((_npnl2 * _INR13).cumsum())
+                _eq_render13(list(_dfbt2['exit_datetime']), _cum2_inr, "s2bt", f"BACKTEST {_sec13_choice}", reset_monthly=True)
+            else:
+                st.caption(f"BACKTEST {_sec13_choice}: no data yet")
+        except Exception as _e:
+            st.caption(f"BT {_sec13_choice} equity curve error: {_e}")
 
-            # ================================================================
-            # EQUITY CURVE - MONTHLY VIEW (BT + FWD, S4V2 + S4)
-            # ================================================================
-            import plotly.graph_objects as _go13
+        try:
+            _f = sorted(_gl13.glob("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"))
+            if _f:
+                _dfbt4 = _pd13.read_csv(_f[-1])
+                _dfbt4['exit_datetime'] = _pd13.to_datetime(_dfbt4['exit_datetime'])
+                _dfbt4 = _dfbt4.sort_values('exit_datetime')
+                _gpnl4   = _dfbt4.get('gross_pnl', _dfbt4['net_pnl'])
+                _oslip4  = _dfbt4.get('slippage_usd', 10.0)
+                _ochg4   = _dfbt4.get('total_charges_usd', 0.0) - _oslip4
+                _npnl4   = (_gpnl4 * _LOT_RATIO13) - (sec13_slip*2*_LOT_RATIO13) - ((_ochg4*_LOT_RATIO13) if sec13_charges else 0.0)
+                _cum4_inr = list((_npnl4 * _INR13).cumsum())
+                _eq_render13(list(_dfbt4['exit_datetime']), _cum4_inr, "s4bt", "BACKTEST S4", reset_monthly=True)
+        except Exception as _e:
+            st.caption(f"BT S4 equity curve error: {_e}")
 
-            def _eq_render13(dates_all, cum_inr_all, key_prefix, title, reset_monthly=False):
-                if not dates_all:
-                    st.caption(f"{title}: no data yet")
-                    return
-                months = sorted(set(d.strftime("%Y-%m") for d in dates_all))
-                skey = f"eq13_{key_prefix}_idx"
-                if skey not in st.session_state:
-                    st.session_state[skey] = len(months) - 1
-                st.session_state[skey] = max(0, min(st.session_state[skey], len(months)-1))
-                c1, c2, c3 = st.columns([1,3,1])
-                with c1:
-                    if st.button("< Prev", key=f"{key_prefix}_prev"):
-                        st.session_state[skey] = max(0, st.session_state[skey]-1)
-                with c3:
-                    if st.button("Next >", key=f"{key_prefix}_next"):
-                        st.session_state[skey] = min(len(months)-1, st.session_state[skey]+1)
-                sel_month = months[st.session_state[skey]]
-                with c2:
-                    st.markdown(f"<div style='text-align:center;font-weight:700;'>{title} - {sel_month}</div>", unsafe_allow_html=True)
+        try:
+            if _sec13_choice == "S4V2":
+                _fwd_pairs_sel = s2p
+            else:
+                _fwd_pairs_sel = _pair13_fills(os.getenv("S4V3_API_KEY",""), os.getenv("S4V3_API_SECRET",""), _VF13_7D) if os.getenv("S4V3_API_KEY") else []
+            if _fwd_pairs_sel:
+                _s2sorted = sorted(_fwd_pairs_sel, key=lambda p: p['xts'] if p.get('xts',0)>0 else p['ets'])
+                _dates = [_dt13.datetime.fromtimestamp(p['xts'] if p.get('xts',0)>0 else p['ets'], _dt13.timezone.utc) + _dt13.timedelta(hours=5, minutes=30) for p in _s2sorted]
+                _cum = []
+                _run = 0.0
+                for p in _s2sorted:
+                    _run += p['pnl']*_INR13
+                    _cum.append(_run)
+                _eq_render13(_dates, _cum, "s2fwd", f"FORWARD TEST {_sec13_choice}")
+            else:
+                st.caption(f"FORWARD TEST {_sec13_choice}: no trades yet")
+        except Exception as _e:
+            st.caption(f"FWD {_sec13_choice} equity curve error: {_e}")
 
-                idxs = [i for i,d in enumerate(dates_all) if d.strftime("%Y-%m")==sel_month]
-                if not idxs:
-                    st.caption("No trades this month")
-                    return
-                m_dates = [dates_all[i] for i in idxs]
-                if len(m_dates) == 1:
-                    import datetime as _dt13sp
-                    m_dates = [m_dates[0] - _dt13sp.timedelta(hours=1), m_dates[0]]
-                    idxs = [idxs[0], idxs[0]]
-                if reset_monthly:
-                    deltas = []
-                    for i in idxs:
-                        if i == 0:
-                            deltas.append(cum_inr_all[i])
-                        else:
-                            deltas.append(cum_inr_all[i] - cum_inr_all[i-1])
-                    m_cum = []
-                    _run = 0.0
-                    for d in deltas:
-                        _run += d
-                        m_cum.append(_run)
-                else:
-                    m_cum = [cum_inr_all[i] for i in idxs]
-
-                _pos = [v if v>=0 else 0 for v in m_cum]
-                _neg = [v if v<0 else 0 for v in m_cum]
-                fig = _go13.Figure(data=[
-                    _go13.Scatter(x=m_dates, y=_pos, fill='tozeroy', fillcolor='rgba(39,174,96,0.2)',
-                                  line=dict(width=0), mode='lines', showlegend=False, hoverinfo='skip'),
-                    _go13.Scatter(x=m_dates, y=_neg, fill='tozeroy', fillcolor='rgba(231,76,60,0.2)',
-                                  line=dict(width=0), mode='lines', showlegend=False, hoverinfo='skip'),
-                    _go13.Scatter(x=m_dates, y=m_cum, line=dict(color='#2c3e50', width=2),
-                                  mode='lines', name='Cumulative PnL')
-                ])
-                fig.update_layout(title=f'Equity Curve (Rs) - {sel_month}', xaxis_title='Date',
-                                   yaxis_title='Cumulative PnL (Rs)', hovermode='x unified', height=350,
-                                   margin=dict(l=40,r=20,t=40,b=30),
-                                   hoverlabel=dict(bgcolor='#2c3e50', font=dict(color='white', size=13)))
-                st.plotly_chart(fig, use_container_width=True, key=f"{key_prefix}_chart")
-
-            st.markdown("<hr style='margin:10px 0;'>", unsafe_allow_html=True)
-            st.markdown(f"<div style='{_HDR13}'>EQUITY CURVE - MONTHLY VIEW</div>", unsafe_allow_html=True)
-
-            try:
-                _bt_glob_sel = "output/trade_log_RenkoSMIIOSupertrendV2Strategy*.csv" if _sec13_choice=="S4V2" else "output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv"
-                _f = sorted(_gl13.glob(_bt_glob_sel))
-                if _f:
-                    _dfbt2 = _pd13.read_csv(_f[-1])
-                    _dfbt2['exit_datetime'] = _pd13.to_datetime(_dfbt2['exit_datetime'])
-                    _dfbt2 = _dfbt2.sort_values('exit_datetime')
-                    _gpnl2   = _dfbt2.get('gross_pnl', _dfbt2['net_pnl'])
-                    _oslip2  = _dfbt2.get('slippage_usd', 10.0)
-                    _ochg2   = _dfbt2.get('total_charges_usd', 0.0) - _oslip2
-                    _npnl2   = (_gpnl2 * _LOT_RATIO13) - (sec13_slip*2*_LOT_RATIO13) - ((_ochg2*_LOT_RATIO13) if sec13_charges else 0.0)
-                    _cum2_inr = list((_npnl2 * _INR13).cumsum())
-                    _eq_render13(list(_dfbt2['exit_datetime']), _cum2_inr, "s2bt", f"BACKTEST {_sec13_choice}", reset_monthly=True)
-                else:
-                    st.caption(f"BACKTEST {_sec13_choice}: no data yet")
-            except Exception as _e:
-                st.caption(f"BT {_sec13_choice} equity curve error: {_e}")
-
-            try:
-                _f = sorted(_gl13.glob("output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"))
-                if _f:
-                    _dfbt4 = _pd13.read_csv(_f[-1])
-                    _dfbt4['exit_datetime'] = _pd13.to_datetime(_dfbt4['exit_datetime'])
-                    _dfbt4 = _dfbt4.sort_values('exit_datetime')
-                    _gpnl4   = _dfbt4.get('gross_pnl', _dfbt4['net_pnl'])
-                    _oslip4  = _dfbt4.get('slippage_usd', 10.0)
-                    _ochg4   = _dfbt4.get('total_charges_usd', 0.0) - _oslip4
-                    _npnl4   = (_gpnl4 * _LOT_RATIO13) - (sec13_slip*2*_LOT_RATIO13) - ((_ochg4*_LOT_RATIO13) if sec13_charges else 0.0)
-                    _cum4_inr = list((_npnl4 * _INR13).cumsum())
-                    _eq_render13(list(_dfbt4['exit_datetime']), _cum4_inr, "s4bt", "BACKTEST S4", reset_monthly=True)
-            except Exception as _e:
-                st.caption(f"BT S4 equity curve error: {_e}")
-
-            try:
-                if _sec13_choice == "S4V2":
-                    _fwd_pairs_sel = s2p
-                else:
-                    _fwd_pairs_sel = _pair13_fills(os.getenv("S4V3_API_KEY",""), os.getenv("S4V3_API_SECRET",""), _VF13_7D) if os.getenv("S4V3_API_KEY") else []
-                if _fwd_pairs_sel:
-                    _s2sorted = sorted(_fwd_pairs_sel, key=lambda p: p['xts'] if p.get('xts',0)>0 else p['ets'])
-                    _dates = [_dt13.datetime.fromtimestamp(p['xts'] if p.get('xts',0)>0 else p['ets'], _dt13.timezone.utc) + _dt13.timedelta(hours=5, minutes=30) for p in _s2sorted]
-                    _cum = []
-                    _run = 0.0
-                    for p in _s2sorted:
-                        _run += p['pnl']*_INR13
-                        _cum.append(_run)
-                    _eq_render13(_dates, _cum, "s2fwd", f"FORWARD TEST {_sec13_choice}")
-                else:
-                    st.caption(f"FORWARD TEST {_sec13_choice}: no trades yet")
-            except Exception as _e:
-                st.caption(f"FWD {_sec13_choice} equity curve error: {_e}")
-
-            try:
-                if s4p:
-                    _s4sorted = sorted(s4p, key=lambda p: p['xts'] if p.get('xts',0)>0 else p['ets'])
-                    _dates = [_dt13.datetime.fromtimestamp(p['xts'] if p.get('xts',0)>0 else p['ets'], _dt13.timezone.utc) + _dt13.timedelta(hours=5, minutes=30) for p in _s4sorted]
-                    _cum = []
-                    _run = 0.0
-                    for p in _s4sorted:
-                        _run += p['pnl']*_INR13
-                        _cum.append(_run)
-                    _eq_render13(_dates, _cum, "s4fwd", "FORWARD TEST S4")
-                else:
-                    st.caption("FORWARD TEST S4: no trades yet")
-            except Exception as _e:
-                st.caption(f"FWD S4 equity curve error: {_e}")
+        try:
+            if s4p:
+                _s4sorted = sorted(s4p, key=lambda p: p['xts'] if p.get('xts',0)>0 else p['ets'])
+                _dates = [_dt13.datetime.fromtimestamp(p['xts'] if p.get('xts',0)>0 else p['ets'], _dt13.timezone.utc) + _dt13.timedelta(hours=5, minutes=30) for p in _s4sorted]
+                _cum = []
+                _run = 0.0
+                for p in _s4sorted:
+                    _run += p['pnl']*_INR13
+                    _cum.append(_run)
+                _eq_render13(_dates, _cum, "s4fwd", "FORWARD TEST S4")
+            else:
+                st.caption("FORWARD TEST S4: no trades yet")
+        except Exception as _e:
+            st.caption(f"FWD S4 equity curve error: {_e}")
 
 
 
