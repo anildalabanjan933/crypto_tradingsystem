@@ -79,6 +79,8 @@ check_heartbeat_stale sl_safety_monitor logs/sl_safety_monitor_heartbeat.txt 300
 check_and_start sl_safety_monitor scripts/sl_safety_monitor.py logs/sl_safety_monitor.log
 check_heartbeat_stale position_risk_monitor logs/position_risk_monitor_heartbeat.txt 180
 check_and_start position_risk_monitor scripts/position_risk_monitor.py logs/position_risk_monitor.log
+check_heartbeat_stale issue_tracker logs/issue_tracker_heartbeat.txt 300
+check_and_start issue_tracker scripts/issue_tracker.py logs/issue_tracker.log
 check_heartbeat_stale margin_monitor logs/margin_monitor_heartbeat.txt 2100
 check_and_start margin_monitor scripts/margin_monitor.py logs/margin_monitor.log
 check_heartbeat_stale maintenance_watcher logs/maintenance_watcher_heartbeat.txt 180
