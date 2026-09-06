@@ -34,7 +34,7 @@ load_dotenv()
 
 from engine.order_manager import OrderManager
 
-BOTS = ["S4", "S4V2", "S4V3", "TM1_S4"]
+BOTS = ["S4", "S4V2", "S4V3"]
 
 API_KEY_ENV = {
     "S4":     ("S4_API_KEY", "S4_API_SECRET"),
@@ -394,8 +394,16 @@ def compute_slip(bt_p, lv_p, direction):
     tag = "FAVORABLE" if signed >= 0 else "UNFAVORABLE"
     return round(abs(signed) * CONTRACT_MULT, 2), tag
 
-def build_verdict(system_flag, close_escalation_yn, missed_yn, flip_yn):
-    if close_escalation_yn == "Y" or flip_yn == "Y" or system_flag:
+FLIP_DAMAGE_NORMAL_CEILING = 20.0  # 2x documented $8-10/side target - normal flip
+                                    # stacks entry+exit slip, so up to ~$20 combined
+                                    # is ordinary double-slip, not a system fault
+_ANOMALY_TAGS = {"BOT_RESTART", "ENGINE_RESTART", "CLOSE_LOSS_CAP_STAGE", "CLOSE_FAILED_MANUAL_REQUIRED"}
+
+def build_verdict(system_flag, close_escalation_yn, missed_yn, flip_yn, flip_damage=0.0):
+    _flags = set(f for f in system_flag.split("|") if f)
+    if close_escalation_yn == "Y" or (_flags & _ANOMALY_TAGS):
+        return "SYSTEM-SIDE"
+    if flip_yn == "Y" and flip_damage > FLIP_DAMAGE_NORMAL_CEILING:
         return "SYSTEM-SIDE"
     if missed_yn == "Y":
         return "UNEXPLAINED"
@@ -493,7 +501,7 @@ def process_bot(bot, from_date, to_date, existing_keys):
         flip_yn = "Y" if "FLIP_FIRE" in system_flag else "N"
         flip_damage = round(entry_slip + exit_slip, 2) if flip_yn == "Y" else 0.0
 
-        verdict = build_verdict(system_flag, close_escalation_yn, missed_yn, flip_yn)
+        verdict = build_verdict(system_flag, close_escalation_yn, missed_yn, flip_yn, flip_damage)
 
         row = {
             "date": str(entry_ts)[:10], "bot": bot, "entry_ts": entry_ts, "exit_ts": exit_ts,
