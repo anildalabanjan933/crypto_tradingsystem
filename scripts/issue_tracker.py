@@ -405,6 +405,8 @@ def build_verdict(system_flag, close_escalation_yn, missed_yn, flip_yn, flip_dam
         return "SYSTEM-SIDE"
     if flip_yn == "Y" and flip_damage > FLIP_DAMAGE_NORMAL_CEILING:
         return "SYSTEM-SIDE"
+    if missed_yn == "OPEN":
+        return "OPEN-PENDING"
     if missed_yn == "Y":
         return "UNEXPLAINED"
     return "MARKET-SIDE"
@@ -464,6 +466,36 @@ def check_orphan_stuck_pending(bot):
                            f"CSV shows {csv_dir} entry_ts={entry_ts_str}, "
                            f"exchange shows {exch_dir} size={exch_size} - direction mismatch")
 
+def _is_live_still_open(bot, bt_entry_ts_raw, bt_dir):
+    """Read-only check: does this BT entry correspond to a live trade that is
+    still genuinely open (PENDING in local signals CSV), not actually missed?
+    No API call - reads the same local signals_*.csv the live bot itself writes."""
+    path = SIGNAL_CSV.get(bot)
+    if not path or not os.path.exists(path):
+        return False
+    try:
+        with open(path, "r") as f:
+            lines = [l.strip() for l in f.readlines() if l.strip()]
+    except Exception:
+        return False
+    if not lines:
+        return False
+    last = lines[-1]
+    parts = last.split(",")
+    if len(parts) < 3:
+        return False
+    sig_entry_ts, sig_exit_ts, sig_dir = parts[0], parts[1], parts[2]
+    if sig_exit_ts.strip().upper() != "PENDING":
+        return False
+    if sig_dir.strip().lower() != str(bt_dir).lower():
+        return False
+    try:
+        bt_ts = pd.Timestamp(str(bt_entry_ts_raw).replace("T", " "))
+        sig_ts = pd.Timestamp(sig_entry_ts.strip().replace("T", " "))
+        return abs((bt_ts - sig_ts).total_seconds()) < 3600
+    except Exception:
+        return False
+
 def process_bot(bot, from_date, to_date, existing_keys):
     bt_rows = get_bt_rows(bot, from_date, to_date)
     lv_rows = get_live_rows(bot, from_date, to_date)
@@ -478,7 +510,11 @@ def process_bot(bot, from_date, to_date, existing_keys):
 
         missed_yn = "Y" if lv is None else "N"
         if missed_yn == "Y":
-            _append_event(bot, "ENTRY_MISMATCH", f"BT entry {entry_ts} has no matched LV fill")
+            if _is_live_still_open(bot, entry_ts, bt["dir"]):
+                missed_yn = "OPEN"
+                _append_event(bot, "OPEN_LIVE_TRADE", f"BT entry {entry_ts} matches still-open live position - not missed")
+            else:
+                _append_event(bot, "ENTRY_MISMATCH", f"BT entry {entry_ts} has no matched LV fill")
 
         entry_slip, entry_tag = (0.0, "-")
         exit_slip, exit_tag = (0.0, "-")
