@@ -346,6 +346,9 @@ def check_and_fire(state,is_s4=False):
             except Exception:
                 _ref = state.candles_tf['close'].iloc[0]
             p_with_ref = dict(p, reference_price=_ref); strategy=RenkoSMIIOSupertrendStrategy(data_dict,LOT_SIZE,**p_with_ref)
+        if state.label=="S4":
+            _dbg=df_tf_indexed[(df_tf_indexed.index>="2026-09-04 02:00:00")&(df_tf_indexed.index<="2026-09-04 16:00:00")]
+            log.info(f"[BRICK-DEBUG] S4 live 2h OHLC window at fire-time:\n{_dbg.to_string()}")
         _t_gs0=time.time()
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -416,15 +419,32 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
                 save_snapshot(state.label, state.candles_1m.copy(), ts, direction, sig_type)
             except Exception as _e:
                 log.error(f"[{state.label}] snapshot-verify skipped (non-critical): {_e}")
+            try:
+                from scripts.confirmation_lag_tracker import log_lag_event
+                from datetime import datetime as _dt
+                _tf_map = {"S4":120,"S4V2":30,"S4V3":240,"S2":120}
+                _sig_ts_dt = _dt.strptime(ts, "%Y-%m-%dT%H:%M:%S")
+                _price_now = float(state.candles_1m["Close"].iloc[-1]) if state.candles_1m is not None and not state.candles_1m.empty else float(cl)
+                log_lag_event(state.label, _sig_ts_dt, now_utc.timestamp(),
+                              _tf_map.get(state.label,120), direction, float(cl), _price_now)
+            except Exception as _e:
+                log.warning(f"[{state.label}] lag tracker skipped (non-critical): {_e}")
         elif sig_type=="EXIT":
             # Find the PENDING row matching the EXACT open entry (not first PENDING found)
-            # Falls back to first PENDING row only if open_entry_ts unknown (e.g. restart)
+            # Falls back to LAST PENDING row only if open_entry_ts unknown (e.g. restart)
             updated = False
             new_rows = []
             target_ts = state.open_entry_ts
-            for r in existing:
+            last_pending_idx = None
+            for _i, r in enumerate(existing):
+                if len(r) >= 2 and r[1] == "PENDING":
+                    last_pending_idx = _i
+            for _i, r in enumerate(existing):
                 is_pending = len(r)>=2 and r[1]=="PENDING"
-                match = is_pending and not updated and (target_ts is None or r[0]==target_ts)
+                match = is_pending and not updated and (
+                    (target_ts is not None and r[0]==target_ts) or
+                    (target_ts is None and _i==last_pending_idx)
+                )
                 if match:
                     r = list(r)
                     r[1] = ts
@@ -446,6 +466,16 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
                     save_snapshot(state.label, state.candles_1m.copy(), ts, direction, "EXIT")
                 except Exception as _e:
                     log.error(f"[{state.label}] snapshot-verify skipped (non-critical): {_e}")
+                try:
+                    from scripts.confirmation_lag_tracker import log_lag_event
+                    from datetime import datetime as _dt
+                    _tf_map = {"S4":120,"S4V2":30,"S4V3":240,"S2":120}
+                    _sig_ts_dt = _dt.strptime(ts, "%Y-%m-%dT%H:%M:%S")
+                    _price_now = float(state.candles_1m["Close"].iloc[-1]) if state.candles_1m is not None and not state.candles_1m.empty else float(cl)
+                    log_lag_event(state.label, _sig_ts_dt, now_utc.timestamp(),
+                                  _tf_map.get(state.label,120), direction, float(cl), _price_now)
+                except Exception as _e:
+                    log.warning(f"[{state.label}] EXIT lag tracker skipped (non-critical): {_e}")
             else:
                 log.warning(f"[{state.label}] EXIT fired but no matching PENDING row (target_ts={target_ts})")
             state.open_entry_ts = None
