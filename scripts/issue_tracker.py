@@ -528,7 +528,7 @@ def process_bot(bot, from_date, to_date, existing_rows):
         exit_ts = bt["exit_ts_raw"]
         entry_key = (bot, entry_ts)
         prev_row = existing_rows.get(entry_key)
-        if prev_row is not None and prev_row.get("exit_ts") == str(exit_ts) and prev_row.get("verdict") != "UNEXPLAINED":
+        if prev_row is not None and prev_row.get("exit_ts") == str(exit_ts) and prev_row.get("verdict") not in ("UNEXPLAINED","OPEN-PENDING"):
             continue
 
         missed_yn = "Y" if lv is None else "N"
