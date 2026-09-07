@@ -80,7 +80,7 @@ TRADES_FIELDS = [
     "date", "bot", "entry_ts", "exit_ts", "direction",
     "entry_slip_$", "entry_slip_tag", "exit_slip_$", "exit_slip_tag",
     "bt_lv_pnl_gap_$", "flip_yn", "flip_damage_$", "missed_yn",
-    "close_escalation_yn", "system_side_flag", "verdict",
+    "close_escalation_yn", "system_side_flag", "verdict", "repeat_count",
 ]
 EVENTS_FIELDS = ["timestamp", "bot", "event_type", "detail"]
 
@@ -535,7 +535,7 @@ def process_bot(bot, from_date, to_date, existing_rows):
         exit_ts = bt["exit_ts_raw"]
         entry_key = (bot, entry_ts)
         prev_row = existing_rows.get(entry_key)
-        if prev_row is not None and prev_row.get("exit_ts") == str(exit_ts) and prev_row.get("verdict") not in ("UNEXPLAINED","OPEN-PENDING"):
+        if prev_row is not None and prev_row.get("exit_ts") == str(exit_ts) and prev_row.get("verdict") not in ("UNEXPLAINED","OPEN-PENDING") and prev_row.get("missed_yn") != "OPEN":
             continue
 
         missed_yn = "Y" if lv is None else "N"
@@ -568,6 +568,7 @@ def process_bot(bot, from_date, to_date, existing_rows):
         flip_damage = round(entry_slip + exit_slip, 2) if flip_yn == "Y" else 0.0
 
         verdict = build_verdict(system_flag, close_escalation_yn, missed_yn, flip_yn, flip_damage)
+        repeat_count = 1 + sum(1 for k, v in existing_rows.items() if v.get("bot") == bot and v.get("system_side_flag") == system_flag and k[1] != str(entry_ts))
 
         row = {
             "date": str(entry_ts)[:10], "bot": bot, "entry_ts": entry_ts, "exit_ts": exit_ts,
@@ -575,6 +576,7 @@ def process_bot(bot, from_date, to_date, existing_rows):
             "exit_slip_$": exit_slip, "exit_slip_tag": exit_tag, "bt_lv_pnl_gap_$": pnl_gap,
             "flip_yn": flip_yn, "flip_damage_$": flip_damage, "missed_yn": missed_yn,
             "close_escalation_yn": close_escalation_yn, "system_side_flag": system_flag, "verdict": verdict,
+            "repeat_count": repeat_count,
         }
         if prev_row is not None:
             _update_trade_row(bot, entry_ts, row)
