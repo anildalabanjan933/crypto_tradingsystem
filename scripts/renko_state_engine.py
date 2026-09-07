@@ -798,6 +798,13 @@ if __name__=="__main__":
     _last_s4v3_tf=_last_closed_tf(240)
     # State dict for ws thread - defined after tf vars
     _ws_state={"last_s2_tf":_last_s2_tf,"last_s4_tf":_last_s4_tf,"last_s4v2_tf":_last_s2_tf,"last_s4v3_tf":_last_s4v3_tf,"last_dl":0.0}
+    def _throttled_download(_min_gap=20):
+        _now_dl = time.time()
+        if _now_dl - _ws_state.get("last_dl", 0) >= _min_gap:
+            update_market_data()
+            _ws_state["last_dl"] = _now_dl
+            return True
+        return False
     # Startup check - fires only if current time is at 1H/2H boundary
     check_and_fire(s4,is_s4=True)
     check_and_fire(s4v2,is_s4=False)
@@ -862,16 +869,26 @@ if __name__=="__main__":
                     log.info(f"[ENGINE] Boundary watcher trigger S4: {_t4} - checking S4 (independent retry, decoupled from WS claim)")
                     def _run_s4_trigger(_dt=_t4_dt):
                         try:
-                            for _retry in range(6):
+                            _start_s4 = time.time()
+                            _cap_sec_s4 = 6900
+                            _fixed_waits_s4 = [2,5,10,20,30,60]
+                            _i_s4 = 0
+                            _caught_up = False
+                            while time.time() - _start_s4 < _cap_sec_s4:
                                 _caught_up = s4.last_1m_ts is not None and s4.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
-                                if not _caught_up:
-                                    update_market_data()
-                                    append_new_candles(s4)
-                                    _caught_up = s4.last_1m_ts is not None and s4.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
                                 if _caught_up:
                                     break
-                                log.info(f"[ENGINE] S4 data not caught up yet, retry {_retry+1}/6")
-                                time.sleep([2,5,10,20,30,60][_retry])
+                                if _throttled_download():
+                                    append_new_candles(s4)
+                                    _caught_up = s4.last_1m_ts is not None and s4.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
+                                    if _caught_up:
+                                        break
+                                _wait_s4 = _fixed_waits_s4[_i_s4] if _i_s4 < len(_fixed_waits_s4) else 30
+                                _i_s4 += 1
+                                log.info(f"[ENGINE] S4 data not caught up yet, retry {_i_s4} (elapsed={int(time.time()-_start_s4)}s)")
+                                time.sleep(_wait_s4)
+                            if not _caught_up:
+                                log.critical(f"[ENGINE] S4 boundary {_dt} STILL not caught up after 6900s safety cap - firing on best-available data")
                             _reconcile_window_from_rest(s4, 120)
                             check_and_fire(s4, is_s4=True)
                         except Exception as _e:
@@ -892,16 +909,26 @@ if __name__=="__main__":
                     log.info(f"[ENGINE] Boundary watcher trigger S4V2: {_tv2} - checking S4V2 (independent retry, decoupled from WS claim)")
                     def _run_s4v2_trigger(_dt=_tv2_dt):
                         try:
-                            for _retry in range(6):
+                            _start_s4v2 = time.time()
+                            _cap_sec_s4v2 = 1500
+                            _fixed_waits_s4v2 = [2,5,10,20,30,60]
+                            _i_s4v2 = 0
+                            _caught_up = False
+                            while time.time() - _start_s4v2 < _cap_sec_s4v2:
                                 _caught_up = s4v2.last_1m_ts is not None and s4v2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
-                                if not _caught_up:
-                                    update_market_data()
-                                    append_new_candles(s4v2)
-                                    _caught_up = s4v2.last_1m_ts is not None and s4v2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
                                 if _caught_up:
                                     break
-                                log.info(f"[ENGINE] S4V2 data not caught up yet, retry {_retry+1}/6")
-                                time.sleep([2,5,10,20,30,60][_retry])
+                                if _throttled_download():
+                                    append_new_candles(s4v2)
+                                    _caught_up = s4v2.last_1m_ts is not None and s4v2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
+                                    if _caught_up:
+                                        break
+                                _wait_s4v2 = _fixed_waits_s4v2[_i_s4v2] if _i_s4v2 < len(_fixed_waits_s4v2) else 30
+                                _i_s4v2 += 1
+                                log.info(f"[ENGINE] S4V2 data not caught up yet, retry {_i_s4v2} (elapsed={int(time.time()-_start_s4v2)}s)")
+                                time.sleep(_wait_s4v2)
+                            if not _caught_up:
+                                log.critical(f"[ENGINE] S4V2 boundary {_dt} STILL not caught up after 1500s safety cap - firing on best-available data")
                             _reconcile_window_from_rest(s4v2, 30)
                             check_and_fire(s4v2, is_s4=False)
                         except Exception as _e:
@@ -922,16 +949,26 @@ if __name__=="__main__":
                     log.info(f"[ENGINE] Boundary watcher trigger S4V3: {_tv3} - checking S4V3 (independent retry, decoupled from WS claim)")
                     def _run_s4v3_trigger(_dt=_tv3_dt):
                         try:
-                            for _retry in range(6):
+                            _start_s4v3 = time.time()
+                            _cap_sec_s4v3 = 14100
+                            _fixed_waits_s4v3 = [2,5,10,20,30,60]
+                            _i_s4v3 = 0
+                            _caught_up = False
+                            while time.time() - _start_s4v3 < _cap_sec_s4v3:
                                 _caught_up = s4v3.last_1m_ts is not None and s4v3.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
-                                if not _caught_up:
-                                    update_market_data()
-                                    append_new_candles(s4v3)
-                                    _caught_up = s4v3.last_1m_ts is not None and s4v3.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
                                 if _caught_up:
                                     break
-                                log.info(f"[ENGINE] S4V3 data not caught up yet, retry {_retry+1}/6")
-                                time.sleep([2,5,10,20,30,60][_retry])
+                                if _throttled_download():
+                                    append_new_candles(s4v3)
+                                    _caught_up = s4v3.last_1m_ts is not None and s4v3.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
+                                    if _caught_up:
+                                        break
+                                _wait_s4v3 = _fixed_waits_s4v3[_i_s4v3] if _i_s4v3 < len(_fixed_waits_s4v3) else 30
+                                _i_s4v3 += 1
+                                log.info(f"[ENGINE] S4V3 data not caught up yet, retry {_i_s4v3} (elapsed={int(time.time()-_start_s4v3)}s)")
+                                time.sleep(_wait_s4v3)
+                            if not _caught_up:
+                                log.critical(f"[ENGINE] S4V3 boundary {_dt} STILL not caught up after 14100s safety cap - firing on best-available data")
                             _reconcile_window_from_rest(s4v3, 240)
                             check_and_fire(s4v3, is_s4=False)
                         except Exception as _e:

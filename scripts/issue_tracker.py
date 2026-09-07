@@ -471,7 +471,8 @@ def compute_slip(bt_p, lv_p, direction):
 FLIP_DAMAGE_NORMAL_CEILING = 20.0  # 2x documented $8-10/side target - normal flip
                                     # stacks entry+exit slip, so up to ~$20 combined
                                     # is ordinary double-slip, not a system fault
-_ANOMALY_TAGS = {"BOT_RESTART", "ENGINE_RESTART", "CLOSE_LOSS_CAP_STAGE", "CLOSE_FAILED_MANUAL_REQUIRED", "CONFIRMATION_LAG"}
+GATE_LOCKOUT_FIX_DEPLOYED_UTC = __import__("datetime").datetime(2026, 9, 7, 16, 3, 0)
+_ANOMALY_TAGS = {"BOT_RESTART", "ENGINE_RESTART", "CLOSE_LOSS_CAP_STAGE", "CLOSE_FAILED_MANUAL_REQUIRED", "CONFIRMATION_LAG", "RECURRED_AFTER_FIX"}
 
 def build_verdict(system_flag, close_escalation_yn, missed_yn, flip_yn, flip_damage=0.0):
     _flags = set(f for f in system_flag.split("|") if f)
@@ -612,6 +613,14 @@ def process_bot(bot, from_date, to_date, existing_rows):
                 CONF_LAG_PNL_GAP_THRESHOLD = 100.0
                 if lag_min > TF_MIN.get(bot, 120) and abs(pnl_gap) > CONF_LAG_PNL_GAP_THRESHOLD:
                     conf_lag_flag = "CONFIRMATION_LAG"
+                _tf_ratio = lag_min / TF_MIN.get(bot, 120) if TF_MIN.get(bot, 120) else 0
+                _gate_lockout_sig = abs(_tf_ratio - round(_tf_ratio)) < 0.02 and round(_tf_ratio) >= 1
+                if _gate_lockout_sig and lv_exit_dt.to_pydatetime() >= GATE_LOCKOUT_FIX_DEPLOYED_UTC:
+                    conf_lag_flag = (conf_lag_flag + "|RECURRED_AFTER_FIX") if conf_lag_flag else "RECURRED_AFTER_FIX"
+                    _append_event(bot, "RECURRED_AFTER_FIX",
+                                   f"Gate-lockout lag signature recurred AFTER fix deploy "
+                                   f"({GATE_LOCKOUT_FIX_DEPLOYED_UTC}): entry_ts={entry_ts} "
+                                   f"exit_ts={exit_ts} lag_min={lag_min:.1f} ratio={_tf_ratio:.3f}")
             except Exception:
                 pass
 
