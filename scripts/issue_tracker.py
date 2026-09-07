@@ -40,30 +40,26 @@ API_KEY_ENV = {
     "S4":     ("S4_API_KEY", "S4_API_SECRET"),
     "S4V2":   ("S4V2_API_KEY", "S4V2_API_SECRET"),
     "S4V3":   ("S4V3_API_KEY", "S4V3_API_SECRET"),
-    "TM1_S4": ("TESTMEMBER1_S4_API_KEY", "TESTMEMBER1_S4_API_SECRET"),
 }
 
 SIGNAL_CSV = {
     "S4":     "logs/signals_s4.csv",
     "S4V2":   "logs/signals_s4v2.csv",
     "S4V3":   "logs/signals_s4v3.csv",
-    "TM1_S4": "logs/signals_s4.csv",
 }
 
 LIVE_LOG = {
     "S4":     "logs/live_trading_s4.log",
     "S4V2":   "logs/live_trading_s4v2.log",
     "S4V3":   "logs/live_trading_s4v3.log",
-    "TM1_S4": "logs/live_trading_testmember1_s4.log",
 }
 
-TF_MIN = {"S4": 120, "S4V2": 30, "S4V3": 240, "TM1_S4": 120}
+TF_MIN = {"S4": 120, "S4V2": 30, "S4V3": 240}
 
 BT_CSV_PATTERN = {
     "S4":     "output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv",
     "S4V2":   "output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv",
     "S4V3":   "output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv",
-    "TM1_S4": "output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv",
 }
 
 PRODUCT_ID = 84
@@ -100,17 +96,43 @@ def _ensure_csv(path, fields):
         with open(path, "w", newline="") as f:
             csv.DictWriter(f, fieldnames=fields).writeheader()
 
-def _read_existing_keys_trades():
-    keys = set()
+def _read_existing_rows_by_entry():
+    rows = {}
     if not os.path.exists(TRADES_CSV):
-        return keys
+        return rows
     try:
         with open(TRADES_CSV) as f:
             for r in csv.DictReader(f):
-                keys.add((r.get("bot"), r.get("entry_ts"), r.get("exit_ts")))
+                rows[(r.get("bot"), r.get("entry_ts"))] = r
     except Exception as e:
         log.warning(f"Could not read existing trades CSV: {e}")
-    return keys
+    return rows
+
+def _update_trade_row(bot, entry_ts, new_row):
+    if not os.path.exists(TRADES_CSV):
+        _append_trade_row(new_row)
+        return
+    rows = []
+    updated = False
+    try:
+        with open(TRADES_CSV) as f:
+            for r in csv.DictReader(f):
+                if r.get("bot") == bot and r.get("entry_ts") == str(entry_ts):
+                    rows.append(new_row)
+                    updated = True
+                else:
+                    rows.append(r)
+    except Exception as e:
+        log.warning(f"Could not read existing trades CSV for update: {e}")
+        _append_trade_row(new_row)
+        return
+    if not updated:
+        rows.append(new_row)
+    with open(TRADES_CSV, "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=TRADES_FIELDS)
+        writer.writeheader()
+        for r in rows:
+            writer.writerow(r)
 
 def _append_trade_row(row):
     _ensure_csv(TRADES_CSV, TRADES_FIELDS)
@@ -496,7 +518,7 @@ def _is_live_still_open(bot, bt_entry_ts_raw, bt_dir):
     except Exception:
         return False
 
-def process_bot(bot, from_date, to_date, existing_keys):
+def process_bot(bot, from_date, to_date, existing_rows):
     bt_rows = get_bt_rows(bot, from_date, to_date)
     lv_rows = get_live_rows(bot, from_date, to_date)
     matched, missed_lv = pair_bt_lv(bt_rows, lv_rows, bot)
@@ -504,8 +526,9 @@ def process_bot(bot, from_date, to_date, existing_keys):
     for bt, lv in matched:
         entry_ts = bt["entry_ts_raw"]
         exit_ts = bt["exit_ts_raw"]
-        key = (bot, entry_ts, exit_ts)
-        if key in existing_keys:
+        entry_key = (bot, entry_ts)
+        prev_row = existing_rows.get(entry_key)
+        if prev_row is not None and prev_row.get("exit_ts") == str(exit_ts):
             continue
 
         missed_yn = "Y" if lv is None else "N"
@@ -546,8 +569,11 @@ def process_bot(bot, from_date, to_date, existing_keys):
             "flip_yn": flip_yn, "flip_damage_$": flip_damage, "missed_yn": missed_yn,
             "close_escalation_yn": close_escalation_yn, "system_side_flag": system_flag, "verdict": verdict,
         }
-        _append_trade_row(row)
-        existing_keys.add(key)
+        if prev_row is not None:
+            _update_trade_row(bot, entry_ts, row)
+        else:
+            _append_trade_row(row)
+        existing_rows[entry_key] = row
 
     for lv in missed_lv:
         _append_event(bot, "UNMATCHED_LV_ENTRY",
@@ -609,10 +635,10 @@ def main():
         try:
             to_date = dt.datetime.utcnow().date()
             from_date = to_date - dt.timedelta(days=LOOKBACK_DAYS)
-            existing_keys = _read_existing_keys_trades()
+            existing_rows = _read_existing_rows_by_entry()
             for bot in BOTS:
                 try:
-                    process_bot(bot, from_date, to_date, existing_keys)
+                    process_bot(bot, from_date, to_date, existing_rows)
                 except Exception as e:
                     log.error(f"[{bot}] process_bot failed: {e}", exc_info=True)
             recompute_summary_and_report()
