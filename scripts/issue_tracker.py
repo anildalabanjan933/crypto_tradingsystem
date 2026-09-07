@@ -277,8 +277,53 @@ def fetch_fills(bot, window_hours=48):
     _FILLS_CACHE[ck] = (now, all_fills)
     return all_fills
 
+def _merge_partial_fills(fills):
+    """Merge fills that are partial chunks of the same order (same side, same
+    second timestamp) into one synthetic fill - weighted-avg price, summed size,
+    summed commission, keeps LAST chunk's meta_data (final cumulative state) and
+    EARLIEST chunk's created_at. Fixes false UNMATCHED_LV_ENTRY duplicates caused
+    by Delta splitting a single order fill into multiple sub-second chunks."""
+    groups = {}
+    order = []
+    for f in fills:
+        side = str(f.get("side", "")).upper()
+        try:
+            ts_key = pd.Timestamp(f.get("created_at", "")).floor("s")
+        except Exception:
+            ts_key = f.get("created_at", "")
+        key = (side, ts_key)
+        if key not in groups:
+            groups[key] = []
+            order.append(key)
+        groups[key].append(f)
+
+    merged = []
+    for key in order:
+        group = groups[key]
+        if len(group) == 1:
+            merged.append(group[0])
+            continue
+        total_size = sum(float(g.get("size", 0) or 0) for g in group)
+        if total_size <= 0:
+            merged.extend(group)
+            continue
+        weighted_price = sum(
+            float(g.get("price", 0) or 0) * float(g.get("size", 0) or 0)
+            for g in group
+        ) / total_size
+        total_comm = sum(abs(float(g.get("commission", 0) or 0)) for g in group)
+        last = group[-1]
+        new_f = dict(last)
+        new_f["size"] = total_size
+        new_f["price"] = weighted_price
+        new_f["commission"] = total_comm
+        new_f["created_at"] = group[0].get("created_at")
+        merged.append(new_f)
+    return merged
+
 def pair_fills(fills):
     fills_sorted = sorted(fills, key=lambda f: f.get("created_at", ""))
+    fills_sorted = _merge_partial_fills(fills_sorted)
     queue = []
     pairs = []
     baseline = 0.0
@@ -426,7 +471,7 @@ def compute_slip(bt_p, lv_p, direction):
 FLIP_DAMAGE_NORMAL_CEILING = 20.0  # 2x documented $8-10/side target - normal flip
                                     # stacks entry+exit slip, so up to ~$20 combined
                                     # is ordinary double-slip, not a system fault
-_ANOMALY_TAGS = {"BOT_RESTART", "ENGINE_RESTART", "CLOSE_LOSS_CAP_STAGE", "CLOSE_FAILED_MANUAL_REQUIRED"}
+_ANOMALY_TAGS = {"BOT_RESTART", "ENGINE_RESTART", "CLOSE_LOSS_CAP_STAGE", "CLOSE_FAILED_MANUAL_REQUIRED", "CONFIRMATION_LAG"}
 
 def build_verdict(system_flag, close_escalation_yn, missed_yn, flip_yn, flip_damage=0.0):
     _flags = set(f for f in system_flag.split("|") if f)
@@ -554,6 +599,22 @@ def process_bot(bot, from_date, to_date, existing_rows):
             exit_slip, exit_tag = compute_slip(bt["exit_p"], lv.get("exit_p"), bt["dir"])
             pnl_gap = round(bt["net_pnl_inr"] - (lv.get("pnl_usd", 0) * INR_RATE - lv.get("charges", 0) * INR_RATE), 2)
 
+        conf_lag_flag = ""
+        if lv is not None:
+            try:
+                bt_exit_dt = pd.Timestamp(bt["exit_ts_raw"])
+                lv_exit_dt = pd.Timestamp(lv["exit_ts_raw"])
+                if bt_exit_dt.tzinfo is not None:
+                    bt_exit_dt = bt_exit_dt.tz_localize(None)
+                if lv_exit_dt.tzinfo is not None:
+                    lv_exit_dt = lv_exit_dt.tz_localize(None)
+                lag_min = (lv_exit_dt - bt_exit_dt).total_seconds() / 60.0
+                CONF_LAG_PNL_GAP_THRESHOLD = 100.0
+                if lag_min > TF_MIN.get(bot, 120) and abs(pnl_gap) > CONF_LAG_PNL_GAP_THRESHOLD:
+                    conf_lag_flag = "CONFIRMATION_LAG"
+            except Exception:
+                pass
+
         try:
             entry_dt = dt.datetime.fromisoformat(str(entry_ts).replace("T", " ").split(".")[0])
         except Exception:
@@ -564,6 +625,8 @@ def process_bot(bot, from_date, to_date, existing_rows):
             exit_dt = None
 
         system_flag, close_escalation_yn = scan_system_side_flags(bot, entry_dt, exit_dt)
+        if conf_lag_flag:
+            system_flag = (system_flag + "|" + conf_lag_flag) if system_flag else conf_lag_flag
         flip_yn = "Y" if "FLIP_FIRE" in system_flag else "N"
         flip_damage = round(entry_slip + exit_slip, 2) if flip_yn == "Y" else 0.0
 
