@@ -1501,7 +1501,7 @@ with _tab_monitor:
             with open(path, encoding="utf-8", errors="ignore") as _f:
                 _f.seek(0, 2)
                 _end = _f.tell()
-                _read_from = max(0, _end - 2_000_000)  # cap initial read to ~2MB
+                _read_from = max(0, _end - 8_000_000)  # cap initial read to ~2MB
                 _f.seek(_read_from)
                 _lines = _f.read().splitlines(keepends=True)
             _lines = _lines[-max_lines:]
@@ -1624,9 +1624,9 @@ with _tab_monitor:
 
     # LAST ORDER - check if any order placed in last 7 days (not stuck)
     try:
-        _s2_log_lines = _tail_cached_lines("logs/live_trading_s4v2.log", max_lines=2000)
-        _s4_log_lines = _tail_cached_lines("logs/live_trading_s4.log", max_lines=2000)
-        _s4v3_log_lines = _tail_cached_lines("logs/live_trading_s4v3.log", max_lines=2000)
+        _s2_log_lines = _tail_cached_lines("logs/live_trading_s4v2.log", max_lines=30000)
+        _s4_log_lines = _tail_cached_lines("logs/live_trading_s4.log", max_lines=30000)
+        _s4v3_log_lines = _tail_cached_lines("logs/live_trading_s4v3.log", max_lines=30000)
         _all_lines = _s2_log_lines + _s4_log_lines + _s4v3_log_lines
         _order_lines = [l for l in _all_lines if "[ORDER] ENTRY" in l or "[ORDER] EXIT" in l]
         _last_order_ok = len(_order_lines) > 0
