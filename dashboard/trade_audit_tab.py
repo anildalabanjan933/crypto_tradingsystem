@@ -45,11 +45,14 @@ def _get_date_range_audit(range_choice, custom_start=None, custom_end=None):
     if range_choice == "Today":
         return _today, _today
     elif range_choice == "2 Day":
-        return _today - _dt_audit.timedelta(days=1), _today
+        _yesterday = _today - _dt_audit.timedelta(days=1)
+        return _yesterday, _yesterday
     elif range_choice == "1 Week":
-        return _today - _dt_audit.timedelta(days=6), _today
+        _monday = _today - _dt_audit.timedelta(days=_today.weekday())
+        return _monday, _today
     elif range_choice == "1 Month":
-        return _today - _dt_audit.timedelta(days=29), _today
+        _month_start = _today.replace(day=1)
+        return _month_start, _today
     elif range_choice == "Custom":
         return custom_start, custom_end
     return _today, _today
@@ -869,6 +872,74 @@ def _metric_pnl_html_audit(label, value):
     '''
 
 
+def _eq_render_audit(rows, key_prefix, title):
+    """
+    Current-month-only equity curve (cumulative net PnL, INR) for audit rows.
+    Mirrors Section 13's _eq_render13 pattern (Plotly cumsum + INR hover),
+    hardcoded to current calendar month - no prev/next nav, no other-month data.
+    Data is reused from already-cached rows (no extra fetch), so no added load.
+    """
+    import plotly.graph_objects as _go_audit
+
+    _today = _dt_audit.datetime.utcnow().date()
+    _month_str = _today.strftime("%Y-%m")
+
+    _pts = []
+    for r in rows:
+        _ts_raw = r.get("exit_ts_raw", "")
+        if not _ts_raw or str(_ts_raw) in ("", "PENDING", "nan", "-"):
+            continue
+        try:
+            _s = str(_ts_raw).strip()
+            if _s.endswith("Z"):
+                _s = _s[:-1]
+            _s = _s.replace("T", " ", 1)
+            _dt_val = _dt_audit.datetime.fromisoformat(_s)
+        except Exception:
+            continue
+        if _dt_val.strftime("%Y-%m") != _month_str:
+            continue
+        _pnl = r.get("net_pnl_inr")
+        if _pnl is None:
+            continue
+        _pts.append((_dt_val, float(_pnl)))
+
+    if not _pts:
+        st.caption(f"{title}: no trades this month")
+        return
+
+    _pts.sort(key=lambda x: x[0])
+    _dates = [p[0] for p in _pts]
+    _cum = []
+    _run = 0.0
+    for p in _pts:
+        _run += p[1]
+        _cum.append(_run)
+
+    if len(_dates) == 1:
+        _dates = [_dates[0] - _dt_audit.timedelta(hours=1), _dates[0]]
+        _cum = [0.0, _cum[0]]
+
+    _pos = [v if v >= 0 else 0 for v in _cum]
+    _neg = [v if v < 0 else 0 for v in _cum]
+    _hover_text = [f"Rs {_fmt_num_audit(v)}" for v in _cum]
+
+    fig = _go_audit.Figure(data=[
+        _go_audit.Scatter(x=_dates, y=_pos, fill='tozeroy', fillcolor='rgba(39,174,96,0.2)',
+                           line=dict(width=0), mode='lines', showlegend=False, hoverinfo='skip'),
+        _go_audit.Scatter(x=_dates, y=_neg, fill='tozeroy', fillcolor='rgba(231,76,60,0.2)',
+                           line=dict(width=0), mode='lines', showlegend=False, hoverinfo='skip'),
+        _go_audit.Scatter(x=_dates, y=_cum, line=dict(color='#2c3e50', width=2),
+                           mode='lines', name='Cumulative PnL',
+                           text=_hover_text, hovertemplate='%{text}<extra></extra>')
+    ])
+    fig.update_layout(title=f'{title} - {_month_str}', xaxis_title='Date',
+                       yaxis_title='Cumulative PnL (Rs)', hovermode='x unified', height=300,
+                       margin=dict(l=40, r=20, t=40, b=30),
+                       hoverlabel=dict(bgcolor='#2c3e50', font=dict(color='white', size=13)))
+    st.plotly_chart(fig, use_container_width=True, key=f"{key_prefix}_audit_eq_chart")
+
+
 def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn, fetch_fills_fn, read_log_fn, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn=None):
     bt_rows_raw = _load_audit_bt_cached(load14_fn, strat_label, from_date, to_date, inr_rate)
     lv_rows = _load_audit_lv_cached(fetch_fills_fn, strat_label, from_date, to_date, inr_rate)
@@ -976,6 +1047,24 @@ def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn,
 
         rows_html_bt = "".join(_render_bt_row_html(r) for r in bt_rows)
         st.markdown(_clean_html_audit(f'<div style="overflow-x:auto;">{_render_bt_table_html(rows_html_bt)}</div>'), unsafe_allow_html=True)
+
+    # Equity curve is intentionally independent of the table date-range selector -
+    # always current month (1st -> today), regardless of Today/2 Day/1 Week/Custom
+    # chosen above. Tables above are untouched by this fetch.
+    _eq_today = _dt_audit.datetime.utcnow().date()
+    _eq_from = _eq_today.replace(day=1)
+    _eq_to = _eq_today
+    _eq_lv_rows = _load_audit_lv_cached(fetch_fills_fn, strat_label, _eq_from, _eq_to, inr_rate)
+    _eq_bt_rows_raw = _load_audit_bt_cached(load14_fn, strat_label, _eq_from, _eq_to, inr_rate)
+    _eq_bt_rows = _apply_bt_adjustments_audit(_eq_bt_rows_raw, bt_lot_input, bt_slippage_input, inr_rate)
+
+    eqc1, eqc2 = st.columns(2)
+    with eqc1:
+        st.markdown("##### Equity Curve - Delta Fill (This Month)")
+        _eq_render_audit(_eq_lv_rows, f"{strat_label}_lv", "Delta Fill")
+    with eqc2:
+        st.markdown("##### Equity Curve - Backtest (This Month)")
+        _eq_render_audit(_eq_bt_rows, f"{strat_label}_bt", "Backtest")
 
 
 def render_trade_audit_tab(load14_fn, fetch_fills_fn, read_log_fn, inr_rate=_INR_RATE_AUDIT, fetch_orders_fn=None):
