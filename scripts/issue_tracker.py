@@ -204,9 +204,16 @@ def scan_system_side_flags(bot, entry_dt, exit_dt):
             close_escalation_yn = "Y"
             _append_event(bot, "CLOSE_LOSS_CAP_STAGE", line.strip())
         if "CLOSE FAILED AFTER" in line:
-            flags.append("CLOSE_FAILED_MANUAL_REQUIRED")
+            _widened = any("CLOSE ESCALATION" in _l or "LOSS-CAPPED" in _l
+                            for _l in _read_lines(LIVE_LOG.get(bot, ""))
+                            if _parse_bot_log_ts(_l) and window_start <= _parse_bot_log_ts(_l) <= ts)
+            if _widened:
+                flags.append("CLOSE_FAILED_GENUINE_THIN_LIQUIDITY")
+                _append_event(bot, "CLOSE_FAILED_GENUINE_THIN_LIQUIDITY", line.strip())
+            else:
+                flags.append("CLOSE_FAILED_BAND_STUCK_150_BUG")
+                _append_event(bot, "CLOSE_FAILED_BAND_STUCK_150_BUG", line.strip())
             close_escalation_yn = "Y"
-            _append_event(bot, "CLOSE_FAILED_MANUAL_REQUIRED", line.strip())
 
     for line in _read_lines("logs/renko_state_engine.log"):
         if "[ENGINE] Renko State Engine starting" not in line:
