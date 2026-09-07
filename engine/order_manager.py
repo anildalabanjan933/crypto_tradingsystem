@@ -385,16 +385,17 @@ class OrderManager:
         _REST_POLL_SEC   = 2.0
         _REST_POLLS      = 5
 
-        _final_cap_active = _elapsed_total >= _TIME_CAP_SEC
-        if _final_cap_active:
-            _current_band = _LOSS_CAP_BAND
-            logging.critical(f"[OrderManager] CLOSE TIME CAP EXCEEDED ({_elapsed_total:.0f}s >= {_TIME_CAP_SEC:.0f}s) - "
-                              f"using LOSS-CAPPED RESTING order (${_LOSS_CAP_BAND:.0f} max, never a raw market order)")
-        else:
-            _escalation_steps = int(_elapsed_total // _BAND_STEP_SEC)
-            _current_band = min(_BASE_BAND + _escalation_steps * 100.0, _ESCALATED_MAX)
-
         for attempt in range(1, max_attempts + 1):
+            _now_wall = time.time()
+            _elapsed_total = _now_wall - _retry_state["first_failure_ts"]
+            _final_cap_active = _elapsed_total >= _TIME_CAP_SEC or attempt >= 7
+            if _final_cap_active:
+                _current_band = _LOSS_CAP_BAND
+                logging.critical(f"[OrderManager] CLOSE ESCALATION - attempt={attempt}/{max_attempts} elapsed={_elapsed_total:.0f}s - "
+                                  f"using LOSS-CAPPED RESTING order (${_LOSS_CAP_BAND:.0f} max, never a raw market order)")
+            else:
+                _escalation_steps = max(int(_elapsed_total // _BAND_STEP_SEC), (attempt - 1) // 3)
+                _current_band = min(_BASE_BAND + _escalation_steps * 100.0, _ESCALATED_MAX)
             pos_check = self.get_position()
             current_size = abs(pos_check.get("size", 0)) if pos_check.get("success") else None
             pos_mark_price = pos_check.get("exit_price", 0.0) if pos_check.get("success") else 0.0
