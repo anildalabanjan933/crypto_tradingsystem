@@ -85,3 +85,8 @@ check_heartbeat_stale margin_monitor logs/margin_monitor_heartbeat.txt 2100
 check_and_start margin_monitor scripts/margin_monitor.py logs/margin_monitor.log
 check_heartbeat_stale maintenance_watcher logs/maintenance_watcher_heartbeat.txt 180
 check_and_start maintenance_watcher scripts/maintenance_watcher.py logs/maintenance_watcher.log
+
+if ! /usr/bin/screen -list 2>/dev/null | grep -qE "[0-9]+\.dashboard[[:space:]]"; then
+    /usr/bin/screen -dmS dashboard /bin/bash -c "cd /home/anildalabanjan933/crypto_trading_system && .venv/bin/python3 -m streamlit run dashboard/streamlit_app.py --server.port 8501 >> logs/dashboard.log 2>&1"
+    echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] Started dashboard" >> logs/maintenance.log
+fi
