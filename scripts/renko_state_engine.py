@@ -91,7 +91,7 @@ class StrategyState:
         self.label=label; self.params=params
         self.candles_1m=None; self.last_1m_ts=None
         self.candles_tf=None  # pre-built 1H or 2H dataframe - built once on startup
-        self.current_direction=None; self.last_signal_ts=None; self.last_exit_ts=None
+        self.current_direction=None; self.last_signal_ts=None; self.last_exit_ts=None; self.last_entry_ts=None
         self.box_size=None
         self.open_entry_ts=None
         self.lock=threading.Lock()
@@ -275,15 +275,16 @@ def _fetch_rest_candles_window(window_start_dt, window_end_dt, timeout_sec=3.0):
 def _reconcile_window_from_rest(state, tf_minutes):
     import pandas as pd
     if state.candles_1m is None or state.candles_1m.empty:
-        return
+        return False
     window_start = (state.last_1m_ts - pd.Timedelta(minutes=tf_minutes*3)).floor(f"{tf_minutes}min")
     window_end   = state.last_1m_ts + pd.Timedelta(minutes=1)
     rest_df = _fetch_rest_candles_window(window_start, window_end)
     if rest_df is None or rest_df.empty:
         log.warning(f"[{state.label}] REST reconcile unavailable for window {window_start}..{window_end} - using WS-built buffer as-is")
-        return
+        return False
     mismatches = 0
     rest_indexed = rest_df.set_index("timestamp")
+    critical_covered = state.last_1m_ts in rest_indexed.index
     mask = (state.candles_1m["timestamp"] >= window_start) & (state.candles_1m["timestamp"] < window_end)
     for idx in state.candles_1m[mask].index:
         ts = state.candles_1m.at[idx, "timestamp"]
@@ -295,7 +296,7 @@ def _reconcile_window_from_rest(state, tf_minutes):
             state.candles_1m.at[idx, "High"]  = r["High"]
             state.candles_1m.at[idx, "Low"]   = r["Low"]
             state.candles_1m.at[idx, "Close"] = r["Close"]
-    log.info(f"[{state.label}] REST reconcile OK window {window_start}..{window_end} mismatches={mismatches}")
+    log.info(f"[{state.label}] REST reconcile OK window {window_start}..{window_end} mismatches={mismatches} critical_covered={critical_covered}")
     if mismatches:
         log.warning(f"[{state.label}] REST reconcile corrected {mismatches} candle(s) with WS/REST drift in window {window_start}..{window_end}")
     recent_1m = state.candles_1m[state.candles_1m["timestamp"] >= window_start]
@@ -304,6 +305,9 @@ def _reconcile_window_from_rest(state, tf_minutes):
         cutoff = recomputed_tf["timestamp"].min()
         state.candles_tf = state.candles_tf[state.candles_tf["timestamp"] < cutoff]
         state.candles_tf = pd.concat([state.candles_tf, recomputed_tf], ignore_index=True).reset_index(drop=True)
+    if not critical_covered:
+        log.warning(f"[{state.label}] REST reconcile did NOT cover boundary candle {state.last_1m_ts} - deferring fire to retry path")
+    return critical_covered
 
 def check_and_fire(state,is_s4=False):
     import pandas as pd
@@ -365,8 +369,11 @@ def check_and_fire(state,is_s4=False):
         for sig in signals:
             ts=sig.get("timestamp","")
             if not ts: continue
-            if state.last_signal_ts and ts<=state.last_signal_ts: continue
-            if sig.get("signal_type","")=="EXIT" and ts==state.last_exit_ts: continue
+            sig_type_chk=sig.get("signal_type","")
+            if sig_type_chk=="EXIT":
+                if state.last_exit_ts and ts<=state.last_exit_ts: continue
+            else:
+                if state.last_entry_ts and ts<=state.last_entry_ts: continue
             new_sigs.append(sig)
         if not new_sigs: return
         # Fire ONE signal at a time - EXIT before ENTRY - oldest first
@@ -502,6 +509,7 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
             log.warning(f"[TELEGRAM] BT alert error: {_ae}")
     state.last_signal_ts=ts
     if sig_type=="EXIT": state.last_exit_ts=ts
+    else: state.last_entry_ts=ts
     state.current_direction=direction if sig_type=="ENTRY" else None
     log.info(f"[{state.label}] {sig_type} {direction} at {ts}")
 
@@ -615,10 +623,13 @@ if __name__=="__main__":
         _ts_s4v3=max(_ts_s4v3,_now_lock_s4v3)
         log.info(f"[ENGINE] S4V3 lock set to max(ts_file,floored_candle): {_ts_s4v3}")
     s4.last_signal_ts=_ts_s4
+    s4.last_entry_ts=_ts_s4; s4.last_exit_ts=_ts_s4
     log.info(f"[ENGINE] S4 startup lock ts: {_ts_s4}")
     s4v2.last_signal_ts=_ts_s4v2
+    s4v2.last_entry_ts=_ts_s4v2; s4v2.last_exit_ts=_ts_s4v2
     log.info(f"[ENGINE] S4V2 startup lock ts: {_ts_s4v2}")
     s4v3.last_signal_ts=_ts_s4v3
+    s4v3.last_entry_ts=_ts_s4v3; s4v3.last_exit_ts=_ts_s4v3
     log.info(f"[ENGINE] S4V3 startup lock ts: {_ts_s4v3}")
     # Restore current_direction from CSV last row (survive restart mid-position)
     for _st,_fn in [(s4,"logs/signals_s4.csv"),(s4v2,"logs/signals_s4v2.csv"),(s4v3,"logs/signals_s4v3.csv")]:
@@ -706,20 +717,20 @@ if __name__=="__main__":
             if _cur_s4v2>_ws_state["last_s4v2_tf"]:
                 _ws_state["last_s4v2_tf"]=_cur_s4v2
                 log.info(f"[WS] New 30m candle closed: {_cur_s4v2} - checking S4V2")
-                _reconcile_window_from_rest(s4v2, 30)
-                check_and_fire(s4v2,is_s4=False)
+                if _reconcile_window_from_rest(s4v2, 30):
+                    check_and_fire(s4v2,is_s4=False)
             _cur_s4=_last_closed_tf(120)
             if _cur_s4>_ws_state["last_s4_tf"]:
                 _ws_state["last_s4_tf"]=_cur_s4
                 log.info(f"[WS] New 2H candle closed: {_cur_s4} - checking S4")
-                _reconcile_window_from_rest(s4, 120)
-                check_and_fire(s4,is_s4=True)
+                if _reconcile_window_from_rest(s4, 120):
+                    check_and_fire(s4,is_s4=True)
             _cur_s4v3=_last_closed_tf(240)
             if _cur_s4v3>_ws_state["last_s4v3_tf"]:
                 _ws_state["last_s4v3_tf"]=_cur_s4v3
                 log.info(f"[WS] New 4H candle closed: {_cur_s4v3} - checking S4V3")
-                _reconcile_window_from_rest(s4v3, 240)
-                check_and_fire(s4v3,is_s4=False)
+                if _reconcile_window_from_rest(s4v3, 240):
+                    check_and_fire(s4v3,is_s4=False)
             # Background REST sync for CSV file persistence only - runs AFTER signals checked
             _ws_state["last_dl"]=time.time()
             threading.Thread(target=update_market_data, daemon=True).start()
@@ -834,24 +845,24 @@ if __name__=="__main__":
                 if cur_s4v2_tf>_ws_state["last_s4v2_tf"]:
                     _ws_state["last_s4v2_tf"]=cur_s4v2_tf
                     log.info(f"[ENGINE] New 30m candle closed: {cur_s4v2_tf} - checking S4V2")
-                    _reconcile_window_from_rest(s4v2, 30)
-                    check_and_fire(s4v2,is_s4=False)
+                    if _reconcile_window_from_rest(s4v2, 30):
+                        check_and_fire(s4v2,is_s4=False)
 
                 # S4: fire only on new closed 2H candle (shared state with WS)
                 cur_s4_tf=_last_closed_tf(120)
                 if cur_s4_tf>_ws_state["last_s4_tf"]:
                     _ws_state["last_s4_tf"]=cur_s4_tf
                     log.info(f"[ENGINE] New 2H candle closed: {cur_s4_tf} - checking S4")
-                    _reconcile_window_from_rest(s4, 120)
-                    check_and_fire(s4,is_s4=True)
+                    if _reconcile_window_from_rest(s4, 120):
+                        check_and_fire(s4,is_s4=True)
 
                 # S4V3: fire only on new closed 4H candle (shared state with WS)
                 cur_s4v3_tf=_last_closed_tf(240)
                 if cur_s4v3_tf>_ws_state["last_s4v3_tf"]:
                     _ws_state["last_s4v3_tf"]=cur_s4v3_tf
                     log.info(f"[ENGINE] New 4H candle closed: {cur_s4v3_tf} - checking S4V3")
-                    _reconcile_window_from_rest(s4v3, 240)
-                    check_and_fire(s4v3,is_s4=False)
+                    if _reconcile_window_from_rest(s4v3, 240):
+                        check_and_fire(s4v3,is_s4=False)
 
             # Boundary watcher trigger - fires if watcher detected missed boundary
             _trig_s4 = "logs/boundary_trigger_s4.txt"
