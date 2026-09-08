@@ -18,7 +18,7 @@ def log_lag_event(label, sig_ts, detected_at_ts, tf_minutes, direction, price_th
                         "gate_lockout_signature","direction","price_then","price_now","est_damage_usd"])
         exceeds_floor = lag_sec > 90
         _ratio = lag_sec / expected_floor if expected_floor else 0
-        gate_lockout_signature = abs(_ratio - round(_ratio)) < 0.02 and round(_ratio) >= 1
+        gate_lockout_signature = abs(_ratio - round(_ratio)) < 0.02 and round(_ratio) >= 2
         est_damage = abs(price_now - price_then) * 100 * 0.001
         w.writerow([label, sig_ts_utc.isoformat(), detected_at_ts, round(lag_sec,1),
                     exceeds_floor, gate_lockout_signature, direction, price_then, price_now, round(est_damage,2)])

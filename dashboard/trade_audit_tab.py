@@ -108,8 +108,7 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
         dfc["entry_datetime"] = _pd_audit.to_datetime(dfc["entry_datetime"])
 
         dfc = dfc[
-            ((dfc["entry_datetime"].dt.date >= from_date) & (dfc["entry_datetime"].dt.date <= to_date)) |
-            ((dfc["exit_datetime"].dt.date >= from_date) & (dfc["exit_datetime"].dt.date <= to_date))
+            (dfc["entry_datetime"].dt.date >= from_date) & (dfc["entry_datetime"].dt.date <= to_date)
         ]
         dfc = dfc.sort_values("entry_datetime", ascending=False)
 
@@ -352,11 +351,7 @@ def _get_live_rows_audit(strat_label, from_date, to_date, fetch_fills_fn, inr_ra
                 _entry_date = _fast_date_audit(p["entry_ts_raw"])
             except Exception:
                 continue
-            try:
-                _exit_date = _fast_date_audit(p.get("exit_ts_raw", ""))
-                _in_range = (from_date <= _entry_date <= to_date) or (from_date <= _exit_date <= to_date)
-            except Exception:
-                _in_range = (from_date <= _entry_date <= to_date)
+            _in_range = (from_date <= _entry_date <= to_date)
             if _in_range:
                 _filtered.append(p)
 

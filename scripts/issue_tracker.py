@@ -402,8 +402,7 @@ def get_bt_rows(bot, from_date, to_date):
     dfc["entry_datetime"] = pd.to_datetime(dfc["entry_datetime"])
     dfc["exit_datetime"] = pd.to_datetime(dfc["exit_datetime"])
     dfc = dfc[
-        ((dfc["entry_datetime"].dt.date >= from_date) & (dfc["entry_datetime"].dt.date <= to_date)) |
-        ((dfc["exit_datetime"].dt.date >= from_date) & (dfc["exit_datetime"].dt.date <= to_date))
+        (dfc["entry_datetime"].dt.date >= from_date) & (dfc["entry_datetime"].dt.date <= to_date)
     ]
     rows = []
     for _, r in dfc.iterrows():
@@ -611,10 +610,10 @@ def process_bot(bot, from_date, to_date, existing_rows):
                     lv_exit_dt = lv_exit_dt.tz_localize(None)
                 lag_min = (lv_exit_dt - bt_exit_dt).total_seconds() / 60.0
                 CONF_LAG_PNL_GAP_THRESHOLD = 100.0
-                if lag_min > TF_MIN.get(bot, 120) and abs(pnl_gap) > CONF_LAG_PNL_GAP_THRESHOLD:
+                if lag_min > TF_MIN.get(bot, 120) * 1.5 and abs(pnl_gap) > CONF_LAG_PNL_GAP_THRESHOLD:
                     conf_lag_flag = "CONFIRMATION_LAG"
                 _tf_ratio = lag_min / TF_MIN.get(bot, 120) if TF_MIN.get(bot, 120) else 0
-                _gate_lockout_sig = abs(_tf_ratio - round(_tf_ratio)) < 0.02 and round(_tf_ratio) >= 1
+                _gate_lockout_sig = abs(_tf_ratio - round(_tf_ratio)) < 0.02 and round(_tf_ratio) >= 2
                 if _gate_lockout_sig and lv_exit_dt.to_pydatetime() >= GATE_LOCKOUT_FIX_DEPLOYED_UTC:
                     conf_lag_flag = (conf_lag_flag + "|RECURRED_AFTER_FIX") if conf_lag_flag else "RECURRED_AFTER_FIX"
                     _append_event(bot, "RECURRED_AFTER_FIX",
