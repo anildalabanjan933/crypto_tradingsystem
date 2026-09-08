@@ -37,7 +37,7 @@ check_and_start() {
             echo "$now_ts" > "$alert_ts_file"
             echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] DOWN alert sent for $name" >> logs/maintenance.log
         fi
-        /usr/bin/screen -dmS "$name" /bin/bash -c "cd /home/anildalabanjan933/crypto_trading_system && .venv/bin/python3 $script >> $log 2>&1"
+        /usr/bin/screen -dmS "$name" /bin/bash -c "cd /home/anildalabanjan933/crypto_trading_system && set -a && source /home/anildalabanjan933/crypto_trading_system/.env && set +a && .venv/bin/python3 $script >> $log 2>&1"
         echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] Started $name" >> logs/maintenance.log
     fi
 }
