@@ -630,6 +630,34 @@ while True:
                 last_known_ts = safe_ts(_xt)
                 if _live_sig: last_processed_seq = _live_sig.get("seq", 0)
 
+            # --- SELF-HEAL: orphaned PENDING exit (engine never wrote real exit, newer signal already due) ---
+            elif position is not None and _xt == "PENDING":
+                _next_row = None
+                for _r2 in signals:
+                    if _r2["entry_time"] > sig_ts:
+                        _next_row = _r2
+                        break
+                if _next_row and now >= _next_row["entry_time"]:
+                    log.warning(f"[SELF-HEAL] Orphaned PENDING exit | entry={sig_ts} | next_signal_entry={_next_row['entry_time']} already due - auto-closing stale position")
+                    actual = om.get_position()
+                    _ex_size = abs(actual.get("size", 0)) if actual.get("success") else 0
+                    if _ex_size == 0:
+                        position = None
+                        save_ts_file(TS_FILE, _next_row["entry_time"])
+                        last_known_ts = safe_ts(_next_row["entry_time"])
+                        log.info(f"[SELF-HEAL] Exchange already FLAT - advanced to {_next_row['entry_time']}")
+                    else:
+                        side = "sell" if position == "long" else "buy"
+                        result = om.close_position(size=_ex_size, side=side)
+                        if result.get("success"):
+                            position = None
+                            save_ts_file(TS_FILE, _next_row["entry_time"])
+                            last_known_ts = safe_ts(_next_row["entry_time"])
+                            send_alert(f"CTS S4V3 SELF-HEAL: Orphaned PENDING exit auto-closed | entry={sig_ts} | advanced to next_signal={_next_row['entry_time']}")
+                            log.info(f"[SELF-HEAL] Position closed, advanced to {_next_row['entry_time']}")
+                        else:
+                            log.error(f"[SELF-HEAL] Auto-close FAILED: {result}")
+
             # --- EXIT first if position open and exit time reached ---
             elif position is not None and now >= _xt:
                 actual = om.get_position()
