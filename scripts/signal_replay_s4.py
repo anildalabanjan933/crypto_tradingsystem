@@ -770,8 +770,8 @@ while True:
                     if not check_engine_heartbeat():
                         log.warning("[ORDER] ENTRY blocked - engine heartbeat stale")
                     else:
-                        _cid = 'S4E' + sig_ts.replace('-','').replace(':','')
-                        result = om.place_market_order(side=side, size=lots, client_order_id=_cid)
+                        _cid = 'S4E' + sig_ts.replace('-','').replace(':','') + f'_a{_entry_retry_state["count"]}'
+                        result = om.place_market_order(side=side, size=lots, client_order_id=_cid, attempt=_entry_retry_state["count"])
                         if result.get("success"):
                             position = direction
                             open_lot_size = lots
