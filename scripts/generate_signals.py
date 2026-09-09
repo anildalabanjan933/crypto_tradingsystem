@@ -12,6 +12,7 @@ sys.path.insert(0, ".")
 from datetime import datetime, timezone, timedelta
 from strategies.backtest.renko_smiio_supertrend_strategy import RenkoSMIIOSupertrendStrategy
 from strategies.backtest.renko_smiio_supertrend_v2_strategy import RenkoSMIIOSupertrendV2Strategy
+from strategies.backtest.renko_smiio_cross_v3_strategy import RenkoSMIIOCrossV3Strategy
 from engine.backtest_engine import BacktestEngine
 import subprocess, logging
 
@@ -95,6 +96,9 @@ def write_trade_log_csv(trades, label):
     if label == "S4V2":
         out = f"output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_{ts}.csv"
         pattern = "output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv"
+    elif label == "S4V3":
+        out = f"output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_{ts}.csv"
+        pattern = "output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv"
     else:
         out = f"output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_{ts}.csv"
         pattern = "output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"
@@ -174,3 +178,14 @@ if __name__ == "__main__":
     write_trade_log_csv(s4_trades, "S4")
 
     log.info("[GENERATE] All signal CSVs ready.")
+
+    # S4V3
+    s4v3_params = dict(renko_box_pct=0.001, renko_timeframe="4h", smiio_shortlen=5, smiio_longlen=10, smiio_siglen=3)
+    s4v3_trades, s4v3_pending = run_backtest(RenkoSMIIOCrossV3Strategy, s4v3_params, "S4V3")
+    s4v3_trades = [t for t in s4v3_trades if "entry_datetime" in t]
+    if not _skip_live:
+        _s4v3_all = merge_signal_csv(s4v3_trades + ([s4v3_pending] if s4v3_pending else []), "logs/signals_s4v3.csv")
+        write_signal_csv(_s4v3_all, "logs/signals_s4v3.csv")
+    else:
+        log.info("[GENERATE] Skipped logs/signals_s4v3.csv (dashboard-refresh-only mode)")
+    write_trade_log_csv(s4v3_trades, "S4V3")
