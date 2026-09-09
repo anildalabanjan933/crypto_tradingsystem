@@ -24,6 +24,7 @@ import hashlib
 import logging
 import datetime as dt
 
+import re
 import requests
 import pandas as pd
 
@@ -203,16 +204,29 @@ def scan_system_side_flags(bot, entry_dt, exit_dt):
             flags.append("CLOSE_LOSS_CAP_STAGE")
             close_escalation_yn = "Y"
             _append_event(bot, "CLOSE_LOSS_CAP_STAGE", line.strip())
+        if "ENTRY UNFILLED" in line and "band" in line:
+            _band_m = re.search(r'\$?(\d+)\s*band', line)
+            _band_val = _band_m.group(1) if _band_m else "?"
+            flags.append("ENTRY_UNFILLED_BAND")
+            _append_event(bot, "ENTRY_UNFILLED_BAND",
+                          f"Entry unfilled - band=${_band_val} breached | " + line.strip())
+        if "ENTRY ABANDONED" in line:
+            flags.append("ENTRY_BAND_ABANDONED")
+            _append_event(bot, "ENTRY_BAND_ABANDONED", line.strip())
         if "CLOSE FAILED AFTER" in line:
             _widened = any("CLOSE ESCALATION" in _l or "LOSS-CAPPED" in _l
                             for _l in _read_lines(LIVE_LOG.get(bot, ""))
                             if _parse_bot_log_ts(_l) and window_start <= _parse_bot_log_ts(_l) <= ts)
+            _cband_m = re.search(r'\$(\d+)', line)
+            _cband_val = _cband_m.group(1) if _cband_m else "?"
             if _widened:
                 flags.append("CLOSE_FAILED_GENUINE_THIN_LIQUIDITY")
-                _append_event(bot, "CLOSE_FAILED_GENUINE_THIN_LIQUIDITY", line.strip())
+                _append_event(bot, "CLOSE_FAILED_GENUINE_THIN_LIQUIDITY",
+                              f"Exit close failed - band=${_cband_val} | " + line.strip())
             else:
                 flags.append("CLOSE_FAILED_BAND_STUCK_150_BUG")
-                _append_event(bot, "CLOSE_FAILED_BAND_STUCK_150_BUG", line.strip())
+                _append_event(bot, "CLOSE_FAILED_BAND_STUCK_150_BUG",
+                              f"Exit close failed - band=${_cband_val} | " + line.strip())
             close_escalation_yn = "Y"
 
     for line in _read_lines("logs/renko_state_engine.log"):
@@ -471,7 +485,7 @@ FLIP_DAMAGE_NORMAL_CEILING = 20.0  # 2x documented $8-10/side target - normal fl
                                     # stacks entry+exit slip, so up to ~$20 combined
                                     # is ordinary double-slip, not a system fault
 GATE_LOCKOUT_FIX_DEPLOYED_UTC = __import__("datetime").datetime(2026, 9, 7, 16, 3, 0)
-_ANOMALY_TAGS = {"BOT_RESTART", "ENGINE_RESTART", "CLOSE_LOSS_CAP_STAGE", "CLOSE_FAILED_MANUAL_REQUIRED", "CONFIRMATION_LAG", "RECURRED_AFTER_FIX"}
+_ANOMALY_TAGS = {"BOT_RESTART", "ENGINE_RESTART", "CLOSE_LOSS_CAP_STAGE", "CLOSE_FAILED_MANUAL_REQUIRED", "CONFIRMATION_LAG", "RECURRED_AFTER_FIX", "ENTRY_UNFILLED_BAND", "ENTRY_BAND_ABANDONED"}
 
 def build_verdict(system_flag, close_escalation_yn, missed_yn, flip_yn, flip_damage=0.0):
     _flags = set(f for f in system_flag.split("|") if f)
@@ -570,7 +584,28 @@ def _is_live_still_open(bot, bt_entry_ts_raw, bt_dir):
     except Exception:
         return False
 
+def scan_standalone_entry_band_failures(bot):
+    import re as _re
+    log_path = LIVE_LOG.get(bot, "")
+    for line in _read_lines(log_path):
+        if "ENTRY ABANDONED" not in line:
+            continue
+        ts = _parse_bot_log_ts(line)
+        if not ts:
+            continue
+        key = f"{bot}_{ts.isoformat()}_ENTRY_ABANDONED"
+        if key in _SEEN_STANDALONE_EVENTS:
+            continue
+        _SEEN_STANDALONE_EVENTS.add(key)
+        _band_m = _re.search(r'\$?(\d+)\s*band', line)
+        band_val = _band_m.group(1) if _band_m else "250"
+        _append_event(bot, "ENTRY_BAND_ABANDONED",
+                      f"MISSED TRADE - entry never filled, band=${band_val} breached repeatedly | {line.strip()}")
+
+_SEEN_STANDALONE_EVENTS = set()
+
 def process_bot(bot, from_date, to_date, existing_rows):
+    scan_standalone_entry_band_failures(bot)
     bt_rows = get_bt_rows(bot, from_date, to_date)
     lv_rows = get_live_rows(bot, from_date, to_date)
     matched, missed_lv = pair_bt_lv(bt_rows, lv_rows, bot)
