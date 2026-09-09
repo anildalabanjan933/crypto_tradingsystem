@@ -634,7 +634,7 @@ def process_bot(bot, from_date, to_date, existing_rows):
         if lv is not None:
             entry_slip, entry_tag = compute_slip(bt["entry_p"], lv["entry_p"], bt["dir"])
             exit_slip, exit_tag = compute_slip(bt["exit_p"], lv.get("exit_p"), bt["dir"])
-            pnl_gap = round(bt["net_pnl_inr"] - (lv.get("pnl_usd", 0) * INR_RATE - lv.get("charges", 0) * INR_RATE), 2)
+            pnl_gap = round((bt["net_pnl_inr"] - (lv.get("pnl_usd", 0) * INR_RATE - lv.get("charges", 0) * INR_RATE)) / INR_RATE, 2)
 
         conf_lag_flag = ""
         if lv is not None:
