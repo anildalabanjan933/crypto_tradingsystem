@@ -632,8 +632,6 @@ while True:
                     log.info(f"[ORDER] EXIT skipped - exchange already FLAT | ts={_xt}")
                     _send_live_exit_alert('S4', dirn, _xt, 0.0)
                     position = None
-                    save_ts_file(TS_FILE, _xt)
-                    last_known_ts = safe_ts(_xt)
                 else:
                     side = "sell" if position == "long" else "buy"
                     close_size = _ex_size
@@ -646,6 +644,8 @@ while True:
                         result = om.close_position(size=close_size, side=side)
                         if result.get("success"):
                             position = None
+                            save_ts_file(TS_FILE, _xt)
+                            last_known_ts = safe_ts(_xt)
                             _entry_price_for_alert = open_entry_price
                             _entry_commission_for_log = _entry_commission if '_entry_commission' in dir() else 0.0
                             open_entry_price = 0.0
@@ -678,7 +678,7 @@ while True:
                         else:
                             log.error(f"[ORDER] EXIT FAILED: {result}")
                             send_alert(f"CTS S4 EXIT FAILED\nError: {result}")
-                            last_known_ts = load_ts_file(TS_FILE)
+                            log.warning(f"[ORDER] EXIT ts NOT advanced - will retry next loop | ts={_xt}")
 
             # --- ENTRY if no position and exit time not yet reached ---
             elif position is None and now < _xt:
