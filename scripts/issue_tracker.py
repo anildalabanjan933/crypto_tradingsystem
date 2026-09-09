@@ -495,6 +495,8 @@ def build_verdict(system_flag, close_escalation_yn, missed_yn, flip_yn, flip_dam
         return "SYSTEM-SIDE"
     if missed_yn == "OPEN":
         return "OPEN-PENDING"
+    if flip_yn == "Y" and flip_damage <= FLIP_DAMAGE_NORMAL_CEILING and (_flags & {"FLIP_FIRE", "WS_REST_RECONCILE"}):
+        return "KNOWN-FIXED-BENIGN"
     if missed_yn == "Y":
         return "UNEXPLAINED"
     return "MARKET-SIDE"
