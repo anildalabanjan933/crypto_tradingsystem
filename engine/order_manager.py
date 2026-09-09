@@ -29,6 +29,7 @@ class OrderManager:
 
     PRODUCT_SYMBOL = "BTCUSD"
     PRODUCT_ID     = 84          # BTCUSD perpetual on Delta Exchange Testnet
+    _ENTRY_BAND_TIERS = [250.0, 250.0, 500.0, 500.0, 750.0]
 
     def __init__(self, api_key: str, api_secret: str, testnet: bool = True):
         """
@@ -204,7 +205,7 @@ class OrderManager:
             }
         return {"success": False, "error": resp.get("error", resp)}
 
-    def place_market_order(self, side: str, size: int, client_order_id: str = None) -> dict:
+    def place_market_order(self, side: str, size: int, client_order_id: str = None, attempt: int = 0) -> dict:
         """
         Place a market order, protected by a $250 price-sanity ceiling.
 
@@ -240,7 +241,7 @@ class OrderManager:
                     "commission": float(_comm_e) if _comm_e else 0.0,
                 }
 
-        _band = 250.0
+        _band = self._ENTRY_BAND_TIERS[min(attempt, len(self._ENTRY_BAND_TIERS) - 1)]
         _limit_price = round(_ref_price + _band, 1) if side == "buy" else round(_ref_price - _band, 1)
         payload = {
             "product_symbol": self.PRODUCT_SYMBOL,
