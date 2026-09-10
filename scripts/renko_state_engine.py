@@ -6,8 +6,8 @@ try:
     WS_AVAILABLE=True
 except ImportError:
     WS_AVAILABLE=False
-sys.path.insert(0,"/home/anildalabanjan933/crypto_trading_system")
-os.chdir("/home/anildalabanjan933/crypto_trading_system")
+sys.path.insert(0,"/home/anildalabanjan7/crypto_tradingsystem")
+os.chdir("/home/anildalabanjan7/crypto_tradingsystem")
 from datetime import datetime,timezone,timedelta
 import warnings,io,contextlib
 import pandas as pd
@@ -562,15 +562,15 @@ if __name__=="__main__":
     # PRIMARY lock = bot last_known_ts files (always correct)
     # FALLBACK = signal file (only if ts file missing)
     try:
-        _ts_s4=open("/home/anildalabanjan933/crypto_trading_system/logs/last_known_ts_s4.txt").read().strip() or None
+        _ts_s4=open("/home/anildalabanjan7/crypto_tradingsystem/logs/last_known_ts_s4.txt").read().strip() or None
         if _ts_s4: log.info(f"[ENGINE] S4 lock from bot ts file: {_ts_s4}")
     except: _ts_s4=None
     try:
-        _ts_s4v2=open("/home/anildalabanjan933/crypto_trading_system/logs/last_known_ts_s4v2.txt").read().strip() or None
+        _ts_s4v2=open("/home/anildalabanjan7/crypto_tradingsystem/logs/last_known_ts_s4v2.txt").read().strip() or None
         if _ts_s4v2: log.info(f"[ENGINE] S4V2 lock from bot ts file: {_ts_s4v2}")
     except: _ts_s4v2=None
     try:
-        _ts_s4v3=open("/home/anildalabanjan933/crypto_trading_system/logs/last_known_ts_s4v3.txt").read().strip() or None
+        _ts_s4v3=open("/home/anildalabanjan7/crypto_tradingsystem/logs/last_known_ts_s4v3.txt").read().strip() or None
         if _ts_s4v3: log.info(f"[ENGINE] S4V3 lock from bot ts file: {_ts_s4v3}")
     except: _ts_s4v3=None
     def _floor_to_tf(dt,tf_minutes):

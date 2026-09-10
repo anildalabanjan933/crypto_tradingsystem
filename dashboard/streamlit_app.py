@@ -1572,7 +1572,7 @@ with _tab_monitor:
     except: _tm1s4_ok = False
 
     # BOUNDARY WATCHER
-    try: _bw_ok = _log_age_min("logs/boundary_watcher.log") < 60
+    try: _bw_ok = _log_age_min("logs/boundary_watcher_heartbeat.txt") < 2
     except: _bw_ok = False
 
     # DELTA API
@@ -1690,7 +1690,7 @@ with _tab_monitor:
     st.markdown("<div class='section-title'>SECTION 1B - BOT CONTROL</div>", unsafe_allow_html=True)
     with st.expander("S4 / S4V2 STOP & RESTART", expanded=False):
         import subprocess as _sp_bc
-        _REPO_BC = "/home/anildalabanjan933/crypto_trading_system"
+        _REPO_BC = "/home/anildalabanjan7/crypto_tradingsystem"
 
         def _bot_running(screen_name):
             try:
@@ -1901,8 +1901,8 @@ with _tab_monitor:
         st.markdown("**GITHUB**")
         try:
             import subprocess as _sp_gh
-            _gh_status = _sp_gh.run(["git", "status", "--porcelain"], cwd="/home/anildalabanjan933/crypto_trading_system", capture_output=True, text=True, timeout=5).stdout.strip()
-            _gh_unpushed = _sp_gh.run(["git", "log", "@{u}..", "--oneline"], cwd="/home/anildalabanjan933/crypto_trading_system", capture_output=True, text=True, timeout=5).stdout.strip()
+            _gh_status = _sp_gh.run(["git", "status", "--porcelain"], cwd="/home/anildalabanjan7/crypto_tradingsystem", capture_output=True, text=True, timeout=5).stdout.strip()
+            _gh_unpushed = _sp_gh.run(["git", "log", "@{u}..", "--oneline"], cwd="/home/anildalabanjan7/crypto_tradingsystem", capture_output=True, text=True, timeout=5).stdout.strip()
             if _gh_status:
                 st.warning("UNSAVED CHANGES")
                 st.caption("Local files changed but not committed yet.")
@@ -1943,13 +1943,13 @@ with _tab_monitor:
     # CARD 1 - BOT LOG STATUS + ENGINE STATUS
     with _cr2a:
         try:
-            _s2_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4v2.log")) / 60 if os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4v2.log") else 999
-            _s4_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4.log")) / 60 if os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4.log") else 999
-            _s4v3_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4v3.log")) / 60 if os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4v3.log") else 999
-            _eng_log = "/home/anildalabanjan933/crypto_trading_system/logs/renko_state_engine.log"
+            _s2_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan7/crypto_tradingsystem/logs/live_trading_s4v2.log")) / 60 if os.path.exists("/home/anildalabanjan7/crypto_tradingsystem/logs/live_trading_s4v2.log") else 999
+            _s4_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan7/crypto_tradingsystem/logs/live_trading_s4.log")) / 60 if os.path.exists("/home/anildalabanjan7/crypto_tradingsystem/logs/live_trading_s4.log") else 999
+            _s4v3_log_age = (_t_cards.time() - os.path.getmtime("/home/anildalabanjan7/crypto_tradingsystem/logs/live_trading_s4v3.log")) / 60 if os.path.exists("/home/anildalabanjan7/crypto_tradingsystem/logs/live_trading_s4v3.log") else 999
+            _eng_log = "/home/anildalabanjan7/crypto_tradingsystem/logs/renko_state_engine.log"
             _eng_age = (_t_cards.time() - os.path.getmtime(_eng_log)) / 60 if os.path.exists(_eng_log) else 999
             st.markdown("**BOT LOG**")
-            if _s2_log_age > 10 or _s4_log_age > 10 or (os.path.exists("/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4v3.log") and _s4v3_log_age > 10):
+            if _s2_log_age > 10 or _s4_log_age > 10 or (os.path.exists("/home/anildalabanjan7/crypto_tradingsystem/logs/live_trading_s4v3.log") and _s4v3_log_age > 10):
                 st.error("INACTIVE")
                 st.caption(f"S4V2: {int(_s2_log_age)}m | S4: {int(_s4_log_age)}m | S4V3: {int(_s4v3_log_age)}m no update")
             else:
@@ -2612,7 +2612,7 @@ with _tab_monitor:
         # 12B. CHECK ENGINE (renko_state_engine) RUNNING
         try:
             import time as _time_eng
-            _eng_log = "/home/anildalabanjan933/crypto_trading_system/logs/renko_state_engine.log"
+            _eng_log = "/home/anildalabanjan7/crypto_tradingsystem/logs/renko_state_engine.log"
             if not os.path.exists(_eng_log):
                 errors.append("ENGINE LOG MISSING - renko_state_engine.py never started - run bash start.sh")
             else:
@@ -2749,7 +2749,7 @@ with _tab_monitor:
     with st.expander("SECTION 1C - DEBUG TRACKER", expanded=st.session_state.get('exp_1c', False)):
         import re as _re1c, datetime as _dt1c
 
-        _BASE_DIR = '/home/anildalabanjan933/crypto_trading_system'
+        _BASE_DIR = '/home/anildalabanjan7/crypto_tradingsystem'
         _TH1C = "padding:5px 8px;border:1px solid #90CAF9;background:#E3F2FD;font-size:10px;font-weight:700;color:#555;"
         _TD1C = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;color:#131722;"
         _TDG1C = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;color:#089981;font-weight:700;"
@@ -2921,7 +2921,7 @@ with _tab_monitor:
             match_status = "Pending next trade"
             match_color = _TDG1C
             try:
-                _vm_log = '/home/anildalabanjan933/crypto_trading_system/logs/verify_match.log'
+                _vm_log = '/home/anildalabanjan7/crypto_tradingsystem/logs/verify_match.log'
                 if _os1c.path.exists(_vm_log):
                     _vm_lines = open(_vm_log).readlines()[-20:]
                     for _vl in reversed(_vm_lines):
@@ -2940,7 +2940,7 @@ with _tab_monitor:
             csv_status = "UNKNOWN"
             csv_color = _TDO1C
             try:
-                _csv_path = '/home/anildalabanjan933/crypto_trading_system/data/btc_1m_delta.csv'
+                _csv_path = '/home/anildalabanjan7/crypto_tradingsystem/data/btc_1m_delta.csv'
                 _csv_age = _t1c.time() - _os1c.path.getmtime(_csv_path)
                 if _csv_age < 7200:
                     csv_status = f"FRESH ({int(_csv_age/60)} min ago)"
@@ -3311,28 +3311,28 @@ with _tab_monitor:
             col5, col6, col7, col8 = st.columns(4)
             with col5:
                 try:
-                    r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system'], capture_output=True, text=True)
+                    r = subprocess.run(['du','-sh','/home/anildalabanjan7/crypto_tradingsystem'], capture_output=True, text=True)
                     app_size = r.stdout.split()[0] if r.stdout else 'N/A'
                 except:
                     app_size = 'N/A'
                 st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>APP SIZE</div><div class='metric-value'>{app_size}</div></div>", unsafe_allow_html=True)
             with col6:
                 try:
-                    r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/logs'], capture_output=True, text=True)
+                    r = subprocess.run(['du','-sh','/home/anildalabanjan7/crypto_tradingsystem/logs'], capture_output=True, text=True)
                     log_size = r.stdout.split()[0] if r.stdout else 'N/A'
                 except:
                     log_size = 'N/A'
                 st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>LOGS SIZE</div><div class='metric-value'>{log_size}</div></div>", unsafe_allow_html=True)
             with col7:
                 try:
-                    r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/data'], capture_output=True, text=True)
+                    r = subprocess.run(['du','-sh','/home/anildalabanjan7/crypto_tradingsystem/data'], capture_output=True, text=True)
                     data_size = r.stdout.split()[0] if r.stdout else 'N/A'
                 except:
                     data_size = 'N/A'
                 st.markdown(f"<div class='metric-box metric-green'><div class='metric-label'>DATA SIZE</div><div class='metric-value'>{data_size}</div></div>", unsafe_allow_html=True)
             with col8:
                 try:
-                    r = subprocess.run(['du','-sh','/home/anildalabanjan933/crypto_trading_system/.venv'], capture_output=True, text=True)
+                    r = subprocess.run(['du','-sh','/home/anildalabanjan7/crypto_tradingsystem/.venv'], capture_output=True, text=True)
                     venv_size = r.stdout.split()[0] if r.stdout else 'N/A'
                 except:
                     venv_size = 'N/A'
@@ -3387,8 +3387,8 @@ with _tab_trading:
                 if mc[4].button("▶", key=f"m_start_{idx}"):
                     try:
                         env = f"S4V2_API_KEY={m.get('s2_key','')} S4V2_API_SECRET={m.get('s2_secret','')} S4_API_KEY={m.get('s4_key','')} S4_API_SECRET={m.get('s4_secret','')}"
-                        subprocess.Popen(['bash','-c',f'screen -S {s2_screen} -X quit 2>/dev/null; sleep 1; screen -dmS {s2_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && export {env} && .venv/bin/python3 scripts/signal_replay_s4v2.py >> {_s2_log} 2>&1"'])
-                        subprocess.Popen(['bash','-c',f'screen -S {s4_screen} -X quit 2>/dev/null; sleep 1; screen -dmS {s4_screen} bash -c "cd /home/anildalabanjan933/crypto_trading_system && export {env} && .venv/bin/python3 scripts/signal_replay_s4.py >> {_s4_log} 2>&1"'])
+                        subprocess.Popen(['bash','-c',f'screen -S {s2_screen} -X quit 2>/dev/null; sleep 1; screen -dmS {s2_screen} bash -c "cd /home/anildalabanjan7/crypto_tradingsystem && export {env} && .venv/bin/python3 scripts/signal_replay_s4v2.py >> {_s2_log} 2>&1"'])
+                        subprocess.Popen(['bash','-c',f'screen -S {s4_screen} -X quit 2>/dev/null; sleep 1; screen -dmS {s4_screen} bash -c "cd /home/anildalabanjan7/crypto_tradingsystem && export {env} && .venv/bin/python3 scripts/signal_replay_s4.py >> {_s4_log} 2>&1"'])
                         st.success(f"{m.get('name')} bots started")
                     except Exception as e:
                         st.error(str(e))
@@ -3444,7 +3444,7 @@ with _tab_trading:
                         json.dump(members_cfg, open(members_config_file,'w'), indent=2)
 
                         # ── AUTO SETUP: scripts, .env, start.sh, start bots ──
-                        _base = '/home/anildalabanjan933/crypto_trading_system'
+                        _base = '/home/anildalabanjan7/crypto_tradingsystem'
                         _mkey = m_name.lower().replace(' ','_')
                         _errors = []
 
@@ -3622,7 +3622,7 @@ with _tab_trading:
         if st.button("START ALL", key="sec2_start"):
             try:
                 import subprocess
-                subprocess.Popen(['bash','-c','cd /home/anildalabanjan933/crypto_trading_system && bash start.sh'])
+                subprocess.Popen(['bash','-c','cd /home/anildalabanjan7/crypto_tradingsystem && bash start.sh'])
                 st.success("Starting...")
             except Exception as e:
                 st.error(str(e))
@@ -3638,7 +3638,7 @@ with _tab_trading:
         if st.button("RESTART ALL", key="sec2_restart"):
             try:
                 import subprocess
-                subprocess.Popen(['bash','-c','cd /home/anildalabanjan933/crypto_trading_system && bash start.sh'])
+                subprocess.Popen(['bash','-c','cd /home/anildalabanjan7/crypto_tradingsystem && bash start.sh'])
                 st.success("Restarting...")
             except Exception as e:
                 st.error(str(e))
@@ -3646,7 +3646,7 @@ with _tab_trading:
         if st.button("RESTART S4V2", key="sec2_restart_s2"):
             try:
                 import subprocess
-                subprocess.Popen(['bash','-c','screen -S live_s4v2 -X quit; sleep 2; screen -dmS live_s4v2 bash -c "cd /home/anildalabanjan933/crypto_trading_system && .venv/bin/python3 scripts/signal_replay_s4v2.py >> logs/live_trading_s4v2.log 2>&1"'])
+                subprocess.Popen(['bash','-c','screen -S live_s4v2 -X quit; sleep 2; screen -dmS live_s4v2 bash -c "cd /home/anildalabanjan7/crypto_tradingsystem && .venv/bin/python3 scripts/signal_replay_s4v2.py >> logs/live_trading_s4v2.log 2>&1"'])
                 st.success("S4V2 restarting...")
             except Exception as e:
                 st.error(str(e))
@@ -3654,7 +3654,7 @@ with _tab_trading:
         if st.button("RESTART S4", key="sec2_restart_s4"):
             try:
                 import subprocess
-                subprocess.Popen(['bash','-c','screen -S live_s4 -X quit; sleep 2; screen -dmS live_s4 bash -c "cd /home/anildalabanjan933/crypto_trading_system && .venv/bin/python3 scripts/signal_replay_s4.py >> logs/live_trading_s4.log 2>&1"'])
+                subprocess.Popen(['bash','-c','screen -S live_s4 -X quit; sleep 2; screen -dmS live_s4 bash -c "cd /home/anildalabanjan7/crypto_tradingsystem && .venv/bin/python3 scripts/signal_replay_s4.py >> logs/live_trading_s4.log 2>&1"'])
                 st.success("S4 restarting...")
             except Exception as e:
                 st.error(str(e))
@@ -3667,7 +3667,7 @@ with _tab_trading:
             if st.button("RESTART S4V3", key="sec2_restart_s3"):
                 try:
                     import subprocess
-                    subprocess.Popen(['bash','-c','screen -S live_s4v3 -X quit; sleep 2; screen -dmS live_s4v3 bash -c "cd /home/anildalabanjan933/crypto_trading_system && .venv/bin/python3 scripts/signal_replay_s4v3.py >> logs/live_trading_s4v3.log 2>&1"'])
+                    subprocess.Popen(['bash','-c','screen -S live_s4v3 -X quit; sleep 2; screen -dmS live_s4v3 bash -c "cd /home/anildalabanjan7/crypto_tradingsystem && .venv/bin/python3 scripts/signal_replay_s4v3.py >> logs/live_trading_s4v3.log 2>&1"'])
                     st.success("S4V3 restarting...")
                 except Exception as e:
                     st.error(str(e))
@@ -4285,7 +4285,7 @@ with _tab_backtest:
                     _r = subprocess.run(
                         [".venv/bin/python3", "scripts/verify_match.py"],
                         capture_output=True, text=True,
-                        cwd="/home/anildalabanjan933/crypto_trading_system"
+                        cwd="/home/anildalabanjan7/crypto_tradingsystem"
                     )
                     st.session_state['match_result']   = _r.stdout
                     st.session_state['match_stderr']   = _r.stderr
@@ -4607,7 +4607,7 @@ with _tab_backtest:
                 _status.info("Step 1/3 - Downloading latest market data...")
                 _progress.progress(10)
                 import subprocess as _sp
-                _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+                _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan7/crypto_tradingsystem')
             else:
                 _status.info("Step 1/3 - Market data is fresh, skipping download...")
                 _progress.progress(10)
@@ -4715,7 +4715,7 @@ with _tab_backtest:
         st.markdown('<hr style="margin:8px 0;border:none;border-top:2px solid #e0e0e0;">', unsafe_allow_html=True)
         st.markdown("### Scale Backtest (Compounding Optimiser)")
         import sys as _sys5s
-        _sys5s.path.insert(0, '/home/anildalabanjan933/crypto_trading_system')
+        _sys5s.path.insert(0, '/home/anildalabanjan7/crypto_tradingsystem')
         from engine.scaling_engine import load_trades, run_full_mode, run_group_mode, apply_scaling, calculate_metrics
         _sc1, _sc2, _sc3 = st.columns(3)
         with _sc1:
@@ -5093,7 +5093,7 @@ with _tab_backtest:
                     _pp_status.info("Step 1/3 - Downloading latest market data...")
                     _pp_progress.progress(10)
                     import subprocess as _sp
-                    _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+                    _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan7/crypto_tradingsystem')
                 else:
                     _pp_status.info("Step 1/3 - Market data is fresh, skipping download...")
                     _pp_progress.progress(10)
@@ -5190,7 +5190,7 @@ with _tab_backtest:
                         _pd_status.info("Step 1/3 - Downloading latest market data...")
                         _pd_progress.progress(10)
                         import subprocess as _sp
-                        _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+                        _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan7/crypto_tradingsystem')
                     else:
                         _pd_status.info("Step 1/3 - Market data is fresh, skipping download...")
                         _pd_progress.progress(10)
@@ -5366,7 +5366,7 @@ with _tab_backtest:
                 _opt_status.info("Step 1/3 - Downloading latest market data...")
                 _opt_progress.progress(10)
                 import subprocess as _sp
-                _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan933/crypto_trading_system')
+                _sp.run([".venv/bin/python","-c","import sys;sys.path.insert(0,'data');from download_market_data import download_or_update;download_or_update('BTC')"], capture_output=True, timeout=120, cwd='/home/anildalabanjan7/crypto_tradingsystem')
             else:
                 _opt_status.info("Step 1/3 - Market data is fresh, skipping download...")
                 _opt_progress.progress(10)
@@ -5641,8 +5641,8 @@ with _tab_maint:
             else:
                 return line.strip()
 
-        s2_log_path = '/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4v2.log'
-        s4_log_path = '/home/anildalabanjan933/crypto_trading_system/logs/live_trading_s4.log'
+        s2_log_path = '/home/anildalabanjan7/crypto_tradingsystem/logs/live_trading_s4v2.log'
+        s4_log_path = '/home/anildalabanjan7/crypto_tradingsystem/logs/live_trading_s4.log'
 
         if log_choice == "S4V2":
             lines = read_log(s2_log_path, active_filter)

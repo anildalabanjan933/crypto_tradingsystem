@@ -15,14 +15,14 @@ import logging
 from datetime import datetime
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path="/home/anildalabanjan933/crypto_trading_system/.env")
+load_dotenv(dotenv_path="/home/anildalabanjan7/crypto_tradingsystem/.env")
 
 import sys
-sys.path.insert(0, "/home/anildalabanjan933/crypto_trading_system")
+sys.path.insert(0, "/home/anildalabanjan7/crypto_tradingsystem")
 from engine.telegram_alert import send_alert
 
 logging.basicConfig(
-    filename="/home/anildalabanjan933/crypto_trading_system/logs/margin_monitor.log",
+    filename="/home/anildalabanjan7/crypto_tradingsystem/logs/margin_monitor.log",
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(message)s"
 )
