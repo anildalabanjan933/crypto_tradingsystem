@@ -2,7 +2,7 @@
 import time, os, logging
 from datetime import datetime, timezone
 
-REPO = "/home/anildalabanjan933/crypto_trading_system"
+REPO = "/home/anildalabanjan7/crypto_tradingsystem"
 os.chdir(REPO)
 os.makedirs("logs", exist_ok=True)
 
