@@ -70,8 +70,8 @@ def _get_bt_trade(sig_ts, strategy_name):
 def _get_csv_bt_row(label, entry_ts):
     """Read BT row from signals CSV by entry_time - returns list [entry_ts, exit_ts, dir, lots, bt_entry_price, bt_exit_price]"""
     import csv as _csv
-    sig_num = "2" if label in ("S2","TM1_S2") else "4"
-    sig_csv = f"logs/signals_s{sig_num}.csv"
+    _sig_map = {"S2":"logs/signals_s2.csv","TM1_S2":"logs/signals_s2.csv","S4":"logs/signals_s4.csv","TM1_S4":"logs/signals_s4.csv","S4V2":"logs/signals_s4v2.csv","S4V3":"logs/signals_s4v3.csv"}
+    sig_csv = _sig_map.get(label, "logs/signals_s4.csv")
     try:
         with open(sig_csv,"r") as _f:
             for row in _csv.reader(_f):
@@ -221,8 +221,8 @@ load_dotenv(dotenv_path="/home/anildalabanjan933/crypto_trading_system/.env")
 def _get_csv_bt_row(label, entry_ts):
     """Read BT row from signals CSV by entry_time - returns list [entry_ts, exit_ts, dir, lots, bt_entry_price, bt_exit_price]"""
     import csv as _csv
-    sig_num = "2" if label in ("S2","TM1_S2") else "4"
-    sig_csv = f"logs/signals_s{sig_num}.csv"
+    _sig_map = {"S2":"logs/signals_s2.csv","TM1_S2":"logs/signals_s2.csv","S4":"logs/signals_s4.csv","TM1_S4":"logs/signals_s4.csv","S4V2":"logs/signals_s4v2.csv","S4V3":"logs/signals_s4v3.csv"}
+    sig_csv = _sig_map.get(label, "logs/signals_s4.csv")
     try:
         with open(sig_csv,"r") as _f:
             for row in _csv.reader(_f):
