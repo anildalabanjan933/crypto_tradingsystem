@@ -702,12 +702,17 @@ while True:
                             _bt_xp_log = _bt_xp2 if _bt_xp2 > 0 else "PENDING"
                             if _bt_ep2 <= 0 or _bt_xp2 <= 0:
                                 log.warning(f"[FILL-LOG] BT price incomplete for sig_ts={sig_ts} (bt_entry={_bt_ep_log}, bt_exit={_bt_xp_log}) after 10s retry - logging with PENDING marker, not dropping row")
-                            if _entry_price_for_alert > 0 and _exit_fill_price > 0:
-                                if _bt_ep2 > 0:
-                                    _send_roundtrip_match_alert("S4V2", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2 if _bt_xp2 > 0 else _bt_ep2, lots)
-                                _exit_commission = result.get("commission", 0.0)
-                                _total_charges = float(_entry_commission_for_log) + float(_exit_commission)
-                                _append_fill_log("logs/fill_prices_s4v2.csv", sig_ts, _xt, dirn, lots, _bt_ep_log, _entry_price_for_alert, _bt_xp_log, _exit_fill_price, _total_charges)
+                            _lv_ep_log = _entry_price_for_alert if _entry_price_for_alert > 0 else "PENDING"
+                            if _entry_price_for_alert <= 0:
+                                log.warning(f"[FILL-LOG] entry_price_for_alert is 0 for sig_ts={sig_ts} (restart-with-open-position) - logging with PENDING marker, not dropping row")
+                            if _entry_price_for_alert > 0 and _exit_fill_price > 0 and _bt_ep2 > 0:
+                                _send_roundtrip_match_alert("S4V2", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2 if _bt_xp2 > 0 else _bt_ep2, lots)
+                            _exit_commission = result.get("commission", 0.0)
+                            _total_charges = float(_entry_commission_for_log) + float(_exit_commission)
+                            if _exit_fill_price > 0:
+                                _append_fill_log("logs/fill_prices_s4v2.csv", sig_ts, _xt, dirn, lots, _bt_ep_log, _lv_ep_log, _bt_xp_log, _exit_fill_price, _total_charges)
+                            else:
+                                log.warning(f"[FILL-LOG] exit_fill_price is 0 for sig_ts={sig_ts} - skipping fill log row entirely")
                         else:
                             log.error(f"[ORDER] EXIT FAILED: {result}")
                             send_alert(f"CTS S4V2 EXIT FAILED\nError: {result}")

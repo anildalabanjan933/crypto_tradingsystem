@@ -698,11 +698,19 @@ while True:
                                 time.sleep(0.5)
                             if _bt_xp2 == 0.0:
                                 log.warning(f"[FILL-LOG] bt_exit still 0.0 after 5 retries (2.5s) for sig_ts={sig_ts} - engine CSV write race unresolved, logging with bt_exit=0.0")
+                            _bt_ep_log = _bt_ep2 if _bt_ep2 > 0 else "PENDING"
+                            _bt_xp_log = _bt_xp2 if _bt_xp2 > 0 else "PENDING"
+                            _lv_ep_log = _entry_price_for_alert if _entry_price_for_alert > 0 else "PENDING"
+                            if _entry_price_for_alert <= 0:
+                                log.warning(f"[FILL-LOG] entry_price_for_alert is 0 for sig_ts={sig_ts} (restart-with-open-position) - logging with PENDING marker, not dropping row")
                             if _bt_ep2 > 0 and _entry_price_for_alert > 0 and _exit_fill_price > 0:
                                 _send_roundtrip_match_alert("S4", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2, lots)
-                                _exit_commission = result.get("commission", 0.0)
-                                _total_charges = float(_entry_commission_for_log) + float(_exit_commission)
-                                _append_fill_log("logs/fill_prices_s4.csv", sig_ts, _xt, dirn, lots, _bt_ep2, _entry_price_for_alert, _bt_xp2, _exit_fill_price, _total_charges)
+                            _exit_commission = result.get("commission", 0.0)
+                            _total_charges = float(_entry_commission_for_log) + float(_exit_commission)
+                            if _exit_fill_price > 0:
+                                _append_fill_log("logs/fill_prices_s4.csv", sig_ts, _xt, dirn, lots, _bt_ep_log, _lv_ep_log, _bt_xp_log, _exit_fill_price, _total_charges)
+                            else:
+                                log.warning(f"[FILL-LOG] exit_fill_price is 0 for sig_ts={sig_ts} - skipping fill log row entirely")
                         else:
                             log.error(f"[ORDER] EXIT FAILED: {result}")
                             send_alert(f"CTS S4 EXIT FAILED\nError: {result}")
