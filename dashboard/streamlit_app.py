@@ -1714,7 +1714,10 @@ with _tab_monitor:
         with bc1:
             st.markdown('**S4 BOT**')
             _s4_run = _bot_running('live_s4')
-            st.success('RUNNING') if _s4_run else st.error('STOPPED')
+            if _s4_run:
+                st.success('RUNNING')
+            else:
+                st.error('STOPPED')
             _confirm_s4 = st.checkbox('Confirm STOP S4', key='confirm_stop_s4')
             if st.button('STOP S4', key='btn_stop_s4'):
                 if _confirm_s4:
@@ -1728,7 +1731,10 @@ with _tab_monitor:
         with bc2:
             st.markdown('**S4V2 BOT**')
             _s4v2_run = _bot_running('live_s4v2')
-            st.success('RUNNING') if _s4v2_run else st.error('STOPPED')
+            if _s4v2_run:
+                st.success('RUNNING')
+            else:
+                st.error('STOPPED')
             _confirm_s4v2 = st.checkbox('Confirm STOP S4V2', key='confirm_stop_s4v2')
             if st.button('STOP S4V2', key='btn_stop_s4v2'):
                 if _confirm_s4v2:
@@ -1742,7 +1748,10 @@ with _tab_monitor:
         with bc3:
             st.markdown('**S4V3 BOT**')
             _s4v3_run = _bot_running('live_s4v3')
-            st.success('RUNNING') if _s4v3_run else st.error('STOPPED')
+            if _s4v3_run:
+                st.success('RUNNING')
+            else:
+                st.error('STOPPED')
             _confirm_s4v3 = st.checkbox('Confirm STOP S4V3', key='confirm_stop_s4v3')
             if st.button('STOP S4V3', key='btn_stop_s4v3'):
                 if _confirm_s4v3:
@@ -2734,7 +2743,7 @@ with _tab_monitor:
             for w in warnings:
                 st.markdown(f"<div class='alert-yellow'>WARNING: {w}</div>", unsafe_allow_html=True)
 
-        with st.expander("SHOW ALL OK CHECKS"):
+        if st.checkbox("SHOW ALL OK CHECKS", key="show_ok_checks_1b"):
             for o in ok:
                 st.markdown(f"OK: {o}")
 
@@ -3407,7 +3416,7 @@ with _tab_trading:
             st.markdown("<div style='background:#f0f4ff;padding:6px 10px;border-radius:3px;font-size:11px;color:#555;'>No members added yet. Add members below.</div>", unsafe_allow_html=True)
 
         # Add member form
-        with st.expander("+ ADD MEMBER"):
+        if st.checkbox("+ ADD MEMBER", key="show_add_member"):
             with st.form("add_member_form"):
                 m_name    = st.text_input("Member Name (e.g. Friend1)")
                 m_account = st.text_input("Account Label (e.g. Testnet)")
@@ -4436,7 +4445,7 @@ with _tab_backtest:
 
                 err = st.session_state.get('match_stderr','')
                 if err and "DeprecationWarning" not in err and "RuntimeWarning" not in err:
-                    with st.expander("Script errors"):
+                    if st.checkbox("Script errors", key="show_script_errors_sec4"):
                         st.code(err[:500])
 
         for comp_tab, algo_name, algo_key in [(comp_tab_s2, "S4V2", "s2"), (comp_tab_s4, "S4", "s4")]:
