@@ -736,50 +736,60 @@ while True:
 
         # Sync position from exchange every 5 minutes
         if int(time.time()) % 30 < 2:
-            _exch = om.get_position()
-            _exch_size = abs(_exch.get("size", 0)) if _exch.get("success") else -1
-            if _exch_size == 0 and position is not None:
-                # FIX: confirm with a second check before declaring flat - prevents
-                # false SL-hit detection from a single transient/empty API response
-                time.sleep(3)
-                _exch2 = om.get_position()
-                _exch_size2 = abs(_exch2.get("size", 0)) if _exch2.get("success") else -1
-                if _exch_size2 != 0:
-                    log.warning(f"[SYNC] False FLAT detected (transient) - exchange size confirmed={_exch_size2} - skipping sync")
-                    _exch_size = _exch_size2
-            if _exch_size == 0 and position is not None:
-                log.warning(f"[SYNC] Exchange FLAT but bot={position} - SL hit or manual close - syncing to FLAT")
-                # FIX: advance last_known_ts past this signal's exit_time so it
-                # is not matched again next loop (prevents duplicate re-entry
-                # after SL hit or manual close from dashboard).
-                _manual_exit_ts = None
-                for _row in signals:
-                    if _row.get("entry_time") == last_known_ts:
-                        _cand_xt = _row.get("exit_time")
-                        if _cand_xt and _cand_xt not in ("PENDING", ""):
-                            _manual_exit_ts = _cand_xt
-                        break
-                position = None
-                if _manual_exit_ts:
-                    save_ts_file(TS_FILE, _manual_exit_ts)
-                    last_known_ts = safe_ts(_manual_exit_ts)
-                    log.info(f"[SYNC] Lock advanced past manually-closed signal to exit_time={_manual_exit_ts}")
-                else:
-                    save_ts_file(TS_FILE, last_known_ts)
-                    log.warning(f"[SYNC] Could not find exit_time for entry={last_known_ts} - lock unchanged, monitor for repeat entry")
-                with open("logs/manual_override_tm1_s4.txt", "w") as _f:
-                    _f.write(f"{int(time.time())}|synced_flat|entry_ts={last_known_ts}")
-                log.info("[SYNC] manual_override_tm1_s4.txt written - next entry signal will be skipped")
-                send_alert(
-                    f"CTS SL HIT DETECTED\n"
-                    f"Bot: TestMember1_S4\n"
-                    f"Action: Position closed by SL on exchange\n"
-                    f"Status: Synced to FLAT"
-                )
-            elif _exch_size > 0 and position is None:
-                _exch_side = _exch.get("side","")
-                position = "long" if _exch_side == "buy" else "short"
-                log.warning(f"[SYNC] Exchange has position={position} but bot=None - syncing to exchange")
+            try:
+                _exch = om.get_position()
+            except Exception as e:
+                log.warning(f"[SYNC] get_position() failed: {e}. Skipping this sync cycle.")
+                _exch = None
+            if _exch is not None:
+                _exch_size = abs(_exch.get("size", 0)) if _exch.get("success") else -1
+                if _exch_size == 0 and position is not None:
+                    # FIX: confirm with a second check before declaring flat - prevents
+                    # false SL-hit detection from a single transient/empty API response
+                    time.sleep(3)
+                    try:
+                        _exch2 = om.get_position()
+                    except Exception as e:
+                        log.warning(f"[SYNC] get_position() re-check failed: {e}. Skipping this sync cycle.")
+                        _exch2 = None
+                    if _exch2 is not None:
+                        _exch_size2 = abs(_exch2.get("size", 0)) if _exch2.get("success") else -1
+                        if _exch_size2 != 0:
+                            log.warning(f"[SYNC] False FLAT detected (transient) - exchange size confirmed={_exch_size2} - skipping sync")
+                            _exch_size = _exch_size2
+                if _exch_size == 0 and position is not None:
+                    log.warning(f"[SYNC] Exchange FLAT but bot={position} - SL hit or manual close - syncing to FLAT")
+                    # FIX: advance last_known_ts past this signal's exit_time so it
+                    # is not matched again next loop (prevents duplicate re-entry
+                    # after SL hit or manual close from dashboard).
+                    _manual_exit_ts = None
+                    for _row in signals:
+                        if _row.get("entry_time") == last_known_ts:
+                            _cand_xt = _row.get("exit_time")
+                            if _cand_xt and _cand_xt not in ("PENDING", ""):
+                                _manual_exit_ts = _cand_xt
+                            break
+                    position = None
+                    if _manual_exit_ts:
+                        save_ts_file(TS_FILE, _manual_exit_ts)
+                        last_known_ts = safe_ts(_manual_exit_ts)
+                        log.info(f"[SYNC] Lock advanced past manually-closed signal to exit_time={_manual_exit_ts}")
+                    else:
+                        save_ts_file(TS_FILE, last_known_ts)
+                        log.warning(f"[SYNC] Could not find exit_time for entry={last_known_ts} - lock unchanged, monitor for repeat entry")
+                    with open("logs/manual_override_tm1_s4.txt", "w") as _f:
+                        _f.write(f"{int(time.time())}|synced_flat|entry_ts={last_known_ts}")
+                    log.info("[SYNC] manual_override_tm1_s4.txt written - next entry signal will be skipped")
+                    send_alert(
+                        f"CTS SL HIT DETECTED\n"
+                        f"Bot: TestMember1_S4\n"
+                        f"Action: Position closed by SL on exchange\n"
+                        f"Status: Synced to FLAT"
+                    )
+                elif _exch_size > 0 and position is None:
+                    _exch_side = _exch.get("side","")
+                    position = "long" if _exch_side == "buy" else "short"
+                    log.warning(f"[SYNC] Exchange has position={position} but bot=None - syncing to exchange")
 
         log.info(f"[WAIT] now={now} | position={position} | last_known_ts={last_known_ts}")
 
