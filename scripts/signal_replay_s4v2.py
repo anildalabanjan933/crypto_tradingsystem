@@ -944,13 +944,18 @@ else:
     sys._sync_counter = 0
 if sys._sync_counter >= 60:
     sys._sync_counter = 0
-    exchange_pos = om.get_position()
-    if exchange_pos['direction'] == 'FLAT' and position is not None:
-        log.warning(f"[SYNC] Exchange is FLAT but bot thinks position={position}. Syncing to FLAT.")
-        position = None
-        open_lot_size = None
-    elif exchange_pos['direction'] != 'FLAT' and position is None:
-        log.warning(f"[SYNC] Exchange has position but bot thinks FLAT. Syncing to {exchange_pos['direction']}.")
-        position = exchange_pos['direction'].lower()
-        open_lot_size = abs(exchange_pos['size'])
+    try:
+        exchange_pos = om.get_position()
+    except Exception as e:
+        log.warning(f"[SYNC] get_position() failed: {e}. Skipping this sync cycle.")
+        exchange_pos = None
+    if exchange_pos is not None:
+        if exchange_pos['direction'] == 'FLAT' and position is not None:
+            log.warning(f"[SYNC] Exchange is FLAT but bot thinks position={position}. Syncing to FLAT.")
+            position = None
+            open_lot_size = None
+        elif exchange_pos['direction'] != 'FLAT' and position is None:
+            log.warning(f"[SYNC] Exchange has position but bot thinks FLAT. Syncing to {exchange_pos['direction']}.")
+            position = exchange_pos['direction'].lower()
+            open_lot_size = abs(exchange_pos['size'])
 
