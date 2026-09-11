@@ -216,7 +216,7 @@ def _send_match_alert(label, direction, bt_entry_price, lv_fill_price, entry_ts,
 
 
 from dotenv import load_dotenv
-load_dotenv(dotenv_path="/home/anildalabanjan933/crypto_trading_system/.env")
+load_dotenv(dotenv_path="/home/anildalabanjan7/crypto_tradingsystem/.env")
 
 def _get_csv_bt_row(label, entry_ts):
     """Read BT row from signals CSV by entry_time - returns list [entry_ts, exit_ts, dir, lots, bt_entry_price, bt_exit_price]"""
@@ -234,7 +234,7 @@ def _get_csv_bt_row(label, entry_ts):
 
 
 from dotenv import load_dotenv
-load_dotenv(dotenv_path="/home/anildalabanjan933/crypto_trading_system/.env")
+load_dotenv(dotenv_path="/home/anildalabanjan7/crypto_tradingsystem/.env")
 
 def _send_live_entry_alert(label, direction, entry_ts, fill_price, sl_price, lots=100):
     """Send Telegram alert on live entry fill."""
@@ -637,7 +637,17 @@ while True:
                     if _r2["entry_time"] > sig_ts:
                         _next_row = _r2
                         break
-                if _next_row and now >= _next_row["entry_time"]:
+                _self_heal_due = False
+                if _next_row:
+                    try:
+                        from datetime import datetime as _dt_sh, timedelta as _td_sh
+                        _TF_MINUTES_SH = 240
+                        _next_entry_dt = _dt_sh.strptime(_next_row["entry_time"], "%Y-%m-%dT%H:%M:%S")
+                        _now_dt_sh = _dt_sh.strptime(now, "%Y-%m-%dT%H:%M:%S")
+                        _self_heal_due = _now_dt_sh >= _next_entry_dt + _td_sh(minutes=_TF_MINUTES_SH)
+                    except Exception:
+                        _self_heal_due = False
+                if _self_heal_due:
                     log.warning(f"[SELF-HEAL] Orphaned PENDING exit | entry={sig_ts} | next_signal_entry={_next_row['entry_time']} already due - auto-closing stale position")
                     actual = om.get_position()
                     _ex_size = abs(actual.get("size", 0)) if actual.get("success") else 0
@@ -948,13 +958,18 @@ else:
     sys._sync_counter = 0
 if sys._sync_counter >= 60:
     sys._sync_counter = 0
-    exchange_pos = om.get_position()
-    if exchange_pos['direction'] == 'FLAT' and position is not None:
-        log.warning(f"[SYNC] Exchange is FLAT but bot thinks position={position}. Syncing to FLAT.")
-        position = None
-        open_lot_size = None
-    elif exchange_pos['direction'] != 'FLAT' and position is None:
-        log.warning(f"[SYNC] Exchange has position but bot thinks FLAT. Syncing to {exchange_pos['direction']}.")
-        position = exchange_pos['direction'].lower()
-        open_lot_size = abs(exchange_pos['size'])
+    try:
+        exchange_pos = om.get_position()
+    except Exception as e:
+        log.warning(f"[SYNC] get_position() failed: {e}. Skipping this sync cycle.")
+        exchange_pos = None
+    if exchange_pos is not None:
+        if exchange_pos['direction'] == 'FLAT' and position is not None:
+            log.warning(f"[SYNC] Exchange is FLAT but bot thinks position={position}. Syncing to FLAT.")
+            position = None
+            open_lot_size = None
+        elif exchange_pos['direction'] != 'FLAT' and position is None:
+            log.warning(f"[SYNC] Exchange has position but bot thinks FLAT. Syncing to {exchange_pos['direction']}.")
+            position = exchange_pos['direction'].lower()
+            open_lot_size = abs(exchange_pos['size'])
 
