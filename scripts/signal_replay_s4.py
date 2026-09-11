@@ -631,7 +631,17 @@ while True:
                     if _r2["entry_time"] > sig_ts:
                         _next_row = _r2
                         break
-                if _next_row and now >= _next_row["entry_time"]:
+                _self_heal_due = False
+                if _next_row:
+                    try:
+                        from datetime import datetime as _dt_sh, timedelta as _td_sh
+                        _TF_MINUTES_SH = 120
+                        _next_entry_dt = _dt_sh.strptime(_next_row["entry_time"], "%Y-%m-%dT%H:%M:%S")
+                        _now_dt_sh = _dt_sh.strptime(now, "%Y-%m-%dT%H:%M:%S")
+                        _self_heal_due = _now_dt_sh >= _next_entry_dt + _td_sh(minutes=_TF_MINUTES_SH)
+                    except Exception:
+                        _self_heal_due = False
+                if _self_heal_due:
                     log.warning(f"[SELF-HEAL] Orphaned PENDING exit | entry={sig_ts} | next_signal_entry={_next_row['entry_time']} already due - auto-closing stale position")
                     actual = om.get_position()
                     _ex_size = abs(actual.get("size", 0)) if actual.get("success") else 0
