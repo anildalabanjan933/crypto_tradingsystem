@@ -212,7 +212,7 @@ def _send_match_alert(label, direction, bt_entry_price, lv_fill_price, entry_ts,
 
 
 from dotenv import load_dotenv
-load_dotenv(dotenv_path="/home/anildalabanjan933/crypto_trading_system/.env")
+load_dotenv(dotenv_path="/home/anildalabanjan7/crypto_tradingsystem/.env")
 
 def _get_csv_bt_row(label, entry_ts):
     """Read BT row from signals CSV by entry_time - returns list [entry_ts, exit_ts, dir, lots, bt_entry_price, bt_exit_price]"""
@@ -230,7 +230,7 @@ def _get_csv_bt_row(label, entry_ts):
 
 
 from dotenv import load_dotenv
-load_dotenv(dotenv_path="/home/anildalabanjan933/crypto_trading_system/.env")
+load_dotenv(dotenv_path="/home/anildalabanjan7/crypto_tradingsystem/.env")
 
 def _send_live_entry_alert(label, direction, entry_ts, fill_price, sl_price, lots=100):
     """Send Telegram alert on live entry fill."""
