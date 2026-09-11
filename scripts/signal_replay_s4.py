@@ -863,14 +863,24 @@ while True:
 
         # Sync position from exchange every 5 minutes
         if int(time.time()) % 30 < 2:
-            _exch = om.get_position()
-            _exch_size = abs(_exch.get("size", 0)) if _exch.get("success") else -1
+            try:
+                _exch = om.get_position()
+                _exch_size = abs(_exch.get("size", 0)) if _exch.get("success") else -1
+            except Exception as e:
+                log.warning(f"[SYNC] get_position() failed: {e}. Skipping this sync cycle.")
+                _exch = None
+                _exch_size = -1
             if _exch_size == 0 and position is not None:
                 # FIX: confirm with a second check before declaring flat - prevents
                 # false SL-hit detection from a single transient/empty API response
                 time.sleep(3)
-                _exch2 = om.get_position()
-                _exch_size2 = abs(_exch2.get("size", 0)) if _exch2.get("success") else -1
+                try:
+                    _exch2 = om.get_position()
+                    _exch_size2 = abs(_exch2.get("size", 0)) if _exch2.get("success") else -1
+                except Exception as e:
+                    log.warning(f"[SYNC] get_position() re-check failed: {e}. Skipping this sync cycle.")
+                    _exch2 = None
+                    _exch_size2 = -1
                 if _exch_size2 != 0:
                     log.warning(f"[SYNC] False FLAT detected (transient) - exchange size confirmed={_exch_size2} - skipping sync")
                     _exch_size = _exch_size2
