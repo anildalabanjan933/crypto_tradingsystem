@@ -344,9 +344,10 @@ def _get_live_rows_audit(strat_label, from_date, to_date, fetch_fills_fn, inr_ra
                 s = s[:-1]
             s = s.replace("T", " ", 1)
             try:
-                return _dt_audit.datetime.fromisoformat(s).date()
+                _d = _dt_audit.datetime.fromisoformat(s)
             except Exception:
-                return _pd_audit.to_datetime(s).date()  # rare fallback, old slow path
+                _d = _pd_audit.to_datetime(s).to_pydatetime()  # rare fallback, old slow path
+            return (_d + _dt_audit.timedelta(hours=5, minutes=30)).date()
 
         _filtered = []
         for p in pairs:
@@ -355,6 +356,14 @@ def _get_live_rows_audit(strat_label, from_date, to_date, fetch_fills_fn, inr_ra
             except Exception:
                 continue
             _in_range = (from_date <= _entry_date <= to_date)
+            if not _in_range:
+                try:
+                    _exit_raw = p.get("exit_ts_raw", "")
+                    if _exit_raw and _exit_raw not in ("PENDING", "nan"):
+                        _exit_date = _fast_date_audit(_exit_raw)
+                        _in_range = (from_date <= _exit_date <= to_date)
+                except Exception:
+                    pass
             if _in_range:
                 _filtered.append(p)
 
@@ -960,16 +969,17 @@ def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn,
         bt_rows = [r for r in bt_rows if _t_ok_audit(r)]
         lv_all_rows = [r for r in lv_all_rows if _t_ok_audit(r)]
 
-        # Recompute Cum PnL fresh for rows remaining after the time-start trim, so the
-        # table always starts at 0 for the visible window. Equity curves (below,
-        # always "This Month") are untouched.
-        for _rows in (bt_rows, lv_all_rows):
-            _run = 0.0
-            for _r in _rows:
-                _pnl = _r.get("net_pnl_inr")
-                if _pnl is not None:
-                    _run += _pnl
-                _r["cum_pnl_inr"] = _run
+    # Recompute Cum PnL so the newest (top) row's cum always equals that table's
+    # Total Net PnL, matching convention on both sides (BT previously accumulated
+    # in the opposite direction from LV). Runs for every date range / filter
+    # combination. Equity curves (below, always "This Month") are untouched.
+    for _rows in (bt_rows, lv_all_rows):
+        _total_run = sum(_r.get("net_pnl_inr") or 0.0 for _r in _rows if _r.get("net_pnl_inr") is not None)
+        for _r in _rows:
+            _pnl = _r.get("net_pnl_inr")
+            _r["cum_pnl_inr"] = _total_run
+            if _pnl is not None:
+                _total_run -= _pnl
 
     col_lv, col_bt = st.columns(2)
 
