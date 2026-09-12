@@ -935,13 +935,24 @@ def _eq_render_audit(rows, key_prefix, title):
     st.plotly_chart(fig, use_container_width=True, key=f"{key_prefix}_audit_eq_chart")
 
 
-def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn, fetch_fills_fn, read_log_fn, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn=None):
+def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn, fetch_fills_fn, read_log_fn, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn=None, time_start=None):
     bt_rows_raw = _load_audit_bt_cached(load14_fn, strat_label, from_date, to_date, inr_rate)
     lv_rows = _load_audit_lv_cached(fetch_fills_fn, strat_label, from_date, to_date, inr_rate)
     lv_open_rows = _load_audit_lv_open_cached(fetch_fills_fn, strat_label, from_date, to_date)
 
     bt_rows = _apply_bt_adjustments_audit(bt_rows_raw, bt_lot_input, bt_slippage_input, inr_rate)
     lv_all_rows = lv_open_rows + lv_rows
+
+    if time_start is not None:
+        def _t_ok_audit(r):
+            try:
+                _ts = str(r.get("entry_ts_raw", "")).replace("T", " ")
+                _dtp = _pd_audit.to_datetime(_ts)
+                return _dtp.time() >= time_start
+            except Exception:
+                return True
+        bt_rows = [r for r in bt_rows if _t_ok_audit(r)]
+        lv_all_rows = [r for r in lv_all_rows if _t_ok_audit(r)]
 
     col_lv, col_bt = st.columns(2)
 
@@ -1080,6 +1091,11 @@ def render_trade_audit_tab(load14_fn, fetch_fills_fn, read_log_fn, inr_rate=_INR
             custom_start = st.date_input("From", key="audit_custom_from")
             custom_end = st.date_input("To", key="audit_custom_to")
 
+    c6, _c7 = st.columns([1, 3])
+    with c6:
+        _time_start_enabled = st.checkbox("Filter by start time", key="audit_time_start_enabled")
+        time_start = st.time_input("Show trades from", key="audit_time_start_val") if _time_start_enabled else None
+
     from_date, to_date = _get_date_range_audit(range_choice, custom_start, custom_end)
     if from_date is None or to_date is None:
         st.warning("Please select a valid custom date range.")
@@ -1093,11 +1109,11 @@ def render_trade_audit_tab(load14_fn, fetch_fills_fn, read_log_fn, inr_rate=_INR
 
     if strat_label == "ALL STRATEGY":
         for _idx, _s in enumerate(["S4", "S4V2", "S4V3"]):
-            _render_one_strategy_block_audit(_s, from_date, to_date, load14_fn, fetch_fills_fn, read_log_fn, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn)
+            _render_one_strategy_block_audit(_s, from_date, to_date, load14_fn, fetch_fills_fn, read_log_fn, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn, time_start=time_start)
             if _idx < 2:
                 st.markdown("---")
     else:
-        _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn, fetch_fills_fn, read_log_fn, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn)
+        _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn, fetch_fills_fn, read_log_fn, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn, time_start=time_start)
 
 
 # ============================================================
