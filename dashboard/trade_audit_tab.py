@@ -948,7 +948,9 @@ def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn,
             try:
                 _ts = str(r.get("entry_ts_raw", "")).replace("T", " ")
                 _dtp = _pd_audit.to_datetime(_ts)
-                return _dtp.time() >= time_start
+                if _dtp.date() == from_date:
+                    return _dtp.time() >= time_start
+                return True
             except Exception:
                 return True
         bt_rows = [r for r in bt_rows if _t_ok_audit(r)]
