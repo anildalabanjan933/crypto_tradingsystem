@@ -149,6 +149,18 @@ def _send_entry_match_alert(label, direction, entry_ts, bt_entry_price, lv_fill_
     except Exception as e:
         pass
 
+def _append_fill_log(csv_path, entry_ts, exit_ts, direction, lots, bt_ep, lv_ep, bt_xp, lv_xp, total_charges=0.0):
+    import csv as _csv_fl, os as _os_fl
+    try:
+        file_exists = _os_fl.path.exists(csv_path)
+        with open(csv_path, "a", newline="") as _f:
+            _w = _csv_fl.writer(_f)
+            if not file_exists:
+                _w.writerow(["entry_ts","exit_ts","dir","lots","bt_entry","lv_entry","bt_exit","lv_exit","total_charges"])
+            _w.writerow([entry_ts, exit_ts, direction, lots, bt_ep, lv_ep, bt_xp, lv_xp, total_charges])
+    except Exception as _e:
+        log.warning(f"[FILL-LOG] Could not write fill log: {_e}")
+
 def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
                                  bt_entry_price, bt_exit_price, lots=100):
     try:
@@ -644,8 +656,17 @@ while True:
                             _bt_csv2 = _get_csv_bt_row("TM1_S4", sig_ts)
                             _bt_ep2  = float(_bt_csv2[4]) if _bt_csv2 and len(_bt_csv2) > 4 and str(_bt_csv2[4]).strip() not in ("", "PENDING") else 0.0
                             _bt_xp2  = float(_bt_csv2[5]) if _bt_csv2 and len(_bt_csv2) > 5 and str(_bt_csv2[5]).strip() not in ("", "PENDING") else 0.0
+                            _bt_ep_log = _bt_ep2 if _bt_ep2 > 0 else "PENDING"
+                            _bt_xp_log = _bt_xp2 if _bt_xp2 > 0 else "PENDING"
+                            _lv_ep_log = _entry_price_for_alert if _entry_price_for_alert > 0 else "PENDING"
+                            if _entry_price_for_alert <= 0:
+                                log.warning(f"[FILL-LOG] entry_price_for_alert is 0 for sig_ts={sig_ts} (restart-with-open-position) - logging with PENDING marker, not dropping row")
                             if _bt_ep2 > 0 and _entry_price_for_alert > 0 and _exit_fill_price > 0:
                                 _send_roundtrip_match_alert("TM1_S4", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2, lots)
+                            if _exit_fill_price > 0:
+                                _append_fill_log("logs/fill_prices_testmember1_s4.csv", sig_ts, _xt, dirn, lots, _bt_ep_log, _lv_ep_log, _bt_xp_log, _exit_fill_price, 0.0)
+                            else:
+                                log.warning(f"[FILL-LOG] exit_fill_price is 0 for sig_ts={sig_ts} - skipping fill log row entirely")
                         else:
                             log.error(f"[ORDER] EXIT FAILED: {result}")
                             send_alert(f"CTS TM1_S4 EXIT FAILED\nError: {result}")
