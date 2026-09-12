@@ -5677,10 +5677,7 @@ with _tab_maint:
             if st.button("REFRESH LOGS", key="sec5_refresh"):
                 st.rerun()
         with col_auto:
-            auto_refresh = st.checkbox("AUTO REFRESH 30s", key="sec5_autorefresh")
-            if auto_refresh:
-                import streamlit.components.v1 as _stc
-                _stc.html('<script>setTimeout(function(){window.location.reload();},30000);</script>', height=0)
+            st.caption("Auto-refresh removed - use REFRESH LOGS button (was causing Bad message format error)")
 
 
 
