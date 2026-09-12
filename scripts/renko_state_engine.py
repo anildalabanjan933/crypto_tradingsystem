@@ -372,6 +372,9 @@ def check_and_fire(state,is_s4=False):
             sig_type_chk=sig.get("signal_type","")
             if sig_type_chk=="EXIT":
                 if state.last_exit_ts and ts<=state.last_exit_ts: continue
+                if state.open_entry_ts and ts<=state.open_entry_ts:
+                    log.warning(f"[{state.label}] Rejected stale EXIT sig ts={ts} <= open_entry_ts={state.open_entry_ts} - would be chronologically-impossible")
+                    continue
             else:
                 if state.last_entry_ts and ts<=state.last_entry_ts: continue
             new_sigs.append(sig)
@@ -447,50 +450,53 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
             updated = False
             new_rows = []
             target_ts = state.open_entry_ts
-            last_pending_idx = None
-            for _i, r in enumerate(existing):
-                if len(r) >= 2 and r[1] == "PENDING":
-                    last_pending_idx = _i
-            for _i, r in enumerate(existing):
-                is_pending = len(r)>=2 and r[1]=="PENDING"
-                match = is_pending and not updated and (
-                    (target_ts is not None and r[0]==target_ts) or
-                    (target_ts is None and _i==last_pending_idx)
-                )
-                if match:
-                    r = list(r)
-                    r[1] = ts
-                    while len(r) < 6:
-                        r.append("")
-                    r[5] = round(float(cl),2)
-                    updated = True
-                new_rows.append(r)
-            if updated:
-                tmp = sig_csv+".tmp"
-                with open(tmp,"w",newline="") as _f:
-                    _w = _csv.writer(_f)
-                    for r in new_rows:
-                        _w.writerow(r)
-                _os.replace(tmp, sig_csv)
-                log.info(f"[{state.label}] CSV exit updated to {ts} (matched entry {target_ts})")
-                try:
-                    from scripts.bt_snapshot_verify import save_snapshot
-                    save_snapshot(state.label, state.candles_1m.copy(), ts, direction, "EXIT")
-                except Exception as _e:
-                    log.error(f"[{state.label}] snapshot-verify skipped (non-critical): {_e}")
-                try:
-                    from scripts.confirmation_lag_tracker import log_lag_event
-                    from datetime import datetime as _dt
-                    _tf_map = {"S4":120,"S4V2":30,"S4V3":240,"S2":120}
-                    _sig_ts_dt = _dt.strptime(ts, "%Y-%m-%dT%H:%M:%S")
-                    _price_now = float(state.candles_1m["Close"].iloc[-1]) if state.candles_1m is not None and not state.candles_1m.empty else float(cl)
-                    log_lag_event(state.label, _sig_ts_dt, now_utc.timestamp(),
-                                  _tf_map.get(state.label,120), direction, float(cl), _price_now)
-                except Exception as _e:
-                    log.warning(f"[{state.label}] EXIT lag tracker skipped (non-critical): {_e}")
+            if target_ts is not None and ts <= target_ts:
+                log.critical(f"[{state.label}] BLOCKED impossible EXIT write: exit_ts={ts} <= matched entry_ts={target_ts} - CSV not modified, signal discarded")
             else:
-                log.warning(f"[{state.label}] EXIT fired but no matching PENDING row (target_ts={target_ts})")
-            state.open_entry_ts = None
+                last_pending_idx = None
+                for _i, r in enumerate(existing):
+                    if len(r) >= 2 and r[1] == "PENDING":
+                        last_pending_idx = _i
+                for _i, r in enumerate(existing):
+                    is_pending = len(r)>=2 and r[1]=="PENDING"
+                    match = is_pending and not updated and (
+                        (target_ts is not None and r[0]==target_ts) or
+                        (target_ts is None and _i==last_pending_idx)
+                    )
+                    if match:
+                        r = list(r)
+                        r[1] = ts
+                        while len(r) < 6:
+                            r.append("")
+                        r[5] = round(float(cl),2)
+                        updated = True
+                    new_rows.append(r)
+                if updated:
+                    tmp = sig_csv+".tmp"
+                    with open(tmp,"w",newline="") as _f:
+                        _w = _csv.writer(_f)
+                        for r in new_rows:
+                            _w.writerow(r)
+                    _os.replace(tmp, sig_csv)
+                    log.info(f"[{state.label}] CSV exit updated to {ts} (matched entry {target_ts})")
+                    try:
+                        from scripts.bt_snapshot_verify import save_snapshot
+                        save_snapshot(state.label, state.candles_1m.copy(), ts, direction, "EXIT")
+                    except Exception as _e:
+                        log.error(f"[{state.label}] snapshot-verify skipped (non-critical): {_e}")
+                    try:
+                        from scripts.confirmation_lag_tracker import log_lag_event
+                        from datetime import datetime as _dt
+                        _tf_map = {"S4":120,"S4V2":30,"S4V3":240,"S2":120}
+                        _sig_ts_dt = _dt.strptime(ts, "%Y-%m-%dT%H:%M:%S")
+                        _price_now = float(state.candles_1m["Close"].iloc[-1]) if state.candles_1m is not None and not state.candles_1m.empty else float(cl)
+                        log_lag_event(state.label, _sig_ts_dt, now_utc.timestamp(),
+                                      _tf_map.get(state.label,120), direction, float(cl), _price_now)
+                    except Exception as _e:
+                        log.warning(f"[{state.label}] EXIT lag tracker skipped (non-critical): {_e}")
+                else:
+                    log.warning(f"[{state.label}] EXIT fired but no matching PENDING row (target_ts={target_ts})")
+                state.open_entry_ts = None
     except Exception as _e:
         log.error(f"[{state.label}] CSV append failed: {_e}")
     write_signal_file(state.label,sig_type,direction,ts)
