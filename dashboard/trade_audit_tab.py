@@ -973,7 +973,7 @@ def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn,
     with col_lv:
         st.markdown(f"**{strat_label}**")
         _total_trade_lv = len(lv_all_rows)
-        _total_pnl_lv = sum(r["net_pnl_inr"] for r in lv_rows if r.get("net_pnl_inr") is not None)
+        _total_pnl_lv = sum(r["net_pnl_inr"] for r in lv_all_rows if r.get("net_pnl_inr") is not None)
         _total_charge_lv = sum(r["charges"] for r in lv_all_rows if r.get("charges") is not None)
         m1, m2, m3 = st.columns(3)
         m1.metric("Total Trade", _total_trade_lv)
