@@ -108,7 +108,8 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
         dfc["entry_datetime"] = _pd_audit.to_datetime(dfc["entry_datetime"])
 
         dfc = dfc[
-            (dfc["entry_datetime"].dt.date >= from_date) & (dfc["entry_datetime"].dt.date <= to_date)
+            ((dfc["entry_datetime"].dt.date >= from_date) & (dfc["entry_datetime"].dt.date <= to_date)) |
+            ((dfc["exit_datetime"].dt.date >= from_date) & (dfc["exit_datetime"].dt.date <= to_date))
         ]
         dfc = dfc.sort_values("entry_datetime", ascending=False)
 
