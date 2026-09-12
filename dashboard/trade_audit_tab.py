@@ -961,9 +961,24 @@ def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn,
                 _ts = str(r.get("entry_ts_raw", "")).replace("T", " ")
                 _dtp_utc = _pd_audit.to_datetime(_ts)
                 _dtp_ist = _dtp_utc + _pd_audit.Timedelta(hours=5, minutes=30)
-                if _dtp_ist.date() == from_date:
+                _ent_date = _dtp_ist.date()
+                if _ent_date > from_date:
+                    return True
+                if _ent_date == from_date:
                     return _dtp_ist.time() >= time_start
-                return True
+                # entry is before from_date - trade only qualifies (via exit-date
+                # inclusion) if it was still open past the start cutoff
+                _ex_raw = str(r.get("exit_ts_raw", "")).strip()
+                if not _ex_raw or _ex_raw in ("", "PENDING", "nan", "OPEN", "-"):
+                    return True
+                _ex_utc = _pd_audit.to_datetime(_ex_raw.replace("T", " "))
+                _ex_ist = _ex_utc + _pd_audit.Timedelta(hours=5, minutes=30)
+                _ex_date = _ex_ist.date()
+                if _ex_date > from_date:
+                    return True
+                if _ex_date == from_date:
+                    return _ex_ist.time() >= time_start
+                return False
             except Exception:
                 return True
         bt_rows = [r for r in bt_rows if _t_ok_audit(r)]
