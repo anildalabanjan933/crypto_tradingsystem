@@ -947,14 +947,26 @@ def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn,
         def _t_ok_audit(r):
             try:
                 _ts = str(r.get("entry_ts_raw", "")).replace("T", " ")
-                _dtp = _pd_audit.to_datetime(_ts)
-                if _dtp.date() == from_date:
-                    return _dtp.time() >= time_start
+                _dtp_utc = _pd_audit.to_datetime(_ts)
+                _dtp_ist = _dtp_utc + _pd_audit.Timedelta(hours=5, minutes=30)
+                if _dtp_ist.date() == from_date:
+                    return _dtp_ist.time() >= time_start
                 return True
             except Exception:
                 return True
         bt_rows = [r for r in bt_rows if _t_ok_audit(r)]
         lv_all_rows = [r for r in lv_all_rows if _t_ok_audit(r)]
+
+        # Recompute Cum PnL fresh for rows remaining after the time-start trim, so the
+        # table always starts at 0 for the visible window. Equity curves (below,
+        # always "This Month") are untouched.
+        for _rows in (bt_rows, lv_all_rows):
+            _run = 0.0
+            for _r in _rows:
+                _pnl = _r.get("net_pnl_inr")
+                if _pnl is not None:
+                    _run += _pnl
+                _r["cum_pnl_inr"] = _run
 
     col_lv, col_bt = st.columns(2)
 
