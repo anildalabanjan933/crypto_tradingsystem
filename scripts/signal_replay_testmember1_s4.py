@@ -646,16 +646,26 @@ while True:
                             position = None
                             _entry_price_for_alert = open_entry_price
                             open_entry_price = 0.0
-                            time.sleep(1)
+                            _entry_commission_for_log = _entry_commission if '_entry_commission' in dir() else 0.0
                             _exit_fill_price = result.get("avg_fill_price", 0.0)
                             if _exit_fill_price == 0.0:
-                                _exit_pos = om.get_position()
-                                _exit_fill_price = _exit_pos.get("exit_price", 0.0) if _exit_pos.get("success") else 0.0
+                                for _i in range(5):
+                                    time.sleep(0.2)
+                                    _exit_pos = om.get_position()
+                                    _exit_fill_price = _exit_pos.get("exit_price", 0.0) if _exit_pos.get("success") else 0.0
+                                    if _exit_fill_price > 0:
+                                        break
                             log.info(f"[ORDER] EXIT confirmed | position=None | exit={_exit_fill_price}")
                             _send_live_exit_alert("TM1_S4", dirn, _xt, _exit_fill_price, _entry_price_for_alert, lots)
-                            _bt_csv2 = _get_csv_bt_row("TM1_S4", sig_ts)
-                            _bt_ep2  = float(_bt_csv2[4]) if _bt_csv2 and len(_bt_csv2) > 4 and str(_bt_csv2[4]).strip() not in ("", "PENDING") else 0.0
-                            _bt_xp2  = float(_bt_csv2[5]) if _bt_csv2 and len(_bt_csv2) > 5 and str(_bt_csv2[5]).strip() not in ("", "PENDING") else 0.0
+                            _bt_ep2 = 0.0
+                            _bt_xp2 = 0.0
+                            for _retry_bt in range(5):
+                                _bt_csv2 = _get_csv_bt_row("TM1_S4", sig_ts)
+                                _bt_ep2  = float(_bt_csv2[4]) if _bt_csv2 and len(_bt_csv2) > 4 and str(_bt_csv2[4]).strip() not in ("", "PENDING") else 0.0
+                                _bt_xp2  = float(_bt_csv2[5]) if _bt_csv2 and len(_bt_csv2) > 5 and str(_bt_csv2[5]).strip() not in ("", "PENDING") else 0.0
+                                if _bt_ep2 > 0 and _bt_xp2 > 0:
+                                    break
+                                time.sleep(0.5)
                             _bt_ep_log = _bt_ep2 if _bt_ep2 > 0 else "PENDING"
                             _bt_xp_log = _bt_xp2 if _bt_xp2 > 0 else "PENDING"
                             _lv_ep_log = _entry_price_for_alert if _entry_price_for_alert > 0 else "PENDING"
@@ -663,8 +673,10 @@ while True:
                                 log.warning(f"[FILL-LOG] entry_price_for_alert is 0 for sig_ts={sig_ts} (restart-with-open-position) - logging with PENDING marker, not dropping row")
                             if _bt_ep2 > 0 and _entry_price_for_alert > 0 and _exit_fill_price > 0:
                                 _send_roundtrip_match_alert("TM1_S4", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2, lots)
+                            _exit_commission = result.get("commission", 0.0)
+                            _total_charges = float(_entry_commission_for_log) + float(_exit_commission)
                             if _exit_fill_price > 0:
-                                _append_fill_log("logs/fill_prices_testmember1_s4.csv", sig_ts, _xt, dirn, lots, _bt_ep_log, _lv_ep_log, _bt_xp_log, _exit_fill_price, 0.0)
+                                _append_fill_log("logs/fill_prices_testmember1_s4.csv", sig_ts, _xt, dirn, lots, _bt_ep_log, _lv_ep_log, _bt_xp_log, _exit_fill_price, _total_charges)
                             else:
                                 log.warning(f"[FILL-LOG] exit_fill_price is 0 for sig_ts={sig_ts} - skipping fill log row entirely")
                         else:
@@ -722,6 +734,7 @@ while True:
                             open_lot_size = lots
                             if _live_sig: last_processed_seq = _live_sig.get("seq", 0)
                             real_entry = result.get("avg_fill_price", 0.0)
+                            _entry_commission = result.get("commission", 0.0)
                             if not real_entry or real_entry <= 0:
                                 for _i in range(5):
                                     time.sleep(0.2)
