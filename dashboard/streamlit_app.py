@@ -1131,7 +1131,7 @@ def _parse_log_trades(log_path, log_path_bak=None):
             if not e["open"] and _ep > 0 and _xp > 0:
                 _raw_pnl = (_xp - _ep) * _qty_btc if side == "buy" else (_ep - _xp) * _qty_btc
                 _fees = (_ep + _xp) * _qty_btc * 0.0005
-                _real_fp = "logs/fill_prices_s4v2.csv" if "s4v2" in log_path else "logs/fill_prices_s4.csv"
+                _real_fp = "logs/fill_prices_s4v2.csv" if "s4v2" in log_path else ("logs/fill_prices_s4v3.csv" if "s4v3" in log_path else "logs/fill_prices_s4.csv")
                 try:
                     if os.path.exists(_real_fp):
                         with open(_real_fp) as _rf:
