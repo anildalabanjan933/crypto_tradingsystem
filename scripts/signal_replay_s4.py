@@ -433,7 +433,6 @@ else:
                 _f.write(f"{int(time.time())}|startup_flat_detected|entry_ts={last_known_ts}")
             log.warning(f"[STARTUP] Exchange FLAT but signal expected OPEN at entry_ts={last_known_ts} - manual close during downtime detected, override written")
             break
-            break
 
 open_lot_size   = LOT_SIZE
 open_entry_price = 0.0
