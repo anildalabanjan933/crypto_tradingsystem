@@ -674,8 +674,6 @@ while True:
                     side = "sell" if position == "long" else "buy"
                     close_size = _ex_size
                     log.info(f"[ORDER] EXIT {side} {close_size} lots | ts={_xt}")
-                    save_ts_file(TS_FILE, _xt)
-                    last_known_ts = safe_ts(_xt)
                     if not check_engine_heartbeat():
                         log.warning("[ORDER] EXIT blocked - engine heartbeat stale")
                     else:
@@ -811,8 +809,6 @@ while True:
                 else:
                     _entry_retry_state["last_attempt"] = _now_epoch
                     log.info(f"[ORDER] ENTRY attempt {side} {lots} lots | dir={direction} | ts={sig_ts} | attempt={_entry_retry_state['count']+1}/{_ENTRY_MAX_ATTEMPTS}")
-                    save_ts_file(TS_FILE, sig_ts)
-                    last_known_ts = sig_ts
                     if not check_engine_heartbeat():
                         log.warning("[ORDER] ENTRY blocked - engine heartbeat stale")
                     else:
@@ -852,6 +848,8 @@ while True:
                             _bt_xp  = float(_bt_csv[5]) if _bt_csv and len(_bt_csv) > 5 and str(_bt_csv[5]).strip() not in ("", "PENDING") else 0.0
                             if _bt_ep > 0 and real_entry > 0:
                                 _send_entry_match_alert("S4", direction, sig_ts, _bt_ep, real_entry, _bt_xt, _bt_xp, lots)
+                            save_ts_file(TS_FILE, sig_ts)
+                            last_known_ts = sig_ts
                             log.info(f"[ORDER] ENTRY confirmed | position={position}")
                             _entry_retry_state["ts"] = None
                             _entry_retry_state["count"] = 0

@@ -722,8 +722,6 @@ while True:
                 else:
                     _entry_retry_state["last_attempt"] = _now_epoch
                     log.info(f"[ORDER] ENTRY attempt {side} {lots} lots | dir={direction} | ts={sig_ts} | attempt={_entry_retry_state['count']+1}/{_ENTRY_MAX_ATTEMPTS}")
-                    save_ts_file(TS_FILE, sig_ts)
-                    last_known_ts = sig_ts
                     if not check_engine_heartbeat():
                         log.warning("[ORDER] ENTRY blocked - engine heartbeat stale")
                     else:
@@ -759,6 +757,8 @@ while True:
                                 _send_entry_match_alert("TM1_S4", direction, sig_ts, _bt_ep, real_entry, _bt_xt, _bt_xp, lots)
                             open_entry_price = real_entry
                             log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
+                            save_ts_file(TS_FILE, sig_ts)
+                            last_known_ts = sig_ts
                             log.info(f"[ORDER] ENTRY confirmed | position={position}")
                             _entry_retry_state["ts"] = None
                             _entry_retry_state["count"] = 0

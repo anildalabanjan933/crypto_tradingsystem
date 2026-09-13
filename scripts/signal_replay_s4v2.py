@@ -809,8 +809,6 @@ while True:
                                 _pre_avail = float(_pb.get("available_balance") or 0)
                                 break
                     log.info(f"[ORDER] Pre-entry available_balance=${_pre_avail:.2f}")
-                    save_ts_file(TS_FILE, sig_ts)
-                    last_known_ts = sig_ts
                     if not check_engine_heartbeat():
                         log.warning("[ORDER] ENTRY blocked - engine heartbeat stale")
                     else:
@@ -849,6 +847,8 @@ while True:
                                 _send_entry_match_alert("S4V2", direction, sig_ts, _bt_ep, real_entry, _bt_xt, _bt_xp, lots)
                             open_entry_price = real_entry
                             _entry_commission = result.get("commission", 0.0)
+                            save_ts_file(TS_FILE, sig_ts)
+                            last_known_ts = sig_ts
                             log.info(f"[ORDER] ENTRY confirmed | position={position}")
                             _entry_retry_state["ts"] = None
                             _entry_retry_state["count"] = 0
