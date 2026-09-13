@@ -275,7 +275,7 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s %(levelname)s %(message)s",
     handlers=[
-        _RFH(LOG_FILE, maxBytes=10*1024*1024, backupCount=1)
+        _RFH(LOG_FILE, maxBytes=10*1024*1024, backupCount=5)
     ]
 )
 log = logging.getLogger(__name__)
