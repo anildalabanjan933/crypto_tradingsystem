@@ -156,44 +156,88 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                 "cum_pnl_inr"  : _cum_pnl,
             })
 
-        # Dynamic open-trade fallback: static trade_log CSV may not yet include
-        # today's still-open signal (regenerated on its own schedule). Check the
-        # live signals CSV (same source Today's Trades tab already reads dynamically)
-        # for a PENDING row, so BT side reflects the real open trade every page load.
+        # Dynamic same-day fallback: static trade_log CSV may not yet include
+        # today's already-closed OR still-open signals (regenerated on its own
+        # schedule). Check the live signals CSV (same source Today's Trades tab
+        # already reads dynamically) for ANY row - open or closed - not yet
+        # present in trade_log, so BT side stays complete every page load
+        # without waiting for the next trade_log regeneration. Permanent,
+        # dynamic, self-correcting: once trade_log regenerates with the real
+        # row, the entry_ts_raw match above skips the fallback automatically.
         _sig_csv_map = {"S4": "logs/signals_s4.csv", "S4V2": "logs/signals_s4v2.csv", "S4V3": "logs/signals_s4v3.csv"}
         _sig_path = _sig_csv_map.get(strat_label)
         _today_end = _dt_audit.date.today()
         if _sig_path and from_date <= _today_end <= to_date:
             try:
                 with open(_sig_path) as _sf:
-                    _last_pending = None
-                    for _sl in _sf:
-                        _sp = _sl.strip().split(',')
-                        if len(_sp) >= 5 and _sp[1] == "PENDING":
-                            _last_pending = _sp
-                    if _last_pending:
-                        _p_et, _p_xt, _p_dir, _p_lots, _p_ep = _last_pending[:5]
-                        _already_present = any(str(r["entry_ts_raw"]) == _p_et for r in rows)
-                        if not _already_present:
-                            _trade_no += 1
-                            rows.insert(0, {
-                                "trade_no"     : _trade_no,
-                                "label"        : strat_label,
-                                "dir"          : _p_dir.upper(),
-                                "date"         : _p_et[:10],
-                                "symbol"       : "BTCUSD",
-                                "entry_ts_raw" : _p_et,
-                                "exit_ts_raw"  : "PENDING",
-                                "entry_ist"    : _to_ist_audit(_offset_ts_audit(_p_et, strat_label)),
-                                "exit_ist"     : "-",
-                                "entry_p"      : float(_p_ep) if _p_ep else 0.0,
-                                "exit_p"       : 0.0,
-                                "lot"          : 1,
-                                "charges"      : 0.0,
-                                "pnl_usd"      : 0.0,
-                                "net_pnl_inr"  : 0.0,
-                                "cum_pnl_inr"  : _cum_pnl,
-                            })
+                    _sig_lines = [ln.strip().split(',') for ln in _sf if ln.strip()]
+                for _sp in _sig_lines:
+                    if len(_sp) < 5:
+                        continue
+                    _p_et, _p_xt, _p_dir, _p_lots, _p_ep = _sp[:5]
+                    _p_xp = _sp[5] if len(_sp) > 5 else ""
+                    if any(str(r["entry_ts_raw"]) == _p_et for r in rows):
+                        continue
+                    try:
+                        _et_date = _dt_audit.datetime.fromisoformat(_p_et).date()
+                    except Exception:
+                        continue
+                    if not (from_date <= _et_date <= to_date):
+                        continue
+                    _is_open = (_p_xt == "PENDING" or not _p_xp)
+                    _trade_no += 1
+                    if _is_open:
+                        rows.append({
+                            "trade_no"     : _trade_no,
+                            "label"        : strat_label,
+                            "dir"          : _p_dir.upper(),
+                            "date"         : _p_et[:10],
+                            "symbol"       : "BTCUSD",
+                            "entry_ts_raw" : _p_et,
+                            "exit_ts_raw"  : "PENDING",
+                            "entry_ist"    : _to_ist_audit(_offset_ts_audit(_p_et, strat_label)),
+                            "exit_ist"     : "-",
+                            "entry_p"      : float(_p_ep) if _p_ep else 0.0,
+                            "exit_p"       : 0.0,
+                            "lot"          : 1,
+                            "charges"      : 0.0,
+                            "pnl_usd"      : 0.0,
+                            "net_pnl_inr"  : 0.0,
+                            "cum_pnl_inr"  : 0.0,
+                        })
+                    else:
+                        _ep_f = float(_p_ep) if _p_ep else 0.0
+                        _xp_f = float(_p_xp) if _p_xp else 0.0
+                        _lots_f = float(_p_lots) if _p_lots else 100.0
+                        _dir_sign = 1.0 if _p_dir.lower() == "long" else -1.0
+                        try:
+                            _pnl_usd_calc = (_xp_f - _ep_f) * _dir_sign * _lots_f * 0.001
+                            _pnl_inr_calc = _pnl_usd_calc * inr_rate
+                            _net_pnl_inr_calc = _pnl_inr_calc - (max(_pnl_inr_calc, 0) * 0.10)
+                        except Exception:
+                            _pnl_usd_calc = 0.0
+                            _net_pnl_inr_calc = 0.0
+                        rows.append({
+                            "trade_no"     : _trade_no,
+                            "label"        : strat_label,
+                            "dir"          : _p_dir.upper(),
+                            "date"         : _p_et[:10],
+                            "symbol"       : "BTCUSD",
+                            "entry_ts_raw" : _p_et,
+                            "exit_ts_raw"  : _p_xt,
+                            "entry_ist"    : _to_ist_audit(_p_et),
+                            "exit_ist"     : _to_ist_audit(_p_xt),
+                            "entry_p"      : _ep_f,
+                            "exit_p"       : _xp_f,
+                            "lot"          : 1,
+                            "charges"      : 0.0,
+                            "pnl_usd"      : _pnl_usd_calc,
+                            "net_pnl_inr"  : _net_pnl_inr_calc,
+                            "cum_pnl_inr"  : 0.0,
+                        })
+                rows.sort(key=lambda r: str(r["entry_ts_raw"]), reverse=True)
+                for _i, _r in enumerate(rows):
+                    _r["trade_no"] = _i + 1
             except Exception:
                 pass
     except Exception:
