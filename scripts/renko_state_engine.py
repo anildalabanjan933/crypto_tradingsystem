@@ -513,6 +513,20 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
             _send_bt_signal_alert(state.label, direction, ts, _exit_ts_alert, _ep, _xp)
         except Exception as _ae:
             log.warning(f"[TELEGRAM] BT alert error: {_ae}")
+    # FLIP-EVENT SELF-LOGGER (permanent, survives restarts) - records same-ts EXIT+ENTRY flips
+    try:
+        if sig_type=="ENTRY" and state.last_exit_ts==ts:
+            import csv as _csv2, os as _os2
+            from datetime import datetime as _dt2, timezone as _tz2
+            _flip_csv = "logs/flip_events.csv"
+            _new_file = not _os2.path.exists(_flip_csv)
+            with open(_flip_csv, "a", newline="") as _ff:
+                _w = _csv2.writer(_ff)
+                if _new_file:
+                    _w.writerow(["logged_at_utc","label","flip_ts","direction"])
+                _w.writerow([_dt2.now(_tz2.utc).isoformat(), state.label, ts, direction])
+    except Exception as _fle:
+        log.warning(f"[FLIP-WATCH] logging error: {_fle}")
     state.last_signal_ts=ts
     if sig_type=="EXIT": state.last_exit_ts=ts
     else: state.last_entry_ts=ts
