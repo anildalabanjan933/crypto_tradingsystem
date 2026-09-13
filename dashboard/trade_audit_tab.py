@@ -176,7 +176,7 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                         continue
                     _p_et, _p_xt, _p_dir, _p_lots, _p_ep = _sp[:5]
                     _p_xp = _sp[5] if len(_sp) > 5 else ""
-                    if any(str(r["entry_ts_raw"]) == _p_et for r in rows):
+                    if any(str(r["entry_ts_raw"]).replace("T", " ") == _p_et.replace("T", " ") for r in rows):
                         continue
                     try:
                         _et_date = _dt_audit.datetime.fromisoformat(_p_et).date()
