@@ -670,6 +670,8 @@ while True:
                     log.info(f"[ORDER] EXIT skipped - exchange already FLAT | ts={_xt}")
                     _send_live_exit_alert('S4', dirn, _xt, 0.0)
                     position = None
+                    save_ts_file(TS_FILE, _xt)
+                    last_known_ts = safe_ts(_xt)
                 else:
                     side = "sell" if position == "long" else "buy"
                     close_size = _ex_size
