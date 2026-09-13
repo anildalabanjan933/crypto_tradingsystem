@@ -263,6 +263,49 @@ def _fetch_fills_audit(fetch_fills_fn, acc_label, product_id=84, window_hours=48
         return []
 
 
+
+def _merge_partial_fills_audit(fills_sorted):
+    """
+    Merges same-side fills that share the same order_id and occur within
+    1 second of each other (Delta partial-fill splitting) into a single
+    fill, so _pair_fills_audit() counts them as one trade, not multiple.
+    Size-weighted avg price, summed size+commission, earliest created_at.
+    Only touches fills list before pairing - pairing/PnL logic untouched.
+    """
+    if not fills_sorted:
+        return fills_sorted
+    merged = []
+    i = 0
+    while i < len(fills_sorted):
+        cur = dict(fills_sorted[i])
+        j = i + 1
+        while j < len(fills_sorted):
+            nxt = fills_sorted[j]
+            same_side = str(nxt.get("side","")).upper() == str(cur.get("side","")).upper()
+            same_order = str(nxt.get("order_id","")) == str(cur.get("order_id",""))
+            try:
+                t1 = _dt_audit.datetime.fromisoformat(str(cur.get("created_at","")).replace("Z",""))
+                t2 = _dt_audit.datetime.fromisoformat(str(nxt.get("created_at","")).replace("Z",""))
+                close_time = abs((t2 - t1).total_seconds()) <= 1.0
+            except Exception:
+                close_time = False
+            if same_side and same_order and close_time:
+                s1 = float(cur.get("size",0) or 0)
+                s2 = float(nxt.get("size",0) or 0)
+                tot = s1 + s2
+                if tot > 0:
+                    cur["price"] = (float(cur.get("price",0) or 0)*s1 + float(nxt.get("price",0) or 0)*s2) / tot
+                cur["size"] = tot
+                cur["commission"] = float(cur.get("commission",0) or 0) + float(nxt.get("commission",0) or 0)
+                cur["meta_data"] = nxt.get("meta_data", cur.get("meta_data", {}))
+                j += 1
+            else:
+                break
+        merged.append(cur)
+        i = j
+    return merged
+
+
 def _pair_fills_audit(fills):
     """
     Uses Delta's own per-fill realized PnL (meta_data.new_position.realized_pnl)
@@ -293,6 +336,7 @@ def _pair_fills_audit(fills):
     range, any account, permanently (no CSV dependency).
     """
     fills_sorted = sorted(fills, key=lambda f: f.get("created_at", ""))
+    fills_sorted = _merge_partial_fills_audit(fills_sorted)
 
     queue = []  # each: dict(remaining, price, time, side, comm_per_unit)
     pairs = []
