@@ -636,14 +636,14 @@ while True:
                     side = "sell" if position == "long" else "buy"
                     close_size = _ex_size
                     log.info(f"[ORDER] EXIT {side} {close_size} lots | ts={_xt}")
-                    save_ts_file(TS_FILE, _xt)
-                    last_known_ts = safe_ts(_xt)
                     if not check_engine_heartbeat():
                         log.warning("[ORDER] EXIT blocked - engine heartbeat stale")
                     else:
                         result = om.close_position(size=close_size, side=side)
                         if result.get("success"):
                             position = None
+                            save_ts_file(TS_FILE, _xt)
+                            last_known_ts = safe_ts(_xt)
                             _entry_price_for_alert = open_entry_price
                             open_entry_price = 0.0
                             _entry_commission_for_log = _entry_commission if '_entry_commission' in dir() else 0.0

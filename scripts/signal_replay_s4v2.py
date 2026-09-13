@@ -681,11 +681,11 @@ while True:
                     if not check_engine_heartbeat():
                         log.warning("[ORDER] EXIT blocked - engine heartbeat stale")
                     else:
-                        save_ts_file(TS_FILE, _xt)
-                        last_known_ts = safe_ts(_xt)
                         result = om.close_position(size=close_size, side=side)
                         if result.get("success"):
                             position = None
+                            save_ts_file(TS_FILE, _xt)
+                            last_known_ts = safe_ts(_xt)
                             _entry_price_for_alert = open_entry_price
                             _entry_commission_for_log = _entry_commission if '_entry_commission' in dir() else 0.0
                             open_entry_price = 0.0
