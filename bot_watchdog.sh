@@ -17,7 +17,7 @@ send_telegram() {
     local token=$(grep TELEGRAM_BOT_TOKEN $REPO/.env | cut -d= -f2)
     local chat=$(grep TELEGRAM_CHAT_ID $REPO/.env | cut -d= -f2)
     if [ -n "$token" ] && [ -n "$chat" ]; then
-        curl -s -X POST "https://api.telegram.org/bot${token}/sendMessage"             -d "chat_id=${chat}"             -d "text=${msg}"             -d "parse_mode=HTML" > /dev/null 2>&1
+        curl -s --max-time 10 -X POST "https://api.telegram.org/bot${token}/sendMessage"             -d "chat_id=${chat}"             -d "text=${msg}"             -d "parse_mode=HTML" > /dev/null 2>&1
     fi
 }
 
@@ -35,6 +35,7 @@ check_and_start() {
         local diff=$((now_ts - last_alert))
         if [ $diff -gt 1800 ]; then
             local msg="⚠️ CTS WATCHDOG ALERT%0A━━━━━━━━━━━━━━━━━━%0AScreen : ${name}%0AScript : ${script}%0AStatus : DOWN - restarting now%0ATime   : $(date -u +%Y-%m-%dT%H:%M:%S) UTC%0A━━━━━━━━━━━━━━━━━━"
+            echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] DEBUG pre-send for $name" >> logs/maintenance.log
             send_telegram "$msg"
             echo "$now_ts" > "$alert_ts_file"
             echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] DOWN alert sent for $name" >> logs/maintenance.log
