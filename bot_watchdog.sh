@@ -17,18 +17,18 @@ send_telegram() {
     local token=$(grep TELEGRAM_BOT_TOKEN $REPO/.env | cut -d= -f2)
     local chat=$(grep TELEGRAM_CHAT_ID $REPO/.env | cut -d= -f2)
     if [ -n "$token" ] && [ -n "$chat" ]; then
-        curl -s --max-time 10 -X POST "https://api.telegram.org/bot${token}/sendMessage"             -d "chat_id=${chat}"             -d "text=${msg}"             -d "parse_mode=HTML" > /dev/null 2>&1
+        curl -s --max-time 10 -X POST "https://api.telegram.org/bot${token}/sendMessage"             -d "chat_id=${chat}"             -d "text=${msg}"             -d "parse_mode=HTML" > /dev/null 2>&1 200>&-
     fi
 }
 
 
 screen_running() {
     local name=$1
-    if /usr/bin/screen -list 2>/dev/null | grep -qE "[0-9]+\.${name}[[:space:]]"; then
+    if timeout 5 /usr/bin/screen -list 2>/dev/null | grep -qE "[0-9]+\.${name}[[:space:]]"; then
         return 0
     fi
     sleep 2
-    /usr/bin/screen -list 2>/dev/null | grep -qE "[0-9]+\.${name}[[:space:]]"
+    timeout 5 /usr/bin/screen -list 2>/dev/null | grep -qE "[0-9]+\.${name}[[:space:]]"
 }
 
 check_and_start() {
@@ -50,7 +50,7 @@ check_and_start() {
             echo "$now_ts" > "$alert_ts_file"
             echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] DOWN alert sent for $name" >> logs/maintenance.log
         fi
-        /usr/bin/screen -dmS "$name" /bin/bash -c "cd /home/anildalabanjan7/crypto_tradingsystem && set -a && source /home/anildalabanjan7/crypto_tradingsystem/.env && set +a && .venv/bin/python3 $script >> $log 2>&1"
+        /usr/bin/screen -dmS "$name" /bin/bash -c "cd /home/anildalabanjan7/crypto_tradingsystem && set -a && source /home/anildalabanjan7/crypto_tradingsystem/.env && set +a && .venv/bin/python3 $script >> $log 2>&1" 200>&-
         echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] Started $name" >> logs/maintenance.log
     fi
 }
