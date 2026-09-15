@@ -1,0 +1,100 @@
+[2026-09-15T05:34:36] Started live_s4v3
+[2026-09-15T05:34:36] Started live_s4
+[2026-09-15T05:34:36] Started testmember1_s4
+[2026-09-15T05:34:36] signal_generator heartbeat STALE (979s > 300s) - force killing for restart
+[2026-09-15T05:34:37] Started signal_generator
+[2026-09-15T05:35:42] Started live_s4v2
+[2026-09-15T05:35:42] Started live_s4v3
+[2026-09-15T05:35:42] Started live_s4
+[2026-09-15T05:35:42] Started testmember1_s4
+[2026-09-15T05:35:42] signal_generator heartbeat STALE (1045s > 300s) - force killing for restart
+[2026-09-15T05:35:43] Started signal_generator
+[2026-09-15T05:37:03] Started live_s4v2
+[2026-09-15T05:37:03] Started live_s4v3
+[2026-09-15T05:37:03] Started live_s4
+[2026-09-15T05:37:04] Started testmember1_s4
+[2026-09-15T05:37:04] signal_generator heartbeat STALE (1127s > 300s) - force killing for restart
+[2026-09-15T05:37:05] Started signal_generator
+[2026-09-15T05:38:28] Started live_s4v2
+[2026-09-15T05:38:28] Started live_s4v3
+[2026-09-15T05:38:28] Started live_s4
+[2026-09-15T05:38:28] Started testmember1_s4
+[2026-09-15T05:38:28] signal_generator heartbeat STALE (1211s > 300s) - force killing for restart
+[2026-09-15T05:38:29] Started signal_generator
+[2026-09-15T05:39:36] Started live_s4v2
+[2026-09-15T05:39:36] Started live_s4v3
+[2026-09-15T05:39:36] Started live_s4
+[2026-09-15T05:39:36] Started testmember1_s4
+[2026-09-15T05:39:36] signal_generator heartbeat STALE (1279s > 300s) - force killing for restart
+[2026-09-15T05:39:37] Started signal_generator
+[2026-09-15T05:40:36] Started live_s4v2
+[2026-09-15T05:40:36] Started live_s4v3
+[2026-09-15T05:40:36] Started live_s4
+[2026-09-15T05:40:36] Started testmember1_s4
+[2026-09-15T05:40:36] signal_generator heartbeat STALE (1339s > 300s) - force killing for restart
+[2026-09-15T05:40:37] Started signal_generator
+[2026-09-15T05:41:43] live_s4v2 heartbeat STALE (194s > 180s) - force killing for restart
+[2026-09-15T05:41:44] Started live_s4v2
+[2026-09-15T05:41:44] live_s4v3 heartbeat STALE (195s > 180s) - force killing for restart
+[2026-09-15T05:41:45] Started live_s4v3
+[2026-09-15T05:41:45] Started live_s4
+[2026-09-15T05:41:45] Started testmember1_s4
+[2026-09-15T05:41:45] signal_generator heartbeat STALE (1408s > 300s) - force killing for restart
+[2026-09-15T05:41:47] Started signal_generator
+[2026-09-15T05:43:13] Started live_s4v2
+[2026-09-15T05:43:13] Started live_s4v3
+[2026-09-15T05:43:13] Started live_s4
+[2026-09-15T05:43:13] Started testmember1_s4
+[2026-09-15T05:43:14] signal_generator heartbeat STALE (1497s > 300s) - force killing for restart
+[2026-09-15T05:43:15] Started signal_generator
+[2026-09-15T05:44:18] Started live_s4v2
+[2026-09-15T05:44:18] Started live_s4v3
+[2026-09-15T05:44:18] Started live_s4
+[2026-09-15T05:44:18] Started testmember1_s4
+[2026-09-15T05:44:18] signal_generator heartbeat STALE (1561s > 300s) - force killing for restart
+[2026-09-15T05:44:19] Started signal_generator
+[2026-09-15T05:45:22] Started live_s4v2
+[2026-09-15T05:45:22] Started live_s4v3
+[2026-09-15T05:45:22] Started live_s4
+[2026-09-15T05:45:22] Started testmember1_s4
+[2026-09-15T05:45:22] signal_generator heartbeat STALE (1625s > 300s) - force killing for restart
+[2026-09-15T05:45:23] Started signal_generator
+[2026-09-15T05:46:36] Started live_s4v2
+[2026-09-15T05:46:36] Started live_s4v3
+[2026-09-15T05:46:36] Started live_s4
+[2026-09-15T05:46:36] testmember1_s4 heartbeat STALE (201s > 180s) - force killing for restart
+[2026-09-15T05:46:37] Started testmember1_s4
+[2026-09-15T05:46:37] signal_generator heartbeat STALE (1700s > 300s) - force killing for restart
+[2026-09-15T05:46:38] Started signal_generator
+[2026-09-15T05:47:36] Started live_s4v2
+[2026-09-15T05:47:36] Started live_s4v3
+[2026-09-15T05:47:36] Started live_s4
+[2026-09-15T05:47:36] Started testmember1_s4
+[2026-09-15T05:47:36] signal_generator heartbeat STALE (1759s > 300s) - force killing for restart
+[2026-09-15T05:47:37] Started signal_generator
+[2026-09-15T05:48:41] Started live_s4v2
+[2026-09-15T05:48:41] Started live_s4v3
+[2026-09-15T05:48:41] Started live_s4
+[2026-09-15T05:48:41] Started testmember1_s4
+[2026-09-15T05:48:41] signal_generator heartbeat STALE (1824s > 300s) - force killing for restart
+[2026-09-15T05:48:42] Started signal_generator
+[2026-09-15T05:50:01] DOWN alert sent for live_s4v2
+[2026-09-15T05:50:01] Started live_s4v2
+[2026-09-15T05:50:01] live_s4v3 heartbeat STALE (204s > 180s) - force killing for restart
+[2026-09-15T05:50:03] DOWN alert sent for live_s4v3
+[2026-09-15T05:50:03] Started live_s4v3
+[2026-09-15T05:50:03] DOWN alert sent for live_s4
+[2026-09-15T05:50:03] Started live_s4
+[2026-09-15T05:50:03] testmember1_s4 heartbeat STALE (206s > 180s) - force killing for restart
+[2026-09-15T05:50:05] DOWN alert sent for testmember1_s4
+[2026-09-15T05:50:05] Started testmember1_s4
+[2026-09-15T05:50:05] signal_generator heartbeat STALE (1908s > 300s) - force killing for restart
+[2026-09-15T05:50:06] DOWN alert sent for signal_generator
+[2026-09-15T05:50:06] Started signal_generator
+[2026-09-15T05:51:30] Started live_s4v2
+[2026-09-15T05:51:30] Started live_s4v3
+[2026-09-15T05:51:30] Started live_s4
+[2026-09-15T05:51:30] Started testmember1_s4
+[2026-09-15T05:51:31] signal_generator heartbeat STALE (1994s > 300s) - force killing for restart
+[2026-09-15T05:51:32] Started signal_generator
+[2026-09-15T06:32:19] Started live_s4v2
