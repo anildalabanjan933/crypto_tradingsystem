@@ -1,4 +1,6 @@
 #!/bin/bash
+exec 200>/tmp/bot_watchdog.lock
+flock -n 200 || exit 0
 export HOME=/home/anildalabanjan7
 export USER=anildalabanjan7
 export LOGNAME=anildalabanjan7
