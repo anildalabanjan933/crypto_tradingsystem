@@ -380,16 +380,16 @@ log.info("[STARTUP] S4V3 Signal Replay Bot starting...")
 import time as _time_startup
 pos = om.get_position()
 _startup_retries = 0
-while not pos.get("success") and _startup_retries < 5:
-    log.warning(f"[STARTUP] get_position() failed, retry {_startup_retries+1}/5")
-    _time_startup.sleep(2)
+while not pos.get("success") and _startup_retries < 10:
+    log.warning(f"[STARTUP] get_position() failed, retry {_startup_retries+1}/10")
+    _time_startup.sleep(min(2*(_startup_retries+1),10))
     pos = om.get_position()
     _startup_retries += 1
 
 if not pos.get("success"):
-    log.critical("[STARTUP] get_position() failed after 5 retries - cannot confirm real exchange state. BLOCKING startup to prevent duplicate/wrong-size entry.")
+    log.critical("[STARTUP] get_position() failed after 10 retries - cannot confirm real exchange state. BLOCKING startup to prevent duplicate/wrong-size entry.")
     from engine.telegram_alert import send_alert
-    send_alert("CTS S4V3 CRITICAL: Startup position sync failed after 5 retries. Bot BLOCKED - manual check required before restart.")
+    send_alert("CTS S4V3 CRITICAL: Startup position sync failed after 10 retries. Bot BLOCKED - manual check required before restart.")
     raise SystemExit("[STARTUP] Position sync failed - blocking to prevent capital risk.")
 
 if pos.get("direction") == "LONG":
