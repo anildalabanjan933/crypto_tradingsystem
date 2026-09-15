@@ -399,6 +399,15 @@ elif pos.get("direction") == "SHORT":
 else:
     position = None
 log.info(f"[STARTUP] Position synced from exchange: {position}")
+if position is not None:
+    try:
+        open_entry_price = float(open("logs/entry_price_s4v3.txt").read().strip())
+        log.info(f"[STARTUP] open_entry_price restored from file: {open_entry_price}")
+    except Exception:
+        open_entry_price = pos.get("entry_price", 0.0) if pos.get("success") else 0.0
+        log.warning(f"[STARTUP] entry_price file missing/invalid - recovered from live exchange position: {open_entry_price}")
+else:
+    open_entry_price = 0.0
 
 last_known_ts = load_ts_file(TS_FILE)
 valid_from    = get_valid_from()
@@ -850,6 +859,11 @@ while True:
                             if _bt_ep > 0 and real_entry > 0:
                                 _send_entry_match_alert("S4V3", direction, sig_ts, _bt_ep, real_entry, _bt_xt, _bt_xp, lots)
                             open_entry_price = real_entry
+                            try:
+                                with open("logs/entry_price_s4v3.txt","w") as _epf:
+                                    _epf.write(str(real_entry))
+                            except Exception as _e:
+                                log.warning(f"[ENTRY] entry_price persist failed: {_e}")
                             _entry_commission = result.get("commission", 0.0)
                             save_ts_file(TS_FILE, sig_ts)
                             last_known_ts = sig_ts
