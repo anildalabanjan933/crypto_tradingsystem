@@ -1,13 +1,13 @@
 #!/bin/bash
-export HOME=/home/anildalabanjan933
-export USER=anildalabanjan933
-export LOGNAME=anildalabanjan933
-export XDG_RUNTIME_DIR=/run/user/$(id -u anildalabanjan933)
-export SCREENDIR=/run/screen/S-anildalabanjan933
+export HOME=/home/anildalabanjan7
+export USER=anildalabanjan7
+export LOGNAME=anildalabanjan7
+export XDG_RUNTIME_DIR=/run/user/$(id -u anildalabanjan7)
+export SCREENDIR=/run/screen/S-anildalabanjan7
 export TERM=xterm
-cd /home/anildalabanjan933/crypto_trading_system
+cd /home/anildalabanjan7/crypto_tradingsystem
 
-REPO=/home/anildalabanjan933/crypto_trading_system
+REPO=/home/anildalabanjan7/crypto_tradingsystem
 ALERT_FILE=$REPO/logs/watchdog_alert_sent.txt
 
 send_telegram() {
@@ -37,7 +37,7 @@ check_and_start() {
             echo "$now_ts" > "$alert_ts_file"
             echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] DOWN alert sent for $name" >> logs/maintenance.log
         fi
-        /usr/bin/screen -dmS "$name" /bin/bash -c "cd /home/anildalabanjan933/crypto_trading_system && set -a && source /home/anildalabanjan933/crypto_trading_system/.env && set +a && .venv/bin/python3 $script >> $log 2>&1"
+        /usr/bin/screen -dmS "$name" /bin/bash -c "cd /home/anildalabanjan7/crypto_tradingsystem && set -a && source /home/anildalabanjan7/crypto_tradingsystem/.env && set +a && .venv/bin/python3 $script >> $log 2>&1"
         echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] Started $name" >> logs/maintenance.log
     fi
 }
@@ -87,6 +87,6 @@ check_heartbeat_stale maintenance_watcher logs/maintenance_watcher_heartbeat.txt
 check_and_start maintenance_watcher scripts/maintenance_watcher.py logs/maintenance_watcher.log
 
 if ! /usr/bin/screen -list 2>/dev/null | grep -qE "[0-9]+\.dashboard[[:space:]]"; then
-    /usr/bin/screen -dmS dashboard /bin/bash -c "cd /home/anildalabanjan933/crypto_trading_system && .venv/bin/python3 -m streamlit run dashboard/streamlit_app.py --server.port 8501 >> logs/dashboard.log 2>&1"
+    /usr/bin/screen -dmS dashboard /bin/bash -c "cd /home/anildalabanjan7/crypto_tradingsystem && .venv/bin/python3 -m streamlit run dashboard/streamlit_app.py --server.port 8501 >> logs/dashboard.log 2>&1"
     echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] Started dashboard" >> logs/maintenance.log
 fi
