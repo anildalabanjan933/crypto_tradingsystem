@@ -309,6 +309,23 @@ def _reconcile_window_from_rest(state, tf_minutes):
         log.warning(f"[{state.label}] REST reconcile did NOT cover boundary candle {state.last_1m_ts} - deferring fire to retry path")
     return critical_covered
 
+def _get_locked_reference(label, state):
+    if getattr(state, "_locked_ref", None) is not None:
+        return state._locked_ref
+    fname = f"logs/box_ref_price_{label}.txt"
+    try:
+        _ref = float(open(fname).read().strip())
+    except Exception:
+        _ref = float(state.candles_tf['close'].iloc[0])
+        try:
+            with open(fname, "w") as _f:
+                _f.write(str(_ref))
+            log.warning(f"[{label}] box_ref_price missing/invalid - locked NEW reference={_ref}, persisted to {fname}")
+        except Exception as _e:
+            log.error(f"[{label}] Failed to persist locked reference to {fname}: {_e}")
+    state._locked_ref = _ref
+    return _ref
+
 def check_and_fire(state,is_s4=False):
     import pandas as pd
     from datetime import datetime,timezone
@@ -326,32 +343,16 @@ def check_and_fire(state,is_s4=False):
         data_dict={tf:df_tf_indexed}
         # Call EXACT same strategy class as backtest - single source of truth
         if state.label=="S2":
-            _ref = None
-            try:
-                _ref = float(open("logs/box_ref_price_s2.txt").read().strip())
-            except Exception:
-                _ref = state.candles_tf['close'].iloc[-1]
+            _ref = _get_locked_reference("s2", state)
             p_with_ref = dict(p, reference_price=_ref); strategy=RenkoReversalStrategy(data_dict,LOT_SIZE,**p_with_ref)
         elif state.label=="S4V2":
-            _ref = None
-            try:
-                _ref = float(open("logs/box_ref_price_s4v2.txt").read().strip())
-            except Exception:
-                _ref = state.candles_tf['close'].iloc[0]
+            _ref = _get_locked_reference("s4v2", state)
             p_with_ref = dict(p, reference_price=_ref); strategy=RenkoSMIIOSupertrendV2Strategy(data_dict,LOT_SIZE,**p_with_ref)
         elif state.label=="S4V3":
-            _ref = None
-            try:
-                _ref = float(open("logs/box_ref_price_s4v3.txt").read().strip())
-            except Exception:
-                _ref = state.candles_tf['close'].iloc[0]
+            _ref = _get_locked_reference("s4v3", state)
             p_with_ref = dict(p, reference_price=_ref); strategy=RenkoSMIIOCrossV3Strategy(data_dict,LOT_SIZE,**p_with_ref)
         else:
-            _ref = None
-            try:
-                _ref = float(open("logs/box_ref_price_s4.txt").read().strip())
-            except Exception:
-                _ref = state.candles_tf['close'].iloc[0]
+            _ref = _get_locked_reference("s4", state)
             p_with_ref = dict(p, reference_price=_ref); strategy=RenkoSMIIOSupertrendStrategy(data_dict,LOT_SIZE,**p_with_ref)
         if state.label=="S4":
             _dbg=df_tf_indexed[(df_tf_indexed.index>="2026-09-04 02:00:00")&(df_tf_indexed.index<="2026-09-04 16:00:00")]
@@ -390,6 +391,8 @@ def check_and_fire(state,is_s4=False):
                 _fire(state,ts,price,direction,"EXIT",box,now_utc,signals)
             elif sig_type in ("BUY_A","BUY_B","SELL_A","SELL_B","ENTRY") and state.current_direction is None:
                 _fire(state,ts,price,direction,"ENTRY",box,now_utc,signals)
+            else:
+                log.warning(f"[{state.label}] SKIPPED signal ts={ts} type={sig_type} dir={direction} - state mismatch (current_direction={state.current_direction})")
     except Exception as e:
         log.error(f"[{state.label}] check error: {e}",exc_info=True)
     finally:
