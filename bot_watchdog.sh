@@ -21,12 +21,22 @@ send_telegram() {
     fi
 }
 
+
+screen_running() {
+    local name=$1
+    if /usr/bin/screen -list 2>/dev/null | grep -qE "[0-9]+\.${name}[[:space:]]"; then
+        return 0
+    fi
+    sleep 2
+    /usr/bin/screen -list 2>/dev/null | grep -qE "[0-9]+\.${name}[[:space:]]"
+}
+
 check_and_start() {
     local name=$1
     local script=$2
     local log=$3
     local alert_key=$REPO/logs/watchdog_down_${name}.txt
-    if ! /usr/bin/screen -list 2>/dev/null | grep -qE "[0-9]+\.${name}[[:space:]]"; then
+    if ! screen_running "$name"; then
         # Send Telegram alert only once per 30 minutes per screen
         local alert_ts_file=$REPO/logs/watchdog_alert_${name}.txt
         local now_ts=$(date +%s)
