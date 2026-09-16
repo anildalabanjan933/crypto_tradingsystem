@@ -754,27 +754,33 @@ if __name__=="__main__":
             _cur_s4v2=_last_closed_tf(30)
             if _cur_s4v2>_ws_state["last_s4v2_tf"]:
                 log.info(f"[WS] New 30m candle closed: {_cur_s4v2} - checking S4V2")
-                if _reconcile_window_from_rest(s4v2, 30):
-                    check_and_fire(s4v2,is_s4=False)
-                    _ws_state["last_s4v2_tf"]=_cur_s4v2
-                else:
-                    log.warning(f"[WS] S4V2 boundary {_cur_s4v2} reconcile failed - NOT claimed, retrying next tick")
+                if time.time()-_ws_state.get("last_reconcile_s4v2",0)>=5:
+                    _ws_state["last_reconcile_s4v2"]=time.time()
+                    if _reconcile_window_from_rest(s4v2, 30):
+                        check_and_fire(s4v2,is_s4=False)
+                        _ws_state["last_s4v2_tf"]=_cur_s4v2
+                    else:
+                        log.warning(f"[WS] S4V2 boundary {_cur_s4v2} reconcile failed - NOT claimed, retrying next tick")
             _cur_s4=_last_closed_tf(120)
             if _cur_s4>_ws_state["last_s4_tf"]:
                 log.info(f"[WS] New 2H candle closed: {_cur_s4} - checking S4")
-                if _reconcile_window_from_rest(s4, 120):
-                    check_and_fire(s4,is_s4=True)
-                    _ws_state["last_s4_tf"]=_cur_s4
-                else:
-                    log.warning(f"[WS] S4 boundary {_cur_s4} reconcile failed - NOT claimed, retrying next tick")
+                if time.time()-_ws_state.get("last_reconcile_s4",0)>=5:
+                    _ws_state["last_reconcile_s4"]=time.time()
+                    if _reconcile_window_from_rest(s4, 120):
+                        check_and_fire(s4,is_s4=True)
+                        _ws_state["last_s4_tf"]=_cur_s4
+                    else:
+                        log.warning(f"[WS] S4 boundary {_cur_s4} reconcile failed - NOT claimed, retrying next tick")
             _cur_s4v3=_last_closed_tf(240)
             if _cur_s4v3>_ws_state["last_s4v3_tf"]:
                 log.info(f"[WS] New 4H candle closed: {_cur_s4v3} - checking S4V3")
-                if _reconcile_window_from_rest(s4v3, 240):
-                    check_and_fire(s4v3,is_s4=False)
-                    _ws_state["last_s4v3_tf"]=_cur_s4v3
-                else:
-                    log.warning(f"[WS] S4V3 boundary {_cur_s4v3} reconcile failed - NOT claimed, retrying next tick")
+                if time.time()-_ws_state.get("last_reconcile_s4v3",0)>=5:
+                    _ws_state["last_reconcile_s4v3"]=time.time()
+                    if _reconcile_window_from_rest(s4v3, 240):
+                        check_and_fire(s4v3,is_s4=False)
+                        _ws_state["last_s4v3_tf"]=_cur_s4v3
+                    else:
+                        log.warning(f"[WS] S4V3 boundary {_cur_s4v3} reconcile failed - NOT claimed, retrying next tick")
             # Background REST sync for CSV file persistence only - runs AFTER signals checked
             _ws_state["last_dl"]=time.time()
             threading.Thread(target=update_market_data, daemon=True).start()
@@ -852,7 +858,7 @@ if __name__=="__main__":
     _last_s4_tf=_last_closed_tf(120)
     _last_s4v3_tf=_last_closed_tf(240)
     # State dict for ws thread - defined after tf vars
-    _ws_state={"last_s2_tf":_last_s2_tf,"last_s4_tf":_last_s4_tf,"last_s4v2_tf":_last_s2_tf,"last_s4v3_tf":_last_s4v3_tf,"last_dl":0.0}
+    _ws_state={"last_s2_tf":_last_s2_tf,"last_s4_tf":_last_s4_tf,"last_s4v2_tf":_last_s2_tf,"last_s4v3_tf":_last_s4v3_tf,"last_dl":0.0,"last_reconcile_s4":0.0,"last_reconcile_s4v2":0.0,"last_reconcile_s4v3":0.0}
     def _throttled_download(_min_gap=20):
         _now_dl = time.time()
         if _now_dl - _ws_state.get("last_dl", 0) >= _min_gap:
@@ -888,31 +894,37 @@ if __name__=="__main__":
                 cur_s4v2_tf=_last_closed_tf(30)
                 if cur_s4v2_tf>_ws_state["last_s4v2_tf"]:
                     log.info(f"[ENGINE] New 30m candle closed: {cur_s4v2_tf} - checking S4V2")
-                    if _reconcile_window_from_rest(s4v2, 30):
-                        check_and_fire(s4v2,is_s4=False)
-                        _ws_state["last_s4v2_tf"]=cur_s4v2_tf
-                    else:
-                        log.warning(f"[ENGINE] S4V2 boundary {cur_s4v2_tf} reconcile failed - NOT claimed, retrying next tick")
+                    if time.time()-_ws_state.get("last_reconcile_s4v2",0)>=5:
+                        _ws_state["last_reconcile_s4v2"]=time.time()
+                        if _reconcile_window_from_rest(s4v2, 30):
+                            check_and_fire(s4v2,is_s4=False)
+                            _ws_state["last_s4v2_tf"]=cur_s4v2_tf
+                        else:
+                            log.warning(f"[ENGINE] S4V2 boundary {cur_s4v2_tf} reconcile failed - NOT claimed, retrying next tick")
 
                 # S4: fire only on new closed 2H candle (shared state with WS)
                 cur_s4_tf=_last_closed_tf(120)
                 if cur_s4_tf>_ws_state["last_s4_tf"]:
                     log.info(f"[ENGINE] New 2H candle closed: {cur_s4_tf} - checking S4")
-                    if _reconcile_window_from_rest(s4, 120):
-                        check_and_fire(s4,is_s4=True)
-                        _ws_state["last_s4_tf"]=cur_s4_tf
-                    else:
-                        log.warning(f"[ENGINE] S4 boundary {cur_s4_tf} reconcile failed - NOT claimed, retrying next tick")
+                    if time.time()-_ws_state.get("last_reconcile_s4",0)>=5:
+                        _ws_state["last_reconcile_s4"]=time.time()
+                        if _reconcile_window_from_rest(s4, 120):
+                            check_and_fire(s4,is_s4=True)
+                            _ws_state["last_s4_tf"]=cur_s4_tf
+                        else:
+                            log.warning(f"[ENGINE] S4 boundary {cur_s4_tf} reconcile failed - NOT claimed, retrying next tick")
 
                 # S4V3: fire only on new closed 4H candle (shared state with WS)
                 cur_s4v3_tf=_last_closed_tf(240)
                 if cur_s4v3_tf>_ws_state["last_s4v3_tf"]:
                     log.info(f"[ENGINE] New 4H candle closed: {cur_s4v3_tf} - checking S4V3")
-                    if _reconcile_window_from_rest(s4v3, 240):
-                        check_and_fire(s4v3,is_s4=False)
-                        _ws_state["last_s4v3_tf"]=cur_s4v3_tf
-                    else:
-                        log.warning(f"[ENGINE] S4V3 boundary {cur_s4v3_tf} reconcile failed - NOT claimed, retrying next tick")
+                    if time.time()-_ws_state.get("last_reconcile_s4v3",0)>=5:
+                        _ws_state["last_reconcile_s4v3"]=time.time()
+                        if _reconcile_window_from_rest(s4v3, 240):
+                            check_and_fire(s4v3,is_s4=False)
+                            _ws_state["last_s4v3_tf"]=cur_s4v3_tf
+                        else:
+                            log.warning(f"[ENGINE] S4V3 boundary {cur_s4v3_tf} reconcile failed - NOT claimed, retrying next tick")
 
             # Boundary watcher trigger - fires if watcher detected missed boundary
             _trig_s4 = "logs/boundary_trigger_s4.txt"
