@@ -754,8 +754,7 @@ if __name__=="__main__":
             _cur_s4v2=_last_closed_tf(30)
             if _cur_s4v2>_ws_state["last_s4v2_tf"]:
                 log.info(f"[WS] New 30m candle closed: {_cur_s4v2} - checking S4V2")
-                if time.time()-_ws_state.get("last_reconcile_s4v2",0)>=5:
-                    _ws_state["last_reconcile_s4v2"]=time.time()
+                if _reconcile_gate("last_reconcile_s4v2"):
                     if _reconcile_window_from_rest(s4v2, 30):
                         check_and_fire(s4v2,is_s4=False)
                         _ws_state["last_s4v2_tf"]=_cur_s4v2
@@ -764,8 +763,7 @@ if __name__=="__main__":
             _cur_s4=_last_closed_tf(120)
             if _cur_s4>_ws_state["last_s4_tf"]:
                 log.info(f"[WS] New 2H candle closed: {_cur_s4} - checking S4")
-                if time.time()-_ws_state.get("last_reconcile_s4",0)>=5:
-                    _ws_state["last_reconcile_s4"]=time.time()
+                if _reconcile_gate("last_reconcile_s4"):
                     if _reconcile_window_from_rest(s4, 120):
                         check_and_fire(s4,is_s4=True)
                         _ws_state["last_s4_tf"]=_cur_s4
@@ -774,8 +772,7 @@ if __name__=="__main__":
             _cur_s4v3=_last_closed_tf(240)
             if _cur_s4v3>_ws_state["last_s4v3_tf"]:
                 log.info(f"[WS] New 4H candle closed: {_cur_s4v3} - checking S4V3")
-                if time.time()-_ws_state.get("last_reconcile_s4v3",0)>=5:
-                    _ws_state["last_reconcile_s4v3"]=time.time()
+                if _reconcile_gate("last_reconcile_s4v3"):
                     if _reconcile_window_from_rest(s4v3, 240):
                         check_and_fire(s4v3,is_s4=False)
                         _ws_state["last_s4v3_tf"]=_cur_s4v3
@@ -859,6 +856,13 @@ if __name__=="__main__":
     _last_s4v3_tf=_last_closed_tf(240)
     # State dict for ws thread - defined after tf vars
     _ws_state={"last_s2_tf":_last_s2_tf,"last_s4_tf":_last_s4_tf,"last_s4v2_tf":_last_s2_tf,"last_s4v3_tf":_last_s4v3_tf,"last_dl":0.0,"last_reconcile_s4":0.0,"last_reconcile_s4v2":0.0,"last_reconcile_s4v3":0.0}
+    _reconcile_throttle_lock = threading.Lock()
+    def _reconcile_gate(_key):
+        with _reconcile_throttle_lock:
+            if time.time()-_ws_state.get(_key,0)>=5:
+                _ws_state[_key]=time.time()
+                return True
+            return False
     def _throttled_download(_min_gap=20):
         _now_dl = time.time()
         if _now_dl - _ws_state.get("last_dl", 0) >= _min_gap:
@@ -894,8 +898,7 @@ if __name__=="__main__":
                 cur_s4v2_tf=_last_closed_tf(30)
                 if cur_s4v2_tf>_ws_state["last_s4v2_tf"]:
                     log.info(f"[ENGINE] New 30m candle closed: {cur_s4v2_tf} - checking S4V2")
-                    if time.time()-_ws_state.get("last_reconcile_s4v2",0)>=5:
-                        _ws_state["last_reconcile_s4v2"]=time.time()
+                    if _reconcile_gate("last_reconcile_s4v2"):
                         if _reconcile_window_from_rest(s4v2, 30):
                             check_and_fire(s4v2,is_s4=False)
                             _ws_state["last_s4v2_tf"]=cur_s4v2_tf
@@ -906,8 +909,7 @@ if __name__=="__main__":
                 cur_s4_tf=_last_closed_tf(120)
                 if cur_s4_tf>_ws_state["last_s4_tf"]:
                     log.info(f"[ENGINE] New 2H candle closed: {cur_s4_tf} - checking S4")
-                    if time.time()-_ws_state.get("last_reconcile_s4",0)>=5:
-                        _ws_state["last_reconcile_s4"]=time.time()
+                    if _reconcile_gate("last_reconcile_s4"):
                         if _reconcile_window_from_rest(s4, 120):
                             check_and_fire(s4,is_s4=True)
                             _ws_state["last_s4_tf"]=cur_s4_tf
@@ -918,8 +920,7 @@ if __name__=="__main__":
                 cur_s4v3_tf=_last_closed_tf(240)
                 if cur_s4v3_tf>_ws_state["last_s4v3_tf"]:
                     log.info(f"[ENGINE] New 4H candle closed: {cur_s4v3_tf} - checking S4V3")
-                    if time.time()-_ws_state.get("last_reconcile_s4v3",0)>=5:
-                        _ws_state["last_reconcile_s4v3"]=time.time()
+                    if _reconcile_gate("last_reconcile_s4v3"):
                         if _reconcile_window_from_rest(s4v3, 240):
                             check_and_fire(s4v3,is_s4=False)
                             _ws_state["last_s4v3_tf"]=cur_s4v3_tf
@@ -961,7 +962,7 @@ if __name__=="__main__":
                                 time.sleep(_wait_s4)
                             if not _caught_up:
                                 log.critical(f"[ENGINE] S4 boundary {_dt} STILL not caught up after 6900s safety cap - reconcile incomplete, signal SKIPPED (not fired)")
-                            if _reconcile_window_from_rest(s4, 120):
+                            if _reconcile_gate("last_reconcile_s4") and _reconcile_window_from_rest(s4, 120):
                                 check_and_fire(s4, is_s4=True)
                                 _ws_state["last_s4_tf"] = max(_ws_state["last_s4_tf"], _t4_dt_engine_label)
                             else:
@@ -1003,7 +1004,7 @@ if __name__=="__main__":
                                 time.sleep(_wait_s4v2)
                             if not _caught_up:
                                 log.critical(f"[ENGINE] S4V2 boundary {_dt} STILL not caught up after 1500s safety cap - reconcile incomplete, signal SKIPPED (not fired)")
-                            if _reconcile_window_from_rest(s4v2, 30):
+                            if _reconcile_gate("last_reconcile_s4v2") and _reconcile_window_from_rest(s4v2, 30):
                                 check_and_fire(s4v2, is_s4=False)
                                 _ws_state["last_s4v2_tf"] = max(_ws_state["last_s4v2_tf"], _tv2_dt_engine_label)
                             else:
@@ -1045,7 +1046,7 @@ if __name__=="__main__":
                                 time.sleep(_wait_s4v3)
                             if not _caught_up:
                                 log.critical(f"[ENGINE] S4V3 boundary {_dt} STILL not caught up after 14100s safety cap - reconcile incomplete, signal SKIPPED (not fired)")
-                            if _reconcile_window_from_rest(s4v3, 240):
+                            if _reconcile_gate("last_reconcile_s4v3") and _reconcile_window_from_rest(s4v3, 240):
                                 check_and_fire(s4v3, is_s4=False)
                                 _ws_state["last_s4v3_tf"] = max(_ws_state["last_s4v3_tf"], _tv3_dt_engine_label)
                             else:
