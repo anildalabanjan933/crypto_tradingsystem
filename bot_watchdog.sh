@@ -37,6 +37,10 @@ check_and_start() {
     local log=$3
     local alert_key=$REPO/logs/watchdog_down_${name}.txt
     if ! screen_running "$name"; then
+        if pgrep -f "$script" >/dev/null 2>&1; then
+            echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] $name screen-list flaked but process alive via pgrep - skip alert" >> logs/maintenance.log
+            return
+        fi
         # Send Telegram alert only once per 30 minutes per screen
         local alert_ts_file=$REPO/logs/watchdog_alert_${name}.txt
         local now_ts=$(date +%s)
