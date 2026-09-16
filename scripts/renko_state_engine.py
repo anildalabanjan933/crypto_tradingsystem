@@ -36,6 +36,16 @@ SLEEP_SEC=0.5
 S4_PARAMS=dict(renko_box_pct=0.001,renko_timeframe="2h",st_atr_length=5,st_factor=2.0,smiio_shortlen=10,smiio_longlen=10,smiio_siglen=3)
 S4V2_PARAMS=dict(renko_box_pct=0.001,renko_timeframe="30m",st_atr_length=5,st_factor=1.5,smiio_shortlen=10,smiio_longlen=20,smiio_siglen=3)
 S4V3_PARAMS=dict(renko_box_pct=0.001,renko_timeframe="4h",smiio_shortlen=5,smiio_longlen=10,smiio_siglen=3)
+
+# Caps state.candles_tf so generate_signals() cost stays bounded no matter
+# what triggers a splice (new candle, WS append, or REST drift-correction).
+TF_BAR_CAP=800
+def _trim_tf(df_tf):
+    import pandas as pd
+    if df_tf is None or len(df_tf)<=TF_BAR_CAP:
+        return df_tf
+    return df_tf.sort_values("timestamp").tail(TF_BAR_CAP).reset_index(drop=True)
+
 def _send_bt_signal_alert(strategy_label, direction, entry_ts, exit_ts, entry_price, exit_price, lots=100, slippage=5.0):
     """Send Telegram alert when backtest signal fires."""
     try:
@@ -190,7 +200,7 @@ def load_history(state):
     log.info(f"[{state.label}] Loaded {len(df):,} candles | last={state.last_1m_ts}")
     # Pre-build 1H/2H dataframe ONCE - no resample on every signal check
     tf=state.params["renko_timeframe"]
-    state.candles_tf=resample_to_tf(df,tf)
+    state.candles_tf=_trim_tf(resample_to_tf(df,tf))
     log.info(f"[{state.label}] Pre-built {tf} dataframe: {len(state.candles_tf)} candles")
 
 def append_new_candles(state):
@@ -234,6 +244,7 @@ def append_new_candles(state):
             cutoff=recomputed_tf["timestamp"].min()
             state.candles_tf=state.candles_tf[state.candles_tf["timestamp"]<cutoff]
             state.candles_tf=pd.concat([state.candles_tf,recomputed_tf],ignore_index=True).reset_index(drop=True)
+            state.candles_tf=_trim_tf(state.candles_tf)
         # Trim raw 1m buffer to rolling window (dynamic - scales with renko_timeframe)
         # Prevents unbounded growth that slows every future scan (root cause of
         # delay creeping from ~3s toward 17s+ the longer engine runs)
@@ -302,9 +313,12 @@ def _reconcile_window_from_rest(state, tf_minutes):
     recent_1m = state.candles_1m[state.candles_1m["timestamp"] >= window_start]
     recomputed_tf = resample_to_tf(recent_1m, state.params["renko_timeframe"])
     if recomputed_tf is not None and not recomputed_tf.empty:
-        cutoff = recomputed_tf["timestamp"].min()
-        state.candles_tf = state.candles_tf[state.candles_tf["timestamp"] < cutoff]
-        state.candles_tf = pd.concat([state.candles_tf, recomputed_tf], ignore_index=True).reset_index(drop=True)
+        _base = state.candles_tf.set_index("timestamp")
+        _upd  = recomputed_tf.set_index("timestamp")
+        _base = _base.reindex(_base.index.union(_upd.index))
+        _base.loc[_upd.index, ["open","high","low","close"]] = _upd[["open","high","low","close"]]
+        state.candles_tf = _base.sort_index().reset_index()
+        state.candles_tf = _trim_tf(state.candles_tf)
     if not critical_covered:
         log.warning(f"[{state.label}] REST reconcile did NOT cover boundary candle {state.last_1m_ts} - deferring fire to retry path")
     return critical_covered
@@ -697,6 +711,7 @@ if __name__=="__main__":
             cutoff=recomputed_tf["timestamp"].min()
             state.candles_tf=state.candles_tf[state.candles_tf["timestamp"]<cutoff]
             state.candles_tf=pd.concat([state.candles_tf,recomputed_tf],ignore_index=True).reset_index(drop=True)
+            state.candles_tf=_trim_tf(state.candles_tf)
         # Trim raw 1m buffer to rolling window (dynamic - scales with renko_timeframe)
         _keep_from=window_start-pd.Timedelta(minutes=1440)
         state.candles_1m=state.candles_1m[state.candles_1m["timestamp"]>=_keep_from].reset_index(drop=True)
@@ -738,22 +753,28 @@ if __name__=="__main__":
             # Signal-critical work FIRST - no CPU competition from background thread
             _cur_s4v2=_last_closed_tf(30)
             if _cur_s4v2>_ws_state["last_s4v2_tf"]:
-                _ws_state["last_s4v2_tf"]=_cur_s4v2
                 log.info(f"[WS] New 30m candle closed: {_cur_s4v2} - checking S4V2")
                 if _reconcile_window_from_rest(s4v2, 30):
                     check_and_fire(s4v2,is_s4=False)
+                    _ws_state["last_s4v2_tf"]=_cur_s4v2
+                else:
+                    log.warning(f"[WS] S4V2 boundary {_cur_s4v2} reconcile failed - NOT claimed, retrying next tick")
             _cur_s4=_last_closed_tf(120)
             if _cur_s4>_ws_state["last_s4_tf"]:
-                _ws_state["last_s4_tf"]=_cur_s4
                 log.info(f"[WS] New 2H candle closed: {_cur_s4} - checking S4")
                 if _reconcile_window_from_rest(s4, 120):
                     check_and_fire(s4,is_s4=True)
+                    _ws_state["last_s4_tf"]=_cur_s4
+                else:
+                    log.warning(f"[WS] S4 boundary {_cur_s4} reconcile failed - NOT claimed, retrying next tick")
             _cur_s4v3=_last_closed_tf(240)
             if _cur_s4v3>_ws_state["last_s4v3_tf"]:
-                _ws_state["last_s4v3_tf"]=_cur_s4v3
                 log.info(f"[WS] New 4H candle closed: {_cur_s4v3} - checking S4V3")
                 if _reconcile_window_from_rest(s4v3, 240):
                     check_and_fire(s4v3,is_s4=False)
+                    _ws_state["last_s4v3_tf"]=_cur_s4v3
+                else:
+                    log.warning(f"[WS] S4V3 boundary {_cur_s4v3} reconcile failed - NOT claimed, retrying next tick")
             # Background REST sync for CSV file persistence only - runs AFTER signals checked
             _ws_state["last_dl"]=time.time()
             threading.Thread(target=update_market_data, daemon=True).start()
@@ -866,26 +887,32 @@ if __name__=="__main__":
                 # S4V2: fire only on new closed 30m candle (shared state with WS)
                 cur_s4v2_tf=_last_closed_tf(30)
                 if cur_s4v2_tf>_ws_state["last_s4v2_tf"]:
-                    _ws_state["last_s4v2_tf"]=cur_s4v2_tf
                     log.info(f"[ENGINE] New 30m candle closed: {cur_s4v2_tf} - checking S4V2")
                     if _reconcile_window_from_rest(s4v2, 30):
                         check_and_fire(s4v2,is_s4=False)
+                        _ws_state["last_s4v2_tf"]=cur_s4v2_tf
+                    else:
+                        log.warning(f"[ENGINE] S4V2 boundary {cur_s4v2_tf} reconcile failed - NOT claimed, retrying next tick")
 
                 # S4: fire only on new closed 2H candle (shared state with WS)
                 cur_s4_tf=_last_closed_tf(120)
                 if cur_s4_tf>_ws_state["last_s4_tf"]:
-                    _ws_state["last_s4_tf"]=cur_s4_tf
                     log.info(f"[ENGINE] New 2H candle closed: {cur_s4_tf} - checking S4")
                     if _reconcile_window_from_rest(s4, 120):
                         check_and_fire(s4,is_s4=True)
+                        _ws_state["last_s4_tf"]=cur_s4_tf
+                    else:
+                        log.warning(f"[ENGINE] S4 boundary {cur_s4_tf} reconcile failed - NOT claimed, retrying next tick")
 
                 # S4V3: fire only on new closed 4H candle (shared state with WS)
                 cur_s4v3_tf=_last_closed_tf(240)
                 if cur_s4v3_tf>_ws_state["last_s4v3_tf"]:
-                    _ws_state["last_s4v3_tf"]=cur_s4v3_tf
                     log.info(f"[ENGINE] New 4H candle closed: {cur_s4v3_tf} - checking S4V3")
                     if _reconcile_window_from_rest(s4v3, 240):
                         check_and_fire(s4v3,is_s4=False)
+                        _ws_state["last_s4v3_tf"]=cur_s4v3_tf
+                    else:
+                        log.warning(f"[ENGINE] S4V3 boundary {cur_s4v3_tf} reconcile failed - NOT claimed, retrying next tick")
 
             # Boundary watcher trigger - fires if watcher detected missed boundary
             _trig_s4 = "logs/boundary_trigger_s4.txt"
