@@ -938,7 +938,6 @@ if __name__=="__main__":
                 _s4_already_caught_up = s4.last_1m_ts is not None and s4.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= (_t4_dt - __import__('datetime').timedelta(minutes=1))
                 _t4_dt_engine_label = _t4_dt - __import__('datetime').timedelta(minutes=120)
                 if not _s4_already_caught_up:
-                    _ws_state["last_s4_tf"] = max(_ws_state["last_s4_tf"], _t4_dt_engine_label)
                     log.info(f"[ENGINE] Boundary watcher trigger S4: {_t4} - checking S4 (independent retry, decoupled from WS claim)")
                     def _run_s4_trigger(_dt=_t4_dt):
                         try:
@@ -964,6 +963,9 @@ if __name__=="__main__":
                                 log.critical(f"[ENGINE] S4 boundary {_dt} STILL not caught up after 6900s safety cap - reconcile incomplete, signal SKIPPED (not fired)")
                             if _reconcile_window_from_rest(s4, 120):
                                 check_and_fire(s4, is_s4=True)
+                                _ws_state["last_s4_tf"] = max(_ws_state["last_s4_tf"], _t4_dt_engine_label)
+                            else:
+                                log.warning(f"[ENGINE] S4 trigger boundary {_dt} reconcile failed - NOT claimed, retrying next tick")
                         except Exception as _e:
                             log.error(f"[ENGINE] S4 trigger thread error: {_e}", exc_info=True)
                     threading.Thread(target=_run_s4_trigger, daemon=True).start()
@@ -978,7 +980,6 @@ if __name__=="__main__":
                 _s4v2_already_caught_up = s4v2.last_1m_ts is not None and s4v2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= (_tv2_dt - __import__('datetime').timedelta(minutes=1))
                 _tv2_dt_engine_label = _tv2_dt - __import__('datetime').timedelta(minutes=30)
                 if not _s4v2_already_caught_up:
-                    _ws_state["last_s4v2_tf"] = max(_ws_state["last_s4v2_tf"], _tv2_dt_engine_label)
                     log.info(f"[ENGINE] Boundary watcher trigger S4V2: {_tv2} - checking S4V2 (independent retry, decoupled from WS claim)")
                     def _run_s4v2_trigger(_dt=_tv2_dt):
                         try:
@@ -1004,6 +1005,9 @@ if __name__=="__main__":
                                 log.critical(f"[ENGINE] S4V2 boundary {_dt} STILL not caught up after 1500s safety cap - reconcile incomplete, signal SKIPPED (not fired)")
                             if _reconcile_window_from_rest(s4v2, 30):
                                 check_and_fire(s4v2, is_s4=False)
+                                _ws_state["last_s4v2_tf"] = max(_ws_state["last_s4v2_tf"], _tv2_dt_engine_label)
+                            else:
+                                log.warning(f"[ENGINE] S4V2 trigger boundary {_dt} reconcile failed - NOT claimed, retrying next tick")
                         except Exception as _e:
                             log.error(f"[ENGINE] S4V2 trigger thread error: {_e}", exc_info=True)
                     threading.Thread(target=_run_s4v2_trigger, daemon=True).start()
@@ -1018,7 +1022,6 @@ if __name__=="__main__":
                 _s4v3_already_caught_up = s4v3.last_1m_ts is not None and s4v3.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= (_tv3_dt - __import__('datetime').timedelta(minutes=1))
                 _tv3_dt_engine_label = _tv3_dt - __import__('datetime').timedelta(minutes=240)
                 if not _s4v3_already_caught_up:
-                    _ws_state["last_s4v3_tf"] = max(_ws_state["last_s4v3_tf"], _tv3_dt_engine_label)
                     log.info(f"[ENGINE] Boundary watcher trigger S4V3: {_tv3} - checking S4V3 (independent retry, decoupled from WS claim)")
                     def _run_s4v3_trigger(_dt=_tv3_dt):
                         try:
@@ -1044,6 +1047,9 @@ if __name__=="__main__":
                                 log.critical(f"[ENGINE] S4V3 boundary {_dt} STILL not caught up after 14100s safety cap - reconcile incomplete, signal SKIPPED (not fired)")
                             if _reconcile_window_from_rest(s4v3, 240):
                                 check_and_fire(s4v3, is_s4=False)
+                                _ws_state["last_s4v3_tf"] = max(_ws_state["last_s4v3_tf"], _tv3_dt_engine_label)
+                            else:
+                                log.warning(f"[ENGINE] S4V3 trigger boundary {_dt} reconcile failed - NOT claimed, retrying next tick")
                         except Exception as _e:
                             log.error(f"[ENGINE] S4V3 trigger thread error: {_e}", exc_info=True)
                     threading.Thread(target=_run_s4v3_trigger, daemon=True).start()
