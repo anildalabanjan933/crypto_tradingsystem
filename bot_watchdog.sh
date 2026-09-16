@@ -24,11 +24,11 @@ send_telegram() {
 
 screen_running() {
     local name=$1
-    if timeout 5 /usr/bin/screen -list 2>/dev/null | grep -qE "[0-9]+\.${name}[[:space:]]"; then
+    if timeout 15 /usr/bin/screen -list 2>/dev/null | grep -qE "[0-9]+\.${name}[[:space:]]"; then
         return 0
     fi
     sleep 2
-    timeout 5 /usr/bin/screen -list 2>/dev/null | grep -qE "[0-9]+\.${name}[[:space:]]"
+    timeout 15 /usr/bin/screen -list 2>/dev/null | grep -qE "[0-9]+\.${name}[[:space:]]"
 }
 
 check_and_start() {
@@ -37,6 +37,10 @@ check_and_start() {
     local log=$3
     local alert_key=$REPO/logs/watchdog_down_${name}.txt
     if ! screen_running "$name"; then
+        sleep 3
+        if screen_running "$name"; then
+            return
+        fi
         if pgrep -f "$script" >/dev/null 2>&1; then
             echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] $name screen-list flaked but process alive via pgrep - skip alert" >> logs/maintenance.log
             return
