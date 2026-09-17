@@ -124,6 +124,13 @@ def check_orphan_position(bot, csv_path):
                 return
             if not os.path.exists(flag_file):
                 entry_price = pos.get('entry_price', 0.0)
+                if not entry_price or entry_price <= 0:
+                    entry_price = pos.get('exit_price', 0.0)
+                if not entry_price or entry_price <= 0:
+                    try:
+                        entry_price = om.get_current_price()
+                    except Exception:
+                        entry_price = 0.0
                 log.critical(f"[{bot['name']}] ORPHAN POSITION CONFIRMED - AUTO-HEALING")
                 new_ts = None
                 _last_err = None
@@ -134,9 +141,9 @@ def check_orphan_position(bot, csv_path):
                     except Exception as _he:
                         _last_err = _he
                         time.sleep(2)
-                with open(flag_file, 'w') as ff:
-                    ff.write(str(time.time()))
                 if new_ts:
+                    with open(flag_file, 'w') as ff:
+                        ff.write(str(time.time()))
                     log.info(f"[{bot['name']}] Orphan auto-heal OK entry_ts={new_ts}")
                     send_alert(f"CTS {bot['name']} ORPHAN POSITION AUTO-HEALED - wrote PENDING row entry_ts={new_ts} dir={direction} size={abs_size} entry={entry_price}. No position closed, fully automatic.")
                 else:
