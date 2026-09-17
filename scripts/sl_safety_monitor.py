@@ -10,6 +10,9 @@ import sys
 import time
 import logging
 import hashlib
+import fcntl
+import csv as _csv_mod
+from datetime import datetime, timezone
 sys.path.insert(0, ".")
 from dotenv import load_dotenv
 load_dotenv()
@@ -79,34 +82,65 @@ def check_stuck_pending(bot, csv_path):
         log.error(f"[{bot['name']}] check_stuck_pending failed: {e}")
 
 
+_orphan_candidates = {}
+
+def _now_utc_str():
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+
+def _append_orphan_pending_row(csv_path, direction, entry_price, size):
+    lock_path = csv_path + ".lock"
+    lf = open(lock_path, "a")
+    fcntl.flock(lf, fcntl.LOCK_EX)
+    try:
+        entry_ts = _now_utc_str()
+        with open(csv_path, "a", newline="") as f:
+            w = _csv_mod.writer(f)
+            w.writerow([entry_ts, "PENDING", direction, size, entry_price, ""])
+        return entry_ts
+    finally:
+        fcntl.flock(lf, fcntl.LOCK_UN)
+        lf.close()
+
 def check_orphan_position(bot, csv_path):
-    """Isolated check: exchange shows OPEN position but CSV last row is not PENDING (closed/missing).
-    Reverse of check_stuck_pending. Read-only + own API call - does not touch other logic."""
     flag_file = f"logs/orphan_flag_{bot['name']}.txt"
     try:
-        om = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
+        om = OrderManager(bot['api_key'], bot['api_secret'], testnet=True)
         pos = om.get_position()
-        if not pos.get("success"):
+        if not pos.get('success'):
             return
-        size = pos.get("size", 0)
+        size = pos.get('size', 0)
         with open(csv_path) as cf:
             rows = cf.readlines()
-        last = rows[-1].strip().split(",") if rows else []
-        csv_pending = len(last) >= 2 and last[1] == "PENDING"
+        last = rows[-1].strip().split(',') if rows else []
+        csv_pending = len(last) >= 2 and last[1] == 'PENDING'
         if size != 0 and not csv_pending:
+            direction = pos.get('direction', 'UNKNOWN').lower()
+            abs_size = abs(size)
+            cand = _orphan_candidates.get(bot['name'])
+            if cand is None or cand[1] != direction or cand[2] != abs_size:
+                _orphan_candidates[bot['name']] = (time.time(), direction, abs_size)
+                return
+            if time.time() - cand[0] < 55:
+                return
             if not os.path.exists(flag_file):
-                with open(flag_file, "w") as ff:
-                    ff.write(str(time.time()))
-                log.critical(f"[{bot['name']}] ORPHAN POSITION detected - exchange OPEN (size={size}) but CSV shows no PENDING row")
-                send_alert(f"CTS {bot['name']} ORPHAN POSITION - exchange has OPEN position but CSV shows it closed/missing\nSize: {size}\nCheck SL and CSV manually")
+                entry_price = pos.get('entry_price', 0.0)
+                log.critical(f"[{bot['name']}] ORPHAN POSITION CONFIRMED - AUTO-HEALING")
+                try:
+                    new_ts = _append_orphan_pending_row(csv_path, direction, entry_price, abs_size)
+                    with open(flag_file, 'w') as ff:
+                        ff.write(str(time.time()))
+                    log.info(f"[{bot['name']}] Orphan auto-heal OK entry_ts={new_ts}")
+                    send_alert(f"CTS {bot['name']} ORPHAN POSITION AUTO-HEALED - wrote PENDING row entry_ts={new_ts} dir={direction} size={abs_size} entry={entry_price}. No position closed.")
+                except Exception as _he:
+                    log.critical(f"[{bot['name']}] Orphan auto-heal FAILED: {_he}")
+                    send_alert(f"CTS {bot['name']} CRITICAL - ORPHAN AUTO-HEAL FAILED: {_he}. MANUAL CHECK REQUIRED")
         else:
             if os.path.exists(flag_file):
                 os.remove(flag_file)
+            _orphan_candidates.pop(bot['name'], None)
     except Exception as e:
         log.error(f"[{bot['name']}] check_orphan_position failed: {e}")
 
-
-_fail_count = {}
 
 def check_extra_risks(bot, csv_path):
     """Isolated checks: API auth failure streak, low balance, size/direction mismatch.
