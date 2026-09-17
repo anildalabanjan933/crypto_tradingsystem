@@ -446,6 +446,10 @@ else:
 open_lot_size   = LOT_SIZE
 if position is None:
     open_entry_price = 0.0
+else:
+    _recovered_size = abs(pos.get("size", 0)) if pos.get("success") else 0
+    if _recovered_size > 0:
+        open_lot_size = _recovered_size
 last_processed_seq = 0
 # FIX: on startup, if the live signal file already points at a timestamp we
 # have already handled (<= last_known_ts), mark it as seen immediately so it
