@@ -457,7 +457,8 @@ else:
             break
 
 open_lot_size   = LOT_SIZE
-open_entry_price = 0.0
+if position is None:
+    open_entry_price = 0.0
 last_processed_seq = 0
 # FIX: on startup, if the live signal file already points at a timestamp we
 # have already handled (<= last_known_ts), mark it as seen immediately so it
