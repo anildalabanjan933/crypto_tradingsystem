@@ -197,6 +197,11 @@ def load_history(state):
             # S4 backtest uses closes[0] = first close of full history
             state.box_size=max(1,round(_closes[0]*state.params["renko_box_pct"]))
         log.info(f"[{state.label}] box_size={state.box_size} (matches backtest exactly)")
+        # ANCHOR FIX: capture TRUE full-history first close BEFORE any 800-bar
+        # trim happens, so the locked reference matches what a full backtest
+        # run would use as closes[0] - not whatever the rolling live window's
+        # front bar happens to be after TF_BAR_CAP trimming.
+        state.full_history_first_close = float(_closes[0])
     log.info(f"[{state.label}] Loaded {len(df):,} candles | last={state.last_1m_ts}")
     # Pre-build 1H/2H dataframe ONCE - no resample on every signal check
     tf=state.params["renko_timeframe"]
@@ -327,14 +332,29 @@ def _get_locked_reference(label, state):
     if getattr(state, "_locked_ref", None) is not None:
         return state._locked_ref
     fname = f"logs/box_ref_price_{label}.txt"
+    _true_anchor = getattr(state, "full_history_first_close", None)
     try:
         _ref = float(open(fname).read().strip())
+        # SELF-REPAIR (automatic, startup-only, zero manual step): if a saved
+        # anchor disagrees with the true full-history anchor by more than one
+        # box-width, it was locked pre-fix from an already-trimmed rolling
+        # window. Auto-correct now. Only runs when flat (open_entry_ts is
+        # None) so it never alters an open position's math mid-hold - if a
+        # position is open, keep existing value this run, self-heal next
+        # restart once flat.
+        if _true_anchor is not None and state.open_entry_ts is None:
+            _box = state.box_size if state.box_size else 1
+            if abs(_ref - _true_anchor) > _box:
+                log.critical(f"[{label}] box_ref_price stale/mismatched (saved={_ref}, true_full_history_anchor={_true_anchor}, box={_box}) - auto-correcting to true anchor, zero manual step")
+                _ref = _true_anchor
+                with open(fname, "w") as _f:
+                    _f.write(str(_ref))
     except Exception:
-        _ref = float(state.candles_tf['close'].iloc[0])
+        _ref = _true_anchor if _true_anchor is not None else float(state.candles_tf['close'].iloc[0])
         try:
             with open(fname, "w") as _f:
                 _f.write(str(_ref))
-            log.warning(f"[{label}] box_ref_price missing/invalid - locked NEW reference={_ref}, persisted to {fname}")
+            log.warning(f"[{label}] box_ref_price missing/invalid - locked NEW reference={_ref} (from true full-history anchor), persisted to {fname}")
         except Exception as _e:
             log.error(f"[{label}] Failed to persist locked reference to {fname}: {_e}")
     state._locked_ref = _ref
