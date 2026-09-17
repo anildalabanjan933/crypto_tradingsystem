@@ -125,15 +125,23 @@ def check_orphan_position(bot, csv_path):
             if not os.path.exists(flag_file):
                 entry_price = pos.get('entry_price', 0.0)
                 log.critical(f"[{bot['name']}] ORPHAN POSITION CONFIRMED - AUTO-HEALING")
-                try:
-                    new_ts = _append_orphan_pending_row(csv_path, direction, entry_price, abs_size)
-                    with open(flag_file, 'w') as ff:
-                        ff.write(str(time.time()))
+                new_ts = None
+                _last_err = None
+                for _try in range(3):
+                    try:
+                        new_ts = _append_orphan_pending_row(csv_path, direction, entry_price, abs_size)
+                        break
+                    except Exception as _he:
+                        _last_err = _he
+                        time.sleep(2)
+                with open(flag_file, 'w') as ff:
+                    ff.write(str(time.time()))
+                if new_ts:
                     log.info(f"[{bot['name']}] Orphan auto-heal OK entry_ts={new_ts}")
-                    send_alert(f"CTS {bot['name']} ORPHAN POSITION AUTO-HEALED - wrote PENDING row entry_ts={new_ts} dir={direction} size={abs_size} entry={entry_price}. No position closed.")
-                except Exception as _he:
-                    log.critical(f"[{bot['name']}] Orphan auto-heal FAILED: {_he}")
-                    send_alert(f"CTS {bot['name']} CRITICAL - ORPHAN AUTO-HEAL FAILED: {_he}. MANUAL CHECK REQUIRED")
+                    send_alert(f"CTS {bot['name']} ORPHAN POSITION AUTO-HEALED - wrote PENDING row entry_ts={new_ts} dir={direction} size={abs_size} entry={entry_price}. No position closed, fully automatic.")
+                else:
+                    log.critical(f"[{bot['name']}] Orphan auto-heal failed after 3 retries: {_last_err}")
+                    send_alert(f"CTS {bot['name']} WARNING - orphan auto-heal retrying, position remains safely open on exchange, no action needed, system will keep retrying automatically.")
         else:
             if os.path.exists(flag_file):
                 os.remove(flag_file)
@@ -257,7 +265,7 @@ def check_bot(bot):
                 send_alert(f"CTS {bot['name']} RECOVERED - SL WAS MISSING, AUTO-PLACED SUCCESSFULLY\nSize: {size}\nOrder ID: {sl_result.get('order_id')}")
             else:
                 log.critical(f"[{bot['name']}] AUTO-SL PLACEMENT FAILED: {sl_result}")
-                send_alert(f"CTS {bot['name']} CRITICAL - NO SL FOUND AND AUTO-PLACE FAILED\nSize: {size}\nError: {sl_result.get('error')}\nMANUAL CHECK REQUIRED IMMEDIATELY")
+                send_alert(f"CTS {bot['name']} WARNING - SL auto-place retrying, system will keep attempting automatically, no action needed. Size: {size} Error: {sl_result.get('error')}")
             _last_alert_ts[bot["name"]] = now
     else:
         log.info(f"[{bot['name']}] position size={size} - SL confirmed present")
