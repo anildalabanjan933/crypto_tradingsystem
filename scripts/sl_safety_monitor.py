@@ -83,6 +83,7 @@ def check_stuck_pending(bot, csv_path):
 
 
 _orphan_candidates = {}
+_fail_count = {}
 
 def _now_utc_str():
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
