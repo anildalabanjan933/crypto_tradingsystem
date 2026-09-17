@@ -161,6 +161,11 @@ def check_extra_risks(bot, csv_path):
             exch_dir = pos.get("direction", "").lower()
             exch_size = abs(size)
             if csv_dir != exch_dir or csv_size != exch_size:
+                time.sleep(10)
+                pos = get_position(bot)
+                exch_dir = pos.get("direction", "").lower()
+                exch_size = abs(pos.get("size", 0))
+            if csv_dir != exch_dir or csv_size != exch_size:
                 if not os.path.exists(mismatch_flag):
                     with open(mismatch_flag, "w") as ff:
                         ff.write(str(time.time()))
