@@ -112,8 +112,9 @@ class RenkoSMIIOCrossV3Strategy(BaseStrategy):
         timestamps = (df_tf.index if isinstance(df_tf.index, pd.DatetimeIndex)
                       else pd.to_datetime(df_tf['timestamp']))
 
-        box_size = max(1, round((self.reference_price if self.reference_price else closes[0]) * self.renko_box_pct))
-        builder = RenkoBuilder(box_size=box_size)
+        _anchor = self.reference_price if self.reference_price else closes[0]
+        box_size = max(1, round(_anchor * self.renko_box_pct))
+        builder = RenkoBuilder(box_size=box_size, reference_price=_anchor)
         renko_raw = builder.build(closes)
         if renko_raw is None or len(renko_raw) == 0:
             raise ValueError("RenkoBuilder produced no bricks")

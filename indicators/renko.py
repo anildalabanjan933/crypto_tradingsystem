@@ -63,8 +63,9 @@ class RenkoBuilder:
     renko_low   : min(renko_open, renko_close)
     """
 
-    def __init__(self, box_size: float = 200.0):
+    def __init__(self, box_size: float = 200.0, reference_price: float = None):
         self.box_size = box_size
+        self.reference_price = reference_price
 
     _cache = {}
 
@@ -89,12 +90,13 @@ class RenkoBuilder:
         if n == 0:
             return pd.DataFrame(columns=cols)
 
-        key = box
+        _anchor = self.reference_price if self.reference_price is not None else closes[0]
+        key = (box, _anchor)
         cached = RenkoBuilder._cache.get(key)
 
         start_i = 0
-        r_open = closes[0]
-        r_close = closes[0]
+        r_open = _anchor
+        r_close = _anchor
         r_dir = 0
         records = []
 
