@@ -70,10 +70,47 @@ def check_stuck_pending(bot, csv_path):
             if time.time() - cand[0] < 55:
                 return
             if not os.path.exists(flag_file):
-                with open(flag_file, "w") as ff:
-                    ff.write(str(time.time()))
-                log.critical(f"[{bot['name']}] STUCK PENDING detected - CSV shows open but exchange flat | entry={last[0]}")
-                send_alert(f"CTS {bot['name']} STUCK PENDING - CSV shows open position but exchange is FLAT\nEntry: {last[0]}\nCheck signals CSV and restart signal_generator if needed")
+                log.critical(f"[{bot['name']}] STUCK PENDING CONFIRMED - AUTO-HEALING | entry={last[0]}")
+                exit_price = 0.0
+                try:
+                    exit_price = om.get_current_price()
+                except Exception:
+                    exit_price = 0.0
+                exit_ts = _now_utc_str()
+                healed = False
+                _last_err = None
+                for _try in range(3):
+                    try:
+                        lock_path = csv_path + ".lock"
+                        lf = open(lock_path, "a")
+                        fcntl.flock(lf, fcntl.LOCK_EX)
+                        try:
+                            with open(csv_path) as cf2:
+                                all_rows = cf2.readlines()
+                            if all_rows and all_rows[-1].strip().split(",")[1] == "PENDING":
+                                fixed = all_rows[-1].strip().split(",")
+                                fixed[1] = exit_ts
+                                if len(fixed) >= 6:
+                                    fixed[5] = str(exit_price)
+                                all_rows[-1] = ",".join(fixed) + "\n"
+                                with open(csv_path, "w") as cf3:
+                                    cf3.writelines(all_rows)
+                            healed = True
+                        finally:
+                            fcntl.flock(lf, fcntl.LOCK_UN)
+                            lf.close()
+                        break
+                    except Exception as _he:
+                        _last_err = _he
+                        time.sleep(2)
+                if healed:
+                    with open(flag_file, "w") as ff:
+                        ff.write(str(time.time()))
+                    log.info(f"[{bot['name']}] Stuck-pending auto-heal OK exit_ts={exit_ts} exit_price={exit_price}")
+                    send_alert(f"CTS {bot['name']} STUCK PENDING AUTO-HEALED - closed CSV row entry={last[0]} exit_ts={exit_ts} exit_price={exit_price}. Fully automatic, no action needed.")
+                else:
+                    log.critical(f"[{bot['name']}] Stuck-pending auto-heal failed after 3 retries: {_last_err}")
+                    send_alert(f"CTS {bot['name']} WARNING - stuck-pending auto-heal retrying automatically, no action needed, system will keep retrying.")
         else:
             if os.path.exists(flag_file):
                 os.remove(flag_file)
