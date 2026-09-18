@@ -416,9 +416,21 @@ def check_and_fire(state,is_s4=False):
         now_utc=datetime.now(timezone.utc)
         # Collect ALL new signals after last_signal_ts - oldest first
         new_sigs=[]
+        _tf_minutes_map={"S4":120,"S4V2":30,"S4V3":240,"S2":120}
+        _tfm=_tf_minutes_map.get(state.label,120)
+        _is_startup=(state.last_entry_ts is None and state.last_exit_ts is None)
         for sig in signals:
             ts=sig.get("timestamp","")
             if not ts: continue
+            if not _is_startup:
+                try:
+                    _sig_dt=datetime.strptime(ts,"%Y-%m-%dT%H:%M:%S")
+                    _age_min=(now_utc.replace(tzinfo=None)-_sig_dt).total_seconds()/60.0
+                    if _age_min > _tfm*1.5:
+                        log.critical(f"[{state.label}] REPAINT GUARD: signal ts={ts} type={sig.get('''signal_type''')} is {_age_min:.0f}min old (threshold {_tfm*1.5:.0f}min) - recomputation disagrees with already-locked history, skipping auto-fire, needs manual review")
+                        continue
+                except Exception:
+                    pass
             sig_type_chk=sig.get("signal_type","")
             if sig_type_chk=="EXIT":
                 if state.last_exit_ts and ts<=state.last_exit_ts: continue
