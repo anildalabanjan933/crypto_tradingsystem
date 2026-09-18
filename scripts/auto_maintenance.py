@@ -10,7 +10,7 @@ Runs automatically - no manual action needed ever.
 import os, glob, shutil, time, logging
 from datetime import datetime, timezone
 
-BASE = '/home/anildalabanjan933/crypto_trading_system'
+BASE = '/home/anildalabanjan7/crypto_tradingsystem'
 LOG  = os.path.join(BASE, 'logs', 'maintenance.log')
 
 logging.basicConfig(
@@ -210,5 +210,5 @@ except Exception as _hb_e:
 
 # Auto restart bots after maintenance
 import subprocess
-subprocess.run(["/bin/bash", "/home/anildalabanjan933/crypto_trading_system/bot_watchdog.sh"])
+subprocess.run(["/bin/bash", "/home/anildalabanjan7/crypto_tradingsystem/bot_watchdog.sh"])
 

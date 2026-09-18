@@ -40,17 +40,53 @@ ALERT_COOLDOWN = 300  # don't spam same bot alert more than once per 5 min
 _stuck_candidates = {}  # bot_name -> (first_flat_ts, entry_id)
 
 def check_stuck_pending(bot, csv_path):
-    """Isolated check: CSV shows open PENDING row but exchange position is flat.
-    This is the exact signature of the startup-lock bug (fixed 19-Aug-2026).
-    Read-only + own API call - does not touch check_bot()/SL logic.
-    Requires 2 consecutive flat detections (~60s apart) before alerting,
-    to avoid false alarm during normal SL-fill/CSV-write timing race."""
+    """Isolated check: CSV shows open PENDING row(s) but exchange position is flat,
+    OR historical PENDING rows already superseded by a newer row (guaranteed stale).
+    Scans ALL rows, not just the last one, so no PENDING row can ever remain stuck
+    permanently. Fully automatic, no manual step, no Telegram watching required."""
     flag_file = f"logs/stuck_flag_{bot['name']}.txt"
     try:
         with open(csv_path) as cf:
             rows = cf.readlines()
         if not rows:
             return
+
+        # PASS 1: heal any BACKLOG PENDING row (not the last row in the file).
+        # A newer trade row already exists after it, so this PENDING is
+        # guaranteed stale/superseded - heal immediately, no exchange check
+        # or wait needed, since the bot has already moved on to a new trade.
+        changed = False
+        for i in range(len(rows) - 1):
+            parts = rows[i].strip().split(",")
+            if len(parts) >= 2 and parts[1] == "PENDING":
+                next_parts = rows[i + 1].strip().split(",")
+                exit_ts = next_parts[0] if len(next_parts) > 0 else _now_utc_str()
+                exit_price = next_parts[4] if len(next_parts) > 4 else "0.0"
+                parts[1] = exit_ts
+                if len(parts) >= 6:
+                    parts[5] = str(exit_price)
+                rows[i] = ",".join(parts) + "\n"
+                changed = True
+                log.critical(f"[{bot['name']}] BACKLOG STUCK PENDING auto-healed (superseded by newer row) | entry={parts[0]} exit_ts={exit_ts} exit_price={exit_price}")
+
+        if changed:
+            for _try in range(3):
+                try:
+                    lock_path = csv_path + ".lock"
+                    lf = open(lock_path, "a")
+                    fcntl.flock(lf, fcntl.LOCK_EX)
+                    try:
+                        with open(csv_path, "w") as cf3:
+                            cf3.writelines(rows)
+                    finally:
+                        fcntl.flock(lf, fcntl.LOCK_UN)
+                        lf.close()
+                    send_alert(f"CTS {bot['name']} BACKLOG STUCK PENDING AUTO-HEALED - closed stale CSV row(s) superseded by newer trade. Fully automatic, no action needed.")
+                    break
+                except Exception:
+                    time.sleep(2)
+
+        # PASS 2: existing logic for the LAST row (may be a live open position).
         last = rows[-1].strip().split(",")
         if len(last) < 2 or last[1] != "PENDING":
             if os.path.exists(flag_file):

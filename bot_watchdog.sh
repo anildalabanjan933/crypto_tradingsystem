@@ -10,6 +10,17 @@ export TERM=xterm
 cd /home/anildalabanjan7/crypto_tradingsystem
 
 REPO=/home/anildalabanjan7/crypto_tradingsystem
+DISK_COMMIT=$(git -C "$REPO" rev-parse HEAD 2>/dev/null)
+RUNNING_COMMIT_FILE="$REPO/logs/engine_running_commit.txt"
+if [ -f "$RUNNING_COMMIT_FILE" ]; then
+    RUNNING_COMMIT=$(cat "$RUNNING_COMMIT_FILE" 2>/dev/null)
+    if [ -n "$RUNNING_COMMIT" ] && [ "$RUNNING_COMMIT" != "$DISK_COMMIT" ]; then
+        echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] VERSION DRIFT: running=$RUNNING_COMMIT disk=$DISK_COMMIT - restarting signal_generator" >> logs/maintenance.log
+        for _pid in $(/usr/bin/screen -list 2>/dev/null | grep -E "[0-9]+\.signal_generator[[:space:]]" | awk "{print \$1}" | cut -d. -f1); do
+            /usr/bin/screen -S "${_pid}.signal_generator" -X quit 2>/dev/null
+        done
+    fi
+fi
 ALERT_FILE=$REPO/logs/watchdog_alert_sent.txt
 
 send_telegram() {

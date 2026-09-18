@@ -9,5 +9,5 @@ headless = true
 fastReruns = true
 
 [client]
-showErrorDetails = false
+showErrorDetails = true
 toolbarMode = "minimal"
