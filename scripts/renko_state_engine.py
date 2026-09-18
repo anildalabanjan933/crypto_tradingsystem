@@ -422,15 +422,6 @@ def check_and_fire(state,is_s4=False):
         for sig in signals:
             ts=sig.get("timestamp","")
             if not ts: continue
-            if not _is_startup:
-                try:
-                    _sig_dt=datetime.strptime(ts,"%Y-%m-%dT%H:%M:%S")
-                    _age_min=(now_utc.replace(tzinfo=None)-_sig_dt).total_seconds()/60.0
-                    if _age_min > _tfm*1.5:
-                        log.critical(f"[{state.label}] REPAINT GUARD: signal ts={ts} type={sig.get('''signal_type''')} is {_age_min:.0f}min old (threshold {_tfm*1.5:.0f}min) - recomputation disagrees with already-locked history, skipping auto-fire, needs manual review")
-                        continue
-                except Exception:
-                    pass
             sig_type_chk=sig.get("signal_type","")
             if sig_type_chk=="EXIT":
                 if state.last_exit_ts and ts<=state.last_exit_ts: continue
@@ -439,6 +430,15 @@ def check_and_fire(state,is_s4=False):
                     continue
             else:
                 if state.last_entry_ts and ts<=state.last_entry_ts: continue
+            if not _is_startup:
+                try:
+                    _sig_dt=datetime.strptime(ts,"%Y-%m-%dT%H:%M:%S")
+                    _age_min=(now_utc.replace(tzinfo=None)-_sig_dt).total_seconds()/60.0
+                    if _age_min > _tfm*1.5:
+                        log.critical(f"[{state.label}] REPAINT GUARD: signal ts={ts} type={sig.get('signal_type')} is {_age_min:.0f}min old (threshold {_tfm*1.5:.0f}min) - already-locked history repaint attempt blocked")
+                        continue
+                except Exception:
+                    pass
             new_sigs.append(sig)
         state._first_check_since_restart=False
         if not new_sigs: return
