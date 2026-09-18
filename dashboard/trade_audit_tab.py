@@ -145,8 +145,8 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                 "symbol"       : "BTCUSD",
                 "entry_ts_raw" : _entry_ts_raw,
                 "exit_ts_raw"  : _exit_ts_raw,
-                "entry_ist"    : _to_ist_audit(_entry_ts_raw),
-                "exit_ist"     : _to_ist_audit(_exit_ts_raw) if _exit_ts_raw not in ("", "PENDING", "nan") else "-",
+                "entry_ist"    : _to_ist_audit(_offset_ts_audit(_entry_ts_raw, strat_label)),
+                "exit_ist"     : _to_ist_audit(_offset_ts_audit(_exit_ts_raw, strat_label)) if _exit_ts_raw not in ("", "PENDING", "nan") else "-",
                 "entry_p"      : _entry_p,
                 "exit_p"       : _exit_p,
                 "lot"          : 1,
@@ -167,7 +167,7 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
         _sig_csv_map = {"S4": "logs/signals_s4.csv", "S4V2": "logs/signals_s4v2.csv", "S4V3": "logs/signals_s4v3.csv"}
         _sig_path = _sig_csv_map.get(strat_label)
         _today_end = _dt_audit.date.today()
-        if _sig_path and from_date <= _today_end <= to_date:
+        if _sig_path:
             try:
                 with open(_sig_path) as _sf:
                     _sig_lines = [ln.strip().split(',') for ln in _sf if ln.strip()]

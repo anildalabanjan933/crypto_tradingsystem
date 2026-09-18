@@ -13,6 +13,13 @@ import warnings,io,contextlib
 import pandas as pd
 import numpy as np
 warnings.filterwarnings("ignore")
+try:
+    import subprocess as _sp_ver
+    _commit = _sp_ver.check_output(["git","rev-parse","HEAD"], cwd="/home/anildalabanjan7/crypto_tradingsystem").decode().strip()
+    with open("logs/engine_running_commit.txt","w") as _f_ver:
+        _f_ver.write(_commit)
+except Exception:
+    pass
 from indicators.renko import RenkoBuilder,SupertrendIndicator
 from data.download_market_data import download_or_update
 from strategies.backtest.renko_reversal_strategy import RenkoReversalStrategy

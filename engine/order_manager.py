@@ -224,6 +224,22 @@ class OrderManager:
 
         if client_order_id:
             client_order_id = client_order_id[:32]
+            _base_cid = client_order_id.rsplit('_a', 1)[0]
+            for _prior_attempt in range(attempt + 1):
+                _prior_cid = f"{_base_cid}_a{_prior_attempt}"[:32]
+                _existing_p = self._get_order_by_client_id(_prior_cid)
+                if _existing_p:
+                    _unfilled_p = int(_existing_p.get("unfilled_size", size))
+                    _filled_p = int(_existing_p.get("size", size)) - _unfilled_p
+                    if _filled_p > 0:
+                        logging.warning(f"[OrderManager] Prior attempt cid={_prior_cid} DID fill (id={_existing_p.get('id')}) - reusing, blocking duplicate retry")
+                        _avg_p = self._get_avg_fill_price(_existing_p["id"])
+                        _comm_p = self._get_order_commission(_existing_p["id"])
+                        return {"success": True, "order_id": _existing_p["id"], "state": _existing_p.get("state"),
+                                "side": _existing_p.get("side"), "size": _filled_p,
+                                "filled_price": _existing_p.get("limit_price", "market"),
+                                "avg_fill_price": float(_avg_p) if _avg_p else 0.0,
+                                "commission": float(_comm_p) if _comm_p else 0.0}
             _existing = self._get_order_by_client_id(client_order_id)
             if _existing:
                 logging.warning(f"[OrderManager] client_order_id={client_order_id} ALREADY EXISTS (id={_existing.get('id')}) - reusing, NOT placing new order")
