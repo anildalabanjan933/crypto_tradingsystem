@@ -108,7 +108,7 @@ class StrategyState:
         self.label=label; self.params=params
         self.candles_1m=None; self.last_1m_ts=None
         self.candles_tf=None  # pre-built 1H or 2H dataframe - built once on startup
-        self.current_direction=None; self.last_signal_ts=None; self.last_exit_ts=None; self.last_entry_ts=None
+        self.current_direction=None; self.last_signal_ts=None; self.last_exit_ts=None; self.last_entry_ts=None; self._first_check_since_restart=True
         self.box_size=None
         self.open_entry_ts=None
         self.lock=threading.Lock()
@@ -418,7 +418,7 @@ def check_and_fire(state,is_s4=False):
         new_sigs=[]
         _tf_minutes_map={"S4":120,"S4V2":30,"S4V3":240,"S2":120}
         _tfm=_tf_minutes_map.get(state.label,120)
-        _is_startup=(state.last_entry_ts is None and state.last_exit_ts is None)
+        _is_startup=getattr(state,"_first_check_since_restart",False)
         for sig in signals:
             ts=sig.get("timestamp","")
             if not ts: continue
@@ -440,6 +440,7 @@ def check_and_fire(state,is_s4=False):
             else:
                 if state.last_entry_ts and ts<=state.last_entry_ts: continue
             new_sigs.append(sig)
+        state._first_check_since_restart=False
         if not new_sigs: return
         # Fire ONE signal at a time - EXIT before ENTRY - oldest first
         for sig in new_sigs:
