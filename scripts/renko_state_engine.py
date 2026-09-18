@@ -336,8 +336,16 @@ def _reconcile_window_from_rest(state, tf_minutes):
     return critical_covered
 
 def _get_locked_reference(label, state):
+    import time as _time
     if getattr(state, "_locked_ref", None) is not None:
-        return state._locked_ref
+        _now=_time.time()
+        if state.open_entry_ts is None and _now - getattr(state, "_last_ref_check", 0) > 300:
+            state._last_ref_check = _now
+        else:
+            _true = getattr(state, "full_history_first_close", None)
+            if _true is not None and abs(state._locked_ref - _true) > (state.box_size or 1):
+                log.critical(f"[{label}] LIVE DRIFT DETECTED: locked_ref={state._locked_ref} vs true_anchor={_true} - will self-correct next flat restart")
+            return state._locked_ref
     fname = f"logs/box_ref_price_{label}.txt"
     _true_anchor = getattr(state, "full_history_first_close", None)
     try:
