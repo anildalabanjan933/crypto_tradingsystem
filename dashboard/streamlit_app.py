@@ -1037,6 +1037,7 @@ def _pair_orders_top(orders):
             })
     return pairs
 
+@st.cache_data(ttl=30)
 def _parse_log_trades(log_path, log_path_bak=None):
     import re, datetime as _dtp
     pairs = []
