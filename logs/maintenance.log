@@ -1,0 +1,628 @@
+[2026-09-10T12:10:33] DOWN alert sent for issue_tracker
+[2026-09-10T12:10:33] Started issue_tracker
+[2026-09-10T12:10:44] Started issue_tracker
+[2026-09-10T12:13:40] DOWN alert sent for live_s4
+[2026-09-10T12:13:40] Started live_s4
+2026-09-10 12:15:38,276 [MAINTENANCE] Starting auto maintenance - 2026-09-10 12:15:38 UTC
+2026-09-10 12:15:38,321 [MAINTENANCE] Pycache cleaned: 9 dirs | 1.17MB freed | days_since=20707
+2026-09-10 12:15:38,342 [MAINTENANCE] Journal cleanup: sudo: a password is required
+2026-09-10 12:15:38,343 [MAINTENANCE] Log OK: renko_state_engine.log | 0.03MB
+2026-09-10 12:15:38,343 [MAINTENANCE] Log OK: position_risk_monitor.log | 0.01MB
+2026-09-10 12:15:38,343 [MAINTENANCE] Log OK: live_trading_s4v3.log | 7.35MB
+2026-09-10 12:15:38,343 [MAINTENANCE] Log OK: boundary_watcher.log | 0.00MB
+2026-09-10 12:15:38,343 [MAINTENANCE] Log OK: live_trading_testmember1_s4.log | 3.70MB
+2026-09-10 12:15:38,343 [MAINTENANCE] Log OK: sl_safety_monitor.log | 0.00MB
+2026-09-10 12:15:38,343 [MAINTENANCE] Log OK: dashboard.log | 0.05MB
+2026-09-10 12:15:38,343 [MAINTENANCE] Log OK: live_trading_s4.log | 7.22MB
+2026-09-10 12:15:38,343 [MAINTENANCE] Log OK: issue_tracker.log | 0.02MB
+2026-09-10 12:15:38,343 [MAINTENANCE] Log OK: maintenance_watcher.log | 0.01MB
+2026-09-10 12:15:38,343 [MAINTENANCE] Log OK: maintenance.log | 0.00MB
+2026-09-10 12:15:38,343 [MAINTENANCE] Log OK: live_trading_s4v2.log | 7.02MB
+2026-09-10 12:15:38,343 [MAINTENANCE] Log OK: margin_monitor.log | 0.00MB
+2026-09-10 12:15:38,346 [MAINTENANCE] Output cleaned: trade_log_S4 | deleted 1 old files | kept 5
+2026-09-10 12:15:38,404 [MAINTENANCE] Output folder: 42.9MB | deleted 1 files total
+2026-09-10 12:15:38,408 [MAINTENANCE] Junk files cleaned: 11 .bak/.lock files removed
+2026-09-10 12:15:38,408 [MAINTENANCE] Disk OK: 20.6% used | 22.2GB free
+2026-09-10 12:15:38,408 [MAINTENANCE] Auto maintenance complete
+2026-09-10 12:15:38,408 [MAINTENANCE] Regenerating signal CSVs for S4V2 and S4...
+2026-09-10 12:15:52,881 [MAINTENANCE] Signal CSVs regenerated successfully
+2026-09-10 12:15:52,881 [MAINTENANCE] Checking box_size drift (engine vs backtest)...
+2026-09-10 12:15:56,657 [MAINTENANCE] Box drift check output: S4V2: engine=46 expected=46 MATCH
+S4: engine=46 expected=46 MATCH
+NO DRIFT - engine matches backtest formula exactly
+2026-09-10 12:15:56,874 [MAINTENANCE] Heartbeat check output: [HEARTBEAT] OK - last ran 0.0 hours ago
+[2026-09-10T15:08:18] Started dashboard
+2026-09-11 03:00:06,694 [MAINTENANCE] Starting auto maintenance - 2026-09-11 03:00:06 UTC
+2026-09-11 03:00:09,036 [MAINTENANCE] Pycache OK: 0.91MB | 1 days since last clean
+2026-09-11 03:00:09,143 [MAINTENANCE] Journal cleanup: sudo: a password is required
+2026-09-11 03:00:09,144 [MAINTENANCE] Log OK: renko_state_engine.log | 0.31MB
+2026-09-11 03:00:09,144 [MAINTENANCE] Log OK: position_risk_monitor.log | 0.46MB
+2026-09-11 03:00:09,144 [MAINTENANCE] Log OK: live_trading_s4v3.log | 6.35MB
+2026-09-11 03:00:09,144 [MAINTENANCE] Log OK: boundary_watcher.log | 0.00MB
+2026-09-11 03:00:09,144 [MAINTENANCE] Log OK: live_trading_testmember1_s4.log | 3.25MB
+2026-09-11 03:00:09,144 [MAINTENANCE] Log OK: sl_safety_monitor.log | 0.08MB
+2026-09-11 03:00:09,144 [MAINTENANCE] Log OK: dashboard.log | 0.17MB
+2026-09-11 03:00:09,144 [MAINTENANCE] Log OK: live_trading_s4.log | 5.78MB
+2026-09-11 03:00:09,144 [MAINTENANCE] Log OK: issue_tracker.log | 4.56MB
+2026-09-11 03:00:09,144 [MAINTENANCE] Log OK: maintenance_watcher.log | 0.01MB
+2026-09-11 03:00:09,144 [MAINTENANCE] Log OK: maintenance.log | 0.00MB
+2026-09-11 03:00:09,144 [MAINTENANCE] Log OK: live_trading_s4v2.log | 4.63MB
+2026-09-11 03:00:09,144 [MAINTENANCE] Log OK: margin_monitor.log | 0.01MB
+2026-09-11 03:00:09,146 [MAINTENANCE] Output cleaned: trade_log_S4 | deleted 1 old files | kept 5
+2026-09-11 03:00:09,233 [MAINTENANCE] Output folder: 37.0MB | deleted 1 files total
+2026-09-11 03:00:09,241 [MAINTENANCE] Junk files: clean
+2026-09-11 03:00:09,241 [MAINTENANCE] Disk OK: 36.3% used | 17.8GB free
+2026-09-11 03:00:09,241 [MAINTENANCE] Auto maintenance complete
+2026-09-11 03:00:09,242 [MAINTENANCE] Regenerating signal CSVs for S4V2 and S4...
+2026-09-11 03:00:25,094 [MAINTENANCE] Signal CSVs regenerated successfully
+2026-09-11 03:00:25,094 [MAINTENANCE] Checking box_size drift (engine vs backtest)...
+2026-09-11 03:00:31,040 [MAINTENANCE] Box drift check output: S4V2: engine=46 expected=46 MATCH
+S4: engine=46 expected=46 MATCH
+NO DRIFT - engine matches backtest formula exactly
+2026-09-11 03:00:31,543 [MAINTENANCE] Heartbeat check output: [HEARTBEAT] OK - last ran 0.0 hours ago
+[2026-09-11T12:05:19] DOWN alert sent for live_s4v3
+[2026-09-11T12:05:19] Started live_s4v3
+[2026-09-11T12:59:32] DOWN alert sent for testmember1_s4
+[2026-09-11T12:59:32] Started testmember1_s4
+2026-09-12 03:00:06,675 [MAINTENANCE] Starting auto maintenance - 2026-09-12 03:00:06 UTC
+2026-09-12 03:00:07,495 [MAINTENANCE] Pycache OK: 1.09MB | 2 days since last clean
+2026-09-12 03:00:07,584 [MAINTENANCE] Journal cleanup: sudo: a password is required
+2026-09-12 03:00:07,585 [MAINTENANCE] Log OK: renko_state_engine.log | 0.76MB
+2026-09-12 03:00:07,585 [MAINTENANCE] Log OK: position_risk_monitor.log | 1.90MB
+2026-09-12 03:00:07,585 [MAINTENANCE] Log OK: live_trading_s4v3.log | 3.21MB
+2026-09-12 03:00:07,585 [MAINTENANCE] Log OK: boundary_watcher.log | 0.01MB
+2026-09-12 03:00:07,585 [MAINTENANCE] Log OK: live_trading_testmember1_s4.log | 8.79MB
+2026-09-12 03:00:07,585 [MAINTENANCE] Log OK: sl_safety_monitor.log | 0.30MB
+2026-09-12 03:00:08,110 [MAINTENANCE] Log trimmed: dashboard.log | 21.8MB → kept last 5000 lines
+2026-09-12 03:00:08,111 [MAINTENANCE] Log OK: live_trading_s4.log | 5.78MB
+2026-09-12 03:00:08,558 [MAINTENANCE] Log trimmed: issue_tracker.log | 12.0MB → kept last 5000 lines
+2026-09-12 03:00:08,558 [MAINTENANCE] Log OK: maintenance_watcher.log | 0.01MB
+2026-09-12 03:00:08,558 [MAINTENANCE] Log OK: maintenance.log | 0.01MB
+2026-09-12 03:00:08,558 [MAINTENANCE] Log OK: live_trading_s4v2.log | 3.08MB
+2026-09-12 03:00:08,558 [MAINTENANCE] Log OK: margin_monitor.log | 0.03MB
+2026-09-12 03:00:08,567 [MAINTENANCE] Output cleaned: trade_log_S4 | deleted 1 old files | kept 5
+2026-09-12 03:00:08,570 [MAINTENANCE] Output folder: 37.0MB | deleted 1 files total
+2026-09-12 03:00:08,577 [MAINTENANCE] Junk files cleaned: 6 .bak/.lock files removed
+2026-09-12 03:00:08,578 [MAINTENANCE] Disk OK: 39.1% used | 17.1GB free
+2026-09-12 03:00:08,578 [MAINTENANCE] Auto maintenance complete
+2026-09-12 03:00:08,578 [MAINTENANCE] Regenerating signal CSVs for S4V2 and S4...
+2026-09-12 03:00:29,754 [MAINTENANCE] Signal CSVs regenerated successfully
+2026-09-12 03:00:29,754 [MAINTENANCE] Checking box_size drift (engine vs backtest)...
+2026-09-12 03:00:33,432 [MAINTENANCE] Box drift check output: S4V2: engine=46 expected=46 MATCH
+S4: engine=46 expected=46 MATCH
+NO DRIFT - engine matches backtest formula exactly
+2026-09-12 03:00:33,601 [MAINTENANCE] Heartbeat check output: [HEARTBEAT] OK - last ran 0.0 hours ago
+[2026-09-12T05:18:07] DOWN alert sent for testmember1_s4
+[2026-09-12T05:18:07] Started testmember1_s4
+[2026-09-12T08:08:11] Started dashboard
+[2026-09-12T14:54:37] DOWN alert sent for signal_generator
+[2026-09-12T14:54:37] Started signal_generator
+[2026-09-12T14:55:54] Started signal_generator
+[2026-09-12T15:13:28] Started dashboard
+[2026-09-12T16:10:24] DOWN alert sent for signal_generator
+[2026-09-12T16:10:24] Started signal_generator
+2026-09-13 03:00:01,987 [MAINTENANCE] Starting auto maintenance - 2026-09-13 03:00:01 UTC
+2026-09-13 03:00:10,367 [MAINTENANCE] Pycache OK: 1.18MB | 3 days since last clean
+2026-09-13 03:00:10,633 [MAINTENANCE] Journal cleanup: sudo: a password is required
+2026-09-13 03:00:10,636 [MAINTENANCE] Log OK: renko_state_engine.log | 1.22MB
+2026-09-13 03:00:10,636 [MAINTENANCE] Log OK: position_risk_monitor.log | 2.98MB
+2026-09-13 03:00:10,636 [MAINTENANCE] Log OK: live_trading_s4v3.log | 4.51MB
+2026-09-13 03:00:10,636 [MAINTENANCE] Log OK: boundary_watcher.log | 0.01MB
+2026-09-13 03:00:10,636 [MAINTENANCE] Log OK: live_trading_testmember1_s4.log | 4.31MB
+2026-09-13 03:00:10,636 [MAINTENANCE] Log OK: sl_safety_monitor.log | 0.45MB
+2026-09-13 03:00:10,636 [MAINTENANCE] Log OK: dashboard.log | 2.92MB
+2026-09-13 03:00:10,636 [MAINTENANCE] Log OK: live_trading_s4.log | 5.85MB
+2026-09-13 03:00:10,636 [MAINTENANCE] Log OK: issue_tracker.log | 8.52MB
+2026-09-13 03:00:10,636 [MAINTENANCE] Log OK: maintenance_watcher.log | 0.02MB
+2026-09-13 03:00:10,636 [MAINTENANCE] Log OK: maintenance.log | 0.01MB
+2026-09-13 03:00:10,636 [MAINTENANCE] Log OK: live_trading_s4v2.log | 1.72MB
+2026-09-13 03:00:10,636 [MAINTENANCE] Log OK: margin_monitor.log | 0.04MB
+2026-09-13 03:00:10,636 [MAINTENANCE] Log OK: s4v3_exitfix_watch.log | 0.00MB
+2026-09-13 03:00:10,640 [MAINTENANCE] Output cleaned: trade_log_S4 | deleted 1 old files | kept 5
+2026-09-13 03:00:10,647 [MAINTENANCE] Output folder: 37.0MB | deleted 1 files total
+2026-09-13 03:00:10,689 [MAINTENANCE] Junk files cleaned: 7 .bak/.lock files removed
+2026-09-13 03:00:10,690 [MAINTENANCE] Disk OK: 40.6% used | 16.6GB free
+2026-09-13 03:00:10,690 [MAINTENANCE] Auto maintenance complete
+2026-09-13 03:00:10,690 [MAINTENANCE] Regenerating signal CSVs for S4V2 and S4...
+2026-09-13 03:00:33,204 [MAINTENANCE] Signal CSVs regenerated successfully
+2026-09-13 03:00:33,204 [MAINTENANCE] Checking box_size drift (engine vs backtest)...
+2026-09-13 03:00:37,881 [MAINTENANCE] Box drift check output: S4V2: engine=46 expected=46 MATCH
+S4: engine=46 expected=46 MATCH
+NO DRIFT - engine matches backtest formula exactly
+2026-09-13 03:00:38,067 [MAINTENANCE] Heartbeat check output: [HEARTBEAT] OK - last ran 0.0 hours ago
+[2026-09-13T09:32:36] Started dashboard
+[2026-09-13T10:39:33] DOWN alert sent for signal_generator
+[2026-09-13T10:39:33] Started signal_generator
+2026-09-14 03:00:06,710 [MAINTENANCE] Starting auto maintenance - 2026-09-14 03:00:06 UTC
+2026-09-14 03:00:16,072 [MAINTENANCE] Pycache OK: 1.19MB | 4 days since last clean
+2026-09-14 03:00:16,315 [MAINTENANCE] Journal cleanup: sudo: a password is required
+2026-09-14 03:00:16,316 [MAINTENANCE] Log OK: renko_state_engine.log | 1.68MB
+2026-09-14 03:00:16,316 [MAINTENANCE] Log OK: position_risk_monitor.log | 4.51MB
+2026-09-14 03:00:16,316 [MAINTENANCE] Log OK: live_trading_s4v3.log | 5.49MB
+2026-09-14 03:00:16,316 [MAINTENANCE] Log OK: boundary_watcher.log | 0.02MB
+2026-09-14 03:00:16,316 [MAINTENANCE] Log OK: pnl_gap_watch.log | 0.00MB
+2026-09-14 03:00:16,316 [MAINTENANCE] Log OK: live_trading_testmember1_s4.log | 9.86MB
+2026-09-14 03:00:16,316 [MAINTENANCE] Log OK: sl_safety_monitor.log | 0.70MB
+2026-09-14 03:00:16,316 [MAINTENANCE] Log OK: dashboard.log | 2.92MB
+2026-09-14 03:00:16,316 [MAINTENANCE] Log OK: live_trading_s4.log | 5.98MB
+2026-09-14 03:00:17,194 [MAINTENANCE] Log trimmed: issue_tracker.log | 16.5MB → kept last 5000 lines
+2026-09-14 03:00:17,194 [MAINTENANCE] Log OK: maintenance_watcher.log | 0.03MB
+2026-09-14 03:00:17,194 [MAINTENANCE] Log OK: maintenance.log | 0.01MB
+2026-09-14 03:00:17,194 [MAINTENANCE] Log OK: live_trading_s4v2.log | 0.42MB
+2026-09-14 03:00:17,194 [MAINTENANCE] Log OK: margin_monitor.log | 0.06MB
+2026-09-14 03:00:17,194 [MAINTENANCE] Log OK: s4v3_exitfix_watch.log | 0.00MB
+2026-09-14 03:00:17,202 [MAINTENANCE] Output cleaned: trade_log_S4 | deleted 1 old files | kept 5
+2026-09-14 03:00:17,206 [MAINTENANCE] Output folder: 37.0MB | deleted 1 files total
+2026-09-14 03:00:17,294 [MAINTENANCE] Junk files cleaned: 25 .bak/.lock files removed
+2026-09-14 03:00:17,294 [MAINTENANCE] Disk OK: 42.0% used | 16.2GB free
+2026-09-14 03:00:17,294 [MAINTENANCE] Auto maintenance complete
+2026-09-14 03:00:17,294 [MAINTENANCE] Regenerating signal CSVs for S4V2 and S4...
+2026-09-14 03:00:34,418 [MAINTENANCE] Signal CSVs regenerated successfully
+2026-09-14 03:00:34,418 [MAINTENANCE] Checking box_size drift (engine vs backtest)...
+2026-09-14 03:00:38,811 [MAINTENANCE] Box drift check output: S4V2: engine=46 expected=46 MATCH
+S4: engine=46 expected=46 MATCH
+NO DRIFT - engine matches backtest formula exactly
+2026-09-14 03:00:39,019 [MAINTENANCE] Heartbeat check output: [HEARTBEAT] OK - last ran 0.0 hours ago
+[2026-09-14T13:46:39] DOWN alert sent for sl_safety_monitor
+[2026-09-14T13:46:39] Started sl_safety_monitor
+2026-09-15 03:00:06,708 [MAINTENANCE] Starting auto maintenance - 2026-09-15 03:00:06 UTC
+2026-09-15 03:00:13,803 [MAINTENANCE] Pycache OK: 1.30MB | 5 days since last clean
+2026-09-15 03:00:13,975 [MAINTENANCE] Journal cleanup: sudo: a password is required
+2026-09-15 03:00:13,976 [MAINTENANCE] Log OK: renko_state_engine.log | 2.14MB
+2026-09-15 03:00:13,976 [MAINTENANCE] Log OK: position_risk_monitor.log | 5.90MB
+2026-09-15 03:00:13,976 [MAINTENANCE] Log OK: live_trading_s4v3.log | 6.42MB
+2026-09-15 03:00:13,976 [MAINTENANCE] Log OK: boundary_watcher.log | 0.02MB
+2026-09-15 03:00:13,976 [MAINTENANCE] Log OK: pnl_gap_watch.log | 0.00MB
+2026-09-15 03:00:13,976 [MAINTENANCE] Log OK: live_trading_testmember1_s4.log | 5.38MB
+2026-09-15 03:00:13,976 [MAINTENANCE] Log OK: sl_safety_monitor.log | 0.90MB
+2026-09-15 03:00:13,976 [MAINTENANCE] Log OK: dashboard.log | 2.92MB
+2026-09-15 03:00:13,976 [MAINTENANCE] Log OK: live_trading_s4.log | 6.03MB
+2026-09-15 03:00:13,976 [MAINTENANCE] Log OK: issue_tracker.log | 8.33MB
+2026-09-15 03:00:13,976 [MAINTENANCE] Log OK: maintenance_watcher.log | 0.03MB
+2026-09-15 03:00:13,977 [MAINTENANCE] Log OK: maintenance.log | 0.01MB
+2026-09-15 03:00:13,977 [MAINTENANCE] Log OK: live_trading_s4v2.log | 8.95MB
+2026-09-15 03:00:13,977 [MAINTENANCE] Log OK: margin_monitor.log | 0.07MB
+2026-09-15 03:00:13,977 [MAINTENANCE] Log OK: s4v3_exitfix_watch.log | 0.00MB
+2026-09-15 03:00:13,978 [MAINTENANCE] Output cleaned: backtest_report_S4 | deleted 1 old files | kept 5
+2026-09-15 03:00:13,980 [MAINTENANCE] Output cleaned: trade_log_S4 | deleted 2 old files | kept 5
+2026-09-15 03:00:13,984 [MAINTENANCE] Output folder: 40.5MB | deleted 3 files total
+2026-09-15 03:00:14,007 [MAINTENANCE] Junk files cleaned: 4 .bak/.lock files removed
+2026-09-15 03:00:14,007 [MAINTENANCE] Disk OK: 42.5% used | 16.1GB free
+2026-09-15 03:00:14,007 [MAINTENANCE] Auto maintenance complete
+2026-09-15 03:00:14,007 [MAINTENANCE] Regenerating signal CSVs for S4V2 and S4...
+2026-09-15 03:00:30,024 [MAINTENANCE] Signal CSVs regenerated successfully
+2026-09-15 03:00:30,024 [MAINTENANCE] Checking box_size drift (engine vs backtest)...
+2026-09-15 03:00:33,773 [MAINTENANCE] Box drift check output: S4V2: engine=46 expected=46 MATCH
+S4: engine=46 expected=46 MATCH
+NO DRIFT - engine matches backtest formula exactly
+2026-09-15 03:00:33,954 [MAINTENANCE] Heartbeat check output: [HEARTBEAT] OK - last ran 0.0 hours ago
+[2026-09-15T05:18:57] DOWN alert sent for live_s4v2
+[2026-09-15T05:18:57] Started live_s4v2
+[2026-09-15T05:18:57] DOWN alert sent for live_s4v3
+[2026-09-15T05:18:57] Started live_s4v3
+[2026-09-15T05:18:58] DOWN alert sent for live_s4
+[2026-09-15T05:18:58] Started live_s4
+[2026-09-15T05:18:59] DOWN alert sent for testmember1_s4
+[2026-09-15T05:18:59] Started testmember1_s4
+[2026-09-15T05:18:59] DOWN alert sent for signal_generator
+[2026-09-15T05:18:59] Started signal_generator
+[2026-09-15T05:20:10] Started live_s4v2
+[2026-09-15T05:20:10] Started live_s4v3
+[2026-09-15T05:20:10] Started live_s4
+[2026-09-15T05:20:10] Started testmember1_s4
+[2026-09-15T05:20:10] Started signal_generator
+[2026-09-15T05:21:23] Started live_s4v2
+[2026-09-15T05:21:23] Started live_s4v3
+[2026-09-15T05:21:23] Started live_s4
+[2026-09-15T05:21:23] Started testmember1_s4
+[2026-09-15T05:21:24] Started signal_generator
+[2026-09-15T05:22:36] live_s4v2 heartbeat STALE (217s > 180s) - force killing for restart
+[2026-09-15T05:22:37] Started live_s4v2
+[2026-09-15T05:22:37] live_s4v3 heartbeat STALE (218s > 180s) - force killing for restart
+[2026-09-15T05:22:38] Started live_s4v3
+[2026-09-15T05:22:38] live_s4 heartbeat STALE (219s > 180s) - force killing for restart
+[2026-09-15T05:22:39] Started live_s4
+[2026-09-15T05:22:39] testmember1_s4 heartbeat STALE (220s > 180s) - force killing for restart
+[2026-09-15T05:22:40] Started testmember1_s4
+[2026-09-15T05:22:40] Started signal_generator
+[2026-09-15T05:23:39] Started live_s4v2
+[2026-09-15T05:23:39] Started live_s4v3
+[2026-09-15T05:23:39] Started live_s4
+[2026-09-15T05:23:39] testmember1_s4 heartbeat STALE (280s > 180s) - force killing for restart
+[2026-09-15T05:23:40] Started testmember1_s4
+[2026-09-15T05:23:40] signal_generator heartbeat STALE (323s > 300s) - force killing for restart
+[2026-09-15T05:23:42] Started signal_generator
+[2026-09-15T05:24:43] Started live_s4v2
+[2026-09-15T05:24:43] Started live_s4v3
+[2026-09-15T05:24:43] Started live_s4
+[2026-09-15T05:24:43] Started testmember1_s4
+[2026-09-15T05:24:43] signal_generator heartbeat STALE (386s > 300s) - force killing for restart
+[2026-09-15T05:24:44] Started signal_generator
+[2026-09-15T05:25:52] Started live_s4v2
+[2026-09-15T05:25:52] Started live_s4v3
+[2026-09-15T05:25:52] Started live_s4
+[2026-09-15T05:25:52] Started testmember1_s4
+[2026-09-15T05:25:52] signal_generator heartbeat STALE (455s > 300s) - force killing for restart
+[2026-09-15T05:25:53] Started signal_generator
+[2026-09-15T05:27:25] Started live_s4v2
+[2026-09-15T05:27:25] Started live_s4v3
+[2026-09-15T05:27:25] Started live_s4
+[2026-09-15T05:27:25] testmember1_s4 heartbeat STALE (224s > 180s) - force killing for restart
+[2026-09-15T05:27:26] Started testmember1_s4
+[2026-09-15T05:27:27] signal_generator heartbeat STALE (550s > 300s) - force killing for restart
+[2026-09-15T05:27:28] Started signal_generator
+[2026-09-15T05:28:28] Started live_s4v2
+[2026-09-15T05:28:28] Started live_s4v3
+[2026-09-15T05:28:28] Started live_s4
+[2026-09-15T05:28:28] Started testmember1_s4
+[2026-09-15T05:28:28] signal_generator heartbeat STALE (611s > 300s) - force killing for restart
+[2026-09-15T05:28:29] Started signal_generator
+[2026-09-15T05:29:36] Started live_s4v2
+[2026-09-15T05:29:36] Started live_s4v3
+[2026-09-15T05:29:36] Started live_s4
+[2026-09-15T05:29:36] Started testmember1_s4
+[2026-09-15T05:29:36] signal_generator heartbeat STALE (679s > 300s) - force killing for restart
+[2026-09-15T05:29:37] Started signal_generator
+[2026-09-15T05:30:48] Started live_s4v2
+[2026-09-15T05:30:49] Started live_s4v3
+[2026-09-15T05:30:49] Started live_s4
+[2026-09-15T05:30:49] Started testmember1_s4
+[2026-09-15T05:30:49] signal_generator heartbeat STALE (752s > 300s) - force killing for restart
+[2026-09-15T05:30:50] Started signal_generator
+[2026-09-15T05:31:55] Started live_s4v2
+[2026-09-15T05:31:56] Started live_s4v3
+[2026-09-15T05:31:56] Started live_s4
+[2026-09-15T05:31:56] testmember1_s4 heartbeat STALE (207s > 180s) - force killing for restart
+[2026-09-15T05:31:57] Started testmember1_s4
+[2026-09-15T05:31:57] signal_generator heartbeat STALE (820s > 300s) - force killing for restart
+[2026-09-15T05:31:58] Started signal_generator
+[2026-09-15T05:33:26] Started live_s4v2
+[2026-09-15T05:33:26] Started live_s4v3
+[2026-09-15T05:33:26] Started live_s4
+[2026-09-15T05:33:26] Started testmember1_s4
+[2026-09-15T05:33:27] signal_generator heartbeat STALE (910s > 300s) - force killing for restart
+[2026-09-15T05:33:28] Started signal_generator
+[2026-09-15T05:34:36] Started live_s4v2
+[2026-09-15T05:34:36] Started live_s4v3
+[2026-09-15T05:34:36] Started live_s4
+[2026-09-15T05:34:36] Started testmember1_s4
+[2026-09-15T05:34:36] signal_generator heartbeat STALE (979s > 300s) - force killing for restart
+[2026-09-15T05:34:37] Started signal_generator
+[2026-09-15T05:35:42] Started live_s4v2
+[2026-09-15T05:35:42] Started live_s4v3
+[2026-09-15T05:35:42] Started live_s4
+[2026-09-15T05:35:42] Started testmember1_s4
+[2026-09-15T05:35:42] signal_generator heartbeat STALE (1045s > 300s) - force killing for restart
+[2026-09-15T05:35:43] Started signal_generator
+[2026-09-15T05:37:03] Started live_s4v2
+[2026-09-15T05:37:03] Started live_s4v3
+[2026-09-15T05:37:03] Started live_s4
+[2026-09-15T05:37:04] Started testmember1_s4
+[2026-09-15T05:37:04] signal_generator heartbeat STALE (1127s > 300s) - force killing for restart
+[2026-09-15T05:37:05] Started signal_generator
+[2026-09-15T05:38:28] Started live_s4v2
+[2026-09-15T05:38:28] Started live_s4v3
+[2026-09-15T05:38:28] Started live_s4
+[2026-09-15T05:38:28] Started testmember1_s4
+[2026-09-15T05:38:28] signal_generator heartbeat STALE (1211s > 300s) - force killing for restart
+[2026-09-15T05:38:29] Started signal_generator
+[2026-09-15T05:39:36] Started live_s4v2
+[2026-09-15T05:39:36] Started live_s4v3
+[2026-09-15T05:39:36] Started live_s4
+[2026-09-15T05:39:36] Started testmember1_s4
+[2026-09-15T05:39:36] signal_generator heartbeat STALE (1279s > 300s) - force killing for restart
+[2026-09-15T05:39:37] Started signal_generator
+[2026-09-15T05:40:36] Started live_s4v2
+[2026-09-15T05:40:36] Started live_s4v3
+[2026-09-15T05:40:36] Started live_s4
+[2026-09-15T05:40:36] Started testmember1_s4
+[2026-09-15T05:40:36] signal_generator heartbeat STALE (1339s > 300s) - force killing for restart
+[2026-09-15T05:40:37] Started signal_generator
+[2026-09-15T05:41:43] live_s4v2 heartbeat STALE (194s > 180s) - force killing for restart
+[2026-09-15T05:41:44] Started live_s4v2
+[2026-09-15T05:41:44] live_s4v3 heartbeat STALE (195s > 180s) - force killing for restart
+[2026-09-15T05:41:45] Started live_s4v3
+[2026-09-15T05:41:45] Started live_s4
+[2026-09-15T05:41:45] Started testmember1_s4
+[2026-09-15T05:41:45] signal_generator heartbeat STALE (1408s > 300s) - force killing for restart
+[2026-09-15T05:41:47] Started signal_generator
+[2026-09-15T05:43:13] Started live_s4v2
+[2026-09-15T05:43:13] Started live_s4v3
+[2026-09-15T05:43:13] Started live_s4
+[2026-09-15T05:43:13] Started testmember1_s4
+[2026-09-15T05:43:14] signal_generator heartbeat STALE (1497s > 300s) - force killing for restart
+[2026-09-15T05:43:15] Started signal_generator
+[2026-09-15T05:44:18] Started live_s4v2
+[2026-09-15T05:44:18] Started live_s4v3
+[2026-09-15T05:44:18] Started live_s4
+[2026-09-15T05:44:18] Started testmember1_s4
+[2026-09-15T05:44:18] signal_generator heartbeat STALE (1561s > 300s) - force killing for restart
+[2026-09-15T05:44:19] Started signal_generator
+[2026-09-15T05:45:22] Started live_s4v2
+[2026-09-15T05:45:22] Started live_s4v3
+[2026-09-15T05:45:22] Started live_s4
+[2026-09-15T05:45:22] Started testmember1_s4
+[2026-09-15T05:45:22] signal_generator heartbeat STALE (1625s > 300s) - force killing for restart
+[2026-09-15T05:45:23] Started signal_generator
+[2026-09-15T05:46:36] Started live_s4v2
+[2026-09-15T05:46:36] Started live_s4v3
+[2026-09-15T05:46:36] Started live_s4
+[2026-09-15T05:46:36] testmember1_s4 heartbeat STALE (201s > 180s) - force killing for restart
+[2026-09-15T05:46:37] Started testmember1_s4
+[2026-09-15T05:46:37] signal_generator heartbeat STALE (1700s > 300s) - force killing for restart
+[2026-09-15T05:46:38] Started signal_generator
+[2026-09-15T05:47:36] Started live_s4v2
+[2026-09-15T05:47:36] Started live_s4v3
+[2026-09-15T05:47:36] Started live_s4
+[2026-09-15T05:47:36] Started testmember1_s4
+[2026-09-15T05:47:36] signal_generator heartbeat STALE (1759s > 300s) - force killing for restart
+[2026-09-15T05:47:37] Started signal_generator
+[2026-09-15T05:48:41] Started live_s4v2
+[2026-09-15T05:48:41] Started live_s4v3
+[2026-09-15T05:48:41] Started live_s4
+[2026-09-15T05:48:41] Started testmember1_s4
+[2026-09-15T05:48:41] signal_generator heartbeat STALE (1824s > 300s) - force killing for restart
+[2026-09-15T05:48:42] Started signal_generator
+[2026-09-15T05:50:01] DOWN alert sent for live_s4v2
+[2026-09-15T05:50:01] Started live_s4v2
+[2026-09-15T05:50:01] live_s4v3 heartbeat STALE (204s > 180s) - force killing for restart
+[2026-09-15T05:50:03] DOWN alert sent for live_s4v3
+[2026-09-15T05:50:03] Started live_s4v3
+[2026-09-15T05:50:03] DOWN alert sent for live_s4
+[2026-09-15T05:50:03] Started live_s4
+[2026-09-15T05:50:03] testmember1_s4 heartbeat STALE (206s > 180s) - force killing for restart
+[2026-09-15T05:50:05] DOWN alert sent for testmember1_s4
+[2026-09-15T05:50:05] Started testmember1_s4
+[2026-09-15T05:50:05] signal_generator heartbeat STALE (1908s > 300s) - force killing for restart
+[2026-09-15T05:50:06] DOWN alert sent for signal_generator
+[2026-09-15T05:50:06] Started signal_generator
+[2026-09-15T05:51:30] Started live_s4v2
+[2026-09-15T05:51:30] Started live_s4v3
+[2026-09-15T05:51:30] Started live_s4
+[2026-09-15T05:51:30] Started testmember1_s4
+[2026-09-15T05:51:31] signal_generator heartbeat STALE (1994s > 300s) - force killing for restart
+[2026-09-15T05:51:32] Started signal_generator
+[2026-09-15T06:32:19] Started live_s4v2
+2026-09-16 03:00:00,403 [MAINTENANCE] Starting auto maintenance - 2026-09-16 03:00:00 UTC
+2026-09-16 03:00:08,070 [MAINTENANCE] Pycache OK: 1.30MB | 6 days since last clean
+2026-09-16 03:00:08,202 [MAINTENANCE] Journal cleanup: sudo: a password is required
+2026-09-16 03:00:08,204 [MAINTENANCE] Log OK: renko_state_engine.log | 2.58MB
+2026-09-16 03:00:08,204 [MAINTENANCE] Log OK: position_risk_monitor.log | 7.56MB
+2026-09-16 03:00:08,204 [MAINTENANCE] Log OK: live_trading_s4v3.log | 6.81MB
+2026-09-16 03:00:08,204 [MAINTENANCE] Log OK: boundary_watcher.log | 0.03MB
+2026-09-16 03:00:08,204 [MAINTENANCE] Log OK: pnl_gap_watch.log | 0.01MB
+2026-09-16 03:00:08,204 [MAINTENANCE] Log OK: live_trading_testmember1_s4.log | 0.62MB
+2026-09-16 03:00:08,204 [MAINTENANCE] Log OK: false_alarm_watch.log | 0.67MB
+2026-09-16 03:00:08,204 [MAINTENANCE] Log OK: sl_safety_monitor.log | 1.17MB
+2026-09-16 03:00:08,205 [MAINTENANCE] Log OK: dashboard.log | 2.92MB
+2026-09-16 03:00:08,205 [MAINTENANCE] Log OK: live_trading_s4.log | 5.92MB
+2026-09-16 03:00:08,710 [MAINTENANCE] Log trimmed: issue_tracker.log | 15.9MB → kept last 5000 lines
+2026-09-16 03:00:08,710 [MAINTENANCE] Log OK: maintenance_watcher.log | 0.03MB
+2026-09-16 03:00:08,711 [MAINTENANCE] Log OK: maintenance.log | 0.02MB
+2026-09-16 03:00:08,711 [MAINTENANCE] Log OK: live_trading_s4v2.log | 6.94MB
+2026-09-16 03:00:08,711 [MAINTENANCE] Log OK: pnl_gap_fix_confirm.log | 0.00MB
+2026-09-16 03:00:08,711 [MAINTENANCE] Log OK: margin_monitor.log | 0.09MB
+2026-09-16 03:00:08,711 [MAINTENANCE] Log OK: bug3_watch.log | 0.04MB
+2026-09-16 03:00:08,711 [MAINTENANCE] Log OK: s4v3_exitfix_watch.log | 0.00MB
+2026-09-16 03:00:08,723 [MAINTENANCE] Output cleaned: trade_log_S4 | deleted 1 old files | kept 5
+2026-09-16 03:00:08,730 [MAINTENANCE] Output folder: 40.5MB | deleted 1 files total
+2026-09-16 03:00:08,832 [MAINTENANCE] Junk files cleaned: 20 .bak/.lock files removed
+2026-09-16 03:00:08,833 [MAINTENANCE] Disk OK: 44.1% used | 15.6GB free
+2026-09-16 03:00:08,833 [MAINTENANCE] Auto maintenance complete
+2026-09-16 03:00:08,833 [MAINTENANCE] Regenerating signal CSVs for S4V2 and S4...
+2026-09-16 03:00:30,464 [MAINTENANCE] Signal CSVs regenerated successfully
+2026-09-16 03:00:30,464 [MAINTENANCE] Checking box_size drift (engine vs backtest)...
+2026-09-16 03:00:35,524 [MAINTENANCE] Box drift check output: S4V2: engine=46 expected=46 MATCH
+S4: engine=46 expected=46 MATCH
+NO DRIFT - engine matches backtest formula exactly
+2026-09-16 03:00:35,704 [MAINTENANCE] Heartbeat check output: [HEARTBEAT] OK - last ran 0.0 hours ago
+[2026-09-16T07:58:30] DEBUG pre-send for live_s4v2
+[2026-09-16T07:58:31] DOWN alert sent for live_s4v2
+[2026-09-16T07:58:31] Started live_s4v2
+[2026-09-16T07:58:33] DEBUG pre-send for live_s4v3
+[2026-09-16T07:58:33] DOWN alert sent for live_s4v3
+[2026-09-16T07:58:33] Started live_s4v3
+[2026-09-16T07:58:35] DEBUG pre-send for live_s4
+[2026-09-16T07:58:36] DOWN alert sent for live_s4
+[2026-09-16T07:58:36] Started live_s4
+[2026-09-16T07:58:38] DEBUG pre-send for testmember1_s4
+[2026-09-16T07:58:39] DOWN alert sent for testmember1_s4
+[2026-09-16T07:58:39] Started testmember1_s4
+[2026-09-16T09:01:38] DEBUG pre-send for live_s4v2
+[2026-09-16T09:01:39] DOWN alert sent for live_s4v2
+[2026-09-16T09:01:39] Started live_s4v2
+[2026-09-16T09:01:41] DEBUG pre-send for live_s4v3
+[2026-09-16T09:01:41] DOWN alert sent for live_s4v3
+[2026-09-16T09:01:41] Started live_s4v3
+[2026-09-16T09:01:43] DEBUG pre-send for live_s4
+[2026-09-16T09:01:44] DOWN alert sent for live_s4
+[2026-09-16T09:01:44] Started live_s4
+[2026-09-16T09:01:46] DEBUG pre-send for testmember1_s4
+[2026-09-16T09:01:47] DOWN alert sent for testmember1_s4
+[2026-09-16T09:01:47] Started testmember1_s4
+2026-09-17 03:00:06,737 [MAINTENANCE] Starting auto maintenance - 2026-09-17 03:00:06 UTC
+2026-09-17 03:00:14,486 [MAINTENANCE] Pycache OK: 1.31MB | 7 days since last clean
+2026-09-17 03:00:14,548 [MAINTENANCE] Journal cleanup: sudo: a password is required
+2026-09-17 03:00:14,605 [MAINTENANCE] Log OK: lockfix_watch.log | 0.04MB
+2026-09-17 03:00:14,606 [MAINTENANCE] Log OK: renko_state_engine.log | 3.05MB
+2026-09-17 03:00:14,606 [MAINTENANCE] Log OK: telegramfix_watch.log | 0.01MB
+2026-09-17 03:00:14,606 [MAINTENANCE] Log OK: position_risk_monitor.log | 8.73MB
+2026-09-17 03:00:14,606 [MAINTENANCE] Log OK: live_trading_s4v3.log | 7.74MB
+2026-09-17 03:00:14,606 [MAINTENANCE] Log OK: boundary_watcher.log | 0.03MB
+2026-09-17 03:00:14,606 [MAINTENANCE] Log OK: pnl_gap_watch.log | 0.01MB
+2026-09-17 03:00:14,606 [MAINTENANCE] Log OK: live_trading_testmember1_s4.log | 6.15MB
+2026-09-17 03:00:14,606 [MAINTENANCE] Log OK: false_alarm_watch.log | 1.47MB
+2026-09-17 03:00:14,606 [MAINTENANCE] Log OK: sl_safety_monitor.log | 1.35MB
+2026-09-17 03:00:14,606 [MAINTENANCE] Log OK: dashboard.log | 2.92MB
+2026-09-17 03:00:14,607 [MAINTENANCE] Log OK: live_trading_s4.log | 5.99MB
+2026-09-17 03:00:14,607 [MAINTENANCE] Log OK: issue_tracker.log | 8.73MB
+2026-09-17 03:00:14,607 [MAINTENANCE] Log OK: maintenance_watcher.log | 0.04MB
+2026-09-17 03:00:14,607 [MAINTENANCE] Log OK: maintenance.log | 0.03MB
+2026-09-17 03:00:14,607 [MAINTENANCE] Log OK: alert_catcher.log | 0.00MB
+2026-09-17 03:00:14,607 [MAINTENANCE] Log OK: live_trading_s4v2.log | 5.55MB
+2026-09-17 03:00:14,607 [MAINTENANCE] Log OK: pnl_gap_fix_confirm.log | 0.00MB
+2026-09-17 03:00:14,607 [MAINTENANCE] Log OK: margin_monitor.log | 0.10MB
+2026-09-17 03:00:14,607 [MAINTENANCE] Log OK: bug3_watch.log | 0.08MB
+2026-09-17 03:00:14,608 [MAINTENANCE] Log OK: baseline16_watch.log | 0.04MB
+2026-09-17 03:00:14,608 [MAINTENANCE] Log OK: s4v3_exitfix_watch.log | 0.00MB
+2026-09-17 03:00:14,611 [MAINTENANCE] Output cleaned: trade_log_S4 | deleted 1 old files | kept 5
+2026-09-17 03:00:14,628 [MAINTENANCE] Output folder: 40.5MB | deleted 1 files total
+2026-09-17 03:00:14,662 [MAINTENANCE] Junk files cleaned: 9 .bak/.lock files removed
+2026-09-17 03:00:14,662 [MAINTENANCE] Disk OK: 44.4% used | 15.6GB free
+2026-09-17 03:00:14,662 [MAINTENANCE] Auto maintenance complete
+2026-09-17 03:00:14,662 [MAINTENANCE] Regenerating signal CSVs for S4V2 and S4...
+2026-09-17 03:00:29,606 [MAINTENANCE] Signal CSVs regenerated successfully
+2026-09-17 03:00:29,606 [MAINTENANCE] Checking box_size drift (engine vs backtest)...
+2026-09-17 03:00:33,624 [MAINTENANCE] Box drift check output: S4V2: engine=46 expected=46 MATCH
+S4: engine=46 expected=46 MATCH
+NO DRIFT - engine matches backtest formula exactly
+2026-09-17 03:00:33,828 [MAINTENANCE] Heartbeat check output: [HEARTBEAT] OK - last ran 0.0 hours ago
+[2026-09-17T05:17:15] DEBUG pre-send for live_s4v2
+[2026-09-17T05:17:16] DOWN alert sent for live_s4v2
+[2026-09-17T05:17:16] Started live_s4v2
+[2026-09-17T05:17:23] DEBUG pre-send for live_s4v3
+[2026-09-17T05:17:24] DOWN alert sent for live_s4v3
+[2026-09-17T05:17:24] Started live_s4v3
+[2026-09-17T05:17:31] DEBUG pre-send for live_s4
+[2026-09-17T05:17:31] DOWN alert sent for live_s4
+[2026-09-17T05:17:32] Started live_s4
+[2026-09-17T05:30:32] Started live_s4v2
+[2026-09-17T05:30:39] Started live_s4v3
+[2026-09-17T05:30:46] Started live_s4
+2026-09-18 03:00:06,772 [MAINTENANCE] Starting auto maintenance - 2026-09-18 03:00:06 UTC
+2026-09-18 03:00:14,665 [MAINTENANCE] Pycache OK: 1.33MB | 8 days since last clean
+2026-09-18 03:00:14,771 [MAINTENANCE] Journal cleanup: sudo: a password is required
+2026-09-18 03:00:14,773 [MAINTENANCE] Log OK: lockfix_watch.log | 0.10MB
+2026-09-18 03:00:14,774 [MAINTENANCE] Log OK: renko_state_engine.log | 3.51MB
+2026-09-18 03:00:14,774 [MAINTENANCE] Log OK: telegramfix_watch.log | 0.02MB
+2026-09-18 03:00:14,774 [MAINTENANCE] Log OK: position_risk_monitor.log | 9.64MB
+2026-09-18 03:00:14,774 [MAINTENANCE] Log OK: live_trading_s4v3.log | 8.67MB
+2026-09-18 03:00:14,774 [MAINTENANCE] Log OK: boundary_watcher.log | 0.04MB
+2026-09-18 03:00:14,774 [MAINTENANCE] Log OK: pnl_gap_watch.log | 0.01MB
+2026-09-18 03:00:14,774 [MAINTENANCE] Log OK: live_trading_testmember1_s4.log | 1.67MB
+2026-09-18 03:00:14,775 [MAINTENANCE] Log OK: false_alarm_watch.log | 2.25MB
+2026-09-18 03:00:14,832 [MAINTENANCE] Log OK: sl_safety_monitor.log | 1.56MB
+2026-09-18 03:00:14,832 [MAINTENANCE] Log OK: dashboard.log | 2.92MB
+2026-09-18 03:00:14,832 [MAINTENANCE] Log OK: live_trading_s4.log | 5.98MB
+2026-09-18 03:00:15,402 [MAINTENANCE] Log trimmed: issue_tracker.log | 16.2MB → kept last 5000 lines
+2026-09-18 03:00:15,402 [MAINTENANCE] Log OK: maintenance_watcher.log | 0.04MB
+2026-09-18 03:00:15,402 [MAINTENANCE] Log OK: maintenance.log | 0.03MB
+2026-09-18 03:00:15,402 [MAINTENANCE] Log OK: alert_catcher.log | 0.00MB
+2026-09-18 03:00:15,403 [MAINTENANCE] Log OK: live_trading_s4v2.log | 4.10MB
+2026-09-18 03:00:15,403 [MAINTENANCE] Log OK: pnl_gap_fix_confirm.log | 0.00MB
+2026-09-18 03:00:15,403 [MAINTENANCE] Log OK: margin_monitor.log | 0.12MB
+2026-09-18 03:00:15,403 [MAINTENANCE] Log OK: bug3_watch.log | 0.13MB
+2026-09-18 03:00:15,403 [MAINTENANCE] Log OK: baseline17_watch.log | 0.14MB
+2026-09-18 03:00:15,403 [MAINTENANCE] Log OK: baseline16_watch.log | 0.14MB
+2026-09-18 03:00:15,403 [MAINTENANCE] Log OK: s4v3_exitfix_watch.log | 0.00MB
+2026-09-18 03:00:15,432 [MAINTENANCE] Output cleaned: trade_log_S4 | deleted 1 old files | kept 5
+2026-09-18 03:00:15,519 [MAINTENANCE] Output folder: 40.5MB | deleted 1 files total
+2026-09-18 03:00:15,597 [MAINTENANCE] Junk files cleaned: 18 .bak/.lock files removed
+2026-09-18 03:00:15,597 [MAINTENANCE] Disk OK: 45.9% used | 15.1GB free
+2026-09-18 03:00:15,597 [MAINTENANCE] Auto maintenance complete
+2026-09-18 03:00:15,597 [MAINTENANCE] Regenerating signal CSVs for S4V2 and S4...
+2026-09-18 03:00:35,957 [MAINTENANCE] Signal CSVs regenerated successfully
+2026-09-18 03:00:35,958 [MAINTENANCE] Checking box_size drift (engine vs backtest)...
+2026-09-18 03:00:41,594 [MAINTENANCE] Box drift check output: S4V2: engine=46 expected=46 MATCH
+S4: engine=46 expected=46 MATCH
+NO DRIFT - engine matches backtest formula exactly
+2026-09-18 03:00:41,763 [MAINTENANCE] Heartbeat check output: [HEARTBEAT] OK - last ran 0.0 hours ago
+[2026-09-18T07:31:45] VERSION DRIFT: running=303891fbaee0581358c4b3145c729acc8b2bc41a disk=71e747640b750ffc7a635a23ca095bbede860c0b - restarting signal_generator
+[2026-09-18T07:33:15] VERSION DRIFT: running=303891fbaee0581358c4b3145c729acc8b2bc41a disk=71e747640b750ffc7a635a23ca095bbede860c0b - restarting signal_generator
+[2026-09-18T07:33:23] DEBUG pre-send for signal_generator
+[2026-09-18T07:33:23] DOWN alert sent for signal_generator
+[2026-09-18T07:33:23] Started signal_generator
+[2026-09-18T07:34:17] VERSION DRIFT: running=71e747640b750ffc7a635a23ca095bbede860c0b disk=372ff1b25958a692f7ccc5fcd3628d146e680a47 - restarting signal_generator
+[2026-09-18T07:34:25] Started signal_generator
+[2026-09-18T13:00:26] VERSION DRIFT: running=372ff1b25958a692f7ccc5fcd3628d146e680a47 disk=d7ef10259806318d515d3e4f5f626d0829976fd0 - restarting signal_generator
+[2026-09-18T13:00:34] DEBUG pre-send for signal_generator
+[2026-09-18T13:00:34] DOWN alert sent for signal_generator
+[2026-09-18T13:00:34] Started signal_generator
+[2026-09-18T13:05:36] VERSION DRIFT: running=d7ef10259806318d515d3e4f5f626d0829976fd0 disk=ca06c757390220c22a3486e4b12aaa53d4ff7010 - restarting signal_generator
+[2026-09-18T13:05:43] Started signal_generator
+[2026-09-18T13:29:18] VERSION DRIFT: running=ca06c757390220c22a3486e4b12aaa53d4ff7010 disk=41c36054ecbb53ff0e4259276ee09a691b169b77 - restarting signal_generator
+[2026-09-18T13:29:25] Started signal_generator
+[2026-09-18T13:30:34] Started signal_generator
+[2026-09-18T13:40:27] VERSION DRIFT: running=41c36054ecbb53ff0e4259276ee09a691b169b77 disk=82a526a8cce4ff2cce9f23673c90ba5a1795d852 - restarting signal_generator
+[2026-09-18T13:40:35] Started signal_generator
+[2026-09-18T14:20:30] VERSION DRIFT: running=82a526a8cce4ff2cce9f23673c90ba5a1795d852 disk=9f485c1741a8692d6ad0bb893a4a065024768046 - restarting signal_generator
+[2026-09-18T14:20:38] DEBUG pre-send for signal_generator
+[2026-09-18T14:20:38] DOWN alert sent for signal_generator
+[2026-09-18T14:20:38] Started signal_generator
+2026-09-19 03:00:00,793 [MAINTENANCE] Starting auto maintenance - 2026-09-19 03:00:00 UTC
+2026-09-19 03:00:06,886 [MAINTENANCE] Pycache OK: 1.33MB | 9 days since last clean
+2026-09-19 03:00:07,087 [MAINTENANCE] Journal cleanup: sudo: a password is required
+2026-09-19 03:00:07,087 [MAINTENANCE] Log OK: lockfix_watch.log | 0.16MB
+2026-09-19 03:00:07,087 [MAINTENANCE] Log OK: renko_state_engine.log | 4.75MB
+2026-09-19 03:00:07,088 [MAINTENANCE] Log OK: telegramfix_watch.log | 0.04MB
+2026-09-19 03:00:07,714 [MAINTENANCE] Log trimmed: position_risk_monitor.log | 10.9MB → kept last 5000 lines
+2026-09-19 03:00:07,716 [MAINTENANCE] Log OK: renko_state_engine_excerpt_17Sep.log | 0.14MB
+2026-09-19 03:00:07,716 [MAINTENANCE] Log OK: live_trading_s4v3.log | 9.75MB
+2026-09-19 03:00:07,716 [MAINTENANCE] Log OK: boundary_watcher.log | 0.04MB
+2026-09-19 03:00:07,716 [MAINTENANCE] Log OK: pnl_gap_watch.log | 0.02MB
+2026-09-19 03:00:07,716 [MAINTENANCE] Log OK: repaint_guard_watch.log | 0.25MB
+2026-09-19 03:00:07,717 [MAINTENANCE] Log OK: live_trading_testmember1_s4.log | 7.23MB
+2026-09-19 03:00:07,717 [MAINTENANCE] Log OK: false_alarm_watch.log | 3.09MB
+2026-09-19 03:00:07,717 [MAINTENANCE] Log OK: sl_safety_monitor.log | 1.77MB
+2026-09-19 03:00:07,717 [MAINTENANCE] Log OK: dashboard.log | 2.92MB
+2026-09-19 03:00:07,717 [MAINTENANCE] Log OK: live_trading_s4.log | 6.09MB
+2026-09-19 03:00:07,717 [MAINTENANCE] Log OK: issue_tracker.log | 8.78MB
+2026-09-19 03:00:07,717 [MAINTENANCE] Log OK: maintenance_watcher.log | 0.04MB
+2026-09-19 03:00:07,717 [MAINTENANCE] Log OK: maintenance.log | 0.04MB
+2026-09-19 03:00:07,717 [MAINTENANCE] Log OK: alert_catcher.log | 0.01MB
+2026-09-19 03:00:07,717 [MAINTENANCE] Log OK: bug2_watch.log | 0.18MB
+2026-09-19 03:00:07,718 [MAINTENANCE] Log OK: live_trading_s4v2.log | 2.70MB
+2026-09-19 03:00:07,719 [MAINTENANCE] Log OK: pnl_gap_fix_confirm.log | 0.00MB
+2026-09-19 03:00:07,719 [MAINTENANCE] Log OK: margin_monitor.log | 0.13MB
+2026-09-19 03:00:07,719 [MAINTENANCE] Log OK: bug3_watch.log | 0.17MB
+2026-09-19 03:00:07,719 [MAINTENANCE] Log OK: baseline17_watch.log | 0.31MB
+2026-09-19 03:00:07,719 [MAINTENANCE] Log OK: baseline16_watch.log | 0.31MB
+2026-09-19 03:00:07,719 [MAINTENANCE] Log OK: s4v3_exitfix_watch.log | 0.00MB
+2026-09-19 03:00:07,734 [MAINTENANCE] Output cleaned: trade_log_S4 | deleted 1 old files | kept 5
+2026-09-19 03:00:07,746 [MAINTENANCE] Output folder: 40.5MB | deleted 1 files total
+2026-09-19 03:00:07,772 [MAINTENANCE] Junk files cleaned: 9 .bak/.lock files removed
+2026-09-19 03:00:07,772 [MAINTENANCE] Disk OK: 46.1% used | 15.1GB free
+2026-09-19 03:00:07,772 [MAINTENANCE] Auto maintenance complete
+2026-09-19 03:00:07,772 [MAINTENANCE] Regenerating signal CSVs for S4V2 and S4...
+2026-09-19 03:00:27,915 [MAINTENANCE] Signal CSVs regenerated successfully
+2026-09-19 03:00:27,916 [MAINTENANCE] Checking box_size drift (engine vs backtest)...
+2026-09-19 03:00:31,933 [MAINTENANCE] Box drift check output: S4V2: engine=46 expected=46 MATCH
+S4: engine=46 expected=46 MATCH
+NO DRIFT - engine matches backtest formula exactly
+2026-09-19 03:00:32,129 [MAINTENANCE] Heartbeat check output: [HEARTBEAT] OK - last ran 0.0 hours ago
+[2026-09-19T08:00:48] VERSION DRIFT: running=9f485c1741a8692d6ad0bb893a4a065024768046 disk=c3e610a5b054bbf92f597ce30d61f65dd591e6d0 - restarting signal_generator
+[2026-09-19T08:00:56] DEBUG pre-send for signal_generator
+[2026-09-19T08:00:56] DOWN alert sent for signal_generator
+[2026-09-19T08:00:56] Started signal_generator
+[2026-09-19T08:05:42] VERSION DRIFT: running=c3e610a5b054bbf92f597ce30d61f65dd591e6d0 disk=044bb93a12af37385d4c2484ecbd7183b9ee9b93 - restarting signal_generator
+[2026-09-19T08:05:49] Started signal_generator
+[2026-09-19T08:37:20] VERSION DRIFT: running=044bb93a12af37385d4c2484ecbd7183b9ee9b93 disk=d674736cadcf71bf0a1b094f797fedf1a1988b59 - restarting signal_generator
+[2026-09-19T08:37:28] Started signal_generator
+[2026-09-19T08:43:27] DEBUG pre-send for live_s4v2
+[2026-09-19T08:43:28] DOWN alert sent for live_s4v2
+[2026-09-19T08:43:28] Started live_s4v2
+[2026-09-19T08:43:35] DEBUG pre-send for live_s4v3
+[2026-09-19T08:43:36] DOWN alert sent for live_s4v3
+[2026-09-19T08:43:36] Started live_s4v3
+[2026-09-19T08:43:43] DEBUG pre-send for live_s4
+[2026-09-19T08:43:44] DOWN alert sent for live_s4
+[2026-09-19T08:43:44] Started live_s4
+[2026-09-19T08:43:51] DEBUG pre-send for testmember1_s4
+[2026-09-19T08:43:51] DOWN alert sent for testmember1_s4
+[2026-09-19T08:43:51] Started testmember1_s4
+[2026-09-19T09:13:25] VERSION DRIFT: running=d674736cadcf71bf0a1b094f797fedf1a1988b59 disk=215ff53fcff6d8e2b47271d0c89d2218b80968ad - restarting signal_generator
+[2026-09-19T09:13:33] DEBUG pre-send for signal_generator
+[2026-09-19T09:13:33] DOWN alert sent for signal_generator
+[2026-09-19T09:13:33] Started signal_generator
+[2026-09-19T09:42:36] VERSION DRIFT: running=215ff53fcff6d8e2b47271d0c89d2218b80968ad disk=61557bb1702f9d60afacf0eb0a11bd83e1745a87 - restarting signal_generator
+[2026-09-19T09:42:43] Started signal_generator
+[2026-09-19T09:59:36] VERSION DRIFT: running=61557bb1702f9d60afacf0eb0a11bd83e1745a87 disk=84f0c8ec9a4eed8f2a1a425b6ec519bfda674d2d - restarting signal_generator
+[2026-09-19T09:59:43] Started signal_generator
+[2026-09-19T10:32:18] VERSION DRIFT: running=84f0c8ec9a4eed8f2a1a425b6ec519bfda674d2d disk=a72c0a64df934254511ed1eac982d672225054b5 - restarting signal_generator
+[2026-09-19T10:32:25] DEBUG pre-send for signal_generator
+[2026-09-19T10:32:26] DOWN alert sent for signal_generator
+[2026-09-19T10:32:26] Started signal_generator
+[2026-09-19T14:18:11] VERSION DRIFT: running=a72c0a64df934254511ed1eac982d672225054b5 disk=30a2df61a2ff45301437ea352f166a4784408e2d - restarting signal_generator
+[2026-09-19T14:18:19] DEBUG pre-send for signal_generator
+[2026-09-19T14:18:19] DOWN alert sent for signal_generator
+[2026-09-19T14:18:19] Started signal_generator
