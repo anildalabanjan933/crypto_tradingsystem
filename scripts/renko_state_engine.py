@@ -442,6 +442,7 @@ def check_and_fire(state,is_s4=False):
             new_sigs.append(sig)
         state._first_check_since_restart=False
         if not new_sigs: return
+        new_sigs.sort(key=lambda s: (s.get("timestamp",""), 0 if s.get("signal_type")=="EXIT" else 1))
         # Fire ONE signal at a time - EXIT before ENTRY - oldest first
         for sig in new_sigs:
             ts=sig.get("timestamp","")
