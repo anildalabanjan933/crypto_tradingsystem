@@ -98,6 +98,7 @@ check_heartbeat_stale live_s4v2 logs/heartbeat_s4v2.txt 300
 check_and_start live_s4v2 scripts/signal_replay_s4v2.py logs/live_trading_s4v2.log
 check_heartbeat_stale live_s4v3 logs/heartbeat_s4v3.txt 300
 check_and_start live_s4v3 scripts/signal_replay_s4v3.py logs/live_trading_s4v3.log
+check_and_start band_tier_watch "python3 scripts/band_tier_watch.py"
 check_heartbeat_stale live_s4 logs/heartbeat_s4.txt 300
 check_and_start live_s4 scripts/signal_replay_s4.py logs/live_trading_s4.log
 # DISABLED (24-Aug-2026, replaced by testmember1_s4, shared account rule): check_and_start testmember1_s4v2 scripts/signal_replay_testmember1_s4v2.py logs/live_trading_testmember1_s4v2.log
