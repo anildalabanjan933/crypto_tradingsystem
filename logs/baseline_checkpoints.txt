@@ -1,0 +1,1 @@
+Baseline #21 - 18-Sep-2026 01:31 PM UTC - REPAINT GUARD fix (commit 41c3605) live on all 4 bots, engine restarted clean, WS connected
