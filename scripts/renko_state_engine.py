@@ -424,12 +424,16 @@ def check_and_fire(state,is_s4=False):
             if not ts: continue
             sig_type_chk=sig.get("signal_type","")
             if sig_type_chk=="EXIT":
-                if state.last_exit_ts and ts<=state.last_exit_ts: continue
+                if state.last_exit_ts and ts<=state.last_exit_ts:
+                    log.warning(f"[{state.label}] DROPPED EXIT sig ts={ts} <= last_exit_ts={state.last_exit_ts} - signal silently skipped")
+                    continue
                 if state.open_entry_ts and ts<=state.open_entry_ts:
                     log.warning(f"[{state.label}] Rejected stale EXIT sig ts={ts} <= open_entry_ts={state.open_entry_ts} - would be chronologically-impossible")
                     continue
             else:
-                if state.last_entry_ts and ts<=state.last_entry_ts: continue
+                if state.last_entry_ts and ts<=state.last_entry_ts:
+                    log.warning(f"[{state.label}] DROPPED ENTRY sig ts={ts} <= last_entry_ts={state.last_entry_ts} - signal silently skipped")
+                    continue
             if not _is_startup:
                 try:
                     _sig_dt=datetime.strptime(ts,"%Y-%m-%dT%H:%M:%S")
@@ -690,24 +694,36 @@ if __name__=="__main__":
     elif _s4_open_pending:
         log.info(f"[ENGINE] S4 open PENDING position detected - lock NOT advanced past ts_file: {_ts_s4}")
     else:
-        _ts_s4=max(_ts_s4,_now_lock_s4)
-        log.info(f"[ENGINE] S4 lock set to max(ts_file,floored_candle): {_ts_s4}")
+        _gap_min_ts_s4=(_now_dt.replace(tzinfo=None)-datetime.strptime(_ts_s4,"%Y-%m-%dT%H:%M:%S")).total_seconds()/60.0
+        if _gap_min_ts_s4>180.0:
+            _ts_s4=max(_ts_s4,_now_lock_s4)
+            log.info(f"[ENGINE] S4 long-downtime gap ({_gap_min_ts_s4:.0f}min) - lock advanced to {_ts_s4}")
+        else:
+            log.info(f"[ENGINE] S4 short restart ({_gap_min_ts_s4:.0f}min gap) - lock kept at ts_file, NOT advanced: {_ts_s4}")
     if not _ts_s4v2:
         _ts_s4v2=_now_lock_s4v2
         log.info(f"[ENGINE] S4V2 no ts file - lock set to floored candle: {_ts_s4v2}")
     elif _s4v2_open_pending:
         log.info(f"[ENGINE] S4V2 open PENDING position detected - lock NOT advanced past ts_file: {_ts_s4v2}")
     else:
-        _ts_s4v2=max(_ts_s4v2,_now_lock_s4v2)
-        log.info(f"[ENGINE] S4V2 lock set to max(ts_file,floored_candle): {_ts_s4v2}")
+        _gap_min_ts_s4v2=(_now_dt.replace(tzinfo=None)-datetime.strptime(_ts_s4v2,"%Y-%m-%dT%H:%M:%S")).total_seconds()/60.0
+        if _gap_min_ts_s4v2>45.0:
+            _ts_s4v2=max(_ts_s4v2,_now_lock_s4v2)
+            log.info(f"[ENGINE] S4V2 long-downtime gap ({_gap_min_ts_s4v2:.0f}min) - lock advanced to {_ts_s4v2}")
+        else:
+            log.info(f"[ENGINE] S4V2 short restart ({_gap_min_ts_s4v2:.0f}min gap) - lock kept at ts_file, NOT advanced: {_ts_s4v2}")
     if not _ts_s4v3:
         _ts_s4v3=_now_lock_s4v3
         log.info(f"[ENGINE] S4V3 no ts file - lock set to floored candle: {_ts_s4v3}")
     elif _s4v3_open_pending:
         log.info(f"[ENGINE] S4V3 open PENDING position detected - lock NOT advanced past ts_file: {_ts_s4v3}")
     else:
-        _ts_s4v3=max(_ts_s4v3,_now_lock_s4v3)
-        log.info(f"[ENGINE] S4V3 lock set to max(ts_file,floored_candle): {_ts_s4v3}")
+        _gap_min_ts_s4v3=(_now_dt.replace(tzinfo=None)-datetime.strptime(_ts_s4v3,"%Y-%m-%dT%H:%M:%S")).total_seconds()/60.0
+        if _gap_min_ts_s4v3>360.0:
+            _ts_s4v3=max(_ts_s4v3,_now_lock_s4v3)
+            log.info(f"[ENGINE] S4V3 long-downtime gap ({_gap_min_ts_s4v3:.0f}min) - lock advanced to {_ts_s4v3}")
+        else:
+            log.info(f"[ENGINE] S4V3 short restart ({_gap_min_ts_s4v3:.0f}min gap) - lock kept at ts_file, NOT advanced: {_ts_s4v3}")
     s4.last_signal_ts=_ts_s4
     s4.last_entry_ts=_ts_s4; s4.last_exit_ts=_ts_s4
     log.info(f"[ENGINE] S4 startup lock ts: {_ts_s4}")
