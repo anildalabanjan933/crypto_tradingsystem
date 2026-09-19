@@ -695,11 +695,10 @@ if __name__=="__main__":
         log.info(f"[ENGINE] S4 open PENDING position detected - lock NOT advanced past ts_file: {_ts_s4}")
     else:
         _gap_min_ts_s4=(_now_dt.replace(tzinfo=None)-datetime.strptime(_ts_s4,"%Y-%m-%dT%H:%M:%S")).total_seconds()/60.0
-        if _gap_min_ts_s4>180.0:
-            _ts_s4=max(_ts_s4,_now_lock_s4)
-            log.info(f"[ENGINE] S4 long-downtime gap ({_gap_min_ts_s4:.0f}min) - lock advanced to {_ts_s4}")
-        else:
-            log.info(f"[ENGINE] S4 short restart ({_gap_min_ts_s4:.0f}min gap) - lock kept at ts_file, NOT advanced: {_ts_s4}")
+        # PERMANENT FIX (Claude_report_5): lock NEVER advances past ts_file on restart
+        # regardless of gap length - all real signals in the gap replay in order via
+        # normal check_and_fire() loop. IOC band layer handles stale-price abandonment.
+        log.info(f"[ENGINE] S4 restart gap={_gap_min_ts_s4:.0f}min - lock kept at ts_file (catch-up replay), NOT advanced: {_ts_s4}")
     if not _ts_s4v2:
         _ts_s4v2=_now_lock_s4v2
         log.info(f"[ENGINE] S4V2 no ts file - lock set to floored candle: {_ts_s4v2}")
@@ -707,11 +706,10 @@ if __name__=="__main__":
         log.info(f"[ENGINE] S4V2 open PENDING position detected - lock NOT advanced past ts_file: {_ts_s4v2}")
     else:
         _gap_min_ts_s4v2=(_now_dt.replace(tzinfo=None)-datetime.strptime(_ts_s4v2,"%Y-%m-%dT%H:%M:%S")).total_seconds()/60.0
-        if _gap_min_ts_s4v2>45.0:
-            _ts_s4v2=max(_ts_s4v2,_now_lock_s4v2)
-            log.info(f"[ENGINE] S4V2 long-downtime gap ({_gap_min_ts_s4v2:.0f}min) - lock advanced to {_ts_s4v2}")
-        else:
-            log.info(f"[ENGINE] S4V2 short restart ({_gap_min_ts_s4v2:.0f}min gap) - lock kept at ts_file, NOT advanced: {_ts_s4v2}")
+        # PERMANENT FIX (Claude_report_5): lock NEVER advances past ts_file on restart
+        # regardless of gap length - all real signals in the gap replay in order via
+        # normal check_and_fire() loop. IOC band layer handles stale-price abandonment.
+        log.info(f"[ENGINE] S4V2 restart gap={_gap_min_ts_s4v2:.0f}min - lock kept at ts_file (catch-up replay), NOT advanced: {_ts_s4v2}")
     if not _ts_s4v3:
         _ts_s4v3=_now_lock_s4v3
         log.info(f"[ENGINE] S4V3 no ts file - lock set to floored candle: {_ts_s4v3}")
@@ -719,11 +717,10 @@ if __name__=="__main__":
         log.info(f"[ENGINE] S4V3 open PENDING position detected - lock NOT advanced past ts_file: {_ts_s4v3}")
     else:
         _gap_min_ts_s4v3=(_now_dt.replace(tzinfo=None)-datetime.strptime(_ts_s4v3,"%Y-%m-%dT%H:%M:%S")).total_seconds()/60.0
-        if _gap_min_ts_s4v3>360.0:
-            _ts_s4v3=max(_ts_s4v3,_now_lock_s4v3)
-            log.info(f"[ENGINE] S4V3 long-downtime gap ({_gap_min_ts_s4v3:.0f}min) - lock advanced to {_ts_s4v3}")
-        else:
-            log.info(f"[ENGINE] S4V3 short restart ({_gap_min_ts_s4v3:.0f}min gap) - lock kept at ts_file, NOT advanced: {_ts_s4v3}")
+        # PERMANENT FIX (Claude_report_5): lock NEVER advances past ts_file on restart
+        # regardless of gap length - all real signals in the gap replay in order via
+        # normal check_and_fire() loop. IOC band layer handles stale-price abandonment.
+        log.info(f"[ENGINE] S4V3 restart gap={_gap_min_ts_s4v3:.0f}min - lock kept at ts_file (catch-up replay), NOT advanced: {_ts_s4v3}")
     s4.last_signal_ts=_ts_s4
     s4.last_entry_ts=_ts_s4; s4.last_exit_ts=_ts_s4
     log.info(f"[ENGINE] S4 startup lock ts: {_ts_s4}")
