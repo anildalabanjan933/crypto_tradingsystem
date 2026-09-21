@@ -425,14 +425,14 @@ def check_and_fire(state,is_s4=False):
             sig_type_chk=sig.get("signal_type","")
             if sig_type_chk=="EXIT":
                 if state.last_exit_ts and ts<=state.last_exit_ts:
-                    log.warning(f"[{state.label}] DROPPED EXIT sig ts={ts} <= last_exit_ts={state.last_exit_ts} - signal silently skipped")
+                    log.debug(f"[{state.label}] DROPPED EXIT sig ts={ts} <= last_exit_ts={state.last_exit_ts} - signal silently skipped")
                     continue
                 if state.open_entry_ts and ts<=state.open_entry_ts:
                     log.warning(f"[{state.label}] Rejected stale EXIT sig ts={ts} <= open_entry_ts={state.open_entry_ts} - would be chronologically-impossible")
                     continue
             else:
                 if state.last_entry_ts and ts<=state.last_entry_ts:
-                    log.warning(f"[{state.label}] DROPPED ENTRY sig ts={ts} <= last_entry_ts={state.last_entry_ts} - signal silently skipped")
+                    log.debug(f"[{state.label}] DROPPED ENTRY sig ts={ts} <= last_entry_ts={state.last_entry_ts} - signal silently skipped")
                     continue
             if not _is_startup:
                 try:
