@@ -299,7 +299,7 @@ def _reconcile_window_from_rest(state, tf_minutes):
     import pandas as pd
     if state.candles_1m is None or state.candles_1m.empty:
         return False
-    window_start = (state.last_1m_ts - pd.Timedelta(minutes=tf_minutes*3)).floor(f"{tf_minutes}min")
+    window_start = (state.last_1m_ts - pd.Timedelta(minutes=tf_minutes*8)).floor(f"{tf_minutes}min")
     window_end   = state.last_1m_ts + pd.Timedelta(minutes=1)
     rest_df = _fetch_rest_candles_window(window_start, window_end)
     if rest_df is None or rest_df.empty:
