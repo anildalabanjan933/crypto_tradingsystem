@@ -483,22 +483,16 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
         already = any(len(r)>=2 and r[0]==ts for r in existing)
         exit_ts = None
         if not already and sig_type=="ENTRY":
-            # Find matching exit from signals list if already known, else PENDING placeholder
-            exit_ts = None
-            if signals:
-                for _sig in signals:
-                    if _sig.get("timestamp","") > ts and _sig.get("signal_type","") in ("EXIT","SELL_A","SELL_B","BUY_A","BUY_B"):
-                        exit_ts = _sig.get("timestamp","")
-                        break
+            exit_ts = None  # never pre-guessed - EXIT branch always writes the REAL fired ts/price
             tmp = sig_csv+".tmp"
             with open(tmp,"w",newline="") as _f:
                 _w = _csv.writer(_f)
                 for r in existing:
                     _w.writerow(r)
-                _w.writerow([ts, exit_ts or "PENDING", direction, 100, round(float(cl),2), ""])
+                _w.writerow([ts, "PENDING", direction, 100, round(float(cl),2), ""])
             _os.replace(tmp, sig_csv)
             state.open_entry_ts = ts
-            log.info(f"[{state.label}] INSTANT CSV append: {ts},{exit_ts or 'PENDING'},{direction}")
+            log.info(f"[{state.label}] INSTANT CSV append: {ts},PENDING,{direction}")
             try:
                 from scripts.bt_snapshot_verify import save_snapshot
                 save_snapshot(state.label, state.candles_1m.copy(), ts, direction, sig_type)
