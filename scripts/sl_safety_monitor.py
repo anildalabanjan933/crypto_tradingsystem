@@ -39,6 +39,48 @@ ALERT_COOLDOWN = 300  # don't spam same bot alert more than once per 5 min
 
 _stuck_candidates = {}  # bot_name -> (first_flat_ts, entry_id)
 
+def _find_real_exit_fill(om, direction, entry_ts_str, window_end_ts_str, expected_size=None):
+    close_side = "sell" if direction.strip().lower() == "long" else "buy"
+    try:
+        entry_dt = datetime.strptime(entry_ts_str, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
+        window_end_dt = datetime.strptime(window_end_ts_str, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
+    except Exception:
+        return None, None
+    if window_end_dt <= entry_dt:
+        return None, None
+    try:
+        resp = om._get("/v2/fills", {"product_ids": str(om.PRODUCT_ID), "page_size": 200})
+    except Exception as e:
+        log.warning(f"_find_real_exit_fill: fills lookup failed: {e}")
+        return None, None
+    if not resp.get("success"):
+        return None, None
+    candidates = []
+    for f in resp.get("result", []):
+        if f.get("side") != close_side:
+            continue
+        raw_ts = f.get("created_at")
+        if not raw_ts:
+            continue
+        try:
+            f_dt = datetime.strptime(raw_ts[:19], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
+        except Exception:
+            continue
+        if entry_dt <= f_dt <= window_end_dt:
+            candidates.append((f_dt, f))
+    if not candidates:
+        return None, None
+    candidates.sort(key=lambda x: x[0])
+    best_dt, best_fill = candidates[0]
+    try:
+        exit_price = float(best_fill.get("price", 0.0))
+    except Exception:
+        exit_price = 0.0
+    if exit_price <= 0:
+        return None, None
+    return best_dt.strftime("%Y-%m-%dT%H:%M:%S"), exit_price
+
+
 def check_stuck_pending(bot, csv_path):
     """Isolated check: CSV shows open PENDING row(s) but exchange position is flat,
     OR historical PENDING rows already superseded by a newer row (guaranteed stale).
@@ -56,18 +98,36 @@ def check_stuck_pending(bot, csv_path):
         # guaranteed stale/superseded - heal immediately, no exchange check
         # or wait needed, since the bot has already moved on to a new trade.
         changed = False
+        _om_p1 = None
+        healed_sources = []
         for i in range(len(rows) - 1):
             parts = rows[i].strip().split(",")
             if len(parts) >= 2 and parts[1] == "PENDING":
                 next_parts = rows[i + 1].strip().split(",")
-                exit_ts = next_parts[0] if len(next_parts) > 0 else _now_utc_str()
-                exit_price = next_parts[4] if len(next_parts) > 4 else "0.0"
+                fallback_exit_ts = next_parts[0] if len(next_parts) > 0 else _now_utc_str()
+                fallback_exit_price = next_parts[4] if len(next_parts) > 4 else "0.0"
+
+                exit_ts, exit_price, source = fallback_exit_ts, fallback_exit_price, "fallback_next_row_copy"
+                try:
+                    if _om_p1 is None:
+                        _om_p1 = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
+                    direction = parts[2] if len(parts) > 2 else ""
+                    real_ts, real_price = _find_real_exit_fill(
+                        _om_p1, direction, parts[0], fallback_exit_ts,
+                        parts[3] if len(parts) > 3 else None
+                    )
+                    if real_ts and real_price:
+                        exit_ts, exit_price, source = real_ts, real_price, "real_fill_lookup"
+                except Exception as _fe:
+                    log.warning(f"[{bot['name']}] PASS1 real-fill lookup failed for row {parts[0]}: {_fe} - using fallback")
+
                 parts[1] = exit_ts
                 if len(parts) >= 6:
                     parts[5] = str(exit_price)
                 rows[i] = ",".join(parts) + "\n"
                 changed = True
-                log.critical(f"[{bot['name']}] BACKLOG STUCK PENDING auto-healed (superseded by newer row) | entry={parts[0]} exit_ts={exit_ts} exit_price={exit_price}")
+                healed_sources.append(source)
+                log.critical(f"[{bot['name']}] BACKLOG STUCK PENDING auto-healed ({source}) | entry={parts[0]} exit_ts={exit_ts} exit_price={exit_price}")
 
         if changed:
             for _try in range(3):
@@ -81,7 +141,10 @@ def check_stuck_pending(bot, csv_path):
                     finally:
                         fcntl.flock(lf, fcntl.LOCK_UN)
                         lf.close()
-                    send_alert(f"CTS {bot['name']} BACKLOG STUCK PENDING AUTO-HEALED - closed stale CSV row(s) superseded by newer trade. Fully automatic, no action needed.")
+                    if changed:
+                        real_count = healed_sources.count("real_fill_lookup")
+                        fallback_count = healed_sources.count("fallback_next_row_copy")
+                        send_alert(f"CTS {bot['name']} BACKLOG CSV CLEANUP - closed stale PENDING row(s) in log file (real exchange fill used: {real_count}, next-row fallback used: {fallback_count}). This is routine CSV bookkeeping on old superseded rows, NOT a live trading stall. No action needed.")
                     break
                 except Exception:
                     time.sleep(2)
