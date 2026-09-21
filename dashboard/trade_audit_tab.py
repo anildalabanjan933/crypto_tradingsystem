@@ -1202,6 +1202,8 @@ def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn,
         st.markdown("##### Equity Curve - Backtest (This Month)")
         _eq_render_audit(_eq_bt_rows, f"{strat_label}_bt", "Backtest")
 
+    return bt_rows, lv_all_rows
+
 
 def render_trade_audit_tab(load14_fn, fetch_fills_fn, read_log_fn, inr_rate=_INR_RATE_AUDIT, fetch_orders_fn=None):
     st.markdown("### TRADE AUDIT - Delta Live Filled vs Backtest")
@@ -1231,19 +1233,52 @@ def render_trade_audit_tab(load14_fn, fetch_fills_fn, read_log_fn, inr_rate=_INR
         st.warning("Please select a valid custom date range.")
         return
 
+    _strats_for_csv = ["S4", "S4V2", "S4V3"] if strat_label == "ALL STRATEGY" else [strat_label]
+    _csv_cols = ["source","label","trade_no","dir","date","symbol","entry_ist","exit_ist","entry_p","exit_p","lot","charges","pnl_usd","net_pnl_inr","cum_pnl_inr"]
+    _csv_rows = []
+    for _s_csv in _strats_for_csv:
+        _bt_raw_csv = _load_audit_bt_cached(load14_fn, _s_csv, from_date, to_date, inr_rate)
+        _bt_csv = _apply_bt_adjustments_audit(_bt_raw_csv, bt_lot_input, bt_slippage_input, inr_rate)
+        _lv_open_csv = _load_audit_lv_open_cached(fetch_fills_fn, _s_csv, from_date, to_date)
+        _lv_closed_csv = _load_audit_lv_cached(fetch_fills_fn, _s_csv, from_date, to_date, inr_rate)
+        _lv_csv = _lv_open_csv + _lv_closed_csv
+        for _r in _lv_csv:
+            _row = {k: _r.get(k) for k in _csv_cols if k != "source"}
+            _row["source"] = "DELTA_LIVE_FILLED"
+            _csv_rows.append(_row)
+        for _r in _bt_csv:
+            _row = {k: _r.get(k) for k in _csv_cols if k != "source"}
+            _row["source"] = "BACKTEST"
+            _csv_rows.append(_row)
+
+    if _csv_rows:
+        _csv_df = _pd_audit.DataFrame(_csv_rows, columns=_csv_cols)
+        st.download_button(
+            label="Download CSV (Delta Fill vs Backtest)",
+            data=_csv_df.to_csv(index=False).encode("utf-8"),
+            file_name=f"audit_trade_{strat_label}_{from_date}_{to_date}.csv",
+            mime="text/csv",
+            key="audit_csv_download_btn",
+        )
     hcol1, hcol2 = st.columns(2)
     with hcol1:
         st.markdown("### DELTA LIVE FILLED")
     with hcol2:
         st.markdown("### BACKTEST")
 
+    _all_bt_rows, _all_lv_rows = [], []
     if strat_label == "ALL STRATEGY":
         for _idx, _s in enumerate(["S4", "S4V2", "S4V3"]):
-            _render_one_strategy_block_audit(_s, from_date, to_date, load14_fn, fetch_fills_fn, read_log_fn, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn, time_start=time_start)
+            _bt_r, _lv_r = _render_one_strategy_block_audit(_s, from_date, to_date, load14_fn, fetch_fills_fn, read_log_fn, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn, time_start=time_start)
+            _all_bt_rows.extend(_bt_r or [])
+            _all_lv_rows.extend(_lv_r or [])
             if _idx < 2:
                 st.markdown("---")
     else:
-        _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn, fetch_fills_fn, read_log_fn, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn, time_start=time_start)
+        _bt_r, _lv_r = _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn, fetch_fills_fn, read_log_fn, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn, time_start=time_start)
+        _all_bt_rows.extend(_bt_r or [])
+        _all_lv_rows.extend(_lv_r or [])
+
 
 
 # ============================================================
