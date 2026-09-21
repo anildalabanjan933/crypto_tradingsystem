@@ -1453,6 +1453,12 @@ def _reload_all_data():
     _df4_fwd=_load14_fwd(84,_s4_key,_s4_sec,_fwd_base)
     return _d2_1yr,_d4_1yr,_d2_full,_d4_full,_1yr_label,_full_label,_df2_fwd,_df4_fwd
 
+_hdr_l, _hdr_r = st.columns([8, 1])
+with _hdr_r:
+    if st.button("Clear Cache & Reload", key="_btn_clear_cache_reload"):
+        st.cache_data.clear()
+        st.rerun()
+
 _tab_monitor, _tab_trading, _tab_today, _tab_analysis, _tab_backtest, _tab_datasync, _tab_maint, _tab_audit = st.tabs([
     "MONITOR", "TRADING", "TODAY'S TRADES", "ANALYSIS", "BACKTEST", "DATA & SYNC", "MAINTENANCE", "TRADE AUDIT"
 ])
