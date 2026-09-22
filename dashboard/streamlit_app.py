@@ -758,12 +758,18 @@ with col_title:
         unsafe_allow_html=True
     )
 with col_status:
-    st.markdown(
-        '<div style="text-align:right;padding-top:4px;">' +
-        '<span style="background:#e8f5e9;color:#2e7d32;font-weight:700;font-size:10px;' +
-        'padding:4px 10px;border-radius:3px;border:1px solid #a5d6a7;letter-spacing:1px;">SYSTEM ONLINE</span></div>',
-        unsafe_allow_html=True
-    )
+    _sc1, _sc2 = st.columns([3, 2])
+    with _sc1:
+        st.markdown(
+            '<div style="text-align:right;padding-top:4px;">' +
+            '<span style="background:#e8f5e9;color:#2e7d32;font-weight:700;font-size:10px;' +
+            'padding:4px 10px;border-radius:3px;border:1px solid #a5d6a7;letter-spacing:1px;">SYSTEM ONLINE</span></div>',
+            unsafe_allow_html=True
+        )
+    with _sc2:
+        if st.button("Clear Cache & Reload", key="_btn_clear_cache_reload"):
+            st.cache_data.clear()
+            st.rerun()
 
 st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
@@ -1453,11 +1459,7 @@ def _reload_all_data():
     _df4_fwd=_load14_fwd(84,_s4_key,_s4_sec,_fwd_base)
     return _d2_1yr,_d4_1yr,_d2_full,_d4_full,_1yr_label,_full_label,_df2_fwd,_df4_fwd
 
-_hdr_l, _hdr_r = st.columns([8, 1])
-with _hdr_r:
-    if st.button("Clear Cache & Reload", key="_btn_clear_cache_reload"):
-        st.cache_data.clear()
-        st.rerun()
+
 
 _tab_monitor, _tab_trading, _tab_today, _tab_analysis, _tab_backtest, _tab_datasync, _tab_maint, _tab_audit = st.tabs([
     "MONITOR", "TRADING", "TODAY'S TRADES", "ANALYSIS", "BACKTEST", "DATA & SYNC", "MAINTENANCE", "TRADE AUDIT"
@@ -7841,11 +7843,23 @@ with _tab_analysis:
                             _sig = _hmlf.new(_s.encode(), _msg.encode(), _hslf.sha256).hexdigest()
                             _hdr = {"api-key":_k,"timestamp":_ts_ep,"signature":_sig}
                             try:
-                                _r = _rqlf.get(f"{_base}{_path}?{_qs}", headers=_hdr, timeout=8)
-                                _d = _r.json()
-                                if not _d.get("success"):
-                                    return []
-                                return _d.get("result", [])
+                                _all_fills = []
+                                _after_cur = None
+                                for _pg in range(10):
+                                    _qs2 = _qs + (f"&after={_after_cur}" if _after_cur else "")
+                                    _msg2 = "GET"+_ts_ep+_path+"?"+_qs2
+                                    _sig2 = _hmlf.new(_s.encode(), _msg2.encode(), _hslf.sha256).hexdigest()
+                                    _hdr2 = {"api-key":_k,"timestamp":_ts_ep,"signature":_sig2}
+                                    _r = _rqlf.get(f"{_base}{_path}?{_qs2}", headers=_hdr2, timeout=8)
+                                    _d = _r.json()
+                                    if not _d.get("success"):
+                                        break
+                                    _page_res = _d.get("result", [])
+                                    _all_fills.extend(_page_res)
+                                    _after_cur = (_d.get("meta") or {}).get("after")
+                                    if not _after_cur or not _page_res:
+                                        break
+                                return _all_fills
                             except Exception:
                                 return []
 
