@@ -14,12 +14,12 @@ from engine.maintenance_flag import check_maintenance_flag
 from engine.telegram_alert import send_alert
 
 def _utc_to_ist(ts_str):
-    """Convert UTC timestamp string to IST display format."""
+    """Convert UTC timestamp string to IST display format (with seconds)."""
     try:
         from datetime import datetime, timezone, timedelta
-        dt = datetime.strptime(ts_str[:16], "%Y-%m-%dT%H:%M")
+        dt = datetime.strptime(ts_str[:19], "%Y-%m-%dT%H:%M:%S")
         ist = dt + timedelta(hours=5, minutes=30)
-        return ist.strftime("%d-%b %I:%M %p IST")
+        return ist.strftime("%d-%b %I:%M:%S %p IST")
     except:
         return ts_str
 
@@ -144,8 +144,8 @@ def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
         msg = (
             f"{sign_ok} {label}\n"
             f"Direction : {direction.upper()}\n"
-            f"Entry     : BT ${bt_entry_price:,.2f} | LV ${entry_fill:,.2f} @ {entry_ts}\n"
-            f"Exit      : BT ${bt_exit_price:,.2f} | LV ${exit_fill:,.2f} @ {exit_ts}\n"
+            f"Entry     : BT ${bt_entry_price:,.2f} | LV ${entry_fill:,.2f} @ {_utc_to_ist(str(entry_ts)) if entry_ts else entry_ts}\n"
+            f"Exit      : BT ${bt_exit_price:,.2f} | LV ${exit_fill:,.2f} @ {_utc_to_ist(str(exit_ts)) if exit_ts else exit_ts}\n"
             f"Entry slip: ${abs(entry_slip):.2f} ({e_fav})\n"
             f"Exit slip : ${abs(exit_slip):.2f} ({x_fav})\n"
             f"Net slip  : {rt_str}\n"
@@ -661,7 +661,7 @@ while True:
                             if _entry_price_for_alert <= 0:
                                 log.warning(f"[FILL-LOG] entry_price_for_alert is 0 for sig_ts={sig_ts} (restart-with-open-position) - logging with PENDING marker, not dropping row")
                             if _entry_price_for_alert > 0 and _exit_fill_price > 0 and _bt_ep2 > 0:
-                                _send_roundtrip_match_alert("S4V3", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2 if _bt_xp2 > 0 else _bt_ep2, lots)
+                                _send_roundtrip_match_alert("S4V3", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2 if _bt_xp2 > 0 else _bt_ep2, lots, entry_ts=sig_ts, exit_ts=_xt, total_charges=float(_entry_commission_for_log)+float(result.get("commission",0.0)))
                             _exit_commission = result.get("commission", 0.0)
                             _total_charges = float(_entry_commission_for_log) + float(_exit_commission)
                             if _exit_fill_price > 0:
