@@ -78,78 +78,20 @@ def _get_csv_bt_row(label, entry_ts):
     return None
 
 def _send_live_entry_alert(label, direction, entry_ts, fill_price, sl_price, lots=100):
-    try:
-        from engine.telegram_alert import send_alert
-        sl_str = f"${sl_price:,.2f} (2% away)" if sl_price > 0 else "pending"
-        msg = (
-            f"CTS LIVE {label} ENTRY\n"
-            f"Direction : {direction.upper()}\n"
-            f"Entry time: {_utc_to_ist(entry_ts)}\n"
-            f"Fill price: ${fill_price:,.2f}\n"
-            f"SL placed : {sl_str}\n"
-            f"Lots      : {lots}"
-        )
-        send_alert(msg)
-    except Exception as e:
-        pass
 
+    pass  # PHASE-A: neutered, round-trip-only message
 def _send_live_exit_alert(label, direction, exit_ts, fill_price, entry_fill=0.0, lots=100):
-    try:
-        from engine.telegram_alert import send_alert
-        if entry_fill and entry_fill > 0:
-            sign = 1 if direction.lower() == "long" else -1
-            live_pnl = round((fill_price - entry_fill) * sign * lots * 0.001, 2)
-            pnl_sign = "+" if live_pnl >= 0 else ""
-            pnl_str  = f"{pnl_sign}${live_pnl:,.2f}"
-        else:
-            pnl_str = "N/A"
-        msg = (
-            f"CTS LIVE {label} EXIT\n"
-            f"Direction : {direction.upper()}\n"
-            f"Exit time : {_utc_to_ist(exit_ts)}\n"
-            f"Fill price: ${fill_price:,.2f}\n"
-            f"Lots      : {lots}\n"
-            f"Live PnL  : {pnl_str}"
-        )
-        send_alert(msg)
-    except Exception as e:
-        pass
 
+    pass  # PHASE-A: neutered, round-trip-only message
 def _send_live_exit_alert_DEPRECATED_DUPLICATE(label, direction, exit_ts, fill_price, lots=100):
     """DEPRECATED - duplicate removed, merged into single function above."""
     pass
 
 def _send_entry_match_alert(label, direction, entry_ts, bt_entry_price, lv_fill_price,
                              bt_exit_ts, bt_exit_price, lots=100):
-    try:
-        from engine.telegram_alert import send_alert
-        entry_slip = abs(lv_fill_price - bt_entry_price)
-        slip_ok    = entry_slip <= 10
-        slip_str   = f"${entry_slip:.2f} - OK (within $10)" if slip_ok else f"${entry_slip:.2f} - EXCEEDS $10"
-        sign_ok    = "CTS ENTRY MATCH" if slip_ok else "CTS ENTRY MISMATCH"
-        gross      = (bt_exit_price - bt_entry_price) if direction.lower()=="long" else (bt_entry_price - bt_exit_price)
-        gross      = gross * lots * 0.001
-        pnl5       = round(gross - (5*2*lots*0.001), 2)
-        pnl10      = round(gross - (10*2*lots*0.001), 2)
-        s5         = "+" if pnl5  >= 0 else ""
-        s10        = "+" if pnl10 >= 0 else ""
-        action_str = "" if slip_ok else "\nAction    : Check dashboard immediately"
-        msg = (
-            f"{sign_ok} {label}\n"
-            f"Direction : MATCH ({direction.upper()})\n"
-            f"Entry time: MATCH ({_utc_to_ist(entry_ts)})\n"
-            f"BT Entry  : ${bt_entry_price:,.2f}\n"
-            f"LV Fill   : ${lv_fill_price:,.2f}\n"
-            f"Entry slip: {slip_str}\n"
-            f"BT PnL ($5/side) : {s5}${pnl5:,.2f} (estimated)\n"
-            f"BT PnL ($10/side): {s10}${pnl10:,.2f} (estimated)\n"
-            f"Exit pending at  : {_utc_to_ist(bt_exit_ts)}{action_str}"
-        )
-        send_alert(msg)
-    except Exception as e:
-        pass
 
 
+    pass  # PHASE-A: neutered, round-trip-only message
 def _append_fill_log(csv_path, entry_ts, exit_ts, direction, lots, bt_ep, lv_ep, bt_xp, lv_xp, total_charges=0.0):
     import csv as _csv_fl, os as _os_fl
     try:
@@ -163,27 +105,30 @@ def _append_fill_log(csv_path, entry_ts, exit_ts, direction, lots, bt_ep, lv_ep,
         log.warning(f'[FILL-LOG] Could not write fill log: {_e}')
 
 def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
-                                 bt_entry_price, bt_exit_price, lots=100):
+                                 bt_entry_price, bt_exit_price, lots=100,
+                                 entry_ts=None, exit_ts=None, total_charges=0.0):
     try:
         from engine.telegram_alert import send_alert
-        entry_slip  = abs(entry_fill - bt_entry_price)
-        exit_slip   = abs(exit_fill  - bt_exit_price)
-        round_trip  = entry_slip + exit_slip
-        rt_ok       = round_trip <= 10
+        sign_lv     = 1 if direction.lower()=="long" else -1
+        entry_slip  = entry_fill - bt_entry_price
+        exit_slip   = exit_fill  - bt_exit_price
+        entry_impact= -(entry_fill - bt_entry_price) * sign_lv * lots * 0.001
+        exit_impact = (exit_fill - bt_exit_price) * sign_lv * lots * 0.001
+        net_slip_usd= abs(entry_slip) + abs(exit_slip)
+        rt_ok       = net_slip_usd <= 10
         sign_ok     = "CTS ROUND TRIP MATCH" if rt_ok else "CTS ROUND TRIP WARNING"
-        e_str       = f"${entry_slip:.2f} - OK" if entry_slip <= 10 else f"${entry_slip:.2f} - HIGH"
-        x_str       = f"${exit_slip:.2f} - OK"  if exit_slip  <= 10 else f"${exit_slip:.2f} - HIGH"
-        rt_str      = f"${round_trip:.2f} - WITHIN $10 OK" if rt_ok else f"${round_trip:.2f} - EXCEEDS $10"
+        e_fav       = "fav" if entry_impact >= 0 else "unfav"
+        x_fav       = "fav" if exit_impact  >= 0 else "unfav"
+        rt_str      = f"${net_slip_usd:.2f} - WITHIN $10 OK" if rt_ok else f"${net_slip_usd:.2f} - EXCEEDS $10"
         gross_bt    = (bt_exit_price - bt_entry_price) if direction.lower()=="long" else (bt_entry_price - bt_exit_price)
         gross_bt    = gross_bt * lots * 0.001
-        pnl5        = round(gross_bt - (5*2*lots*0.001), 2)
         pnl10       = round(gross_bt - (10*2*lots*0.001), 2)
-        s5          = "+" if pnl5  >= 0 else ""
         s10         = "+" if pnl10 >= 0 else ""
-        sign_lv     = 1 if direction.lower()=="long" else -1
-        live_pnl    = round((exit_fill - entry_fill) * sign_lv * lots * 0.001, 2)
-        slv         = "+" if live_pnl >= 0 else ""
-        pnl_diff    = round(live_pnl - pnl5, 2)
+        live_gross  = round((exit_fill - entry_fill) * sign_lv * lots * 0.001, 2)
+        live_net    = round(live_gross - total_charges, 2)
+        gs          = "+" if live_gross >= 0 else ""
+        slv         = "+" if live_net   >= 0 else ""
+        pnl_diff    = round(live_net - pnl10, 2)
         diff_s      = "+" if pnl_diff >= 0 else ""
         action_str  = ""
         count_str   = ""
@@ -194,14 +139,15 @@ def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
             action_str = "\nAction    : Check dashboard immediately"
         msg = (
             f"{sign_ok} {label}\n"
-            f"Direction : MATCH ({direction.upper()})\n"
-            f"Entry slip: {e_str}\n"
-            f"Exit slip : {x_str}\n"
-            f"Round trip: {rt_str}\n"
-            f"BT PnL ($5/side) : {s5}${pnl5:,.2f}\n"
+            f"Direction : {direction.upper()}\n"
+            f"Entry     : BT ${bt_entry_price:,.2f} | LV ${entry_fill:,.2f} @ {entry_ts}\n"
+            f"Exit      : BT ${bt_exit_price:,.2f} | LV ${exit_fill:,.2f} @ {exit_ts}\n"
+            f"Entry slip: ${abs(entry_slip):.2f} ({e_fav})\n"
+            f"Exit slip : ${abs(exit_slip):.2f} ({x_fav})\n"
+            f"Net slip  : {rt_str}\n"
             f"BT PnL ($10/side): {s10}${pnl10:,.2f}\n"
-            f"Live PnL         : {slv}${live_pnl:,.2f}\n"
-            f"PnL diff         : {diff_s}${pnl_diff:,.2f}{count_str}{action_str}"
+            f"Live PnL (net)   : {slv}${live_net:,.2f} [gross {gs}${live_gross:,.2f} - charges ${total_charges:,.2f}]\n"
+            f"PnL diff  : {diff_s}${pnl_diff:,.2f}{count_str}{action_str}"
         )
         send_alert(msg)
     except Exception as e:
@@ -233,32 +179,13 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path="/home/anildalabanjan7/crypto_tradingsystem/.env")
 
 def _send_live_entry_alert(label, direction, entry_ts, fill_price, sl_price, lots=100):
-    """Send Telegram alert on live entry fill."""
-    try:
-        from engine.telegram_alert import send_alert
-        import datetime as _dt
-        def _ist(ts):
-            try:
-                dt = _dt.datetime.strptime(ts[:19], "%Y-%m-%dT%H:%M:%S")
-                return (dt + _dt.timedelta(hours=5, minutes=30)).strftime("%d-%b-%Y %I:%M %p IST")
-            except: return ts
-        msg = (
-            f"CTS LIVE {label} ENTRY\n"
-            f"Direction : {direction.upper()}\n"
-            f"Entry time: {_ist(entry_ts)}\n"
-            f"Fill price: ${fill_price:,.2f}\n"
-            f"SL placed : ${sl_price:,.2f}\n"
-            f"Lots      : {lots}"
-        )
-        send_alert(msg)
-    except Exception as e:
-        pass
 
 
 
 
 
 
+    pass  # PHASE-A: neutered, round-trip-only message
 # --- Config ---
 SYMBOL       = "BTCUSD"
 LOT_SIZE     = 100
@@ -727,7 +654,7 @@ while True:
                             if _entry_price_for_alert <= 0:
                                 log.warning(f"[FILL-LOG] entry_price_for_alert is 0 for sig_ts={sig_ts} (restart-with-open-position) - logging with PENDING marker, not dropping row")
                             if _entry_price_for_alert > 0 and _exit_fill_price > 0 and _bt_ep2 > 0:
-                                _send_roundtrip_match_alert("S4", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2 if _bt_xp2 > 0 else _bt_ep2, lots)
+                                _send_roundtrip_match_alert("S4", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2 if _bt_xp2 > 0 else _bt_ep2, lots, entry_ts=sig_ts, exit_ts=_xt, total_charges=float(_entry_commission_for_log)+float(result.get("commission",0.0)))
                             _exit_commission = result.get("commission", 0.0)
                             _total_charges = float(_entry_commission_for_log) + float(_exit_commission)
                             if _exit_fill_price > 0:
