@@ -119,12 +119,14 @@ def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
         exit_slip   = exit_fill  - bt_exit_price
         entry_impact= -(entry_fill - bt_entry_price) * sign_lv * lots * 0.001
         exit_impact = (exit_fill - bt_exit_price) * sign_lv * lots * 0.001
-        net_slip_usd= abs(entry_slip) + abs(exit_slip)
-        rt_ok       = net_slip_usd <= 10
+        net_slip_usd= entry_impact + exit_impact
+        rt_ok       = abs(net_slip_usd) <= 10
+        n_fav       = "fav" if net_slip_usd >= 0 else "unfav"
+        n_sign      = "+" if net_slip_usd >= 0 else "-"
         sign_ok     = "CTS ROUND TRIP MATCH" if rt_ok else "CTS ROUND TRIP WARNING"
         e_fav       = "fav" if entry_impact >= 0 else "unfav"
         x_fav       = "fav" if exit_impact  >= 0 else "unfav"
-        rt_str      = f"${net_slip_usd:.2f} ({net_slip_usd/bt_entry_price*100:.3f}%) - WITHIN $10 OK" if rt_ok else f"${net_slip_usd:.2f} ({net_slip_usd/bt_entry_price*100:.3f}%) - EXCEEDS $10"
+        rt_str      = f"{n_sign}${abs(net_slip_usd):.2f} ({abs(net_slip_usd)/bt_entry_price*100:.3f}%) ({n_fav}) - WITHIN $10 OK" if rt_ok else f"{n_sign}${abs(net_slip_usd):.2f} ({abs(net_slip_usd)/bt_entry_price*100:.3f}%) ({n_fav}) - EXCEEDS $10"
         gross_bt    = (bt_exit_price - bt_entry_price) if direction.lower()=="long" else (bt_entry_price - bt_exit_price)
         gross_bt    = gross_bt * lots * 0.001
         pnl10       = round(gross_bt - (10*2*lots*0.001), 2)
@@ -147,8 +149,8 @@ def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
             f"Direction : BT {bt_direction.upper() if bt_direction else 'N/A'} | LV {direction.upper()}\n"
             f"Entry     : BT ${bt_entry_price:,.2f} @ {_utc_to_ist(str(bt_entry_ts)) if bt_entry_ts else 'N/A'} | LV ${entry_fill:,.2f} @ {_utc_to_ist(str(entry_ts)) if entry_ts else entry_ts}\n"
             f"Exit      : BT ${bt_exit_price:,.2f} @ {_utc_to_ist(str(bt_exit_ts)) if bt_exit_ts else 'N/A'} | LV ${exit_fill:,.2f} @ {_utc_to_ist(str(exit_ts)) if exit_ts else exit_ts}\n"
-            f"Entry slip: ${abs(entry_slip):.2f} ({abs(entry_slip)/bt_entry_price*100:.3f}%) ({e_fav})\n"
-            f"Exit slip : ${abs(exit_slip):.2f} ({abs(exit_slip)/bt_exit_price*100:.3f}%) ({x_fav})\n"
+            f"Entry slip: {'+' if e_fav=='fav' else '-'}${abs(entry_slip):.2f} ({abs(entry_slip)/bt_entry_price*100:.3f}%) ({e_fav})\n"
+            f"Exit slip : {'+' if x_fav=='fav' else '-'}${abs(exit_slip):.2f} ({abs(exit_slip)/bt_exit_price*100:.3f}%) ({x_fav})\n"
             f"Net slip  : {rt_str}\n"
             f"BT PnL ($10/side): {s10}${pnl10:,.2f}\n"
             f"Live PnL (net)   : {slv}${live_net:,.2f} [gross {gs}${live_gross:,.2f} - charges ${total_charges:,.2f}]\n"
