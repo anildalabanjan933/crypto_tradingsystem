@@ -46,7 +46,7 @@ def _get_date_range_audit(range_choice, custom_start=None, custom_end=None):
         return _today, _today
     elif range_choice == "2 Day":
         _yesterday = _today - _dt_audit.timedelta(days=1)
-        return _yesterday, _yesterday
+        return _yesterday, _today
     elif range_choice == "1 Week":
         _monday = _today - _dt_audit.timedelta(days=_today.weekday())
         return _monday, _today
@@ -1233,6 +1233,32 @@ def render_trade_audit_tab(load14_fn, fetch_fills_fn, read_log_fn, inr_rate=_INR
         st.warning("Please select a valid custom date range.")
         return
 
+    def _t_ok_audit_csv(r):
+        if time_start is None:
+            return True
+        try:
+            _ts = str(r.get("entry_ts_raw", "")).replace("T", " ")
+            _dtp_utc = _pd_audit.to_datetime(_ts)
+            _dtp_ist = _dtp_utc + _pd_audit.Timedelta(hours=5, minutes=30)
+            _ent_date = _dtp_ist.date()
+            if _ent_date > from_date:
+                return True
+            if _ent_date == from_date:
+                return _dtp_ist.time() >= time_start
+            _ex_raw = str(r.get("exit_ts_raw", "")).strip()
+            if not _ex_raw or _ex_raw in ("", "PENDING", "nan", "OPEN", "-"):
+                return True
+            _ex_utc = _pd_audit.to_datetime(_ex_raw.replace("T", " "))
+            _ex_ist = _ex_utc + _pd_audit.Timedelta(hours=5, minutes=30)
+            _ex_date = _ex_ist.date()
+            if _ex_date > from_date:
+                return True
+            if _ex_date == from_date:
+                return _ex_ist.time() >= time_start
+            return False
+        except Exception:
+            return True
+
     _strats_for_csv = ["S4", "S4V2", "S4V3"] if strat_label == "ALL STRATEGY" else [strat_label]
     _csv_cols = ["source","label","trade_no","dir","date","symbol","entry_ist","exit_ist","entry_p","exit_p","lot","charges","pnl_usd","net_pnl_inr","cum_pnl_inr"]
     _csv_rows = []
@@ -1242,6 +1268,8 @@ def render_trade_audit_tab(load14_fn, fetch_fills_fn, read_log_fn, inr_rate=_INR
         _lv_open_csv = _load_audit_lv_open_cached(fetch_fills_fn, _s_csv, from_date, to_date)
         _lv_closed_csv = _load_audit_lv_cached(fetch_fills_fn, _s_csv, from_date, to_date, inr_rate)
         _lv_csv = _lv_open_csv + _lv_closed_csv
+        _bt_csv = [r for r in _bt_csv if _t_ok_audit_csv(r)]
+        _lv_csv = [r for r in _lv_csv if _t_ok_audit_csv(r)]
         for _r in _lv_csv:
             _row = {k: _r.get(k) for k in _csv_cols if k != "source"}
             _row["source"] = "DELTA_LIVE_FILLED"
@@ -1291,7 +1319,7 @@ def render_trade_audit_tab(load14_fn, fetch_fills_fn, read_log_fn, inr_rate=_INR
 import streamlit as st
 
 @st.cache_data(ttl=180, show_spinner=False)
-def _fetch_account_fills_cached_audit(acc, _product_id=84, _window_hours=48):
+def _fetch_account_fills_cached_audit(acc, product_id=84, window_hours=48):
     import hmac as _hmlf_a, hashlib as _hslf_a, time as _tmlf_a, requests as _rqlf_a, os as _os_a
     _k = _os_a.environ.get(f'{acc}_API_KEY', '')
     _s = _os_a.environ.get(f'{acc}_API_SECRET', '')
@@ -1300,13 +1328,13 @@ def _fetch_account_fills_cached_audit(acc, _product_id=84, _window_hours=48):
     _base = "https://cdn-ind.testnet.deltaex.org"
     _path = "/v2/fills"
     _now = int(_tmlf_a.time())
-    _start = int((_now - _window_hours * 3600) * 1e6)
+    _start = int((_now - window_hours * 3600) * 1e6)
     _end   = int((_now + 300) * 1e6)
     _all_fills = []
     _after_cursor = None
     for _page in range(1, 50):
         _ts_ep = str(int(_tmlf_a.time()))
-        _p = {"product_id": _product_id, "page_size": 50,
+        _p = {"product_id": product_id, "page_size": 50,
               "start_time": _start, "end_time": _end}
         if _after_cursor:
             _p["after"] = _after_cursor
