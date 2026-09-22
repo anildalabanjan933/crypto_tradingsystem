@@ -116,23 +116,31 @@ def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
         entry_impact= -(entry_fill - bt_entry_price) * sign_lv * lots * 0.001
         exit_impact = (exit_fill - bt_exit_price) * sign_lv * lots * 0.001
         net_slip_usd= entry_impact + exit_impact
-        rt_ok       = abs(net_slip_usd) <= 10
+        rt_ok       = True if net_slip_usd >= 0 else (abs(net_slip_usd) <= 10)
         n_fav       = "fav" if net_slip_usd >= 0 else "unfav"
         n_sign      = "+" if net_slip_usd >= 0 else "-"
         sign_ok     = "CTS ROUND TRIP MATCH" if rt_ok else "CTS ROUND TRIP WARNING"
         e_fav       = "fav" if entry_impact >= 0 else "unfav"
         x_fav       = "fav" if exit_impact  >= 0 else "unfav"
-        rt_str      = f"{n_sign}${abs(net_slip_usd):.2f} ({abs(net_slip_usd)/bt_entry_price*100:.3f}%) ({n_fav}) - WITHIN $10 OK" if rt_ok else f"{n_sign}${abs(net_slip_usd):.2f} ({abs(net_slip_usd)/bt_entry_price*100:.3f}%) ({n_fav}) - EXCEEDS $10"
+        e_emoji     = "▲" if e_fav=="fav" else "▼"
+        x_emoji     = "▲" if x_fav=="fav" else "▼"
+        n_emoji     = "▲" if n_fav=="fav" else "▼"
+        dir_lv_emoji  = "▲" if direction.lower()=="long" else "▼"
+        dir_bt_emoji  = ("▲" if bt_direction.lower()=="long" else "▼") if bt_direction else ""
+        rt_str      = f"({n_sign}) {n_fav} ${abs(net_slip_usd):.2f} ({abs(net_slip_usd)/bt_entry_price*100:.3f}%) {n_emoji} - WITHIN $10 OK" if rt_ok else f"({n_sign}) {n_fav} ${abs(net_slip_usd):.2f} ({abs(net_slip_usd)/bt_entry_price*100:.3f}%) {n_emoji} - EXCEEDS $10"
         gross_bt    = (bt_exit_price - bt_entry_price) if direction.lower()=="long" else (bt_entry_price - bt_exit_price)
         gross_bt    = gross_bt * lots * 0.001
         pnl10       = round(gross_bt - (10*2*lots*0.001), 2)
         s10         = "+" if pnl10 >= 0 else ""
+        pnl10_emoji = "▲" if pnl10 >= 0 else "▼"
         live_gross  = round((exit_fill - entry_fill) * sign_lv * lots * 0.001, 2)
         live_net    = round(live_gross - total_charges, 2)
         gs          = "+" if live_gross >= 0 else ""
         slv         = "+" if live_net   >= 0 else ""
         pnl_diff    = round(live_net - pnl10, 2)
         diff_s      = "+" if pnl_diff >= 0 else ""
+        live_net_emoji = "▲" if live_net >= 0 else "▼"
+        pnl_diff_emoji = "▲" if pnl_diff >= 0 else "▼"
         action_str  = ""
         count_str   = ""
         if rt_ok:
@@ -141,16 +149,18 @@ def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
         else:
             action_str = "\nAction    : Check dashboard immediately"
         msg = (
-            f"{sign_ok} {label}\n"
-            f"Direction : BT {bt_direction.upper() if bt_direction else 'N/A'} | LV {direction.upper()}\n"
-            f"Entry     : BT ${bt_entry_price:,.2f} @ {_utc_to_ist(str(bt_entry_ts)) if bt_entry_ts else 'N/A'} | LV ${entry_fill:,.2f} @ {_utc_to_ist(str(entry_ts)) if entry_ts else entry_ts}\n"
-            f"Exit      : BT ${bt_exit_price:,.2f} @ {_utc_to_ist(str(bt_exit_ts)) if bt_exit_ts else 'N/A'} | LV ${exit_fill:,.2f} @ {_utc_to_ist(str(exit_ts)) if exit_ts else exit_ts}\n"
-            f"Entry slip: {'+' if e_fav=='fav' else '-'}${abs(entry_slip):.2f} ({abs(entry_slip)/bt_entry_price*100:.3f}%) ({e_fav})\n"
-            f"Exit slip : {'+' if x_fav=='fav' else '-'}${abs(exit_slip):.2f} ({abs(exit_slip)/bt_exit_price*100:.3f}%) ({x_fav})\n"
-            f"Net slip  : {rt_str}\n"
-            f"BT PnL ($10/side): {s10}${pnl10:,.2f}\n"
-            f"Live PnL (net)   : {slv}${live_net:,.2f} [gross {gs}${live_gross:,.2f} - charges ${total_charges:,.2f}]\n"
-            f"PnL diff  : {diff_s}${pnl_diff:,.2f}{count_str}{action_str}"
+            f"<b>{sign_ok} {label}</b>\n"
+            f"Direction : BT {dir_bt_emoji} {bt_direction.upper() if bt_direction else 'N/A'} | LV {dir_lv_emoji} {direction.upper()}\n"
+            f"Entry Time : BT {_utc_to_ist(str(bt_entry_ts)) if bt_entry_ts else 'N/A'} | LV {_utc_to_ist(str(entry_ts)) if entry_ts else entry_ts}\n"
+            f"Entry Price: BT ${bt_entry_price:,.2f} | LV ${entry_fill:,.2f}\n"
+            f"Exit Time  : BT {_utc_to_ist(str(bt_exit_ts)) if bt_exit_ts else 'N/A'} | LV {_utc_to_ist(str(exit_ts)) if exit_ts else exit_ts}\n"
+            f"Exit Price : BT ${bt_exit_price:,.2f} | LV ${exit_fill:,.2f}\n"
+            f"Entry slip: {'+' if e_fav=='fav' else '-'}${abs(entry_slip):.2f} ({abs(entry_slip)/bt_entry_price*100:.3f}%) {e_emoji}\n"
+            f"Exit slip : {'+' if x_fav=='fav' else '-'}${abs(exit_slip):.2f} ({abs(exit_slip)/bt_exit_price*100:.3f}%) {x_emoji}\n"
+            f"<b>Net slip  : {rt_str}</b>\n"
+            f"BT PnL ($10/side): {pnl10_emoji} {s10}${pnl10:,.2f}\n"
+            f"Live PnL (net)   : {live_net_emoji} {slv}${live_net:,.2f} [gross {gs}${live_gross:,.2f} - charges ${total_charges:,.2f}]\n"
+            f"PnL diff  : {pnl_diff_emoji} {diff_s}${pnl_diff:,.2f}{count_str}{action_str}"
         )
         send_alert(msg)
     except Exception as e:
