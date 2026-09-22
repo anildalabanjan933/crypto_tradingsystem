@@ -120,7 +120,7 @@ def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
         sign_ok     = "CTS ROUND TRIP MATCH" if rt_ok else "CTS ROUND TRIP WARNING"
         e_fav       = "fav" if entry_impact >= 0 else "unfav"
         x_fav       = "fav" if exit_impact  >= 0 else "unfav"
-        rt_str      = f"${net_slip_usd:.2f} - WITHIN $10 OK" if rt_ok else f"${net_slip_usd:.2f} - EXCEEDS $10"
+        rt_str      = f"${net_slip_usd:.2f} ({net_slip_usd/bt_entry_price*100:.3f}%) - WITHIN $10 OK" if rt_ok else f"${net_slip_usd:.2f} ({net_slip_usd/bt_entry_price*100:.3f}%) - EXCEEDS $10"
         gross_bt    = (bt_exit_price - bt_entry_price) if direction.lower()=="long" else (bt_entry_price - bt_exit_price)
         gross_bt    = gross_bt * lots * 0.001
         pnl10       = round(gross_bt - (10*2*lots*0.001), 2)
