@@ -574,7 +574,8 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
                     if _s.get("timestamp","") == _exit_ts_alert:
                         _xp = float(_s.get("price", 0.0))
                         break
-            _send_bt_signal_alert(state.label, direction, ts, _exit_ts_alert, _ep, _xp)
+            if state.label not in ("S4","S4V2","S4V3"):
+                _send_bt_signal_alert(state.label, direction, ts, _exit_ts_alert, _ep, _xp)
         except Exception as _ae:
             log.warning(f"[TELEGRAM] BT alert error: {_ae}")
     # FLIP-EVENT SELF-LOGGER (permanent, survives restarts) - records same-ts EXIT+ENTRY flips
