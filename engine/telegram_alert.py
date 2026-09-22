@@ -5,7 +5,7 @@ import requests
 import logging
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path="/home/anildalabanjan933/crypto_trading_system/.env")
+load_dotenv(dotenv_path="/home/anildalabanjan7/crypto_tradingsystem/.env")
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID   = os.getenv("TELEGRAM_CHAT_ID", "")
