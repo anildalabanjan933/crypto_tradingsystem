@@ -110,7 +110,8 @@ def _append_fill_log(csv_path, entry_ts, exit_ts, direction, lots, bt_ep, lv_ep,
 
 def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
                                  bt_entry_price, bt_exit_price, lots=100,
-                                 entry_ts=None, exit_ts=None, total_charges=0.0):
+                                 entry_ts=None, exit_ts=None, total_charges=0.0,
+                                 bt_entry_ts=None, bt_exit_ts=None, bt_direction=None):
     try:
         from engine.telegram_alert import send_alert
         sign_lv     = 1 if direction.lower()=="long" else -1
@@ -143,9 +144,9 @@ def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
             action_str = "\nAction    : Check dashboard immediately"
         msg = (
             f"{sign_ok} {label}\n"
-            f"Direction : {direction.upper()}\n"
-            f"Entry     : BT ${bt_entry_price:,.2f} | LV ${entry_fill:,.2f} @ {_utc_to_ist(str(entry_ts)) if entry_ts else entry_ts}\n"
-            f"Exit      : BT ${bt_exit_price:,.2f} | LV ${exit_fill:,.2f} @ {_utc_to_ist(str(exit_ts)) if exit_ts else exit_ts}\n"
+            f"Direction : BT {bt_direction.upper() if bt_direction else 'N/A'} | LV {direction.upper()}\n"
+            f"Entry     : BT ${bt_entry_price:,.2f} @ {_utc_to_ist(str(bt_entry_ts)) if bt_entry_ts else 'N/A'} | LV ${entry_fill:,.2f} @ {_utc_to_ist(str(entry_ts)) if entry_ts else entry_ts}\n"
+            f"Exit      : BT ${bt_exit_price:,.2f} @ {_utc_to_ist(str(bt_exit_ts)) if bt_exit_ts else 'N/A'} | LV ${exit_fill:,.2f} @ {_utc_to_ist(str(exit_ts)) if exit_ts else exit_ts}\n"
             f"Entry slip: ${abs(entry_slip):.2f} ({e_fav})\n"
             f"Exit slip : ${abs(exit_slip):.2f} ({x_fav})\n"
             f"Net slip  : {rt_str}\n"
@@ -661,7 +662,7 @@ while True:
                             if _entry_price_for_alert <= 0:
                                 log.warning(f"[FILL-LOG] entry_price_for_alert is 0 for sig_ts={sig_ts} (restart-with-open-position) - logging with PENDING marker, not dropping row")
                             if _entry_price_for_alert > 0 and _exit_fill_price > 0 and _bt_ep2 > 0:
-                                _send_roundtrip_match_alert("S4V3", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2 if _bt_xp2 > 0 else _bt_ep2, lots, entry_ts=sig_ts, exit_ts=_xt, total_charges=float(_entry_commission_for_log)+float(result.get("commission",0.0)))
+                                _send_roundtrip_match_alert("S4V3", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2 if _bt_xp2 > 0 else _bt_ep2, lots, entry_ts=sig_ts, exit_ts=_xt, total_charges=float(_entry_commission_for_log)+float(result.get("commission",0.0)), bt_entry_ts=_bt_csv2[0] if _bt_csv2 and len(_bt_csv2)>0 else None, bt_exit_ts=_bt_csv2[1] if _bt_csv2 and len(_bt_csv2)>1 else None, bt_direction=_bt_csv2[2] if _bt_csv2 and len(_bt_csv2)>2 else None)
                             _exit_commission = result.get("commission", 0.0)
                             _total_charges = float(_entry_commission_for_log) + float(_exit_commission)
                             if _exit_fill_price > 0:
