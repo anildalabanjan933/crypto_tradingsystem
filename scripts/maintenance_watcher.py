@@ -276,7 +276,7 @@ def main():
                 on_close=on_close
             )
             _current_ws = ws
-            ws.run_forever()
+            ws.run_forever(ping_interval=30, ping_timeout=20)
         except Exception as e:
             log.error(f"[MaintenanceWatcher] run_forever exception: {e}")
 
