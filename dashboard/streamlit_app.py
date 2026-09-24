@@ -860,8 +860,11 @@ def _load14(csv_pattern, from_dt=None):
                 if cum>pk: pk=cum
                 drop=pk-cum
                 if drop>dd: dd=drop
-            # Today + Month PnL
-            _today_df = df[df['entry_datetime'].dt.date == today_s.date()]
+            # Today + Month PnL (IST date boundary, entry OR exit - matches Trade Audit tab benchmark)
+            _today_ist_date14 = (now14 + _dt14.timedelta(hours=5, minutes=30)).date()
+            _entry_ist_d14 = (df['entry_datetime'] + _pd14.Timedelta(hours=5, minutes=30)).dt.date
+            _exit_ist_d14  = (df['exit_dt'] + _pd14.Timedelta(hours=5, minutes=30)).dt.date
+            _today_df = df[(_entry_ist_d14 == _today_ist_date14) | (_exit_ist_d14 == _today_ist_date14)]
             if 'net_pnl_inr' in df.columns:
                 _today_win_inr = _today_df[_today_df['net_pnl_inr']>0]['net_pnl_inr'].sum()
                 pnl_today_inr = _today_df['net_pnl_inr'].sum() - (_today_win_inr*0.10)
@@ -895,7 +898,12 @@ def _load14(csv_pattern, from_dt=None):
         months = max(total_m, 1)
         roc_monthly = roc / months
         # Today + month trade count
-        today_count = len(df[df['entry_datetime'].dt.date == today_s.date()]) if 'entry_datetime' in df.columns else 0
+        if 'exit_datetime' in df.columns:
+            _entry_ist_d14b = (df['entry_datetime'] + _pd14.Timedelta(hours=5, minutes=30)).dt.date
+            _exit_ist_d14b  = (_pd14.to_datetime(df['exit_datetime']) + _pd14.Timedelta(hours=5, minutes=30)).dt.date
+            today_count = len(df[(_entry_ist_d14b == _today_ist_date14) | (_exit_ist_d14b == _today_ist_date14)])
+        else:
+            today_count = len(df[(df['entry_datetime'] + _pd14.Timedelta(hours=5, minutes=30)).dt.date == _today_ist_date14]) if 'entry_datetime' in df.columns else 0
         month_count = len(df[df['entry_datetime'] >= _pd14.Timestamp(month_s)]) if 'entry_datetime' in df.columns else 0
         # extra metrics
         import math as _m14x, numpy as _np14x
@@ -4616,7 +4624,7 @@ if _active_tab == "BACKTEST":
         st.markdown("**Date Range**")
         bt_range_options = ["1 Month", "6 Months", "1 Year", "1.5 Years", "2 Years", "Full CSV", "Custom"]
         bt_range = st.radio("Date Range", bt_range_options, index=2, horizontal=True, key="sec6_range", label_visibility="collapsed")
-        today = datetime.date.today()
+        today = (datetime.datetime.utcnow() + datetime.timedelta(hours=5, minutes=30)).date()
         if bt_range == "1 Month":
             bt_start = today - datetime.timedelta(days=30)
             bt_end = today
