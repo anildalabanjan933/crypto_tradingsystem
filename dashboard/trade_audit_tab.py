@@ -41,7 +41,7 @@ def _to_ist_audit(ts):
         return str(ts)
 
 def _get_date_range_audit(range_choice, custom_start=None, custom_end=None):
-    _today = _dt_audit.datetime.utcnow().date()
+    _today = (_dt_audit.datetime.utcnow() + _dt_audit.timedelta(hours=5, minutes=30)).date()
     if range_choice == "Today":
         return _today, _today
     elif range_choice == "2 Day":
@@ -135,7 +135,6 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
             ) * inr_rate
 
             _net_pnl_inr = _pnl_inr - (max(_pnl_inr, 0) * 0.10)
-            _cum_pnl += _net_pnl_inr
 
             rows.append({
                 "trade_no"     : _trade_no,
@@ -145,16 +144,17 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                 "symbol"       : "BTCUSD",
                 "entry_ts_raw" : _entry_ts_raw,
                 "exit_ts_raw"  : _exit_ts_raw,
-                "entry_ist"    : _to_ist_audit(_offset_ts_audit(_entry_ts_raw, strat_label)),
-                "exit_ist"     : _to_ist_audit(_offset_ts_audit(_exit_ts_raw, strat_label)) if _exit_ts_raw not in ("", "PENDING", "nan") else "-",
+                "entry_ist"    : _to_ist_audit(_entry_ts_raw),
+                "exit_ist"     : _to_ist_audit(_exit_ts_raw) if _exit_ts_raw not in ("", "PENDING", "nan") else "-",
                 "entry_p"      : _entry_p,
                 "exit_p"       : _exit_p,
                 "lot"          : 1,
                 "charges"      : _tax_charges,
                 "pnl_usd"      : _pnl_usd,
                 "net_pnl_inr"  : _net_pnl_inr,
-                "cum_pnl_inr"  : _cum_pnl,
+                "cum_pnl_inr"  : 0.0,
             })
+
 
         # Dynamic same-day fallback: static trade_log CSV may not yet include
         # today's already-closed OR still-open signals (regenerated on its own
@@ -171,12 +171,28 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
             try:
                 with open(_sig_path) as _sf:
                     _sig_lines = [ln.strip().split(',') for ln in _sf if ln.strip()]
-                for _sp in _sig_lines:
+                for _si, _sp in enumerate(_sig_lines):
                     if len(_sp) < 5:
                         continue
                     _p_et, _p_xt, _p_dir, _p_lots, _p_ep = _sp[:5]
                     _p_xp = _sp[5] if len(_sp) > 5 else ""
-                    if any(str(r["entry_ts_raw"]).replace("T", " ") == _p_et.replace("T", " ") for r in rows):
+                    def _parse_dt_dedup(_raw):
+                        try:
+                            _s = str(_raw).strip()
+                            if _s.endswith("Z"): _s = _s[:-1]
+                            _s = _s.replace("T", " ", 1)
+                            return _dt_audit.datetime.fromisoformat(_s).replace(second=0, microsecond=0)
+                        except Exception:
+                            return None
+                    _p_et_parsed = _parse_dt_dedup(_p_et)
+                    _dup_found = False
+                    if _p_et_parsed is not None:
+                        for _r in rows:
+                            _r_et_parsed = _parse_dt_dedup(_r["entry_ts_raw"])
+                            if _r_et_parsed is not None and _r_et_parsed == _p_et_parsed:
+                                _dup_found = True
+                                break
+                    if _dup_found:
                         continue
                     try:
                         _et_date = _dt_audit.datetime.fromisoformat(_p_et).date()
@@ -184,7 +200,47 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                         continue
                     if not (from_date <= _et_date <= to_date):
                         continue
-                    _is_open = (_p_xt == "PENDING" or not _p_xp)
+                    _p_xp_check = 0.0
+                    try:
+                        _p_xp_check = float(_p_xp) if _p_xp else 0.0
+                    except Exception:
+                        _p_xp_check = 0.0
+                    # Guard: source signals CSV can contain rows whose own
+                    # exit timestamp is not later than their own entry
+                    # timestamp (bad write at the source). Such an exit is
+                    # not trustworthy - force it to be treated as missing so
+                    # the forward-scan lookahead below resolves the real
+                    # later exit (or correctly marks the row open).
+                    if _p_xp_check > 0.0:
+                        _own_xt_parsed = _parse_dt_dedup(_p_xt)
+                        if (_p_et_parsed is not None and _own_xt_parsed is not None
+                                and _own_xt_parsed <= _p_et_parsed):
+                            _p_xp_check = 0.0
+                    # Flip-strategy convention: if this row has no real exit yet,
+                    # but a later signal row already exists, that later row is the
+                    # actual flip/close for this trade - use its entry as this exit
+                    # instead of falsely marking this row open. Only the true last
+                    # row (no later row) stays open. Isolated to fallback path only.
+                    # Scan forward (not just _si+1) and require the candidate's own
+                    # entry timestamp to be strictly later than this row's entry -
+                    # guards against out-of-order appends in the signals CSV.
+                    if _p_xp_check <= 0.0:
+                        _fwd = _si + 1
+                        while _fwd < len(_sig_lines):
+                            _next_sp = _sig_lines[_fwd]
+                            if len(_next_sp) >= 5:
+                                _next_et_parsed = _parse_dt_dedup(_next_sp[0])
+                                if (_p_et_parsed is not None and _next_et_parsed is not None
+                                        and _next_et_parsed > _p_et_parsed):
+                                    _p_xt = _next_sp[0]
+                                    _p_xp = _next_sp[4]
+                                    try:
+                                        _p_xp_check = float(_p_xp) if _p_xp else 0.0
+                                    except Exception:
+                                        _p_xp_check = 0.0
+                                    break
+                            _fwd += 1
+                    _is_open = (_p_xt == "PENDING" or not _p_xp or _p_xp_check <= 0.0)
                     _trade_no += 1
                     if _is_open:
                         rows.append({
@@ -242,6 +298,13 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                 pass
     except Exception:
         pass
+
+    _asc_rows_audit = sorted(rows, key=lambda _r: _r["entry_ts_raw"])
+    _running_pnl_audit = 0.0
+    for _r in _asc_rows_audit:
+        _running_pnl_audit += _r["net_pnl_inr"]
+        _r["cum_pnl_inr"] = _running_pnl_audit
+
     return rows
 
 # ============================================================
@@ -823,30 +886,38 @@ def _apply_bt_adjustments_audit(bt_rows, lot_input, slippage_usd, inr_rate):
     synthetic slippage cost ($ per lot). Pure what-if simulation on
     the backtest side only - no live data involved.
     Assumes CSV base figures represent 1 lot.
+    cum_pnl_inr is accumulated in ascending chronological order
+    (oldest trade first) regardless of input row order, so the
+    running total is correct even though rows display newest-first.
     """
-    adjusted = []
-    cum = 0.0
+    scaled = []
     for r in bt_rows:
         r2 = dict(r)
         pnl_usd = r.get("pnl_usd")
         if pnl_usd is None or r.get("exit_ist") in ("-", None):
             r2["lot"] = lot_input
             r2["net_pnl_inr"] = None
-            r2["cum_pnl_inr"] = cum
-            adjusted.append(r2)
+            scaled.append(r2)
             continue
         scaled_usd = pnl_usd * (lot_input / 100.0)
         before_tax_inr = scaled_usd * inr_rate
         after_tax_inr = before_tax_inr - (max(before_tax_inr, 0) * 0.10)
         slip_deduction_inr = slippage_usd * (lot_input / 100.0) * inr_rate
         final_net_inr = after_tax_inr - slip_deduction_inr
-        cum += final_net_inr
         r2["lot"] = lot_input
         r2["charges"] = (r.get("charges") or 0) * (lot_input / 100.0)
         r2["net_pnl_inr"] = final_net_inr
-        r2["cum_pnl_inr"] = cum
-        adjusted.append(r2)
-    return adjusted
+        scaled.append(r2)
+
+    _asc_order = sorted(range(len(scaled)), key=lambda i: str(scaled[i].get("entry_ts_raw", "")))
+    cum = 0.0
+    for i in _asc_order:
+        _npi = scaled[i].get("net_pnl_inr")
+        if _npi is not None:
+            cum += _npi
+        scaled[i]["cum_pnl_inr"] = cum
+
+    return scaled
 
 
 def _render_lv_row_html(row, strat_label, read_log_fn, fetch_orders_fn=None):
@@ -976,7 +1047,7 @@ def _eq_render_audit(rows, key_prefix, title):
     """
     import plotly.graph_objects as _go_audit
 
-    _today = _dt_audit.datetime.utcnow().date()
+    _today = (_dt_audit.datetime.utcnow() + _dt_audit.timedelta(hours=5, minutes=30)).date()
     _month_str = _today.strftime("%Y-%m")
 
     _pts = []
@@ -1187,7 +1258,7 @@ def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn,
     # Equity curve is intentionally independent of the table date-range selector -
     # always current month (1st -> today), regardless of Today/2 Day/1 Week/Custom
     # chosen above. Tables above are untouched by this fetch.
-    _eq_today = _dt_audit.datetime.utcnow().date()
+    _eq_today = (_dt_audit.datetime.utcnow() + _dt_audit.timedelta(hours=5, minutes=30)).date()
     _eq_from = _eq_today.replace(day=1)
     _eq_to = _eq_today
     _eq_lv_rows = _load_audit_lv_cached(fetch_fills_fn, strat_label, _eq_from, _eq_to, inr_rate)
