@@ -1,3 +1,4 @@
+import datetime as _dt_tracker; open("logs/dashboard_rerun_tracker.log","a").write(f"{_dt_tracker.datetime.now()} RERUN\n")
 
 import streamlit as st
 from dotenv import load_dotenv as _ld_env
@@ -4679,11 +4680,15 @@ with _tab_backtest:
                     ]
                     if not bt_include_charges:
                         cmd.append("--no-charges")
-                    result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+                    try:
+                        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300, cwd='/home/anildalabanjan7/crypto_tradingsystem')
+                    except subprocess.TimeoutExpired as _te:
+                        class _R: pass
+                        result = _R(); result.returncode = -1; result.stdout=''; result.stderr=f'Backtest timed out: {_te}'
                     if result.returncode == 0:
                         _progress.progress(100)
                         import glob as _glob, time as _time, os as _glob_os
-                        _time.sleep(3)
+                        pass  # sleep removed
                         _new_files = sorted([f for f in _glob.glob("output/*.html") if "backtest_report_" in f and "optimization" not in f], key=_glob_os.path.getmtime, reverse=True)
                         _new_csvs = sorted([f for f in _glob.glob("output/*.csv") if "trade_log_" in f], key=_glob_os.path.getmtime, reverse=True)
                         if _new_files:
@@ -4694,7 +4699,6 @@ with _tab_backtest:
                         _bt_msg = f"DASHBOARD RUN COMPLETE - {bt_strategy}  |  HTML: {_html_nm}  |  CSV: {_csv_nm}"
                         st.session_state["sec6_complete_msg"] = _bt_msg
                         _status.success(_bt_msg)
-                        import time as _t; _t.sleep(2)
                         st.rerun()
                     else:
                         _progress.progress(100)
@@ -4844,7 +4848,7 @@ with _tab_backtest:
                         st.session_state['sc_starting_lots'] = sc_starting_lots
                         _sc_progress.progress(100)
                         _sc_status.success(f"Done! {len(_results)} combinations tested.")
-                        import time as _sct; _sct.sleep(1); st.rerun()
+                        st.rerun()
             except Exception as _sce:
                 _sc_status.error(f"Error: {_sce}")
                 import traceback; st.code(traceback.format_exc())
@@ -5180,7 +5184,6 @@ with _tab_backtest:
                             _pp_msg = f"DASHBOARD RUN COMPLETE - S4V2+S4 Portfolio  |  HTML: {_html_nm}  |  CSV: {_csv_nm}"
                             st.session_state["port_pre_complete_msg"] = _pp_msg
                             _pp_status.success(_pp_msg)
-                            import time as _t; _t.sleep(2)
                             st.rerun()
                         else:
                             _pp_progress.progress(100)
@@ -5278,7 +5281,6 @@ with _tab_backtest:
                                 _pd_msg = f"DASHBOARD RUN COMPLETE - {_strat_nm}  |  HTML: {_html_nm}  |  CSV: {_csv_nm}"
                                 st.session_state["port_dyn_complete_msg"] = _pd_msg
                                 _pd_status.success(_pd_msg)
-                                import time as _t; _t.sleep(2)
                                 st.rerun()
                             else:
                                 _pd_progress.progress(100)
@@ -5459,7 +5461,6 @@ with _tab_backtest:
                     _opt_msg = f"DASHBOARD RUN COMPLETE - {opt_strategy}  |  HTML: {_html_nm}  |  CSV: {_csv_nm}"
                     st.session_state["sec7_complete_msg"] = _opt_msg
                     _opt_status.success(_opt_msg)
-                    import time as _t; _t.sleep(2)
                     st.rerun()
                 else:
                     _opt_progress.progress(100)
