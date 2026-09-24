@@ -1,0 +1,36 @@
+24-Sep-2026 07:30:00 PM IST INFO [ENGINE] Boundary watcher trigger S4: 2026-09-24T14:00:00 - checking S4 (independent retry, decoupled from WS claim)
+24-Sep-2026 07:30:00 PM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-24T14:00:00 - checking S4V2 (independent retry, decoupled from WS claim)
+24-Sep-2026 08:30:00 PM IST WARNING [S4V2] SKIPPED signal ts=2026-09-24T14:30:00 type=EXIT dir=long - state mismatch (current_direction=None)
+24-Sep-2026 08:30:00 PM IST INFO [S4V2] INSTANT CSV append: 2026-09-24T14:30:00,PENDING,short
+24-Sep-2026 08:30:00 PM IST INFO [S4V2] ENTRY short at 2026-09-24T14:30:00
+24-Sep-2026 08:54:34 PM IST INFO [ENGINE] S4V2 lock from bot ts file: 2026-09-24T14:30:00
+24-Sep-2026 08:54:34 PM IST INFO [ENGINE] S4V2 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-24T14:30:00
+24-Sep-2026 08:54:34 PM IST INFO [ENGINE] S4V2 startup lock ts: 2026-09-24T14:30:00
+24-Sep-2026 08:54:34 PM IST INFO [S4V2] open_entry_ts restored: 2026-09-24T14:30:00
+24-Sep-2026 08:54:34 PM IST WARNING [S4] SKIPPED signal ts=2026-09-24T14:00:00 type=EXIT dir=long - state mismatch (current_direction=None)
+24-Sep-2026 08:54:34 PM IST INFO [S4] INSTANT CSV append: 2026-09-24T14:00:00,PENDING,short
+24-Sep-2026 08:55:43 PM IST INFO [S4] ENTRY short at 2026-09-24T14:00:00
+24-Sep-2026 08:55:44 PM IST INFO [S4V2] CSV exit updated to 2026-09-24T15:00:00 (matched entry 2026-09-24T14:30:00)
+24-Sep-2026 08:55:44 PM IST INFO [S4V2] EXIT short at 2026-09-24T15:00:00
+24-Sep-2026 08:55:44 PM IST INFO [S4V2] INSTANT CSV append: 2026-09-24T15:00:00,PENDING,long
+24-Sep-2026 08:55:44 PM IST INFO [S4V2] ENTRY long at 2026-09-24T15:00:00
+24-Sep-2026 09:08:01 PM IST INFO [ENGINE] S4 lock from bot ts file: 2026-09-24T14:00:00
+24-Sep-2026 09:08:01 PM IST INFO [ENGINE] S4V2 lock from bot ts file: 2026-09-24T15:00:00
+24-Sep-2026 09:08:01 PM IST INFO [ENGINE] S4 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-24T14:00:00
+24-Sep-2026 09:08:01 PM IST INFO [ENGINE] S4V2 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-24T15:00:00
+24-Sep-2026 09:08:01 PM IST INFO [ENGINE] S4 startup lock ts: 2026-09-24T14:00:00
+24-Sep-2026 09:08:01 PM IST INFO [ENGINE] S4V2 startup lock ts: 2026-09-24T15:00:00
+24-Sep-2026 09:08:01 PM IST INFO [S4] open_entry_ts restored: 2026-09-24T14:00:00
+24-Sep-2026 09:08:01 PM IST INFO [S4V2] open_entry_ts restored: 2026-09-24T15:00:00
+24-Sep-2026 09:51:05 PM IST INFO [ENGINE] S4 lock from bot ts file: 2026-09-24T14:00:00
+24-Sep-2026 09:51:05 PM IST INFO [ENGINE] S4V2 lock from bot ts file: 2026-09-24T15:00:00
+24-Sep-2026 09:51:05 PM IST INFO [ENGINE] S4V3 lock from bot ts file: 2026-09-24T16:01:19
+24-Sep-2026 09:51:05 PM IST INFO [ENGINE] S4 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-24T14:00:00
+24-Sep-2026 09:51:05 PM IST INFO [ENGINE] S4V2 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-24T15:00:00
+24-Sep-2026 09:51:05 PM IST INFO [ENGINE] S4V3 restart gap=20min - lock kept at ts_file (catch-up replay), NOT advanced: 2026-09-24T16:01:19
+24-Sep-2026 09:51:05 PM IST INFO [ENGINE] S4 startup lock ts: 2026-09-24T14:00:00
+24-Sep-2026 09:51:05 PM IST INFO [ENGINE] S4V2 startup lock ts: 2026-09-24T15:00:00
+24-Sep-2026 09:51:05 PM IST INFO [ENGINE] S4V3 startup lock ts: 2026-09-24T16:01:19
+24-Sep-2026 09:51:05 PM IST INFO [S4] open_entry_ts restored: 2026-09-24T14:00:00
+24-Sep-2026 09:51:05 PM IST INFO [S4V2] open_entry_ts restored: 2026-09-24T15:00:00
+24-Sep-2026 10:00:00 PM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-24T16:30:00 - checking S4V2 (independent retry, decoupled from WS claim)
