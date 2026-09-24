@@ -7168,7 +7168,8 @@ if _active_tab == "ANALYSIS":
     # FOOTER
     # ================================================================
     st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
-    st.caption(f"Version: {system.get('version', 'v3.9')} | Commit: {git_commit} | Last refresh: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5,minutes=30))).strftime('%d-%b-%Y %I:%M %p IST')}")
+    _footer_commit = git_commit if 'git_commit' in dir() else get_git_commit()
+    st.caption(f"Version: {system.get('version', 'v3.9')} | Commit: {_footer_commit} | Last refresh: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5,minutes=30))).strftime('%d-%b-%Y %I:%M %p IST')}")
     # This line intentionally left blank
 
 
