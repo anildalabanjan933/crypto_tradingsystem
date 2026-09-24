@@ -1472,11 +1472,10 @@ def _reload_all_data():
 
 
 
-_tab_monitor, _tab_trading, _tab_today, _tab_analysis, _tab_backtest, _tab_datasync, _tab_maint, _tab_audit = st.tabs([
-    "MONITOR", "TRADING", "TODAY'S TRADES", "ANALYSIS", "BACKTEST", "DATA & SYNC", "MAINTENANCE", "TRADE AUDIT"
-])
+_tab_labels = ["MONITOR", "TRADING", "TODAY'S TRADES", "ANALYSIS", "BACKTEST", "DATA & SYNC", "MAINTENANCE", "TRADE AUDIT"]
+_active_tab = st.radio("Navigation", _tab_labels, horizontal=True, label_visibility="collapsed", key="_active_tab_nav")
 
-with _tab_audit:
+if _active_tab == "TRADE AUDIT":
     from dashboard.trade_audit_tab import (
         render_trade_audit_tab,
         _fetch_account_fills_cached_audit,
@@ -1485,7 +1484,7 @@ with _tab_audit:
     )
     render_trade_audit_tab(_load14, _fetch_account_fills_cached_audit, _read_log_lines_audit, fetch_orders_fn=_fetch_account_orders_history_cached_audit)
 
-with _tab_monitor:
+if _active_tab == "MONITOR":
     # SECTION 1 - SYSTEM STATUS CARDS
     # ================================================================
     st.markdown("<div class='section-title'>SECTION 1 - SYSTEM STATUS & MAINTENANCE</div>", unsafe_allow_html=True)
@@ -3395,7 +3394,7 @@ with _tab_monitor:
     st.markdown('<hr style="margin:4px 0 6px 0;border:none;border-top:1px solid #e0e0e0;">', unsafe_allow_html=True)
 
     # ================================================================
-with _tab_trading:
+if _active_tab == "TRADING":
     # SECTION 2 - BOT CONTROL
     st.markdown("<div class='section-title'>SECTION 2 - BOT CONTROL</div>", unsafe_allow_html=True)
     # SECTION 2.4 - MEMBER MANAGEMENT
@@ -4295,7 +4294,7 @@ with _tab_trading:
 
 
     # ================================================================
-with _tab_backtest:
+if _active_tab == "BACKTEST":
     # SECTION 4 - FORWARD TEST vs BACKTEST COMPARE
     # ================================================================
     if 'exp_4' not in st.session_state: st.session_state['exp_4'] = False
@@ -5513,7 +5512,7 @@ with _tab_backtest:
 
 
     # ================================================================
-with _tab_datasync:
+if _active_tab == "DATA & SYNC":
     # SECTION 8 - BATCH BACKTEST + SCANNER (PLACEHOLDER)
     # ================================================================
     if 'exp_8' not in st.session_state: st.session_state['exp_8'] = False
@@ -5646,7 +5645,7 @@ with _tab_datasync:
                 st.error("Please enter a commit message")
 
     # ================================================================
-with _tab_maint:
+if _active_tab == "MAINTENANCE":
     # SECTION 12 - LOG MONITOR
     # ================================================================
     with st.expander("SECTION 12 - LOG MONITOR", expanded=st.session_state.get('exp_12', False)):
@@ -5726,7 +5725,7 @@ with _tab_maint:
 
 
         # ================================================================
-with _tab_analysis:
+if _active_tab == "ANALYSIS":
     # SECTION 13 - STRATEGY PERFORMANCE SUMMARY
     # ================================================================
     if 'exp_13s' not in st.session_state: st.session_state['exp_13s'] = False
@@ -8621,7 +8620,7 @@ def _month_csv_download(lv2m, lv4m):
         st.caption(f"Download unavailable: {_e}")
 
 
-with _tab_today:
+if _active_tab == "TODAY'S TRADES":
     if 'exp_today_t' not in st.session_state: st.session_state['exp_today_t'] = False
     with st.expander("TODAY'S TRADES", expanded=st.session_state.get('exp_today_t', False)):
         st.caption('Live comparison of today\'s backtest signals vs forward test execution')
