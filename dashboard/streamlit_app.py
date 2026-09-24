@@ -7208,10 +7208,12 @@ if _active_tab == "ANALYSIS":
                     dfc = dfc.copy()
                     dfc['exit_datetime'] = _pd_t.to_datetime(dfc['exit_datetime'])
                     dfc['entry_datetime'] = _pd_t.to_datetime(dfc['entry_datetime'])
-                    # filter to today only (entry_datetime = today UTC)
+                    # filter to today only (IST date boundary, entry OR exit - matches Trade Audit tab benchmark logic)
                     import datetime as _dtt_bt
-                    _today_bt = _dtt_bt.datetime.utcnow().date()
-                    dfc = dfc[dfc['entry_datetime'].dt.date == _today_bt]
+                    _today_bt = (_dtt_bt.datetime.utcnow() + _dtt_bt.timedelta(hours=5, minutes=30)).date()
+                    _entry_ist_d_bt = (dfc['entry_datetime'] + _pd_t.Timedelta(hours=5, minutes=30)).dt.date
+                    _exit_ist_d_bt  = (dfc['exit_datetime'] + _pd_t.Timedelta(hours=5, minutes=30)).dt.date
+                    dfc = dfc[(_entry_ist_d_bt == _today_bt) | (_exit_ist_d_bt == _today_bt)]
                     dfc = dfc.sort_values('entry_datetime', ascending=False)
                     _sig_lookup = _load_signals_lookup(label)
                     for _, r in dfc.iterrows():
