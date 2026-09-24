@@ -30,6 +30,9 @@ class OrderManager:
     PRODUCT_SYMBOL = "BTCUSD"
     PRODUCT_ID     = 84          # BTCUSD perpetual on Delta Exchange Testnet
     _ENTRY_BAND_TIERS = [250.0, 250.0, 500.0, 500.0, 750.0]
+    _ALERT_COOLDOWN_SEC = 300  # 5 min - prevents Telegram flood on repeated API failures
+    _ALERT_STATE_FILE = "logs/api_fail_alert_state.json"
+    _alert_file_lock = threading.Lock()
 
     def __init__(self, api_key: str, api_secret: str, testnet: bool = True):
         """
@@ -74,6 +77,34 @@ class OrderManager:
             "User-Agent":   "python-rest-client"
         }
 
+    def _throttled_alert(self, key: str, message: str):
+        """Send CTS API FAIL alert max once per _ALERT_COOLDOWN_SEC per key,
+        across all processes (file-based lock, prevents Telegram flood)."""
+        now = time.time()
+        with self._alert_file_lock:
+            try:
+                state = {}
+                if os.path.exists(self._ALERT_STATE_FILE):
+                    with open(self._ALERT_STATE_FILE, "r") as f:
+                        fcntl.flock(f, fcntl.LOCK_SH)
+                        try:
+                            state = json.load(f)
+                        except Exception:
+                            state = {}
+                        fcntl.flock(f, fcntl.LOCK_UN)
+                last = state.get(key, 0)
+                if now - last < self._ALERT_COOLDOWN_SEC:
+                    return
+                state[key] = now
+                os.makedirs(os.path.dirname(self._ALERT_STATE_FILE) or ".", exist_ok=True)
+                with open(self._ALERT_STATE_FILE, "w") as f:
+                    fcntl.flock(f, fcntl.LOCK_EX)
+                    json.dump(state, f)
+                    fcntl.flock(f, fcntl.LOCK_UN)
+            except Exception as e:
+                logging.warning(f"[OrderManager] alert throttle check failed: {e}")
+        send_alert(message)
+
     def _post(self, path: str, payload: dict, retries: int = 3) -> dict:
         body    = json.dumps(payload)
         url     = self.base_url + path
@@ -87,7 +118,7 @@ class OrderManager:
                 if attempt < retries:
                     time.sleep(2 * attempt)
         logging.error(f"[OrderManager] POST failed after {retries} attempts: {path}")
-        send_alert(f"CTS API FAIL\nPOST failed after {retries} attempts\nPath: {path}\nCheck Delta API status")
+        self._throttled_alert(f"POST:{path}", f"CTS API FAIL\nPOST failed after {retries} attempts\nPath: {path}\nCheck Delta API status")
         return {"success": False, "error": "max_retries_exceeded"}
 
     def _delete(self, path: str, payload: dict) -> dict:
@@ -124,7 +155,7 @@ class OrderManager:
                 if attempt < retries:
                     time.sleep(2 * attempt)
         logging.error(f"[OrderManager] GET failed after {retries} attempts: {path}")
-        send_alert(f"CTS API FAIL\nGET failed after {retries} attempts\nPath: {path}\nCheck Delta API status")
+        self._throttled_alert(f"GET:{path}", f"CTS API FAIL\nGET failed after {retries} attempts\nPath: {path}\nCheck Delta API status")
         return {"success": False, "error": "max_retries_exceeded"}
 
     # ------------------------------------------------------------------
