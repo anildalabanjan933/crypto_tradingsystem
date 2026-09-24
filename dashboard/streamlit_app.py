@@ -198,6 +198,16 @@ def _fetch_delta_api_status():
     except Exception as e:
         return f"ERROR_{str(e)[:20]}"
 
+def _fetch_prod_api_status():
+    import requests as _rq3
+    try:
+        r = _rq3.get('https://api.india.delta.exchange/v2/products?contract_types=perpetual_futures&limit=1', timeout=5)
+        if r.status_code != 200:
+            return f"FAIL_{r.status_code}"
+        return 200
+    except Exception as e:
+        return f"ERROR_{str(e)[:20]}"
+
 def _fetch_key_validity():
     _s4v2k = os.environ.get("S4V2_API_KEY","")
     _s4v2s = os.environ.get("S4V2_API_SECRET","")
@@ -1584,11 +1594,34 @@ with _tab_monitor:
     try: _bw_ok = _log_age_min("logs/boundary_watcher_heartbeat.txt") < 2
     except: _bw_ok = False
 
-    # DELTA API
+    # DELTA API (TESTNET) - synced with sl_safety_monitor.log using TIME WINDOW (not line count)
     try:
+        import re as _re
         _api_result = _timed('delta_api_status', 60, _fetch_delta_api_status)
         _api_ok = (_api_result == 200)
+        _slm_lines_recent = _tail_cached_lines("logs/sl_safety_monitor.log", max_lines=500)
+        _recent_fail = False
+        for _l in reversed(_slm_lines_recent):
+            if "GET failed after 3 attempts" in _l or "POST failed after 3 attempts" in _l:
+                _m_ts = _re.match(r'^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})', _l)
+                if _m_ts:
+                    try:
+                        _fail_ts = _dt_lamps.datetime.strptime(_m_ts.group(1), "%Y-%m-%d %H:%M:%S")
+                        _age_sec = (_dt_lamps.datetime.utcnow() - _fail_ts).total_seconds()
+                        if _age_sec < 300:
+                            _recent_fail = True
+                    except Exception:
+                        pass
+                break
+        if _recent_fail:
+            _api_ok = False
     except: _api_ok = False
+
+    # PROD API
+    try:
+        _prod_result = _timed('prod_api_status', 60, _fetch_prod_api_status)
+        _prod_ok = (_prod_result == 200)
+    except: _prod_ok = False
 
     # DISK
     try:
@@ -1677,7 +1710,8 @@ with _tab_monitor:
         _lamp("SIGNAL", _sig_ok, _sig_warn) +
         _lamp("WEBSOCKET", _ws_ok, _ws_warn) +
         _lamp("CSV", _csv_ok, _csv_warn) +
-        _lamp("DELTA API", _api_ok)
+        _lamp("TESTNET API", _api_ok) +
+        _lamp("PROD API", _prod_ok)
     )
     _row2 = (
         _lamp("TM1 S4", _tm1s4_ok) +
