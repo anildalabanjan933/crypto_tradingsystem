@@ -10,30 +10,38 @@ load_dotenv(dotenv_path="/home/anildalabanjan7/crypto_tradingsystem/.env")
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID   = os.getenv("TELEGRAM_CHAT_ID", "")
 
-_RATE_STATE_FILE = "/home/anildalabanjan933/crypto_trading_system/logs/alert_rate_state.json"
+_RATE_STATE_FILE = "/home/anildalabanjan7/crypto_tradingsystem/logs/alert_rate_state.json"
 _RATE_MAX_COUNT  = 1
 _RATE_WINDOW_SEC = 1800  # 30 minutes
 
 def _rate_limited(message: str) -> bool:
-    """Return True if this message-type has already hit the alert cap in the current window."""
+    """Return True if this message-type has already hit the alert cap in the current window.
+    Uses fcntl.flock to prevent race conditions when multiple bot processes call this simultaneously."""
+    import fcntl
+    lock_path = _RATE_STATE_FILE + ".lock"
     try:
         key = message.strip().split("\n")[0][:60]
         now = time.time()
-        state = {}
-        if os.path.exists(_RATE_STATE_FILE):
+        with open(lock_path, "w") as lockf:
+            fcntl.flock(lockf, fcntl.LOCK_EX)
             try:
-                state = json.load(open(_RATE_STATE_FILE))
-            except Exception:
                 state = {}
-        entries = [t for t in state.get(key, []) if now - t < _RATE_WINDOW_SEC]
-        if len(entries) >= _RATE_MAX_COUNT:
-            state[key] = entries
-            json.dump(state, open(_RATE_STATE_FILE, "w"))
-            return True
-        entries.append(now)
-        state[key] = entries
-        json.dump(state, open(_RATE_STATE_FILE, "w"))
-        return False
+                if os.path.exists(_RATE_STATE_FILE):
+                    try:
+                        state = json.load(open(_RATE_STATE_FILE))
+                    except Exception:
+                        state = {}
+                entries = [t for t in state.get(key, []) if now - t < _RATE_WINDOW_SEC]
+                if len(entries) >= _RATE_MAX_COUNT:
+                    state[key] = entries
+                    json.dump(state, open(_RATE_STATE_FILE, "w"))
+                    return True
+                entries.append(now)
+                state[key] = entries
+                json.dump(state, open(_RATE_STATE_FILE, "w"))
+                return False
+            finally:
+                fcntl.flock(lockf, fcntl.LOCK_UN)
     except Exception:
         return False  # never block alert on rate-limit internal error
 
