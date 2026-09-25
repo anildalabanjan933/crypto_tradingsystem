@@ -1,0 +1,209 @@
+=== signals_s4.csv tail ===
+2026-09-22T10:00:00,2026-09-22T12:00:00,short,100,86117.0,86071.0
+2026-09-22T12:00:00,SKIPPED_MANUAL_OVERRIDE,long,100,86117.0,
+2026-09-22T18:00:00,2026-09-23T00:00:00,short,100,86393.0,86255.0
+2026-09-23T00:00:00,2026-09-23T04:00:00,long,100,86301.0,86531.0
+2026-09-23T04:00:00,2026-09-23T12:00:00,short,100,86531.0,85795.0
+2026-09-23T12:00:00,2026-09-23T15:18:25,long,100,85795.0,0.0
+2026-09-23T14:00:00,2026-09-23T16:02:25,short,100,85519.0,0.0
+2026-09-23T16:00:00,2026-09-23T18:02:14,long,100,84093.0,0.0
+2026-09-24T00:00:00,2026-09-24T02:02:09,short,100,84277.0,0.0
+2026-09-24T02:00:00,2026-09-24T03:16:48,long,100,84231.0,0.0
+2026-09-24T06:00:00,2026-09-24T08:01:51,long,100,84093.0,0.0
+2026-09-24T08:00:00,2026-09-24T10:01:21,short,100,84369.0,0.0
+2026-09-24T10:00:00,2026-09-24T12:01:48,long,100,83357.0,83549.70871107
+2026-09-24T14:00:00,2026-09-24T18:00:00,short,100,84047.0,84185.0
+2026-09-24T18:00:00,2026-09-24T20:00:00,long,100,84277.0,84277.0
+2026-09-24T20:00:00,2026-09-24T22:00:00,short,100,84277.0,84415.0
+2026-09-24T22:00:00,2026-09-24T22:00:08,long,100,84415.0,84305.0
+2026-09-25T02:00:00,2026-09-25T08:00:00,short,100,84415.0,84139.0
+2026-09-25T08:00:00,2026-09-25T10:00:00,long,100,84139.0,84415.0
+2026-09-25T10:00:00,PENDING,short,100,84415.0,
+=== live_trading_s4.log 2026-09-25 08:00-08:01 and 08:44-08:46 ===
+2026-09-25 08:00:00,333 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:00,798 INFO [WAIT] now=2026-09-25T08:00:00 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:01,309 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:01,914 INFO [WAIT] now=2026-09-25T08:00:01 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:02,425 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:02,430 INFO [WAIT] now=2026-09-25T08:00:02 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:02,942 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:02,949 INFO [WAIT] now=2026-09-25T08:00:02 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:03,459 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:03,468 INFO [WAIT] now=2026-09-25T08:00:03 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:03,997 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:04,015 INFO [WAIT] now=2026-09-25T08:00:03 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:04,530 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:04,542 INFO [WAIT] now=2026-09-25T08:00:04 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:05,052 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:05,059 INFO [WAIT] now=2026-09-25T08:00:05 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:05,748 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:05,764 INFO [WAIT] now=2026-09-25T08:00:05 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:06,283 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:06,298 INFO [WAIT] now=2026-09-25T08:00:06 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:06,809 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:06,817 INFO [WAIT] now=2026-09-25T08:00:06 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:07,329 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:07,338 INFO [WAIT] now=2026-09-25T08:00:07 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:07,852 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:07,858 INFO [WAIT] now=2026-09-25T08:00:07 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:08,370 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:08,376 INFO [WAIT] now=2026-09-25T08:00:08 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:08,886 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:08,892 INFO [WAIT] now=2026-09-25T08:00:08 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:09,403 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:09,410 INFO [WAIT] now=2026-09-25T08:00:09 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:09,921 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:09,929 INFO [WAIT] now=2026-09-25T08:00:09 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:10,441 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:10,448 INFO [WAIT] now=2026-09-25T08:00:10 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:10,958 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:10,966 INFO [WAIT] now=2026-09-25T08:00:10 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:11,478 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:11,485 INFO [WAIT] now=2026-09-25T08:00:11 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:12,009 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:12,026 INFO [WAIT] now=2026-09-25T08:00:11 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:12,551 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:12,578 INFO [WAIT] now=2026-09-25T08:00:12 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:13,090 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:13,108 INFO [WAIT] now=2026-09-25T08:00:13 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:13,729 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:13,749 INFO [WAIT] now=2026-09-25T08:00:13 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:14,263 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:14,274 INFO [WAIT] now=2026-09-25T08:00:14 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:14,784 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:14,790 INFO [WAIT] now=2026-09-25T08:00:14 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:15,297 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:15,303 INFO [WAIT] now=2026-09-25T08:00:15 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:15,810 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:15,814 INFO [WAIT] now=2026-09-25T08:00:15 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:16,321 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:16,326 INFO [WAIT] now=2026-09-25T08:00:16 | position=short | last_known_ts=2026-09-25T02:00:00
+2026-09-25 08:00:16,834 INFO [REPLAY] Loaded 4773 signals from logs/signals_s4.csv
+2026-09-25 08:00:16,839 INFO [WAIT] now=2026-09-25T08:00:16 | position=short | last_known_ts=2026-09-25T02:00:00
+=== renko_state_engine.py reconcile_gate ===
+814:                if _reconcile_gate("last_reconcile_s4v2"):
+815-                    if _reconcile_window_from_rest(s4v2, 30):
+816-                        check_and_fire(s4v2,is_s4=False)
+817-                        _ws_state["last_s4v2_tf"]=_cur_s4v2
+818-                    else:
+819-                        log.warning(f"[WS] S4V2 boundary {_cur_s4v2} reconcile failed - NOT claimed, retrying next tick")
+820-            _cur_s4=_last_closed_tf(120)
+821-            if _cur_s4>_ws_state["last_s4_tf"]:
+822-                log.info(f"[WS] New 2H candle closed: {_cur_s4} - checking S4")
+823:                if _reconcile_gate("last_reconcile_s4"):
+824-                    if _reconcile_window_from_rest(s4, 120):
+825-                        check_and_fire(s4,is_s4=True)
+826-                        _ws_state["last_s4_tf"]=_cur_s4
+827-                    else:
+828-                        log.warning(f"[WS] S4 boundary {_cur_s4} reconcile failed - NOT claimed, retrying next tick")
+829-            _cur_s4v3=_last_closed_tf(240)
+830-            if _cur_s4v3>_ws_state["last_s4v3_tf"]:
+831-                log.info(f"[WS] New 4H candle closed: {_cur_s4v3} - checking S4V3")
+832:                if _reconcile_gate("last_reconcile_s4v3"):
+833-                    if _reconcile_window_from_rest(s4v3, 240):
+834-                        check_and_fire(s4v3,is_s4=False)
+835-                        _ws_state["last_s4v3_tf"]=_cur_s4v3
+836-                    else:
+837-                        log.warning(f"[WS] S4V3 boundary {_cur_s4v3} reconcile failed - NOT claimed, retrying next tick")
+838-            # Background REST sync for CSV file persistence only - runs AFTER signals checked
+839-            _ws_state["last_dl"]=time.time()
+840-            threading.Thread(target=update_market_data, daemon=True).start()
+--
+917:    def _reconcile_gate(_key):
+918-        with _reconcile_throttle_lock:
+919-            if time.time()-_ws_state.get(_key,0)>=5:
+920-                _ws_state[_key]=time.time()
+921-                return True
+922-            return False
+923-    def _throttled_download(_min_gap=20):
+924-        _now_dl = time.time()
+925-        if _now_dl - _ws_state.get("last_dl", 0) >= _min_gap:
+--
+958:                    if _reconcile_gate("last_reconcile_s4v2"):
+959-                        if _reconcile_window_from_rest(s4v2, 30):
+960-                            check_and_fire(s4v2,is_s4=False)
+961-                            _ws_state["last_s4v2_tf"]=cur_s4v2_tf
+962-                        else:
+963-                            log.warning(f"[ENGINE] S4V2 boundary {cur_s4v2_tf} reconcile failed - NOT claimed, retrying next tick")
+964-
+965-                # S4: fire only on new closed 2H candle (shared state with WS)
+966-                cur_s4_tf=_last_closed_tf(120)
+--
+969:                    if _reconcile_gate("last_reconcile_s4"):
+970-                        if _reconcile_window_from_rest(s4, 120):
+971-                            check_and_fire(s4,is_s4=True)
+972-                            _ws_state["last_s4_tf"]=cur_s4_tf
+973-                        else:
+974-                            log.warning(f"[ENGINE] S4 boundary {cur_s4_tf} reconcile failed - NOT claimed, retrying next tick")
+975-
+976-                # S4V3: fire only on new closed 4H candle (shared state with WS)
+977-                cur_s4v3_tf=_last_closed_tf(240)
+--
+980:                    if _reconcile_gate("last_reconcile_s4v3"):
+981-                        if _reconcile_window_from_rest(s4v3, 240):
+982-                            check_and_fire(s4v3,is_s4=False)
+983-                            _ws_state["last_s4v3_tf"]=cur_s4v3_tf
+984-                        else:
+985-                            log.warning(f"[ENGINE] S4V3 boundary {cur_s4v3_tf} reconcile failed - NOT claimed, retrying next tick")
+986-
+987-            # Boundary watcher trigger - fires if watcher detected missed boundary
+988-            _trig_s4 = "logs/boundary_trigger_s4.txt"
+--
+1022:                            if _reconcile_gate("last_reconcile_s4") and _reconcile_window_from_rest(s4, 120):
+1023-                                check_and_fire(s4, is_s4=True)
+1024-                                _ws_state["last_s4_tf"] = max(_ws_state["last_s4_tf"], _t4_dt_engine_label)
+1025-                            else:
+1026-                                log.warning(f"[ENGINE] S4 trigger boundary {_dt} reconcile failed - NOT claimed, retrying next tick")
+1027-                        except Exception as _e:
+1028-                            log.error(f"[ENGINE] S4 trigger thread error: {_e}", exc_info=True)
+1029-                    threading.Thread(target=_run_s4_trigger, daemon=True).start()
+1030-            _trig_s4v2 = "logs/boundary_trigger_s4v2.txt"
+--
+1064:                            if _reconcile_gate("last_reconcile_s4v2") and _reconcile_window_from_rest(s4v2, 30):
+1065-                                check_and_fire(s4v2, is_s4=False)
+1066-                                _ws_state["last_s4v2_tf"] = max(_ws_state["last_s4v2_tf"], _tv2_dt_engine_label)
+1067-                            else:
+1068-                                log.warning(f"[ENGINE] S4V2 trigger boundary {_dt} reconcile failed - NOT claimed, retrying next tick")
+1069-                        except Exception as _e:
+1070-                            log.error(f"[ENGINE] S4V2 trigger thread error: {_e}", exc_info=True)
+1071-                    threading.Thread(target=_run_s4v2_trigger, daemon=True).start()
+1072-            _trig_s4v3 = "logs/boundary_trigger_s4v3.txt"
+--
+1106:                            if _reconcile_gate("last_reconcile_s4v3") and _reconcile_window_from_rest(s4v3, 240):
+1107-                                check_and_fire(s4v3, is_s4=False)
+1108-                                _ws_state["last_s4v3_tf"] = max(_ws_state["last_s4v3_tf"], _tv3_dt_engine_label)
+1109-                            else:
+1110-                                log.warning(f"[ENGINE] S4V3 trigger boundary {_dt} reconcile failed - NOT claimed, retrying next tick")
+1111-                        except Exception as _e:
+1112-                            log.error(f"[ENGINE] S4V3 trigger thread error: {_e}", exc_info=True)
+1113-                    threading.Thread(target=_run_s4v3_trigger, daemon=True).start()
+1114-
+=== renko_state_engine.py reconcile_window_from_rest ===
+def _reconcile_window_from_rest(state, tf_minutes):
+    import pandas as pd
+    if state.candles_1m is None or state.candles_1m.empty:
+        return False
+    window_start = (state.last_1m_ts - pd.Timedelta(minutes=tf_minutes*8)).floor(f"{tf_minutes}min")
+    window_end   = state.last_1m_ts + pd.Timedelta(minutes=1)
+    rest_df = _fetch_rest_candles_window(window_start, window_end)
+    if rest_df is None or rest_df.empty:
+        log.warning(f"[{state.label}] REST reconcile unavailable for window {window_start}..{window_end} - using WS-built buffer as-is")
+        return False
+    mismatches = 0
+    rest_indexed = rest_df.set_index("timestamp")
+    critical_covered = state.last_1m_ts in rest_indexed.index
+    mask = (state.candles_1m["timestamp"] >= window_start) & (state.candles_1m["timestamp"] < window_end)
+    for idx in state.candles_1m[mask].index:
+        ts = state.candles_1m.at[idx, "timestamp"]
+        if ts in rest_indexed.index:
+            r = rest_indexed.loc[ts]
+            if abs(state.candles_1m.at[idx, "Close"] - r["Close"]) > 0.01:
+                mismatches += 1
+            state.candles_1m.at[idx, "Open"]  = r["Open"]
+            state.candles_1m.at[idx, "High"]  = r["High"]
+            state.candles_1m.at[idx, "Low"]   = r["Low"]
+            state.candles_1m.at[idx, "Close"] = r["Close"]
+    log.info(f"[{state.label}] REST reconcile OK window {window_start}..{window_end} mismatches={mismatches} critical_covered={critical_covered}")
+    if mismatches:
+        log.warning(f"[{state.label}] REST reconcile corrected {mismatches} candle(s) with WS/REST drift in window {window_start}..{window_end}")
+    recent_1m = state.candles_1m[state.candles_1m["timestamp"] >= window_start]
