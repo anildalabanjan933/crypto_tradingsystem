@@ -10,7 +10,7 @@ export TERM=xterm
 cd /home/anildalabanjan7/crypto_tradingsystem
 
 REPO=/home/anildalabanjan7/crypto_tradingsystem
-DISK_COMMIT=$(git -C "$REPO" rev-parse HEAD 2>/dev/null)
+DISK_COMMIT=$(git -C "$REPO" log -1 --format=%H -- scripts/renko_state_engine.py 2>/dev/null)
 RUNNING_COMMIT_FILE="$REPO/logs/engine_running_commit.txt"
 if [ -f "$RUNNING_COMMIT_FILE" ]; then
     RUNNING_COMMIT=$(cat "$RUNNING_COMMIT_FILE" 2>/dev/null)

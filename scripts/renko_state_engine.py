@@ -15,7 +15,7 @@ import numpy as np
 warnings.filterwarnings("ignore")
 try:
     import subprocess as _sp_ver
-    _commit = _sp_ver.check_output(["git","rev-parse","HEAD"], cwd="/home/anildalabanjan7/crypto_tradingsystem").decode().strip()
+    _commit = _sp_ver.check_output(["git","log","-1","--format=%H","--","scripts/renko_state_engine.py"], cwd="/home/anildalabanjan7/crypto_tradingsystem").decode().strip()
     with open("logs/engine_running_commit.txt","w") as _f_ver:
         _f_ver.write(_commit)
 except Exception:
@@ -813,6 +813,7 @@ if __name__=="__main__":
                 log.info(f"[WS] New 30m candle closed: {_cur_s4v2} - checking S4V2")
                 if _reconcile_gate("last_reconcile_s4v2"):
                     if _reconcile_window_from_rest(s4v2, 30):
+                        _reconcile_gate_commit("last_reconcile_s4v2")
                         check_and_fire(s4v2,is_s4=False)
                         _ws_state["last_s4v2_tf"]=_cur_s4v2
                     else:
@@ -822,6 +823,7 @@ if __name__=="__main__":
                 log.info(f"[WS] New 2H candle closed: {_cur_s4} - checking S4")
                 if _reconcile_gate("last_reconcile_s4"):
                     if _reconcile_window_from_rest(s4, 120):
+                        _reconcile_gate_commit("last_reconcile_s4")
                         check_and_fire(s4,is_s4=True)
                         _ws_state["last_s4_tf"]=_cur_s4
                     else:
@@ -831,6 +833,7 @@ if __name__=="__main__":
                 log.info(f"[WS] New 4H candle closed: {_cur_s4v3} - checking S4V3")
                 if _reconcile_gate("last_reconcile_s4v3"):
                     if _reconcile_window_from_rest(s4v3, 240):
+                        _reconcile_gate_commit("last_reconcile_s4v3")
                         check_and_fire(s4v3,is_s4=False)
                         _ws_state["last_s4v3_tf"]=_cur_s4v3
                     else:
@@ -917,9 +920,11 @@ if __name__=="__main__":
     def _reconcile_gate(_key):
         with _reconcile_throttle_lock:
             if time.time()-_ws_state.get(_key,0)>=5:
-                _ws_state[_key]=time.time()
                 return True
             return False
+    def _reconcile_gate_commit(_key):
+        with _reconcile_throttle_lock:
+            _ws_state[_key]=time.time()
     def _throttled_download(_min_gap=20):
         _now_dl = time.time()
         if _now_dl - _ws_state.get("last_dl", 0) >= _min_gap:
