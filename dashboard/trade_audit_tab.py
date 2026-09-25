@@ -40,6 +40,16 @@ def _to_ist_audit(ts):
     except Exception:
         return str(ts)
 
+def _ist_date_audit(ts):
+    if ts in (None, "", "-", "PENDING"):
+        return "-"
+    try:
+        _t = _fast_parse_ts_audit(str(ts).replace("T", " "))
+        _t_ist = _t + _pd_audit.Timedelta(hours=5, minutes=30)
+        return _t_ist.strftime("%Y-%m-%d")
+    except Exception:
+        return str(ts)[:10]
+
 def _get_date_range_audit(range_choice, custom_start=None, custom_end=None):
     _today = (_dt_audit.datetime.utcnow() + _dt_audit.timedelta(hours=5, minutes=30)).date()
     if range_choice == "Today":
@@ -140,7 +150,7 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                 "trade_no"     : _trade_no,
                 "label"        : strat_label,
                 "dir"          : _dir_raw,
-                "date"         : _entry_ts_raw[:10],
+                "date"         : _ist_date_audit(_entry_ts_raw),
                 "symbol"       : "BTCUSD",
                 "entry_ts_raw" : _entry_ts_raw,
                 "exit_ts_raw"  : _exit_ts_raw,
@@ -247,7 +257,7 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                             "trade_no"     : _trade_no,
                             "label"        : strat_label,
                             "dir"          : _p_dir.upper(),
-                            "date"         : _p_et[:10],
+                            "date"         : _ist_date_audit(_offset_ts_audit(_p_et, strat_label)),
                             "symbol"       : "BTCUSD",
                             "entry_ts_raw" : _p_et,
                             "exit_ts_raw"  : "PENDING",
@@ -277,7 +287,7 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                             "trade_no"     : _trade_no,
                             "label"        : strat_label,
                             "dir"          : _p_dir.upper(),
-                            "date"         : _p_et[:10],
+                            "date"         : _ist_date_audit(_offset_ts_audit(_p_et, strat_label)),
                             "symbol"       : "BTCUSD",
                             "entry_ts_raw" : _p_et,
                             "exit_ts_raw"  : _p_xt,
@@ -569,7 +579,7 @@ def _get_live_rows_audit(strat_label, from_date, to_date, fetch_fills_fn, inr_ra
                 "trade_no"     : _trade_no,
                 "label"        : strat_label,
                 "dir"          : g["dir"],
-                "date"         : str(g["entry_ts_raw"])[:10],
+                "date"         : _ist_date_audit(g["entry_ts_raw"]),
                 "symbol"       : "BTCUSD",
                 "entry_ts_raw" : g["entry_ts_raw"],
                 "exit_ts_raw"  : g["exit_ts_raw"],
@@ -822,7 +832,7 @@ def _get_open_live_rows_audit(strat_label, from_date, to_date, fetch_fills_fn, p
         _dir = "LONG" if entry_side == "BUY" else "SHORT"
         rows.append({
             "trade_no": None, "label": strat_label, "dir": _dir,
-            "date": str(entry_time)[:10], "symbol": "BTCUSD",
+            "date": _ist_date_audit(entry_time), "symbol": "BTCUSD",
             "entry_ts_raw": entry_time, "exit_ts_raw": None,
             "entry_ist": _to_ist_audit(entry_time), "exit_ist": "OPEN",
             "entry_p": entry_price, "exit_p": None,
