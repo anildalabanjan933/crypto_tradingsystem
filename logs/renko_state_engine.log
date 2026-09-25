@@ -38158,3 +38158,2212 @@ timestamp
 25-Sep-2026 03:49:03 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
 25-Sep-2026 03:49:12 PM IST INFO [ENGINE] Market data updated
 25-Sep-2026 03:49:12 PM IST INFO [ENGINE] New candle: 2026-09-25 10:18:00
+25-Sep-2026 03:49:53 PM IST INFO [ENGINE] Renko State Engine starting - TradingView style
+25-Sep-2026 03:49:53 PM IST INFO [ENGINE] Loads history ONCE - only new bricks checked - zero recalculation
+25-Sep-2026 03:49:53 PM IST INFO [ENGINE] Only closed candles - zero repaint - zero false signal
+25-Sep-2026 03:49:53 PM IST INFO [ENGINE] Backtest files untouched - single source of truth
+25-Sep-2026 03:49:53 PM IST INFO [S4] Loading full history...
+25-Sep-2026 03:49:57 PM IST INFO [S4] box_size=46 (matches backtest exactly)
+25-Sep-2026 03:49:57 PM IST INFO [S4] Loaded 1,393,113 candles | last=2026-09-25 10:18:00
+25-Sep-2026 03:49:57 PM IST INFO [S4] Pre-built 2h dataframe: 800 candles
+25-Sep-2026 03:49:57 PM IST INFO [S4V2] Loading full history...
+25-Sep-2026 03:50:01 PM IST INFO [S4V2] box_size=46 (matches backtest exactly)
+25-Sep-2026 03:50:01 PM IST INFO [S4V2] Loaded 1,393,113 candles | last=2026-09-25 10:18:00
+25-Sep-2026 03:50:01 PM IST INFO [S4V2] Pre-built 30m dataframe: 800 candles
+25-Sep-2026 03:50:01 PM IST INFO [S4V3] Loading full history...
+25-Sep-2026 03:50:04 PM IST INFO [S4V3] box_size=46 (matches backtest exactly)
+25-Sep-2026 03:50:04 PM IST INFO [S4V3] Loaded 1,393,113 candles | last=2026-09-25 10:18:00
+25-Sep-2026 03:50:04 PM IST INFO [S4V3] Pre-built 4h dataframe: 800 candles
+25-Sep-2026 03:50:04 PM IST INFO [ENGINE] S4 lock from bot ts file: 2026-09-25T08:00:00
+25-Sep-2026 03:50:04 PM IST INFO [ENGINE] S4V2 lock from bot ts file: 2026-09-25T09:30:00
+25-Sep-2026 03:50:04 PM IST INFO [ENGINE] S4V3 lock from bot ts file: 2026-09-25T00:00:00
+25-Sep-2026 03:50:04 PM IST INFO [ENGINE] S4 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-25T08:00:00
+25-Sep-2026 03:50:04 PM IST INFO [ENGINE] S4V2 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-25T09:30:00
+25-Sep-2026 03:50:04 PM IST INFO [ENGINE] S4V3 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-25T00:00:00
+25-Sep-2026 03:50:04 PM IST INFO [ENGINE] S4 startup lock ts: 2026-09-25T08:00:00
+25-Sep-2026 03:50:04 PM IST INFO [ENGINE] S4V2 startup lock ts: 2026-09-25T09:30:00
+25-Sep-2026 03:50:04 PM IST INFO [ENGINE] S4V3 startup lock ts: 2026-09-25T00:00:00
+25-Sep-2026 03:50:04 PM IST INFO [S4] current_direction restored: long
+25-Sep-2026 03:50:04 PM IST INFO [S4] open_entry_ts restored: 2026-09-25T08:00:00
+25-Sep-2026 03:50:04 PM IST INFO [S4V2] current_direction restored: short
+25-Sep-2026 03:50:04 PM IST INFO [S4V2] open_entry_ts restored: 2026-09-25T09:30:00
+25-Sep-2026 03:50:04 PM IST INFO [S4V3] current_direction restored: short
+25-Sep-2026 03:50:04 PM IST INFO [S4V3] open_entry_ts restored: 2026-09-25T00:00:00
+25-Sep-2026 03:50:04 PM IST INFO [ENGINE] WebSocket thread + heartbeat watchdog started
+25-Sep-2026 03:50:05 PM IST INFO [BRICK-DEBUG] S4 live 2h OHLC window at fire-time:
+                        open     high      low    close
+timestamp                                              
+2026-09-04 02:00:00  80943.0  81019.5  80634.0  80816.0
+2026-09-04 04:00:00  80816.0  81271.0  80784.0  80960.5
+2026-09-04 06:00:00  80961.0  81069.5  80546.0  80636.5
+2026-09-04 08:00:00  80635.5  81286.5  80483.0  81026.0
+2026-09-04 10:00:00  81026.0  81386.0  80798.5  81196.0
+2026-09-04 12:00:00  81196.5  81332.5  78956.5  79351.0
+2026-09-04 14:00:00  79350.5  79553.5  78625.5  79392.5
+2026-09-04 16:00:00  79392.5  79847.0  79342.0  79438.0
+25-Sep-2026 03:50:05 PM IST INFO [S4] Strategy returned 563 signals | gen_signals_took=0.07s
+25-Sep-2026 03:50:05 PM IST INFO [S4] CSV exit updated to 2026-09-25T10:00:00 (matched entry 2026-09-25T08:00:00)
+25-Sep-2026 03:50:05 PM IST INFO Websocket connected
+25-Sep-2026 03:50:05 PM IST INFO [WS] Connected - instant candle detection active
+25-Sep-2026 03:50:22 PM IST INFO [S4] EXIT long at 2026-09-25T10:00:00
+25-Sep-2026 03:50:22 PM IST INFO [S4] INSTANT CSV append: 2026-09-25T10:00:00,PENDING,short
+25-Sep-2026 03:50:26 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 03:50:36 PM IST INFO [S4] ENTRY short at 2026-09-25T10:00:00
+25-Sep-2026 03:50:36 PM IST INFO [S4V2] Strategy returned 443 signals | gen_signals_took=0.07s
+25-Sep-2026 03:50:36 PM IST INFO [ENGINE] New candle: 2026-09-25 10:19:00
+25-Sep-2026 03:50:37 PM IST INFO [S4] +1 candles | last=2026-09-25 10:19:00
+25-Sep-2026 03:50:37 PM IST INFO [S4V2] +1 candles | last=2026-09-25 10:19:00
+25-Sep-2026 03:50:37 PM IST INFO [S4V3] +1 candles | last=2026-09-25 10:19:00
+25-Sep-2026 03:51:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 03:51:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 03:51:41 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 03:51:41 PM IST INFO [ENGINE] New candle: 2026-09-25 10:20:00
+25-Sep-2026 03:52:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 03:52:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 03:52:11 PM IST INFO [ENGINE] New candle: 2026-09-25 10:21:00
+25-Sep-2026 03:52:41 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 03:53:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 03:53:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 03:53:51 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 03:53:51 PM IST INFO [ENGINE] New candle: 2026-09-25 10:22:00
+25-Sep-2026 03:54:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 03:54:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 03:55:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 03:55:02 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 03:55:02 PM IST INFO [ENGINE] New candle: 2026-09-25 10:23:00
+25-Sep-2026 03:55:13 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 03:55:13 PM IST INFO [ENGINE] New candle: 2026-09-25 10:24:00
+25-Sep-2026 03:56:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 03:56:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 03:56:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 03:56:39 PM IST INFO [ENGINE] New candle: 2026-09-25 10:25:00
+25-Sep-2026 03:57:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 03:57:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 03:57:53 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 03:57:53 PM IST INFO [ENGINE] New candle: 2026-09-25 10:26:00
+25-Sep-2026 03:58:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 03:58:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 03:59:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 03:59:04 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 03:59:04 PM IST INFO [ENGINE] New candle: 2026-09-25 10:27:00
+25-Sep-2026 03:59:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 03:59:12 PM IST INFO [ENGINE] New candle: 2026-09-25 10:28:00
+25-Sep-2026 04:00:00 PM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-25T10:30:00 - checking S4V2 (independent retry, decoupled from WS claim)
+25-Sep-2026 04:00:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:00:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:00:00 PM IST INFO [WS] New 30m candle closed: 2026-09-25 10:00:00 - checking S4V2
+25-Sep-2026 04:00:00 PM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-25 10:30:00 reconcile failed - NOT claimed, retrying next tick
+25-Sep-2026 04:00:01 PM IST INFO [S4V2] REST reconcile OK window 2026-09-25 06:00:00..2026-09-25 10:30:00 mismatches=9 critical_covered=True
+25-Sep-2026 04:00:01 PM IST WARNING [S4V2] REST reconcile corrected 9 candle(s) with WS/REST drift in window 2026-09-25 06:00:00..2026-09-25 10:30:00
+25-Sep-2026 04:00:01 PM IST INFO [S4V2] Strategy returned 444 signals | gen_signals_took=0.04s
+25-Sep-2026 04:00:01 PM IST INFO [S4V2] CSV exit updated to 2026-09-25T10:00:00 (matched entry 2026-09-25T09:30:00)
+25-Sep-2026 04:00:01 PM IST INFO [S4V2] EXIT short at 2026-09-25T10:00:00
+25-Sep-2026 04:00:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:00:11 PM IST INFO [ENGINE] New candle: 2026-09-25 10:29:00
+25-Sep-2026 04:00:31 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:01:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:01:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:01:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:01:40 PM IST INFO [ENGINE] New candle: 2026-09-25 10:30:00
+25-Sep-2026 04:02:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:02:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:02:50 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:02:50 PM IST INFO [ENGINE] New candle: 2026-09-25 10:31:00
+25-Sep-2026 04:03:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:03:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:03:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:03:59 PM IST INFO [ENGINE] New candle: 2026-09-25 10:32:00
+25-Sep-2026 04:04:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:04:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:05:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:05:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:05:10 PM IST INFO [ENGINE] New candle: 2026-09-25 10:34:00
+25-Sep-2026 04:05:18 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:06:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:06:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:06:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:06:40 PM IST INFO [ENGINE] New candle: 2026-09-25 10:35:00
+25-Sep-2026 04:07:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:07:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:07:50 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:07:50 PM IST INFO [ENGINE] New candle: 2026-09-25 10:36:00
+25-Sep-2026 04:08:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:08:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:09:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:09:03 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:09:03 PM IST INFO [ENGINE] New candle: 2026-09-25 10:37:00
+25-Sep-2026 04:09:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:09:12 PM IST INFO [ENGINE] New candle: 2026-09-25 10:38:00
+25-Sep-2026 04:10:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:10:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:10:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:10:40 PM IST INFO [ENGINE] New candle: 2026-09-25 10:39:00
+25-Sep-2026 04:11:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:11:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:11:50 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:11:50 PM IST INFO [ENGINE] New candle: 2026-09-25 10:40:00
+25-Sep-2026 04:12:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:12:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:12:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:12:59 PM IST INFO [ENGINE] New candle: 2026-09-25 10:41:00
+25-Sep-2026 04:13:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:13:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:14:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:14:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:14:11 PM IST INFO [ENGINE] New candle: 2026-09-25 10:42:00
+25-Sep-2026 04:14:21 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:14:22 PM IST INFO [ENGINE] New candle: 2026-09-25 10:43:00
+25-Sep-2026 04:15:02 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:15:15 PM IST INFO [ENGINE] New candle: 2026-09-25 10:44:00
+25-Sep-2026 04:15:15 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:15:32 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:16:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:16:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:16:42 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:16:42 PM IST INFO [ENGINE] New candle: 2026-09-25 10:45:00
+25-Sep-2026 04:17:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:17:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:17:11 PM IST INFO [ENGINE] New candle: 2026-09-25 10:46:00
+25-Sep-2026 04:17:42 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:18:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:18:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:18:13 PM IST INFO [ENGINE] New candle: 2026-09-25 10:47:00
+25-Sep-2026 04:18:43 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:19:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:19:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:19:10 PM IST INFO [ENGINE] New candle: 2026-09-25 10:48:00
+25-Sep-2026 04:19:43 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:20:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:20:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:20:34 PM IST INFO [ENGINE] Renko State Engine starting - TradingView style
+25-Sep-2026 04:20:34 PM IST INFO [ENGINE] Loads history ONCE - only new bricks checked - zero recalculation
+25-Sep-2026 04:20:34 PM IST INFO [ENGINE] Only closed candles - zero repaint - zero false signal
+25-Sep-2026 04:20:34 PM IST INFO [ENGINE] Backtest files untouched - single source of truth
+25-Sep-2026 04:20:34 PM IST INFO [S4] Loading full history...
+25-Sep-2026 04:20:37 PM IST INFO [S4] box_size=46 (matches backtest exactly)
+25-Sep-2026 04:20:37 PM IST INFO [S4] Loaded 1,393,143 candles | last=2026-09-25 10:48:00
+25-Sep-2026 04:20:38 PM IST INFO [S4] Pre-built 2h dataframe: 800 candles
+25-Sep-2026 04:20:38 PM IST INFO [S4V2] Loading full history...
+25-Sep-2026 04:20:41 PM IST INFO [S4V2] box_size=46 (matches backtest exactly)
+25-Sep-2026 04:20:41 PM IST INFO [S4V2] Loaded 1,393,143 candles | last=2026-09-25 10:48:00
+25-Sep-2026 04:20:41 PM IST INFO [S4V2] Pre-built 30m dataframe: 800 candles
+25-Sep-2026 04:20:41 PM IST INFO [S4V3] Loading full history...
+25-Sep-2026 04:20:44 PM IST INFO [S4V3] box_size=46 (matches backtest exactly)
+25-Sep-2026 04:20:44 PM IST INFO [S4V3] Loaded 1,393,143 candles | last=2026-09-25 10:48:00
+25-Sep-2026 04:20:44 PM IST INFO [S4V3] Pre-built 4h dataframe: 800 candles
+25-Sep-2026 04:20:44 PM IST INFO [ENGINE] S4 lock from bot ts file: 2026-09-25T10:00:00
+25-Sep-2026 04:20:44 PM IST INFO [ENGINE] S4V2 lock from bot ts file: 2026-09-25T10:00:00
+25-Sep-2026 04:20:44 PM IST INFO [ENGINE] S4V3 lock from bot ts file: 2026-09-25T00:00:00
+25-Sep-2026 04:20:44 PM IST INFO [ENGINE] S4 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-25T10:00:00
+25-Sep-2026 04:20:44 PM IST INFO [ENGINE] S4V2 restart gap=51min - lock kept at ts_file (catch-up replay), NOT advanced: 2026-09-25T10:00:00
+25-Sep-2026 04:20:44 PM IST INFO [ENGINE] S4V3 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-25T00:00:00
+25-Sep-2026 04:20:44 PM IST INFO [ENGINE] S4 startup lock ts: 2026-09-25T10:00:00
+25-Sep-2026 04:20:44 PM IST INFO [ENGINE] S4V2 startup lock ts: 2026-09-25T10:00:00
+25-Sep-2026 04:20:44 PM IST INFO [ENGINE] S4V3 startup lock ts: 2026-09-25T00:00:00
+25-Sep-2026 04:20:44 PM IST INFO [S4] current_direction restored: short
+25-Sep-2026 04:20:44 PM IST INFO [S4] open_entry_ts restored: 2026-09-25T10:00:00
+25-Sep-2026 04:20:44 PM IST INFO [S4V3] current_direction restored: short
+25-Sep-2026 04:20:44 PM IST INFO [S4V3] open_entry_ts restored: 2026-09-25T00:00:00
+25-Sep-2026 04:20:44 PM IST INFO [ENGINE] WebSocket thread + heartbeat watchdog started
+25-Sep-2026 04:20:44 PM IST INFO [BRICK-DEBUG] S4 live 2h OHLC window at fire-time:
+                        open     high      low    close
+timestamp                                              
+2026-09-04 02:00:00  80943.0  81019.5  80634.0  80816.0
+2026-09-04 04:00:00  80816.0  81271.0  80784.0  80960.5
+2026-09-04 06:00:00  80961.0  81069.5  80546.0  80636.5
+2026-09-04 08:00:00  80635.5  81286.5  80483.0  81026.0
+2026-09-04 10:00:00  81026.0  81386.0  80798.5  81196.0
+2026-09-04 12:00:00  81196.5  81332.5  78956.5  79351.0
+2026-09-04 14:00:00  79350.5  79553.5  78625.5  79392.5
+2026-09-04 16:00:00  79392.5  79847.0  79342.0  79438.0
+25-Sep-2026 04:20:45 PM IST INFO [S4] Strategy returned 561 signals | gen_signals_took=0.06s
+25-Sep-2026 04:20:45 PM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.04s
+25-Sep-2026 04:20:45 PM IST INFO [S4V2] INSTANT CSV append: 2026-09-25T10:30:00,PENDING,long
+25-Sep-2026 04:20:45 PM IST INFO Websocket connected
+25-Sep-2026 04:20:45 PM IST INFO [WS] Connected - instant candle detection active
+25-Sep-2026 04:21:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:21:04 PM IST INFO [S4V2] ENTRY long at 2026-09-25T10:30:00
+25-Sep-2026 04:21:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:21:10 PM IST INFO [ENGINE] New candle: 2026-09-25 10:49:00
+25-Sep-2026 04:21:22 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:21:22 PM IST INFO [ENGINE] New candle: 2026-09-25 10:50:00
+25-Sep-2026 04:21:45 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:22:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:22:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:22:53 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:22:53 PM IST INFO [ENGINE] New candle: 2026-09-25 10:51:00
+25-Sep-2026 04:23:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:23:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:23:13 PM IST INFO [ENGINE] New candle: 2026-09-25 10:52:00
+25-Sep-2026 04:23:53 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:24:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:24:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:25:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:25:02 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:25:02 PM IST INFO [ENGINE] New candle: 2026-09-25 10:53:00
+25-Sep-2026 04:25:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:25:10 PM IST INFO [ENGINE] New candle: 2026-09-25 10:54:00
+25-Sep-2026 04:26:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:26:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:26:41 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:26:41 PM IST INFO [ENGINE] New candle: 2026-09-25 10:55:00
+25-Sep-2026 04:27:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:27:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:27:53 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:27:53 PM IST INFO [ENGINE] New candle: 2026-09-25 10:56:00
+25-Sep-2026 04:28:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:28:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:29:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:29:01 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:29:01 PM IST INFO [ENGINE] New candle: 2026-09-25 10:57:00
+25-Sep-2026 04:29:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:29:10 PM IST INFO [ENGINE] New candle: 2026-09-25 10:58:00
+25-Sep-2026 04:30:00 PM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-25T11:00:00 - checking S4V2 (independent retry, decoupled from WS claim)
+25-Sep-2026 04:30:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:30:00 PM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+25-Sep-2026 04:30:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:30:00 PM IST INFO [WS] New 30m candle closed: 2026-09-25 10:30:00 - checking S4V2
+25-Sep-2026 04:30:00 PM IST INFO [S4V2] REST reconcile OK window 2026-09-25 06:30:00..2026-09-25 11:00:00 mismatches=9 critical_covered=True
+25-Sep-2026 04:30:00 PM IST WARNING [S4V2] REST reconcile corrected 9 candle(s) with WS/REST drift in window 2026-09-25 06:30:00..2026-09-25 11:00:00
+25-Sep-2026 04:30:00 PM IST INFO [S4V2] Strategy returned 444 signals | gen_signals_took=0.04s
+25-Sep-2026 04:30:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:30:02 PM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-25 11:00:00 reconcile failed - NOT claimed, retrying next tick
+25-Sep-2026 04:30:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:30:39 PM IST INFO [ENGINE] New candle: 2026-09-25 10:59:00
+25-Sep-2026 04:31:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:31:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:31:48 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:31:48 PM IST INFO [ENGINE] New candle: 2026-09-25 11:00:00
+25-Sep-2026 04:32:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:32:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:32:57 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:32:57 PM IST INFO [ENGINE] New candle: 2026-09-25 11:01:00
+25-Sep-2026 04:33:04 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:33:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:33:12 PM IST INFO [ENGINE] New candle: 2026-09-25 11:02:00
+25-Sep-2026 04:33:57 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:34:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:34:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:35:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:35:07 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:35:07 PM IST INFO [ENGINE] New candle: 2026-09-25 11:03:00
+25-Sep-2026 04:35:14 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:35:14 PM IST INFO [ENGINE] New candle: 2026-09-25 11:04:00
+25-Sep-2026 04:35:59 PM IST INFO [ENGINE] Renko State Engine starting - TradingView style
+25-Sep-2026 04:35:59 PM IST INFO [ENGINE] Loads history ONCE - only new bricks checked - zero recalculation
+25-Sep-2026 04:35:59 PM IST INFO [ENGINE] Only closed candles - zero repaint - zero false signal
+25-Sep-2026 04:35:59 PM IST INFO [ENGINE] Backtest files untouched - single source of truth
+25-Sep-2026 04:35:59 PM IST INFO [S4] Loading full history...
+25-Sep-2026 04:36:03 PM IST INFO [S4] box_size=46 (matches backtest exactly)
+25-Sep-2026 04:36:03 PM IST INFO [S4] Loaded 1,393,159 candles | last=2026-09-25 11:04:00
+25-Sep-2026 04:36:03 PM IST INFO [S4] Pre-built 2h dataframe: 800 candles
+25-Sep-2026 04:36:03 PM IST INFO [S4V2] Loading full history...
+25-Sep-2026 04:36:06 PM IST INFO [S4V2] box_size=46 (matches backtest exactly)
+25-Sep-2026 04:36:06 PM IST INFO [S4V2] Loaded 1,393,159 candles | last=2026-09-25 11:04:00
+25-Sep-2026 04:36:06 PM IST INFO [S4V2] Pre-built 30m dataframe: 800 candles
+25-Sep-2026 04:36:06 PM IST INFO [S4V3] Loading full history...
+25-Sep-2026 04:36:09 PM IST INFO [S4V3] box_size=46 (matches backtest exactly)
+25-Sep-2026 04:36:09 PM IST INFO [S4V3] Loaded 1,393,159 candles | last=2026-09-25 11:04:00
+25-Sep-2026 04:36:10 PM IST INFO [S4V3] Pre-built 4h dataframe: 800 candles
+25-Sep-2026 04:36:10 PM IST INFO [ENGINE] S4 lock from bot ts file: 2026-09-25T10:00:00
+25-Sep-2026 04:36:10 PM IST INFO [ENGINE] S4V2 lock from bot ts file: 2026-09-25T10:30:00
+25-Sep-2026 04:36:10 PM IST INFO [ENGINE] S4V3 lock from bot ts file: 2026-09-25T00:00:00
+25-Sep-2026 04:36:10 PM IST INFO [ENGINE] S4 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-25T10:00:00
+25-Sep-2026 04:36:10 PM IST INFO [ENGINE] S4V2 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-25T10:30:00
+25-Sep-2026 04:36:10 PM IST INFO [ENGINE] S4V3 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-25T00:00:00
+25-Sep-2026 04:36:10 PM IST INFO [ENGINE] S4 startup lock ts: 2026-09-25T10:00:00
+25-Sep-2026 04:36:10 PM IST INFO [ENGINE] S4V2 startup lock ts: 2026-09-25T10:30:00
+25-Sep-2026 04:36:10 PM IST INFO [ENGINE] S4V3 startup lock ts: 2026-09-25T00:00:00
+25-Sep-2026 04:36:10 PM IST INFO [S4] current_direction restored: short
+25-Sep-2026 04:36:10 PM IST INFO [S4] open_entry_ts restored: 2026-09-25T10:00:00
+25-Sep-2026 04:36:10 PM IST INFO [S4V2] current_direction restored: long
+25-Sep-2026 04:36:10 PM IST INFO [S4V2] open_entry_ts restored: 2026-09-25T10:30:00
+25-Sep-2026 04:36:10 PM IST INFO [S4V3] current_direction restored: short
+25-Sep-2026 04:36:10 PM IST INFO [S4V3] open_entry_ts restored: 2026-09-25T00:00:00
+25-Sep-2026 04:36:10 PM IST INFO [ENGINE] WebSocket thread + heartbeat watchdog started
+25-Sep-2026 04:36:10 PM IST INFO [BRICK-DEBUG] S4 live 2h OHLC window at fire-time:
+                        open     high      low    close
+timestamp                                              
+2026-09-04 02:00:00  80943.0  81019.5  80634.0  80816.0
+2026-09-04 04:00:00  80816.0  81271.0  80784.0  80960.5
+2026-09-04 06:00:00  80961.0  81069.5  80546.0  80636.5
+2026-09-04 08:00:00  80635.5  81286.5  80483.0  81026.0
+2026-09-04 10:00:00  81026.0  81386.0  80798.5  81196.0
+2026-09-04 12:00:00  81196.5  81332.5  78956.5  79351.0
+2026-09-04 14:00:00  79350.5  79553.5  78625.5  79392.5
+2026-09-04 16:00:00  79392.5  79847.0  79342.0  79438.0
+25-Sep-2026 04:36:10 PM IST INFO [S4] Strategy returned 561 signals | gen_signals_took=0.05s
+25-Sep-2026 04:36:10 PM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.06s
+25-Sep-2026 04:36:10 PM IST WARNING [S4V2] SKIPPED signal ts=2026-09-25T11:00:00 type=ENTRY dir=long - state mismatch (current_direction=long)
+25-Sep-2026 04:36:10 PM IST INFO Websocket connected
+25-Sep-2026 04:36:10 PM IST INFO [WS] Connected - instant candle detection active
+25-Sep-2026 04:36:23 PM IST INFO [ENGINE] New candle: 2026-09-25 11:05:00
+25-Sep-2026 04:36:23 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:36:23 PM IST INFO [S4] +1 candles | last=2026-09-25 11:05:00
+25-Sep-2026 04:36:23 PM IST INFO [S4V2] +1 candles | last=2026-09-25 11:05:00
+25-Sep-2026 04:36:23 PM IST INFO [S4V3] +1 candles | last=2026-09-25 11:05:00
+25-Sep-2026 04:37:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:37:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:37:38 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:37:38 PM IST INFO [ENGINE] New candle: 2026-09-25 11:06:00
+25-Sep-2026 04:38:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:38:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:38:47 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:38:47 PM IST INFO [ENGINE] New candle: 2026-09-25 11:07:00
+25-Sep-2026 04:39:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:39:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:39:58 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:39:58 PM IST INFO [ENGINE] New candle: 2026-09-25 11:08:00
+25-Sep-2026 04:40:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:40:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:41:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:41:08 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:41:08 PM IST INFO [ENGINE] New candle: 2026-09-25 11:09:00
+25-Sep-2026 04:41:15 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:41:15 PM IST INFO [ENGINE] New candle: 2026-09-25 11:10:00
+25-Sep-2026 04:42:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:42:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:42:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:42:39 PM IST INFO [ENGINE] New candle: 2026-09-25 11:11:00
+25-Sep-2026 04:43:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:43:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:43:47 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:43:47 PM IST INFO [ENGINE] New candle: 2026-09-25 11:12:00
+25-Sep-2026 04:44:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:44:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:44:55 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:44:55 PM IST INFO [ENGINE] New candle: 2026-09-25 11:13:00
+25-Sep-2026 04:45:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:45:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:46:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:46:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:46:09 PM IST INFO [ENGINE] New candle: 2026-09-25 11:14:00
+25-Sep-2026 04:46:16 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:46:17 PM IST INFO [ENGINE] New candle: 2026-09-25 11:15:00
+25-Sep-2026 04:47:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:47:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:47:38 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:47:38 PM IST INFO [ENGINE] New candle: 2026-09-25 11:16:00
+25-Sep-2026 04:48:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:48:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:48:52 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:48:52 PM IST INFO [ENGINE] New candle: 2026-09-25 11:17:00
+25-Sep-2026 04:49:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:49:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:50:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:50:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:50:00 PM IST INFO [ENGINE] New candle: 2026-09-25 11:18:00
+25-Sep-2026 04:50:08 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:50:09 PM IST INFO [ENGINE] New candle: 2026-09-25 11:19:00
+25-Sep-2026 04:51:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:51:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:51:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:52:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:52:08 PM IST INFO [ENGINE] New candle: 2026-09-25 11:21:00
+25-Sep-2026 04:52:08 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:52:30 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:53:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:53:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:53:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:53:39 PM IST INFO [ENGINE] New candle: 2026-09-25 11:22:00
+25-Sep-2026 04:54:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:54:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:54:47 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:54:47 PM IST INFO [ENGINE] New candle: 2026-09-25 11:23:00
+25-Sep-2026 04:55:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:55:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:56:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:56:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:56:00 PM IST INFO [ENGINE] New candle: 2026-09-25 11:24:00
+25-Sep-2026 04:56:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:56:10 PM IST INFO [ENGINE] New candle: 2026-09-25 11:25:00
+25-Sep-2026 04:57:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:57:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:57:43 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:57:43 PM IST INFO [ENGINE] New candle: 2026-09-25 11:26:00
+25-Sep-2026 04:58:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:58:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:58:53 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 04:58:53 PM IST INFO [ENGINE] New candle: 2026-09-25 11:27:00
+25-Sep-2026 04:59:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 04:59:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:00:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:00:00 PM IST INFO [WS] New 30m candle closed: 2026-09-25 11:00:00 - checking S4V2
+25-Sep-2026 05:00:00 PM IST INFO [S4V2] REST reconcile OK window 2026-09-25 07:00:00..2026-09-25 11:30:00 mismatches=14 critical_covered=True
+25-Sep-2026 05:00:00 PM IST WARNING [S4V2] REST reconcile corrected 14 candle(s) with WS/REST drift in window 2026-09-25 07:00:00..2026-09-25 11:30:00
+25-Sep-2026 05:00:00 PM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.03s
+25-Sep-2026 05:00:00 PM IST WARNING [S4V2] SKIPPED signal ts=2026-09-25T11:00:00 type=ENTRY dir=long - state mismatch (current_direction=long)
+25-Sep-2026 05:00:04 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:00:04 PM IST INFO [ENGINE] New candle: 2026-09-25 11:28:00
+25-Sep-2026 05:00:12 PM IST INFO [ENGINE] New candle: 2026-09-25 11:29:00
+25-Sep-2026 05:00:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:01:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:01:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:01:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:01:40 PM IST INFO [ENGINE] New candle: 2026-09-25 11:30:00
+25-Sep-2026 05:02:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:02:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:02:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:02:49 PM IST INFO [ENGINE] New candle: 2026-09-25 11:31:00
+25-Sep-2026 05:03:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:03:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:04:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:04:01 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:04:01 PM IST INFO [ENGINE] New candle: 2026-09-25 11:32:00
+25-Sep-2026 05:04:13 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:04:13 PM IST INFO [ENGINE] New candle: 2026-09-25 11:33:00
+25-Sep-2026 05:05:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:05:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:05:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:05:40 PM IST INFO [ENGINE] New candle: 2026-09-25 11:34:00
+25-Sep-2026 05:06:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:06:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:06:53 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:06:53 PM IST INFO [ENGINE] New candle: 2026-09-25 11:35:00
+25-Sep-2026 05:07:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:07:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:08:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:08:01 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:08:01 PM IST INFO [ENGINE] New candle: 2026-09-25 11:36:00
+25-Sep-2026 05:08:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:08:09 PM IST INFO [ENGINE] New candle: 2026-09-25 11:37:00
+25-Sep-2026 05:09:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:09:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:09:10 PM IST INFO [ENGINE] New candle: 2026-09-25 11:38:00
+25-Sep-2026 05:09:31 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:10:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:10:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:10:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:10:39 PM IST INFO [ENGINE] New candle: 2026-09-25 11:39:00
+25-Sep-2026 05:11:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:11:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:11:47 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:11:47 PM IST INFO [ENGINE] New candle: 2026-09-25 11:40:00
+25-Sep-2026 05:12:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:12:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:12:55 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:12:55 PM IST INFO [ENGINE] New candle: 2026-09-25 11:41:00
+25-Sep-2026 05:13:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:13:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:14:02 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:14:05 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:14:05 PM IST INFO [ENGINE] New candle: 2026-09-25 11:42:00
+25-Sep-2026 05:14:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:14:12 PM IST INFO [ENGINE] New candle: 2026-09-25 11:43:00
+25-Sep-2026 05:15:03 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:15:10 PM IST INFO [ENGINE] New candle: 2026-09-25 11:44:00
+25-Sep-2026 05:15:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:15:33 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:16:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:16:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:16:45 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:16:45 PM IST INFO [ENGINE] New candle: 2026-09-25 11:45:00
+25-Sep-2026 05:17:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:17:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:17:53 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:17:53 PM IST INFO [ENGINE] New candle: 2026-09-25 11:46:00
+25-Sep-2026 05:18:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:18:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:19:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:19:04 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:19:04 PM IST INFO [ENGINE] New candle: 2026-09-25 11:47:00
+25-Sep-2026 05:19:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:19:11 PM IST INFO [ENGINE] New candle: 2026-09-25 11:48:00
+25-Sep-2026 05:20:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:20:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:20:38 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:20:38 PM IST INFO [ENGINE] New candle: 2026-09-25 11:49:00
+25-Sep-2026 05:21:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:21:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:21:47 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:21:47 PM IST INFO [ENGINE] New candle: 2026-09-25 11:50:00
+25-Sep-2026 05:22:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:22:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:22:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:22:59 PM IST INFO [ENGINE] New candle: 2026-09-25 11:51:00
+25-Sep-2026 05:23:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:23:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:24:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:24:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:24:09 PM IST INFO [ENGINE] New candle: 2026-09-25 11:53:00
+25-Sep-2026 05:24:17 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:25:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:25:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:25:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:25:40 PM IST INFO [ENGINE] New candle: 2026-09-25 11:54:00
+25-Sep-2026 05:26:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:26:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:26:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:26:49 PM IST INFO [ENGINE] New candle: 2026-09-25 11:55:00
+25-Sep-2026 05:27:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:27:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:27:57 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:27:57 PM IST INFO [ENGINE] New candle: 2026-09-25 11:56:00
+25-Sep-2026 05:28:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:28:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:29:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:29:07 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:29:07 PM IST INFO [ENGINE] New candle: 2026-09-25 11:57:00
+25-Sep-2026 05:29:14 PM IST INFO [ENGINE] New candle: 2026-09-25 11:58:00
+25-Sep-2026 05:29:14 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:30:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:30:00 PM IST INFO [WS] New 30m candle closed: 2026-09-25 11:30:00 - checking S4V2
+25-Sep-2026 05:30:00 PM IST INFO [S4V2] REST reconcile OK window 2026-09-25 07:30:00..2026-09-25 12:00:00 mismatches=7 critical_covered=True
+25-Sep-2026 05:30:00 PM IST WARNING [S4V2] REST reconcile corrected 7 candle(s) with WS/REST drift in window 2026-09-25 07:30:00..2026-09-25 12:00:00
+25-Sep-2026 05:30:00 PM IST INFO [S4V2] Strategy returned 447 signals | gen_signals_took=0.03s
+25-Sep-2026 05:30:00 PM IST CRITICAL [S4V2] REPAINT GUARD: signal ts=2026-09-25T11:00:00 type=ENTRY is 60min old (threshold 45min) - already-locked history repaint attempt blocked
+25-Sep-2026 05:30:00 PM IST INFO [S4V2] CSV exit updated to 2026-09-25T11:30:00 (matched entry 2026-09-25T10:30:00)
+25-Sep-2026 05:30:00 PM IST INFO [S4V2] EXIT long at 2026-09-25T11:30:00
+25-Sep-2026 05:30:00 PM IST INFO [S4V2] INSTANT CSV append: 2026-09-25T11:30:00,PENDING,short
+25-Sep-2026 05:30:00 PM IST INFO [S4V2] ENTRY short at 2026-09-25T11:30:00
+25-Sep-2026 05:30:00 PM IST INFO [WS] New 2H candle closed: 2026-09-25 10:00:00 - checking S4
+25-Sep-2026 05:30:02 PM IST INFO [S4] REST reconcile OK window 2026-09-24 18:00:00..2026-09-25 12:00:00 mismatches=37 critical_covered=True
+25-Sep-2026 05:30:02 PM IST WARNING [S4] REST reconcile corrected 37 candle(s) with WS/REST drift in window 2026-09-24 18:00:00..2026-09-25 12:00:00
+25-Sep-2026 05:30:02 PM IST INFO [BRICK-DEBUG] S4 live 2h OHLC window at fire-time:
+                        open     high      low    close
+timestamp                                              
+2026-09-04 02:00:00  80943.0  81019.5  80634.0  80816.0
+2026-09-04 04:00:00  80816.0  81271.0  80784.0  80960.5
+2026-09-04 06:00:00  80961.0  81069.5  80546.0  80636.5
+2026-09-04 08:00:00  80635.5  81286.5  80483.0  81026.0
+2026-09-04 10:00:00  81026.0  81386.0  80798.5  81196.0
+2026-09-04 12:00:00  81196.5  81332.5  78956.5  79351.0
+2026-09-04 14:00:00  79350.5  79553.5  78625.5  79392.5
+2026-09-04 16:00:00  79392.5  79847.0  79342.0  79438.0
+25-Sep-2026 05:30:02 PM IST INFO [S4] Strategy returned 561 signals | gen_signals_took=0.12s
+25-Sep-2026 05:30:02 PM IST INFO [WS] New 4H candle closed: 2026-09-25 08:00:00 - checking S4V3
+25-Sep-2026 05:30:03 PM IST INFO [S4V3] REST reconcile OK window 2026-09-24 00:00:00..2026-09-25 12:00:00 mismatches=81 critical_covered=True
+25-Sep-2026 05:30:03 PM IST WARNING [S4V3] REST reconcile corrected 81 candle(s) with WS/REST drift in window 2026-09-24 00:00:00..2026-09-25 12:00:00
+25-Sep-2026 05:30:04 PM IST INFO [S4V3] Strategy returned 337 signals | gen_signals_took=0.06s
+25-Sep-2026 05:30:04 PM IST WARNING [S4V3] SKIPPED signal ts=2026-09-25T08:00:00 type=ENTRY dir=long - state mismatch (current_direction=short)
+25-Sep-2026 05:30:14 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:30:14 PM IST INFO [ENGINE] New candle: 2026-09-25 11:59:00
+25-Sep-2026 05:30:34 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:31:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:31:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:31:43 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:31:43 PM IST INFO [ENGINE] New candle: 2026-09-25 12:00:00
+25-Sep-2026 05:32:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:32:13 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:32:13 PM IST INFO [ENGINE] New candle: 2026-09-25 12:01:00
+25-Sep-2026 05:32:43 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:33:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:33:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:33:54 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:33:54 PM IST INFO [ENGINE] New candle: 2026-09-25 12:02:00
+25-Sep-2026 05:34:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:34:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:35:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:35:04 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:35:04 PM IST INFO [ENGINE] New candle: 2026-09-25 12:03:00
+25-Sep-2026 05:35:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:35:12 PM IST INFO [ENGINE] New candle: 2026-09-25 12:04:00
+25-Sep-2026 05:36:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:36:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:36:42 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:36:42 PM IST INFO [ENGINE] New candle: 2026-09-25 12:05:00
+25-Sep-2026 05:37:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:37:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:37:51 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:37:51 PM IST INFO [ENGINE] New candle: 2026-09-25 12:06:00
+25-Sep-2026 05:38:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:38:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:39:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:39:05 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:39:05 PM IST INFO [ENGINE] New candle: 2026-09-25 12:07:00
+25-Sep-2026 05:39:14 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:39:14 PM IST INFO [ENGINE] New candle: 2026-09-25 12:08:00
+25-Sep-2026 05:40:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:40:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:40:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:40:39 PM IST INFO [ENGINE] New candle: 2026-09-25 12:09:00
+25-Sep-2026 05:41:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:41:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:41:48 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:41:48 PM IST INFO [ENGINE] New candle: 2026-09-25 12:10:00
+25-Sep-2026 05:42:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:42:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:42:57 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:42:57 PM IST INFO [ENGINE] New candle: 2026-09-25 12:11:00
+25-Sep-2026 05:43:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:43:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:44:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:44:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:44:09 PM IST INFO [ENGINE] New candle: 2026-09-25 12:12:00
+25-Sep-2026 05:44:16 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:44:17 PM IST INFO [ENGINE] New candle: 2026-09-25 12:13:00
+25-Sep-2026 05:45:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:45:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:45:38 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:45:38 PM IST INFO [ENGINE] New candle: 2026-09-25 12:14:00
+25-Sep-2026 05:46:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:46:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:46:52 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:46:52 PM IST INFO [ENGINE] New candle: 2026-09-25 12:15:00
+25-Sep-2026 05:47:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:47:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:48:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:48:01 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:48:01 PM IST INFO [ENGINE] New candle: 2026-09-25 12:16:00
+25-Sep-2026 05:48:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:48:10 PM IST INFO [ENGINE] New candle: 2026-09-25 12:17:00
+25-Sep-2026 05:49:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:49:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:49:42 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:49:42 PM IST INFO [ENGINE] New candle: 2026-09-25 12:18:00
+25-Sep-2026 05:50:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:50:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:50:52 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:50:52 PM IST INFO [ENGINE] New candle: 2026-09-25 12:19:00
+25-Sep-2026 05:51:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:51:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:52:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:52:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:52:00 PM IST INFO [ENGINE] New candle: 2026-09-25 12:20:00
+25-Sep-2026 05:52:08 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:52:09 PM IST INFO [ENGINE] New candle: 2026-09-25 12:21:00
+25-Sep-2026 05:53:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:53:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:53:38 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:53:38 PM IST INFO [ENGINE] New candle: 2026-09-25 12:22:00
+25-Sep-2026 05:54:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:54:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:54:46 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:54:46 PM IST INFO [ENGINE] New candle: 2026-09-25 12:23:00
+25-Sep-2026 05:55:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:55:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:55:57 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:55:57 PM IST INFO [ENGINE] New candle: 2026-09-25 12:24:00
+25-Sep-2026 05:56:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:56:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:56:10 PM IST INFO [ENGINE] New candle: 2026-09-25 12:25:00
+25-Sep-2026 05:56:57 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:57:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:57:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:58:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:58:07 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:58:07 PM IST INFO [ENGINE] New candle: 2026-09-25 12:26:00
+25-Sep-2026 05:58:14 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:58:14 PM IST INFO [ENGINE] New candle: 2026-09-25 12:27:00
+25-Sep-2026 05:59:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 05:59:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:59:45 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 05:59:45 PM IST INFO [ENGINE] New candle: 2026-09-25 12:28:00
+25-Sep-2026 06:00:00 PM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-25T12:30:00 - checking S4V2 (independent retry, decoupled from WS claim)
+25-Sep-2026 06:00:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:00:00 PM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+25-Sep-2026 06:00:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:00:01 PM IST INFO [WS] New 30m candle closed: 2026-09-25 12:00:00 - checking S4V2
+25-Sep-2026 06:00:02 PM IST INFO [S4V2] REST reconcile OK window 2026-09-25 08:00:00..2026-09-25 12:30:00 mismatches=9 critical_covered=True
+25-Sep-2026 06:00:02 PM IST WARNING [S4V2] REST reconcile corrected 9 candle(s) with WS/REST drift in window 2026-09-25 08:00:00..2026-09-25 12:30:00
+25-Sep-2026 06:00:02 PM IST INFO [S4V2] Strategy returned 447 signals | gen_signals_took=0.03s
+25-Sep-2026 06:00:02 PM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-25 12:30:00 reconcile failed - NOT claimed, retrying next tick
+25-Sep-2026 06:00:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:00:11 PM IST INFO [ENGINE] New candle: 2026-09-25 12:29:00
+25-Sep-2026 06:00:45 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:01:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:01:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:01:54 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:01:54 PM IST INFO [ENGINE] New candle: 2026-09-25 12:30:00
+25-Sep-2026 06:02:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:02:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:03:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:03:04 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:03:04 PM IST INFO [ENGINE] New candle: 2026-09-25 12:31:00
+25-Sep-2026 06:03:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:03:12 PM IST INFO [ENGINE] New candle: 2026-09-25 12:32:00
+25-Sep-2026 06:04:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:04:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:04:38 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:04:38 PM IST INFO [ENGINE] New candle: 2026-09-25 12:33:00
+25-Sep-2026 06:05:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:05:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:05:12 PM IST INFO [ENGINE] New candle: 2026-09-25 12:34:00
+25-Sep-2026 06:05:38 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:06:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:06:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:06:51 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:06:51 PM IST INFO [ENGINE] New candle: 2026-09-25 12:35:00
+25-Sep-2026 06:07:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:07:16 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:07:16 PM IST INFO [ENGINE] New candle: 2026-09-25 12:36:00
+25-Sep-2026 06:07:51 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:08:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:08:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:09:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:09:02 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:09:02 PM IST INFO [ENGINE] New candle: 2026-09-25 12:37:00
+25-Sep-2026 06:09:17 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:09:17 PM IST INFO [ENGINE] New candle: 2026-09-25 12:38:00
+25-Sep-2026 06:10:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:10:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:10:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:10:40 PM IST INFO [ENGINE] New candle: 2026-09-25 12:39:00
+25-Sep-2026 06:11:02 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:11:14 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:11:14 PM IST INFO [ENGINE] New candle: 2026-09-25 12:40:00
+25-Sep-2026 06:11:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:12:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:12:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:12:51 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:12:51 PM IST INFO [ENGINE] New candle: 2026-09-25 12:41:00
+25-Sep-2026 06:13:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:13:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:14:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:14:04 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:14:04 PM IST INFO [ENGINE] New candle: 2026-09-25 12:42:00
+25-Sep-2026 06:14:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:14:12 PM IST INFO [ENGINE] New candle: 2026-09-25 12:43:00
+25-Sep-2026 06:15:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:15:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:15:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:15:39 PM IST INFO [ENGINE] New candle: 2026-09-25 12:44:00
+25-Sep-2026 06:16:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:16:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:16:10 PM IST INFO [ENGINE] New candle: 2026-09-25 12:45:00
+25-Sep-2026 06:16:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:17:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:17:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:17:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:17:49 PM IST INFO [ENGINE] New candle: 2026-09-25 12:46:00
+25-Sep-2026 06:18:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:18:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:18:58 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:18:58 PM IST INFO [ENGINE] New candle: 2026-09-25 12:47:00
+25-Sep-2026 06:19:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:19:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:20:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:20:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:20:09 PM IST INFO [ENGINE] New candle: 2026-09-25 12:48:00
+25-Sep-2026 06:20:17 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:20:17 PM IST INFO [ENGINE] New candle: 2026-09-25 12:49:00
+25-Sep-2026 06:21:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:21:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:21:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:21:40 PM IST INFO [ENGINE] New candle: 2026-09-25 12:50:00
+25-Sep-2026 06:22:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:22:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:22:11 PM IST INFO [ENGINE] New candle: 2026-09-25 12:51:00
+25-Sep-2026 06:22:41 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:23:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:23:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:23:50 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:23:50 PM IST INFO [ENGINE] New candle: 2026-09-25 12:52:00
+25-Sep-2026 06:24:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:24:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:25:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:25:01 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:25:01 PM IST INFO [ENGINE] New candle: 2026-09-25 12:53:00
+25-Sep-2026 06:25:15 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:25:15 PM IST INFO [ENGINE] New candle: 2026-09-25 12:54:00
+25-Sep-2026 06:26:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:26:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:26:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:26:39 PM IST INFO [ENGINE] New candle: 2026-09-25 12:55:00
+25-Sep-2026 06:27:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:27:15 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:27:15 PM IST INFO [ENGINE] New candle: 2026-09-25 12:56:00
+25-Sep-2026 06:27:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:28:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:28:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:28:48 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:28:48 PM IST INFO [ENGINE] New candle: 2026-09-25 12:57:00
+25-Sep-2026 06:29:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:29:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:29:10 PM IST INFO [ENGINE] New candle: 2026-09-25 12:58:00
+25-Sep-2026 06:29:48 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:30:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:30:00 PM IST INFO [WS] New 30m candle closed: 2026-09-25 12:30:00 - checking S4V2
+25-Sep-2026 06:30:00 PM IST INFO [S4V2] REST reconcile OK window 2026-09-25 08:30:00..2026-09-25 13:00:00 mismatches=8 critical_covered=True
+25-Sep-2026 06:30:00 PM IST WARNING [S4V2] REST reconcile corrected 8 candle(s) with WS/REST drift in window 2026-09-25 08:30:00..2026-09-25 13:00:00
+25-Sep-2026 06:30:00 PM IST INFO [S4V2] Strategy returned 447 signals | gen_signals_took=0.03s
+25-Sep-2026 06:30:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:31:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:31:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:31:11 PM IST INFO [ENGINE] New candle: 2026-09-25 12:59:00
+25-Sep-2026 06:31:19 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:31:19 PM IST INFO [ENGINE] New candle: 2026-09-25 13:00:00
+25-Sep-2026 06:32:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:32:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:32:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:32:39 PM IST INFO [ENGINE] New candle: 2026-09-25 13:01:00
+25-Sep-2026 06:33:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:33:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:33:48 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:33:48 PM IST INFO [ENGINE] New candle: 2026-09-25 13:02:00
+25-Sep-2026 06:34:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:34:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:35:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:35:02 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:35:02 PM IST INFO [ENGINE] New candle: 2026-09-25 13:03:00
+25-Sep-2026 06:35:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:35:11 PM IST INFO [ENGINE] New candle: 2026-09-25 13:04:00
+25-Sep-2026 06:36:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:36:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:36:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:36:39 PM IST INFO [ENGINE] New candle: 2026-09-25 13:05:00
+25-Sep-2026 06:37:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:37:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:37:54 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:37:54 PM IST INFO [ENGINE] New candle: 2026-09-25 13:06:00
+25-Sep-2026 06:38:02 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:38:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:38:11 PM IST INFO [ENGINE] New candle: 2026-09-25 13:07:00
+25-Sep-2026 06:38:54 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:39:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:39:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:40:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:40:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:40:09 PM IST INFO [ENGINE] New candle: 2026-09-25 13:08:00
+25-Sep-2026 06:40:18 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:40:18 PM IST INFO [ENGINE] New candle: 2026-09-25 13:09:00
+25-Sep-2026 06:41:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:41:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:41:10 PM IST INFO [ENGINE] New candle: 2026-09-25 13:10:00
+25-Sep-2026 06:41:31 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:42:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:42:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:42:10 PM IST INFO [ENGINE] New candle: 2026-09-25 13:11:00
+25-Sep-2026 06:42:31 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:43:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:43:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:43:09 PM IST INFO [ENGINE] New candle: 2026-09-25 13:12:00
+25-Sep-2026 06:43:31 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:44:02 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:44:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:44:11 PM IST INFO [ENGINE] New candle: 2026-09-25 13:13:00
+25-Sep-2026 06:44:32 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:45:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:45:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:45:42 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:45:42 PM IST INFO [ENGINE] New candle: 2026-09-25 13:14:00
+25-Sep-2026 06:46:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:46:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:46:51 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:46:51 PM IST INFO [ENGINE] New candle: 2026-09-25 13:15:00
+25-Sep-2026 06:47:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:47:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:48:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:48:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:48:00 PM IST INFO [ENGINE] New candle: 2026-09-25 13:16:00
+25-Sep-2026 06:48:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:48:10 PM IST INFO [ENGINE] New candle: 2026-09-25 13:17:00
+25-Sep-2026 06:49:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:49:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:49:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:49:39 PM IST INFO [ENGINE] New candle: 2026-09-25 13:18:00
+25-Sep-2026 06:50:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:50:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:50:51 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:50:51 PM IST INFO [ENGINE] New candle: 2026-09-25 13:19:00
+25-Sep-2026 06:51:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:51:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:52:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:52:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:52:00 PM IST INFO [ENGINE] New candle: 2026-09-25 13:20:00
+25-Sep-2026 06:52:12 PM IST INFO [ENGINE] New candle: 2026-09-25 13:21:00
+25-Sep-2026 06:52:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:53:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:53:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:53:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:53:39 PM IST INFO [ENGINE] New candle: 2026-09-25 13:22:00
+25-Sep-2026 06:54:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:54:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:54:48 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:54:48 PM IST INFO [ENGINE] New candle: 2026-09-25 13:23:00
+25-Sep-2026 06:55:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:55:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:55:57 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:55:57 PM IST INFO [ENGINE] New candle: 2026-09-25 13:24:00
+25-Sep-2026 06:56:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:56:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:57:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:57:14 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:57:14 PM IST INFO [ENGINE] New candle: 2026-09-25 13:25:00
+25-Sep-2026 06:57:22 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:57:22 PM IST INFO [ENGINE] New candle: 2026-09-25 13:26:00
+25-Sep-2026 06:58:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:58:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:58:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:58:40 PM IST INFO [ENGINE] New candle: 2026-09-25 13:27:00
+25-Sep-2026 06:59:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 06:59:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:59:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 06:59:49 PM IST INFO [ENGINE] New candle: 2026-09-25 13:28:00
+25-Sep-2026 07:00:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:00:00 PM IST INFO [WS] New 30m candle closed: 2026-09-25 13:00:00 - checking S4V2
+25-Sep-2026 07:00:00 PM IST INFO [S4V2] REST reconcile OK window 2026-09-25 09:00:00..2026-09-25 13:30:00 mismatches=3 critical_covered=True
+25-Sep-2026 07:00:00 PM IST WARNING [S4V2] REST reconcile corrected 3 candle(s) with WS/REST drift in window 2026-09-25 09:00:00..2026-09-25 13:30:00
+25-Sep-2026 07:00:01 PM IST INFO [S4V2] Strategy returned 447 signals | gen_signals_took=0.08s
+25-Sep-2026 07:00:13 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:00:13 PM IST INFO [ENGINE] New candle: 2026-09-25 13:29:00
+25-Sep-2026 07:00:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:01:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:01:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:02:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:02:01 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:02:01 PM IST INFO [ENGINE] New candle: 2026-09-25 13:30:00
+25-Sep-2026 07:02:16 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:02:16 PM IST INFO [ENGINE] New candle: 2026-09-25 13:31:00
+25-Sep-2026 07:03:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:03:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:03:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:03:40 PM IST INFO [ENGINE] New candle: 2026-09-25 13:32:00
+25-Sep-2026 07:04:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:04:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:04:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:04:49 PM IST INFO [ENGINE] New candle: 2026-09-25 13:33:00
+25-Sep-2026 07:05:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:05:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:06:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:06:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:06:00 PM IST INFO [ENGINE] New candle: 2026-09-25 13:34:00
+25-Sep-2026 07:06:16 PM IST INFO [ENGINE] New candle: 2026-09-25 13:35:00
+25-Sep-2026 07:06:16 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:07:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:07:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:07:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:07:39 PM IST INFO [ENGINE] New candle: 2026-09-25 13:36:00
+25-Sep-2026 07:08:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:08:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:08:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:08:49 PM IST INFO [ENGINE] New candle: 2026-09-25 13:37:00
+25-Sep-2026 07:09:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:09:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:10:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:10:02 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:10:02 PM IST INFO [ENGINE] New candle: 2026-09-25 13:38:00
+25-Sep-2026 07:10:16 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:10:16 PM IST INFO [ENGINE] New candle: 2026-09-25 13:39:00
+25-Sep-2026 07:11:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:11:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:11:41 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:11:41 PM IST INFO [ENGINE] New candle: 2026-09-25 13:40:00
+25-Sep-2026 07:12:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:12:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:12:50 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:12:50 PM IST INFO [ENGINE] New candle: 2026-09-25 13:41:00
+25-Sep-2026 07:13:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:13:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:13:10 PM IST INFO [ENGINE] New candle: 2026-09-25 13:42:00
+25-Sep-2026 07:13:50 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:14:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:14:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:15:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:15:02 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:15:02 PM IST INFO [ENGINE] New candle: 2026-09-25 13:43:00
+25-Sep-2026 07:15:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:15:10 PM IST INFO [ENGINE] New candle: 2026-09-25 13:44:00
+25-Sep-2026 07:16:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:16:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:16:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:16:39 PM IST INFO [ENGINE] New candle: 2026-09-25 13:45:00
+25-Sep-2026 07:17:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:17:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:17:54 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:17:54 PM IST INFO [ENGINE] New candle: 2026-09-25 13:46:00
+25-Sep-2026 07:18:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:18:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:19:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:19:03 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:19:03 PM IST INFO [ENGINE] New candle: 2026-09-25 13:47:00
+25-Sep-2026 07:19:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:19:12 PM IST INFO [ENGINE] New candle: 2026-09-25 13:48:00
+25-Sep-2026 07:20:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:20:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:20:54 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:20:54 PM IST INFO [ENGINE] New candle: 2026-09-25 13:49:00
+25-Sep-2026 07:21:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:21:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:22:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:22:05 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:22:05 PM IST INFO [ENGINE] New candle: 2026-09-25 13:50:00
+25-Sep-2026 07:22:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:22:13 PM IST INFO [ENGINE] New candle: 2026-09-25 13:51:00
+25-Sep-2026 07:23:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:23:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:23:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:23:40 PM IST INFO [ENGINE] New candle: 2026-09-25 13:52:00
+25-Sep-2026 07:24:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:24:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:24:50 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:24:50 PM IST INFO [ENGINE] New candle: 2026-09-25 13:53:00
+25-Sep-2026 07:25:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:25:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:25:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:25:59 PM IST INFO [ENGINE] New candle: 2026-09-25 13:54:00
+25-Sep-2026 07:26:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:26:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:27:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:27:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:27:09 PM IST INFO [ENGINE] New candle: 2026-09-25 13:55:00
+25-Sep-2026 07:27:17 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:27:17 PM IST INFO [ENGINE] New candle: 2026-09-25 13:56:00
+25-Sep-2026 07:28:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:28:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:28:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:28:39 PM IST INFO [ENGINE] New candle: 2026-09-25 13:57:00
+25-Sep-2026 07:29:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:29:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:29:48 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:29:48 PM IST INFO [ENGINE] New candle: 2026-09-25 13:58:00
+25-Sep-2026 07:30:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:30:00 PM IST INFO [WS] New 30m candle closed: 2026-09-25 13:30:00 - checking S4V2
+25-Sep-2026 07:30:00 PM IST INFO [S4V2] REST reconcile OK window 2026-09-25 09:30:00..2026-09-25 14:00:00 mismatches=12 critical_covered=True
+25-Sep-2026 07:30:00 PM IST WARNING [S4V2] REST reconcile corrected 12 candle(s) with WS/REST drift in window 2026-09-25 09:30:00..2026-09-25 14:00:00
+25-Sep-2026 07:30:00 PM IST INFO [S4V2] Strategy returned 447 signals | gen_signals_took=0.03s
+25-Sep-2026 07:30:00 PM IST INFO [WS] New 2H candle closed: 2026-09-25 12:00:00 - checking S4
+25-Sep-2026 07:30:01 PM IST INFO [S4] REST reconcile OK window 2026-09-24 20:00:00..2026-09-25 14:00:00 mismatches=32 critical_covered=True
+25-Sep-2026 07:30:01 PM IST WARNING [S4] REST reconcile corrected 32 candle(s) with WS/REST drift in window 2026-09-24 20:00:00..2026-09-25 14:00:00
+25-Sep-2026 07:30:01 PM IST INFO [BRICK-DEBUG] S4 live 2h OHLC window at fire-time:
+                        open     high      low    close
+timestamp                                              
+2026-09-04 02:00:00  80943.0  81019.5  80634.0  80816.0
+2026-09-04 04:00:00  80816.0  81271.0  80784.0  80960.5
+2026-09-04 06:00:00  80961.0  81069.5  80546.0  80636.5
+2026-09-04 08:00:00  80635.5  81286.5  80483.0  81026.0
+2026-09-04 10:00:00  81026.0  81386.0  80798.5  81196.0
+2026-09-04 12:00:00  81196.5  81332.5  78956.5  79351.0
+2026-09-04 14:00:00  79350.5  79553.5  78625.5  79392.5
+2026-09-04 16:00:00  79392.5  79847.0  79342.0  79438.0
+25-Sep-2026 07:30:01 PM IST INFO [S4] Strategy returned 563 signals | gen_signals_took=0.09s
+25-Sep-2026 07:30:01 PM IST WARNING [S4] SKIPPED signal ts=2026-09-25T12:00:00 type=EXIT dir=long - state mismatch (current_direction=short)
+25-Sep-2026 07:30:01 PM IST WARNING [S4] SKIPPED signal ts=2026-09-25T12:00:00 type=ENTRY dir=short - state mismatch (current_direction=short)
+25-Sep-2026 07:30:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:30:10 PM IST INFO [ENGINE] New candle: 2026-09-25 13:59:00
+25-Sep-2026 07:30:48 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:31:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:31:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:31:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:31:59 PM IST INFO [ENGINE] New candle: 2026-09-25 14:00:00
+25-Sep-2026 07:32:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:32:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:33:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:33:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:33:11 PM IST INFO [ENGINE] New candle: 2026-09-25 14:01:00
+25-Sep-2026 07:33:25 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:33:25 PM IST INFO [ENGINE] New candle: 2026-09-25 14:02:00
+25-Sep-2026 07:34:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:34:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:34:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:34:40 PM IST INFO [ENGINE] New candle: 2026-09-25 14:03:00
+25-Sep-2026 07:35:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:35:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:35:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:35:49 PM IST INFO [ENGINE] New candle: 2026-09-25 14:04:00
+25-Sep-2026 07:36:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:36:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:36:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:36:59 PM IST INFO [ENGINE] New candle: 2026-09-25 14:05:00
+25-Sep-2026 07:37:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:37:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:38:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:38:16 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:38:16 PM IST INFO [ENGINE] New candle: 2026-09-25 14:06:00
+25-Sep-2026 07:38:25 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:38:25 PM IST INFO [ENGINE] New candle: 2026-09-25 14:07:00
+25-Sep-2026 07:39:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:39:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:39:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:39:39 PM IST INFO [ENGINE] New candle: 2026-09-25 14:08:00
+25-Sep-2026 07:40:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:40:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:40:48 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:40:48 PM IST INFO [ENGINE] New candle: 2026-09-25 14:09:00
+25-Sep-2026 07:41:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:41:17 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:41:17 PM IST INFO [ENGINE] New candle: 2026-09-25 14:10:00
+25-Sep-2026 07:41:48 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:42:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:42:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:42:58 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:42:58 PM IST INFO [ENGINE] New candle: 2026-09-25 14:11:00
+25-Sep-2026 07:43:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:43:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:44:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:44:16 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:44:16 PM IST INFO [ENGINE] New candle: 2026-09-25 14:12:00
+25-Sep-2026 07:44:25 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:44:25 PM IST INFO [ENGINE] New candle: 2026-09-25 14:13:00
+25-Sep-2026 07:45:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:45:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:45:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:45:40 PM IST INFO [ENGINE] New candle: 2026-09-25 14:14:00
+25-Sep-2026 07:46:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:46:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:46:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:46:49 PM IST INFO [ENGINE] New candle: 2026-09-25 14:15:00
+25-Sep-2026 07:47:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:47:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:47:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:47:59 PM IST INFO [ENGINE] New candle: 2026-09-25 14:16:00
+25-Sep-2026 07:48:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:48:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:49:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:49:16 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:49:16 PM IST INFO [ENGINE] New candle: 2026-09-25 14:17:00
+25-Sep-2026 07:49:24 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:49:24 PM IST INFO [ENGINE] New candle: 2026-09-25 14:18:00
+25-Sep-2026 07:50:03 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:50:17 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:50:18 PM IST INFO [ENGINE] New candle: 2026-09-25 14:19:00
+25-Sep-2026 07:50:33 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:51:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:51:21 PM IST INFO [ENGINE] New candle: 2026-09-25 14:20:00
+25-Sep-2026 07:51:21 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:51:33 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:52:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:52:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:52:43 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:52:43 PM IST INFO [ENGINE] New candle: 2026-09-25 14:21:00
+25-Sep-2026 07:53:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:53:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:53:53 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:53:53 PM IST INFO [ENGINE] New candle: 2026-09-25 14:22:00
+25-Sep-2026 07:54:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:54:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:55:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:55:03 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:55:03 PM IST INFO [ENGINE] New candle: 2026-09-25 14:23:00
+25-Sep-2026 07:55:17 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:55:17 PM IST INFO [ENGINE] New candle: 2026-09-25 14:24:00
+25-Sep-2026 07:56:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:56:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:56:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:56:39 PM IST INFO [ENGINE] New candle: 2026-09-25 14:25:00
+25-Sep-2026 07:57:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:57:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:57:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:57:49 PM IST INFO [ENGINE] New candle: 2026-09-25 14:26:00
+25-Sep-2026 07:58:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:58:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:58:58 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 07:58:58 PM IST INFO [ENGINE] New candle: 2026-09-25 14:27:00
+25-Sep-2026 07:59:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 07:59:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:00:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:00:00 PM IST INFO [WS] New 30m candle closed: 2026-09-25 14:00:00 - checking S4V2
+25-Sep-2026 08:00:01 PM IST INFO [S4V2] REST reconcile OK window 2026-09-25 10:00:00..2026-09-25 14:30:00 mismatches=11 critical_covered=True
+25-Sep-2026 08:00:01 PM IST WARNING [S4V2] REST reconcile corrected 11 candle(s) with WS/REST drift in window 2026-09-25 10:00:00..2026-09-25 14:30:00
+25-Sep-2026 08:00:01 PM IST INFO [S4V2] Strategy returned 447 signals | gen_signals_took=0.14s
+25-Sep-2026 08:00:16 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:00:16 PM IST INFO [ENGINE] New candle: 2026-09-25 14:28:00
+25-Sep-2026 08:00:25 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:00:26 PM IST INFO [ENGINE] New candle: 2026-09-25 14:29:00
+25-Sep-2026 08:01:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:01:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:01:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:01:39 PM IST INFO [ENGINE] New candle: 2026-09-25 14:30:00
+25-Sep-2026 08:02:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:02:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:02:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:02:49 PM IST INFO [ENGINE] New candle: 2026-09-25 14:31:00
+25-Sep-2026 08:03:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:03:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:03:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:03:59 PM IST INFO [ENGINE] New candle: 2026-09-25 14:32:00
+25-Sep-2026 08:04:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:04:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:05:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:05:17 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:05:17 PM IST INFO [ENGINE] New candle: 2026-09-25 14:33:00
+25-Sep-2026 08:05:26 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:05:27 PM IST INFO [ENGINE] New candle: 2026-09-25 14:34:00
+25-Sep-2026 08:06:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:06:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:06:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:06:39 PM IST INFO [ENGINE] New candle: 2026-09-25 14:35:00
+25-Sep-2026 08:07:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:07:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:07:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:07:49 PM IST INFO [ENGINE] New candle: 2026-09-25 14:36:00
+25-Sep-2026 08:08:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:08:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:08:58 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:08:58 PM IST INFO [ENGINE] New candle: 2026-09-25 14:37:00
+25-Sep-2026 08:09:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:09:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:10:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:10:16 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:10:16 PM IST INFO [ENGINE] New candle: 2026-09-25 14:38:00
+25-Sep-2026 08:10:26 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:10:26 PM IST INFO [ENGINE] New candle: 2026-09-25 14:39:00
+25-Sep-2026 08:11:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:11:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:11:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:11:40 PM IST INFO [ENGINE] New candle: 2026-09-25 14:40:00
+25-Sep-2026 08:12:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:12:14 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:12:14 PM IST INFO [ENGINE] New candle: 2026-09-25 14:41:00
+25-Sep-2026 08:12:41 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:13:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:13:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:13:12 PM IST INFO [ENGINE] New candle: 2026-09-25 14:42:00
+25-Sep-2026 08:13:41 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:14:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:14:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:14:50 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:14:50 PM IST INFO [ENGINE] New candle: 2026-09-25 14:43:00
+25-Sep-2026 08:15:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:15:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:16:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:16:00 PM IST INFO [ENGINE] New candle: 2026-09-25 14:44:00
+25-Sep-2026 08:16:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:16:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:17:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:17:15 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:17:15 PM IST INFO [ENGINE] New candle: 2026-09-25 14:46:00
+25-Sep-2026 08:17:30 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:18:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:18:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:18:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:18:40 PM IST INFO [ENGINE] New candle: 2026-09-25 14:47:00
+25-Sep-2026 08:19:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:19:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:19:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:19:49 PM IST INFO [ENGINE] New candle: 2026-09-25 14:48:00
+25-Sep-2026 08:20:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:20:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:21:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:21:06 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:21:06 PM IST INFO [ENGINE] New candle: 2026-09-25 14:49:00
+25-Sep-2026 08:21:20 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:21:20 PM IST INFO [ENGINE] New candle: 2026-09-25 14:50:00
+25-Sep-2026 08:22:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:22:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:22:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:22:40 PM IST INFO [ENGINE] New candle: 2026-09-25 14:51:00
+25-Sep-2026 08:23:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:23:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:23:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:23:49 PM IST INFO [ENGINE] New candle: 2026-09-25 14:52:00
+25-Sep-2026 08:24:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:24:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:24:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:24:59 PM IST INFO [ENGINE] New candle: 2026-09-25 14:53:00
+25-Sep-2026 08:25:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:25:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:26:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:26:14 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:26:14 PM IST INFO [ENGINE] New candle: 2026-09-25 14:54:00
+25-Sep-2026 08:26:26 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:26:26 PM IST INFO [ENGINE] New candle: 2026-09-25 14:55:00
+25-Sep-2026 08:27:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:27:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:27:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:27:39 PM IST INFO [ENGINE] New candle: 2026-09-25 14:56:00
+25-Sep-2026 08:28:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:28:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:28:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:28:49 PM IST INFO [ENGINE] New candle: 2026-09-25 14:57:00
+25-Sep-2026 08:29:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:29:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:29:58 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:29:58 PM IST INFO [ENGINE] New candle: 2026-09-25 14:58:00
+25-Sep-2026 08:30:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:30:00 PM IST INFO [WS] New 30m candle closed: 2026-09-25 14:30:00 - checking S4V2
+25-Sep-2026 08:30:00 PM IST INFO [S4V2] REST reconcile OK window 2026-09-25 10:30:00..2026-09-25 15:00:00 mismatches=3 critical_covered=True
+25-Sep-2026 08:30:00 PM IST WARNING [S4V2] REST reconcile corrected 3 candle(s) with WS/REST drift in window 2026-09-25 10:30:00..2026-09-25 15:00:00
+25-Sep-2026 08:30:00 PM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.04s
+25-Sep-2026 08:30:01 PM IST INFO [S4V2] CSV exit updated to 2026-09-25T14:30:00 (matched entry 2026-09-25T11:30:00)
+25-Sep-2026 08:30:01 PM IST INFO [S4V2] EXIT short at 2026-09-25T14:30:00
+25-Sep-2026 08:30:01 PM IST INFO [S4V2] INSTANT CSV append: 2026-09-25T14:30:00,PENDING,long
+25-Sep-2026 08:30:01 PM IST INFO [S4V2] ENTRY long at 2026-09-25T14:30:00
+25-Sep-2026 08:30:20 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:30:20 PM IST INFO [ENGINE] New candle: 2026-09-25 14:59:00
+25-Sep-2026 08:30:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:31:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:31:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:32:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:32:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:32:10 PM IST INFO [ENGINE] New candle: 2026-09-25 15:00:00
+25-Sep-2026 08:32:24 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:32:24 PM IST INFO [ENGINE] New candle: 2026-09-25 15:01:00
+25-Sep-2026 08:33:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:33:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:33:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:33:40 PM IST INFO [ENGINE] New candle: 2026-09-25 15:02:00
+25-Sep-2026 08:34:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:34:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:34:50 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:34:50 PM IST INFO [ENGINE] New candle: 2026-09-25 15:03:00
+25-Sep-2026 08:35:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:35:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:35:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:35:59 PM IST INFO [ENGINE] New candle: 2026-09-25 15:04:00
+25-Sep-2026 08:36:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:36:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:37:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:37:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:37:10 PM IST INFO [ENGINE] New candle: 2026-09-25 15:06:00
+25-Sep-2026 08:37:24 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:38:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:38:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:38:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:38:39 PM IST INFO [ENGINE] New candle: 2026-09-25 15:07:00
+25-Sep-2026 08:39:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:39:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:39:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:39:49 PM IST INFO [ENGINE] New candle: 2026-09-25 15:08:00
+25-Sep-2026 08:40:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:40:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:41:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:41:04 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:41:04 PM IST INFO [ENGINE] New candle: 2026-09-25 15:09:00
+25-Sep-2026 08:41:14 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:41:15 PM IST INFO [ENGINE] New candle: 2026-09-25 15:10:00
+25-Sep-2026 08:42:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:42:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:42:41 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:42:41 PM IST INFO [ENGINE] New candle: 2026-09-25 15:11:00
+25-Sep-2026 08:43:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:43:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:43:51 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:43:51 PM IST INFO [ENGINE] New candle: 2026-09-25 15:12:00
+25-Sep-2026 08:44:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:44:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:45:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:45:04 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:45:04 PM IST INFO [ENGINE] New candle: 2026-09-25 15:13:00
+25-Sep-2026 08:45:24 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:45:24 PM IST INFO [ENGINE] New candle: 2026-09-25 15:14:00
+25-Sep-2026 08:46:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:46:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:46:42 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:46:42 PM IST INFO [ENGINE] New candle: 2026-09-25 15:15:00
+25-Sep-2026 08:47:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:47:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:47:52 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:47:52 PM IST INFO [ENGINE] New candle: 2026-09-25 15:16:00
+25-Sep-2026 08:48:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:48:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:49:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:49:02 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:49:02 PM IST INFO [ENGINE] New candle: 2026-09-25 15:17:00
+25-Sep-2026 08:49:13 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:49:13 PM IST INFO [ENGINE] New candle: 2026-09-25 15:18:00
+25-Sep-2026 08:50:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:50:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:50:45 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:50:45 PM IST INFO [ENGINE] New candle: 2026-09-25 15:19:00
+25-Sep-2026 08:51:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:51:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:51:55 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:51:55 PM IST INFO [ENGINE] New candle: 2026-09-25 15:20:00
+25-Sep-2026 08:52:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:52:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:53:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:53:07 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:53:07 PM IST INFO [ENGINE] New candle: 2026-09-25 15:21:00
+25-Sep-2026 08:53:15 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:53:16 PM IST INFO [ENGINE] New candle: 2026-09-25 15:22:00
+25-Sep-2026 08:54:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:54:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:54:47 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:54:47 PM IST INFO [ENGINE] New candle: 2026-09-25 15:23:00
+25-Sep-2026 08:55:02 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:55:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:55:11 PM IST INFO [ENGINE] New candle: 2026-09-25 15:24:00
+25-Sep-2026 08:55:48 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:56:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:56:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:56:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:56:59 PM IST INFO [ENGINE] New candle: 2026-09-25 15:25:00
+25-Sep-2026 08:57:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:57:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:57:12 PM IST INFO [ENGINE] New candle: 2026-09-25 15:26:00
+25-Sep-2026 08:57:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:58:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:58:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:58:12 PM IST INFO [ENGINE] New candle: 2026-09-25 15:27:00
+25-Sep-2026 08:58:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 08:59:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 08:59:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:00:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:00:01 PM IST INFO [WS] New 30m candle closed: 2026-09-25 15:00:00 - checking S4V2
+25-Sep-2026 09:00:02 PM IST INFO [S4V2] REST reconcile OK window 2026-09-25 11:00:00..2026-09-25 15:30:00 mismatches=8 critical_covered=True
+25-Sep-2026 09:00:02 PM IST WARNING [S4V2] REST reconcile corrected 8 candle(s) with WS/REST drift in window 2026-09-25 11:00:00..2026-09-25 15:30:00
+25-Sep-2026 09:00:03 PM IST INFO [S4V2] Strategy returned 447 signals | gen_signals_took=0.52s
+25-Sep-2026 09:00:03 PM IST INFO [S4V2] CSV exit updated to 2026-09-25T15:00:00 (matched entry 2026-09-25T14:30:00)
+25-Sep-2026 09:00:04 PM IST INFO [S4V2] EXIT long at 2026-09-25T15:00:00
+25-Sep-2026 09:00:05 PM IST INFO [S4V2] INSTANT CSV append: 2026-09-25T15:00:00,PENDING,short
+25-Sep-2026 09:00:05 PM IST INFO [S4V2] ENTRY short at 2026-09-25T15:00:00
+25-Sep-2026 09:01:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:01:08 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:01:08 PM IST INFO [ENGINE] New candle: 2026-09-25 15:28:00
+25-Sep-2026 09:02:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:02:33 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:03:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:03:14 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:03:46 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:04:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:04:36 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:04:36 PM IST INFO [ENGINE] New candle: 2026-09-25 15:31:00
+25-Sep-2026 09:05:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:05:08 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:05:09 PM IST INFO [ENGINE] New candle: 2026-09-25 15:32:00
+25-Sep-2026 09:06:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:06:02 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:06:45 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:07:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:07:23 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:07:23 PM IST INFO [ENGINE] New candle: 2026-09-25 15:34:00
+25-Sep-2026 09:07:58 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:07:58 PM IST INFO [ENGINE] New candle: 2026-09-25 15:35:00
+25-Sep-2026 09:08:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:08:21 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:08:21 PM IST INFO [ENGINE] New candle: 2026-09-25 15:36:00
+25-Sep-2026 09:08:45 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:09:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:09:24 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:09:24 PM IST INFO [ENGINE] New candle: 2026-09-25 15:37:00
+25-Sep-2026 09:09:45 PM IST INFO [ENGINE] New candle: 2026-09-25 15:38:00
+25-Sep-2026 09:09:45 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:10:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:10:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:10:42 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:10:42 PM IST INFO [ENGINE] New candle: 2026-09-25 15:39:00
+25-Sep-2026 09:11:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:11:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:11:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:11:59 PM IST INFO [ENGINE] New candle: 2026-09-25 15:40:00
+25-Sep-2026 09:12:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:12:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:13:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:13:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:13:11 PM IST INFO [ENGINE] New candle: 2026-09-25 15:41:00
+25-Sep-2026 09:13:34 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:13:34 PM IST INFO [ENGINE] New candle: 2026-09-25 15:42:00
+25-Sep-2026 09:14:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:14:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:14:43 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:14:43 PM IST INFO [ENGINE] New candle: 2026-09-25 15:43:00
+25-Sep-2026 09:15:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:15:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:15:58 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:15:58 PM IST INFO [ENGINE] New candle: 2026-09-25 15:44:00
+25-Sep-2026 09:16:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:16:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:17:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:17:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:17:10 PM IST INFO [ENGINE] New candle: 2026-09-25 15:45:00
+25-Sep-2026 09:17:20 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:17:20 PM IST INFO [ENGINE] New candle: 2026-09-25 15:46:00
+25-Sep-2026 09:18:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:18:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:18:45 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:18:45 PM IST INFO [ENGINE] New candle: 2026-09-25 15:47:00
+25-Sep-2026 09:19:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:19:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:19:11 PM IST INFO [ENGINE] New candle: 2026-09-25 15:48:00
+25-Sep-2026 09:19:45 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:20:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:20:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:21:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:21:03 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:21:03 PM IST INFO [ENGINE] New candle: 2026-09-25 15:49:00
+25-Sep-2026 09:21:13 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:21:13 PM IST INFO [ENGINE] New candle: 2026-09-25 15:50:00
+25-Sep-2026 09:22:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:22:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:22:52 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:22:52 PM IST INFO [ENGINE] New candle: 2026-09-25 15:51:00
+25-Sep-2026 09:23:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:23:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:24:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:24:05 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:24:05 PM IST INFO [ENGINE] New candle: 2026-09-25 15:52:00
+25-Sep-2026 09:24:14 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:24:14 PM IST INFO [ENGINE] New candle: 2026-09-25 15:53:00
+25-Sep-2026 09:25:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:25:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:25:41 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:25:41 PM IST INFO [ENGINE] New candle: 2026-09-25 15:54:00
+25-Sep-2026 09:26:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:26:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:26:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:26:59 PM IST INFO [ENGINE] New candle: 2026-09-25 15:55:00
+25-Sep-2026 09:27:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:27:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:27:12 PM IST INFO [ENGINE] New candle: 2026-09-25 15:56:00
+25-Sep-2026 09:27:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:28:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:28:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:29:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:29:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:29:11 PM IST INFO [ENGINE] New candle: 2026-09-25 15:57:00
+25-Sep-2026 09:29:20 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:29:20 PM IST INFO [ENGINE] New candle: 2026-09-25 15:58:00
+25-Sep-2026 09:30:00 PM IST INFO [ENGINE] Boundary watcher trigger S4: 2026-09-25T16:00:00 - checking S4 (independent retry, decoupled from WS claim)
+25-Sep-2026 09:30:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:30:00 PM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-25T16:00:00 - checking S4V2 (independent retry, decoupled from WS claim)
+25-Sep-2026 09:30:00 PM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+25-Sep-2026 09:30:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:30:00 PM IST INFO [ENGINE] Boundary watcher trigger S4V3: 2026-09-25T16:00:00 - checking S4V3 (independent retry, decoupled from WS claim)
+25-Sep-2026 09:30:00 PM IST INFO [ENGINE] S4V3 data not caught up yet, retry 1 (elapsed=0s)
+25-Sep-2026 09:30:00 PM IST INFO [WS] New 30m candle closed: 2026-09-25 15:30:00 - checking S4V2
+25-Sep-2026 09:30:01 PM IST INFO [S4V2] REST reconcile OK window 2026-09-25 11:30:00..2026-09-25 16:00:00 mismatches=9 critical_covered=True
+25-Sep-2026 09:30:01 PM IST WARNING [S4V2] REST reconcile corrected 9 candle(s) with WS/REST drift in window 2026-09-25 11:30:00..2026-09-25 16:00:00
+25-Sep-2026 09:30:01 PM IST INFO [S4V2] Strategy returned 447 signals | gen_signals_took=0.10s
+25-Sep-2026 09:30:01 PM IST INFO [WS] New 2H candle closed: 2026-09-25 14:00:00 - checking S4
+25-Sep-2026 09:30:01 PM IST INFO [S4] REST reconcile OK window 2026-09-24 22:00:00..2026-09-25 16:00:00 mismatches=29 critical_covered=True
+25-Sep-2026 09:30:01 PM IST WARNING [S4] REST reconcile corrected 29 candle(s) with WS/REST drift in window 2026-09-24 22:00:00..2026-09-25 16:00:00
+25-Sep-2026 09:30:01 PM IST INFO [BRICK-DEBUG] S4 live 2h OHLC window at fire-time:
+                        open     high      low    close
+timestamp                                              
+2026-09-04 02:00:00  80943.0  81019.5  80634.0  80816.0
+2026-09-04 04:00:00  80816.0  81271.0  80784.0  80960.5
+2026-09-04 06:00:00  80961.0  81069.5  80546.0  80636.5
+2026-09-04 08:00:00  80635.5  81286.5  80483.0  81026.0
+2026-09-04 10:00:00  81026.0  81386.0  80798.5  81196.0
+2026-09-04 12:00:00  81196.5  81332.5  78956.5  79351.0
+2026-09-04 14:00:00  79350.5  79553.5  78625.5  79392.5
+2026-09-04 16:00:00  79392.5  79847.0  79342.0  79438.0
+25-Sep-2026 09:30:01 PM IST INFO [S4] Strategy returned 563 signals | gen_signals_took=0.04s
+25-Sep-2026 09:30:01 PM IST CRITICAL [S4] REPAINT GUARD: signal ts=2026-09-25T12:00:00 type=EXIT is 240min old (threshold 180min) - already-locked history repaint attempt blocked
+25-Sep-2026 09:30:01 PM IST CRITICAL [S4] REPAINT GUARD: signal ts=2026-09-25T12:00:00 type=ENTRY is 240min old (threshold 180min) - already-locked history repaint attempt blocked
+25-Sep-2026 09:30:01 PM IST INFO [S4] REST reconcile OK window 2026-09-24 22:00:00..2026-09-25 16:00:00 mismatches=1 critical_covered=True
+25-Sep-2026 09:30:01 PM IST WARNING [S4] REST reconcile corrected 1 candle(s) with WS/REST drift in window 2026-09-24 22:00:00..2026-09-25 16:00:00
+25-Sep-2026 09:30:02 PM IST INFO [BRICK-DEBUG] S4 live 2h OHLC window at fire-time:
+                        open     high      low    close
+timestamp                                              
+2026-09-04 02:00:00  80943.0  81019.5  80634.0  80816.0
+2026-09-04 04:00:00  80816.0  81271.0  80784.0  80960.5
+2026-09-04 06:00:00  80961.0  81069.5  80546.0  80636.5
+2026-09-04 08:00:00  80635.5  81286.5  80483.0  81026.0
+2026-09-04 10:00:00  81026.0  81386.0  80798.5  81196.0
+2026-09-04 12:00:00  81196.5  81332.5  78956.5  79351.0
+2026-09-04 14:00:00  79350.5  79553.5  78625.5  79392.5
+2026-09-04 16:00:00  79392.5  79847.0  79342.0  79438.0
+25-Sep-2026 09:30:02 PM IST INFO [S4] Strategy returned 563 signals | gen_signals_took=0.05s
+25-Sep-2026 09:30:02 PM IST CRITICAL [S4] REPAINT GUARD: signal ts=2026-09-25T12:00:00 type=EXIT is 240min old (threshold 180min) - already-locked history repaint attempt blocked
+25-Sep-2026 09:30:02 PM IST CRITICAL [S4] REPAINT GUARD: signal ts=2026-09-25T12:00:00 type=ENTRY is 240min old (threshold 180min) - already-locked history repaint attempt blocked
+25-Sep-2026 09:30:02 PM IST INFO [WS] New 4H candle closed: 2026-09-25 12:00:00 - checking S4V3
+25-Sep-2026 09:30:02 PM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-25 16:00:00 reconcile failed - NOT claimed, retrying next tick
+25-Sep-2026 09:30:02 PM IST INFO [S4V3] REST reconcile OK window 2026-09-24 04:00:00..2026-09-25 16:00:00 mismatches=62 critical_covered=True
+25-Sep-2026 09:30:02 PM IST WARNING [S4V3] REST reconcile corrected 62 candle(s) with WS/REST drift in window 2026-09-24 04:00:00..2026-09-25 16:00:00
+25-Sep-2026 09:30:02 PM IST INFO [S4V3] Strategy returned 338 signals | gen_signals_took=0.06s
+25-Sep-2026 09:30:02 PM IST CRITICAL [S4V3] REPAINT GUARD: signal ts=2026-09-25T08:00:00 type=ENTRY is 480min old (threshold 360min) - already-locked history repaint attempt blocked
+25-Sep-2026 09:30:02 PM IST WARNING [S4V3] SKIPPED signal ts=2026-09-25T12:00:00 type=EXIT dir=long - state mismatch (current_direction=short)
+25-Sep-2026 09:30:03 PM IST INFO [S4V3] REST reconcile OK window 2026-09-24 04:00:00..2026-09-25 16:00:00 mismatches=0 critical_covered=True
+25-Sep-2026 09:30:03 PM IST INFO [S4V3] Strategy returned 338 signals | gen_signals_took=0.06s
+25-Sep-2026 09:30:03 PM IST CRITICAL [S4V3] REPAINT GUARD: signal ts=2026-09-25T08:00:00 type=ENTRY is 480min old (threshold 360min) - already-locked history repaint attempt blocked
+25-Sep-2026 09:30:03 PM IST WARNING [S4V3] SKIPPED signal ts=2026-09-25T12:00:00 type=EXIT dir=long - state mismatch (current_direction=short)
+25-Sep-2026 09:30:13 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:30:13 PM IST INFO [ENGINE] New candle: 2026-09-25 15:59:00
+25-Sep-2026 09:30:33 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:31:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:31:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:31:47 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:31:47 PM IST INFO [ENGINE] New candle: 2026-09-25 16:00:00
+25-Sep-2026 09:32:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:32:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:33:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:33:07 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:33:07 PM IST INFO [ENGINE] New candle: 2026-09-25 16:01:00
+25-Sep-2026 09:33:26 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:33:26 PM IST INFO [ENGINE] New candle: 2026-09-25 16:02:00
+25-Sep-2026 09:34:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:34:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:34:41 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:34:41 PM IST INFO [ENGINE] New candle: 2026-09-25 16:03:00
+25-Sep-2026 09:35:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:35:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:35:57 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:35:57 PM IST INFO [ENGINE] New candle: 2026-09-25 16:04:00
+25-Sep-2026 09:36:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:36:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:37:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:37:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:37:12 PM IST INFO [ENGINE] New candle: 2026-09-25 16:05:00
+25-Sep-2026 09:37:21 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:37:21 PM IST INFO [ENGINE] New candle: 2026-09-25 16:06:00
+25-Sep-2026 09:38:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:38:14 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:38:14 PM IST INFO [ENGINE] New candle: 2026-09-25 16:07:00
+25-Sep-2026 09:38:31 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:39:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:39:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:39:42 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:39:42 PM IST INFO [ENGINE] New candle: 2026-09-25 16:08:00
+25-Sep-2026 09:40:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:40:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:41:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:41:08 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:41:08 PM IST INFO [ENGINE] New candle: 2026-09-25 16:09:00
+25-Sep-2026 09:41:30 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:41:30 PM IST INFO [ENGINE] New candle: 2026-09-25 16:10:00
+25-Sep-2026 09:42:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:42:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:42:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:42:40 PM IST INFO [ENGINE] New candle: 2026-09-25 16:11:00
+25-Sep-2026 09:43:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:43:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:43:51 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:43:51 PM IST INFO [ENGINE] New candle: 2026-09-25 16:12:00
+25-Sep-2026 09:44:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:44:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:45:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:45:01 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:45:01 PM IST INFO [ENGINE] New candle: 2026-09-25 16:13:00
+25-Sep-2026 09:45:23 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:45:23 PM IST INFO [ENGINE] New candle: 2026-09-25 16:14:00
+25-Sep-2026 09:46:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:46:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:46:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:46:39 PM IST INFO [ENGINE] New candle: 2026-09-25 16:15:00
+25-Sep-2026 09:47:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:47:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:47:11 PM IST INFO [ENGINE] New candle: 2026-09-25 16:16:00
+25-Sep-2026 09:47:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:48:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:48:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:48:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:48:49 PM IST INFO [ENGINE] New candle: 2026-09-25 16:17:00
+25-Sep-2026 09:49:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:49:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:49:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:49:59 PM IST INFO [ENGINE] New candle: 2026-09-25 16:18:00
+25-Sep-2026 09:50:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:50:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:51:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:51:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:51:10 PM IST INFO [ENGINE] New candle: 2026-09-25 16:19:00
+25-Sep-2026 09:51:25 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:51:26 PM IST INFO [ENGINE] New candle: 2026-09-25 16:20:00
+25-Sep-2026 09:52:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:52:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:52:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:52:39 PM IST INFO [ENGINE] New candle: 2026-09-25 16:21:00
+25-Sep-2026 09:53:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:53:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:53:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:53:49 PM IST INFO [ENGINE] New candle: 2026-09-25 16:22:00
+25-Sep-2026 09:54:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:54:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:54:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:54:59 PM IST INFO [ENGINE] New candle: 2026-09-25 16:23:00
+25-Sep-2026 09:55:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:55:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:56:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:56:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:56:10 PM IST INFO [ENGINE] New candle: 2026-09-25 16:24:00
+25-Sep-2026 09:56:27 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:56:28 PM IST INFO [ENGINE] New candle: 2026-09-25 16:25:00
+25-Sep-2026 09:57:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:57:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:57:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:57:40 PM IST INFO [ENGINE] New candle: 2026-09-25 16:26:00
+25-Sep-2026 09:58:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:58:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:58:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:58:49 PM IST INFO [ENGINE] New candle: 2026-09-25 16:27:00
+25-Sep-2026 09:59:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 09:59:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 09:59:10 PM IST INFO [ENGINE] New candle: 2026-09-25 16:28:00
+25-Sep-2026 09:59:50 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:00:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:00:01 PM IST INFO [WS] New 30m candle closed: 2026-09-25 16:00:00 - checking S4V2
+25-Sep-2026 10:00:01 PM IST INFO [S4V2] REST reconcile OK window 2026-09-25 12:00:00..2026-09-25 16:30:00 mismatches=8 critical_covered=True
+25-Sep-2026 10:00:01 PM IST WARNING [S4V2] REST reconcile corrected 8 candle(s) with WS/REST drift in window 2026-09-25 12:00:00..2026-09-25 16:30:00
+25-Sep-2026 10:00:01 PM IST INFO [S4V2] Strategy returned 449 signals | gen_signals_took=0.03s
+25-Sep-2026 10:00:01 PM IST INFO [S4V2] CSV exit updated to 2026-09-25T16:00:00 (matched entry 2026-09-25T15:00:00)
+25-Sep-2026 10:00:01 PM IST INFO [S4V2] EXIT short at 2026-09-25T16:00:00
+25-Sep-2026 10:00:01 PM IST INFO [S4V2] INSTANT CSV append: 2026-09-25T16:00:00,PENDING,long
+25-Sep-2026 10:00:01 PM IST INFO [S4V2] ENTRY long at 2026-09-25T16:00:00
+25-Sep-2026 10:00:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:00:13 PM IST INFO [ENGINE] New candle: 2026-09-25 16:29:00
+25-Sep-2026 10:00:50 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:01:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:01:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:02:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:02:00 PM IST INFO [ENGINE] New candle: 2026-09-25 16:30:00
+25-Sep-2026 10:02:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:02:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:03:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:03:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:03:11 PM IST INFO [ENGINE] New candle: 2026-09-25 16:32:00
+25-Sep-2026 10:03:23 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:04:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:04:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:04:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:04:40 PM IST INFO [ENGINE] New candle: 2026-09-25 16:33:00
+25-Sep-2026 10:05:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:05:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:05:50 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:05:50 PM IST INFO [ENGINE] New candle: 2026-09-25 16:34:00
+25-Sep-2026 10:06:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:06:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:07:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:07:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:07:00 PM IST INFO [ENGINE] New candle: 2026-09-25 16:35:00
+25-Sep-2026 10:07:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:07:10 PM IST INFO [ENGINE] New candle: 2026-09-25 16:36:00
+25-Sep-2026 10:08:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:08:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:08:40 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:08:40 PM IST INFO [ENGINE] New candle: 2026-09-25 16:37:00
+25-Sep-2026 10:09:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:09:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:09:51 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:09:51 PM IST INFO [ENGINE] New candle: 2026-09-25 16:38:00
+25-Sep-2026 10:10:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:10:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:10:11 PM IST INFO [ENGINE] New candle: 2026-09-25 16:39:00
+25-Sep-2026 10:10:51 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:11:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:11:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:12:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:12:01 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:12:01 PM IST INFO [ENGINE] New candle: 2026-09-25 16:40:00
+25-Sep-2026 10:12:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:12:10 PM IST INFO [ENGINE] New candle: 2026-09-25 16:41:00
+25-Sep-2026 10:13:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:13:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:13:41 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:13:41 PM IST INFO [ENGINE] New candle: 2026-09-25 16:42:00
+25-Sep-2026 10:14:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:14:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:14:50 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:14:50 PM IST INFO [ENGINE] New candle: 2026-09-25 16:43:00
+25-Sep-2026 10:15:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:15:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:16:14 PM IST INFO [ENGINE] Renko State Engine starting - TradingView style
+25-Sep-2026 10:16:14 PM IST INFO [ENGINE] Loads history ONCE - only new bricks checked - zero recalculation
+25-Sep-2026 10:16:14 PM IST INFO [ENGINE] Only closed candles - zero repaint - zero false signal
+25-Sep-2026 10:16:14 PM IST INFO [ENGINE] Backtest files untouched - single source of truth
+25-Sep-2026 10:16:14 PM IST INFO [S4] Loading full history...
+25-Sep-2026 10:16:18 PM IST INFO [S4] box_size=46 (matches backtest exactly)
+25-Sep-2026 10:16:18 PM IST INFO [S4] Loaded 1,393,498 candles | last=2026-09-25 16:43:00
+25-Sep-2026 10:16:18 PM IST INFO [S4] Pre-built 2h dataframe: 800 candles
+25-Sep-2026 10:16:18 PM IST INFO [S4V2] Loading full history...
+25-Sep-2026 10:16:26 PM IST INFO [ENGINE] Renko State Engine starting - TradingView style
+25-Sep-2026 10:16:26 PM IST INFO [ENGINE] Loads history ONCE - only new bricks checked - zero recalculation
+25-Sep-2026 10:16:26 PM IST INFO [ENGINE] Only closed candles - zero repaint - zero false signal
+25-Sep-2026 10:16:26 PM IST INFO [ENGINE] Backtest files untouched - single source of truth
+25-Sep-2026 10:16:26 PM IST INFO [S4] Loading full history...
+25-Sep-2026 10:16:33 PM IST INFO [S4] box_size=46 (matches backtest exactly)
+25-Sep-2026 10:16:33 PM IST INFO [S4] Loaded 1,393,498 candles | last=2026-09-25 16:43:00
+25-Sep-2026 10:16:33 PM IST INFO [S4] Pre-built 2h dataframe: 800 candles
+25-Sep-2026 10:16:33 PM IST INFO [S4V2] Loading full history...
+25-Sep-2026 10:16:44 PM IST INFO [S4V2] box_size=46 (matches backtest exactly)
+25-Sep-2026 10:16:44 PM IST INFO [S4V2] Loaded 1,393,498 candles | last=2026-09-25 16:43:00
+25-Sep-2026 10:16:44 PM IST INFO [S4V2] Pre-built 30m dataframe: 800 candles
+25-Sep-2026 10:16:44 PM IST INFO [S4V3] Loading full history...
+25-Sep-2026 10:16:50 PM IST INFO [S4V3] box_size=46 (matches backtest exactly)
+25-Sep-2026 10:16:50 PM IST INFO [S4V3] Loaded 1,393,498 candles | last=2026-09-25 16:43:00
+25-Sep-2026 10:16:50 PM IST INFO [S4V3] Pre-built 4h dataframe: 800 candles
+25-Sep-2026 10:16:50 PM IST INFO [ENGINE] S4 lock from bot ts file: 2026-09-25T10:00:00
+25-Sep-2026 10:16:50 PM IST INFO [ENGINE] S4V2 lock from bot ts file: 2026-09-25T16:00:00
+25-Sep-2026 10:16:50 PM IST INFO [ENGINE] S4V3 lock from bot ts file: 2026-09-25T00:00:00
+25-Sep-2026 10:16:50 PM IST INFO [ENGINE] S4 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-25T10:00:00
+25-Sep-2026 10:16:50 PM IST INFO [ENGINE] S4V2 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-25T16:00:00
+25-Sep-2026 10:16:50 PM IST INFO [ENGINE] S4V3 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-25T00:00:00
+25-Sep-2026 10:16:50 PM IST INFO [ENGINE] S4 startup lock ts: 2026-09-25T10:00:00
+25-Sep-2026 10:16:50 PM IST INFO [ENGINE] S4V2 startup lock ts: 2026-09-25T16:00:00
+25-Sep-2026 10:16:50 PM IST INFO [ENGINE] S4V3 startup lock ts: 2026-09-25T00:00:00
+25-Sep-2026 10:16:50 PM IST INFO [S4] current_direction restored: short
+25-Sep-2026 10:16:50 PM IST INFO [S4] open_entry_ts restored: 2026-09-25T10:00:00
+25-Sep-2026 10:16:50 PM IST INFO [S4V2] current_direction restored: long
+25-Sep-2026 10:16:50 PM IST INFO [S4V2] open_entry_ts restored: 2026-09-25T16:00:00
+25-Sep-2026 10:16:50 PM IST INFO [S4V3] current_direction restored: short
+25-Sep-2026 10:16:50 PM IST INFO [S4V3] open_entry_ts restored: 2026-09-25T00:00:00
+25-Sep-2026 10:16:50 PM IST INFO [ENGINE] WebSocket thread + heartbeat watchdog started
+25-Sep-2026 10:16:51 PM IST INFO [BRICK-DEBUG] S4 live 2h OHLC window at fire-time:
+                        open     high      low    close
+timestamp                                              
+2026-09-04 02:00:00  80943.0  81019.5  80634.0  80816.0
+2026-09-04 04:00:00  80816.0  81271.0  80784.0  80960.5
+2026-09-04 06:00:00  80961.0  81069.5  80546.0  80636.5
+2026-09-04 08:00:00  80635.5  81286.5  80483.0  81026.0
+2026-09-04 10:00:00  81026.0  81386.0  80798.5  81196.0
+2026-09-04 12:00:00  81196.5  81332.5  78956.5  79351.0
+2026-09-04 14:00:00  79350.5  79553.5  78625.5  79392.5
+2026-09-04 16:00:00  79392.5  79847.0  79342.0  79438.0
+25-Sep-2026 10:16:51 PM IST INFO [S4] Strategy returned 565 signals | gen_signals_took=0.06s
+25-Sep-2026 10:16:51 PM IST WARNING [S4] SKIPPED signal ts=2026-09-25T12:00:00 type=EXIT dir=long - state mismatch (current_direction=short)
+25-Sep-2026 10:16:51 PM IST WARNING [S4] SKIPPED signal ts=2026-09-25T12:00:00 type=ENTRY dir=short - state mismatch (current_direction=short)
+25-Sep-2026 10:16:51 PM IST INFO [S4] CSV exit updated to 2026-09-25T16:00:00 (matched entry 2026-09-25T10:00:00)
+25-Sep-2026 10:16:51 PM IST INFO Websocket connected
+25-Sep-2026 10:16:51 PM IST INFO [WS] Connected - instant candle detection active
+25-Sep-2026 10:17:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:17:24 PM IST INFO [S4] EXIT short at 2026-09-25T16:00:00
+25-Sep-2026 10:17:24 PM IST INFO [S4] INSTANT CSV append: 2026-09-25T16:00:00,PENDING,long
+25-Sep-2026 10:17:25 PM IST INFO [S4] ENTRY long at 2026-09-25T16:00:00
+25-Sep-2026 10:17:25 PM IST INFO [S4V2] Strategy returned 450 signals | gen_signals_took=0.23s
+25-Sep-2026 10:17:25 PM IST INFO [S4V2] CSV exit updated to 2026-09-25T16:30:00 (matched entry 2026-09-25T16:00:00)
+25-Sep-2026 10:17:25 PM IST INFO [S4V2] EXIT long at 2026-09-25T16:30:00
+25-Sep-2026 10:17:33 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:17:33 PM IST INFO [ENGINE] New candle: 2026-09-25 16:45:00
+25-Sep-2026 10:18:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:18:29 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:18:45 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:18:45 PM IST INFO [ENGINE] New candle: 2026-09-25 16:46:00
+25-Sep-2026 10:19:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:19:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:19:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:19:00 PM IST INFO [ENGINE] New candle: 2026-09-25 16:47:00
+25-Sep-2026 10:19:53 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:19:53 PM IST INFO [ENGINE] New candle: 2026-09-25 16:48:00
+25-Sep-2026 10:20:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:20:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:21:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:21:06 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:21:06 PM IST INFO [ENGINE] New candle: 2026-09-25 16:49:00
+25-Sep-2026 10:21:16 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:21:16 PM IST INFO [ENGINE] New candle: 2026-09-25 16:50:00
+25-Sep-2026 10:22:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:22:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:22:42 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:22:42 PM IST INFO [ENGINE] New candle: 2026-09-25 16:51:00
+25-Sep-2026 10:23:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:23:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:23:51 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:23:51 PM IST INFO [ENGINE] New candle: 2026-09-25 16:52:00
+25-Sep-2026 10:24:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:24:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:24:09 PM IST INFO [ENGINE] New candle: 2026-09-25 16:53:00
+25-Sep-2026 10:24:51 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:25:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:25:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:26:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:26:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:26:00 PM IST INFO [ENGINE] New candle: 2026-09-25 16:54:00
+25-Sep-2026 10:26:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:26:09 PM IST INFO [ENGINE] New candle: 2026-09-25 16:55:00
+25-Sep-2026 10:27:02 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:27:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:27:11 PM IST INFO [ENGINE] New candle: 2026-09-25 16:56:00
+25-Sep-2026 10:27:18 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:28:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:28:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:28:43 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:28:43 PM IST INFO [ENGINE] New candle: 2026-09-25 16:57:00
+25-Sep-2026 10:29:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:29:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:29:09 PM IST INFO [ENGINE] New candle: 2026-09-25 16:58:00
+25-Sep-2026 10:29:44 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:30:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:30:00 PM IST INFO [WS] New 30m candle closed: 2026-09-25 16:30:00 - checking S4V2
+25-Sep-2026 10:30:00 PM IST INFO [S4V2] REST reconcile OK window 2026-09-25 12:30:00..2026-09-25 17:00:00 mismatches=19 critical_covered=True
+25-Sep-2026 10:30:00 PM IST WARNING [S4V2] REST reconcile corrected 19 candle(s) with WS/REST drift in window 2026-09-25 12:30:00..2026-09-25 17:00:00
+25-Sep-2026 10:30:01 PM IST INFO [S4V2] Strategy returned 451 signals | gen_signals_took=0.03s
+25-Sep-2026 10:30:01 PM IST INFO [S4V2] INSTANT CSV append: 2026-09-25T16:30:00,PENDING,short
+25-Sep-2026 10:30:01 PM IST INFO [S4V2] ENTRY short at 2026-09-25T16:30:00
+25-Sep-2026 10:30:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:30:10 PM IST INFO [ENGINE] New candle: 2026-09-25 16:59:00
+25-Sep-2026 10:30:44 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:31:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:31:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:31:53 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:31:53 PM IST INFO [ENGINE] New candle: 2026-09-25 17:00:00
+25-Sep-2026 10:32:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:32:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:32:09 PM IST INFO [ENGINE] New candle: 2026-09-25 17:01:00
+25-Sep-2026 10:32:53 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:33:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:33:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:34:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:34:03 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:34:03 PM IST INFO [ENGINE] New candle: 2026-09-25 17:02:00
+25-Sep-2026 10:34:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:34:11 PM IST INFO [ENGINE] New candle: 2026-09-25 17:03:00
+25-Sep-2026 10:35:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:35:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:35:46 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:35:46 PM IST INFO [ENGINE] New candle: 2026-09-25 17:04:00
+25-Sep-2026 10:36:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:36:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:36:11 PM IST INFO [ENGINE] New candle: 2026-09-25 17:05:00
+25-Sep-2026 10:36:46 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:37:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:37:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:37:55 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:37:55 PM IST INFO [ENGINE] New candle: 2026-09-25 17:06:00
+25-Sep-2026 10:38:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:38:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:39:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:39:06 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:39:06 PM IST INFO [ENGINE] New candle: 2026-09-25 17:07:00
+25-Sep-2026 10:39:14 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:39:14 PM IST INFO [ENGINE] New candle: 2026-09-25 17:08:00
+25-Sep-2026 10:40:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:40:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:40:44 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:40:44 PM IST INFO [ENGINE] New candle: 2026-09-25 17:09:00
+25-Sep-2026 10:41:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:41:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:42:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:42:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:42:00 PM IST INFO [ENGINE] New candle: 2026-09-25 17:10:00
+25-Sep-2026 10:42:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:42:10 PM IST INFO [ENGINE] New candle: 2026-09-25 17:11:00
+25-Sep-2026 10:43:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:43:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:43:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:43:39 PM IST INFO [ENGINE] New candle: 2026-09-25 17:12:00
+25-Sep-2026 10:44:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:44:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:44:48 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:44:48 PM IST INFO [ENGINE] New candle: 2026-09-25 17:13:00
+25-Sep-2026 10:44:58 PM IST WARNING [WS] Heartbeat timeout (18s) - forcing reconnect
+25-Sep-2026 10:45:02 PM IST WARNING [WS] Closed - polling fallback active
+25-Sep-2026 10:45:02 PM IST WARNING [WS] Reconnecting in 5s...
+25-Sep-2026 10:45:08 PM IST INFO Websocket connected
+25-Sep-2026 10:45:08 PM IST INFO [WS] Connected - instant candle detection active
+25-Sep-2026 10:45:08 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:45:18 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:45:18 PM IST INFO [ENGINE] New candle: 2026-09-25 17:14:00
+25-Sep-2026 10:45:25 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:45:48 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:46:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:46:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:47:11 PM IST WARNING [WS] Heartbeat timeout (16s) - forcing reconnect
+25-Sep-2026 10:47:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:47:12 PM IST INFO [ENGINE] New candle: 2026-09-25 17:15:00
+25-Sep-2026 10:47:15 PM IST WARNING [WS] Closed - polling fallback active
+25-Sep-2026 10:47:15 PM IST WARNING [WS] Reconnecting in 5s...
+25-Sep-2026 10:47:20 PM IST INFO Websocket connected
+25-Sep-2026 10:47:20 PM IST INFO [WS] Connected - instant candle detection active
+25-Sep-2026 10:47:21 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:47:31 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:47:32 PM IST INFO [ENGINE] New candle: 2026-09-25 17:16:00
+25-Sep-2026 10:47:41 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:48:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:48:19 PM IST INFO [ENGINE] New candle: 2026-09-25 17:17:00
+25-Sep-2026 10:48:19 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:48:31 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:49:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:49:10 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:49:10 PM IST INFO [ENGINE] New candle: 2026-09-25 17:18:00
+25-Sep-2026 10:49:31 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:50:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:50:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:50:42 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:50:42 PM IST INFO [ENGINE] New candle: 2026-09-25 17:19:00
+25-Sep-2026 10:51:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:51:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:51:53 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:51:53 PM IST INFO [ENGINE] New candle: 2026-09-25 17:20:00
+25-Sep-2026 10:52:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:52:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:53:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:53:03 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:53:03 PM IST INFO [ENGINE] New candle: 2026-09-25 17:21:00
+25-Sep-2026 10:53:11 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:53:11 PM IST INFO [ENGINE] New candle: 2026-09-25 17:22:00
+25-Sep-2026 10:54:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:54:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:54:10 PM IST INFO [ENGINE] New candle: 2026-09-25 17:23:00
+25-Sep-2026 10:54:31 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:55:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:55:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:55:47 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:55:47 PM IST INFO [ENGINE] New candle: 2026-09-25 17:24:00
+25-Sep-2026 10:56:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:56:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:57:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:57:01 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:57:01 PM IST INFO [ENGINE] New candle: 2026-09-25 17:25:00
+25-Sep-2026 10:57:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:57:10 PM IST INFO [ENGINE] New candle: 2026-09-25 17:26:00
+25-Sep-2026 10:58:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 10:58:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:58:47 PM IST INFO [ENGINE] Renko State Engine starting - TradingView style
+25-Sep-2026 10:58:47 PM IST INFO [ENGINE] Loads history ONCE - only new bricks checked - zero recalculation
+25-Sep-2026 10:58:47 PM IST INFO [ENGINE] Only closed candles - zero repaint - zero false signal
+25-Sep-2026 10:58:47 PM IST INFO [ENGINE] Backtest files untouched - single source of truth
+25-Sep-2026 10:59:02 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 10:59:02 PM IST INFO [S4] Loading full history...
+25-Sep-2026 10:59:08 PM IST INFO [S4] box_size=46 (matches backtest exactly)
+25-Sep-2026 10:59:08 PM IST INFO [S4] Loaded 1,393,542 candles | last=2026-09-25 17:27:00
+25-Sep-2026 10:59:09 PM IST INFO [S4] Pre-built 2h dataframe: 800 candles
+25-Sep-2026 10:59:09 PM IST INFO [S4V2] Loading full history...
+25-Sep-2026 10:59:13 PM IST INFO [S4V2] box_size=46 (matches backtest exactly)
+25-Sep-2026 10:59:13 PM IST INFO [S4V2] Loaded 1,393,542 candles | last=2026-09-25 17:27:00
+25-Sep-2026 10:59:13 PM IST INFO [S4V2] Pre-built 30m dataframe: 800 candles
+25-Sep-2026 10:59:13 PM IST INFO [S4V3] Loading full history...
+25-Sep-2026 10:59:19 PM IST INFO [S4V3] box_size=46 (matches backtest exactly)
+25-Sep-2026 10:59:19 PM IST INFO [S4V3] Loaded 1,393,542 candles | last=2026-09-25 17:27:00
+25-Sep-2026 10:59:19 PM IST INFO [S4V3] Pre-built 4h dataframe: 800 candles
+25-Sep-2026 10:59:19 PM IST INFO [ENGINE] S4 lock from bot ts file: 2026-09-25T16:00:00
+25-Sep-2026 10:59:19 PM IST INFO [ENGINE] S4V2 lock from bot ts file: 2026-09-25T16:30:00
+25-Sep-2026 10:59:19 PM IST INFO [ENGINE] S4V3 lock from bot ts file: 2026-09-25T00:00:00
+25-Sep-2026 10:59:19 PM IST INFO [ENGINE] S4 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-25T16:00:00
+25-Sep-2026 10:59:19 PM IST INFO [ENGINE] S4V2 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-25T16:30:00
+25-Sep-2026 10:59:19 PM IST INFO [ENGINE] S4V3 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-25T00:00:00
+25-Sep-2026 10:59:19 PM IST INFO [ENGINE] S4 startup lock ts: 2026-09-25T16:00:00
+25-Sep-2026 10:59:19 PM IST INFO [ENGINE] S4V2 startup lock ts: 2026-09-25T16:30:00
+25-Sep-2026 10:59:19 PM IST INFO [ENGINE] S4V3 startup lock ts: 2026-09-25T00:00:00
+25-Sep-2026 10:59:19 PM IST INFO [S4] current_direction restored: long
+25-Sep-2026 10:59:19 PM IST INFO [S4] open_entry_ts restored: 2026-09-25T16:00:00
+25-Sep-2026 10:59:19 PM IST INFO [S4V2] current_direction restored: short
+25-Sep-2026 10:59:19 PM IST INFO [S4V2] open_entry_ts restored: 2026-09-25T16:30:00
+25-Sep-2026 10:59:19 PM IST INFO [S4V3] current_direction restored: short
+25-Sep-2026 10:59:19 PM IST INFO [S4V3] open_entry_ts restored: 2026-09-25T00:00:00
+25-Sep-2026 10:59:19 PM IST INFO [ENGINE] WebSocket thread + heartbeat watchdog started
+25-Sep-2026 10:59:19 PM IST INFO [BRICK-DEBUG] S4 live 2h OHLC window at fire-time:
+                        open     high      low    close
+timestamp                                              
+2026-09-04 02:00:00  80943.0  81019.5  80634.0  80816.0
+2026-09-04 04:00:00  80816.0  81271.0  80784.0  80960.5
+2026-09-04 06:00:00  80961.0  81069.5  80546.0  80636.5
+2026-09-04 08:00:00  80635.5  81286.5  80483.0  81026.0
+2026-09-04 10:00:00  81026.0  81386.0  80798.5  81196.0
+2026-09-04 12:00:00  81196.5  81332.5  78956.5  79351.0
+2026-09-04 14:00:00  79350.5  79553.5  78625.5  79392.5
+2026-09-04 16:00:00  79392.5  79847.0  79342.0  79438.0
+25-Sep-2026 10:59:20 PM IST INFO [S4] Strategy returned 563 signals | gen_signals_took=0.14s
+25-Sep-2026 10:59:20 PM IST INFO [S4V2] Strategy returned 453 signals | gen_signals_took=0.04s
+25-Sep-2026 10:59:20 PM IST INFO [S4V2] CSV exit updated to 2026-09-25T17:00:00 (matched entry 2026-09-25T16:30:00)
+25-Sep-2026 10:59:20 PM IST INFO Websocket connected
+25-Sep-2026 10:59:20 PM IST INFO [WS] Connected - instant candle detection active
+25-Sep-2026 10:59:52 PM IST INFO [S4V2] EXIT short at 2026-09-25T17:00:00
+25-Sep-2026 10:59:53 PM IST INFO [S4V2] INSTANT CSV append: 2026-09-25T17:00:00,PENDING,long
+25-Sep-2026 11:00:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:00:01 PM IST INFO [WS] New 30m candle closed: 2026-09-25 17:00:00 - checking S4V2
+25-Sep-2026 11:00:02 PM IST INFO [S4V2] REST reconcile OK window 2026-09-25 13:00:00..2026-09-25 17:30:00 mismatches=16 critical_covered=True
+25-Sep-2026 11:00:02 PM IST WARNING [S4V2] REST reconcile corrected 16 candle(s) with WS/REST drift in window 2026-09-25 13:00:00..2026-09-25 17:30:00
+25-Sep-2026 11:00:05 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:00:15 PM IST WARNING [WS] Heartbeat timeout (18s) - forcing reconnect
+25-Sep-2026 11:00:30 PM IST WARNING [WS] Heartbeat timeout (15s) - forcing reconnect
+25-Sep-2026 11:00:43 PM IST INFO [S4V2] ENTRY long at 2026-09-25T17:00:00
+25-Sep-2026 11:00:44 PM IST INFO [S4V2] Strategy returned 451 signals | gen_signals_took=0.70s
+25-Sep-2026 11:00:44 PM IST WARNING [WS] Closed - polling fallback active
+25-Sep-2026 11:00:44 PM IST WARNING [WS] Reconnecting in 5s...
+25-Sep-2026 11:00:45 PM IST WARNING [WS] Heartbeat timeout (15s) - forcing reconnect
+25-Sep-2026 11:00:50 PM IST INFO Websocket connected
+25-Sep-2026 11:00:50 PM IST INFO [WS] Connected - instant candle detection active
+25-Sep-2026 11:01:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:01:37 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:01:37 PM IST INFO [ENGINE] New candle: 2026-09-25 17:29:00
+25-Sep-2026 11:02:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:02:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:02:28 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:02:54 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:03:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:03:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:03:27 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:03:27 PM IST INFO [ENGINE] New candle: 2026-09-25 17:31:00
+25-Sep-2026 11:03:43 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:03:43 PM IST INFO [ENGINE] New candle: 2026-09-25 17:32:00
+25-Sep-2026 11:04:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:04:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:04:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:04:39 PM IST INFO [ENGINE] New candle: 2026-09-25 17:33:00
+25-Sep-2026 11:05:57 PM IST INFO [ENGINE] Renko State Engine starting - TradingView style
+25-Sep-2026 11:05:57 PM IST INFO [ENGINE] Loads history ONCE - only new bricks checked - zero recalculation
+25-Sep-2026 11:05:57 PM IST INFO [ENGINE] Only closed candles - zero repaint - zero false signal
+25-Sep-2026 11:05:57 PM IST INFO [ENGINE] Backtest files untouched - single source of truth
+25-Sep-2026 11:06:09 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:06:09 PM IST INFO [S4] Loading full history...
+25-Sep-2026 11:06:14 PM IST INFO [S4] box_size=46 (matches backtest exactly)
+25-Sep-2026 11:06:14 PM IST INFO [S4] Loaded 1,393,549 candles | last=2026-09-25 17:34:00
+25-Sep-2026 11:06:15 PM IST INFO [S4] Pre-built 2h dataframe: 800 candles
+25-Sep-2026 11:06:15 PM IST INFO [S4V2] Loading full history...
+25-Sep-2026 11:06:20 PM IST INFO [S4V2] box_size=46 (matches backtest exactly)
+25-Sep-2026 11:06:20 PM IST INFO [S4V2] Loaded 1,393,549 candles | last=2026-09-25 17:34:00
+25-Sep-2026 11:06:20 PM IST INFO [S4V2] Pre-built 30m dataframe: 800 candles
+25-Sep-2026 11:06:20 PM IST INFO [S4V3] Loading full history...
+25-Sep-2026 11:06:29 PM IST INFO [S4V3] box_size=46 (matches backtest exactly)
+25-Sep-2026 11:06:29 PM IST INFO [S4V3] Loaded 1,393,549 candles | last=2026-09-25 17:34:00
+25-Sep-2026 11:06:29 PM IST INFO [S4V3] Pre-built 4h dataframe: 800 candles
+25-Sep-2026 11:06:29 PM IST INFO [ENGINE] S4 lock from bot ts file: 2026-09-25T16:00:00
+25-Sep-2026 11:06:29 PM IST INFO [ENGINE] S4V2 lock from bot ts file: 2026-09-25T17:00:00
+25-Sep-2026 11:06:29 PM IST INFO [ENGINE] S4V3 lock from bot ts file: 2026-09-25T00:00:00
+25-Sep-2026 11:06:29 PM IST INFO [ENGINE] S4 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-25T16:00:00
+25-Sep-2026 11:06:29 PM IST INFO [ENGINE] S4V2 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-25T17:00:00
+25-Sep-2026 11:06:29 PM IST INFO [ENGINE] S4V3 open PENDING position detected - lock NOT advanced past ts_file: 2026-09-25T00:00:00
+25-Sep-2026 11:06:29 PM IST INFO [ENGINE] S4 startup lock ts: 2026-09-25T16:00:00
+25-Sep-2026 11:06:29 PM IST INFO [ENGINE] S4V2 startup lock ts: 2026-09-25T17:00:00
+25-Sep-2026 11:06:29 PM IST INFO [ENGINE] S4V3 startup lock ts: 2026-09-25T00:00:00
+25-Sep-2026 11:06:29 PM IST INFO [S4] current_direction restored: long
+25-Sep-2026 11:06:29 PM IST INFO [S4] open_entry_ts restored: 2026-09-25T16:00:00
+25-Sep-2026 11:06:29 PM IST INFO [S4V2] current_direction restored: long
+25-Sep-2026 11:06:29 PM IST INFO [S4V2] open_entry_ts restored: 2026-09-25T17:00:00
+25-Sep-2026 11:06:29 PM IST INFO [S4V3] current_direction restored: short
+25-Sep-2026 11:06:29 PM IST INFO [S4V3] open_entry_ts restored: 2026-09-25T00:00:00
+25-Sep-2026 11:06:29 PM IST INFO [ENGINE] WebSocket thread + heartbeat watchdog started
+25-Sep-2026 11:06:29 PM IST INFO [BRICK-DEBUG] S4 live 2h OHLC window at fire-time:
+                        open     high      low    close
+timestamp                                              
+2026-09-04 02:00:00  80943.0  81019.5  80634.0  80816.0
+2026-09-04 04:00:00  80816.0  81271.0  80784.0  80960.5
+2026-09-04 06:00:00  80961.0  81069.5  80546.0  80636.5
+2026-09-04 08:00:00  80635.5  81286.5  80483.0  81026.0
+2026-09-04 10:00:00  81026.0  81386.0  80798.5  81196.0
+2026-09-04 12:00:00  81196.5  81332.5  78956.5  79351.0
+2026-09-04 14:00:00  79350.5  79553.5  78625.5  79392.5
+2026-09-04 16:00:00  79392.5  79847.0  79342.0  79438.0
+25-Sep-2026 11:06:29 PM IST INFO [S4] Strategy returned 563 signals | gen_signals_took=0.40s
+25-Sep-2026 11:06:29 PM IST INFO [S4V2] Strategy returned 451 signals | gen_signals_took=0.07s
+25-Sep-2026 11:06:30 PM IST INFO Websocket connected
+25-Sep-2026 11:06:30 PM IST INFO [WS] Connected - instant candle detection active
+25-Sep-2026 11:06:49 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:06:49 PM IST INFO [ENGINE] New candle: 2026-09-25 17:35:00
+25-Sep-2026 11:06:49 PM IST INFO [S4] +1 candles | last=2026-09-25 17:35:00
+25-Sep-2026 11:06:49 PM IST INFO [S4V2] +1 candles | last=2026-09-25 17:35:00
+25-Sep-2026 11:06:50 PM IST INFO [S4V3] +1 candles | last=2026-09-25 17:35:00
+25-Sep-2026 11:07:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:07:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:07:50 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:07:50 PM IST INFO [ENGINE] New candle: 2026-09-25 17:36:00
+25-Sep-2026 11:08:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:08:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:08:59 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:08:59 PM IST INFO [ENGINE] New candle: 2026-09-25 17:37:00
+25-Sep-2026 11:09:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:09:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:10:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:10:08 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:10:08 PM IST INFO [ENGINE] New candle: 2026-09-25 17:38:00
+25-Sep-2026 11:10:15 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:10:16 PM IST INFO [ENGINE] New candle: 2026-09-25 17:39:00
+25-Sep-2026 11:11:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:11:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:11:42 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:11:42 PM IST INFO [ENGINE] New candle: 2026-09-25 17:40:00
+25-Sep-2026 11:12:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:12:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:12:56 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:12:56 PM IST INFO [ENGINE] New candle: 2026-09-25 17:41:00
+25-Sep-2026 11:13:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:13:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:14:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:14:12 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:14:12 PM IST INFO [ENGINE] New candle: 2026-09-25 17:42:00
+25-Sep-2026 11:14:19 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:14:19 PM IST INFO [ENGINE] New candle: 2026-09-25 17:43:00
+25-Sep-2026 11:15:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:15:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:15:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:15:39 PM IST INFO [ENGINE] New candle: 2026-09-25 17:44:00
+25-Sep-2026 11:16:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:16:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:16:47 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:16:47 PM IST INFO [ENGINE] New candle: 2026-09-25 17:45:00
+25-Sep-2026 11:17:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:17:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:17:57 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:17:57 PM IST INFO [ENGINE] New candle: 2026-09-25 17:46:00
+25-Sep-2026 11:18:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:18:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:19:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:19:13 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:19:13 PM IST INFO [ENGINE] New candle: 2026-09-25 17:47:00
+25-Sep-2026 11:19:25 PM IST INFO [ENGINE] New candle: 2026-09-25 17:48:00
+25-Sep-2026 11:19:25 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:20:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:20:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:20:39 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:20:39 PM IST INFO [ENGINE] New candle: 2026-09-25 17:49:00
+25-Sep-2026 11:21:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:21:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:21:47 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:21:47 PM IST INFO [ENGINE] New candle: 2026-09-25 17:50:00
+25-Sep-2026 11:22:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:22:00 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:22:56 PM IST INFO [ENGINE] Market data updated
+25-Sep-2026 11:22:56 PM IST INFO [ENGINE] New candle: 2026-09-25 17:51:00
+25-Sep-2026 11:23:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+25-Sep-2026 11:23:00 PM IST INFO [ENGINE] Market data updated
