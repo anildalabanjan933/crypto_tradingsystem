@@ -620,6 +620,7 @@ if __name__=="__main__":
     s4=StrategyState("S4",S4_PARAMS)
     s4v2=StrategyState("S4V2",S4V2_PARAMS)
     s4v3=StrategyState("S4V3",S4V3_PARAMS)
+    update_market_data()
     load_history(s4)
     load_history(s4v2)
     load_history(s4v3)
