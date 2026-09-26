@@ -6,6 +6,13 @@ Places orders when current UTC time matches signal entry/exit time.
 Zero Renko recalculation. 100% match with backtest guaranteed.
 """
 import os
+try:
+    import subprocess as _sp_ver
+    _commit = _sp_ver.check_output(["git","log","-1","--format=%H","--","scripts/signal_replay_s4v3.py"], cwd="/home/anildalabanjan7/crypto_tradingsystem").decode().strip()
+    with open(f"logs/running_commit_signal_replay_s4v3.txt","w") as _f_ver:
+        _f_ver.write(_commit)
+except Exception:
+    pass
 import time, sys, time, csv, logging, re
 from datetime import datetime, timezone
 sys.path.insert(0, ".")
