@@ -94,11 +94,31 @@ check_heartbeat_stale() {
     fi
 }
 
+check_version_drift() {
+    local name=$1
+    local script=$2
+    local DISK_C=$(git -C "$REPO" log -1 --format=%H -- "$script" 2>/dev/null)
+    local RUN_FILE="$REPO/logs/running_commit_$(basename $script .py).txt"
+    if [ -f "$RUN_FILE" ]; then
+        local RUN_C=$(cat "$RUN_FILE" 2>/dev/null)
+        if [ -n "$RUN_C" ] && [ "$RUN_C" != "$DISK_C" ]; then
+            echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] VERSION DRIFT: $name running=$RUN_C disk=$DISK_C - restarting" >> logs/maintenance.log
+            for _pid in $(/usr/bin/screen -list 2>/dev/null | grep -E "[0-9]+\.${name}[[:space:]]" | awk '{print $1}' | cut -d. -f1); do
+                /usr/bin/screen -S "${_pid}.${name}" -X quit 2>/dev/null
+            done
+            sleep 1
+        fi
+    fi
+}
+
+check_version_drift live_s4v2 scripts/signal_replay_s4v2.py
 check_heartbeat_stale live_s4v2 logs/heartbeat_s4v2.txt 300
 check_and_start live_s4v2 scripts/signal_replay_s4v2.py logs/live_trading_s4v2.log
+check_version_drift live_s4v3 scripts/signal_replay_s4v3.py
 check_heartbeat_stale live_s4v3 logs/heartbeat_s4v3.txt 300
 check_and_start live_s4v3 scripts/signal_replay_s4v3.py logs/live_trading_s4v3.log
 check_and_start band_tier_watch "python3 scripts/band_tier_watch.py"
+check_version_drift live_s4 scripts/signal_replay_s4.py
 check_heartbeat_stale live_s4 logs/heartbeat_s4.txt 300
 check_and_start live_s4 scripts/signal_replay_s4.py logs/live_trading_s4.log
 # DISABLED (24-Aug-2026, replaced by testmember1_s4, shared account rule): check_and_start testmember1_s4v2 scripts/signal_replay_testmember1_s4v2.py logs/live_trading_testmember1_s4v2.log
