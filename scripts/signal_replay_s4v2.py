@@ -551,13 +551,23 @@ while True:
                 if _et < last_known_ts:
                     # Even if entry is behind last_known_ts, advance if exit also passed and no position
                     if position is None and now >= _xt and _xt > last_known_ts:
-                        log.info(f"[SKIP] Expired signal entry={_et} exit={_xt} | advancing last_known_ts")
+                        log.critical(f"[SKIP] Expired signal entry={_et} exit={_xt} | advancing last_known_ts")
+                        try:
+                            from engine.telegram_alert import send_alert
+                            send_alert(f"CTS S4V2 MISSED TRADE - signal entry={_et} exit={_xt} expired before execution, skipped")
+                        except Exception:
+                            pass
                         save_ts_file(TS_FILE, _xt)
                         last_known_ts = safe_ts(_xt)
                     continue
                 # Expired signal: exit already passed and no position - skip and advance
                 if position is None and now >= _xt:
-                    log.info(f"[SKIP] Expired signal entry={_et} exit={_xt} | advancing last_known_ts")
+                    log.critical(f"[SKIP] Expired signal entry={_et} exit={_xt} | advancing last_known_ts")
+                    try:
+                        from engine.telegram_alert import send_alert
+                        send_alert(f"CTS S4V2 MISSED TRADE - signal entry={_et} exit={_xt} expired before execution, skipped")
+                    except Exception:
+                        pass
                     save_ts_file(TS_FILE, _xt)
                     last_known_ts = safe_ts(_xt)
                     continue
@@ -582,7 +592,12 @@ while True:
 
             # --- Skip expired signal (exit already passed, no position) ---
             if position is None and now >= _xt:
-                log.info(f"[SKIP] Expired signal | entry={sig_ts} exit={_xt} | advancing last_known_ts")
+                log.critical(f"[SKIP] Expired signal | entry={sig_ts} exit={_xt} | advancing last_known_ts")
+                try:
+                    from engine.telegram_alert import send_alert
+                    send_alert(f"CTS S4V2 MISSED TRADE - signal entry={sig_ts} exit={_xt} expired before execution, skipped")
+                except Exception:
+                    pass
                 save_ts_file(TS_FILE, _xt)
                 last_known_ts = safe_ts(_xt)
                 if _live_sig: last_processed_seq = _live_sig.get("seq", 0)
