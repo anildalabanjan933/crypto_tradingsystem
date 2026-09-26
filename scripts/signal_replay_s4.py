@@ -523,6 +523,11 @@ _entry_retry_state = {"ts": None, "count": 0, "last_attempt": 0}
 _ENTRY_MAX_ATTEMPTS = 5
 _ENTRY_RETRY_COOLDOWN_SEC = 5
 
+
+# --- Signal CSV mtime cache (perf fix, no logic change) ---
+_repl_sig_cache = None
+_repl_sig_cache_mtime = None
+
 while True:
     try:
         open('logs/heartbeat_s4.txt','w').write(str(__import__('time').time()))
@@ -532,8 +537,17 @@ while True:
         now = now_utc_str()
 
         # --- CSV Signal Matching (single source of truth, CSV-only) ---
-        # Reload signals every loop iteration - CSV write is instant (0.05s)
-        signals = load_signals()
+        # Reload signals only if file changed (perf fix, same freshness guarantee)
+        try:
+            _cur_mtime = os.path.getmtime(SIGNAL_CSV)
+        except Exception:
+            _cur_mtime = None
+        if _cur_mtime != _repl_sig_cache_mtime:
+            signals = load_signals()
+            _repl_sig_cache = signals
+            _repl_sig_cache_mtime = _cur_mtime
+        else:
+            signals = _repl_sig_cache
 
         # --- Fast live_signal path removed - CSV-only single source of truth ---
         _live_sig = None
