@@ -1,0 +1,1222 @@
+REAL DELTA FILLS-BASED REPORT: 2026-08-21 to 2026-09-26 (UTC)
+
+=== DATE: 2026-08-21 ===
+
+S4 | BT trades: 7 | LIVE trades: 5
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 04:00/74939 vs 03:00/74412.45 | 06:00/74617 vs 06:00/79000.0 | -3576s | 7s | $-490.96 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 06:00/74617 vs 06:10/75546.65 | 12:00/77745 vs 12:00/76788.0 | 638s | 5s | $-188.66 | ENTRY_DELAY,SLIPPAGE |
+| short | 12:00/77745 vs 12:00/76776.0 | 14:00/76871 vs 14:00/77253.0 | 11s | 6s | $-135.1 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 14:00/76871 vs 14:00/77206.0 | 20:00/77239 vs 20:00/76988.0 | 12s | 7s | $-58.6 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 20:00/77239 vs 20:00/76899.0 | 22:00/77101 vs 21:30/78217.64 | 14s | -1777s | $-145.66 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 22:00/77147 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 00:00/78389 vs 00:00/78297.0 | 04:00/77975 vs 03:00/78420.0 | 8s | -3557s | $-53.7 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+
+S4V2 | BT trades: 19 | LIVE trades: 25
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 00:30/73191 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 02:30/74939 vs 02:30/75000.0 | 03:30/74571 vs 03:30/78000.0 | 9s | 6s | $-336.8 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 03:30/74617 vs 03:30/74625.55 | 04:00/74479 vs 04:00/74537.0 | 22s | 4s | $4.94 | ENTRY_DELAY |
+| short | 04:00/74479 vs 04:00/74572.0 | 04:30/74617 vs 04:30/80000.0 | 8s | 5s | $-529.0 | ENTRY_DELAY,SLIPPAGE |
+| long | 04:30/74617 vs 04:44/75180.0 | 09:30/79125 vs 09:30/77710.0 | 868s | 4s | $-197.8 | ENTRY_DELAY,SLIPPAGE |
+| short | 09:30/79125 vs 09:30/77692.0 | 10:00/77837 vs 09:44/78320.0 | 9s | -952s | $-191.6 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 10:00/77837 vs 10:00/77946.08 | 11:00/77791 vs 11:00/77826.0 | 10s | 6s | $-7.41 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 11:30/77607 vs 11:30/77440.0 | 13:00/76871 vs 13:00/77267.0 | 5s | 5s | $-56.3 | SLIPPAGE |
+| long | 13:00/76871 vs 13:00/77211.0 | 13:30/77101 vs 13:30/76930.5 | 10s | 6s | $-51.05 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 14:00/77239 vs 14:00/77239.92 | 14:30/77147 vs 14:19/76573.0 | 4s | -642s | $-57.49 | EXIT_DELAY,SLIPPAGE |
+| short | 14:30/77101 vs 14:30/77089.0 | 15:00/77193 vs 15:00/77378.0 | 17s | 10s | $-19.7 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 15:00/77193 vs 15:00/77385.0 | 16:00/77469 vs 16:00/77255.0 | 15s | 10s | $-40.6 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 16:00/77469 vs 16:00/77229.0 | 16:30/77331 vs 16:30/77345.0 | 14s | 25s | $-25.4 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 16:30/77423 vs 16:30/77360.0 | 18:00/77377 vs 18:00/77398.0 | 30s | 10s | $8.4 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 18:00/77377 vs 18:00/77376.0 | 19:30/77285 vs 19:30/77302.0 | 15s | 6s | $-1.8 | ENTRY_DELAY,EXIT_DELAY |
+| long | 19:30/77331 vs 19:30/77327.0 | 20:00/77193 vs 20:00/76970.0 | 11s | 8s | $-21.9 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 20:00/77193 vs 20:00/76894.0 | 20:30/77101 vs 20:24/77509.39 | 12s | -337s | $-70.74 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 20:30/77101 vs 20:30/77478.42 | 00:00/78343 vs 00:00/78310.0 | 11s | 11s | $-41.04 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 00:00/78343 vs 00:00/78293.0 | 02:30/77975 vs 02:30/78374.0 | 16s | 7s | $-44.9 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | NO_BT_SIGNAL vs 00:00/73519.1 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 00:05/73519.1 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 00:10/73775.51 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 00:15/73626.6 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 00:55/73824.47 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 09:45/78265.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 14:20/76642.36 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 20:25/77486.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+=== DATE: 2026-08-22 ===
+
+S4 | BT trades: 7 | LIVE trades: 6
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 04:00/77975 vs 03:00/78426.0 | 06:00/78297 vs 05:10/77112.0 | -3551s | -2950s | $-163.6 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 06:00/78297 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 14:00/77193 vs 12:00/77146.0 | 16:00/77193 vs 16:00/77025.0 | -7192s | 33s | $-12.1 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 16:00/77101 vs 16:00/77005.0 | 18:00/77101 vs 18:00/77299.98 | 40s | 14s | $-29.5 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 18:00/77101 vs 18:00/77298.98 | 22:00/77285 vs 22:00/76953.0 | 21s | 11s | $-53.0 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 22:00/77285 vs 22:00/76932.0 | 00:00/76963 vs 00:00/77116.28 | 18s | 11s | $-50.63 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 00:00/76963 vs 00:00/77135.28 | 04:00/77055 vs 03:00/77104.0 | 18s | -3559s | $-12.33 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+
+S4V2 | BT trades: 15 | LIVE trades: 15
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 02:30/78021 vs 02:30/78401.0 | 04:00/78573 vs 04:00/78413.7 | 13s | 4s | $-53.93 | ENTRY_DELAY,SLIPPAGE |
+| short | 04:00/78573 vs 04:00/78426.0 | 04:30/78527 vs 04:30/78569.0 | 8s | 8s | $-18.9 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 04:30/78619 vs 04:30/78590.33 | 05:00/78481 vs 05:00/78455.0 | 13s | 5s | $0.27 | ENTRY_DELAY |
+| short | 05:00/78481 vs 05:00/78468.0 | 07:00/77423 vs 07:00/77485.0 | 11s | 5s | $-7.5 | ENTRY_DELAY,SLIPPAGE |
+| long | 07:00/77423 vs 07:00/77500.0 | 08:00/77377 vs 08:00/77285.46 | 10s | 8s | $-16.85 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 10:00/77193 vs 10:00/77060.0 | 12:00/77101 vs 12:00/77136.0 | 11s | 12s | $-16.8 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 12:00/77101 vs 12:00/77125.0 | 13:30/77193 vs 13:30/77195.0 | 17s | 7s | $-2.2 | ENTRY_DELAY,EXIT_DELAY |
+| long | 14:00/77285 vs 14:00/77300.53 | 14:30/77193 vs 14:30/77121.0 | 9s | 10s | $-8.75 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 14:30/77147 vs 14:30/77137.0 | 16:30/77147 vs 16:30/77219.27 | 16s | 4s | $-8.23 | ENTRY_DELAY,SLIPPAGE |
+| long | 16:30/77147 vs 16:30/77216.0 | 17:30/77147 vs 17:30/77133.0 | 10s | 8s | $-8.3 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 17:30/77101 vs 17:30/77150.0 | 18:00/77239 vs 18:00/77299.98 | 13s | 8s | $-1.2 | ENTRY_DELAY,EXIT_DELAY |
+| long | 18:00/77239 vs 18:00/77299.98 | 20:30/77285 vs 20:30/77317.0 | 13s | 6s | $-2.9 | ENTRY_DELAY,EXIT_DELAY |
+| short | 21:30/77239 vs 21:30/77212.0 | 22:30/77009 vs 22:30/77056.0 | 26s | 10s | $-7.4 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 22:30/77055 vs 22:30/77067.52 | 23:00/76963 vs 23:00/77029.0 | 14s | 10s | $5.35 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 00:00/77101 vs 00:00/77116.28 | 02:30/77147 vs 02:30/77135.0 | 15s | 4s | $-2.73 | ENTRY_DELAY |
+
+=== DATE: 2026-08-23 ===
+
+S4 | BT trades: 4 | LIVE trades: 5
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 04:00/77009 vs 04:00/76948.0 | 10:00/76181 vs 10:00/76551.0 | 22s | 5s | $-43.1 | ENTRY_DELAY,SLIPPAGE |
+| long | 10:00/76181 vs 10:00/76551.69 | 16:00/77331 vs 16:00/77152.0 | 11s | 10s | $-54.97 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 16:00/77331 vs 16:00/77180.0 | 20:00/77239 vs 18:24/77295.0 | 18s | -5702s | $-20.7 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 20:00/77285 vs 18:26/77338.0 | 02:00/77653 vs 02:00/76941.0 | -5623s | 7s | $-76.5 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+
+S4V2 | BT trades: 12 | LIVE trades: 35
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 02:30/77101 vs 02:30/77135.0 | 06:30/76227 vs 06:30/76246.0 | 10s | 5s | $1.5 | ENTRY_DELAY |
+| long | 06:30/76227 vs 06:30/76270.0 | 07:00/76135 vs 07:00/76121.0 | 9s | 8s | $-5.7 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 07:30/76227 vs 07:30/76231.0 | 08:00/76135 vs 08:00/76018.84 | 5s | 5s | $-12.02 | SLIPPAGE |
+| short | 08:00/75997 vs 08:00/76005.52 | 08:30/76135 vs 08:30/76266.0 | 10s | 4s | $-12.25 | ENTRY_DELAY,SLIPPAGE |
+| long | 08:30/76135 vs 08:30/76266.0 | 12:30/77147 vs 12:30/77054.0 | 11s | 4s | $-22.4 | ENTRY_DELAY,SLIPPAGE |
+| short | 12:30/77147 vs 12:30/77058.0 | 13:00/77147 vs 13:00/77212.0 | 8s | 8s | $-15.4 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 13:30/77285 vs 13:34/77395.11 | 15:00/77331 vs 15:00/77179.0 | 271s | 14s | $-26.21 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 15:00/77331 vs 15:00/77129.0 | 16:30/77285 vs 16:30/77309.0 | 19s | 6s | $-22.6 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 17:00/77377 vs 17:00/77403.0 | 17:30/77239 vs 17:32/77145.0 | 11s | 135s | $-12.0 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 17:30/77239 vs 17:32/77145.0 | 18:30/77331 vs 18:26/77338.0 | 140s | -202s | $-10.1 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 21:00/77377 vs 21:00/77406.81 | 22:00/77837 vs 22:00/77886.0 | 30s | 9s | $1.92 | ENTRY_DELAY,EXIT_DELAY |
+| short | 22:00/77837 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | NO_BT_SIGNAL vs 22:00/77812.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 22:05/77697.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 22:10/77687.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 22:15/77660.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 22:20/77699.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 22:25/77768.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 22:35/77662.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 22:40/77669.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 22:45/77631.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 22:50/77666.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 22:55/77622.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 23:00/77579.82 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 23:05/77437.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 23:10/77479.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 23:15/77459.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 23:20/77517.72 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 23:25/77502.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 23:30/77670.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 23:35/77664.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 23:40/77523.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 23:45/77485.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 23:50/77540.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 23:55/77641.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+=== DATE: 2026-08-24 ===
+
+S4 | BT trades: 4 | LIVE trades: 4
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 02:00/77653 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 06:00/77009 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 18:00/78895 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 22:00/78941 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | NO_BT_SIGNAL vs 02:00/76964.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 06:00/77146.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 18:00/78825.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 22:00/78857.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+S4V2 | BT trades: 22 | LIVE trades: 121
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 00:30/77607 vs 00:30/77444.0 | 01:00/77515 vs 00:30/77364.0 | 6s | -1741s | $-1.2 | ENTRY_DELAY,EXIT_DELAY |
+| long | 01:00/77561 vs 01:00/77684.19 | 01:30/77561 vs 01:01/77600.7 | 18s | -1729s | $-8.35 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 01:30/77515 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 02:30/77055 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 03:30/77285 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 04:30/77147 vs 04:30/77229.0 | 05:00/77101 vs 04:30/77233.0 | 5s | -1741s | $5.0 | EXIT_DELAY |
+| short | 05:00/77055 vs 05:00/76896.27 | 05:30/77009 vs 05:01/76852.0 | 17s | -1729s | $-0.17 | ENTRY_DELAY,EXIT_DELAY |
+| long | 05:30/77009 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 08:00/77423 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 09:30/77101 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 11:00/77699 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 11:30/77837 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 13:30/78987 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 14:30/78849 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 16:00/79723 vs 16:01/79151.0 | 16:30/79171 vs 16:02/79239.0 | 101s | -1645s | $-64.0 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 16:30/79171 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 17:00/79493 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 18:00/78665 vs 18:00/78773.0 | 19:30/78803 vs 19:30/78826.0 | 6s | 28s | $-8.5 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 20:30/78711 vs 20:30/78675.0 | 21:00/78849 vs 21:00/78921.0 | 5s | 9s | $-10.8 | EXIT_DELAY,SLIPPAGE |
+| long | 21:00/78849 vs 21:00/78921.0 | 22:30/78803 vs 22:30/78753.83 | 18s | 8s | $-12.12 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 22:30/78757 vs 22:30/78760.43 | 23:30/78849 vs 23:30/78872.0 | 16s | 4s | $-1.96 | ENTRY_DELAY |
+| long | 23:30/78849 vs 23:30/78873.0 | 00:30/78803 vs 00:30/78749.0 | 12s | 6s | $-7.8 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | NO_BT_SIGNAL vs 00:00/77720.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 00:35/77423.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 00:40/77389.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 00:45/77231.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 00:50/77354.97 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 00:55/77480.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 01:00/77668.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 01:05/77667.12 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 01:10/77460.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 01:15/77411.01 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 01:20/77370.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 01:25/77280.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 01:30/77212.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 01:35/77341.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 01:40/77259.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 01:45/77205.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 01:50/77225.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 01:55/77179.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 02:00/76938.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 02:05/77079.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 02:10/77081.63 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 02:15/77389.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 02:20/77493.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 02:25/77475.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 02:30/77437.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 02:35/77503.5 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 02:40/77417.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 02:45/77431.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 02:50/77361.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 02:55/77374.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 03:00/77460.59 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 03:05/77339.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 03:10/77306.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 03:15/77206.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 03:20/77187.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 03:25/77231.52 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 03:30/77126.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 03:35/77110.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 03:40/77030.81 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 03:45/77007.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 03:50/77036.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 03:55/76986.83 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 04:00/76972.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 04:05/77061.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 04:10/77022.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 04:15/77056.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 04:20/77174.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 04:25/77182.82 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 04:35/77217.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 04:40/77172.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 04:45/77128.88 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 04:50/76955.2 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 04:55/76831.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 05:00/76873.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 05:05/76950.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 05:10/77037.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 05:15/77217.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 05:20/77039.77 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 05:25/77045.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 05:30/77011.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 05:35/76957.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 05:40/77016.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 05:45/77088.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 05:50/77053.69 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 05:55/77116.37 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 06:00/77146.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 06:05/77086.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 06:10/77189.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 06:15/77393.29 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 06:20/77363.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 06:25/77388.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 06:30/77360.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 06:35/77267.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 06:40/77250.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 06:45/77341.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 06:50/77517.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 06:55/77450.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 07:00/77456.65 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 07:05/77491.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 07:10/77575.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 07:15/77750.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 07:20/77649.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 07:25/77663.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 07:30/77594.72 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 07:35/77491.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 07:40/77467.75 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 07:45/77338.63 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 07:50/77388.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 07:55/77364.59 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 08:00/77332.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 08:00/77330.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 08:05/77286.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 08:10/77341.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 08:15/77234.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 08:20/77125.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 08:25/76936.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 08:30/76897.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 08:35/77022.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 08:40/77098.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 08:45/77130.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 08:50/77123.83 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 08:55/77068.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 09:00/77021.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 09:30/77424.62 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 09:35/77443.59 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 09:40/77500.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 09:45/77471.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 09:50/77511.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 09:55/77577.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 10:00/77557.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 13:30/78990.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+=== DATE: 2026-08-25 ===
+
+S4 | BT trades: 3 | LIVE trades: 2
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 08:00/80551 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 16:00/78803 vs 16:00/79473.02 | 18:00/79355 vs 16:00/79447.0 | 9s | -7183s | $-57.8 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 18:00/79355 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | NO_BT_SIGNAL vs 08:00/79753.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+S4V2 | BT trades: 16 | LIVE trades: 9
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 00:30/78803 vs 00:30/78757.0 | 01:00/78895 vs 00:45/79375.0 | 15s | -873s | $-52.6 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 01:00/78895 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 03:00/80827 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 05:30/80459 vs 05:30/80659.36 | 07:00/80551 vs 07:00/80548.0 | 4s | 6s | $-20.34 | EXIT_DELAY,SLIPPAGE |
+| long | 07:30/80689 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 08:00/80551 vs 07:00/80534.0 | 08:30/79769 vs 08:30/80172.0 | -3585s | 5s | $-42.0 | ENTRY_DELAY,SLIPPAGE |
+| long | 08:30/79769 vs 08:30/80173.0 | 09:00/80045 vs 09:00/79909.0 | 14s | 44s | $-54.0 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 09:00/79953 vs 09:00/79909.0 | 11:00/79309 vs 10:41/79298.0 | 53s | -1096s | $-3.3 | ENTRY_DELAY,EXIT_DELAY |
+| long | 11:00/79309 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 12:30/79033 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 14:30/78803 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 16:30/79263 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 18:00/78987 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 19:30/79033 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 21:30/78343 vs 21:30/78434.49 | 23:30/78711 vs 23:33/78698.0 | 5s | 194s | $-10.45 | EXIT_DELAY,SLIPPAGE |
+| short | 23:30/78665 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | NO_BT_SIGNAL vs 14:30/79198.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 18:00/79214.52 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 23:33/78693.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+=== DATE: 2026-08-26 ===
+
+S4 | BT trades: 3 | LIVE trades: 3
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 02:00/78665 vs 02:00/78818.0 | 08:00/78895 vs 08:00/78888.0 | 5s | 16s | $-16.0 | EXIT_DELAY,SLIPPAGE |
+| short | 08:00/78895 vs 08:00/78885.0 | 18:00/78159 vs 18:00/78370.0 | 22s | 33s | $-22.1 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 18:00/78159 vs 18:00/78370.0 | 02:00/78849 vs 02:01/78936.0 | 39s | 84s | $-12.4 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+
+S4V2 | BT trades: 18 | LIVE trades: 15
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 01:30/78711 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 03:00/79033 vs 03:00/79073.0 | 05:30/78941 vs 05:30/78976.0 | 5s | 4s | $0.5 | OK |
+| long | 05:30/79033 vs 05:30/78958.0 | 06:30/78895 vs 06:30/78860.0 | 13s | 6s | $4.0 | ENTRY_DELAY,EXIT_DELAY |
+| short | 06:30/78895 vs 06:30/78875.0 | 08:30/78987 vs 08:30/78961.0 | 14s | 4s | $0.6 | ENTRY_DELAY |
+| long | 08:30/78987 vs 08:30/78980.0 | 09:00/78849 vs 09:00/78667.0 | 14s | 6s | $-17.5 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 09:00/78849 vs 09:00/78676.0 | 10:30/78573 vs 10:30/78608.0 | 14s | 6s | $-20.8 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 10:30/78573 vs 10:30/78608.0 | 12:00/78527 vs 12:00/78494.0 | 15s | 7s | $-6.8 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 12:00/78435 vs 12:00/78492.0 | 12:30/78573 vs 12:30/78651.51 | 17s | 5s | $-2.15 | ENTRY_DELAY |
+| long | 12:30/78573 vs 12:30/78314.0 | 13:00/78573 vs 13:00/78291.0 | 13s | 9s | $-2.3 | ENTRY_DELAY,EXIT_DELAY |
+| short | 13:00/78527 vs 13:00/78310.0 | 14:00/78159 vs 14:00/78281.0 | 18s | 15s | $-33.9 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 14:00/78159 vs 14:00/78277.0 | 14:30/78297 vs 14:30/78188.0 | 24s | 13s | $-22.7 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 14:30/78205 vs 14:30/78214.81 | 15:30/77929 vs 15:32/78015.0 | 21s | 153s | $-7.62 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 15:30/77929 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 17:30/78113 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 18:00/78389 vs 18:00/78389.0 | 19:30/78527 vs 19:30/78487.0 | 19s | 23s | $4.0 | ENTRY_DELAY,EXIT_DELAY |
+| long | 19:30/78527 vs 19:30/78498.48 | 20:30/78389 vs 20:32/78320.0 | 32s | 168s | $-4.05 | ENTRY_DELAY,EXIT_DELAY |
+| short | 20:30/78389 vs 20:32/78311.0 | 21:30/78481 vs 21:30/78696.0 | 178s | 23s | $-29.3 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 21:30/78573 vs 21:30/78684.0 | 00:30/78849 vs 00:30/78860.0 | 33s | 22s | $-10.0 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+
+=== DATE: 2026-08-27 ===
+
+S4 | BT trades: 6 | LIVE trades: 4
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 02:00/78849 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 10:00/79125 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 12:00/79815 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 16:00/79585 vs 16:00/80322.0 | 20:00/80275 vs 20:00/79904.0 | 25s | 8s | $-110.8 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 20:00/80275 vs 20:00/79904.0 | 22:00/79999 vs 22:00/80197.0 | 14s | 30s | $-56.9 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 22:00/79999 vs 22:00/80192.0 | 04:00/80321 vs 03:01/79868.0 | 37s | -3486s | $-64.6 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | NO_BT_SIGNAL vs 02:01/78908.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+S4V2 | BT trades: 16 | LIVE trades: 10
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 00:30/78849 vs 00:30/78854.0 | 01:30/78803 vs 01:31/78917.0 | 31s | 73s | $-10.9 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 01:30/78895 vs 01:31/78922.0 | 02:30/78803 vs 02:31/78736.81 | 86s | 102s | $-9.32 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 02:30/78803 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 03:30/78895 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 04:30/78757 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 06:00/78849 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 06:30/78803 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 07:00/78803 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 10:00/80321 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 14:00/79401 vs 13:32/79124.98 | 16:00/80413 vs 16:00/80307.0 | -1625s | 8s | $17.0 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 16:00/80413 vs 16:00/80330.0 | 16:30/80413 vs 16:30/80355.0 | 16s | 5s | $-2.5 | ENTRY_DELAY |
+| long | 17:30/80551 vs 17:30/80700.95 | 18:00/80551 vs 18:00/80425.0 | 4s | 11s | $-27.59 | EXIT_DELAY,SLIPPAGE |
+| short | 18:00/80551 vs 18:00/80425.0 | 19:00/80045 vs 19:00/80126.2 | 20s | 6s | $-20.72 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 19:00/80045 vs 19:00/80117.0 | 20:00/79999 vs 20:00/79904.0 | 15s | 4s | $-16.7 | ENTRY_DELAY,SLIPPAGE |
+| short | 20:00/79907 vs 20:00/79904.0 | 20:30/79999 vs 20:30/79965.14 | 14s | 8s | $3.09 | ENTRY_DELAY,EXIT_DELAY |
+| long | 20:30/79999 vs 20:30/79965.0 | 02:00/80965 vs 02:00/80478.0 | 17s | 5s | $-45.3 | ENTRY_DELAY,SLIPPAGE |
+| short | NO_BT_SIGNAL vs 02:31/78736.62 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+=== DATE: 2026-08-28 ===
+
+S4 | BT trades: 4 | LIVE trades: 1
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 04:00/80321 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 12:00/79401 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 14:00/79355 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 00:00/77515 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | NO_BT_SIGNAL vs 03:02/78997.15 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+S4V2 | BT trades: 15 | LIVE trades: 8
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 02:00/80965 vs 02:00/80434.0 | 06:30/79769 vs 06:30/79811.0 | 16s | 13s | $-57.3 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 06:30/79769 vs 06:30/79811.0 | 08:00/79723 vs 08:00/79689.0 | 23s | 23s | $-7.6 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 08:30/79769 vs 08:30/79762.0 | 09:00/79631 vs 09:00/79493.0 | 27s | 5s | $-13.1 | ENTRY_DELAY,SLIPPAGE |
+| short | 09:00/79539 vs 09:00/79491.0 | 11:00/79401 vs 11:00/79546.0 | 14s | 23s | $-19.3 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 11:00/79401 vs 11:00/79530.0 | 12:30/79493 vs 12:30/79490.8 | 32s | 5s | $-13.12 | ENTRY_DELAY,SLIPPAGE |
+| short | 13:00/79401 vs 13:00/79375.0 | 14:00/79309 vs 14:00/79294.41 | 4s | 5s | $-1.14 | OK |
+| long | 14:00/79309 vs 14:00/79373.42 | 14:30/79171 vs 14:30/78928.0 | 15s | 6s | $-30.74 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 14:30/79171 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 15:00/79033 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 15:30/79355 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 17:00/77699 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 18:30/77561 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 19:30/77699 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 20:00/77515 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 22:30/77515 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | NO_BT_SIGNAL vs 14:30/78895.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+=== DATE: 2026-08-29 ===
+
+S4 | BT trades: 2 | LIVE trades: 0
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 04:00/77653 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 06:00/77607 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+
+S4V2 | BT trades: 5 | LIVE trades: 3
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 02:30/77653 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 06:30/77515 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 07:30/77515 vs 07:30/77336.95 | 15:30/77837 vs 15:30/77866.0 | 4s | 5s | $20.71 | SLIPPAGE |
+| long | 16:30/77975 vs 16:30/77935.03 | 21:00/78067 vs 21:00/78104.0 | 4s | 9s | $7.7 | EXIT_DELAY,SLIPPAGE |
+| short | 21:00/78067 vs 21:00/78104.0 | 23:00/78205 vs 23:00/78219.0 | 18s | 19s | $2.3 | ENTRY_DELAY,EXIT_DELAY |
+
+=== DATE: 2026-08-30 ===
+
+S4 | BT trades: 4 | LIVE trades: 4
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 02:00/78067 vs 02:00/78061.0 | 06:00/78159 vs 06:00/78121.0 | 30s | 6s | $3.2 | ENTRY_DELAY,EXIT_DELAY |
+| short | 10:00/78021 vs 10:00/77969.0 | 12:00/78067 vs 12:00/78159.31 | 6s | 9s | $-14.43 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 12:00/78113 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 20:00/78849 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | NO_BT_SIGNAL vs 12:00/78159.31 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 20:00/78849.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+S4V2 | BT trades: 6 | LIVE trades: 6
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 01:30/78067 vs 01:30/78005.0 | 03:00/78113 vs 03:00/78084.0 | 14s | 10s | $-3.3 | ENTRY_DELAY,EXIT_DELAY |
+| long | 07:00/78205 vs 07:00/78261.15 | 08:00/78113 vs 08:00/78091.81 | 22s | 6s | $-7.73 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 08:00/78113 vs 08:00/78094.0 | 11:00/78113 vs 11:00/78134.75 | 14s | 22s | $-4.08 | ENTRY_DELAY,EXIT_DELAY |
+| long | 11:00/78159 vs 11:00/78134.75 | 17:30/79171 vs 17:30/78863.0 | 30s | 24s | $-28.38 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 17:30/79171 vs 17:30/78875.0 | 18:00/79033 vs 18:00/79016.0 | 37s | 4s | $-27.9 | ENTRY_DELAY,SLIPPAGE |
+| short | 19:30/78895 vs 19:30/78885.0 | 00:30/77791 vs 00:30/77868.0 | 6s | 9s | $-8.7 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+
+=== DATE: 2026-08-31 ===
+
+S4 | BT trades: 4 | LIVE trades: 0
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 06:00/77791 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 12:00/78343 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 16:00/78021 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 00:00/78757 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+
+S4V2 | BT trades: 16 | LIVE trades: 4
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 00:30/77791 vs 00:30/77871.0 | 01:30/77745 vs 01:30/77748.0 | 18s | 4s | $-7.7 | ENTRY_DELAY,SLIPPAGE |
+| long | 02:30/77791 vs 02:30/77838.0 | 03:00/77745 vs 03:01/77419.0 | 17s | 88s | $-37.3 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 03:00/77653 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 03:30/77561 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 04:30/77469 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 05:00/77607 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 10:00/78481 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 11:00/78711 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 11:30/78573 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 13:30/78067 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 14:00/77929 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 14:30/77975 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 16:00/78527 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 17:30/78481 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 18:00/78665 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 20:00/78895 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | NO_BT_SIGNAL vs 03:02/77482.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 23:22/78524.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+=== DATE: 2026-09-01 ===
+
+S4 | BT trades: 5 | LIVE trades: 4
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 04:00/78527 vs 00:39/78769.5 | 08:00/78987 vs 08:00/78631.5 | -12034s | 9s | $-59.8 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 08:00/78987 vs 08:00/78636.0 | 12:00/78021 vs 12:00/78063.5 | 15s | 6s | $-39.35 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 12:00/78021 vs 12:00/78063.5 | 16:00/77929 vs 16:00/77895.0 | 12s | 8s | $-7.65 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 18:00/77791 vs 18:00/77273.0 | 00:00/77331 vs 00:00/77426.5 | 5s | 7s | $-61.35 | EXIT_DELAY,SLIPPAGE |
+| long | 00:00/77331 vs 00:00/77426.5 | 02:00/77285 vs 02:00/77006.0 | 13s | 5s | $-37.45 | ENTRY_DELAY,SLIPPAGE |
+
+S4V2 | BT trades: 11 | LIVE trades: 11
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 00:30/78803 vs 00:30/78841.5 | 01:00/78711 vs 01:00/78651.5 | 13s | 8s | $-9.8 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 01:00/78711 vs 01:00/78651.0 | 03:00/78343 vs 03:00/78431.5 | 18s | 4s | $-14.85 | ENTRY_DELAY,SLIPPAGE |
+| long | 03:00/78343 vs 03:00/78431.5 | 05:00/78665 vs 05:00/78712.0 | 14s | 5s | $-4.15 | ENTRY_DELAY |
+| long | 05:30/78803 vs 05:31/78989.0 | 06:30/78987 vs 06:30/78869.5 | 103s | 5s | $-30.35 | ENTRY_DELAY,SLIPPAGE |
+| short | 06:30/78987 vs 06:30/78873.0 | 10:30/78021 vs 10:30/78008.5 | 14s | 5s | $-10.15 | ENTRY_DELAY,SLIPPAGE |
+| long | 10:30/78021 vs 10:30/78008.5 | 13:30/77883 vs 13:30/77885.5 | 14s | 4s | $1.5 | ENTRY_DELAY |
+| long | 14:00/77975 vs 14:00/78079.4 | 15:30/78067 vs 15:30/77846.5 | 5s | 6s | $-32.49 | EXIT_DELAY,SLIPPAGE |
+| short | 15:30/77975 vs 15:30/77830.5 | 19:30/77193 vs 19:30/77313.0 | 14s | 8s | $-26.45 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 19:30/77193 vs 19:30/77357.51 | 21:30/77285 vs 21:30/77144.955 | 16s | 7s | $-30.46 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 21:30/77147 vs 21:30/77138.96 | 23:00/77193 vs 23:00/77251.0 | 15s | 5s | $-6.6 | ENTRY_DELAY,SLIPPAGE |
+| long | 23:00/77193 vs 23:00/77227.0 | 00:30/77239 vs 00:30/77236.41 | 14s | 4s | $-3.66 | ENTRY_DELAY |
+
+=== DATE: 2026-09-02 ===
+
+S4 | BT trades: 4 | LIVE trades: 5
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 02:00/77193 vs 02:00/77008.5 | 04:00/77101 vs 03:00/77297.5 | 11s | -3565s | $-38.1 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 04:00/77101 vs 03:00/77316.0 | 08:00/77469 vs 08:00/77475.5 | -3558s | 8s | $-20.85 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 08:00/77469 vs 08:00/77479.0 | 14:00/76871 vs 14:00/77091.0 | 13s | 5s | $-21.0 | ENTRY_DELAY,SLIPPAGE |
+| long | 14:00/76871 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | NO_BT_SIGNAL vs 14:00/77101.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+S4V2 | BT trades: 17 | LIVE trades: 16
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 00:30/77193 vs 00:30/77230.5 | 02:30/77147 vs 02:30/77284.0 | 12s | 6s | $-9.95 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 02:30/77147 vs 02:30/77272.5 | 04:30/77469 vs 04:30/77428.0 | 16s | 5s | $-16.65 | ENTRY_DELAY,SLIPPAGE |
+| short | 04:30/77423 vs 04:30/77413.0 | 05:00/77515 vs 05:00/77540.5 | 14s | 25s | $-3.55 | ENTRY_DELAY,EXIT_DELAY |
+| long | 05:00/77561 vs 05:00/77546.0 | 06:30/77561 vs 06:30/77500.0 | 34s | 6s | $-4.6 | ENTRY_DELAY,EXIT_DELAY |
+| short | 06:30/77561 vs 06:30/77486.0 | 11:00/76687 vs 11:30/76462.0 | 14s | 1825s | $15.0 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 11:00/76687 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 12:00/76595 vs 12:00/76785.5 | 13:00/76825 vs 13:00/76604.5 | 5s | 9s | $-41.1 | EXIT_DELAY,SLIPPAGE |
+| short | 13:00/76733 vs 13:00/76623.0 | 13:30/76687 vs 13:30/76797.765 | 18s | 6s | $-22.08 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 13:30/76733 vs 13:30/76810.26 | 15:00/77147 vs 15:00/77027.5 | 14s | 6s | $-19.68 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 15:00/77147 vs 15:00/76961.0 | 16:00/77147 vs 16:00/77253.0 | 14s | 12s | $-29.2 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 16:00/77239 vs 16:00/77243.0 | 17:00/77285 vs 17:00/77173.0 | 22s | 11s | $-11.6 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 17:00/77285 vs 17:00/77209.0 | 18:00/77239 vs 18:00/77361.0 | 20s | 6s | $-19.8 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 18:00/77331 vs 18:00/77358.0 | 19:30/77239 vs 19:30/77114.0 | 16s | 4s | $-15.2 | ENTRY_DELAY,SLIPPAGE |
+| short | 19:30/77239 vs 19:30/77094.5 | 20:00/77239 vs 20:00/77300.5 | 13s | 14s | $-20.6 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 20:00/77285 vs 20:00/77326.0 | 22:30/77193 vs 22:30/76998.5 | 22s | 8s | $-23.55 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 22:30/77193 vs 22:30/77003.5 | 23:30/77101 vs 23:30/77171.16 | 17s | 8s | $-25.97 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 23:30/77147 vs 23:30/77175.16 | 00:30/77147 vs 00:30/76987.5 | 17s | 25s | $-18.77 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+
+=== DATE: 2026-09-03 ===
+
+S4 | BT trades: 5 | LIVE trades: 5
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 08:00/77607 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 12:00/77883 vs 12:00/77912.63 | 18:00/81149 vs 18:00/81027.5 | 15s | 9s | $-15.11 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 18:00/81149 vs 18:00/80990.5 | 20:00/81149 vs 20:00/81625.5 | 17s | 25s | $-63.5 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 20:00/81241 vs 20:00/81604.0 | 22:00/81609 vs 22:00/81582.0 | 32s | 10s | $-39.0 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 22:00/81609 vs 22:00/81582.0 | 06:00/80965 vs 06:00/80967.5 | 16s | 14s | $-2.95 | ENTRY_DELAY,EXIT_DELAY |
+| short | NO_BT_SIGNAL vs 00:12/77191.5 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+S4V2 | BT trades: 19 | LIVE trades: 19
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 00:30/77101 vs 00:30/76994.0 | 01:30/77101 vs 01:30/77440.5 | 35s | 5s | $-44.65 | ENTRY_DELAY,SLIPPAGE |
+| long | 01:30/77101 vs 01:30/77455.0 | 02:00/77285 vs 02:00/77326.0 | 15s | 9s | $-31.3 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 02:30/77423 vs 02:30/77572.5 | 04:00/77653 vs 04:00/77690.0 | 5s | 11s | $-11.25 | EXIT_DELAY,SLIPPAGE |
+| short | 04:00/77653 vs 04:00/77690.0 | 05:00/77699 vs 05:00/77761.22 | 21s | 5s | $-2.52 | ENTRY_DELAY |
+| long | 05:00/77791 vs 05:00/77761.05 | 05:30/77653 vs 05:30/77142.0 | 15s | 7s | $-48.11 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 05:30/77653 vs 05:30/77188.0 | 06:00/77285 vs 06:00/77741.0 | 17s | 11s | $-92.1 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 06:00/77331 vs 06:00/77745.0 | 08:00/77745 vs 08:00/77654.0 | 22s | 8s | $-50.5 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 08:00/77745 vs 08:00/77672.0 | 08:30/77745 vs 08:30/77970.0 | 18s | 4s | $-29.8 | ENTRY_DELAY,SLIPPAGE |
+| long | 08:30/77837 vs 08:30/77964.26 | 09:00/77837 vs 09:00/77803.0 | 14s | 25s | $-16.13 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 09:00/77837 vs 09:00/77787.0 | 11:00/77745 vs 11:00/77725.1 | 36s | 4s | $-3.01 | ENTRY_DELAY |
+| long | 11:30/77791 vs 11:30/77915.12 | 13:30/78481 vs 13:30/78468.5 | 4s | 7s | $-13.66 | EXIT_DELAY,SLIPPAGE |
+| short | 13:30/78481 vs 13:30/78477.5 | 14:00/78573 vs 14:00/78772.0 | 18s | 7s | $-20.25 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 14:00/78711 vs 14:00/78741.5 | 16:30/81149 vs 16:30/80761.5 | 17s | 5s | $-41.8 | ENTRY_DELAY,SLIPPAGE |
+| short | 16:30/81149 vs 16:30/80764.5 | 17:00/80873 vs 17:00/80931.5 | 15s | 7s | $-44.3 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 17:00/80965 vs 17:00/80938.0 | 20:30/81563 vs 20:30/81515.945 | 18s | 5s | $-2.01 | ENTRY_DELAY |
+| short | 20:30/81563 vs 20:30/81522.0 | 21:30/81609 vs 21:30/81777.5 | 15s | 7s | $-20.95 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 21:30/81747 vs 21:30/81873.0 | 22:00/81609 vs 22:00/81561.5 | 18s | 5s | $-17.35 | ENTRY_DELAY,SLIPPAGE |
+| short | 22:00/81609 vs 22:00/81582.0 | 23:30/81241 vs 23:30/81216.5 | 14s | 8s | $-0.25 | ENTRY_DELAY,EXIT_DELAY |
+| long | 23:30/81287 vs 23:30/81211.62 | 00:30/81149 vs 00:30/81131.5 | 19s | 5s | $5.79 | ENTRY_DELAY,SLIPPAGE |
+
+=== DATE: 2026-09-04 ===
+
+S4 | BT trades: 5 | LIVE trades: 5
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 06:00/80965 vs 06:00/80957.0 | 08:00/80827 vs 08:00/80667.0 | 20s | 12s | $-15.2 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 08:00/80689 vs 08:00/80667.0 | 10:00/80735 vs 10:00/81026.0 | 19s | 7s | $-31.3 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 10:00/80735 vs 10:00/81025.0 | 14:00/81057 vs 14:00/79329.5 | 15s | 6s | $-201.75 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 14:00/81057 vs 14:00/79391.0 | 18:00/79447 vs 18:00/79457.5 | 12s | 8s | $-167.65 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 18:00/79447 vs 18:00/79462.5 | 22:00/79585 vs 22:00/79650.5 | 15s | 41s | $5.0 | ENTRY_DELAY,EXIT_DELAY |
+
+S4V2 | BT trades: 16 | LIVE trades: 3
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 00:30/81103 vs 00:30/81128.0 | 02:00/80965 vs 02:00/80938.5 | 16s | 12s | $5.15 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 02:00/80965 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 02:30/80781 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 03:00/80827 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 05:00/81011 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 08:00/80735 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 08:30/80735 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 11:00/81103 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 13:00/81149 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 15:30/79033 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 17:30/79493 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 19:30/79631 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 21:00/79631 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 21:30/79769 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 22:00/79631 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 00:00/79585 vs 00:00/79627.5 | 06:30/79631 vs 06:30/79620.0 | 5s | 13s | $5.35 | EXIT_DELAY,SLIPPAGE |
+| long | NO_BT_SIGNAL vs 02:00/80931.5 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 05:55/80853.5 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+=== DATE: 2026-09-05 ===
+
+S4 | BT trades: 7 | LIVE trades: 5
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 02:00/79539 vs 00:00/79627.5 | 08:00/79677 vs 07:54/79699.3 | -7190s | -351s | $6.62 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 08:00/79677 vs 07:54/79699.3 | 10:00/79585 vs 10:00/79607.0 | -344s | 8s | $-0.03 | ENTRY_DELAY,EXIT_DELAY |
+| short | 10:00/79585 vs 10:00/79607.0 | 16:00/79769 vs 16:00/79767.0 | 12s | 9s | $2.4 | ENTRY_DELAY,EXIT_DELAY |
+| long | 16:00/79769 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 20:00/79907 vs 20:00/79749.0 | 22:00/79861 vs 22:00/79907.08 | 10s | 7s | $-20.41 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 22:00/79907 vs 22:00/79892.58 | 00:00/79769 vs 00:00/79804.5 | 15s | 19s | $4.99 | ENTRY_DELAY,EXIT_DELAY |
+| short | 00:00/79769 vs 00:00/79804.5 | 02:00/79953 vs 01:59/79923.515 | 24s | -58s | $6.5 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+
+S4V2 | BT trades: 5 | LIVE trades: 6
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 07:30/79677 vs 07:30/79693.5 | 14:00/79539 vs 14:00/79603.5 | 8s | 5s | $4.8 | ENTRY_DELAY |
+| short | 14:00/79539 vs 14:00/79605.0 | 14:30/79677 vs 14:30/79700.425 | 15s | 7s | $4.26 | ENTRY_DELAY,EXIT_DELAY |
+| long | 14:30/79677 vs 14:30/79702.93 | 18:30/79907 vs 18:30/79934.5 | 19s | 5s | $0.16 | ENTRY_DELAY |
+| short | 18:30/79907 vs 18:30/79934.5 | 21:30/79861 vs 21:30/79834.78 | 12s | 9s | $5.37 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 23:00/79723 vs 23:00/79765.0 | 00:30/79861 vs 00:30/79905.5 | 9s | 25s | $-0.25 | ENTRY_DELAY,EXIT_DELAY |
+
+=== DATE: 2026-09-06 ===
+
+S4 | BT trades: 5 | LIVE trades: 6
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 02:00/79953 vs 01:59/79927.78 | 08:00/79861 vs 08:00/79784.5 | -42s | 7s | $-5.13 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 08:00/79861 vs 08:00/79784.5 | 12:00/79907 vs 12:00/79895.66 | 14s | 11s | $-6.52 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 12:00/79907 vs 12:00/79895.66 | 16:00/79723 vs 16:00/79686.5 | 19s | 13s | $-2.52 | ENTRY_DELAY,EXIT_DELAY |
+| short | 16:00/79723 vs 16:00/79691.5 | 22:00/79907 vs 22:00/79880.0 | 19s | 24s | $-0.45 | ENTRY_DELAY,EXIT_DELAY |
+| long | 22:00/79907 vs 22:00/79881.5 | 02:00/80137 vs 02:00/79902.5 | 31s | 6s | $-20.9 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+
+S4V2 | BT trades: 12 | LIVE trades: 12
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 00:30/79907 vs 00:30/79893.5 | 04:30/79861 vs 04:30/79909.5 | 35s | 7s | $6.2 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 04:30/79861 vs 04:30/79913.5 | 06:00/79999 vs 06:00/79963.575 | 19s | 5s | $8.79 | ENTRY_DELAY,SLIPPAGE |
+| long | 06:00/79999 vs 06:00/79957.57 | 06:30/79861 vs 06:30/79798.0 | 16s | 5s | $-2.16 | ENTRY_DELAY |
+| short | 06:30/79861 vs 06:30/79780.5 | 09:30/79907 vs 09:30/79953.775 | 15s | 5s | $-12.73 | ENTRY_DELAY,SLIPPAGE |
+| long | 09:30/79953 vs 09:30/79958.27 | 10:00/79815 vs 10:00/79867.0 | 15s | 9s | $4.67 | ENTRY_DELAY,EXIT_DELAY |
+| short | 10:00/79815 vs 10:00/79886.0 | 10:30/79953 vs 10:30/79959.54 | 21s | 10s | $6.45 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 10:30/79953 vs 10:30/79971.02 | 13:30/79815 vs 13:30/79784.5 | 19s | 5s | $-4.85 | ENTRY_DELAY |
+| short | 13:30/79815 vs 13:30/79788.5 | 16:00/79677 vs 16:00/79689.205 | 15s | 6s | $-3.87 | ENTRY_DELAY,EXIT_DELAY |
+| long | 16:00/79723 vs 16:00/79693.93 | 20:00/79769 vs 20:00/79814.0 | 18s | 12s | $7.41 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 20:30/79907 vs 20:30/79909.76 | 22:30/79769 vs 22:30/79803.0 | 9s | 26s | $3.12 | ENTRY_DELAY,EXIT_DELAY |
+| short | 22:30/79769 vs 22:30/79799.0 | 23:00/79907 vs 23:00/80035.5 | 37s | 8s | $-9.85 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 23:00/79907 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | NO_BT_SIGNAL vs 23:00/79986.5 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+=== DATE: 2026-09-07 ===
+
+S4 | BT trades: 5 | LIVE trades: 5
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 02:00/80137 vs 02:00/79902.5 | 06:00/79723 vs 06:00/79731.77 | 13s | 13s | $-24.33 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 06:00/79723 vs 06:00/79727.77 | 08:00/79631 vs 08:00/79371.0 | 19s | 7s | $-26.48 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 08:00/79539 vs 08:00/79371.0 | 18:00/78941 vs 18:00/79222.485 | 14s | 7s | $-44.95 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 18:00/78941 vs 18:00/79237.5 | 22:00/79171 vs 22:00/79145.0 | 13s | 14s | $-32.25 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 22:00/79171 vs 22:00/79145.0 | 02:00/79263 vs 02:00/79426.99 | 22s | 8s | $-19.0 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+
+S4V2 | BT trades: 11 | LIVE trades: 8
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 00:30/80137 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 03:00/79907 vs 03:00/79829.5 | 05:00/79723 vs 05:00/79687.085 | 5s | 8s | $-4.16 | EXIT_DELAY |
+| long | 05:00/79723 vs 05:00/79687.09 | 06:30/79677 vs 06:30/79691.0 | 19s | 8s | $4.99 | ENTRY_DELAY,EXIT_DELAY |
+| short | 07:00/79631 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 11:30/79447 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 14:00/79355 vs 14:00/79341.0 | 15:00/79171 vs 15:00/79164.03 | 21s | 7s | $-0.7 | ENTRY_DELAY,EXIT_DELAY |
+| long | 15:00/79171 vs 15:00/79159.5 | 15:30/79033 vs 15:30/78988.5 | 18s | 6s | $-3.3 | ENTRY_DELAY,EXIT_DELAY |
+| short | 15:30/78987 vs 15:30/78988.0 | 17:00/78941 vs 17:01/79002.52 | 16s | 118s | $-6.05 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 17:00/78941 vs 17:02/79002.52 | 20:30/79171 vs 20:30/79195.0 | 131s | 4s | $-3.75 | ENTRY_DELAY |
+| short | 22:30/79125 vs 22:30/79059.87 | 00:00/79079 vs 00:00/79077.03 | 8s | 5s | $-6.32 | ENTRY_DELAY,SLIPPAGE |
+| long | 00:00/79125 vs 00:00/79091.53 | 00:30/78987 vs 00:32/79014.0 | 14s | 120s | $6.05 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | NO_BT_SIGNAL vs 07:00/79625.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+=== DATE: 2026-09-08 ===
+
+S4 | BT trades: 6 | LIVE trades: 6
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 02:00/79263 vs 02:00/79427.01 | 04:00/79309 vs 04:00/78885.0 | 16s | 12s | $-58.8 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 04:00/79309 vs 04:00/78885.0 | 10:00/78619 vs 10:00/78734.36 | 18s | 7s | $-53.94 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 10:00/78619 vs 10:00/78734.54 | 12:00/78619 vs 12:00/78365.0 | 15s | 43s | $-36.95 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 12:00/78527 vs 12:00/78353.5 | 16:00/78113 vs 16:00/78846.445 | 51s | 9s | $-90.69 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 16:00/78113 vs 16:00/78807.41 | 18:00/78757 vs 18:00/78481.5 | 16s | 6s | $-96.99 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 18:00/78757 vs 18:00/78477.5 | 02:00/78573 vs 03:05/78652.14 | 13s | 3913s | $-35.86 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+
+S4V2 | BT trades: 18 | LIVE trades: 19
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 00:30/78987 vs 00:32/79039.5 | 01:00/79079 vs 01:00/79281.16 | 132s | 10s | $-14.97 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 01:00/79079 vs 01:00/79277.16 | 02:30/79263 vs 02:30/79238.5 | 20s | 7s | $-22.27 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 02:30/79217 vs 02:30/79238.5 | 04:00/78895 vs 04:00/78887.945 | 22s | 9s | $2.86 | ENTRY_DELAY,EXIT_DELAY |
+| short | 04:30/78757 vs 04:30/78804.0 | 05:30/78803 vs 05:30/78808.665 | 15s | 6s | $4.13 | ENTRY_DELAY,EXIT_DELAY |
+| long | 05:30/78803 vs 05:30/78793.16 | 06:00/78665 vs 06:00/78559.0 | 18s | 9s | $-9.62 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 06:00/78619 vs 06:00/78553.0 | 07:30/78435 vs 07:30/78461.0 | 20s | 9s | $-9.2 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 07:30/78435 vs 07:30/78451.5 | 11:00/78665 vs 11:00/78557.0 | 20s | 7s | $-12.45 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 11:00/78573 vs 11:00/78546.5 | 14:30/78113 vs 14:30/78337.12 | 18s | 7s | $-25.06 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 14:30/78113 vs 14:30/78293.87 | 15:30/78389 vs 15:30/78439.365 | 17s | 4s | $-13.05 | ENTRY_DELAY,SLIPPAGE |
+| long | 16:00/78527 vs 16:00/78853.93 | 16:30/78757 vs 16:30/78597.5 | 5s | 38s | $-48.64 | EXIT_DELAY,SLIPPAGE |
+| short | 16:30/78757 vs 16:30/78598.5 | 17:00/78711 vs 17:00/78723.65 | 50s | 7s | $-17.11 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 17:30/78573 vs 17:30/78574.0 | 18:30/78619 vs 18:30/78730.625 | 6s | 23s | $-11.06 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 18:30/78665 vs 18:30/78718.62 | 19:00/78573 vs 19:00/78435.11 | 35s | 8s | $-19.15 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 19:00/78573 vs 19:00/78441.5 | 20:30/78527 vs 20:30/78566.0 | 18s | 8s | $-17.05 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 20:30/78573 vs 20:30/78554.0 | 21:00/78435 vs 21:00/78466.0 | 18s | 20s | $5.0 | ENTRY_DELAY,EXIT_DELAY |
+| short | 21:00/78435 vs 21:00/78473.0 | 23:00/78573 vs 23:00/78542.0 | 31s | 7s | $6.9 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 23:00/78573 vs 23:00/78542.0 | 23:30/78435 vs 23:30/78437.0 | 18s | 26s | $3.3 | ENTRY_DELAY,EXIT_DELAY |
+| short | 23:30/78435 vs 23:30/78431.48 | 00:30/78573 vs 00:30/78611.64 | 36s | 6s | $-4.22 | ENTRY_DELAY,EXIT_DELAY |
+
+=== DATE: 2026-09-09 ===
+
+S4 | BT trades: 9 | LIVE trades: 5
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 02:00/78619 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 04:00/78757 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 06:00/78757 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 10:00/79079 vs 10:00/78936.5 | 12:00/79033 vs 12:00/79359.5 | 8s | 13s | $-46.9 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 12:00/79079 vs 12:00/79345.59 | 14:00/79171 vs 14:00/79083.0 | 19s | 17s | $-35.46 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 14:00/79171 vs 14:00/79108.5 | 18:00/78757 vs 18:00/78763.0 | 24s | 8s | $-6.85 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 18:00/78757 vs 18:00/78774.7 | 20:00/78619 vs 20:00/78211.5 | 14s | 12s | $-42.52 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 20:00/78527 vs 20:00/78216.5 | 00:00/78297 vs 00:00/78263.0 | 19s | 8s | $-27.65 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 00:00/78297 vs 00:00/78263.0 | 02:00/78159 vs 02:00/78044.975 | 14s | 38s | $-8.0 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+
+S4V2 | BT trades: 16 | LIVE trades: 16
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 00:30/78573 vs 00:30/78616.14 | 03:00/78711 vs 03:00/78700.0 | 17s | 8s | $-5.41 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 03:00/78665 vs 03:00/78700.0 | 04:30/78711 vs 04:30/78868.68 | 21s | 8s | $-12.27 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 04:30/78757 vs 04:30/78857.21 | 06:00/78987 vs 06:00/79100.0 | 17s | 5s | $1.28 | ENTRY_DELAY |
+| short | 06:00/78987 vs 06:00/79100.0 | 06:30/79033 vs 06:30/79176.105 | 17s | 20s | $-3.01 | ENTRY_DELAY,EXIT_DELAY |
+| long | 06:30/79125 vs 06:30/79205.18 | 09:30/79493 vs 09:30/79397.5 | 31s | 5s | $-17.57 | ENTRY_DELAY,SLIPPAGE |
+| short | 09:30/79493 vs 09:30/79393.0 | 10:30/79079 vs 10:30/79057.0 | 16s | 5s | $-7.8 | ENTRY_DELAY,SLIPPAGE |
+| short | 11:00/78941 vs 11:00/78888.5 | 11:30/78987 vs 11:30/78964.5 | 5s | 7s | $-3.0 | EXIT_DELAY |
+| long | 11:30/78987 vs 11:30/78956.0 | 14:00/79447 vs 14:00/79051.0 | 17s | 9s | $-36.5 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 14:00/79447 vs 14:00/79089.5 | 14:30/79217 vs 14:30/79222.8 | 20s | 5s | $-36.33 | ENTRY_DELAY,SLIPPAGE |
+| long | 14:30/79263 vs 14:30/79231.81 | 15:00/79125 vs 15:00/78953.5 | 15s | 7s | $-14.03 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 15:00/79125 vs 15:00/79005.0 | 16:00/78527 vs 16:00/78572.5 | 18s | 5s | $-16.55 | ENTRY_DELAY,SLIPPAGE |
+| long | 16:00/78527 vs 16:00/78562.0 | 18:30/78665 vs 18:30/78589.5 | 15s | 5s | $-11.05 | ENTRY_DELAY,SLIPPAGE |
+| short | 18:30/78573 vs 18:30/78605.0 | 21:00/78251 vs 21:00/78293.0 | 15s | 10s | $-1.0 | ENTRY_DELAY,EXIT_DELAY |
+| long | 21:00/78251 vs 21:00/78250.0 | 22:00/78159 vs 22:00/78144.5 | 21s | 9s | $-1.35 | ENTRY_DELAY,EXIT_DELAY |
+| short | 22:30/78067 vs 22:30/77968.0 | 23:30/78067 vs 23:30/78162.245 | 42s | 6s | $-19.42 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 23:30/78067 vs 23:30/78162.24 | 01:00/78159 vs 01:00/78151.0 | 17s | 7s | $-10.32 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+
+=== DATE: 2026-09-10 ===
+
+S4 | BT trades: 5 | LIVE trades: 4
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 02:00/78067 vs 02:00/78044.95 | 04:00/78205 vs 03:00/78349.15 | 45s | -3568s | $-16.62 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 04:00/78205 vs 03:00/78349.15 | 08:00/78343 vs 06:01/78497.5 | -3562s | -7095s | $1.04 | ENTRY_DELAY,EXIT_DELAY |
+| short | 08:00/78297 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 18:00/77285 vs 18:00/77307.5 | 20:00/77193 vs 20:00/77166.0 | 4s | 6s | $-4.95 | EXIT_DELAY |
+| short | 00:00/77055 vs 00:00/76560.5 | 02:00/76687 vs 02:00/76964.0 | 4s | 5s | $-77.15 | SLIPPAGE |
+
+S4V2 | BT trades: 19 | LIVE trades: 13
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 02:30/78067 vs 02:30/77995.0 | 03:00/78159 vs 03:00/78349.5 | 8s | 5s | $-26.25 | ENTRY_DELAY,SLIPPAGE |
+| long | 03:00/78159 vs 03:00/78335.0 | 06:30/78343 vs 06:04/78426.5 | 12s | -1501s | $-9.25 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 06:30/78297 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 07:00/78343 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 07:30/78297 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 09:30/78159 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 10:00/78021 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 11:30/78021 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 12:00/77883 vs 12:00/77817.5 | 14:00/77009 vs 14:00/77174.615 | 4s | 9s | $-23.11 | EXIT_DELAY,SLIPPAGE |
+| long | 14:00/77009 vs 14:00/77202.5 | 15:30/77239 vs 15:30/77112.5 | 17s | 4s | $-32.0 | ENTRY_DELAY,SLIPPAGE |
+| short | 15:30/77147 vs 15:30/77101.0 | 16:00/77193 vs 16:00/77226.5 | 11s | 4s | $-7.95 | ENTRY_DELAY,SLIPPAGE |
+| long | 16:00/77193 vs 16:00/77222.5 | 16:30/77101 vs 16:30/76917.0 | 10s | 5s | $-21.35 | ENTRY_DELAY,SLIPPAGE |
+| short | 16:30/77101 vs 16:30/76899.5 | 17:00/77009 vs 17:00/77163.765 | 12s | 6s | $-35.63 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 17:00/77009 vs 17:00/77145.27 | 18:30/77147 vs 18:30/77051.0 | 12s | 6s | $-23.23 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 18:30/77101 vs 18:30/77046.0 | 19:00/77147 vs 19:00/77222.5 | 13s | 7s | $-13.05 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 19:00/77147 vs 19:00/77231.0 | 20:00/77101 vs 20:00/77150.5 | 15s | 4s | $-3.45 | ENTRY_DELAY |
+| short | 20:00/77101 vs 20:00/77156.5 | 20:30/77239 vs 20:30/77255.0 | 10s | 5s | $3.95 | ENTRY_DELAY |
+| long | 20:30/77239 vs 20:30/77255.0 | 22:00/77147 vs 22:00/77084.0 | 12s | 18s | $-7.9 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 22:00/77147 vs 22:00/77081.0 | 00:30/76687 vs 00:30/76832.0 | 26s | 6s | $-21.1 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+
+=== DATE: 2026-09-11 ===
+
+S4 | BT trades: 6 | LIVE trades: 7
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 02:00/76687 vs 02:00/76976.0 | 04:00/76825 vs 03:00/76829.0 | 12s | -3577s | $-28.5 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 06:00/76963 vs 06:00/77235.5 | 10:00/77101 vs 10:00/77009.0 | 9s | 3s | $-36.45 | ENTRY_DELAY,SLIPPAGE |
+| short | 10:00/77101 vs 10:00/77009.0 | 14:00/77101 vs 14:00/79241.0 | 9s | 7s | $-223.2 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 14:00/77147 vs 14:00/79285.5 | 16:00/79125 vs 16:00/77750.0 | 12s | 11s | $-351.35 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 16:00/79125 vs 16:00/77776.0 | 00:00/77239 vs 00:00/77206.07 | 16s | 9s | $-131.61 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 00:00/77239 vs 00:00/77206.12 | 18:00/77193 vs 18:00/77184.0 | 14s | 8s | $2.39 | ENTRY_DELAY,EXIT_DELAY |
+| short | NO_BT_SIGNAL vs 03:00/76828.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+S4V2 | BT trades: 13 | LIVE trades: 13
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 00:30/76687 vs 00:30/76818.0 | 02:30/76779 vs 02:30/76792.5 | 14s | 4s | $-11.75 | ENTRY_DELAY,SLIPPAGE |
+| long | 04:30/76917 vs 04:30/77175.0 | 05:00/77055 vs 05:00/77092.5 | 3s | 6s | $-22.05 | EXIT_DELAY,SLIPPAGE |
+| long | 06:00/77193 vs 06:00/77235.5 | 09:30/77193 vs 09:30/77115.5 | 7s | 3s | $-12.0 | ENTRY_DELAY,SLIPPAGE |
+| short | 09:30/77193 vs 09:30/77122.0 | 12:00/76963 vs 12:00/77001.5 | 9s | 3s | $-10.95 | ENTRY_DELAY,SLIPPAGE |
+| long | 12:00/77009 vs 12:00/76998.0 | 13:30/77837 vs 13:30/77495.5 | 9s | 5s | $-33.05 | ENTRY_DELAY,SLIPPAGE |
+| short | 13:30/77837 vs 13:30/77547.0 | 14:00/77607 vs 14:00/79255.0 | 9s | 7s | $-193.8 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 14:00/77699 vs 14:00/79285.5 | 14:30/79125 vs 14:30/78963.3 | 12s | 6s | $-174.82 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 14:30/79125 vs 14:30/78940.8 | 17:00/77791 vs 17:00/77893.5 | 13s | 6s | $-28.67 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 17:00/77791 vs 17:00/77906.18 | 18:00/77745 vs 18:00/77504.5 | 11s | 4s | $-35.57 | ENTRY_DELAY,SLIPPAGE |
+| short | 18:00/77561 vs 18:00/77487.5 | 19:30/77193 vs 19:30/77193.5 | 9s | 4s | $-7.4 | ENTRY_DELAY,SLIPPAGE |
+| long | 19:30/77193 vs 19:30/77193.5 | 22:00/77193 vs 22:00/77090.5 | 9s | 7s | $-10.3 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 22:00/77055 vs 22:00/77061.5 | 23:30/77193 vs 23:30/77180.5 | 13s | 22s | $1.9 | ENTRY_DELAY,EXIT_DELAY |
+| long | 23:30/77193 vs 23:30/77180.95 | 05:30/77147 vs 05:30/77209.5 | 27s | 8s | $7.46 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+
+=== DATE: 2026-09-12 ===
+
+S4 | BT trades: 1 | LIVE trades: 2
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 22:00/77239 vs 22:00/77234.57 | 04:00/77147 vs 04:00/77179.5 | 12s | 5s | $3.69 | ENTRY_DELAY |
+
+S4V2 | BT trades: 2 | LIVE trades: 2
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 07:00/77285 vs 07:00/77275.83 | 17:30/77285 vs 17:30/77277.5 | 5s | 4s | $0.17 | OK |
+| short | 17:30/77239 vs 17:30/77277.5 | 22:00/77239 vs 22:00/77235.02 | 10s | 12s | $4.25 | ENTRY_DELAY,EXIT_DELAY |
+
+=== DATE: 2026-09-13 ===
+
+S4 | BT trades: 4 | LIVE trades: 3
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 06:00/77331 vs 06:00/77297.2 | 08:00/77147 vs 08:00/77094.0 | 8s | 7s | $-1.92 | ENTRY_DELAY,EXIT_DELAY |
+| short | 08:00/77147 vs 08:00/77097.5 | 16:00/76917 vs 16:00/77135.485 | 13s | 13s | $-26.8 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 16:00/76917 vs 16:00/77134.77 | 00:00/77147 vs 00:00/76834.0 | 18s | 9s | $-53.08 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 00:00/77147 vs 00:00/76829.5 | 02:00/76917 vs 02:00/77107.5 | 14s | 5s | $-50.8 | ENTRY_DELAY,SLIPPAGE |
+
+S4V2 | BT trades: 10 | LIVE trades: 9
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 02:00/77285 vs 02:00/77301.0 | 04:00/77147 vs 04:00/77179.5 | 13s | 3s | $1.65 | ENTRY_DELAY |
+| short | 04:00/77147 vs 04:00/77179.5 | 05:30/77285 vs 05:30/77266.84 | 9s | 6s | $5.07 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 05:30/77285 vs 05:30/77273.84 | 07:00/77147 vs 07:00/77075.5 | 13s | 3s | $-6.03 | ENTRY_DELAY,SLIPPAGE |
+| short | 07:00/77147 vs 07:00/77071.0 | 10:00/76779 vs 10:00/76775.0 | 10s | 4s | $-7.2 | ENTRY_DELAY,SLIPPAGE |
+| long | 10:00/76779 vs 10:00/76770.5 | 11:00/76641 vs 10:55/76686.0 | 11s | -276s | $5.35 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 12:00/76779 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 13:30/76549 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 14:00/76687 vs 14:00/76832.5 | 15:30/77009 vs 15:30/77035.5 | 14s | 6s | $-11.9 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 16:00/77147 vs 16:00/77135.49 | 22:30/77239 vs 22:30/76832.5 | 19s | 4s | $-39.5 | ENTRY_DELAY,SLIPPAGE |
+| short | 22:30/77239 vs 22:30/76815.5 | 01:00/76595 vs 01:00/76768.5 | 9s | 5s | $-59.7 | ENTRY_DELAY,SLIPPAGE |
+| short | NO_BT_SIGNAL vs 10:55/76661.5 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+=== DATE: 2026-09-14 ===
+
+S4 | BT trades: 4 | LIVE trades: 5
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 02:00/76917 vs 02:00/77114.0 | 12:00/77975 vs 12:00/77733.0 | 10s | 7s | $-43.9 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 12:00/77975 vs 12:00/77733.0 | 14:00/77883 vs 13:55/78194.29 | 13s | -251s | $-55.33 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 14:00/77929 vs 13:56/78232.5 | 22:00/78803 vs 22:00/78761.0 | -238s | 5s | $-34.55 | ENTRY_DELAY,SLIPPAGE |
+| short | 22:00/78803 vs 22:00/78761.0 | 18:00/76641 vs 18:00/76930.75 | 10s | 5s | $-33.17 | ENTRY_DELAY,SLIPPAGE |
+
+S4V2 | BT trades: 13 | LIVE trades: 13
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 01:00/76595 vs 01:00/76771.0 | 04:00/77653 vs 04:00/77575.5 | 10s | 5s | $-25.35 | ENTRY_DELAY,SLIPPAGE |
+| short | 04:00/77653 vs 04:00/77561.0 | 07:30/77653 vs 07:30/77682.0 | 10s | 3s | $-12.1 | ENTRY_DELAY,SLIPPAGE |
+| long | 08:00/77791 vs 08:00/77869.5 | 08:30/77699 vs 08:30/77713.29 | 3s | 5s | $-6.42 | SLIPPAGE |
+| short | 08:30/77699 vs 08:30/77701.93 | 10:00/77837 vs 10:00/78142.56 | 11s | 7s | $-30.26 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 10:00/77883 vs 10:00/78146.06 | 10:30/78021 vs 10:30/77946.5 | 12s | 7s | $-33.76 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 10:30/78021 vs 10:30/77946.5 | 12:30/77929 vs 12:30/77977.925 | 13s | 3s | $-12.34 | ENTRY_DELAY,SLIPPAGE |
+| short | 13:00/77837 vs 13:00/77631.5 | 13:30/77791 vs 13:30/77833.0 | 4s | 4s | $-24.75 | SLIPPAGE |
+| long | 13:30/77837 vs 13:30/77879.5 | 15:30/78343 vs 15:30/78398.0 | 9s | 6s | $1.25 | ENTRY_DELAY,EXIT_DELAY |
+| short | 15:30/78343 vs 15:30/78405.0 | 16:00/78481 vs 16:00/78565.09 | 12s | 4s | $-2.21 | ENTRY_DELAY |
+| long | 16:00/78573 vs 16:00/78565.6 | 20:00/79033 vs 20:00/78980.5 | 10s | 5s | $-4.51 | ENTRY_DELAY |
+| short | 20:00/79033 vs 20:00/78983.5 | 20:30/79079 vs 20:30/79421.11 | 11s | 16s | $-39.16 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 20:30/79217 vs 20:30/79421.11 | 21:00/79309 vs 21:00/79083.5 | 23s | 4s | $-42.96 | ENTRY_DELAY,SLIPPAGE |
+| short | 21:00/79309 vs 21:00/79070.0 | 06:00/77607 vs 05:52/77559.0 | 11s | -466s | $-19.1 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+
+=== DATE: 2026-09-15 ===
+
+S4 | BT trades: 3 | LIVE trades: 2
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 18:00/76641 vs 18:00/76919.86 | 20:00/76825 vs 20:00/75962.0 | 11s | 5s | $-114.19 | ENTRY_DELAY,SLIPPAGE |
+| short | 20:00/76779 vs 20:00/75962.0 | 00:00/75583 vs 00:00/76541.8 | 13s | 48s | $-177.58 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 00:00/75583 vs 00:01/76541.8 | 02:00/75491 vs 02:00/75952.0 | 66s | 32s | $-49.78 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+
+S4V2 | BT trades: 13 | LIVE trades: 11
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 06:00/77607 vs 05:52/77559.0 | 06:30/77469 vs 06:30/77383.0 | -460s | 4s | $-3.8 | ENTRY_DELAY |
+| short | 08:00/77239 vs 07:00/77259.0 | 09:00/77009 vs 09:00/76975.13 | -3594s | 4s | $5.39 | ENTRY_DELAY,SLIPPAGE |
+| long | 09:00/77009 vs 09:00/76946.0 | 09:30/76871 vs 09:30/76896.0 | 11s | 5s | $8.8 | ENTRY_DELAY,SLIPPAGE |
+| long | 11:00/77009 vs 11:00/77040.14 | 12:00/76917 vs 12:00/76922.0 | 6s | 10s | $-2.61 | ENTRY_DELAY,EXIT_DELAY |
+| short | 14:00/76779 vs 14:00/76610.0 | 15:30/76089 vs 15:30/76320.02 | 3s | 4s | $-40.0 | SLIPPAGE |
+| long | 15:30/76089 vs 15:30/76356.02 | 17:00/76319 vs 17:00/76361.0 | 10s | 4s | $-22.5 | ENTRY_DELAY,SLIPPAGE |
+| long | 17:30/76457 vs 17:30/76499.0 | 19:00/76779 vs 19:00/75974.0 | 4s | 7s | $-84.7 | EXIT_DELAY,SLIPPAGE |
+| short | 19:00/76779 vs 19:00/75924.5 | 20:00/76043 vs 20:00/76044.1 | 14s | 56s | $-85.56 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 20:00/76043 vs 20:01/76044.6 | 20:30/76043 vs 20:31/75960.5 | 74s | 74s | $-8.41 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 20:30/75905 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 21:00/75813 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 21:30/75721 vs 21:30/75956.5 | 23:00/75583 vs 23:00/76541.8 | 15s | 35s | $-72.33 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 23:00/75583 vs 23:00/76541.8 | 02:00/75675 vs 02:00/75952.0 | 42s | 30s | $-68.18 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+
+=== DATE: 2026-09-16 ===
+
+S4 | BT trades: 7 | LIVE trades: 6
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 04:00/75583 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 08:00/75767 vs 07:56/75716.5 | 10:00/75859 vs 10:00/75973.5 | -192s | 4s | $-16.5 | ENTRY_DELAY,SLIPPAGE |
+| long | 10:00/75905 vs 10:00/75973.5 | 14:00/76043 vs 14:00/75625.0 | 10s | 3s | $-48.65 | ENTRY_DELAY,SLIPPAGE |
+| short | 14:00/76043 vs 14:00/75629.5 | 16:00/75721 vs 16:00/75773.5 | 9s | 5s | $-46.6 | ENTRY_DELAY,SLIPPAGE |
+| long | 16:00/75721 vs 16:00/75769.52 | 22:00/75905 vs 22:00/75969.0 | 10s | 4s | $1.55 | ENTRY_DELAY |
+| short | 22:00/75905 vs 22:00/75960.0 | 00:00/76043 vs 02:00/76345.5 | 9s | 7203s | $-24.75 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 00:00/76043 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+
+S4V2 | BT trades: 13 | LIVE trades: 13
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 02:00/75583 vs 02:00/75968.55 | 02:30/75583 vs 02:32/77625.5 | 36s | 120s | $-165.69 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 02:30/75583 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 06:00/75951 vs 06:00/75959.5 | 07:30/75859 vs 07:30/75794.0 | 7s | 3s | $-7.35 | ENTRY_DELAY,SLIPPAGE |
+| short | 07:30/75859 vs 07:30/75794.0 | 09:00/75583 vs 09:00/75711.055 | 11s | 4s | $-19.31 | ENTRY_DELAY,SLIPPAGE |
+| long | 09:00/75629 vs 09:00/75709.18 | 12:30/76043 vs 12:30/75910.5 | 11s | 3s | $-21.27 | ENTRY_DELAY,SLIPPAGE |
+| short | 12:30/76043 vs 12:30/75910.5 | 14:30/75767 vs 14:30/75797.095 | 9s | 3s | $-16.26 | ENTRY_DELAY,SLIPPAGE |
+| long | 14:30/75813 vs 14:30/75805.38 | 15:00/75675 vs 15:00/75666.0 | 9s | 2s | $-0.14 | ENTRY_DELAY |
+| short | 15:00/75675 vs 15:00/75662.0 | 16:00/75767 vs 16:00/75773.5 | 8s | 3s | $-1.95 | ENTRY_DELAY |
+| long | 16:00/75767 vs 16:00/75773.5 | 19:00/75813 vs 18:30/76004.5 | 9s | -1798s | $18.5 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 19:00/75767 vs 19:00/75674.0 | 20:00/75675 vs 20:00/76079.0 | 8s | 2s | $-49.7 | ENTRY_DELAY,SLIPPAGE |
+| long | 20:00/75721 vs 20:00/76057.0 | 21:30/76043 vs 21:30/76064.0 | 9s | 3s | $-31.5 | ENTRY_DELAY,SLIPPAGE |
+| short | 21:30/76043 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 23:30/75859 vs 23:30/76074.5 | 02:00/76457 vs 02:00/76346.0 | 8s | 3s | $-32.65 | ENTRY_DELAY,SLIPPAGE |
+| long | NO_BT_SIGNAL vs 18:30/75953.12 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 22:00/75969.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+=== DATE: 2026-09-17 ===
+
+S4 | BT trades: 1 | LIVE trades: 2
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 20:00/76595 vs 20:00/76565.0 | 02:00/76549 vs 02:00/76723.5 | 4s | 4s | $-20.45 | SLIPPAGE |
+| long | NO_BT_SIGNAL vs 02:00/76348.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+S4V2 | BT trades: 15 | LIVE trades: 14
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 02:00/76457 vs 02:00/76346.5 | 03:00/76319 vs 03:00/76364.0 | 9s | 2s | $-15.55 | ENTRY_DELAY,SLIPPAGE |
+| long | 03:30/76411 vs 03:00/76369.5 | 04:30/76319 vs 04:30/76183.0 | -1791s | 3s | $-9.45 | ENTRY_DELAY,SLIPPAGE |
+| short | 04:30/76319 vs 04:30/76195.0 | 05:00/76319 vs 05:00/76505.0 | 9s | 3s | $-31.0 | ENTRY_DELAY,SLIPPAGE |
+| long | 05:00/76365 vs 05:00/76526.0 | 06:00/76411 vs 06:00/76298.0 | 9s | 3s | $-27.4 | ENTRY_DELAY,SLIPPAGE |
+| short | 06:00/76365 vs 06:00/76289.0 | 06:30/76411 vs 06:30/76454.5 | 11s | 3s | $-11.95 | ENTRY_DELAY,SLIPPAGE |
+| long | 06:30/76457 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 10:00/76503 vs 10:00/76450.5 | 12:00/76457 vs 12:00/76461.19 | 8s | 2s | $-5.67 | ENTRY_DELAY,SLIPPAGE |
+| long | 12:00/76503 vs 12:00/76466.19 | 13:00/76825 vs 13:00/76708.5 | 9s | 1s | $-7.97 | ENTRY_DELAY,SLIPPAGE |
+| short | 13:00/76825 vs 13:00/76688.5 | 14:00/76595 vs 14:00/76698.955 | 8s | 2s | $-24.05 | ENTRY_DELAY,SLIPPAGE |
+| long | 14:00/76641 vs 14:00/76672.46 | 15:00/76779 vs 15:00/76488.5 | 8s | 2s | $-32.2 | ENTRY_DELAY,SLIPPAGE |
+| short | 15:00/76733 vs 15:00/76472.5 | 16:00/76595 vs 16:00/76767.5 | 9s | 3s | $-43.3 | ENTRY_DELAY,SLIPPAGE |
+| long | 16:00/76641 vs 16:00/76770.0 | 18:00/76733 vs 18:00/76654.5 | 10s | 2s | $-20.75 | ENTRY_DELAY,SLIPPAGE |
+| short | 18:00/76687 vs 18:00/76657.0 | 20:30/76687 vs 20:30/76694.5 | 9s | 3s | $-3.75 | ENTRY_DELAY |
+| short | 21:00/76549 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 23:00/76411 vs 23:00/76402.32 | 00:30/76319 vs 00:30/76366.5 | 4s | 4s | $5.62 | SLIPPAGE |
+| long | NO_BT_SIGNAL vs 07:00/76457.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+=== DATE: 2026-09-18 ===
+
+S4 | BT trades: 4 | LIVE trades: 2
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 02:00/76641 vs 02:00/76723.5 | 12:00/78021 vs 12:00/78061.0 | 13s | 2s | $-4.25 | ENTRY_DELAY |
+| short | 12:00/78021 vs 12:00/78045.0 | 14:00/78159 vs 13:29/78158.0 | 9s | -1821s | $2.5 | ENTRY_DELAY,EXIT_DELAY |
+| long | 14:00/78343 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 00:00/81057 vs 00:00/80888.5 | 02:00/80965 vs 02:00/81275.5 | 4s | 2s | $-47.9 | SLIPPAGE |
+
+S4V2 | BT trades: 16 | LIVE trades: 15
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 01:00/76457 vs 01:00/76575.0 | 04:30/77239 vs 04:30/77268.0 | 4s | 3s | $-8.9 | SLIPPAGE |
+| short | 04:30/77239 vs 04:30/77268.0 | 05:00/77377 vs 05:00/77567.5 | 11s | 2s | $-16.15 | ENTRY_DELAY,SLIPPAGE |
+| long | 05:00/77515 vs 05:00/77543.5 | 06:00/77423 vs 06:00/77472.0 | 9s | 3s | $2.05 | ENTRY_DELAY |
+| short | 06:00/77423 vs 06:00/77486.5 | 07:00/77561 vs 07:00/77553.0 | 9s | 3s | $7.15 | ENTRY_DELAY,SLIPPAGE |
+| long | 07:30/77699 vs 07:30/77785.0 | 11:30/78113 vs 11:30/78019.0 | 1s | 2s | $-18.0 | SLIPPAGE |
+| short | 11:30/78113 vs 11:30/78026.5 | 13:30/78113 vs 13:29/78158.0 | 8s | -12s | $-13.15 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 14:00/78251 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 16:00/80781 vs 16:00/80730.44 | 16:30/80827 vs 16:30/81026.0 | 4s | 2s | $-24.96 | SLIPPAGE |
+| long | 16:30/81057 vs 16:30/81000.0 | 17:00/80919 vs 17:00/80827.43 | 8s | 3s | $-3.46 | ENTRY_DELAY |
+| short | 17:00/80919 vs 17:00/80815.95 | 18:00/80873 vs 18:00/80973.5 | 9s | 3s | $-20.36 | ENTRY_DELAY,SLIPPAGE |
+| long | 18:00/80965 vs 18:00/80926.0 | 19:00/80873 vs 19:00/80927.0 | 12s | 2s | $9.3 | ENTRY_DELAY,SLIPPAGE |
+| short | 19:00/80873 vs 19:00/80927.0 | 19:30/81011 vs 19:30/81224.0 | 10s | 2s | $-15.9 | ENTRY_DELAY,SLIPPAGE |
+| long | 19:30/81011 vs 19:30/81206.5 | 20:30/81103 vs 20:30/81015.0 | 11s | 5s | $-28.35 | ENTRY_DELAY,SLIPPAGE |
+| short | 20:30/81103 vs 20:30/81015.0 | 21:00/81103 vs 21:00/81115.0 | 12s | 4s | $-10.0 | ENTRY_DELAY,SLIPPAGE |
+| long | 22:00/81195 vs 22:00/81216.5 | 23:30/81057 vs 23:30/80957.0 | 5s | 7s | $-12.15 | EXIT_DELAY,SLIPPAGE |
+| short | 23:30/81057 vs 23:30/80965.0 | 00:30/81011 vs 00:30/81088.5 | 14s | 5s | $-16.95 | ENTRY_DELAY,SLIPPAGE |
+
+=== DATE: 2026-09-19 ===
+
+S4 | BT trades: 5 | LIVE trades: 5
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 02:00/81011 vs 02:00/81275.5 | 04:00/81149 vs 04:00/81114.0 | 9s | 3s | $-29.95 | ENTRY_DELAY,SLIPPAGE |
+| short | 04:00/81149 vs 04:00/81114.0 | 10:00/81195 vs 08:37/81284.0 | 9s | -4939s | $-12.4 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 10:00/81241 vs 08:37/81283.0 | 18:00/81471 vs 18:00/81440.0 | -4926s | 3s | $-7.3 | ENTRY_DELAY,SLIPPAGE |
+| short | 18:00/81471 vs 18:00/81433.5 | 00:00/81241 vs 00:00/81244.5 | 10s | 7s | $-4.1 | ENTRY_DELAY,EXIT_DELAY |
+| long | 00:00/81241 vs 00:00/81226.0 | 02:00/81103 vs 02:00/81083.5 | 14s | 2s | $-0.45 | ENTRY_DELAY |
+
+S4V2 | BT trades: 7 | LIVE trades: 6
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 00:30/81057 vs 00:30/81105.5 | 01:30/81471 vs 01:30/81233.5 | 11s | 3s | $-28.6 | ENTRY_DELAY,SLIPPAGE |
+| short | 01:30/81471 vs 01:30/81248.0 | 02:30/81333 vs 02:30/81322.5 | 10s | 4s | $-21.25 | ENTRY_DELAY,SLIPPAGE |
+| short | 03:30/81195 vs 03:30/81113.5 | 07:30/81103 vs 07:30/81104.0 | 3s | 3s | $-8.25 | SLIPPAGE |
+| long | 08:30/81149 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 14:30/81379 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 17:30/81655 vs 17:30/81521.5 | 23:00/81195 vs 23:00/81247.5 | 9s | 4s | $-18.6 | ENTRY_DELAY,SLIPPAGE |
+| long | 23:00/81241 vs 23:00/81247.5 | 01:30/81103 vs 01:30/81085.5 | 13s | 2s | $-2.4 | ENTRY_DELAY |
+| long | NO_BT_SIGNAL vs 15:48/81694.5 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+=== DATE: 2026-09-20 ===
+
+S4 | BT trades: 4 | LIVE trades: 4
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 02:00/81103 vs 02:00/81078.72 | 10:00/80459 vs 10:00/80456.0 | 8s | 2s | $-2.13 | ENTRY_DELAY |
+| long | 10:00/80459 vs 10:00/80475.0 | 22:00/81011 vs 22:00/80926.5 | 9s | 3s | $-10.05 | ENTRY_DELAY,SLIPPAGE |
+| short | 22:00/81011 vs 22:00/80943.5 | 00:00/81011 vs 00:00/81150.5 | 11s | 2s | $-20.7 | ENTRY_DELAY,SLIPPAGE |
+| long | 00:00/81103 vs 00:00/81199.5 | 02:00/81057 vs 02:00/80982.5 | 10s | 3s | $-17.1 | ENTRY_DELAY,SLIPPAGE |
+
+S4V2 | BT trades: 11 | LIVE trades: 11
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 01:30/81057 vs 01:30/81091.5 | 04:00/80459 vs 04:00/80482.0 | 10s | 4s | $1.15 | ENTRY_DELAY |
+| long | 04:00/80459 vs 04:00/80499.5 | 04:30/80367 vs 04:30/80422.5 | 11s | 3s | $1.5 | ENTRY_DELAY |
+| long | 05:30/80505 vs 05:30/80526.0 | 06:30/80413 vs 06:30/80435.0 | 3s | 2s | $0.1 | OK |
+| short | 09:00/80275 vs 09:00/80231.04 | 10:00/80413 vs 10:00/80456.0 | 4s | 2s | $-8.7 | SLIPPAGE |
+| long | 10:00/80413 vs 10:00/80475.0 | 10:30/80321 vs 10:30/80366.0 | 9s | 3s | $-1.7 | ENTRY_DELAY |
+| long | 12:00/80459 vs 12:00/80449.5 | 12:30/80321 vs 12:30/80344.5 | 4s | 2s | $3.3 | OK |
+| long | 13:00/80459 vs 13:00/80470.5 | 17:30/81149 vs 17:30/81135.5 | 5s | 3s | $-2.5 | OK |
+| short | 17:30/81149 vs 17:30/81151.5 | 18:30/81241 vs 18:30/81251.0 | 10s | 4s | $-0.75 | ENTRY_DELAY |
+| short | 19:00/81149 vs 19:00/81040.5 | 19:30/81103 vs 19:30/81105.0 | 3s | 2s | $-11.05 | SLIPPAGE |
+| short | 21:30/81011 vs 21:30/80858.0 | 22:30/80965 vs 22:30/81137.0 | 3s | 4s | $-32.5 | SLIPPAGE |
+| long | 22:30/81011 vs 22:30/81135.0 | 01:00/81563 vs 01:00/81563.5 | 11s | 3s | $-12.35 | ENTRY_DELAY,SLIPPAGE |
+
+=== DATE: 2026-09-21 ===
+
+S4 | BT trades: 2 | LIVE trades: 3
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 02:00/81057 vs 02:00/81000.5 | 04:00/81103 vs 03:01/81303.5 | 10s | -3514s | $-25.7 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 04:00/81149 vs 03:01/81314.5 | 02:00/86439 vs 02:00/85603.0 | -3506s | 3s | $-100.15 | ENTRY_DELAY,SLIPPAGE |
+
+S4V2 | BT trades: 13 | LIVE trades: 11
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 01:00/81563 vs 01:00/81591.5 | 02:30/81149 vs 02:30/81407.0 | 11s | 3s | $-22.95 | ENTRY_DELAY,SLIPPAGE |
+| long | 02:30/81195 vs 02:30/81407.0 | 03:00/81287 vs 03:00/81313.5 | 11s | 3s | $-18.55 | ENTRY_DELAY,SLIPPAGE |
+| long | 03:30/81425 vs 03:30/81453.0 | 04:30/81287 vs 04:30/81262.0 | 3s | 3s | $-5.3 | SLIPPAGE |
+| short | 04:30/81287 vs 04:30/81233.5 | 05:00/81379 vs 05:00/81375.5 | 10s | 2s | $-5.0 | ENTRY_DELAY |
+| long | 05:00/81379 vs 05:00/81375.5 | 07:00/81655 vs 07:00/81608.0 | 9s | 4s | $-4.35 | ENTRY_DELAY |
+| short | 07:00/81655 vs 07:00/81611.5 | 08:00/81747 vs 08:00/81720.0 | 13s | 3s | $-1.65 | ENTRY_DELAY |
+| long | 08:30/81793 vs 08:30/82213.0 | 10:30/84461 vs 10:30/84396.5 | 3s | 2s | $-48.45 | SLIPPAGE |
+| short | 10:30/84461 vs 10:30/84390.5 | 11:30/84461 vs 11:30/85136.0 | 10s | 57s | $-74.55 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 11:30/84645 vs 11:31/85441.09 | 13:30/85105 vs 13:27/84992.5 | 64s | -136s | $-90.86 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 13:30/85105 vs 13:27/85376.0 | 14:00/85013 vs 13:44/85069.0 | -128s | -917s | $21.5 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 14:00/85151 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 21:00/87083 vs 21:00/86975.5 | 00:00/86577 vs 00:00/86597.0 | 3s | 3s | $-12.75 | SLIPPAGE |
+| long | 00:00/86623 vs 00:00/86608.5 | 00:30/86485 vs 00:30/86374.5 | 11s | 3s | $-9.6 | ENTRY_DELAY,SLIPPAGE |
+
+=== DATE: 2026-09-22 ===
+
+S4 | BT trades: 7 | LIVE trades: 6
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 02:00/86439 vs 02:00/85602.0 | 04:00/85703 vs 03:00/85724.5 | 11s | -3559s | $-85.85 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 04:00/85703 vs 03:00/85722.0 | 06:00/85565 vs 06:00/85418.5 | -3552s | 7s | $-16.55 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 06:00/85427 vs 06:00/85401.5 | 10:00/85473 vs 09:44/86043.0 | 16s | -939s | $-59.55 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 10:00/85473 vs 09:45/86046.5 | 12:00/86117 vs 11:21/86067.0 | -873s | -2326s | $-62.35 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 12:00/86117 vs 11:21/86064.0 | 14:00/86071 vs 13:14/86036.5 | -2310s | -2706s | $-1.85 | ENTRY_DELAY,EXIT_DELAY |
+| long | 14:00/86117 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 20:00/86393 vs 20:00/86166.5 | 02:00/86255 vs 02:00/86363.5 | 4s | 3s | $-33.5 | SLIPPAGE |
+
+S4V2 | BT trades: 21 | LIVE trades: 22
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 00:30/86439 vs 00:30/86370.5 | 02:30/85749 vs 02:30/85737.5 | 11s | 2s | $-5.7 | ENTRY_DELAY,SLIPPAGE |
+| long | 02:30/85749 vs 02:30/85741.5 | 03:30/85611 vs 03:30/85574.5 | 10s | 3s | $-2.9 | ENTRY_DELAY |
+| long | 04:00/85703 vs 04:00/85679.0 | 04:30/85565 vs 04:30/85540.5 | 3s | 5s | $-0.05 | OK |
+| short | 05:30/85427 vs 05:30/85192.5 | 06:00/85335 vs 06:00/85393.0 | 3s | 2s | $-29.25 | SLIPPAGE |
+| long | 06:00/85335 vs 06:00/85418.0 | 07:30/85289 vs 07:30/85306.5 | 9s | 2s | $-6.55 | ENTRY_DELAY,SLIPPAGE |
+| long | 08:30/85427 vs 08:30/85397.5 | 09:30/86025 vs 09:30/85872.5 | 3s | 2s | $-12.3 | SLIPPAGE |
+| short | 09:30/86025 vs 09:30/85872.5 | 10:00/85979 vs 09:45/86046.5 | 10s | -866s | $-22.0 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 10:00/86071 vs 10:00/86212.0 | 10:30/86117 vs 10:30/85831.5 | 3s | 3s | $-42.65 | SLIPPAGE |
+| short | 10:30/86117 vs 10:30/85830.0 | 11:30/85933 vs 11:21/86058.5 | 11s | -488s | $-41.25 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 12:30/85979 vs 11:22/86066.0 | 13:30/85933 vs 12:50/86038.0 | -4073s | -2381s | $1.8 | ENTRY_DELAY,EXIT_DELAY |
+| short | 13:30/85933 vs 12:50/86005.5 | 14:00/85841 vs 14:00/86325.0 | -2366s | 4s | $-41.15 | ENTRY_DELAY,SLIPPAGE |
+| long | 14:00/85841 vs 14:00/86280.5 | 14:30/86209 vs 14:30/85876.0 | 12s | 2s | $-77.25 | ENTRY_DELAY,SLIPPAGE |
+| short | 14:30/86209 vs 14:30/85879.5 | 15:00/86025 vs 15:00/86245.0 | 11s | 3s | $-54.95 | ENTRY_DELAY,SLIPPAGE |
+| long | 15:00/86071 vs 15:00/86217.5 | 16:30/86209 vs 16:30/86072.5 | 10s | 5s | $-28.3 | ENTRY_DELAY,SLIPPAGE |
+| short | 16:30/86163 vs 16:30/86102.0 | 17:00/86163 vs 17:00/86405.0 | 13s | 2s | $-30.3 | ENTRY_DELAY,SLIPPAGE |
+| long | 17:00/86209 vs 17:00/86375.5 | 18:30/86393 vs 18:30/86265.5 | 9s | 3s | $-29.4 | ENTRY_DELAY,SLIPPAGE |
+| short | 18:30/86393 vs 18:30/86265.5 | 19:00/86347 vs 19:00/86417.0 | 9s | 3s | $-19.75 | ENTRY_DELAY,SLIPPAGE |
+| long | 19:00/86393 vs 19:00/86446.5 | 20:00/86301 vs 20:00/86186.0 | 10s | 2s | $-16.85 | ENTRY_DELAY,SLIPPAGE |
+| short | 20:00/86301 vs 20:00/86175.5 | 20:30/86255 vs 20:30/86319.5 | 9s | 2s | $-19.0 | ENTRY_DELAY,SLIPPAGE |
+| long | 20:30/86301 vs 20:30/86317.0 | 21:00/86209 vs 21:00/86249.5 | 9s | 4s | $2.45 | ENTRY_DELAY |
+| short | 21:00/86209 vs 21:00/86253.0 | 00:30/86255 vs 00:30/86444.0 | 12s | 3s | $-14.5 | ENTRY_DELAY,SLIPPAGE |
+
+=== DATE: 2026-09-23 ===
+
+S4 | BT trades: 5 | LIVE trades: 2
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 02:00/86301 vs 02:00/86351.5 | 06:00/86531 vs 06:00/86472.0 | 10s | 2s | $-10.95 | ENTRY_DELAY,SLIPPAGE |
+| short | 06:00/86531 vs 06:00/86459.5 | 14:00/85795 vs 15:16/84717.5 | 9s | 4579s | $100.6 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 14:00/85795 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 16:00/85519 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 18:00/84093 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+
+S4V2 | BT trades: 19 | LIVE trades: 4
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 00:30/86255 vs 00:30/86457.5 | 02:00/86439 vs 02:00/86361.0 | 9s | 2s | $-28.05 | ENTRY_DELAY,SLIPPAGE |
+| short | 02:00/86393 vs 02:00/86347.5 | 02:30/86439 vs 02:30/86560.0 | 9s | 2s | $-16.65 | ENTRY_DELAY,SLIPPAGE |
+| long | 02:30/86485 vs 02:30/86531.0 | 05:30/86945 vs 05:30/86740.0 | 10s | 3s | $-25.1 | ENTRY_DELAY,SLIPPAGE |
+| short | 05:30/86945 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 11:00/85933 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 11:30/85611 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 12:00/85611 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 13:30/85565 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 14:30/85519 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 15:00/84139 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 16:00/84277 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 16:30/84093 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 17:00/84001 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 18:00/84139 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 18:30/84139 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 19:00/84231 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 20:30/84323 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 21:30/84415 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 00:00/84369 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | NO_BT_SIGNAL vs 05:30/86740.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+=== DATE: 2026-09-24 ===
+
+S4 | BT trades: 8 | LIVE trades: 3
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 02:00/84277 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 08:00/84093 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 10:00/84369 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 12:00/83357 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 18:00/84231 vs 15:24/84190.0 | 20:00/84185 vs 18:27/84435.0 | -9322s | -5544s | $-29.1 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 20:00/84277 vs 18:27/84452.5 | 22:00/84277 vs 22:00/84305.0 | -5522s | 8s | $-14.75 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 22:00/84277 vs 22:00/84293.0 | 00:00/84415 vs 00:00/84386.5 | 14s | 6s | $4.45 | ENTRY_DELAY,EXIT_DELAY |
+| long | 00:00/84415 vs 00:00/84386.5 | 04:00/84415 vs 03:15/84299.5 | 12s | -2652s | $-8.7 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+
+S4V2 | BT trades: 15 | LIVE trades: 7
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 03:00/84277 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 03:30/84185 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 05:00/84047 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 06:00/83955 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 06:30/84047 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 07:30/84185 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 08:30/84323 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 11:00/83403 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 15:00/84691 vs 15:00/83602.0 | 15:30/83771 vs 15:25/84117.0 | 3s | -254s | $-143.5 | EXIT_DELAY,SLIPPAGE |
+| long | 15:30/83771 vs 15:25/84105.0 | 17:00/84507 vs 17:00/84418.0 | -245s | 2s | $-42.3 | ENTRY_DELAY,SLIPPAGE |
+| short | 17:00/84507 vs 17:00/84369.5 | 18:30/84231 vs 18:28/84430.0 | 10s | -87s | $-33.65 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 18:30/84277 vs 18:28/84434.5 | 20:00/84461 vs 20:00/84355.5 | -79s | 2s | $-26.3 | ENTRY_DELAY,SLIPPAGE |
+| short | 20:00/84415 vs 20:00/84343.5 | 21:30/84415 vs 21:30/84395.5 | 11s | 3s | $-5.2 | ENTRY_DELAY,SLIPPAGE |
+| short | 22:00/84277 vs 22:00/84305.0 | 23:00/84277 vs 23:00/84256.5 | 7s | 2s | $4.85 | ENTRY_DELAY |
+| long | 23:30/84323 vs 23:30/84415.5 | 01:30/84461 vs 01:30/84512.0 | 5s | 4s | $-4.15 | OK |
+
+=== DATE: 2026-09-25 ===
+
+S4 | BT trades: 6 | LIVE trades: 6
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 04:00/84415 vs 03:15/84310.0 | 10:00/84139 vs 09:51/84567.5 | -2646s | -490s | $-53.35 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | 10:00/84139 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| short | 14:00/84415 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 20:00/83909 vs 16:47/83821.5 | 22:00/83863 vs 22:00/83761.5 | -11552s | 3s | $-1.4 | ENTRY_DELAY |
+| short | 22:00/83771 vs 22:00/83768.5 | 00:00/83863 vs 00:00/84070.5 | 10s | 4s | $-21.0 | ENTRY_DELAY,SLIPPAGE |
+| long | 00:00/83863 vs 00:00/84068.0 | 04:00/83955 vs 03:16/83914.0 | 9s | -2619s | $-24.6 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| long | NO_BT_SIGNAL vs 09:52/84567.5 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 10:20/84429.5 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+S4V2 | BT trades: 13 | LIVE trades: 13
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| long | 02:00/84599 vs 02:00/84597.0 | 03:00/84507 vs 03:00/84189.0 | 3s | 2s | $-31.6 | SLIPPAGE |
+| short | 03:00/84507 vs 03:00/84162.5 | 08:30/84139 vs 08:30/84399.5 | 9s | 3s | $-60.5 | ENTRY_DELAY,SLIPPAGE |
+| long | 08:30/84139 vs 08:30/84407.5 | 10:00/84599 vs 09:52/84560.0 | 9s | -467s | $-30.75 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 10:00/84599 vs 09:52/84560.0 | 10:30/84645 vs 10:30/84678.5 | -460s | 3s | $-7.25 | ENTRY_DELAY,SLIPPAGE |
+| long | 11:30/84737 vs 10:50/84721.0 | 12:00/84737 vs 12:00/84568.0 | -2352s | 2s | $-15.3 | ENTRY_DELAY,SLIPPAGE |
+| short | 12:00/84737 vs 12:00/84557.5 | 15:00/83771 vs 15:00/83968.5 | 9s | 3s | $-37.7 | ENTRY_DELAY,SLIPPAGE |
+| long | 15:00/83771 vs 15:00/83991.5 | 15:30/83863 vs 15:30/83774.5 | 9s | 5s | $-30.9 | ENTRY_DELAY,SLIPPAGE |
+| short | 15:30/83725 vs 15:30/83839.0 | 16:30/83863 vs 16:30/83970.5 | 13s | 3s | $0.65 | ENTRY_DELAY |
+| long | 16:30/83863 vs 16:30/83958.5 | 17:00/83817 vs 16:47/83817.0 | 9s | -753s | $-9.55 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | 17:00/83771 vs MISSED | - | - | - | - | MISSED_NO_LIVE_FILL |
+| long | 18:30/83817 vs 17:29/83670.0 | 21:00/83863 vs 21:00/83853.5 | -3604s | 3s | $13.75 | ENTRY_DELAY,SLIPPAGE |
+| short | 21:00/83817 vs 21:00/83846.0 | 23:00/83909 vs 23:00/84051.5 | 8s | 5s | $-11.35 | ENTRY_DELAY,SLIPPAGE |
+| long | 23:00/83909 vs 23:00/84052.0 | 00:30/83909 vs 00:30/83930.5 | 13s | 3s | $-12.15 | ENTRY_DELAY,SLIPPAGE |
+| short | NO_BT_SIGNAL vs 17:00/83730.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+=== DATE: 2026-09-26 ===
+
+S4 | BT trades: 0 | LIVE trades: 3
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | NO_BT_SIGNAL vs 03:16/83914.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 08:00/84094.62 | - | - | - | - | UNMATCHED_LV_TRADE |
+
+S4V2 | BT trades: 2 | LIVE trades: 5
+| direction | entry BT vs LV (time/price) | exit BT vs LV (time/price) | entry delay | exit delay | net slippage | issue |
+|---|---|---|---|---|---|---|
+| short | 00:30/83909 vs 00:30/83925.5 | 02:00/84001 vs 02:00/84060.0 | 10s | 3s | $-4.25 | ENTRY_DELAY |
+| long | 02:00/84001 vs 02:00/84060.0 | 03:30/83909 vs 03:16/83914.0 | 9s | -815s | $-5.4 | ENTRY_DELAY,EXIT_DELAY,SLIPPAGE |
+| short | NO_BT_SIGNAL vs 03:16/83914.0 | - | - | - | - | UNMATCHED_LV_TRADE |
+| short | NO_BT_SIGNAL vs 04:00/83925.6 | - | - | - | - | UNMATCHED_LV_TRADE |
+| long | NO_BT_SIGNAL vs 07:30/83993.5 | - | - | - | - | UNMATCHED_LV_TRADE |
