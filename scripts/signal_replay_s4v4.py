@@ -1,18 +1,11 @@
 #!/usr/bin/env python3
 """
-signal_replay_s4v2.py - S4V2 Signal Replay Bot
-Reads pre-generated backtest signals from logs/signals_s4v2.csv
+signal_replay_s4v4.py - S4V4 Signal Replay Bot
+Reads pre-generated backtest signals from logs/signals_s4v4.csv
 Places orders when current UTC time matches signal entry/exit time.
 Zero Renko recalculation. 100% match with backtest guaranteed.
 """
 import os
-try:
-    import subprocess as _sp_ver
-    _commit = _sp_ver.check_output(["git","log","-1","--format=%H","--","scripts/signal_replay_s4v2.py"], cwd="/home/anildalabanjan7/crypto_tradingsystem").decode().strip()
-    with open(f"logs/running_commit_signal_replay_s4v2.txt","w") as _f_ver:
-        _f_ver.write(_commit)
-except Exception:
-    pass
 import time, sys, time, csv, logging, re
 from datetime import datetime, timezone
 sys.path.insert(0, ".")
@@ -21,12 +14,12 @@ from engine.maintenance_flag import check_maintenance_flag
 from engine.telegram_alert import send_alert
 
 def _utc_to_ist(ts_str):
-    """Convert UTC timestamp string to IST display format (with seconds)."""
+    """Convert UTC timestamp string to IST display format."""
     try:
         from datetime import datetime, timezone, timedelta
-        dt = datetime.strptime(ts_str[:19], "%Y-%m-%dT%H:%M:%S")
+        dt = datetime.strptime(ts_str[:16], "%Y-%m-%dT%H:%M")
         ist = dt + timedelta(hours=5, minutes=30)
-        return ist.strftime("%d-%b %I:%M:%S %p IST")
+        return ist.strftime("%d-%b %I:%M %p IST")
     except:
         return ts_str
 
@@ -73,8 +66,8 @@ def _get_bt_trade(sig_ts, strategy_name):
 def _get_csv_bt_row(label, entry_ts):
     """Read BT row from signals CSV by entry_time - returns list [entry_ts, exit_ts, dir, lots, bt_entry_price, bt_exit_price]"""
     import csv as _csv
-    _sig_map = {"S2":"logs/signals_s2.csv","TM1_S2":"logs/signals_s2.csv","S4":"logs/signals_s4.csv","TM1_S4":"logs/signals_s4.csv","S4V2":"logs/signals_s4v2.csv","S4V3":"logs/signals_s4v3.csv"}
-    sig_csv = _sig_map.get(label, "logs/signals_s4.csv")
+    sig_num = "2" if label in ("S2","TM1_S2") else "4"
+    sig_csv = f"logs/signals_s{sig_num}.csv"
     try:
         with open(sig_csv,"r") as _f:
             for row in _csv.reader(_f):
@@ -112,42 +105,28 @@ def _append_fill_log(csv_path, entry_ts, exit_ts, direction, lots, bt_ep, lv_ep,
         log.warning(f'[FILL-LOG] Could not write fill log: {_e}')
 
 def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
-                                 bt_entry_price, bt_exit_price, lots=100,
-                                 entry_ts=None, exit_ts=None, total_charges=0.0,
-                                 bt_entry_ts=None, bt_exit_ts=None, bt_direction=None):
+                                 bt_entry_price, bt_exit_price, lots=100):
     try:
         from engine.telegram_alert import send_alert
-        sign_lv     = 1 if direction.lower()=="long" else -1
-        entry_slip  = entry_fill - bt_entry_price
-        exit_slip   = exit_fill  - bt_exit_price
-        entry_impact= -(entry_fill - bt_entry_price) * sign_lv * lots * 0.001
-        exit_impact = (exit_fill - bt_exit_price) * sign_lv * lots * 0.001
-        net_slip_usd= entry_impact + exit_impact
-        rt_ok       = True if net_slip_usd >= 0 else (abs(net_slip_usd) <= 10)
-        n_fav       = "fav" if net_slip_usd >= 0 else "unfav"
-        n_sign      = "+" if net_slip_usd >= 0 else "-"
+        entry_slip  = abs(entry_fill - bt_entry_price)
+        exit_slip   = abs(exit_fill  - bt_exit_price)
+        round_trip  = entry_slip + exit_slip
+        rt_ok       = round_trip <= 10
         sign_ok     = "CTS ROUND TRIP MATCH" if rt_ok else "CTS ROUND TRIP WARNING"
-        e_fav       = "fav" if entry_impact >= 0 else "unfav"
-        x_fav       = "fav" if exit_impact  >= 0 else "unfav"
-        e_emoji     = "▲" if e_fav=="fav" else "▼"
-        x_emoji     = "▲" if x_fav=="fav" else "▼"
-        n_emoji     = "▲" if n_fav=="fav" else "▼"
-        dir_lv_emoji  = "▲" if direction.lower()=="long" else "▼"
-        dir_bt_emoji  = ("▲" if bt_direction.lower()=="long" else "▼") if bt_direction else ""
-        rt_str      = f"({n_sign}) {n_fav} ${abs(net_slip_usd):.2f} ({abs(net_slip_usd)/bt_entry_price*100:.3f}%) {n_emoji} - WITHIN $10 OK" if rt_ok else f"({n_sign}) {n_fav} ${abs(net_slip_usd):.2f} ({abs(net_slip_usd)/bt_entry_price*100:.3f}%) {n_emoji} - EXCEEDS $10"
+        e_str       = f"${entry_slip:.2f} - OK" if entry_slip <= 10 else f"${entry_slip:.2f} - HIGH"
+        x_str       = f"${exit_slip:.2f} - OK"  if exit_slip  <= 10 else f"${exit_slip:.2f} - HIGH"
+        rt_str      = f"${round_trip:.2f} - WITHIN $10 OK" if rt_ok else f"${round_trip:.2f} - EXCEEDS $10"
         gross_bt    = (bt_exit_price - bt_entry_price) if direction.lower()=="long" else (bt_entry_price - bt_exit_price)
         gross_bt    = gross_bt * lots * 0.001
+        pnl5        = round(gross_bt - (5*2*lots*0.001), 2)
         pnl10       = round(gross_bt - (10*2*lots*0.001), 2)
+        s5          = "+" if pnl5  >= 0 else ""
         s10         = "+" if pnl10 >= 0 else ""
-        pnl10_emoji = "▲" if pnl10 >= 0 else "▼"
-        live_gross  = round((exit_fill - entry_fill) * sign_lv * lots * 0.001, 2)
-        live_net    = round(live_gross - total_charges, 2)
-        gs          = "+" if live_gross >= 0 else ""
-        slv         = "+" if live_net   >= 0 else ""
-        pnl_diff    = round(live_net - pnl10, 2)
+        sign_lv     = 1 if direction.lower()=="long" else -1
+        live_pnl    = round((exit_fill - entry_fill) * sign_lv * lots * 0.001, 2)
+        slv         = "+" if live_pnl >= 0 else ""
+        pnl_diff    = round(live_pnl - pnl5, 2)
         diff_s      = "+" if pnl_diff >= 0 else ""
-        live_net_emoji = "▲" if live_net >= 0 else "▼"
-        pnl_diff_emoji = "▲" if pnl_diff >= 0 else "▼"
         action_str  = ""
         count_str   = ""
         if rt_ok:
@@ -156,18 +135,15 @@ def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
         else:
             action_str = "\nAction    : Check dashboard immediately"
         msg = (
-            f"<b>{sign_ok} {label}</b>\n"
-            f"Direction : BT {dir_bt_emoji} {bt_direction.upper() if bt_direction else 'N/A'} | LV {dir_lv_emoji} {direction.upper()}\n"
-            f"Entry Time : BT {_utc_to_ist(str(bt_entry_ts)) if bt_entry_ts else 'N/A'} | LV {_utc_to_ist(str(entry_ts)) if entry_ts else entry_ts}\n"
-            f"Entry Price: BT ${bt_entry_price:,.2f} | LV ${entry_fill:,.2f}\n"
-            f"Exit Time  : BT {_utc_to_ist(str(bt_exit_ts)) if bt_exit_ts else 'N/A'} | LV {_utc_to_ist(str(exit_ts)) if exit_ts else exit_ts}\n"
-            f"Exit Price : BT ${bt_exit_price:,.2f} | LV ${exit_fill:,.2f}\n"
-            f"Entry slip: {'+' if e_fav=='fav' else '-'}${abs(entry_slip):.2f} ({abs(entry_slip)/bt_entry_price*100:.3f}%) {e_emoji}\n"
-            f"Exit slip : {'+' if x_fav=='fav' else '-'}${abs(exit_slip):.2f} ({abs(exit_slip)/bt_exit_price*100:.3f}%) {x_emoji}\n"
-            f"<b>Net slip  : {rt_str}</b>\n"
-            f"BT PnL ($10/side): {pnl10_emoji} {s10}${pnl10:,.2f}\n"
-            f"Live PnL (net)   : {live_net_emoji} {slv}${live_net:,.2f} [gross {gs}${live_gross:,.2f} - charges ${total_charges:,.2f}]\n"
-            f"PnL diff  : {pnl_diff_emoji} {diff_s}${pnl_diff:,.2f}{count_str}{action_str}"
+            f"{sign_ok} {label}\n"
+            f"Direction : MATCH ({direction.upper()})\n"
+            f"Entry slip: {e_str}\n"
+            f"Exit slip : {x_str}\n"
+            f"Round trip: {rt_str}\n"
+            f"BT PnL ($5/side) : {s5}${pnl5:,.2f}\n"
+            f"BT PnL ($10/side): {s10}${pnl10:,.2f}\n"
+            f"Live PnL         : {slv}${live_pnl:,.2f}\n"
+            f"PnL diff         : {diff_s}${pnl_diff:,.2f}{count_str}{action_str}"
         )
         send_alert(msg)
     except Exception as e:
@@ -183,8 +159,8 @@ load_dotenv(dotenv_path="/home/anildalabanjan7/crypto_tradingsystem/.env")
 def _get_csv_bt_row(label, entry_ts):
     """Read BT row from signals CSV by entry_time - returns list [entry_ts, exit_ts, dir, lots, bt_entry_price, bt_exit_price]"""
     import csv as _csv
-    _sig_map = {"S2":"logs/signals_s2.csv","TM1_S2":"logs/signals_s2.csv","S4":"logs/signals_s4.csv","TM1_S4":"logs/signals_s4.csv","S4V2":"logs/signals_s4v2.csv","S4V3":"logs/signals_s4v3.csv"}
-    sig_csv = _sig_map.get(label, "logs/signals_s4.csv")
+    sig_num = "2" if label in ("S2","TM1_S2") else "4"
+    sig_csv = f"logs/signals_s{sig_num}.csv"
     try:
         with open(sig_csv,"r") as _f:
             for row in _csv.reader(_f):
@@ -209,14 +185,11 @@ def _send_live_entry_alert(label, direction, entry_ts, fill_price, sl_price, lot
 # --- Config ---
 SYMBOL       = "BTCUSD"
 LOT_SIZE     = 100
-SIGNAL_CSV   = "logs/signals_s4v2.csv"
-TS_FILE      = "logs/last_known_ts_s4v2.txt"
+SIGNAL_CSV   = "logs/signals_s4v4.csv"
+TS_FILE      = "logs/last_known_ts_s4v4.txt"
 BASELINE_FILE= "logs/valid_from_baseline.txt"
 SLEEP_SEC    = 0.5
-LOG_FILE     = "logs/live_trading_s4v2.log"
-_entry_retry_state = {"ts": None, "count": 0, "last_attempt": 0}
-_ENTRY_MAX_ATTEMPTS = 5
-_ENTRY_RETRY_COOLDOWN_SEC = 5
+LOG_FILE     = "logs/live_trading_s4v4.log"
 
 # --- Logging ---
 os.makedirs("logs", exist_ok=True)
@@ -231,8 +204,8 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 # --- Order Manager ---
-API_KEY    = os.getenv("S4V2_API_KEY", "")
-API_SECRET = os.getenv("S4V2_API_SECRET", "")
+API_KEY    = os.getenv("S4_API_KEY", "")
+API_SECRET = os.getenv("S4_API_SECRET", "")
 om = OrderManager(API_KEY, API_SECRET, testnet=True)
 
 TS_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$")
@@ -293,7 +266,7 @@ def load_signals():
     _signals_cache["data"] = signals
     return signals
 
-SIGNAL_FILE = "logs/live_signal_s4v2.txt"
+SIGNAL_FILE = "logs/live_signal_s4v4.txt"
 def get_valid_from():
     """VALID_FROM = max(today 00:00 UTC, signal file exit time).
     Prevents firing yesterday signal on restart = no stale SL hits."""
@@ -318,21 +291,21 @@ def get_valid_from():
 
 # --- Startup ---
 # VALID_FROM resets to today 00:00 UTC on every startup for fresh window
-log.info("[STARTUP] S4V2 Signal Replay Bot starting...")
+log.info("[STARTUP] S4V4 Signal Replay Bot starting...")
 
 import time as _time_startup
 pos = om.get_position()
 _startup_retries = 0
-while not pos.get("success") and _startup_retries < 10:
-    log.warning(f"[STARTUP] get_position() failed, retry {_startup_retries+1}/10")
-    _time_startup.sleep(min(2*(_startup_retries+1),10))
+while not pos.get("success") and _startup_retries < 5:
+    log.warning(f"[STARTUP] get_position() failed, retry {_startup_retries+1}/5")
+    _time_startup.sleep(2)
     pos = om.get_position()
     _startup_retries += 1
 
 if not pos.get("success"):
-    log.critical("[STARTUP] get_position() failed after 10 retries - cannot confirm real exchange state. BLOCKING startup to prevent duplicate/wrong-size entry.")
+    log.critical("[STARTUP] get_position() failed after 5 retries - cannot confirm real exchange state. BLOCKING startup to prevent duplicate/wrong-size entry.")
     from engine.telegram_alert import send_alert
-    send_alert("CTS S4V2 CRITICAL: Startup position sync failed after 10 retries. Bot BLOCKED - manual check required before restart.")
+    send_alert("CTS S4V4 CRITICAL: Startup position sync failed after 5 retries. Bot BLOCKED - manual check required before restart.")
     raise SystemExit("[STARTUP] Position sync failed - blocking to prevent capital risk.")
 
 if pos.get("direction") == "LONG":
@@ -342,21 +315,12 @@ elif pos.get("direction") == "SHORT":
 else:
     position = None
 log.info(f"[STARTUP] Position synced from exchange: {position}")
-if position is not None:
-    try:
-        open_entry_price = float(open("logs/entry_price_s4v2.txt").read().strip())
-        log.info(f"[STARTUP] open_entry_price restored from file: {open_entry_price}")
-    except Exception:
-        open_entry_price = pos.get("entry_price", 0.0) if pos.get("success") else 0.0
-        log.warning(f"[STARTUP] entry_price file missing/invalid - recovered from live exchange position: {open_entry_price}")
-else:
-    open_entry_price = 0.0
 
 last_known_ts = load_ts_file(TS_FILE)
 valid_from    = get_valid_from()
 # If last_known_ts empty - use signal file as fallback lock
 if not last_known_ts:
-    _sig_file = "logs/live_signal_s4v2.txt"
+    _sig_file = "logs/live_signal_s4v4.txt"
     try:
         _line = open(_sig_file).read().strip()
         if _line and "|" in _line:
@@ -371,11 +335,6 @@ if position is None and last_known_ts and valid_from and last_known_ts < valid_f
     log.info(f"[STARTUP] last_known_ts advanced to valid_from={valid_from}")
 elif position is not None and last_known_ts and valid_from and last_known_ts < valid_from:
     log.info(f"[STARTUP] last_known_ts NOT advanced - position={position} open with entry_ts={last_known_ts}")
-# First-ever run (no ts file, no signal file yet) - default to valid_from, not None
-if not last_known_ts and valid_from:
-    last_known_ts = valid_from
-    save_ts_file(TS_FILE, valid_from)
-    log.info(f"[STARTUP] last_known_ts was None (first run) - set to valid_from={valid_from}")
 log.info(f"[STARTUP] last_known_ts={last_known_ts} | valid_from={valid_from}")
 
 signals = load_signals()
@@ -390,29 +349,23 @@ if position is not None:
                 log.warning(f"[SELF-HEAL] last_known_ts mismatch: had={last_known_ts} correct={_row['entry_time']} | correcting")
                 last_known_ts = safe_ts(_row["entry_time"])
                 save_ts_file(TS_FILE, last_known_ts)
-            break
 else:
     for _row in signals:
         if _row.get("entry_time") == last_known_ts and _row.get("exit_time") == "PENDING":
-            with open("logs/manual_override_s4v2.txt", "w") as _f:
+            with open("logs/manual_override_s4v4.txt", "w") as _f:
                 _f.write(f"{int(time.time())}|startup_flat_detected|entry_ts={last_known_ts}")
             log.warning(f"[STARTUP] Exchange FLAT but signal expected OPEN at entry_ts={last_known_ts} - manual close during downtime detected, override written")
             break
 
 open_lot_size   = LOT_SIZE
-if position is None:
-    open_entry_price = 0.0
-else:
-    _recovered_size = abs(pos.get("size", 0)) if pos.get("success") else 0
-    if _recovered_size > 0:
-        open_lot_size = _recovered_size
+open_entry_price = 0.0
 last_processed_seq = 0
 # FIX: on startup, if the live signal file already points at a timestamp we
 # have already handled (<= last_known_ts), mark it as seen immediately so it
 # is not re-processed as "new" right after a restart.
 try:
     import re as _re_startup
-    _lf = open("logs/live_signal_s4v2.txt").read().strip()
+    _lf = open(f"logs/live_signal_s{__file__[-4]}.txt").read().strip()
     _parts = _lf.split("|")
     if len(_parts) >= 4:
         _startup_ts  = _parts[1]
@@ -442,7 +395,7 @@ try:
             _ist_x = _utc_to_ist(_ms["exit_time"])
             log.warning(f"[MISSED TRADE] entry={_ms['entry_time']} exit={_ms['exit_time']} dir={_ms['direction']} reason=bot_restart")
             send_alert(
-                f"⚠️ CTS S4V2 BOT RESTART - MISSED TRADE\n"
+                f"⚠️ CTS S4V4 BOT RESTART - MISSED TRADE\n"
                 f"━━━━━━━━━━━━━━━━━━\n"
                 f"Dir   : {_ms['direction'].upper()}\n"
                 f"Entry : {_ist_e}\n"
@@ -473,7 +426,7 @@ def check_engine_heartbeat():
         if age_min > 15:
             log.warning(f"[ENGINE] Heartbeat stale {int(age_min)}m - engine may be dead - skipping order")
             from engine.telegram_alert import send_alert
-            send_alert(f"CTS S4V2 WARNING - Engine heartbeat stale {int(age_min)}m - orders blocked until engine restarts")
+            send_alert(f"CTS S4V4 WARNING - Engine heartbeat stale {int(age_min)}m - orders blocked until engine restarts")
             return False
         return True
     except Exception as e:
@@ -527,30 +480,22 @@ try:
 except Exception as _e_val:
     log.error(f"[CRITICAL] API key validation error: {_e_val}")
 
-# --- Signal CSV mtime cache (perf fix, no logic change) ---
-_repl_sig_cache = None
-_repl_sig_cache_mtime = None
+# Entry retry cooldown/cap state - prevents retry-spam on repeated entry failure
+_entry_retry_state = {"ts": None, "count": 0, "last_attempt": 0}
+_ENTRY_MAX_ATTEMPTS = 5
+_ENTRY_RETRY_COOLDOWN_SEC = 5
 
 while True:
     try:
-        open('logs/heartbeat_s4v2.txt','w').write(str(__import__('time').time()))
+        open('logs/heartbeat_s4v4.txt','w').write(str(__import__('time').time()))
     except Exception:
         pass
     try:
         now = now_utc_str()
 
         # --- CSV Signal Matching (single source of truth, CSV-only) ---
-        # Reload signals only if file changed (perf fix, same freshness guarantee)
-        try:
-            _cur_mtime = os.path.getmtime(SIGNAL_CSV)
-        except Exception:
-            _cur_mtime = None
-        if _cur_mtime != _repl_sig_cache_mtime:
-            signals = load_signals()
-            _repl_sig_cache = signals
-            _repl_sig_cache_mtime = _cur_mtime
-        else:
-            signals = _repl_sig_cache
+        # Reload signals every loop iteration - CSV write is instant (0.05s)
+        signals = load_signals()
 
         # --- Fast live_signal path removed - CSV-only single source of truth ---
         _live_sig = None
@@ -565,23 +510,13 @@ while True:
                 if _et < last_known_ts:
                     # Even if entry is behind last_known_ts, advance if exit also passed and no position
                     if position is None and now >= _xt and _xt > last_known_ts:
-                        log.critical(f"[SKIP] Expired signal entry={_et} exit={_xt} | advancing last_known_ts")
-                        try:
-                            from engine.telegram_alert import send_alert
-                            send_alert(f"CTS S4V2 MISSED TRADE - signal entry={_et} exit={_xt} expired before execution, skipped")
-                        except Exception:
-                            pass
+                        log.info(f"[SKIP] Expired signal entry={_et} exit={_xt} | advancing last_known_ts")
                         save_ts_file(TS_FILE, _xt)
                         last_known_ts = safe_ts(_xt)
                     continue
                 # Expired signal: exit already passed and no position - skip and advance
                 if position is None and now >= _xt:
-                    log.critical(f"[SKIP] Expired signal entry={_et} exit={_xt} | advancing last_known_ts")
-                    try:
-                        from engine.telegram_alert import send_alert
-                        send_alert(f"CTS S4V2 MISSED TRADE - signal entry={_et} exit={_xt} expired before execution, skipped")
-                    except Exception:
-                        pass
+                    log.info(f"[SKIP] Expired signal entry={_et} exit={_xt} | advancing last_known_ts")
                     save_ts_file(TS_FILE, _xt)
                     last_known_ts = safe_ts(_xt)
                     continue
@@ -606,12 +541,7 @@ while True:
 
             # --- Skip expired signal (exit already passed, no position) ---
             if position is None and now >= _xt:
-                log.critical(f"[SKIP] Expired signal | entry={sig_ts} exit={_xt} | advancing last_known_ts")
-                try:
-                    from engine.telegram_alert import send_alert
-                    send_alert(f"CTS S4V2 MISSED TRADE - signal entry={sig_ts} exit={_xt} expired before execution, skipped")
-                except Exception:
-                    pass
+                log.info(f"[SKIP] Expired signal | entry={sig_ts} exit={_xt} | advancing last_known_ts")
                 save_ts_file(TS_FILE, _xt)
                 last_known_ts = safe_ts(_xt)
                 if _live_sig: last_processed_seq = _live_sig.get("seq", 0)
@@ -627,7 +557,7 @@ while True:
                 if _next_row:
                     try:
                         from datetime import datetime as _dt_sh, timedelta as _td_sh
-                        _TF_MINUTES_SH = 30
+                        _TF_MINUTES_SH = 120
                         _next_entry_dt = _dt_sh.strptime(_next_row["entry_time"], "%Y-%m-%dT%H:%M:%S")
                         _now_dt_sh = _dt_sh.strptime(now, "%Y-%m-%dT%H:%M:%S")
                         _self_heal_due = _now_dt_sh >= _next_entry_dt + _td_sh(minutes=_TF_MINUTES_SH)
@@ -649,7 +579,7 @@ while True:
                             position = None
                             save_ts_file(TS_FILE, _next_row["entry_time"])
                             last_known_ts = safe_ts(_next_row["entry_time"])
-                            send_alert(f"CTS S4V2 SELF-HEAL: Orphaned PENDING exit auto-closed | entry={sig_ts} | advanced to next_signal={_next_row['entry_time']}")
+                            send_alert(f"CTS S4V4 SELF-HEAL: Orphaned PENDING exit auto-closed | entry={sig_ts} | advanced to next_signal={_next_row['entry_time']}")
                             log.info(f"[SELF-HEAL] Position closed, advanced to {_next_row['entry_time']}")
                         else:
                             log.error(f"[SELF-HEAL] Auto-close FAILED: {result}")
@@ -660,7 +590,7 @@ while True:
                 _ex_size = abs(actual.get("size", 0)) if actual.get("success") else 0
                 if _ex_size == 0:
                     log.info(f"[ORDER] EXIT skipped - exchange already FLAT | ts={_xt}")
-                    _send_live_exit_alert('S4V2', dirn, _xt, 0.0)
+                    _send_live_exit_alert('S4V4', dirn, _xt, 0.0)
                     position = None
                     save_ts_file(TS_FILE, _xt)
                     last_known_ts = safe_ts(_xt)
@@ -688,11 +618,11 @@ while True:
                                     if _exit_fill_price > 0:
                                         break
                             log.info(f"[ORDER] EXIT confirmed | position=None | exit={_exit_fill_price}")
-                            _send_live_exit_alert("S4V2", dirn, _xt, _exit_fill_price, _entry_price_for_alert, lots)
+                            _send_live_exit_alert("S4V4", dirn, _xt, _exit_fill_price, _entry_price_for_alert, lots)
                             _bt_ep2 = 0.0
                             _bt_xp2 = 0.0
                             for _retry_bt2 in range(20):
-                                _bt_csv2 = _get_csv_bt_row("S4V2", sig_ts)
+                                _bt_csv2 = _get_csv_bt_row("S4V4", sig_ts)
                                 _bt_ep2  = float(_bt_csv2[4]) if _bt_csv2 and len(_bt_csv2) > 4 and str(_bt_csv2[4]).strip() not in ("", "PENDING") else 0.0
                                 _bt_xp2  = float(_bt_csv2[5]) if _bt_csv2 and len(_bt_csv2) > 5 and str(_bt_csv2[5]).strip() not in ("", "PENDING") else 0.0
                                 if _bt_ep2 > 0 and _bt_xp2 > 0:
@@ -706,16 +636,17 @@ while True:
                             if _entry_price_for_alert <= 0:
                                 log.warning(f"[FILL-LOG] entry_price_for_alert is 0 for sig_ts={sig_ts} (restart-with-open-position) - logging with PENDING marker, not dropping row")
                             if _entry_price_for_alert > 0 and _exit_fill_price > 0 and _bt_ep2 > 0:
-                                _send_roundtrip_match_alert("S4V2", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2 if _bt_xp2 > 0 else _bt_ep2, lots, entry_ts=sig_ts, exit_ts=_xt, total_charges=float(_entry_commission_for_log)+float(result.get("commission",0.0)), bt_entry_ts=_bt_csv2[0] if _bt_csv2 and len(_bt_csv2)>0 else None, bt_exit_ts=_bt_csv2[1] if _bt_csv2 and len(_bt_csv2)>1 else None, bt_direction=_bt_csv2[2] if _bt_csv2 and len(_bt_csv2)>2 else None)
+                                _send_roundtrip_match_alert("S4V4", dirn, _entry_price_for_alert, _exit_fill_price, _bt_ep2, _bt_xp2 if _bt_xp2 > 0 else _bt_ep2, lots)
                             _exit_commission = result.get("commission", 0.0)
                             _total_charges = float(_entry_commission_for_log) + float(_exit_commission)
                             if _exit_fill_price > 0:
-                                _append_fill_log("logs/fill_prices_s4v2.csv", sig_ts, _xt, dirn, lots, _bt_ep_log, _lv_ep_log, _bt_xp_log, _exit_fill_price, _total_charges)
+                                _append_fill_log("logs/fill_prices_s4v4.csv", sig_ts, _xt, dirn, lots, _bt_ep_log, _lv_ep_log, _bt_xp_log, _exit_fill_price, _total_charges)
                             else:
                                 log.warning(f"[FILL-LOG] exit_fill_price is 0 for sig_ts={sig_ts} - skipping fill log row entirely")
                         else:
                             log.error(f"[ORDER] EXIT FAILED: {result}")
-                            send_alert(f"CTS S4V2 EXIT FAILED\nError: {result}")
+                            send_alert(f"CTS S4V4 EXIT FAILED\nError: {result}")
+                            log.warning(f"[ORDER] EXIT ts NOT advanced - will retry next loop | ts={_xt}")
 
             # --- ENTRY if no position and exit time not yet reached ---
             elif position is None and now < _xt:
@@ -724,57 +655,68 @@ while True:
                     continue
                 direction = dirn
                 side = "buy" if direction == "long" else "sell"
-                _override_file = "logs/manual_override_s4v2.txt"
+                _override_file = "logs/manual_override_s4v4.txt"
                 if os.path.exists(_override_file):
-                    os.remove(_override_file)
-                    # FIX (24-Aug-2026, Bug2): advance last_known_ts PAST this
-                    # signal's real exit_time, NOT just to sig_ts. Setting it
-                    # equal to sig_ts left the matching loop re-matching the
-                    # same signal on the next tick, firing ENTRY again every
-                    # ~0.5s -> repeated phantom trades (root cause of LV trade
-                    # count >> BT count).
-                    _skip_advance_ts = _xt if _xt and _xt != "PENDING" else None
-                    if not _skip_advance_ts:
-                        try:
-                            _fresh_signals = load_signals()
-                            for _frow in _fresh_signals:
-                                if _frow.get("entry_time") == sig_ts:
-                                    _cand = _frow.get("exit_time")
-                                    if _cand and _cand != "PENDING":
-                                        _skip_advance_ts = _cand
-                                    break
-                        except Exception as _e_fresh:
-                            log.warning(f"[SKIP-CHECK] Could not re-read signals for exit_time ({_e_fresh})")
-                    if not _skip_advance_ts:
-                        from datetime import datetime as _dt_sk, timedelta as _td_sk
-                        try:
-                            _skip_advance_ts = (_dt_sk.strptime(sig_ts, "%Y-%m-%dT%H:%M:%S") + _td_sk(seconds=1)).strftime("%Y-%m-%dT%H:%M:%S")
-                        except Exception:
-                            _skip_advance_ts = now_utc_str()
-                    last_known_ts = safe_ts(_skip_advance_ts)
-                    save_ts_file(TS_FILE, last_known_ts)
+                    _skip_this = True
+                    _ov_entry_ts = None
                     try:
-                        import csv as _csv_sk, os as _os_sk
-                        _sig_csv_sk = "logs/signals_s4v2.csv"
-                        with open(_sig_csv_sk, "r") as _f_sk:
-                            _rows_sk = list(_csv_sk.reader(_f_sk))
-                        _upd_sk = False
-                        for _r_sk in _rows_sk:
-                            if len(_r_sk) >= 2 and _r_sk[0] == sig_ts and _r_sk[1] == "PENDING":
-                                _r_sk[1] = "SKIPPED_MANUAL_OVERRIDE"
-                                _upd_sk = True
-                                break
-                        if _upd_sk:
-                            _tmp_sk = _sig_csv_sk + ".tmp"
-                            with open(_tmp_sk, "w", newline="") as _f_sk:
-                                _w_sk = _csv_sk.writer(_f_sk)
-                                for _r_sk in _rows_sk:
-                                    _w_sk.writerow(_r_sk)
-                            _os_sk.replace(_tmp_sk, _sig_csv_sk)
-                    except Exception as _e_sk:
-                        log.warning(f"[SKIP-CSV-FIX] Could not mark CSV row skipped: {_e_sk}")
-                    log.info(f"[SKIP] ENTRY blocked - manual_override active (single-shot) | dir={direction} | ts={sig_ts} | advanced past exit={last_known_ts}")
-                    continue
+                        with open(_override_file, "r") as _f_ov:
+                            _ov_content = _f_ov.read().strip()
+                        if "entry_ts=" in _ov_content:
+                            _ov_entry_ts = _ov_content.split("entry_ts=")[-1].strip()
+                            if _ov_entry_ts and sig_ts != _ov_entry_ts:
+                                _skip_this = False
+                    except Exception as _e_ov:
+                        log.warning(f"[SKIP-CHECK] Could not parse override file ({_e_ov}) - defaulting to skip for safety")
+                    os.remove(_override_file)
+                    if _skip_this:
+                        # FIX (24-Aug-2026, Bug2): advance last_known_ts PAST this
+                        # signal's real exit_time, NOT just to sig_ts (same root
+                        # cause / same fix as signal_replay_s4v2.py, same date).
+                        _skip_advance_ts = _xt if _xt and _xt != "PENDING" else None
+                        if not _skip_advance_ts:
+                            try:
+                                _fresh_signals = load_signals()
+                                for _frow in _fresh_signals:
+                                    if _frow.get("entry_time") == sig_ts:
+                                        _cand = _frow.get("exit_time")
+                                        if _cand and _cand != "PENDING":
+                                            _skip_advance_ts = _cand
+                                        break
+                            except Exception as _e_fresh:
+                                log.warning(f"[SKIP-CHECK] Could not re-read signals for exit_time ({_e_fresh})")
+                        if not _skip_advance_ts:
+                            from datetime import datetime as _dt_sk, timedelta as _td_sk
+                            try:
+                                _skip_advance_ts = (_dt_sk.strptime(sig_ts, "%Y-%m-%dT%H:%M:%S") + _td_sk(seconds=1)).strftime("%Y-%m-%dT%H:%M:%S")
+                            except Exception:
+                                _skip_advance_ts = now_utc_str()
+                        last_known_ts = safe_ts(_skip_advance_ts)
+                        save_ts_file(TS_FILE, last_known_ts)
+                        try:
+                            import csv as _csv_sk, os as _os_sk
+                            _sig_csv_sk = "logs/signals_s4v4.csv"
+                            with open(_sig_csv_sk, "r") as _f_sk:
+                                _rows_sk = list(_csv_sk.reader(_f_sk))
+                            _upd_sk = False
+                            for _r_sk in _rows_sk:
+                                if len(_r_sk) >= 2 and _r_sk[0] == sig_ts and _r_sk[1] == "PENDING":
+                                    _r_sk[1] = "SKIPPED_MANUAL_OVERRIDE"
+                                    _upd_sk = True
+                                    break
+                            if _upd_sk:
+                                _tmp_sk = _sig_csv_sk + ".tmp"
+                                with open(_tmp_sk, "w", newline="") as _f_sk:
+                                    _w_sk = _csv_sk.writer(_f_sk)
+                                    for _r_sk in _rows_sk:
+                                        _w_sk.writerow(_r_sk)
+                                _os_sk.replace(_tmp_sk, _sig_csv_sk)
+                        except Exception as _e_sk:
+                            log.warning(f"[SKIP-CSV-FIX] Could not mark CSV row skipped: {_e_sk}")
+                        log.info(f"[SKIP] ENTRY blocked - manual_override active (single-shot) | dir={direction} | ts={sig_ts} | advanced past exit={last_known_ts}")
+                        continue
+                    else:
+                        log.info(f"[SKIP-CHECK] Override present but for different entry_ts={_ov_entry_ts} (current sig_ts={sig_ts}) - NOT skipping, legitimate new trade")
                 _now_epoch = time.time()
                 if _entry_retry_state["ts"] != sig_ts:
                     _entry_retry_state["ts"] = sig_ts
@@ -782,7 +724,7 @@ while True:
                     _entry_retry_state["last_attempt"] = 0
                 if _entry_retry_state["count"] >= _ENTRY_MAX_ATTEMPTS:
                     log.error(f"[ORDER] ENTRY ABANDONED - {_ENTRY_MAX_ATTEMPTS} failed attempts | dir={direction} | ts={sig_ts} | advancing past exit={_xt}")
-                    send_alert(f"CTS S4V2 ENTRY ABANDONED\nDirection: {direction}\nSignal ts: {sig_ts}\nFailed {_ENTRY_MAX_ATTEMPTS}x - advancing past this signal")
+                    send_alert(f"CTS S4V4 ENTRY ABANDONED\nDirection: {direction}\nSignal ts: {sig_ts}\nFailed {_ENTRY_MAX_ATTEMPTS}x - advancing past this signal")
                     save_ts_file(TS_FILE, _xt)
                     last_known_ts = safe_ts(_xt)
                     _entry_retry_state["ts"] = None
@@ -802,7 +744,7 @@ while True:
                     if not check_engine_heartbeat():
                         log.warning("[ORDER] ENTRY blocked - engine heartbeat stale")
                     else:
-                        _cid = 'S4V2E' + sig_ts.replace('-','').replace(':','') + f'_a{_entry_retry_state["count"]}'
+                        _cid = 'S4E' + sig_ts.replace('-','').replace(':','') + f'_a{_entry_retry_state["count"]}'
                         result = om.place_market_order(side=side, size=lots, client_order_id=_cid, attempt=_entry_retry_state["count"])
                         if result.get("success"):
                             position = direction
@@ -816,6 +758,9 @@ while True:
                                     real_entry = pos_check.get("entry_price", 0.0) if pos_check.get("success") else 0.0
                                     if real_entry > 0:
                                         break
+                            open_entry_price = real_entry
+                            _entry_commission = result.get("commission", 0.0)
+                            log.info(f"[ORDER] ENTRY {side} {lots} lots | dir={direction} | ts={sig_ts}")
                             _sl_price_val = 0.0
                             if real_entry > 0:
                                 sl_result = om.place_stop_loss_order(direction=direction, entry_price=real_entry, sl_pct=10.0)
@@ -824,24 +769,17 @@ while True:
                                     log.info(f"[SL] Stop SL placed | sl_price={_sl_price_val}")
                                 else:
                                     log.error(f"[SL] Stop SL FAILED: {sl_result}")
-                                    send_alert(f"CTS S4V2 SL PLACEMENT FAILED\nDirection: {direction}\nEntry: {real_entry}\nError: {sl_result}")
+                                    send_alert(f"CTS S4V4 SL PLACEMENT FAILED\nDirection: {direction}\nEntry: {real_entry}\nError: {sl_result}")
                             else:
                                 log.error(f"[SL] NO SL PLACED - entry_price never populated after 10s")
-                                send_alert(f"CTS S4V2 CRITICAL - NO SL PLACED\nPosition open but entry_price=0 after 10s retries\nManual check required immediately")
-                            _send_live_entry_alert("S4V2", direction, datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"), real_entry, _sl_price_val, lots)
-                            _bt_csv = _get_csv_bt_row("S4V2", sig_ts)
+                                send_alert(f"CTS S4V4 CRITICAL - NO SL PLACED\nPosition open but entry_price=0 after 10s retries\nManual check required immediately")
+                            _send_live_entry_alert("S4V4", direction, datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S"), real_entry, _sl_price_val, lots)
+                            _bt_csv = _get_csv_bt_row("S4V4", sig_ts)
                             _bt_ep  = float(_bt_csv[4]) if _bt_csv and len(_bt_csv) > 4 and str(_bt_csv[4]).strip() not in ("", "PENDING") else 0.0
                             _bt_xt  = _bt_csv[1] if _bt_csv else ""
                             _bt_xp  = float(_bt_csv[5]) if _bt_csv and len(_bt_csv) > 5 and str(_bt_csv[5]).strip() not in ("", "PENDING") else 0.0
                             if _bt_ep > 0 and real_entry > 0:
-                                _send_entry_match_alert("S4V2", direction, sig_ts, _bt_ep, real_entry, _bt_xt, _bt_xp, lots)
-                            open_entry_price = real_entry
-                            try:
-                                with open("logs/entry_price_s4v2.txt","w") as _epf:
-                                    _epf.write(str(real_entry))
-                            except Exception as _e:
-                                log.warning(f"[ENTRY] entry_price persist failed: {_e}")
-                            _entry_commission = result.get("commission", 0.0)
+                                _send_entry_match_alert("S4V4", direction, sig_ts, _bt_ep, real_entry, _bt_xt, _bt_xp, lots)
                             save_ts_file(TS_FILE, sig_ts)
                             last_known_ts = sig_ts
                             log.info(f"[ORDER] ENTRY confirmed | position={position}")
@@ -849,7 +787,7 @@ while True:
                             _entry_retry_state["count"] = 0
                         else:
                             log.error(f"[ORDER] ENTRY FAILED: {result}")
-                            send_alert(f"CTS S4V2 ENTRY FAILED\n" + ("Delta side maintenance is ON - no API response" if ("max_retries_exceeded" in str(result) or "timeout" in str(result).lower()) else ("Low balance - add funds" if "insufficient" in str(result).lower() else f"Error: {result}")))
+                            send_alert(f"CTS S4V4 ENTRY FAILED\n" + ("Delta side maintenance is ON - no API response" if ("max_retries_exceeded" in str(result) or "timeout" in str(result).lower()) else ("Low balance - add funds" if "insufficient" in str(result).lower() else f"Error: {result}")))
                             last_known_ts = load_ts_file(TS_FILE)
                             _entry_retry_state["count"] += 1
 
@@ -894,18 +832,15 @@ while True:
                     last_known_ts = safe_ts(_manual_exit_ts)
                     log.info(f"[SYNC] Lock advanced past manually-closed signal to exit_time={_manual_exit_ts}")
                 else:
-                    # FIX (24-Aug-2026, Bug1): PENDING row with no exit found (SL/manual
-                    # close on exchange) - write real exit price+time into CSV so BT/live
-                    # comparison does not show a stuck PENDING trade AND so the dashboard's
-                    # _parse_log_trades() regex (exit=... price=...) has a real fill price
-                    # to pick up instead of rendering Exit $0 / "exit price missing".
-                    # Mirrors the fix already present in signal_replay_s4.py.
+                    # PENDING row with no exit found (SL/manual close on exchange) -
+                    # write real exit into CSV so BT/live comparison does not show
+                    # a stuck PENDING trade forever.
                     try:
                         import csv as _csv3, os as _os3
                         from datetime import datetime as _dt3, timezone as _tz3
                         _sync_exit_ts = _dt3.now(_tz3.utc).strftime("%Y-%m-%dT%H:%M:%S")
                         _sync_price = om.get_current_price()
-                        _sig_csv = "logs/signals_s4v2.csv"
+                        _sig_csv = "logs/signals_s4v4.csv"
                         with open(_sig_csv, "r") as _f3:
                             _rows3 = list(_csv3.reader(_f3))
                         _updated3 = False
@@ -931,12 +866,12 @@ while True:
                     except Exception as _sync_e:
                         save_ts_file(TS_FILE, last_known_ts)
                         log.warning(f"[SYNC] Could not fill PENDING exit ({_sync_e}) - lock unchanged, monitor for repeat entry")
-                with open("logs/manual_override_s4v2.txt", "w") as _f:
+                with open("logs/manual_override_s4v4.txt", "w") as _f:
                     _f.write(f"{int(time.time())}|synced_flat|entry_ts={last_known_ts}")
-                log.info("[SYNC] manual_override_s4v2.txt written - next entry signal will be skipped")
+                log.info("[SYNC] manual_override_s4v4.txt written - next entry signal will be skipped")
                 send_alert(
                     f"CTS SL HIT DETECTED\n"
-                    f"Bot: S4V2\n"
+                    f"Bot: S4V4\n"
                     f"Action: Position closed by SL on exchange\n"
                     f"Status: Synced to FLAT"
                 )
