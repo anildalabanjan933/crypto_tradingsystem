@@ -1,0 +1,24 @@
+26-Sep-2026 09:30:03 AM IST INFO [ENGINE] New 4H candle closed: 2026-09-26 00:00:00 - checking S4V3
+26-Sep-2026 09:30:03 AM IST INFO [WS] New 4H candle closed: 2026-09-26 00:00:00 - checking S4V3
+26-Sep-2026 09:30:04 AM IST INFO [S4V3] REST reconcile OK window 2026-09-24 16:00:00..2026-09-26 04:00:00 mismatches=14 critical_covered=True
+26-Sep-2026 09:30:04 AM IST WARNING [S4V3] REST reconcile corrected 14 candle(s) with WS/REST drift in window 2026-09-24 16:00:00..2026-09-26 04:00:00
+26-Sep-2026 09:30:04 AM IST INFO [S4V3] Strategy returned 340 signals | gen_signals_took=0.07s
+26-Sep-2026 09:30:04 AM IST CRITICAL [S4V3] REPAINT GUARD: signal ts=2026-09-25T08:00:00 type=ENTRY is 1200min old (threshold 360min) - already-locked history repaint attempt blocked
+26-Sep-2026 09:30:04 AM IST CRITICAL [S4V3] REPAINT GUARD: signal ts=2026-09-25T12:00:00 type=EXIT is 960min old (threshold 360min) - already-locked history repaint attempt blocked
+26-Sep-2026 09:30:04 AM IST CRITICAL [S4V3] REPAINT GUARD: signal ts=2026-09-25T16:00:00 type=ENTRY is 720min old (threshold 360min) - already-locked history repaint attempt blocked
+26-Sep-2026 09:30:04 AM IST WARNING [S4V3] SKIPPED signal ts=2026-09-26T00:00:00 type=EXIT dir=long - state mismatch (current_direction=short)
+26-Sep-2026 09:30:04 AM IST INFO [S4V3] REST reconcile OK window 2026-09-24 16:00:00..2026-09-26 04:00:00 mismatches=0 critical_covered=True
+26-Sep-2026 09:30:04 AM IST INFO [S4V3] Strategy returned 340 signals | gen_signals_took=0.08s
+26-Sep-2026 09:30:04 AM IST CRITICAL [S4V3] REPAINT GUARD: signal ts=2026-09-25T08:00:00 type=ENTRY is 1200min old (threshold 360min) - already-locked history repaint attempt blocked
+26-Sep-2026 09:30:04 AM IST CRITICAL [S4V3] REPAINT GUARD: signal ts=2026-09-25T12:00:00 type=EXIT is 960min old (threshold 360min) - already-locked history repaint attempt blocked
+26-Sep-2026 09:30:04 AM IST CRITICAL [S4V3] REPAINT GUARD: signal ts=2026-09-25T16:00:00 type=ENTRY is 720min old (threshold 360min) - already-locked history repaint attempt blocked
+26-Sep-2026 09:30:04 AM IST WARNING [S4V3] SKIPPED signal ts=2026-09-26T00:00:00 type=EXIT dir=long - state mismatch (current_direction=short)
+26-Sep-2026 09:30:00 PM IST INFO [ENGINE] Boundary watcher trigger S4V3: 2026-09-26T16:00:00 - checking S4V3 (independent retry, decoupled from WS claim)
+26-Sep-2026 09:30:04 PM IST INFO [WS] New 4H candle closed: 2026-09-26 12:00:00 - checking S4V3
+26-Sep-2026 09:30:07 PM IST INFO [S4V3] REST reconcile OK window 2026-09-25 04:00:00..2026-09-26 16:00:00 mismatches=28 critical_covered=True
+26-Sep-2026 09:30:07 PM IST WARNING [S4V3] REST reconcile corrected 28 candle(s) with WS/REST drift in window 2026-09-25 04:00:00..2026-09-26 16:00:00
+26-Sep-2026 09:30:07 PM IST INFO [S4V3] Strategy returned 341 signals | gen_signals_took=0.18s
+26-Sep-2026 09:30:07 PM IST CRITICAL [S4V3] REPAINT GUARD: signal ts=2026-09-26T04:00:00 type=ENTRY is 720min old (threshold 360min) - already-locked history repaint attempt blocked
+26-Sep-2026 09:30:39 PM IST INFO [S4V3] REST reconcile OK window 2026-09-25 04:00:00..2026-09-26 16:00:00 mismatches=0 critical_covered=True
+26-Sep-2026 09:30:39 PM IST INFO [S4V3] Strategy returned 341 signals | gen_signals_took=0.07s
+26-Sep-2026 09:30:39 PM IST CRITICAL [S4V3] REPAINT GUARD: signal ts=2026-09-26T04:00:00 type=ENTRY is 721min old (threshold 360min) - already-locked history repaint attempt blocked
