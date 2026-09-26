@@ -18,6 +18,7 @@ FULL_FETCH_START = "2024-01-01"
 MAX_CANDLES = 2000
 RESOLUTION = "1m"
 CANDLE_SECONDS = 60
+OVERLAP_SECONDS = 7200  # re-fetch last 2 hours every update to self-heal stale bars
 
 
 def fetch_candles(symbol, start_ts, end_ts):
@@ -102,7 +103,7 @@ def download_or_update(asset_key):
         mode = "full"
         print("  No existing file found. Full fetch from " + FULL_FETCH_START + ".")
     else:
-        start_ts = last_ts + CANDLE_SECONDS
+        start_ts = last_ts - OVERLAP_SECONDS + CANDLE_SECONDS
         mode = "incremental"
         last_dt = datetime.utcfromtimestamp(last_ts).strftime("%Y-%m-%d %H:%M:%S")
         print("  Existing file found. Incremental update from " + last_dt + " UTC.")
@@ -134,11 +135,11 @@ def download_or_update(asset_key):
         print("  No new candles fetched for " + symbol + ".")
         return
     new_df = candles_to_df(all_candles)
-    new_df = new_df.drop_duplicates(subset=["Date", "Time"]).sort_values(["Date", "Time"]).reset_index(drop=True)
+    new_df = new_df.drop_duplicates(subset=["Date", "Time"], keep="last").sort_values(["Date", "Time"]).reset_index(drop=True)
     if mode == "incremental" and os.path.exists(filepath):
         existing_df = pd.read_csv(filepath)
         combined = pd.concat([existing_df, new_df], ignore_index=True)
-        combined = combined.drop_duplicates(subset=["Date", "Time"]).sort_values(["Date", "Time"]).reset_index(drop=True)
+        combined = combined.drop_duplicates(subset=["Date", "Time"], keep="last").sort_values(["Date", "Time"]).reset_index(drop=True)
         _csv_lock_write(filepath, combined)
         print("  Updated: " + str(len(new_df)) + " new rows added. Total rows: " + str(len(combined)) + ".")
     else:
