@@ -129,7 +129,7 @@ check_heartbeat_stale live_s4 logs/heartbeat_s4.txt 300
 check_and_start live_s4 scripts/signal_replay_s4.py logs/live_trading_s4.log
 # DISABLED (24-Aug-2026, replaced by testmember1_s4, shared account rule): check_and_start testmember1_s4v2 scripts/signal_replay_testmember1_s4v2.py logs/live_trading_testmember1_s4v2.log
 check_heartbeat_stale testmember1_s4 logs/heartbeat_testmember1_s4.txt 300
-check_and_start testmember1_s4 scripts/signal_replay_testmember1_s4.py logs/live_trading_testmember1_s4.log
+# DISABLED (27-Sep-2026, inactive bot): check_and_start testmember1_s4 scripts/signal_replay_testmember1_s4.py logs/live_trading_testmember1_s4.log
 check_heartbeat_stale signal_generator logs/engine_heartbeat.txt 300
 check_and_start signal_generator scripts/renko_state_engine.py logs/renko_state_engine.log
 check_heartbeat_stale boundary_watcher logs/boundary_watcher_heartbeat.txt 300
