@@ -853,7 +853,7 @@ while True:
                             _entry_retry_state["count"] = 0
                         else:
                             log.error(f"[ORDER] ENTRY FAILED: {result}")
-                            send_alert(f"CTS S4V3 ENTRY FAILED\nError: {result}")
+                            send_alert(f"CTS S4V3 ENTRY FAILED\n" + ("Delta side maintenance is ON - no API response" if ("max_retries_exceeded" in str(result) or "timeout" in str(result).lower()) else ("Low balance - add funds" if "insufficient" in str(result).lower() else f"Error: {result}")))
                             last_known_ts = load_ts_file(TS_FILE)
                             _entry_retry_state["count"] += 1
 
