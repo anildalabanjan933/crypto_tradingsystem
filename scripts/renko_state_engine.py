@@ -469,6 +469,7 @@ def check_and_fire(state,is_s4=False):
                 log.warning(f"[{state.label}] SKIPPED signal ts={ts} type={sig_type} dir={direction} - state mismatch (current_direction={state.current_direction}), mismatch_count={state._mismatch_count}, stale_sec={_stale_sec:.0f}")
                 if state._mismatch_count>=3 or _stale_sec>_tfm*60*1.5:
                     _real_dir=None
+                    _resync_ok=False
                     try:
                         _api_key=os.getenv(f"{state.label}_API_KEY","")
                         _api_secret=os.getenv(f"{state.label}_API_SECRET","")
@@ -479,17 +480,23 @@ def check_and_fire(state,is_s4=False):
                             if _pos.get("success"):
                                 _d=_pos.get("direction","FLAT")
                                 _real_dir={"LONG":"long","SHORT":"short","FLAT":None}.get(_d)
+                                _resync_ok=True
                     except Exception as _e:
                         log.error(f"[{state.label}] AUTO-RESYNC exchange read failed: {_e}")
-                    log.critical(f"[{state.label}] AUTO-RESYNC: internal current_direction={state.current_direction} disagreed with signals for {_stale_sec:.0f}s ({state._mismatch_count} rejects) - correcting to exchange-reported={_real_dir}")
-                    try:
-                        from engine.telegram_alert import send_alert
-                        send_alert(f"CTS {state.label} AUTO-RESYNC fired - state was stuck {_stale_sec:.0f}s, corrected direction {state.current_direction}->{_real_dir}")
-                    except Exception:
-                        pass
-                    state.current_direction=_real_dir
-                    state._mismatch_count=0
-                    state._mismatch_since=None
+                    if not _resync_ok:
+                        log.error(f"[{state.label}] AUTO-RESYNC skipped - exchange query failed/unavailable, state left unchanged (current_direction={state.current_direction}), will retry next cycle")
+                    else:
+                        log.critical(f"[{state.label}] AUTO-RESYNC: internal current_direction={state.current_direction} disagreed with signals for {_stale_sec:.0f}s ({state._mismatch_count} rejects) - correcting to exchange-reported={_real_dir}")
+                        try:
+                            from engine.telegram_alert import send_alert
+                            send_alert(f"CTS {state.label} AUTO-RESYNC fired - state was stuck {_stale_sec:.0f}s, corrected direction {state.current_direction}->{_real_dir}")
+                        except Exception:
+                            pass
+                        if state.current_direction != _real_dir:
+                            state.open_entry_ts=None
+                        state.current_direction=_real_dir
+                        state._mismatch_count=0
+                        state._mismatch_since=None
     except Exception as e:
         log.error(f"[{state.label}] check error: {e}",exc_info=True)
     finally:
