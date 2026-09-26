@@ -112,6 +112,8 @@ class StrategyState:
         self.box_size=None
         self.open_entry_ts=None
         self.lock=threading.Lock()
+        self._mismatch_count=0
+        self._mismatch_since=None
 
 
 
@@ -459,7 +461,35 @@ def check_and_fire(state,is_s4=False):
             elif sig_type in ("BUY_A","BUY_B","SELL_A","SELL_B","ENTRY") and state.current_direction is None:
                 _fire(state,ts,price,direction,"ENTRY",box,now_utc,signals)
             else:
-                log.warning(f"[{state.label}] SKIPPED signal ts={ts} type={sig_type} dir={direction} - state mismatch (current_direction={state.current_direction})")
+                _now_t=time.time()
+                if state._mismatch_since is None:
+                    state._mismatch_since=_now_t
+                state._mismatch_count+=1
+                _stale_sec=_now_t-state._mismatch_since
+                log.warning(f"[{state.label}] SKIPPED signal ts={ts} type={sig_type} dir={direction} - state mismatch (current_direction={state.current_direction}), mismatch_count={state._mismatch_count}, stale_sec={_stale_sec:.0f}")
+                if state._mismatch_count>=3 or _stale_sec>_tfm*60*1.5:
+                    _real_dir=None
+                    try:
+                        _api_key=os.getenv(f"{state.label}_API_KEY","")
+                        _api_secret=os.getenv(f"{state.label}_API_SECRET","")
+                        if _api_key and _api_secret:
+                            from engine.order_manager import OrderManager
+                            _om=OrderManager(_api_key,_api_secret,testnet=True)
+                            _pos=_om.get_position()
+                            if _pos.get("success"):
+                                _d=_pos.get("direction","FLAT")
+                                _real_dir={"LONG":"long","SHORT":"short","FLAT":None}.get(_d)
+                    except Exception as _e:
+                        log.error(f"[{state.label}] AUTO-RESYNC exchange read failed: {_e}")
+                    log.critical(f"[{state.label}] AUTO-RESYNC: internal current_direction={state.current_direction} disagreed with signals for {_stale_sec:.0f}s ({state._mismatch_count} rejects) - correcting to exchange-reported={_real_dir}")
+                    try:
+                        from engine.telegram_alert import send_alert
+                        send_alert(f"CTS {state.label} AUTO-RESYNC fired - state was stuck {_stale_sec:.0f}s, corrected direction {state.current_direction}->{_real_dir}")
+                    except Exception:
+                        pass
+                    state.current_direction=_real_dir
+                    state._mismatch_count=0
+                    state._mismatch_since=None
     except Exception as e:
         log.error(f"[{state.label}] check error: {e}",exc_info=True)
     finally:
