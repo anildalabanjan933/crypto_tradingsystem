@@ -303,6 +303,12 @@ def _reconcile_window_from_rest(state, tf_minutes):
         return False
     window_start = (state.last_1m_ts - pd.Timedelta(minutes=tf_minutes*8)).floor(f"{tf_minutes}min")
     window_end   = state.last_1m_ts + pd.Timedelta(minutes=1)
+    _lock_ts = state.last_exit_ts if (state.last_exit_ts and (not state.last_entry_ts or state.last_exit_ts >= state.last_entry_ts)) else state.last_entry_ts
+    if _lock_ts:
+        _lock_dt = pd.to_datetime(_lock_ts)
+        if window_start < _lock_dt:
+            log.info(f"[{state.label}] REST reconcile window clipped: {window_start} -> {_lock_dt} (locked signal boundary, avoiding history repaint)")
+            window_start = _lock_dt
     rest_df = _fetch_rest_candles_window(window_start, window_end)
     if rest_df is None or rest_df.empty:
         log.warning(f"[{state.label}] REST reconcile unavailable for window {window_start}..{window_end} - using WS-built buffer as-is")
@@ -377,6 +383,47 @@ def _get_locked_reference(label, state):
     state._locked_ref = _ref
     return _ref
 
+def _bump_mismatch_and_maybe_resync(state, tfm, ts, sig_type, direction, blocked_by_repaint_guard=False):
+    _now_t=time.time()
+    if state._mismatch_since is None:
+        state._mismatch_since=_now_t
+    state._mismatch_count+=1
+    _stale_sec=_now_t-state._mismatch_since
+    if not blocked_by_repaint_guard:
+        log.warning(f"[{state.label}] SKIPPED signal ts={ts} type={sig_type} dir={direction} - state mismatch (current_direction={state.current_direction}), mismatch_count={state._mismatch_count}, stale_sec={_stale_sec:.0f}")
+    else:
+        log.warning(f"[{state.label}] REPAINT-BLOCKED signal ts={ts} type={sig_type} dir={direction} still counted for resync - mismatch_count={state._mismatch_count}, stale_sec={_stale_sec:.0f}")
+    if state._mismatch_count>=3 or _stale_sec>tfm*60*1.5:
+        _real_dir=None
+        _resync_ok=False
+        try:
+            _api_key=os.getenv(f"{state.label}_API_KEY","")
+            _api_secret=os.getenv(f"{state.label}_API_SECRET","")
+            if _api_key and _api_secret:
+                from engine.order_manager import OrderManager
+                _om=OrderManager(_api_key,_api_secret,testnet=True)
+                _pos=_om.get_position()
+                if _pos.get("success"):
+                    _d=_pos.get("direction","FLAT")
+                    _real_dir={"LONG":"long","SHORT":"short","FLAT":None}.get(_d)
+                    _resync_ok=True
+        except Exception as _e:
+            log.error(f"[{state.label}] AUTO-RESYNC exchange read failed: {_e}")
+        if not _resync_ok:
+            log.error(f"[{state.label}] AUTO-RESYNC skipped - exchange query failed/unavailable, state left unchanged (current_direction={state.current_direction}), will retry next cycle")
+        else:
+            log.critical(f"[{state.label}] AUTO-RESYNC: internal current_direction={state.current_direction} disagreed with signals for {_stale_sec:.0f}s ({state._mismatch_count} rejects) - correcting to exchange-reported={_real_dir}")
+            try:
+                from engine.telegram_alert import send_alert
+                send_alert(f"CTS {state.label} AUTO-RESYNC fired - state was stuck {_stale_sec:.0f}s, corrected direction {state.current_direction}->{_real_dir}")
+            except Exception:
+                pass
+            if state.current_direction != _real_dir:
+                state.open_entry_ts=None
+            state.current_direction=_real_dir
+            state._mismatch_count=0
+            state._mismatch_since=None
+
 def check_and_fire(state,is_s4=False):
     import pandas as pd
     from datetime import datetime,timezone
@@ -442,6 +489,7 @@ def check_and_fire(state,is_s4=False):
                     _age_min=(now_utc.replace(tzinfo=None)-_sig_dt).total_seconds()/60.0
                     if _age_min > _tfm*1.5:
                         log.critical(f"[{state.label}] REPAINT GUARD: signal ts={ts} type={sig.get('signal_type')} is {_age_min:.0f}min old (threshold {_tfm*1.5:.0f}min) - already-locked history repaint attempt blocked")
+                        _bump_mismatch_and_maybe_resync(state, _tfm, ts, sig.get("signal_type"), sig.get("direction",""), blocked_by_repaint_guard=True)
                         continue
                 except Exception:
                     pass
@@ -461,42 +509,7 @@ def check_and_fire(state,is_s4=False):
             elif sig_type in ("BUY_A","BUY_B","SELL_A","SELL_B","ENTRY") and state.current_direction is None:
                 _fire(state,ts,price,direction,"ENTRY",box,now_utc,signals)
             else:
-                _now_t=time.time()
-                if state._mismatch_since is None:
-                    state._mismatch_since=_now_t
-                state._mismatch_count+=1
-                _stale_sec=_now_t-state._mismatch_since
-                log.warning(f"[{state.label}] SKIPPED signal ts={ts} type={sig_type} dir={direction} - state mismatch (current_direction={state.current_direction}), mismatch_count={state._mismatch_count}, stale_sec={_stale_sec:.0f}")
-                if state._mismatch_count>=3 or _stale_sec>_tfm*60*1.5:
-                    _real_dir=None
-                    _resync_ok=False
-                    try:
-                        _api_key=os.getenv(f"{state.label}_API_KEY","")
-                        _api_secret=os.getenv(f"{state.label}_API_SECRET","")
-                        if _api_key and _api_secret:
-                            from engine.order_manager import OrderManager
-                            _om=OrderManager(_api_key,_api_secret,testnet=True)
-                            _pos=_om.get_position()
-                            if _pos.get("success"):
-                                _d=_pos.get("direction","FLAT")
-                                _real_dir={"LONG":"long","SHORT":"short","FLAT":None}.get(_d)
-                                _resync_ok=True
-                    except Exception as _e:
-                        log.error(f"[{state.label}] AUTO-RESYNC exchange read failed: {_e}")
-                    if not _resync_ok:
-                        log.error(f"[{state.label}] AUTO-RESYNC skipped - exchange query failed/unavailable, state left unchanged (current_direction={state.current_direction}), will retry next cycle")
-                    else:
-                        log.critical(f"[{state.label}] AUTO-RESYNC: internal current_direction={state.current_direction} disagreed with signals for {_stale_sec:.0f}s ({state._mismatch_count} rejects) - correcting to exchange-reported={_real_dir}")
-                        try:
-                            from engine.telegram_alert import send_alert
-                            send_alert(f"CTS {state.label} AUTO-RESYNC fired - state was stuck {_stale_sec:.0f}s, corrected direction {state.current_direction}->{_real_dir}")
-                        except Exception:
-                            pass
-                        if state.current_direction != _real_dir:
-                            state.open_entry_ts=None
-                        state.current_direction=_real_dir
-                        state._mismatch_count=0
-                        state._mismatch_since=None
+                _bump_mismatch_and_maybe_resync(state, _tfm, ts, sig_type, direction)
     except Exception as e:
         log.error(f"[{state.label}] check error: {e}",exc_info=True)
     finally:
