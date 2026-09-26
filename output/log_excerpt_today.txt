@@ -1,0 +1,47 @@
+26-Sep-2026 01:30:01 AM IST INFO [S4] REST reconcile OK window 2026-09-25 02:00:00..2026-09-25 20:00:00 mismatches=12 critical_covered=True
+26-Sep-2026 01:30:01 AM IST WARNING [S4] REST reconcile corrected 12 candle(s) with WS/REST drift in window 2026-09-25 02:00:00..2026-09-25 20:00:00
+26-Sep-2026 01:30:01 AM IST INFO [S4] Strategy returned 565 signals | gen_signals_took=0.05s
+26-Sep-2026 01:30:01 AM IST WARNING [S4] SKIPPED signal ts=2026-09-25T18:00:00 type=EXIT dir=short - state mismatch (current_direction=long)
+26-Sep-2026 01:30:01 AM IST WARNING [S4] SKIPPED signal ts=2026-09-25T18:00:00 type=ENTRY dir=long - state mismatch (current_direction=long)
+26-Sep-2026 02:07:10 AM IST INFO [S4] +1 candles | last=2026-09-25 20:36:00
+26-Sep-2026 03:30:02 AM IST INFO [S4] REST reconcile OK window 2026-09-25 04:00:00..2026-09-25 22:00:00 mismatches=10 critical_covered=True
+26-Sep-2026 03:30:02 AM IST WARNING [S4] REST reconcile corrected 10 candle(s) with WS/REST drift in window 2026-09-25 04:00:00..2026-09-25 22:00:00
+26-Sep-2026 03:30:02 AM IST INFO [S4] Strategy returned 567 signals | gen_signals_took=0.04s
+26-Sep-2026 03:30:02 AM IST CRITICAL [S4] REPAINT GUARD: signal ts=2026-09-25T18:00:00 type=EXIT is 240min old (threshold 180min) - already-locked history repaint attempt blocked
+26-Sep-2026 03:30:02 AM IST CRITICAL [S4] REPAINT GUARD: signal ts=2026-09-25T18:00:00 type=ENTRY is 240min old (threshold 180min) - already-locked history repaint attempt blocked
+26-Sep-2026 03:30:02 AM IST INFO [S4] CSV exit updated to 2026-09-25T20:00:00 (matched entry 2026-09-25T16:00:00)
+26-Sep-2026 03:30:02 AM IST INFO [S4] EXIT long at 2026-09-25T20:00:00
+26-Sep-2026 03:30:02 AM IST INFO [S4] INSTANT CSV append: 2026-09-25T20:00:00,PENDING,short
+26-Sep-2026 03:30:02 AM IST INFO [S4] ENTRY short at 2026-09-25T20:00:00
+26-Sep-2026 05:30:02 AM IST INFO [S4] REST reconcile OK window 2026-09-25 06:00:00..2026-09-26 00:00:00 mismatches=4 critical_covered=True
+26-Sep-2026 05:30:02 AM IST WARNING [S4] REST reconcile corrected 4 candle(s) with WS/REST drift in window 2026-09-25 06:00:00..2026-09-26 00:00:00
+26-Sep-2026 05:30:02 AM IST INFO [S4] Strategy returned 569 signals | gen_signals_took=0.06s
+26-Sep-2026 05:30:02 AM IST INFO [S4] CSV exit updated to 2026-09-25T22:00:00 (matched entry 2026-09-25T20:00:00)
+26-Sep-2026 05:30:02 AM IST INFO [S4] EXIT short at 2026-09-25T22:00:00
+26-Sep-2026 05:30:02 AM IST INFO [S4] INSTANT CSV append: 2026-09-25T22:00:00,PENDING,long
+26-Sep-2026 05:30:02 AM IST INFO [S4] ENTRY long at 2026-09-25T22:00:00
+26-Sep-2026 01:30:01 PM IST INFO [S4] REST reconcile OK window 2026-09-25 14:00:00..2026-09-26 08:00:00 mismatches=7 critical_covered=True
+26-Sep-2026 01:30:01 PM IST WARNING [S4] REST reconcile corrected 7 candle(s) with WS/REST drift in window 2026-09-25 14:00:00..2026-09-26 08:00:00
+26-Sep-2026 01:30:01 PM IST INFO [S4] Strategy returned 569 signals | gen_signals_took=0.05s
+26-Sep-2026 01:30:01 PM IST INFO [S4] CSV exit updated to 2026-09-26T06:00:00 (matched entry None)
+26-Sep-2026 01:30:01 PM IST INFO [S4] EXIT short at 2026-09-26T06:00:00
+26-Sep-2026 01:30:01 PM IST INFO [S4] INSTANT CSV append: 2026-09-26T06:00:00,PENDING,long
+26-Sep-2026 01:30:01 PM IST INFO [S4] ENTRY long at 2026-09-26T06:00:00
+26-Sep-2026 03:30:01 PM IST INFO [S4] REST reconcile OK window 2026-09-25 16:00:00..2026-09-26 10:00:00 mismatches=13 critical_covered=True
+26-Sep-2026 03:30:01 PM IST WARNING [S4] REST reconcile corrected 13 candle(s) with WS/REST drift in window 2026-09-25 16:00:00..2026-09-26 10:00:00
+26-Sep-2026 03:30:01 PM IST INFO [S4] Strategy returned 571 signals | gen_signals_took=0.04s
+26-Sep-2026 03:30:01 PM IST INFO [S4] CSV exit updated to 2026-09-26T08:00:00 (matched entry 2026-09-26T06:00:00)
+26-Sep-2026 03:30:01 PM IST INFO [S4] EXIT long at 2026-09-26T08:00:00
+26-Sep-2026 03:30:01 PM IST INFO [S4] INSTANT CSV append: 2026-09-26T08:00:00,PENDING,short
+26-Sep-2026 03:30:01 PM IST INFO [S4] ENTRY short at 2026-09-26T08:00:00
+26-Sep-2026 05:08:15 PM IST INFO [S4] Loading full history...
+26-Sep-2026 05:08:18 PM IST INFO [S4] box_size=46 (matches backtest exactly)
+26-Sep-2026 05:08:18 PM IST INFO [S4] Loaded 1,394,632 candles | last=2026-09-26 11:37:00
+26-Sep-2026 05:08:18 PM IST INFO [S4] Pre-built 2h dataframe: 800 candles
+26-Sep-2026 05:08:25 PM IST INFO [S4] current_direction restored: short
+26-Sep-2026 05:08:25 PM IST INFO [S4] open_entry_ts restored: 2026-09-26T08:00:00
+26-Sep-2026 05:08:25 PM IST INFO [S4] Strategy returned 573 signals | gen_signals_took=0.07s
+26-Sep-2026 05:08:25 PM IST INFO [S4] CSV exit updated to 2026-09-26T10:00:00 (matched entry 2026-09-26T08:00:00)
+26-Sep-2026 05:08:43 PM IST INFO [S4] EXIT short at 2026-09-26T10:00:00
+26-Sep-2026 05:08:43 PM IST INFO [S4] INSTANT CSV append: 2026-09-26T10:00:00,PENDING,long
+26-Sep-2026 05:08:59 PM IST INFO [S4] ENTRY long at 2026-09-26T10:00:00
