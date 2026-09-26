@@ -271,3 +271,5 @@ OVERALL: All 4 remaining accidental-loss investigation items for S4/S4V2
 are now closed. No new code fixes required beyond what is already applied
 (15-Aug bad-fill IOC-band fix, 17-Aug manual-close override-flag fix).
 Investigation phase for accidental losses is COMPLETE.
+[26-Sep-2026] | S4 reload-loop CPU fix | STATUS: FIXED
+Added mtime-cache in signal_replay_s4.py so CSV loads only on file change, not every 0.5s. CPU 3.4% -> 1.3%.
