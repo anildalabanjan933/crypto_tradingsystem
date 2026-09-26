@@ -67,6 +67,12 @@ def _find_real_exit_fill(om, direction, entry_ts_str, window_end_ts_str, expecte
         except Exception:
             continue
         if entry_dt <= f_dt <= window_end_dt:
+            if expected_size is not None:
+                try:
+                    if abs(float(f.get("size", 0))) != abs(float(expected_size)):
+                        continue
+                except Exception:
+                    pass
             candidates.append((f_dt, f))
     if not candidates:
         return None, None
