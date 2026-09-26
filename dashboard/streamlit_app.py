@@ -1603,6 +1603,9 @@ if _active_tab == "MONITOR":
     except: _bw_ok = False
 
     # DELTA API (TESTNET) - synced with sl_safety_monitor.log using TIME WINDOW (not line count)
+    _api_fail_count = 0
+    _api_fail_last_ts = None
+    _api_fail_path = ""
     try:
         import re as _re
         _api_result = _timed('delta_api_status', 60, _fetch_delta_api_status)
@@ -1616,11 +1619,17 @@ if _active_tab == "MONITOR":
                     try:
                         _fail_ts = _dt_lamps.datetime.strptime(_m_ts.group(1), "%Y-%m-%d %H:%M:%S")
                         _age_sec = (_dt_lamps.datetime.utcnow() - _fail_ts).total_seconds()
-                        if _age_sec < 300:
-                            _recent_fail = True
                     except Exception:
-                        pass
-                break
+                        continue
+                    if _age_sec >= 300:
+                        break
+                    _recent_fail = True
+                    _api_fail_count += 1
+                    if _api_fail_last_ts is None:
+                        _api_fail_last_ts = _fail_ts
+                        _m_path = _re.search(r'Path:\s*(\S+)', _l)
+                        if _m_path:
+                            _api_fail_path = _m_path.group(1)
         if _recent_fail:
             _api_ok = False
     except: _api_ok = False
@@ -1734,6 +1743,12 @@ if _active_tab == "MONITOR":
     )
     st.markdown(f"""<div style='background:#f0f7ff;border:1px solid #90CAF9;border-radius:6px;padding:10px 16px;margin-bottom:4px;'>{_row1}</div>
 <div style='background:#f0f7ff;border:1px solid #90CAF9;border-radius:6px;padding:10px 16px;margin-bottom:12px;'>{_row2}</div>""", unsafe_allow_html=True)
+    if _api_fail_count > 0:
+        try:
+            _api_fail_last_ist = (_api_fail_last_ts + _dt_lamps.timedelta(hours=5, minutes=30)).strftime("%H:%M:%S")
+        except Exception:
+            _api_fail_last_ist = "?"
+        st.markdown(f"<div style='color:#b36b00;font-size:0.85em;margin:-6px 0 10px 4px;'>\u26a0 API flapping: {_api_fail_count} failure(s) in last 5 min (last: {_api_fail_last_ist} IST, path: {_api_fail_path or 'unknown'})</div>", unsafe_allow_html=True)
 
     # ================================================================
     # SECTION 1B - BOT CONTROL (STOP / RESTART for S4 and S4V2)
@@ -7651,6 +7666,10 @@ if _active_tab == "ANALYSIS":
                                 continue
                             if "unfilled_beyond_band" in _line and "ENTRY FAILED" in _line:
                                 _issues.append("Entry order rejected - price moved outside safety band (protects against bad fills during sharp BTC price spikes)")
+                            elif "ENTRY FAILED" in _line and "Delta side maintenance is ON" in _line:
+                                _issues.append("Delta side maintenance is ON - no API response")
+                            elif "ENTRY FAILED" in _line and "Low balance" in _line:
+                                _issues.append("Low balance - add funds")
                             elif "ENTRY FAILED" in _line:
                                 _issues.append("Entry order failed - exchange rejected the order, bot logged error and moved on")
                             elif "ENTRY ABANDONED" in _line:
@@ -8294,6 +8313,10 @@ def _month_trades_html(df2, df4, df2_fwd, df4_fwd):
                     if not (_ws <= _lt2 <= _we): continue
                     if "unfilled_beyond_band" in _line and "ENTRY FAILED" in _line:
                         _issues.append("Entry order rejected - price moved outside safety band (protects against bad fills during sharp BTC price spikes)")
+                    elif "ENTRY FAILED" in _line and "Delta side maintenance is ON" in _line:
+                        _issues.append("Delta side maintenance is ON - no API response")
+                    elif "ENTRY FAILED" in _line and "Low balance" in _line:
+                        _issues.append("Low balance - add funds")
                     elif "ENTRY FAILED" in _line:
                         _issues.append("Entry order failed - exchange rejected the order, bot logged error and moved on")
                     elif "ENTRY ABANDONED" in _line:
