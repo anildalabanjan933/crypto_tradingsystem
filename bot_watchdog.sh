@@ -99,6 +99,10 @@ check_version_drift() {
     local script=$2
     local DISK_C=$(git -C "$REPO" log -1 --format=%H -- "$script" 2>/dev/null)
     local RUN_FILE="$REPO/logs/running_commit_$(basename $script .py).txt"
+    if [ -z "$DISK_C" ]; then
+        echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] VERSION DRIFT CHECK SKIPPED: $name - git log returned empty, skipping this cycle" >> logs/maintenance.log
+        return
+    fi
     if [ -f "$RUN_FILE" ]; then
         local RUN_C=$(cat "$RUN_FILE" 2>/dev/null)
         if [ -n "$RUN_C" ] && [ "$RUN_C" != "$DISK_C" ]; then
