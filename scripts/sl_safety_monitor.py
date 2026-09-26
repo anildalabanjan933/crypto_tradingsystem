@@ -55,10 +55,8 @@ def _find_real_exit_fill(om, direction, entry_ts_str, window_end_ts_str, expecte
         return None, None
     if not resp.get("success"):
         return None, None
-    candidates = []
+    all_fills = []
     for f in resp.get("result", []):
-        if f.get("side") != close_side:
-            continue
         raw_ts = f.get("created_at")
         if not raw_ts:
             continue
@@ -66,7 +64,33 @@ def _find_real_exit_fill(om, direction, entry_ts_str, window_end_ts_str, expecte
             f_dt = datetime.strptime(raw_ts[:19], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
         except Exception:
             continue
-        if entry_dt <= f_dt <= window_end_dt:
+        all_fills.append((f_dt, f))
+    all_fills.sort(key=lambda x: x[0])
+
+    # GROUND-TRUTH MATCH: use exchange's own new_position.size field.
+    # The real exit fill for THIS position is the first fill after entry_dt
+    # where new_position.size == 0 (position went flat). This is immune to
+    # same-side/same-size collisions at flip boundaries (old position's
+    # closing fill vs new position's own future exit), unlike side+size
+    # guessing which can attach the wrong fill.
+    candidates = []
+    for f_dt, f in all_fills:
+        if f_dt < entry_dt or f_dt > window_end_dt:
+            continue
+        if f.get("side") != close_side:
+            continue
+        meta = f.get("meta_data", {}) or {}
+        new_pos = meta.get("new_position", {}) or {}
+        pos_size_after = new_pos.get("size", None)
+        if pos_size_after == 0:
+            candidates.append((f_dt, f))
+    if not candidates:
+        # Fallback to old side+size logic if new_position data unavailable
+        for f_dt, f in all_fills:
+            if f_dt < entry_dt or f_dt > window_end_dt:
+                continue
+            if f.get("side") != close_side:
+                continue
             if expected_size is not None:
                 try:
                     if abs(float(f.get("size", 0))) != abs(float(expected_size)):
