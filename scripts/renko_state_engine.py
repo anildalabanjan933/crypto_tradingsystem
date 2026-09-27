@@ -383,6 +383,22 @@ def _get_locked_reference(label, state):
     state._locked_ref = _ref
     return _ref
 
+def _write_state_health(state):
+    import json
+    try:
+        fname = f"logs/state_health_{state.label}.json"
+        payload = {
+            "label": state.label,
+            "current_direction": state.current_direction,
+            "mismatch_count": state._mismatch_count,
+            "mismatch_since": state._mismatch_since,
+            "written_at": time.time(),
+        }
+        with open(fname, "w") as f:
+            json.dump(payload, f)
+    except Exception as _e:
+        log.error(f"[{state.label}] Failed to write state_health file: {_e}")
+
 def _bump_mismatch_and_maybe_resync(state, tfm, ts, sig_type, direction, blocked_by_repaint_guard=False):
     _now_t=time.time()
     if state._mismatch_since is None:
@@ -423,11 +439,13 @@ def _bump_mismatch_and_maybe_resync(state, tfm, ts, sig_type, direction, blocked
             state.current_direction=_real_dir
             state._mismatch_count=0
             state._mismatch_since=None
+    _write_state_health(state)
 
 def check_and_fire(state,is_s4=False):
     import pandas as pd
     from datetime import datetime,timezone
     state.lock.acquire()
+    _write_state_health(state)
     try:
         p=state.params
         tf=p["renko_timeframe"]
