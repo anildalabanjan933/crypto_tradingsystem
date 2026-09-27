@@ -196,3 +196,37 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+import os, time
+
+MAX_LOG_SIZE = 20 * 1024 * 1024
+FAST_LOG = "logs/watchdog_fast_events.csv"
+
+def _rotate_if_needed(path):
+    if os.path.exists(path) and os.path.getsize(path) > MAX_LOG_SIZE:
+        os.rename(path, path + ".1")
+
+def log_event(event_type, message, path=FAST_LOG):
+    _rotate_if_needed(path)
+    with open(path, "a") as f:
+        f.write(f"{time.time()},{event_type},{message}\n")
+        f.flush()
+        os.fsync(f.fileno())
+
+def run_canary():
+    try:
+        with open("logs/canary_ping.txt", "w") as f:
+            f.write(str(time.time()))
+        time.sleep(5)
+        if not os.path.exists("logs/canary_pong.txt"):
+            log_event("CANARY_FAIL", "No response within 5s")
+            return False
+        with open("logs/canary_pong.txt") as f:
+            pong_ts = float(f.read().strip())
+        if time.time() - pong_ts > 10:
+            log_event("CANARY_STALE", "Response too old")
+            return False
+        return True
+    except Exception as e:
+        log_event("CANARY_CHECK_FAILED", str(e))
+        return False
