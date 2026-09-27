@@ -34,10 +34,17 @@ def ensure_csv_header():
         with open(OUT_CSV, "w", newline="") as f:
             csv.writer(f).writerow(["detected_at_utc", "bot", "check_class", "detail"])
 
+MAX_LOG_SIZE = 20 * 1024 * 1024
+
 def log_event(bot_name, check_class, detail):
+    if os.path.exists(OUT_CSV) and os.path.getsize(OUT_CSV) > MAX_LOG_SIZE:
+        os.rename(OUT_CSV, OUT_CSV + ".1")
     now = datetime.now(timezone.utc).isoformat()
     with open(OUT_CSV, "a", newline="") as f:
-        csv.writer(f).writerow([now, bot_name, check_class, detail])
+        w = csv.writer(f)
+        w.writerow([now, bot_name, check_class, detail])
+        f.flush()
+        os.fsync(f.fileno())
     print(f"[watchdog_slow] {check_class} | {bot_name} | {detail}")
 
 def get_python_pid(script_name):
@@ -135,8 +142,77 @@ def main():
                 check_liquidity_frequency(bot)
             except Exception as e:
                 log_event(bot["name"], "D_ERROR", str(e))
+        try:
+            check_clock_drift()
+        except Exception as e:
+            log_event("SYSTEM", "CLOCK_DRIFT_ERROR", str(e))
+        try:
+            check_leverage_drift()
+        except Exception as e:
+            log_event("SYSTEM", "LEVERAGE_DRIFT_ERROR", str(e))
+        try:
+            check_env_drift()
+        except Exception as e:
+            log_event("SYSTEM", "ENV_DRIFT_ERROR", str(e))
         time.sleep(POLL_SECONDS)
 
+def check_clock_drift():
+    try:
+        out = subprocess.run(['chronyc', 'tracking'], capture_output=True, text=True, timeout=5)
+        for line in out.stdout.splitlines():
+            if 'System time' in line:
+                drift = float(line.split(':')[1].strip().split()[0])
+                if drift > 2.0:
+                    log_event("SYSTEM", "CLOCK_DRIFT", f"Drift {drift}s exceeds 2s threshold")
+                return drift
+    except Exception as e:
+        log_event("SYSTEM", "CLOCK_DRIFT_CHECK_FAILED", str(e))
+    return None
+
+import requests, hashlib, hmac
+
+EXPECTED_LEVERAGE = {"S4": 200, "S4V2": 200, "S4V3": 200}
+PRODUCT_ID_MAP = {"S4": 202019, "S4V2": 202019, "S4V3": 202019}
+TESTNET_BASE_URL = "https://cdn-ind.testnet.deltaex.org"
+
+def _gen_sig(secret, message):
+    return hmac.new(bytes(secret, 'utf-8'), bytes(message, 'utf-8'), hashlib.sha256).hexdigest()
+
+def check_leverage_drift():
+    key_map = {
+        "S4": (os.environ.get("S4_API_KEY", ""), os.environ.get("S4_API_SECRET", "")),
+        "S4V2": (os.environ.get("S4V2_API_KEY", ""), os.environ.get("S4V2_API_SECRET", "")),
+        "S4V3": (os.environ.get("S4V3_API_KEY", ""), os.environ.get("S4V3_API_SECRET", "")),
+    }
+    for bot, expected in EXPECTED_LEVERAGE.items():
+        pid = PRODUCT_ID_MAP.get(bot)
+        api_key, api_secret = key_map.get(bot, ("", ""))
+        if pid is None or not api_key or not api_secret:
+            log_event("SYSTEM", "LEVERAGE_CHECK_SKIPPED", f"{bot}: missing product_id or credentials")
+            continue
+        try:
+            method = "GET"
+            timestamp = str(int(time.time()))
+            path = f"/v2/products/{pid}/orders/leverage"
+            sig_data = method + timestamp + path
+            signature = _gen_sig(api_secret, sig_data)
+            headers = {"api-key": api_key, "timestamp": timestamp, "signature": signature}
+            r = requests.get(TESTNET_BASE_URL + path, headers=headers, timeout=5)
+            data = r.json()
+            if not data.get("success"):
+                log_event("SYSTEM", "LEVERAGE_CHECK_FAILED", f"{bot}: {data.get('error')}")
+                continue
+            live = int(float(data["result"]["leverage"]))
+            if live != expected:
+                log_event("SYSTEM", "LEVERAGE_DRIFT", f"{bot} live={live} expected={expected}")
+        except Exception as e:
+            log_event("SYSTEM", "LEVERAGE_CHECK_FAILED", f"{bot}: {e}")
+
+def check_env_drift():
+    required = ["S4_API_KEY", "S4_API_SECRET", "S4V2_API_KEY", "S4V2_API_SECRET", "S4V3_API_KEY", "S4V3_API_SECRET", "PYTHONPATH"]
+    for var in required:
+        if not os.environ.get(var):
+            log_event("SYSTEM", "ENV_DRIFT", f"Missing env var: {var}")
 if __name__ == "__main__":
     main()
 
@@ -149,47 +225,4 @@ def _rotate_if_needed(path):
     if os.path.exists(path) and os.path.getsize(path) > MAX_LOG_SIZE:
         os.rename(path, path + ".1")
 
-def log_event(event_type, message, path=SLOW_LOG):
-    _rotate_if_needed(path)
-    with open(path, "a") as f:
-        f.write(f"{time.time()},{event_type},{message}\n")
-        f.flush()
-        os.fsync(f.fileno())
 
-def check_clock_drift():
-    try:
-        out = subprocess.run(['chronyc', 'tracking'], capture_output=True, text=True, timeout=5)
-        for line in out.stdout.splitlines():
-            if 'System time' in line:
-                drift = float(line.split(':')[1].strip().split()[0])
-                if drift > 2.0:
-                    log_event("CLOCK_DRIFT", f"Drift {drift}s exceeds 2s threshold")
-                return drift
-    except Exception as e:
-        log_event("CLOCK_DRIFT_CHECK_FAILED", str(e))
-    return None
-
-import requests
-
-EXPECTED_LEVERAGE = {"S4": 4, "S4V2": 4, "S4V3": 4}
-PRODUCT_ID_MAP = {"S4": 196, "S4V2": 196, "S4V3": 196}
-
-def check_leverage_drift():
-    for bot, expected in EXPECTED_LEVERAGE.items():
-        pid = PRODUCT_ID_MAP.get(bot)
-        if pid is None:
-            log_event("LEVERAGE_CHECK_SKIPPED", f"{bot}: no product_id set")
-            continue
-        try:
-            r = requests.get(f"https://api.india.delta.exchange/v2/products/{pid}/orders/leverage", timeout=5)
-            live = int(float(r.json()["result"]["leverage"]))
-            if live != expected:
-                log_event("LEVERAGE_DRIFT", f"{bot} live={live} expected={expected}")
-        except Exception as e:
-            log_event("LEVERAGE_CHECK_FAILED", f"{bot}: {e}")
-
-def check_env_drift():
-    required = ["DELTA_API_KEY", "DELTA_API_SECRET", "PYTHONPATH"]
-    for var in required:
-        if not os.environ.get(var):
-            log_event("ENV_DRIFT", f"Missing env var: {var}")
