@@ -273,3 +273,6 @@ are now closed. No new code fixes required beyond what is already applied
 Investigation phase for accidental losses is COMPLETE.
 [26-Sep-2026] | S4 reload-loop CPU fix | STATUS: FIXED
 Added mtime-cache in signal_replay_s4.py so CSV loads only on file change, not every 0.5s. CPU 3.4% -> 1.3%.
+[27-Sep-2026] | Bug D - REST reconcile repaint + frozen mismatch counter (S4/S4V2/S4V3) | STATUS: FIXED
+Root cause 1: REST reconcile rewrote candles at/before already-locked signal ts, flipping computed direction and creating false state mismatch. Root cause 2: mismatch_count only incremented in SKIP branch, froze once REPAINT GUARD took over - S4 (2H) never auto-resynced, S4V3 (4H) stuck 20+ hrs, S4V2 (30min) self-healed by luck only.
+Fix: clipped reconcile window at locked signal boundary + moved mismatch_count increment into shared helper called from both SKIP and REPAINT GUARD branches. Commit 6dd4c48. Restarted signal_generator PID 1885886 at 22:08 IST 27-Sep-2026.

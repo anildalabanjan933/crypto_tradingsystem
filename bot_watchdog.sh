@@ -71,7 +71,7 @@ check_and_start() {
             echo "$now_ts" > "$alert_ts_file"
             echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] DOWN alert sent for $name" >> logs/maintenance.log
         fi
-        /usr/bin/screen -dmS "$name" /bin/bash -c "cd /home/anildalabanjan7/crypto_tradingsystem && set -a && source /home/anildalabanjan7/crypto_tradingsystem/.env && set +a && .venv/bin/python3 $script >> $log 2>&1" 200>&-
+        /usr/bin/screen -dmS "$name" /bin/bash -c "cd /home/anildalabanjan7/crypto_tradingsystem && set -a && source /home/anildalabanjan7/crypto_tradingsystem/.env && set +a && export PYTHONPATH=/home/anildalabanjan7/crypto_tradingsystem && .venv/bin/python3 $script >> $log 2>&1" 200>&-
         echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] Started $name" >> logs/maintenance.log
     fi
 }
@@ -124,6 +124,8 @@ check_version_drift live_s4v3 scripts/signal_replay_s4v3.py
 check_heartbeat_stale live_s4v3 logs/heartbeat_s4v3.txt 300
 check_and_start live_s4v3 scripts/signal_replay_s4v3.py logs/live_trading_s4v3.log
 check_and_start band_tier_watch "python3 scripts/band_tier_watch.py"
+check_and_start watchdog_fast "scripts/watchdog_fast.py" logs/watchdog_fast.log
+check_and_start watchdog_slow "scripts/watchdog_slow.py" logs/watchdog_slow.log
 check_version_drift live_s4 scripts/signal_replay_s4.py
 check_heartbeat_stale live_s4 logs/heartbeat_s4.txt 300
 check_and_start live_s4 scripts/signal_replay_s4.py logs/live_trading_s4.log
@@ -149,3 +151,7 @@ if ! /usr/bin/screen -list 2>/dev/null | grep -qE "[0-9]+\.dashboard[[:space:]]"
     /usr/bin/screen -dmS dashboard /bin/bash -c "cd /home/anildalabanjan7/crypto_tradingsystem && PYTHONPATH=/home/anildalabanjan7/crypto_tradingsystem .venv/bin/python3 -m streamlit run dashboard/streamlit_app.py --server.port 8501 >> logs/dashboard.log 2>&1"
     echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] Started dashboard" >> logs/maintenance.log
 fi
+
+
+check_heartbeat_stale watchdog_fast logs/watchdog_fast_heartbeat.txt 120
+check_heartbeat_stale watchdog_slow logs/watchdog_slow_heartbeat.txt 900
