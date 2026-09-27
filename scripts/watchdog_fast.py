@@ -230,6 +230,7 @@ import os, time
 MAX_LOG_SIZE = 20 * 1024 * 1024
 FAST_LOG = "logs/watchdog_fast_events.csv"
 
+# UNUSED - dead code, never called. Do not call, do not delete without care (see 27-Sep incident).
 def _rotate_if_needed(path):
     if os.path.exists(path) and os.path.getsize(path) > MAX_LOG_SIZE:
         os.rename(path, path + ".1")
