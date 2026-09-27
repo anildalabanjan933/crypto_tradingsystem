@@ -154,6 +154,10 @@ def main():
             check_env_drift()
         except Exception as e:
             log_event("SYSTEM", "ENV_DRIFT_ERROR", str(e))
+        try:
+            check_env_hash_drift()
+        except Exception as e:
+            log_event("SYSTEM", "ENV_HASH_ERROR", str(e))
         time.sleep(POLL_SECONDS)
 
 def check_clock_drift():
@@ -226,3 +230,19 @@ def _rotate_if_needed(path):
         os.rename(path, path + ".1")
 
 
+
+
+import hashlib
+_env_hash_last = None
+
+def check_env_hash_drift():
+    global _env_hash_last
+    try:
+        with open(".env", "rb") as f:
+            h = hashlib.sha256(f.read()).hexdigest()
+    except Exception as e:
+        log_event("SYSTEM", "ENV_HASH_CHECK_ERROR", str(e))
+        return
+    if _env_hash_last is not None and h != _env_hash_last:
+        log_event("SYSTEM", "ENV_FILE_CHANGED", f".env hash changed {_env_hash_last[:8]}->{h[:8]}")
+    _env_hash_last = h
