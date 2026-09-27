@@ -1,6 +1,7 @@
 #!/bin/bash
 exec 200<"$0"
 flock -n 200 || exit 0
+date +%s > "$0.heartbeat" 2>/dev/null || true; date +%s > /home/anildalabanjan7/crypto_tradingsystem/logs/watchdog_top_heartbeat.txt
 export HOME=/home/anildalabanjan7
 export USER=anildalabanjan7
 export LOGNAME=anildalabanjan7
