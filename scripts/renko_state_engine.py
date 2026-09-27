@@ -1202,5 +1202,23 @@ if __name__=="__main__":
             open('logs/engine_heartbeat.txt','w').write(str(__import__('time').time()))
         except:
             pass
+
+        # Fix: refresh state_health files every cycle so watchdog Class A check
+        # doesn't false-alarm between candle closes (was only written in check_and_fire)
+        try:
+            _write_state_health(s4)
+            _write_state_health(s4v2)
+            _write_state_health(s4v3)
+        except Exception:
+            pass
+
+        # Fix: respond to watchdog canary ping so CANARY_FAIL stops firing
+        try:
+            if os.path.exists("logs/canary_ping.txt"):
+                with open("logs/canary_pong.txt", "w") as _f:
+                    _f.write(str(time.time()))
+        except Exception:
+            pass
+
         time.sleep(SLEEP_SEC)
 
