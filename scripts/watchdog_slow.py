@@ -139,3 +139,57 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+import subprocess, os, time
+
+MAX_LOG_SIZE = 20 * 1024 * 1024  # 20MB
+SLOW_LOG = "logs/watchdog_slow_events.csv"
+
+def _rotate_if_needed(path):
+    if os.path.exists(path) and os.path.getsize(path) > MAX_LOG_SIZE:
+        os.rename(path, path + ".1")
+
+def log_event(event_type, message, path=SLOW_LOG):
+    _rotate_if_needed(path)
+    with open(path, "a") as f:
+        f.write(f"{time.time()},{event_type},{message}\n")
+        f.flush()
+        os.fsync(f.fileno())
+
+def check_clock_drift():
+    try:
+        out = subprocess.run(['chronyc', 'tracking'], capture_output=True, text=True, timeout=5)
+        for line in out.stdout.splitlines():
+            if 'System time' in line:
+                drift = float(line.split(':')[1].strip().split()[0])
+                if drift > 2.0:
+                    log_event("CLOCK_DRIFT", f"Drift {drift}s exceeds 2s threshold")
+                return drift
+    except Exception as e:
+        log_event("CLOCK_DRIFT_CHECK_FAILED", str(e))
+    return None
+
+import requests
+
+EXPECTED_LEVERAGE = {"S4": 4, "S4V2": 4, "S4V3": 4}
+PRODUCT_ID_MAP = {"S4": 196, "S4V2": 196, "S4V3": 196}
+
+def check_leverage_drift():
+    for bot, expected in EXPECTED_LEVERAGE.items():
+        pid = PRODUCT_ID_MAP.get(bot)
+        if pid is None:
+            log_event("LEVERAGE_CHECK_SKIPPED", f"{bot}: no product_id set")
+            continue
+        try:
+            r = requests.get(f"https://api.india.delta.exchange/v2/products/{pid}/orders/leverage", timeout=5)
+            live = int(float(r.json()["result"]["leverage"]))
+            if live != expected:
+                log_event("LEVERAGE_DRIFT", f"{bot} live={live} expected={expected}")
+        except Exception as e:
+            log_event("LEVERAGE_CHECK_FAILED", f"{bot}: {e}")
+
+def check_env_drift():
+    required = ["DELTA_API_KEY", "DELTA_API_SECRET", "PYTHONPATH"]
+    for var in required:
+        if not os.environ.get(var):
+            log_event("ENV_DRIFT", f"Missing env var: {var}")

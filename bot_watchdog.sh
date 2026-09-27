@@ -155,3 +155,4 @@ fi
 
 check_heartbeat_stale watchdog_fast logs/watchdog_fast_heartbeat.txt 120
 check_heartbeat_stale watchdog_slow logs/watchdog_slow_heartbeat.txt 900
+date +%s > /home/anildalabanjan7/crypto_tradingsystem/logs/watchdog_top_heartbeat.txt
