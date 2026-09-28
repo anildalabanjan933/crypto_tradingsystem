@@ -151,6 +151,10 @@ def _ensure_mismatch_csv_header():
             ])
 
 def match_and_log(bt_rows, lv_rows, bot, date_str):
+    tf_min = 120 if bot == 's4' else 30
+    if bot == 's4v3':
+        tf_min = 240
+    match_window_sec = (tf_min + 15) * 60
     _rotate_mismatch_csv_if_needed()
     _ensure_mismatch_csv_header()
     now_iso = datetime.now(timezone.utc).isoformat()
@@ -171,7 +175,7 @@ def match_and_log(bt_rows, lv_rows, bot, date_str):
                 diff = abs((bt_dt - lv_dt).total_seconds())
             except Exception:
                 continue
-            if diff <= 900 and (best_dt is None or diff < best_dt):
+            if diff <= match_window_sec and (best_dt is None or diff < best_dt):
                 best_dt = diff
                 best_j = j
         if best_j is not None:
