@@ -8,7 +8,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from engine.order_manager import OrderManager
-from engine.telegram_alert import send_alert
+from engine.telegram_alert import send_alert as _raw_send_alert
+
+_ALERT_COOLDOWN_SEC = 600
+_last_alert_time = {}
+
+def send_alert_throttled(key, message):
+    now = time.time()
+    last = _last_alert_time.get(key, 0)
+    if now - last >= _ALERT_COOLDOWN_SEC:
+        _last_alert_time[key] = now
+        _raw_send_alert(message)
 
 MISMATCH_CRITICAL_SEC = 1200
 HEALTH_FILE_STALE_SEC = 180
@@ -84,7 +94,7 @@ def check_missed_signals(bot):
         for line in new_data.splitlines():
             if "MISSED TRADE" in line:
                 log_event(bot["name"], "C_MISSED_SIGNAL", line.strip()[:200])
-                send_alert(f"WATCHDOG [{bot['name']}] Class C - MISSED TRADE detected:\n{line.strip()[:200]}")
+                send_alert_throttled(f"C_{bot['name']}", f"WATCHDOG [{bot['name']}] Class C - MISSED TRADE detected:\n{line.strip()[:200]}")
     else:
         _log_positions[path] = size
 
@@ -106,7 +116,7 @@ def check_state_desync(bot):
     written_at = data.get('written_at')
     if written_at is not None and (now - written_at) > HEALTH_FILE_STALE_SEC:
         log_event(bot['name'], 'A_HEALTHFILE_STALE', f"state_health file not updated in {now - written_at:.0f}s - engine may be dead")
-        send_alert(f"WATCHDOG [{bot['name']}] Class A - state_health file STALE for {now - written_at:.0f}s, engine may be dead")
+        send_alert_throttled(f"A_STALE_{bot['name']}", f"WATCHDOG [{bot['name']}] Class A - state_health file STALE for {now - written_at:.0f}s, engine may be dead")
         return
 
     mismatch_since = data.get('mismatch_since')
@@ -116,7 +126,7 @@ def check_state_desync(bot):
         if stale_sec > MISMATCH_CRITICAL_SEC:
             detail = f"mismatch_since age={stale_sec:.0f}s (count={mismatch_count}) exceeds critical threshold {MISMATCH_CRITICAL_SEC}s - auto-resync may be failing"
             log_event(bot['name'], 'A_STATE_DESYNC', detail)
-            send_alert(f"WATCHDOG [{bot['name']}] Class A - STATE DESYNC CRITICAL:\n{detail}")
+            send_alert_throttled(f"A_DESYNC_{bot['name']}", f"WATCHDOG [{bot['name']}] Class A - STATE DESYNC CRITICAL:\n{detail}")
 
 # ---------- Class E: position mismatch vs believed state (fill_prices CSV) ----------
 def _read_last_fill_row(fill_csv):
@@ -173,7 +183,7 @@ def check_position_mismatch(bot):
         if _mismatch_streak[bot["name"]] >= 2:
             detail = f"CSV believed={csv_dir}/{csv_size} vs exchange={exch_dir}/{exch_size} (2 consecutive polls)"
             log_event(bot["name"], "E_POSITION_MISMATCH", detail)
-            send_alert(f"WATCHDOG [{bot['name']}] Class E - POSITION MISMATCH (2 consecutive polls):\n{detail}")
+            send_alert_throttled(f"E_{bot['name']}", f"WATCHDOG [{bot['name']}] Class E - POSITION MISMATCH (2 consecutive polls):\n{detail}")
     else:
         _mismatch_streak[bot["name"]] = 0
 
