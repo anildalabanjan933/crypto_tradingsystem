@@ -22,7 +22,6 @@ from dotenv import load_dotenv
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, PROJECT_ROOT)
-from dashboard.trade_audit_tab import _pair_fills_audit
 
 load_dotenv(dotenv_path=os.path.join(PROJECT_ROOT, '.env'))
 
@@ -63,6 +62,120 @@ def get_delta_fills(bot, date_str):
     r = requests.get(url, params=query, headers=headers, timeout=(3, 27))
     r.raise_for_status()
     return r.json().get('result', [])
+
+def _merge_partial_fills_local(fills_sorted):
+    """
+    Independent copy of dashboard/trade_audit_tab.py::_merge_partial_fills_audit.
+    Merges same-side fills sharing order_id within 1 second (Delta partial-fill
+    splitting) into a single fill. Kept standalone to avoid cross-file coupling.
+    """
+    if not fills_sorted:
+        return fills_sorted
+    merged = []
+    i = 0
+    while i < len(fills_sorted):
+        cur = dict(fills_sorted[i])
+        j = i + 1
+        while j < len(fills_sorted):
+            nxt = fills_sorted[j]
+            same_side = str(nxt.get("side","")).upper() == str(cur.get("side","")).upper()
+            same_order = str(nxt.get("order_id","")) == str(cur.get("order_id",""))
+            try:
+                t1 = datetime.fromisoformat(str(cur.get("created_at","")).replace("Z",""))
+                t2 = datetime.fromisoformat(str(nxt.get("created_at","")).replace("Z",""))
+                close_time = abs((t2 - t1).total_seconds()) <= 1.0
+            except Exception:
+                close_time = False
+            if same_side and same_order and close_time:
+                s1 = float(cur.get("size",0) or 0)
+                s2 = float(nxt.get("size",0) or 0)
+                tot = s1 + s2
+                if tot > 0:
+                    cur["price"] = (float(cur.get("price",0) or 0)*s1 + float(nxt.get("price",0) or 0)*s2) / tot
+                cur["size"] = tot
+                cur["commission"] = float(cur.get("commission",0) or 0) + float(nxt.get("commission",0) or 0)
+                cur["meta_data"] = nxt.get("meta_data", cur.get("meta_data", {}))
+                j += 1
+            else:
+                break
+        merged.append(cur)
+        i = j
+    return merged
+
+
+def _pair_fills_local(fills):
+    """
+    Independent copy of dashboard/trade_audit_tab.py::_pair_fills_audit.
+    Uses Delta's per-fill realized PnL (meta_data.new_position.realized_pnl)
+    via baseline-delta extraction (cumulative snapshot minus lifecycle
+    baseline, reset to 0 whenever position returns to size == 0).
+    Kept standalone to avoid cross-file coupling with dashboard code.
+    If dashboard/trade_audit_tab.py's pairing logic is ever bugfixed,
+    this copy must be manually re-synced.
+    """
+    fills_sorted = sorted(fills, key=lambda f: f.get("created_at", ""))
+    fills_sorted = _merge_partial_fills_local(fills_sorted)
+
+    queue = []
+    pairs = []
+    baseline = 0.0
+
+    for f in fills_sorted:
+        side = str(f.get("side", "")).upper()
+        size = float(f.get("size", 0) or 0)
+        if size <= 0:
+            continue
+        price = float(f.get("price", 0) or 0)
+        time = f.get("created_at", "")
+        commission = abs(float(f.get("commission", 0) or 0))
+        comm_per_unit = commission / size if size else 0.0
+        meta = f.get("meta_data", {}) or {}
+        new_pos = meta.get("new_position", {}) or {}
+        raw_cumulative = float(new_pos.get("realized_pnl", 0) or 0)
+        pos_size_after = new_pos.get("size", None)
+        _fill_order_id = str(f.get("order_id", ""))
+        _fill_order_unfilled = float(meta.get("order_unfilled_size", 0) or 0)
+        _fill_order_closed = _fill_order_unfilled <= 1e-9
+
+        realized_pnl = raw_cumulative - baseline
+
+        avail_opposite = sum(q["remaining"] for q in queue if q["side"] != side)
+        closed_qty = min(size, avail_opposite)
+        remaining_to_close = closed_qty
+
+        while remaining_to_close > 1e-9 and queue and queue[0]["side"] != side:
+            head = queue[0]
+            match_size = min(remaining_to_close, head["remaining"])
+            frac = (match_size / closed_qty) if closed_qty > 1e-9 else 0.0
+            chunk_pnl = realized_pnl * frac
+            chunk_exit_comm = comm_per_unit * match_size
+            chunk_entry_comm = head["comm_per_unit"] * match_size
+            _dir = "LONG" if head["side"] == "BUY" else "SHORT"
+            pairs.append({
+                "dir": _dir,
+                "entry_ts_raw": head["time"],
+                "exit_ts_raw": time,
+                "entry_p": head["price"],
+                "exit_p": price,
+                "lot": match_size,
+                "charges": chunk_exit_comm + chunk_entry_comm,
+                "pnl_usd": chunk_pnl,
+                "exit_order_id": _fill_order_id,
+                "exit_order_closed": _fill_order_closed,
+            })
+            head["remaining"] -= match_size
+            remaining_to_close -= match_size
+            if head["remaining"] <= 1e-9:
+                queue.pop(0)
+
+        opening_qty = size - closed_qty
+        if opening_qty > 1e-9 and pos_size_after != 0:
+            queue.append({"remaining": opening_qty, "price": price, "time": time,
+                          "side": side, "comm_per_unit": comm_per_unit})
+
+        baseline = 0.0 if pos_size_after == 0 else raw_cumulative
+
+    return pairs
 
 def get_bt_rows(bot, date_str):
     pattern = BT_CSV_PATTERN[bot]
@@ -214,6 +327,70 @@ def match_and_log(bt_rows, lv_rows, bot, date_str):
         os.fsync(f.fileno())
 
     print(f"\nLogged {len(rows_to_write)} row(s) to {MISMATCH_CSV}")
+    return rows_to_write
+
+ISSUE_TRACKER_CSV = os.path.join(PROJECT_ROOT, "logs", "issue_tracker_trades.csv")
+
+def cross_reference_issue_tracker(bot, date_str, rows_to_write):
+    """
+    Fix E: cross-references today's bt_live_mismatch rows (in-memory, just
+    written) against logs/issue_tracker_trades.csv on (bot, entry_ts_live)
+    to pull existing verdict/repeat_count if a human/prior run already
+    tagged that trade. Read-only against issue_tracker_trades.csv - never
+    writes or modifies it. Print-only report, no new file.
+    """
+    if not os.path.exists(ISSUE_TRACKER_CSV):
+        print(f"\n(No {ISSUE_TRACKER_CSV} found - skipping cross-reference)")
+        return
+    try:
+        it_df = pd.read_csv(ISSUE_TRACKER_CSV)
+    except Exception as e:
+        print(f"\n(Could not read issue_tracker_trades.csv: {e})")
+        return
+    if 'bot' not in it_df.columns or 'entry_ts' not in it_df.columns:
+        print("\n(issue_tracker_trades.csv missing 'bot' or 'entry_ts' column - skipping)")
+        return
+
+    it_df['bot_norm'] = it_df['bot'].astype(str).str.lower()
+    it_df['entry_ts_parsed'] = pd.to_datetime(it_df['entry_ts'], errors='coerce')
+
+    print(f"\n========== CROSS-REFERENCE WITH issue_tracker_trades.csv - {bot.upper()} - {date_str} ==========")
+    match_count = 0
+    for row in rows_to_write:
+        row_bot = row[1]
+        entry_ts_live = row[7]
+        if not entry_ts_live:
+            continue
+        try:
+            lv_dt = pd.to_datetime(entry_ts_live, errors='coerce')
+            if lv_dt is not None and not pd.isna(lv_dt) and lv_dt.tzinfo is not None:
+                lv_dt = lv_dt.tz_localize(None)
+        except Exception:
+            continue
+        if pd.isna(lv_dt):
+            continue
+
+        candidates = it_df[it_df['bot_norm'] == row_bot.lower()]
+        if candidates.empty:
+            continue
+
+        diffs = (candidates['entry_ts_parsed'] - lv_dt).abs()
+        best_idx = diffs.idxmin() if not diffs.empty else None
+        if best_idx is None or pd.isna(diffs.loc[best_idx]):
+            continue
+        if diffs.loc[best_idx].total_seconds() > 900:
+            continue
+
+        match = candidates.loc[best_idx]
+        match_count += 1
+        print(f"LIVE entry={entry_ts_live} -> issue_tracker verdict={match.get('verdict','')} "
+              f"repeat_count={match.get('repeat_count','')} "
+              f"bt_lv_pnl_gap_$={match.get('bt_lv_pnl_gap_$','')}")
+
+    if match_count == 0:
+        print("No matching rows found in issue_tracker_trades.csv for this date/bot.")
+    print(f"Cross-reference matches found: {match_count}")
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -231,7 +408,7 @@ def main():
 
     print(f"\n========== DELTA LIVE FILLS (via Audit pairing) - {args.bot.upper()} - {args.date} ==========")
     fills = get_delta_fills(args.bot, args.date)
-    lv_rows = _pair_fills_audit(fills)
+    lv_rows = _pair_fills_local(fills)
     lv_rows = analyze_live_trades(lv_rows, args.bot)
     if not lv_rows:
         print("No live trades found for this date.")
@@ -252,7 +429,8 @@ def main():
     else:
         print("Counts match - review prices/times/pnl above manually for slippage/delay.")
 
-    match_and_log(bt_rows, lv_rows, args.bot, args.date)
+    _rows_written = match_and_log(bt_rows, lv_rows, args.bot, args.date)
+    cross_reference_issue_tracker(args.bot, args.date, _rows_written)
 
 if __name__ == '__main__':
     main()
