@@ -16,6 +16,7 @@ import hmac
 import time
 import requests
 import pandas as pd
+import csv
 from datetime import datetime, timezone, date
 from dotenv import load_dotenv
 
@@ -129,6 +130,87 @@ def analyze_live_trades(lv_rows, bot):
         r['big_loss_flag'] = r.get('pnl_usd', 0) < -BIG_LOSS_USD
     return lv_rows
 
+
+MISMATCH_CSV = os.path.join(PROJECT_ROOT, "logs", "bt_live_mismatch.csv")
+MISMATCH_CSV_MAX_BYTES = 20 * 1024 * 1024
+
+def _rotate_mismatch_csv_if_needed():
+    if os.path.exists(MISMATCH_CSV) and os.path.getsize(MISMATCH_CSV) > MISMATCH_CSV_MAX_BYTES:
+        ts = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        os.rename(MISMATCH_CSV, f"{MISMATCH_CSV}.{ts}.bak")
+
+def _ensure_mismatch_csv_header():
+    if not os.path.exists(MISMATCH_CSV):
+        with open(MISMATCH_CSV, "w", newline="") as f:
+            w = csv.writer(f)
+            w.writerow([
+                "logged_at","bot","date","direction_bt","direction_live","direction_mismatch",
+                "entry_ts_bt","entry_ts_live","entry_price_bt","entry_price_live","entry_slippage_usd",
+                "exit_ts_bt","exit_ts_live","exit_price_bt","exit_price_live","exit_slippage_usd",
+                "bt_pnl_usd","live_pnl_usd","net_pnl_gap_usd","missed_trade"
+            ])
+
+def match_and_log(bt_rows, lv_rows, bot, date_str):
+    _rotate_mismatch_csv_if_needed()
+    _ensure_mismatch_csv_header()
+    now_iso = datetime.now(timezone.utc).isoformat()
+    matched_live_idx = set()
+    rows_to_write = []
+
+    for bt in bt_rows:
+        best_j = None
+        best_dt = None
+        for j, lv in enumerate(lv_rows):
+            if j in matched_live_idx:
+                continue
+            if lv['dir'] != bt['dir']:
+                continue
+            try:
+                bt_dt = pd.to_datetime(bt['entry_ts'])
+                lv_dt = pd.to_datetime(lv['entry_ts_raw'])
+                diff = abs((bt_dt - lv_dt).total_seconds())
+            except Exception:
+                continue
+            if diff <= 900 and (best_dt is None or diff < best_dt):
+                best_dt = diff
+                best_j = j
+        if best_j is not None:
+            lv = lv_rows[best_j]
+            matched_live_idx.add(best_j)
+            entry_slip = round(lv['entry_p'] - bt['entry_p'], 2)
+            exit_slip = round(lv['exit_p'] - bt['exit_p'], 2)
+            pnl_gap = round(lv['pnl_usd'] - bt['net_pnl_usd'], 2)
+            rows_to_write.append([
+                now_iso, bot, date_str, bt['dir'], lv['dir'], bt['dir'] != lv['dir'],
+                bt['entry_ts'], lv['entry_ts_raw'], bt['entry_p'], lv['entry_p'], entry_slip,
+                bt['exit_ts'], lv['exit_ts_raw'], bt['exit_p'], lv['exit_p'], exit_slip,
+                bt['net_pnl_usd'], lv['pnl_usd'], pnl_gap, False
+            ])
+        else:
+            rows_to_write.append([
+                now_iso, bot, date_str, bt['dir'], "", False,
+                bt['entry_ts'], "", bt['entry_p'], "", "",
+                bt['exit_ts'], "", bt['exit_p'], "", "",
+                bt['net_pnl_usd'], "", "", True
+            ])
+
+    for j, lv in enumerate(lv_rows):
+        if j not in matched_live_idx:
+            rows_to_write.append([
+                now_iso, bot, date_str, "", lv['dir'], False,
+                "", lv['entry_ts_raw'], "", lv['entry_p'], "",
+                "", lv['exit_ts_raw'], "", lv['exit_p'], "",
+                "", lv['pnl_usd'], "", False
+            ])
+
+    with open(MISMATCH_CSV, "a", newline="") as f:
+        w = csv.writer(f)
+        w.writerows(rows_to_write)
+        f.flush()
+        os.fsync(f.fileno())
+
+    print(f"\nLogged {len(rows_to_write)} row(s) to {MISMATCH_CSV}")
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--bot', required=True, choices=list(KEY_MAP.keys()))
@@ -165,6 +247,8 @@ def main():
         print("!! COUNT MISMATCH - review both lists above manually !!")
     else:
         print("Counts match - review prices/times/pnl above manually for slippage/delay.")
+
+    match_and_log(bt_rows, lv_rows, args.bot, args.date)
 
 if __name__ == '__main__':
     main()
