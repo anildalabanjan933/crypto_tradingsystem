@@ -1209,8 +1209,8 @@ if __name__=="__main__":
             _write_state_health(s4)
             _write_state_health(s4v2)
             _write_state_health(s4v3)
-        except Exception:
-            pass
+        except Exception as _e:
+            log.error(f"[ENGINE] state_health write failed: {_e}", exc_info=True)
 
         # Fix: respond to watchdog canary ping so CANARY_FAIL stops firing
         try:
