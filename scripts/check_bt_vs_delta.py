@@ -222,7 +222,7 @@ def get_bt_rows(bot, date_str):
     tf_min = 120 if bot == 's4' else 30
     if bot == 's4v3':
         tf_min = 240
-    _off = pd.Timedelta(minutes=tf_min)
+    _off = timedelta(minutes=tf_min)
     rows = []
     for _, r in df.iterrows():
         rows.append({
@@ -288,7 +288,7 @@ def _ensure_mismatch_csv_header():
                 "logged_at","bot","date","direction_bt","direction_live","direction_mismatch",
                 "entry_ts_bt","entry_ts_live","entry_price_bt","entry_price_live","entry_slippage_usd",
                 "exit_ts_bt","exit_ts_live","exit_price_bt","exit_price_live","exit_slippage_usd",
-                "bt_pnl_usd","live_pnl_usd","net_pnl_gap_usd","missed_trade"
+                "bt_pnl_usd","live_pnl_usd","net_pnl_gap_usd","missed_trade","extra_live_trade"
             ])
 
 def match_and_log(bt_rows, lv_rows, bot, date_str):
@@ -301,7 +301,9 @@ def match_and_log(bt_rows, lv_rows, bot, date_str):
     now_iso = datetime.now(timezone.utc).isoformat()
     matched_live_idx = set()
     rows_to_write = []
+    unmatched_bt = []
 
+    # Pass 1: same-direction matching within time window (original behavior)
     for bt in bt_rows:
         best_j = None
         best_dt = None
@@ -312,7 +314,11 @@ def match_and_log(bt_rows, lv_rows, bot, date_str):
                 continue
             try:
                 bt_dt = pd.to_datetime(bt['entry_ts'])
+                if bt_dt.tzinfo is None:
+                    bt_dt = bt_dt.tz_localize('UTC')
                 lv_dt = pd.to_datetime(lv['entry_ts_raw'])
+                if lv_dt.tzinfo is None:
+                    lv_dt = lv_dt.tz_localize('UTC')
                 diff = abs((bt_dt - lv_dt).total_seconds())
             except Exception:
                 continue
@@ -329,23 +335,67 @@ def match_and_log(bt_rows, lv_rows, bot, date_str):
                 now_iso, bot, date_str, bt['dir'], lv['dir'], bt['dir'] != lv['dir'],
                 bt['entry_ts'], lv['entry_ts_raw'], bt['entry_p'], lv['entry_p'], entry_slip,
                 bt['exit_ts'], lv['exit_ts_raw'], bt['exit_p'], lv['exit_p'], exit_slip,
-                bt['net_pnl_usd'], lv['pnl_usd'], pnl_gap, False
+                bt['net_pnl_usd'], lv['pnl_usd'], pnl_gap, False, False
             ])
         else:
-            rows_to_write.append([
-                now_iso, bot, date_str, bt['dir'], "", False,
-                bt['entry_ts'], "", bt['entry_p'], "", "",
-                bt['exit_ts'], "", bt['exit_p'], "", "",
-                bt['net_pnl_usd'], "", "", True
-            ])
+            unmatched_bt.append(bt)
 
+    # Pass 2: retry BT rows still unmatched against remaining live rows,
+    # regardless of direction - lets direction_mismatch=True actually get
+    # logged instead of every wrong-direction case silently becoming
+    # "missed_trade".
+    still_unmatched_bt = []
+    for bt in unmatched_bt:
+        best_j = None
+        best_dt = None
+        for j, lv in enumerate(lv_rows):
+            if j in matched_live_idx:
+                continue
+            try:
+                bt_dt = pd.to_datetime(bt['entry_ts'])
+                if bt_dt.tzinfo is None:
+                    bt_dt = bt_dt.tz_localize('UTC')
+                lv_dt = pd.to_datetime(lv['entry_ts_raw'])
+                if lv_dt.tzinfo is None:
+                    lv_dt = lv_dt.tz_localize('UTC')
+                diff = abs((bt_dt - lv_dt).total_seconds())
+            except Exception:
+                continue
+            if diff <= match_window_sec and (best_dt is None or diff < best_dt):
+                best_dt = diff
+                best_j = j
+        if best_j is not None:
+            lv = lv_rows[best_j]
+            matched_live_idx.add(best_j)
+            entry_slip = round(lv['entry_p'] - bt['entry_p'], 2)
+            exit_slip = round(lv['exit_p'] - bt['exit_p'], 2)
+            pnl_gap = round(lv['pnl_usd'] - bt['net_pnl_usd'], 2)
+            rows_to_write.append([
+                now_iso, bot, date_str, bt['dir'], lv['dir'], bt['dir'] != lv['dir'],
+                bt['entry_ts'], lv['entry_ts_raw'], bt['entry_p'], lv['entry_p'], entry_slip,
+                bt['exit_ts'], lv['exit_ts_raw'], bt['exit_p'], lv['exit_p'], exit_slip,
+                bt['net_pnl_usd'], lv['pnl_usd'], pnl_gap, False, False
+            ])
+        else:
+            still_unmatched_bt.append(bt)
+
+    # Truly missed BT trades - no live counterpart in either pass
+    for bt in still_unmatched_bt:
+        rows_to_write.append([
+            now_iso, bot, date_str, bt['dir'], "", False,
+            bt['entry_ts'], "", bt['entry_p'], "", "",
+            bt['exit_ts'], "", bt['exit_p'], "", "",
+            bt['net_pnl_usd'], "", "", True, False
+        ])
+
+    # Extra live trades - executed with no BT counterpart at all
     for j, lv in enumerate(lv_rows):
         if j not in matched_live_idx:
             rows_to_write.append([
                 now_iso, bot, date_str, "", lv['dir'], False,
                 "", lv['entry_ts_raw'], "", lv['entry_p'], "",
                 "", lv['exit_ts_raw'], "", lv['exit_p'], "",
-                "", lv['pnl_usd'], "", False
+                "", lv['pnl_usd'], "", False, True
             ])
 
     with open(MISMATCH_CSV, "a", newline="") as f:
