@@ -17,7 +17,7 @@ import time
 import requests
 import pandas as pd
 import csv
-from datetime import datetime, timezone, date
+from datetime import datetime, timezone, date, timedelta
 from dotenv import load_dotenv
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -45,8 +45,11 @@ def get_delta_fills(bot, date_str):
     if not api_key or not api_secret:
         raise RuntimeError(f"Missing API credentials for bot={bot}")
     y, m, d = map(int, date_str.split('-'))
-    start_dt = datetime(y, m, d, 0, 0, 0, tzinfo=timezone.utc)
-    end_dt = datetime(y, m, d, 23, 59, 59, tzinfo=timezone.utc)
+    IST_OFFSET = timedelta(hours=5, minutes=30)
+    # Widened by 1 day each side so overnight trades (entry on prev IST day,
+    # exit on target IST day, or vice versa) aren't cut off mid-fetch.
+    start_dt = (datetime(y, m, d, 0, 0, 0) - timedelta(days=1) - IST_OFFSET).replace(tzinfo=timezone.utc)
+    end_dt = (datetime(y, m, d, 23, 59, 59) + timedelta(days=1) - IST_OFFSET).replace(tzinfo=timezone.utc)
     start_us = int(start_dt.timestamp() * 1_000_000)
     end_us = int(end_dt.timestamp() * 1_000_000)
     method = 'GET'
@@ -101,6 +104,31 @@ def _merge_partial_fills_local(fills_sorted):
         merged.append(cur)
         i = j
     return merged
+
+
+def _filter_by_ist_date_local(lv_rows, date_str):
+    """
+    Keeps a paired trade only if its entry date (IST) OR exit date (IST)
+    equals the target date - mirrors the same entry-OR-exit day-boundary
+    rule get_bt_rows() already applies, so BT and Delta fills use identical
+    day-boundary logic instead of a strict same-day cutoff that silently
+    drops overnight trades.
+    """
+    y, m, d = map(int, date_str.split('-'))
+    target = date(y, m, d)
+    IST_OFFSET = timedelta(hours=5, minutes=30)
+    filtered = []
+    for r in lv_rows:
+        try:
+            et = datetime.fromisoformat(str(r['entry_ts_raw']).replace('Z', '+00:00'))
+            xt = datetime.fromisoformat(str(r['exit_ts_raw']).replace('Z', '+00:00'))
+            et_ist_date = (et + IST_OFFSET).date()
+            xt_ist_date = (xt + IST_OFFSET).date()
+            if et_ist_date == target or xt_ist_date == target:
+                filtered.append(r)
+        except Exception:
+            filtered.append(r)  # fail-safe: keep row rather than silently drop on parse error
+    return filtered
 
 
 def _pair_fills_local(fills):
@@ -420,6 +448,7 @@ def main():
     print(f"\n========== DELTA LIVE FILLS (via Audit pairing) - {args.bot.upper()} - {args.date} ==========")
     fills = get_delta_fills(args.bot, args.date)
     lv_rows = _pair_fills_local(fills)
+    lv_rows = _filter_by_ist_date_local(lv_rows, args.date)
     lv_rows = analyze_live_trades(lv_rows, args.bot)
     if not lv_rows:
         print("No live trades found for this date.")
