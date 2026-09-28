@@ -131,6 +131,57 @@ def _filter_by_ist_date_local(lv_rows, date_str):
     return filtered
 
 
+def _aggregate_partial_exits_local(pairs):
+    """
+    Merges multiple pairs sharing the same entry (same entry_ts_raw + dir +
+    entry_p) into a single trade record. This happens when one entry
+    position is closed via multiple separate exit fills (partial closes) -
+    without this, one real trade appears as several duplicate-entry rows
+    with different exits, which both confuses the printed output and
+    pollutes BT-vs-Live matching (only 1 fragment can match the BT row,
+    the rest get wrongly counted as extra_live_trade).
+    """
+    if not pairs:
+        return pairs
+    groups = {}
+    order = []
+    for p in pairs:
+        key = (p['entry_ts_raw'], p['dir'], p['entry_p'])
+        if key not in groups:
+            groups[key] = []
+            order.append(key)
+        groups[key].append(p)
+
+    aggregated = []
+    for key in order:
+        legs = groups[key]
+        if len(legs) == 1:
+            aggregated.append(legs[0])
+            continue
+        legs_sorted = sorted(legs, key=lambda x: x['exit_ts_raw'])
+        total_lot = sum(l['lot'] for l in legs_sorted)
+        total_pnl = sum(l['pnl_usd'] for l in legs_sorted)
+        total_charges = sum(l['charges'] for l in legs_sorted)
+        if total_lot > 1e-9:
+            weighted_exit_p = sum(l['exit_p'] * l['lot'] for l in legs_sorted) / total_lot
+        else:
+            weighted_exit_p = legs_sorted[-1]['exit_p']
+        last_leg = legs_sorted[-1]
+        aggregated.append({
+            "dir": last_leg['dir'],
+            "entry_ts_raw": last_leg['entry_ts_raw'],
+            "exit_ts_raw": last_leg['exit_ts_raw'],
+            "entry_p": last_leg['entry_p'],
+            "exit_p": weighted_exit_p,
+            "lot": total_lot,
+            "charges": total_charges,
+            "pnl_usd": total_pnl,
+            "exit_order_id": last_leg['exit_order_id'],
+            "exit_order_closed": last_leg['exit_order_closed'],
+        })
+    return aggregated
+
+
 def _pair_fills_local(fills):
     """
     Independent copy of dashboard/trade_audit_tab.py::_pair_fills_audit.
@@ -203,7 +254,7 @@ def _pair_fills_local(fills):
 
         baseline = 0.0 if pos_size_after == 0 else raw_cumulative
 
-    return pairs
+    return _aggregate_partial_exits_local(pairs)
 
 def get_bt_rows(bot, date_str):
     pattern = BT_CSV_PATTERN[bot]
