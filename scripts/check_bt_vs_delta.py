@@ -354,8 +354,18 @@ def cross_reference_issue_tracker(bot, date_str, rows_to_write):
     it_df['bot_norm'] = it_df['bot'].astype(str).str.lower()
     it_df['entry_ts_parsed'] = pd.to_datetime(it_df['entry_ts'], errors='coerce')
 
+    # Fix E correction (28-Sep-2026): use same per-bot window as Fix A instead
+    # of a flat 15-min tolerance - flat window missed real matches for
+    # S4 (needs 135min) and S4V3 (needs 255min) due to confirmation-lag delay
+    # after candle close, not cron-timing congestion.
+    _tf_min = 120 if bot == 's4' else 30
+    if bot == 's4v3':
+        _tf_min = 240
+    _match_window_sec = (_tf_min + 15) * 60
+
     print(f"\n========== CROSS-REFERENCE WITH issue_tracker_trades.csv - {bot.upper()} - {date_str} ==========")
     match_count = 0
+    matched_it_idx = set()  # exclusivity guard - each issue_tracker row claimed once
     for row in rows_to_write:
         row_bot = row[1]
         entry_ts_live = row[7]
@@ -370,7 +380,7 @@ def cross_reference_issue_tracker(bot, date_str, rows_to_write):
         if pd.isna(lv_dt):
             continue
 
-        candidates = it_df[it_df['bot_norm'] == row_bot.lower()]
+        candidates = it_df[(it_df['bot_norm'] == row_bot.lower()) & (~it_df.index.isin(matched_it_idx))]
         if candidates.empty:
             continue
 
@@ -378,9 +388,10 @@ def cross_reference_issue_tracker(bot, date_str, rows_to_write):
         best_idx = diffs.idxmin() if not diffs.empty else None
         if best_idx is None or pd.isna(diffs.loc[best_idx]):
             continue
-        if diffs.loc[best_idx].total_seconds() > 900:
+        if diffs.loc[best_idx].total_seconds() > _match_window_sec:
             continue
 
+        matched_it_idx.add(best_idx)
         match = candidates.loc[best_idx]
         match_count += 1
         print(f"LIVE entry={entry_ts_live} -> issue_tracker verdict={match.get('verdict','')} "
