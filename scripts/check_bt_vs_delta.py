@@ -261,14 +261,26 @@ def get_bt_rows(bot, date_str):
     files = sorted(glob.glob(os.path.join(PROJECT_ROOT, pattern)), reverse=True)
     if not files:
         return []
-    df = pd.read_csv(files[0])
-    if 'entry_datetime' not in df.columns:
+    dfs = []
+    for fpath in files:
+        try:
+            df_part = pd.read_csv(fpath)
+            if 'entry_datetime' in df_part.columns:
+                dfs.append(df_part)
+        except Exception:
+            continue
+    if not dfs:
         return []
+    df = pd.concat(dfs, ignore_index=True)
     df['entry_datetime'] = pd.to_datetime(df['entry_datetime'], errors='coerce')
     df['exit_datetime'] = pd.to_datetime(df['exit_datetime'], errors='coerce')
     y, m, d = map(int, date_str.split('-'))
     target = date(y, m, d)
-    df = df[(df['entry_datetime'].dt.date == target) | (df['exit_datetime'].dt.date == target)]
+    IST_OFFSET = timedelta(hours=5, minutes=30)
+    entry_ist_date = (df['entry_datetime'] + IST_OFFSET).dt.date
+    exit_ist_date = (df['exit_datetime'] + IST_OFFSET).dt.date
+    df = df[(entry_ist_date == target) | (exit_ist_date == target)]
+    df = df.drop_duplicates(subset=['entry_datetime', 'exit_datetime', 'entry_price', 'exit_price'])
     df = df.sort_values('entry_datetime')
     tf_min = 120 if bot == 's4' else 30
     if bot == 's4v3':
