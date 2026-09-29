@@ -111,6 +111,7 @@ class TradeBuilder:
 
         net_pnl, charges_breakdown = self._apply_charges(
             gross_pnl=gross_pnl,
+            size_value=size_value,
             duration_hours=duration_hours
         )
 
@@ -174,7 +175,7 @@ class TradeBuilder:
 
         return trade_record
 
-    def _apply_charges(self, gross_pnl, duration_hours=8):
+    def _apply_charges(self, gross_pnl, size_value, duration_hours=8):
         """
         Slippage: self.slippage $ per side × 2 sides (entry + exit)
         All other charges unchanged.
@@ -183,7 +184,7 @@ class TradeBuilder:
 
         # Taker fees
         taker_fee_rate   = self.charges_config.get('taker_fee_rate', 0.0005)
-        cb["taker_fees"] = LOT_NOTIONAL_USD * taker_fee_rate * 2
+        cb["taker_fees"] = size_value * taker_fee_rate * 2
 
         # Slippage — $ per side × 2 sides (entry + exit)
         cb["slippage"] = self.slippage * 2
@@ -194,7 +195,7 @@ class TradeBuilder:
         intervals_per_year     = (365 * 24) / funding_interval_hours
         rate_per_interval      = funding_rate_annual / intervals_per_year
         funding_intervals      = duration_hours / funding_interval_hours
-        cb["funding"]          = LOT_NOTIONAL_USD * rate_per_interval * funding_intervals
+        cb["funding"]          = size_value * rate_per_interval * funding_intervals
 
         cb["insurance"] = 0.0
         cb["tax"]       = 0.0

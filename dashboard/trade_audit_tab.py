@@ -283,6 +283,26 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                         except Exception:
                             _pnl_usd_calc = 0.0
                             _net_pnl_inr_calc = 0.0
+                        try:
+                            _size_value_calc = _ep_f * _lots_f * 0.001
+                            _taker_fee_calc = _size_value_calc * 0.0005 * 2
+                            _et_parsed_chg = _parse_dt_dedup(_p_et)
+                            _xt_parsed_chg = _parse_dt_dedup(_p_xt)
+                            _dur_hours_calc = (
+                                (_xt_parsed_chg - _et_parsed_chg).total_seconds() / 3600.0
+                                if (_et_parsed_chg is not None and _xt_parsed_chg is not None) else 8.0
+                            )
+                            _funding_rate_annual_calc = 0.1095
+                            _funding_interval_hours_calc = 8
+                            _intervals_per_year_calc = (365 * 24) / _funding_interval_hours_calc
+                            _rate_per_interval_calc = _funding_rate_annual_calc / _intervals_per_year_calc
+                            _funding_intervals_calc = _dur_hours_calc / _funding_interval_hours_calc
+                            _funding_calc = _size_value_calc * _rate_per_interval_calc * _funding_intervals_calc
+                            _charges_usd_calc = (_taker_fee_calc + _funding_calc) * inr_rate
+                        except Exception:
+                            _charges_usd_calc = 0.0
+                        _pnl_usd_calc = _pnl_usd_calc - (_charges_usd_calc / inr_rate if inr_rate else 0.0)
+                        _net_pnl_inr_calc = _net_pnl_inr_calc - _charges_usd_calc
                         rows.append({
                             "trade_no"     : _trade_no,
                             "label"        : strat_label,
@@ -296,7 +316,7 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                             "entry_p"      : _ep_f,
                             "exit_p"       : _xp_f,
                             "lot"          : 1,
-                            "charges"      : 0.0,
+                            "charges"      : _charges_usd_calc,
                             "pnl_usd"      : _pnl_usd_calc,
                             "net_pnl_inr"  : _net_pnl_inr_calc,
                             "cum_pnl_inr"  : 0.0,
