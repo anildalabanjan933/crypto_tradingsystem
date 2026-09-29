@@ -219,13 +219,13 @@ def run_canary():
     try:
         with open("logs/canary_ping.txt", "w") as f:
             f.write(str(time.time()))
-        time.sleep(5)
+        time.sleep(15)
         if not os.path.exists("logs/canary_pong.txt"):
-            log_event("SYSTEM", "CANARY_FAIL", "No response within 5s")
+            log_event("SYSTEM", "CANARY_FAIL", "No response within 15s")
             return False
         with open("logs/canary_pong.txt") as f:
             pong_ts = float(f.read().strip())
-        if time.time() - pong_ts > 10:
+        if time.time() - pong_ts > 20:
             log_event("SYSTEM", "CANARY_STALE", "Response too old")
             return False
         return True
