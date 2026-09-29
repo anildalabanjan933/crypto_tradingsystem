@@ -217,10 +217,9 @@ def check_env_drift():
     for var in required:
         if not os.environ.get(var):
             log_event("SYSTEM", "ENV_DRIFT", f"Missing env var: {var}")
-if __name__ == "__main__":
-    main()
 
-import subprocess, os, time
+import subprocess, time
+import hashlib
 
 MAX_LOG_SIZE = 20 * 1024 * 1024  # 20MB
 SLOW_LOG = "logs/watchdog_slow_events.csv"
@@ -230,10 +229,6 @@ def _rotate_if_needed(path):
     if os.path.exists(path) and os.path.getsize(path) > MAX_LOG_SIZE:
         os.rename(path, path + ".1")
 
-
-
-
-import hashlib
 _env_hash_last = None
 
 def check_env_hash_drift():
@@ -247,3 +242,6 @@ def check_env_hash_drift():
     if _env_hash_last is not None and h != _env_hash_last:
         log_event("SYSTEM", "ENV_FILE_CHANGED", f".env hash changed {_env_hash_last[:8]}->{h[:8]}")
     _env_hash_last = h
+
+if __name__ == "__main__":
+    main()
