@@ -3265,3 +3265,5 @@ detected_at_utc,bot,check_class,detail
 2026-09-28T22:43:44.456397+00:00,SYSTEM,CANARY_STALE,Response too old
 2026-09-28T22:59:13.004126+00:00,S4V3,A_ERROR,failed to read logs/state_health_S4V3.json: Expecting value: line 1 column 1 (char 0)
 2026-09-28T23:05:09.882719+00:00,SYSTEM,CANARY_STALE,Response too old
+2026-09-29T00:00:15.440442+00:00,S4,A_ERROR,failed to read logs/state_health_S4.json: Expecting value: line 1 column 1 (char 0)
+2026-09-29T00:01:03.592782+00:00,SYSTEM,CANARY_STALE,Response too old

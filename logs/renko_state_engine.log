@@ -61083,3 +61083,54 @@ timestamp
 29-Sep-2026 05:28:11 AM IST INFO [ENGINE] New candle: 2026-09-28 23:57:00
 29-Sep-2026 05:28:42 AM IST INFO [ENGINE] Market data updated
 29-Sep-2026 05:29:01 AM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+29-Sep-2026 05:29:11 AM IST INFO [ENGINE] Market data updated
+29-Sep-2026 05:29:12 AM IST INFO [ENGINE] New candle: 2026-09-28 23:58:00
+29-Sep-2026 05:29:52 AM IST INFO [ENGINE] Market data updated
+29-Sep-2026 05:30:00 AM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+29-Sep-2026 05:30:00 AM IST INFO [WS] New 30m candle closed: 2026-09-28 23:30:00 - checking S4V2
+29-Sep-2026 05:30:00 AM IST INFO [S4V2] REST reconcile window clipped: 2026-09-28 19:30:00 -> 2026-09-28 22:30:00 (locked signal boundary, avoiding history repaint)
+29-Sep-2026 05:30:00 AM IST INFO [S4V2] REST reconcile OK window 2026-09-28 22:30:00..2026-09-29 00:00:00 mismatches=4 critical_covered=True
+29-Sep-2026 05:30:00 AM IST WARNING [S4V2] REST reconcile corrected 4 candle(s) with WS/REST drift in window 2026-09-28 22:30:00..2026-09-29 00:00:00
+29-Sep-2026 05:30:00 AM IST INFO [S4V2] Strategy returned 427 signals | gen_signals_took=0.03s
+29-Sep-2026 05:30:00 AM IST INFO [WS] New 2H candle closed: 2026-09-28 22:00:00 - checking S4
+29-Sep-2026 05:30:00 AM IST INFO [S4] REST reconcile window clipped: 2026-09-28 06:00:00 -> 2026-09-28 18:00:00 (locked signal boundary, avoiding history repaint)
+29-Sep-2026 05:30:01 AM IST INFO [S4] REST reconcile OK window 2026-09-28 18:00:00..2026-09-29 00:00:00 mismatches=6 critical_covered=True
+29-Sep-2026 05:30:01 AM IST WARNING [S4] REST reconcile corrected 6 candle(s) with WS/REST drift in window 2026-09-28 18:00:00..2026-09-29 00:00:00
+29-Sep-2026 05:30:01 AM IST INFO [BRICK-DEBUG] S4 live 2h OHLC window at fire-time:
+                        open     high      low    close
+timestamp                                              
+2026-09-04 02:00:00  80943.0  81019.5  80634.0  80816.0
+2026-09-04 04:00:00  80816.0  81271.0  80784.0  80960.5
+2026-09-04 06:00:00  80961.0  81069.5  80546.0  80636.5
+2026-09-04 08:00:00  80635.5  81286.5  80483.0  81026.0
+2026-09-04 10:00:00  81026.0  81386.0  80798.5  81196.0
+2026-09-04 12:00:00  81196.5  81332.5  78956.5  79351.0
+2026-09-04 14:00:00  79350.5  79553.5  78625.5  79392.5
+2026-09-04 16:00:00  79392.5  79847.0  79342.0  79438.0
+29-Sep-2026 05:30:01 AM IST INFO [S4] Strategy returned 579 signals | gen_signals_took=0.24s
+29-Sep-2026 05:30:01 AM IST INFO [S4] CSV exit updated to 2026-09-28T22:00:00 (matched entry 2026-09-28T18:00:00)
+29-Sep-2026 05:30:01 AM IST INFO [S4] EXIT short at 2026-09-28T22:00:00
+29-Sep-2026 05:30:01 AM IST INFO [S4] INSTANT CSV append: 2026-09-28T22:00:00,PENDING,long
+29-Sep-2026 05:30:02 AM IST INFO [S4] ENTRY long at 2026-09-28T22:00:00
+29-Sep-2026 05:30:02 AM IST INFO [WS] New 4H candle closed: 2026-09-28 20:00:00 - checking S4V3
+29-Sep-2026 05:30:02 AM IST INFO [S4V3] REST reconcile window clipped: 2026-09-27 12:00:00 -> 2026-09-28 08:00:00 (locked signal boundary, avoiding history repaint)
+29-Sep-2026 05:30:02 AM IST INFO [S4V3] REST reconcile OK window 2026-09-28 08:00:00..2026-09-29 00:00:00 mismatches=17 critical_covered=True
+29-Sep-2026 05:30:02 AM IST WARNING [S4V3] REST reconcile corrected 17 candle(s) with WS/REST drift in window 2026-09-28 08:00:00..2026-09-29 00:00:00
+29-Sep-2026 05:30:03 AM IST INFO [S4V3] Strategy returned 339 signals | gen_signals_took=0.06s
+29-Sep-2026 05:30:16 AM IST INFO [ENGINE] Market data updated
+29-Sep-2026 05:30:16 AM IST INFO [ENGINE] New candle: 2026-09-28 23:59:00
+29-Sep-2026 05:31:00 AM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+29-Sep-2026 05:31:04 AM IST INFO [ENGINE] Market data updated
+29-Sep-2026 05:31:13 AM IST INFO [ENGINE] Market data updated
+29-Sep-2026 05:31:13 AM IST INFO [ENGINE] New candle: 2026-09-29 00:00:00
+29-Sep-2026 05:32:00 AM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+29-Sep-2026 05:32:10 AM IST INFO [ENGINE] Market data updated
+29-Sep-2026 05:32:10 AM IST INFO [ENGINE] New candle: 2026-09-29 00:01:00
+29-Sep-2026 05:32:40 AM IST INFO [ENGINE] Market data updated
+29-Sep-2026 05:33:00 AM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+29-Sep-2026 05:33:10 AM IST INFO [ENGINE] Market data updated
+29-Sep-2026 05:33:10 AM IST INFO [ENGINE] New candle: 2026-09-29 00:02:00
+29-Sep-2026 05:33:50 AM IST INFO [ENGINE] Market data updated
+29-Sep-2026 05:34:00 AM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+29-Sep-2026 05:34:10 AM IST INFO [ENGINE] Market data updated
+29-Sep-2026 05:34:10 AM IST INFO [ENGINE] New candle: 2026-09-29 00:03:00
