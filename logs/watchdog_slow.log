@@ -1,0 +1,481 @@
+[watchdog_slow] started, 3 bots, poll=300s
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined
+[watchdog_slow] ENV_HASH_ERROR | SYSTEM | name 'check_env_hash_drift' is not defined[watchdog_slow] started, 3 bots, poll=300s
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: Expecting value: line 1 column 1 (char 0)
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: Expecting value: line 1 column 1 (char 0)
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: Expecting value: line 1 column 1 (char 0)
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V3: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4: {'code': 'invalid_contract'}
+[watchdog_slow] LEVERAGE_CHECK_FAILED | SYSTEM | S4V2: {'code': 'invalid_contract'}[watchdog_slow] started, 3 bots, poll=300s
+[watchdog_slow] LEVERAGE_DRIFT | SYSTEM | S4 live=4 expected=200
+[watchdog_slow] LEVERAGE_DRIFT | SYSTEM | S4V2 live=4 expected=200
+[watchdog_slow] LEVERAGE_DRIFT | SYSTEM | S4V3 live=10 expected=200
+[watchdog_slow] started, 3 bots, poll=300s
+[watchdog_slow] started, 3 bots, poll=300s
+[watchdog_slow] LEVERAGE_DRIFT | SYSTEM | S4V3 live=10 expected=4
+[watchdog_slow] LEVERAGE_DRIFT | SYSTEM | S4V3 live=10 expected=4
+[watchdog_slow] LEVERAGE_DRIFT | SYSTEM | S4V3 live=10 expected=4
+[watchdog_slow] started, 3 bots, poll=300s
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable
+[watchdog_slow] LEVERAGE_CHECK_SKIPPED | SYSTEM | S4V3: portfolio margin mode - fixed leverage check not applicable

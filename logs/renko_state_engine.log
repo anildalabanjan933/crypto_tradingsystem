@@ -67321,3 +67321,5 @@ timestamp
 30-Sep-2026 05:16:10 AM IST INFO [ENGINE] New candle: 2026-09-29 23:45:00
 30-Sep-2026 05:16:41 AM IST INFO [ENGINE] Market data updated
 30-Sep-2026 05:17:03 AM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+30-Sep-2026 05:17:13 AM IST INFO [ENGINE] Market data updated
+30-Sep-2026 05:17:13 AM IST INFO [ENGINE] New candle: 2026-09-29 23:46:00
