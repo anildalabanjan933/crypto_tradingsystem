@@ -79,8 +79,12 @@ class OrderManager:
 
     def _throttled_alert(self, key: str, message: str):
         """Send CTS API FAIL alert max once per _ALERT_COOLDOWN_SEC per key,
-        across all processes (file-based lock, prevents Telegram flood)."""
+        across all processes (file-based lock, prevents Telegram flood).
+        Tracks failure count since last sent alert so a throttled alert
+        still reports flapping failures (no extra Telegram messages added)."""
         now = time.time()
+        send_now = True
+        fail_count = 1
         with self._alert_file_lock:
             try:
                 state = {}
@@ -92,10 +96,17 @@ class OrderManager:
                         except Exception:
                             state = {}
                         fcntl.flock(f, fcntl.LOCK_UN)
-                last = state.get(key, 0)
-                if now - last < self._ALERT_COOLDOWN_SEC:
-                    return
-                state[key] = now
+                entry = state.get(key, {"last_alert": 0, "count": 0})
+                if not isinstance(entry, dict):
+                    entry = {"last_alert": entry, "count": 0}
+                entry["count"] = entry.get("count", 0) + 1
+                last = entry.get("last_alert", 0)
+                send_now = (now - last >= self._ALERT_COOLDOWN_SEC)
+                if send_now:
+                    fail_count = entry["count"]
+                    entry["last_alert"] = now
+                    entry["count"] = 0
+                state[key] = entry
                 os.makedirs(os.path.dirname(self._ALERT_STATE_FILE) or ".", exist_ok=True)
                 with open(self._ALERT_STATE_FILE, "w") as f:
                     fcntl.flock(f, fcntl.LOCK_EX)
@@ -103,7 +114,9 @@ class OrderManager:
                     fcntl.flock(f, fcntl.LOCK_UN)
             except Exception as e:
                 logging.warning(f"[OrderManager] alert throttle check failed: {e}")
-        send_alert(message)
+        if not send_now:
+            return
+        send_alert(f"{message}\nFailures in last {self._ALERT_COOLDOWN_SEC // 60} min: {fail_count}")
 
     def _post(self, path: str, payload: dict, retries: int = 3) -> dict:
         body    = json.dumps(payload)
@@ -112,7 +125,11 @@ class OrderManager:
             try:
                 headers = self._sign("POST", path, "", body)
                 resp = self.session.post(url, data=body, headers=headers, timeout=(3, 27))
-                return resp.json()
+                try:
+                    return resp.json()
+                except Exception as je:
+                    logging.warning(f"[OrderManager] POST attempt {attempt}/{retries} JSON parse failed: {je} | status={resp.status_code} body={resp.text[:200]!r}")
+                    raise
             except Exception as e:
                 logging.warning(f"[OrderManager] POST attempt {attempt}/{retries} failed: {e}")
                 if attempt < retries:
@@ -149,7 +166,11 @@ class OrderManager:
             try:
                 headers = self._sign("GET", path, query_part, "")
                 resp = self.session.get(url, headers=headers, timeout=(3, 27))
-                return resp.json()
+                try:
+                    return resp.json()
+                except Exception as je:
+                    logging.warning(f"[OrderManager] GET attempt {attempt}/{retries} JSON parse failed: {je} | status={resp.status_code} body={resp.text[:200]!r}")
+                    raise
             except Exception as e:
                 logging.warning(f"[OrderManager] GET attempt {attempt}/{retries} failed: {e}")
                 if attempt < retries:
