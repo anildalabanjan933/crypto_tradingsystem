@@ -175,9 +175,10 @@ def check_clock_drift():
 
 import requests, hashlib, hmac
 
-EXPECTED_LEVERAGE = {"S4": 200, "S4V2": 200, "S4V3": 200}
-PRODUCT_ID_MAP = {"S4": 202019, "S4V2": 202019, "S4V3": 202019}
+EXPECTED_LEVERAGE = {"S4": 4, "S4V2": 4, "S4V3": 4}
+PRODUCT_ID_MAP = {"S4": 84, "S4V2": 84, "S4V3": 84}
 TESTNET_BASE_URL = "https://cdn-ind.testnet.deltaex.org"
+PORTFOLIO_MODE_BOTS = {"S4V3"}  # accounts on Portfolio margin mode - fixed leverage check not applicable
 
 def _gen_sig(secret, message):
     return hmac.new(bytes(secret, 'utf-8'), bytes(message, 'utf-8'), hashlib.sha256).hexdigest()
@@ -189,6 +190,9 @@ def check_leverage_drift():
         "S4V3": (os.environ.get("S4V3_API_KEY", ""), os.environ.get("S4V3_API_SECRET", "")),
     }
     for bot, expected in EXPECTED_LEVERAGE.items():
+        if bot in PORTFOLIO_MODE_BOTS:
+            log_event("SYSTEM", "LEVERAGE_CHECK_SKIPPED", f"{bot}: portfolio margin mode - fixed leverage check not applicable")
+            continue
         pid = PRODUCT_ID_MAP.get(bot)
         api_key, api_secret = key_map.get(bot, ("", ""))
         if pid is None or not api_key or not api_secret:
