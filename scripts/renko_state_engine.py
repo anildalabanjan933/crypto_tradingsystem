@@ -491,6 +491,14 @@ def check_and_fire(state,is_s4=False):
             ts=sig.get("timestamp","")
             if not ts: continue
             sig_type_chk=sig.get("signal_type","")
+            try:
+                _sig_dt2=datetime.strptime(ts,"%Y-%m-%dT%H:%M:%S")
+                _candle_close_utc=_sig_dt2+pd.Timedelta(minutes=_tfm)
+                if _candle_close_utc > now_utc.replace(tzinfo=None):
+                    log.critical(f"[{state.label}] FUTURE-CANDLE GUARD: signal ts={ts} type={sig_type_chk} candle_close={_candle_close_utc} now_utc={now_utc} - mid-candle signal blocked (open candle treated as closed after restart)")
+                    continue
+            except Exception:
+                pass
             if sig_type_chk=="EXIT":
                 if state.last_exit_ts and ts<=state.last_exit_ts:
                     log.debug(f"[{state.label}] DROPPED EXIT sig ts={ts} <= last_exit_ts={state.last_exit_ts} - signal silently skipped")
