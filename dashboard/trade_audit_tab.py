@@ -117,8 +117,16 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
         dfc["exit_datetime"]  = _pd_audit.to_datetime(dfc["exit_datetime"])
         dfc["entry_datetime"] = _pd_audit.to_datetime(dfc["entry_datetime"])
 
-        _entry_ist_d = (dfc["entry_datetime"] + _pd_audit.Timedelta(hours=5, minutes=30)).dt.date
-        _exit_ist_d  = (dfc["exit_datetime"] + _pd_audit.Timedelta(hours=5, minutes=30)).dt.date
+        # Date-boundary fix (29-Sep-2026): raw CSV timestamps are candle
+        # REFERENCE times, not actual fill times - the real fill/display
+        # time is reference + TF_minutes (same offset _offset_ts_audit
+        # applies for display). Filtering must use that same offset date,
+        # otherwise a trade whose displayed exit is "today" can be dropped
+        # because its raw reference date is "yesterday".
+        _tf_min_filt = TF_MIN_AUDIT.get(strat_label, 0)
+        _tf_delta_filt = _pd_audit.Timedelta(minutes=_tf_min_filt)
+        _entry_ist_d = (dfc["entry_datetime"] + _tf_delta_filt + _pd_audit.Timedelta(hours=5, minutes=30)).dt.date
+        _exit_ist_d  = (dfc["exit_datetime"] + _tf_delta_filt + _pd_audit.Timedelta(hours=5, minutes=30)).dt.date
         dfc = dfc[
             ((_entry_ist_d >= from_date) & (_entry_ist_d <= to_date)) |
             ((_exit_ist_d >= from_date) & (_exit_ist_d <= to_date))
@@ -205,7 +213,7 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                     if _dup_found:
                         continue
                     try:
-                        _et_date = _dt_audit.datetime.fromisoformat(_p_et).date()
+                        _et_date = (_dt_audit.datetime.fromisoformat(_p_et) + _dt_audit.timedelta(hours=5, minutes=30)).date()
                     except Exception:
                         continue
                     if not (from_date <= _et_date <= to_date):
@@ -1043,18 +1051,39 @@ def _render_bt_table_html(rows_html):
     return header + rows_html + "</table>"
 
 
+import glob as _glob_audit
+import os as _os_audit
+
+def _bt_mtime_audit(strat_label):
+    _pattern = _BT_CSV_PATTERN_AUDIT.get(strat_label, "")
+    _mtimes = [0.0]
+    try:
+        for _f in _glob_audit.glob(_pattern):
+            _mtimes.append(_os_audit.path.getmtime(_f))
+    except Exception:
+        pass
+    _sig_map = {"S4": "logs/signals_s4.csv", "S4V2": "logs/signals_s4v2.csv", "S4V3": "logs/signals_s4v3.csv"}
+    _sig_path = _sig_map.get(strat_label, "")
+    try:
+        if _sig_path and _os_audit.path.exists(_sig_path):
+            _mtimes.append(_os_audit.path.getmtime(_sig_path))
+    except Exception:
+        pass
+    return max(_mtimes)
+
+
 @st.cache_data(ttl=180, show_spinner=False)
-def _load_audit_bt_cached(_load14_fn, strat_label, from_date, to_date, inr_rate):
+def _load_audit_bt_cached(_load14_fn, strat_label, from_date, to_date, inr_rate, _bust=None):
     return _get_bt_rows_audit(strat_label, from_date, to_date, _load14_fn, inr_rate)
 
 
 @st.cache_data(ttl=180, show_spinner=False)
-def _load_audit_lv_cached(_fetch_fills_fn, strat_label, from_date, to_date, inr_rate):
+def _load_audit_lv_cached(_fetch_fills_fn, strat_label, from_date, to_date, inr_rate, _bust=None):
     return _get_live_rows_audit(strat_label, from_date, to_date, _fetch_fills_fn, inr_rate)
 
 
 @st.cache_data(ttl=180, show_spinner=False)
-def _load_audit_lv_open_cached(_fetch_fills_fn, strat_label, from_date, to_date):
+def _load_audit_lv_open_cached(_fetch_fills_fn, strat_label, from_date, to_date, _bust=None):
     return _get_open_live_rows_audit(strat_label, from_date, to_date, _fetch_fills_fn)
 
 
@@ -1137,9 +1166,9 @@ def _eq_render_audit(rows, key_prefix, title):
 
 
 def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn, fetch_fills_fn, read_log_fn, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn=None, time_start=None):
-    bt_rows_raw = _load_audit_bt_cached(load14_fn, strat_label, from_date, to_date, inr_rate)
-    lv_rows = _load_audit_lv_cached(fetch_fills_fn, strat_label, from_date, to_date, inr_rate)
-    lv_open_rows = _load_audit_lv_open_cached(fetch_fills_fn, strat_label, from_date, to_date)
+    bt_rows_raw = _load_audit_bt_cached(load14_fn, strat_label, from_date, to_date, inr_rate, _bt_mtime_audit(strat_label))
+    lv_rows = _load_audit_lv_cached(fetch_fills_fn, strat_label, from_date, to_date, inr_rate, _bt_mtime_audit(strat_label))
+    lv_open_rows = _load_audit_lv_open_cached(fetch_fills_fn, strat_label, from_date, to_date, _bt_mtime_audit(strat_label))
 
     bt_rows = _apply_bt_adjustments_audit(bt_rows_raw, bt_lot_input, bt_slippage_input, inr_rate)
     lv_all_rows = lv_open_rows + lv_rows
@@ -1291,8 +1320,8 @@ def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn,
     _eq_today = (_dt_audit.datetime.utcnow() + _dt_audit.timedelta(hours=5, minutes=30)).date()
     _eq_from = _eq_today.replace(day=1)
     _eq_to = _eq_today
-    _eq_lv_rows = _load_audit_lv_cached(fetch_fills_fn, strat_label, _eq_from, _eq_to, inr_rate)
-    _eq_bt_rows_raw = _load_audit_bt_cached(load14_fn, strat_label, _eq_from, _eq_to, inr_rate)
+    _eq_lv_rows = _load_audit_lv_cached(fetch_fills_fn, strat_label, _eq_from, _eq_to, inr_rate, _bt_mtime_audit(strat_label))
+    _eq_bt_rows_raw = _load_audit_bt_cached(load14_fn, strat_label, _eq_from, _eq_to, inr_rate, _bt_mtime_audit(strat_label))
     _eq_bt_rows = _apply_bt_adjustments_audit(_eq_bt_rows_raw, bt_lot_input, bt_slippage_input, inr_rate)
 
     eqc1, eqc2 = st.columns(2)
@@ -1364,10 +1393,10 @@ def render_trade_audit_tab(load14_fn, fetch_fills_fn, read_log_fn, inr_rate=_INR
     _csv_cols = ["source","label","trade_no","dir","date","symbol","entry_ist","exit_ist","entry_p","exit_p","lot","charges","pnl_usd","net_pnl_inr","cum_pnl_inr"]
     _csv_rows = []
     for _s_csv in _strats_for_csv:
-        _bt_raw_csv = _load_audit_bt_cached(load14_fn, _s_csv, from_date, to_date, inr_rate)
+        _bt_raw_csv = _load_audit_bt_cached(load14_fn, _s_csv, from_date, to_date, inr_rate, _bt_mtime_audit(_s_csv))
         _bt_csv = _apply_bt_adjustments_audit(_bt_raw_csv, bt_lot_input, bt_slippage_input, inr_rate)
-        _lv_open_csv = _load_audit_lv_open_cached(fetch_fills_fn, _s_csv, from_date, to_date)
-        _lv_closed_csv = _load_audit_lv_cached(fetch_fills_fn, _s_csv, from_date, to_date, inr_rate)
+        _lv_open_csv = _load_audit_lv_open_cached(fetch_fills_fn, _s_csv, from_date, to_date, _bt_mtime_audit(_s_csv))
+        _lv_closed_csv = _load_audit_lv_cached(fetch_fills_fn, _s_csv, from_date, to_date, inr_rate, _bt_mtime_audit(_s_csv))
         _lv_csv = _lv_open_csv + _lv_closed_csv
         _bt_csv = [r for r in _bt_csv if _t_ok_audit_csv(r)]
         _lv_csv = [r for r in _lv_csv if _t_ok_audit_csv(r)]
