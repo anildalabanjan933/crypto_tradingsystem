@@ -25,11 +25,11 @@ HEALTH_FILE_STALE_SEC = 180
 
 BOTS = [
     {"name": "S4",   "api_key": os.getenv("S4_API_KEY", ""),   "api_secret": os.getenv("S4_API_SECRET", ""),
-     "log": "logs/live_trading_s4.log", "fill_csv": "logs/fill_prices_s4.csv"},
+     "log": "logs/live_trading_s4.log", "fill_csv": "logs/fill_prices_s4.csv", "stale_sec": 7800},
     {"name": "S4V2", "api_key": os.getenv("S4V2_API_KEY", ""), "api_secret": os.getenv("S4V2_API_SECRET", ""),
-     "log": "logs/live_trading_s4v2.log", "fill_csv": "logs/fill_prices_s4v2.csv"},
+     "log": "logs/live_trading_s4v2.log", "fill_csv": "logs/fill_prices_s4v2.csv", "stale_sec": 2100},
     {"name": "S4V3", "api_key": os.getenv("S4V3_API_KEY", ""), "api_secret": os.getenv("S4V3_API_SECRET", ""),
-     "log": "logs/live_trading_s4v3.log", "fill_csv": "logs/fill_prices_s4v3.csv"},
+     "log": "logs/live_trading_s4v3.log", "fill_csv": "logs/fill_prices_s4v3.csv", "stale_sec": 15000},
 ]
 
 POLL_SECONDS = 30
@@ -114,7 +114,7 @@ def check_state_desync(bot):
 
     now = time.time()
     written_at = data.get('written_at')
-    if written_at is not None and (now - written_at) > HEALTH_FILE_STALE_SEC:
+    if written_at is not None and (now - written_at) > bot.get("stale_sec", HEALTH_FILE_STALE_SEC):
         log_event(bot['name'], 'A_HEALTHFILE_STALE', f"state_health file not updated in {now - written_at:.0f}s - engine may be dead")
         send_alert_throttled(f"A_STALE_{bot['name']}", f"WATCHDOG [{bot['name']}] Class A - state_health file STALE for {now - written_at:.0f}s, engine may be dead")
         return
