@@ -729,8 +729,19 @@ while True:
                 direction = dirn
                 side = "buy" if direction == "long" else "sell"
                 _override_file = "logs/manual_override_s4v3.txt"
+                _override_scoped_match = False
                 if os.path.exists(_override_file):
+                    try:
+                        with open(_override_file) as _f_ov:
+                            _ov_content = _f_ov.read()
+                        if f"entry_ts={sig_ts}" in _ov_content:
+                            _override_scoped_match = True
+                        else:
+                            log.warning(f"[OVERRIDE] Stale override (entry_ts mismatch, expected {sig_ts}) - removing and proceeding with normal entry")
+                    except Exception as _e_ov:
+                        log.warning(f"[OVERRIDE] Could not read override file ({_e_ov}) - removing and treating as stale")
                     os.remove(_override_file)
+                if _override_scoped_match:
                     # FIX (24-Aug-2026, Bug2): advance last_known_ts PAST this
                     # signal's real exit_time, NOT just to sig_ts. Setting it
                     # equal to sig_ts left the matching loop re-matching the
