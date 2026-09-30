@@ -161,6 +161,7 @@ class BacktestEngine:
         calculator = MetricsCalculator(
             trades          = self.trades,
             initial_capital = self.initial_capital,
+            charges_config  = charges_config,
         )
         self.metrics = calculator.calculate_all_metrics()
         print(f"✅ Calculated metrics")
