@@ -12,7 +12,7 @@ import logging
 import hashlib
 import fcntl
 import csv as _csv_mod
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 sys.path.insert(0, ".")
 from dotenv import load_dotenv
 load_dotenv()
@@ -39,7 +39,10 @@ ALERT_COOLDOWN = 300  # don't spam same bot alert more than once per 5 min
 
 _stuck_candidates = {}  # bot_name -> (first_flat_ts, entry_id)
 
-def _find_real_exit_fill(om, direction, entry_ts_str, window_end_ts_str, expected_size=None):
+_TF_MIN_MAP = {"S4": 120, "S4V2": 30, "S4V3": 240}
+BUG2_BUFFER_SEC = 60
+
+def _find_real_exit_fill(om, direction, entry_ts_str, window_end_ts_str, expected_size=None, tf_min=0):
     close_side = "sell" if direction.strip().lower() == "long" else "buy"
     try:
         entry_dt = datetime.strptime(entry_ts_str, "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
@@ -48,6 +51,7 @@ def _find_real_exit_fill(om, direction, entry_ts_str, window_end_ts_str, expecte
         return None, None
     if window_end_dt <= entry_dt:
         return None, None
+    lower_bound = entry_dt + timedelta(minutes=tf_min) if tf_min else entry_dt
     try:
         resp = om._get("/v2/fills", {"product_ids": str(om.PRODUCT_ID), "page_size": 200})
     except Exception as e:
@@ -75,7 +79,7 @@ def _find_real_exit_fill(om, direction, entry_ts_str, window_end_ts_str, expecte
     # guessing which can attach the wrong fill.
     candidates = []
     for f_dt, f in all_fills:
-        if f_dt < entry_dt or f_dt > window_end_dt:
+        if f_dt < lower_bound or f_dt > window_end_dt:
             continue
         if f.get("side") != close_side:
             continue
@@ -87,7 +91,7 @@ def _find_real_exit_fill(om, direction, entry_ts_str, window_end_ts_str, expecte
     if not candidates:
         # Fallback to old side+size logic if new_position data unavailable
         for f_dt, f in all_fills:
-            if f_dt < entry_dt or f_dt > window_end_dt:
+            if f_dt < lower_bound or f_dt > window_end_dt:
                 continue
             if f.get("side") != close_side:
                 continue
@@ -133,6 +137,27 @@ def check_stuck_pending(bot, csv_path):
         for i in range(len(rows) - 1):
             parts = rows[i].strip().split(",")
             if len(parts) >= 2 and parts[1] == "PENDING":
+                # --- BUG2 GUARD (30-Sep-2026): heal only if exchange FLAT and row age > TF_MIN+buffer ---
+                _bg2_skip = False
+                try:
+                    if _om_p1 is None:
+                        _om_p1 = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
+                    _bg2_pos = _om_p1.get_position()
+                    if not _bg2_pos.get("success") or _bg2_pos.get("size", 0) != 0:
+                        _bg2_skip = True
+                        log.info(f"[{bot['name']}] PASS1 skip heal row {parts[0]}: exchange not flat (size={_bg2_pos.get('size')})")
+                    else:
+                        _bg2_tf2 = _TF_MIN_MAP.get(bot["name"], 0)
+                        _bg2_entry_dt = datetime.strptime(parts[0], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
+                        _bg2_age = datetime.now(timezone.utc) - _bg2_entry_dt
+                        if _bg2_age < timedelta(minutes=_bg2_tf2, seconds=BUG2_BUFFER_SEC):
+                            _bg2_skip = True
+                            log.info(f"[{bot['name']}] PASS1 skip heal row {parts[0]}: age too young ({_bg2_age})")
+                except Exception as _bg2_e:
+                    log.warning(f"[{bot['name']}] PASS1 guard check failed: {_bg2_e} - skipping heal this cycle")
+                    _bg2_skip = True
+                if _bg2_skip:
+                    continue
                 next_parts = rows[i + 1].strip().split(",")
                 fallback_exit_ts = next_parts[0] if len(next_parts) > 0 else _now_utc_str()
                 fallback_exit_price = next_parts[4] if len(next_parts) > 4 else "0.0"
@@ -142,9 +167,10 @@ def check_stuck_pending(bot, csv_path):
                     if _om_p1 is None:
                         _om_p1 = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
                     direction = parts[2] if len(parts) > 2 else ""
+                    _bg2_tf = _TF_MIN_MAP.get(bot["name"], 0)
                     real_ts, real_price = _find_real_exit_fill(
                         _om_p1, direction, parts[0], fallback_exit_ts,
-                        parts[3] if len(parts) > 3 else None
+                        parts[3] if len(parts) > 3 else None, tf_min=_bg2_tf
                     )
                     if real_ts and real_price:
                         exit_ts, exit_price, source = real_ts, real_price, "real_fill_lookup"
