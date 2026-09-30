@@ -528,6 +528,32 @@ _ENTRY_RETRY_COOLDOWN_SEC = 5
 _repl_sig_cache = None
 _repl_sig_cache_mtime = None
 
+# --- BOUNDARY GUARD (30-Sep-2026, Bug1): never act on a row whose candle is not closed or whose ts is off the TF grid ---
+_BG_TF_MIN = 120
+_bg_logged = set()
+def _reject_nb(ts_str, now_str, kind):
+    from datetime import timedelta as _bg_td
+    reason = None
+    try:
+        _d = datetime.strptime(str(ts_str), "%Y-%m-%dT%H:%M:%S")
+        _n = datetime.strptime(str(now_str), "%Y-%m-%dT%H:%M:%S")
+        if _d.second != 0 or ((_d.hour * 60 + _d.minute) % _BG_TF_MIN) != 0:
+            reason = "off_grid"
+        elif _d + _bg_td(minutes=_BG_TF_MIN) > _n:
+            reason = "candle_not_closed"
+    except Exception:
+        reason = "unparseable_ts"
+    if reason is None:
+        return False
+    _k = (kind, str(ts_str), reason)
+    if _k not in _bg_logged:
+        if len(_bg_logged) > 500:
+            _bg_logged.clear()
+        _bg_logged.add(_k)
+        log.critical(f"REJECTED non-boundary signal: ts={ts_str} reason={reason} kind={kind} now={now_str} tf_min={_BG_TF_MIN}")
+    return True
+
+
 while True:
     try:
         open('logs/heartbeat_s4.txt','w').write(str(__import__('time').time()))
@@ -652,6 +678,8 @@ while True:
                             log.error(f"[SELF-HEAL] Auto-close FAILED: {result}")
 
             # --- EXIT first if position open and exit time reached ---
+            elif position is not None and _xt not in ("PENDING", "") and now >= _xt and _reject_nb(_xt, now, "EXIT"):
+                pass  # Bug1: rejected non-boundary EXIT - last_known_ts NOT advanced
             elif position is not None and now >= _xt:
                 actual = om.get_position()
                 _ex_size = abs(actual.get("size", 0)) if actual.get("success") else 0
@@ -716,6 +744,8 @@ while True:
                             log.warning(f"[ORDER] EXIT ts NOT advanced - will retry next loop | ts={_xt}")
 
             # --- ENTRY if no position and exit time not yet reached ---
+            elif position is None and now < _xt and _reject_nb(sig_ts, now, "ENTRY"):
+                pass  # Bug1: rejected non-boundary ENTRY - last_known_ts NOT advanced
             elif position is None and now < _xt:
                 if check_maintenance_flag():
                     log.info(f"[SKIP] ENTRY blocked - exchange maintenance active | dir={dirn} | ts={sig_ts}")
