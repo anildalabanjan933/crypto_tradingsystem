@@ -18,10 +18,20 @@ if [ -z "$DISK_COMMIT" ]; then
 elif [ -f "$RUNNING_COMMIT_FILE" ]; then
     RUNNING_COMMIT=$(cat "$RUNNING_COMMIT_FILE" 2>/dev/null)
     if [ -n "$RUNNING_COMMIT" ] && [ "$RUNNING_COMMIT" != "$DISK_COMMIT" ]; then
-        echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] VERSION DRIFT: running=$RUNNING_COMMIT disk=$DISK_COMMIT - restarting signal_generator" >> logs/maintenance.log
-        for _pid in $(/usr/bin/screen -list 2>/dev/null | grep -E "[0-9]+\.signal_generator[[:space:]]" | awk "{print \$1}" | cut -d. -f1); do
-            /usr/bin/screen -S "${_pid}.signal_generator" -X quit 2>/dev/null
+        _any_pending=0
+        for _f in logs/signals_s4.csv logs/signals_s4v2.csv logs/signals_s4v3.csv; do
+            if [ -f "$_f" ] && tail -1 "$_f" | grep -q ",PENDING,"; then
+                _any_pending=1
+            fi
         done
+        if [ "$_any_pending" = "1" ]; then
+            echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] VERSION DRIFT: running=$RUNNING_COMMIT disk=$DISK_COMMIT - DEFERRED (open PENDING position, waiting for safe boundary)" >> logs/maintenance.log
+        else
+            echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] VERSION DRIFT: running=$RUNNING_COMMIT disk=$DISK_COMMIT - restarting signal_generator" >> logs/maintenance.log
+            for _pid in $(/usr/bin/screen -list 2>/dev/null | grep -E "[0-9]+\.signal_generator[[:space:]]" | awk "{print \$1}" | cut -d. -f1); do
+                /usr/bin/screen -S "${_pid}.signal_generator" -X quit 2>/dev/null
+            done
+        fi
     fi
 fi
 ALERT_FILE=$REPO/logs/watchdog_alert_sent.txt
@@ -127,6 +137,7 @@ check_and_start live_s4v3 scripts/signal_replay_s4v3.py logs/live_trading_s4v3.l
 check_and_start band_tier_watch "python3 scripts/band_tier_watch.py"
 check_and_start watchdog_fast "scripts/watchdog_fast.py" logs/watchdog_fast.log
 check_and_start watchdog_slow "scripts/watchdog_slow.py" logs/watchdog_slow.log
+check_and_start watchdog_capital "scripts/watchdog_capital.py" logs/watchdog_capital.log
 check_version_drift live_s4 scripts/signal_replay_s4.py
 check_heartbeat_stale live_s4 logs/heartbeat_s4.txt 300
 check_and_start live_s4 scripts/signal_replay_s4.py logs/live_trading_s4.log
@@ -156,4 +167,5 @@ fi
 
 check_heartbeat_stale watchdog_fast logs/watchdog_fast_heartbeat.txt 120
 check_heartbeat_stale watchdog_slow logs/watchdog_slow_heartbeat.txt 900
+check_heartbeat_stale watchdog_capital logs/watchdog_capital_heartbeat.txt 120
 date +%s > /home/anildalabanjan7/crypto_tradingsystem/logs/watchdog_top_heartbeat.txt
