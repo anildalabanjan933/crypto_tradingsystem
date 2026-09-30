@@ -550,10 +550,16 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
     # INSTANT CSV append - no full backtest rerun
     # Append only new signal row directly to signals CSV
     try:
-        import csv as _csv, os as _os
+        import csv as _csv, os as _os, fcntl as _fcntl
         already = False
         sig_label = {"S2":"2","S4":"4","S4V2":"4v2","S4V3":"4v3"}.get(state.label,"4")
         sig_csv = f"logs/signals_s{sig_label}.csv"
+        # BUG3-GAP1 FIX (30-Sep-2026): hold same exclusive flock cron uses
+        # (generate_signals.py _bg3gap1_locked_merge_write) for this entire
+        # read-modify-write cycle - prevents cron's read/replace from
+        # colliding with this ENTRY/EXIT append and losing an update.
+        _bg3gap1_engine_lock = open(sig_csv + ".lock", "a")
+        _fcntl.flock(_bg3gap1_engine_lock.fileno(), _fcntl.LOCK_EX)
         # Read existing signals
         existing = []
         if _os.path.exists(sig_csv):
@@ -643,6 +649,12 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
                 state.open_entry_ts = None
     except Exception as _e:
         log.error(f"[{state.label}] CSV append failed: {_e}")
+    finally:
+        try:
+            _fcntl.flock(_bg3gap1_engine_lock.fileno(), _fcntl.LOCK_UN)
+            _bg3gap1_engine_lock.close()
+        except Exception:
+            pass
     write_signal_file(state.label,sig_type,direction,ts)
     if sig_type == "ENTRY" and not already:
         try:
