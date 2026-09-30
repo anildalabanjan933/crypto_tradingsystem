@@ -144,10 +144,17 @@ def merge_signal_csv(new_trades, csv_path, tf_min=0):
             try:
                 _bg3_entry = _bg3_dt.strptime(key[:19].replace("T", " "), "%Y-%m-%d %H:%M:%S").replace(tzinfo=_bg3_tz.utc)
                 if _bg3_entry + _bg3_td(minutes=tf_min) > _bg3_now:
-                    log.info(f"[GENERATE] merge skip (candle not closed): entry={key}")
+                    log.info(f"[GENERATE] merge skip (entry candle not closed): entry={key}")
                     continue
+                _bg3_exit_raw = str(t.get("exit_datetime","")).strip()
+                if _bg3_exit_raw and _bg3_exit_raw.upper() != "PENDING":
+                    _bg3_exit_dt = _bg3_dt.strptime(_bg3_exit_raw[:19].replace("T", " "), "%Y-%m-%d %H:%M:%S").replace(tzinfo=_bg3_tz.utc)
+                    if _bg3_exit_dt + _bg3_td(minutes=tf_min) > _bg3_now:
+                        log.info(f"[GENERATE] merge skip (exit candle not closed): entry={key} exit={_bg3_exit_raw}")
+                        continue
             except Exception as _bg3_e:
-                log.warning(f"[GENERATE] merge: could not parse entry_datetime {key}: {_bg3_e}")
+                log.warning(f"[GENERATE] merge: could not parse entry/exit datetime for {key}: {_bg3_e} - skipping row for safety")
+                continue
         merged[key] = t
     return [merged[k] for k in sorted(merged.keys())]
 
