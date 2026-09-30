@@ -146,6 +146,7 @@ check_heartbeat_stale testmember1_s4 logs/heartbeat_testmember1_s4.txt 300
 # DISABLED (27-Sep-2026, inactive bot): check_and_start testmember1_s4 scripts/signal_replay_testmember1_s4.py logs/live_trading_testmember1_s4.log
 check_heartbeat_stale signal_generator logs/engine_heartbeat.txt 300
 check_and_start signal_generator scripts/renko_state_engine.py logs/renko_state_engine.log
+check_and_start bt_chart_engine scripts/renko_chart_engine.py logs/renko_chart_engine.log
 check_heartbeat_stale boundary_watcher logs/boundary_watcher_heartbeat.txt 300
 check_and_start boundary_watcher scripts/boundary_watcher.py logs/boundary_watcher.log
 check_heartbeat_stale sl_safety_monitor logs/sl_safety_monitor_heartbeat.txt 300
