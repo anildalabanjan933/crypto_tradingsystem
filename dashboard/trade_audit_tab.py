@@ -942,7 +942,7 @@ def _apply_bt_adjustments_audit(bt_rows, lot_input, slippage_usd, inr_rate):
         slip_deduction_inr = slippage_usd * (lot_input / 100.0) * inr_rate
         final_net_inr = after_tax_inr - slip_deduction_inr
         r2["lot"] = lot_input
-        r2["charges"] = (r.get("charges") or 0) * (lot_input / 100.0)
+        r2["charges"] = (r.get("charges") or 0) * (lot_input / 100.0)  # real charges only (taker+funding+tax); BT Slip($) is a what-if impacting Net PnL only, not shown here
         r2["net_pnl_inr"] = final_net_inr
         scaled.append(r2)
 
