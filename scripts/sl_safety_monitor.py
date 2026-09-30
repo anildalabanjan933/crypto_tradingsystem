@@ -427,7 +427,9 @@ def check_extra_risks(bot, csv_path):
             exch_size = abs(size)
             if csv_dir != exch_dir or csv_size != exch_size:
                 time.sleep(10)
-                pos = get_position(bot)
+                # BUGFIX (30-Sep-2026, _bg_fix_getposition): get_position(bot) was
+                # undefined - caused NameError, caught as "check_extra_risks failed".
+                pos = om.get_position()
                 exch_dir = pos.get("direction", "").lower()
                 exch_size = abs(pos.get("size", 0))
             if csv_dir != exch_dir or csv_size != exch_size:
