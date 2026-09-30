@@ -35,6 +35,7 @@ def _get_strat_list():
 _STRAT_CLASS_OVERRIDE = {
     "renko_smiio_supertrend_strategy": "RenkoSMIIOSupertrendStrategy",
     "renko_smiio_supertrend_v2_strategy": "RenkoSMIIOSupertrendV2Strategy",
+    "renko_smiio_cross_v3_strategy": "RenkoSMIIOCrossV3Strategy",
     "tf1_supertrend_ema_strategy": "TF1SupertrendEMAStrategy",
 }
 
