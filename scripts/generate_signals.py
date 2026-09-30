@@ -142,7 +142,7 @@ def merge_signal_csv(new_trades, csv_path, tf_min=0):
             continue
         if tf_min:
             try:
-                _bg3_entry = _bg3_dt.strptime(key[:19], "%Y-%m-%d %H:%M:%S").replace(tzinfo=_bg3_tz.utc)
+                _bg3_entry = _bg3_dt.strptime(key[:19].replace("T", " "), "%Y-%m-%d %H:%M:%S").replace(tzinfo=_bg3_tz.utc)
                 if _bg3_entry + _bg3_td(minutes=tf_min) > _bg3_now:
                     log.info(f"[GENERATE] merge skip (candle not closed): entry={key}")
                     continue
