@@ -277,8 +277,10 @@ def get_bt_rows(bot, date_str):
     y, m, d = map(int, date_str.split('-'))
     target = date(y, m, d)
     IST_OFFSET = timedelta(hours=5, minutes=30)
-    entry_ist_date = (df['entry_datetime'] + IST_OFFSET).dt.date
-    exit_ist_date = (df['exit_datetime'] + IST_OFFSET).dt.date
+    _tf_f = 240 if bot == 's4v3' else (120 if bot == 's4' else 30)
+    _off_f = timedelta(minutes=_tf_f)
+    entry_ist_date = (df['entry_datetime'] + _off_f + IST_OFFSET).dt.date
+    exit_ist_date = (df['exit_datetime'] + _off_f + IST_OFFSET).dt.date
     df = df[(entry_ist_date == target) | (exit_ist_date == target)]
     df = df.drop_duplicates(subset=['entry_datetime', 'exit_datetime', 'entry_price', 'exit_price'])
     df = df.sort_values('entry_datetime')
