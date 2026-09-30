@@ -174,8 +174,20 @@ def check_stuck_pending(bot, csv_path):
                         log.warning(f"[{bot['name']}] PASS1 skip heal row {parts[0]}: no _bg2gap TF_MIN mapping")
                     else:
                         _bg2_tf = _TF_MIN_MAP[bot["name"]]
+                        # BUG2-GAPFIX (30-Sep-2026): fallback_exit_ts is next row's
+                        # bar-open label, not the real fill time - the real exit
+                        # fill lands AFTER label+TF_MIN. Extend window_end so
+                        # flip-adjacent backlog rows can still match their fill.
+                        try:
+                            _bg2gapfix_window_end = (
+                                datetime.strptime(fallback_exit_ts, "%Y-%m-%dT%H:%M:%S")
+                                .replace(tzinfo=timezone.utc)
+                                + timedelta(minutes=_bg2_tf, seconds=BUG2_BUFFER_SEC)
+                            ).strftime("%Y-%m-%dT%H:%M:%S")
+                        except Exception:
+                            _bg2gapfix_window_end = fallback_exit_ts
                         real_ts, real_price = _find_real_exit_fill(
-                            _om_p1, direction, parts[0], fallback_exit_ts,
+                            _om_p1, direction, parts[0], _bg2gapfix_window_end,
                             parts[3] if len(parts) > 3 else None, tf_min=_bg2_tf
                         )
                         if real_ts and real_price:
