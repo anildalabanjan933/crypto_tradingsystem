@@ -138,7 +138,7 @@ class MetricsCalculator:
         # SECTION 6: FINAL NET PnL (post-tax)
         # This is the true final result after ALL charges including tax
         # ══════════════════════════════════════════════════════════════════════
-        total_pnl_final     = total_net_pnl_pretax - total_tax
+        total_pnl_final     = total_net_pnl_pretax - total_tax - self.metrics['total_slippage']
         total_pnl_final_inr = usd_to_inr(total_pnl_final, self.usd_to_inr_rate)
 
         self.metrics['total_pnl']         = total_pnl_final
@@ -304,8 +304,19 @@ class MetricsCalculator:
         # ══════════════════════════════════════════════════════════════════════
         # SECTION 15: MONTHLY RETURNS (INR primary)
         # ══════════════════════════════════════════════════════════════════════
+        # Per-trade tax (distributes the same global tax_rate on winning trades only,
+        # so monthly/yearly sums reconcile exactly with the top summary total_tax)
+        df_trades['tax_usd_pertrade'] = df_trades['net_pnl'].where(
+            df_trades['net_pnl'] > 0, 0.0
+        ) * tax_rate
+
+        # Final per-trade net PnL after tax AND slippage (matches top summary formula)
+        df_trades['final_net_pnl_inr'] = (
+            df_trades['net_pnl'] - df_trades['tax_usd_pertrade'] - df_trades['slippage_usd']
+        ) * self.usd_to_inr_rate
+
         df_trades['month'] = df_trades['exit_datetime'].dt.to_period('M')
-        monthly_pnl        = df_trades.groupby('month')['net_pnl_inr'].sum()
+        monthly_pnl        = df_trades.groupby('month')['final_net_pnl_inr'].sum()
         self.metrics['monthly_returns'] = {
             str(k): float(v) for k, v in monthly_pnl.items()
         }
@@ -317,6 +328,7 @@ class MetricsCalculator:
 
         df_trades['tax_charges_inr'] = (
             df_trades['gross_pnl'] - df_trades['net_pnl']
+            + df_trades['slippage_usd'] + df_trades['tax_usd_pertrade']
         ) * self.usd_to_inr_rate
         monthly_tax_charges = df_trades.groupby('month')['tax_charges_inr'].sum()
         self.metrics['monthly_tax_charges'] = {
@@ -327,7 +339,7 @@ class MetricsCalculator:
         # SECTION 16: YEARLY RETURNS (INR primary)
         # ══════════════════════════════════════════════════════════════════════
         df_trades['year'] = df_trades['exit_datetime'].dt.year
-        yearly_pnl        = df_trades.groupby('year')['net_pnl_inr'].sum()
+        yearly_pnl        = df_trades.groupby('year')['final_net_pnl_inr'].sum()
         self.metrics['yearly_returns'] = {
             str(k): float(v) for k, v in yearly_pnl.items()
         }
