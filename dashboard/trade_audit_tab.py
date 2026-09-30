@@ -147,10 +147,9 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
             _pnl_inr = float(r.get("net_pnl_inr", 0))
             _tax_charges = (
                 float(r.get("taker_fees_usd", 0))
-                + float(r.get("slippage_usd", 0))
                 + float(r.get("funding_usd", 0))
                 + float(r.get("tax_usd", 0))
-            ) * inr_rate
+            ) * inr_rate  # slippage excluded: already priced into entry/exit via _apply_slippage
 
             _net_pnl_inr = _pnl_inr - (max(_pnl_inr, 0) * 0.10)
 
