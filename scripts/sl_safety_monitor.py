@@ -146,8 +146,11 @@ def check_stuck_pending(bot, csv_path):
                     if not _bg2_pos.get("success") or _bg2_pos.get("size", 0) != 0:
                         _bg2_skip = True
                         log.info(f"[{bot['name']}] PASS1 skip heal row {parts[0]}: exchange not flat (size={_bg2_pos.get('size')})")
+                    elif bot["name"] not in _TF_MIN_MAP:
+                        _bg2_skip = True
+                        log.warning(f"[{bot['name']}] PASS1 skip heal row {parts[0]}: no _bg2gap TF_MIN mapping for this bot")
                     else:
-                        _bg2_tf2 = _TF_MIN_MAP.get(bot["name"], 0)
+                        _bg2_tf2 = _TF_MIN_MAP[bot["name"]]
                         _bg2_entry_dt = datetime.strptime(parts[0], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
                         _bg2_age = datetime.now(timezone.utc) - _bg2_entry_dt
                         if _bg2_age < timedelta(minutes=_bg2_tf2, seconds=BUG2_BUFFER_SEC):
@@ -162,20 +165,28 @@ def check_stuck_pending(bot, csv_path):
                 fallback_exit_ts = next_parts[0] if len(next_parts) > 0 else _now_utc_str()
                 fallback_exit_price = next_parts[4] if len(next_parts) > 4 else "0.0"
 
-                exit_ts, exit_price, source = fallback_exit_ts, fallback_exit_price, "fallback_next_row_copy"
+                exit_ts, exit_price, source = None, None, None
                 try:
                     if _om_p1 is None:
                         _om_p1 = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
                     direction = parts[2] if len(parts) > 2 else ""
-                    _bg2_tf = _TF_MIN_MAP.get(bot["name"], 0)
-                    real_ts, real_price = _find_real_exit_fill(
-                        _om_p1, direction, parts[0], fallback_exit_ts,
-                        parts[3] if len(parts) > 3 else None, tf_min=_bg2_tf
-                    )
-                    if real_ts and real_price:
-                        exit_ts, exit_price, source = real_ts, real_price, "real_fill_lookup"
+                    if bot["name"] not in _TF_MIN_MAP:
+                        log.warning(f"[{bot['name']}] PASS1 skip heal row {parts[0]}: no _bg2gap TF_MIN mapping")
+                    else:
+                        _bg2_tf = _TF_MIN_MAP[bot["name"]]
+                        real_ts, real_price = _find_real_exit_fill(
+                            _om_p1, direction, parts[0], fallback_exit_ts,
+                            parts[3] if len(parts) > 3 else None, tf_min=_bg2_tf
+                        )
+                        if real_ts and real_price:
+                            exit_ts, exit_price, source = real_ts, real_price, "real_fill_lookup"
                 except Exception as _fe:
-                    log.warning(f"[{bot['name']}] PASS1 real-fill lookup failed for row {parts[0]}: {_fe} - using fallback")
+                    log.warning(f"[{bot['name']}] PASS1 real-fill lookup failed for row {parts[0]}: {_fe}")
+                if exit_ts is None or exit_price is None:
+                    # BUG2-GAP4 (30-Sep-2026): no real fill found - do NOT heal with
+                    # stale fallback_next_row_copy. Leave row untouched this cycle.
+                    log.warning(f"[{bot['name']}] PASS1 NO_FILL for row {parts[0]}: no real exit fill found - leaving row untouched")
+                    continue
 
                 parts[1] = exit_ts
                 if len(parts) >= 6:
