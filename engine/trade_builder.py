@@ -186,8 +186,9 @@ class TradeBuilder:
         taker_fee_rate   = self.charges_config.get('taker_fee_rate', 0.0005)
         cb["taker_fees"] = size_value * taker_fee_rate * 2
 
-        # Slippage — $ per side × 2 sides (entry + exit)
-        cb["slippage"] = self.slippage * 2
+        # Slippage — $ per side × 2 sides (entry + exit), scaled by lot size
+        # to match audit tab's lot_input/100 scaling (base = 100 lots)
+        cb["slippage"] = self.slippage * 2 * (self.size_qty / 100.0)
 
         # Funding
         funding_rate_annual    = self.charges_config.get('funding_rate_annual', 0.1095)
