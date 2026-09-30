@@ -108,7 +108,7 @@ def write_trade_log_csv(trades, label):
     df.to_csv(out, index=False)
     log.info(f"[GENERATE] Trade log saved: {out} ({len(trades)} rows)")
 
-def merge_signal_csv(new_trades, csv_path):
+def merge_signal_csv(new_trades, csv_path, tf_min=0):
     import csv as _csv
     merged = {}
     if os.path.exists(csv_path):
@@ -129,10 +129,26 @@ def merge_signal_csv(new_trades, csv_path):
     # rows (differing price formatting) for periods already locked in by
     # the live engine.
     cutoff = max(merged.keys()) if merged else None
+    from datetime import datetime as _bg3_dt, timezone as _bg3_tz, timedelta as _bg3_td
+    _bg3_now = _bg3_dt.now(_bg3_tz.utc)
     for t in new_trades:
         key = str(t.get("entry_datetime",""))
-        if key and (cutoff is None or key > cutoff):
-            merged[key] = t
+        if not key or (cutoff is not None and key <= cutoff):
+            continue
+        # BUG3 GUARD (30-Sep-2026): cron merge must never write open/PENDING
+        # rows or rows whose candle has not closed yet - live engine only.
+        if str(t.get("exit_datetime","")).strip().upper() == "PENDING":
+            log.info(f"[GENERATE] merge skip (still open/PENDING): entry={key}")
+            continue
+        if tf_min:
+            try:
+                _bg3_entry = _bg3_dt.strptime(key[:19], "%Y-%m-%d %H:%M:%S").replace(tzinfo=_bg3_tz.utc)
+                if _bg3_entry + _bg3_td(minutes=tf_min) > _bg3_now:
+                    log.info(f"[GENERATE] merge skip (candle not closed): entry={key}")
+                    continue
+            except Exception as _bg3_e:
+                log.warning(f"[GENERATE] merge: could not parse entry_datetime {key}: {_bg3_e}")
+        merged[key] = t
     return [merged[k] for k in sorted(merged.keys())]
 
 def write_signal_csv(trades, out_path):
@@ -159,7 +175,7 @@ if __name__ == "__main__":
     s4v2_trades, s4v2_pending = run_backtest(RenkoSMIIOSupertrendV2Strategy, s4v2_params, "S4V2")
     s4v2_trades = [t for t in s4v2_trades if "entry_datetime" in t]
     if not _skip_live:
-        _s4v2_all = merge_signal_csv(s4v2_trades + ([s4v2_pending] if s4v2_pending else []), "logs/signals_s4v2.csv")
+        _s4v2_all = merge_signal_csv(s4v2_trades + ([s4v2_pending] if s4v2_pending else []), "logs/signals_s4v2.csv", tf_min=30)
         write_signal_csv(_s4v2_all, "logs/signals_s4v2.csv")
     else:
         log.info("[GENERATE] Skipped logs/signals_s4v2.csv (dashboard-refresh-only mode)")
@@ -171,7 +187,7 @@ if __name__ == "__main__":
     s4_trades, s4_pending = run_backtest(RenkoSMIIOSupertrendStrategy, s4_params, "S4")
     s4_trades = [t for t in s4_trades if "entry_datetime" in t]
     if not _skip_live:
-        _s4_all = merge_signal_csv(s4_trades + ([s4_pending] if s4_pending else []), "logs/signals_s4.csv")
+        _s4_all = merge_signal_csv(s4_trades + ([s4_pending] if s4_pending else []), "logs/signals_s4.csv", tf_min=120)
         write_signal_csv(_s4_all, "logs/signals_s4.csv")
     else:
         log.info("[GENERATE] Skipped logs/signals_s4.csv (dashboard-refresh-only mode)")
@@ -184,7 +200,7 @@ if __name__ == "__main__":
     s4v3_trades, s4v3_pending = run_backtest(RenkoSMIIOCrossV3Strategy, s4v3_params, "S4V3")
     s4v3_trades = [t for t in s4v3_trades if "entry_datetime" in t]
     if not _skip_live:
-        _s4v3_all = merge_signal_csv(s4v3_trades + ([s4v3_pending] if s4v3_pending else []), "logs/signals_s4v3.csv")
+        _s4v3_all = merge_signal_csv(s4v3_trades + ([s4v3_pending] if s4v3_pending else []), "logs/signals_s4v3.csv", tf_min=240)
         write_signal_csv(_s4v3_all, "logs/signals_s4v3.csv")
     else:
         log.info("[GENERATE] Skipped logs/signals_s4v3.csv (dashboard-refresh-only mode)")
