@@ -108,6 +108,14 @@ def write_trade_log_csv(trades, label):
     df.to_csv(out, index=False)
     log.info(f"[GENERATE] Trade log saved: {out} ({len(trades)} rows)")
 
+def _bg3gap2_norm_key(s):
+    # BUG3-GAP2 FIX (30-Sep-2026): entry_datetime may arrive as ISO T-format
+    # ("...T08:00:00") or space-format ("... 08:00:00"). Space (0x20) sorts
+    # below 'T' (0x54) in ASCII, so mixed formats broke the cutoff <=
+    # string-compare and could duplicate/skip same-day rows. Normalize to
+    # T-format, truncated to seconds, before any compare or dict key use.
+    return str(s).strip()[:19].replace(" ", "T")
+
 def merge_signal_csv(new_trades, csv_path, tf_min=0):
     import csv as _csv
     merged = {}
@@ -115,7 +123,8 @@ def merge_signal_csv(new_trades, csv_path, tf_min=0):
         with open(csv_path, "r") as f:
             for row in _csv.reader(f):
                 if len(row) >= 3 and row[0]:
-                    merged[row[0]] = {
+                    _bg3gap2_k = _bg3gap2_norm_key(row[0])
+                    merged[_bg3gap2_k] = {
                         "entry_datetime": row[0],
                         "exit_datetime": row[1] if len(row) > 1 else "",
                         "direction": row[2] if len(row) > 2 else "",
@@ -132,7 +141,8 @@ def merge_signal_csv(new_trades, csv_path, tf_min=0):
     from datetime import datetime as _bg3_dt, timezone as _bg3_tz, timedelta as _bg3_td
     _bg3_now = _bg3_dt.now(_bg3_tz.utc)
     for t in new_trades:
-        key = str(t.get("entry_datetime",""))
+        _bg3gap2_raw_key = str(t.get("entry_datetime",""))
+        key = _bg3gap2_norm_key(_bg3gap2_raw_key) if _bg3gap2_raw_key else ""
         if not key or (cutoff is not None and key <= cutoff):
             continue
         # BUG3 GUARD (30-Sep-2026): cron merge must never write open/PENDING
