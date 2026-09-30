@@ -160,17 +160,31 @@ def merge_signal_csv(new_trades, csv_path, tf_min=0):
 
 def write_signal_csv(trades, out_path):
     os.makedirs(os.path.dirname(out_path), exist_ok=True)
-    with open(out_path, "w", newline="") as f:
-        writer = csv.writer(f)
-        # NO header row - signal_replay bots read as headerless CSV
-        for t in trades:
-            entry = str(t.get("entry_datetime", ""))
-            exit_ = str(t.get("exit_datetime",  ""))
-            dirn  = str(t.get("direction",       ""))
-            entry_price = t.get("entry_price", "")
-            exit_price  = t.get("exit_price", "")
-            writer.writerow([entry, exit_, dirn, LOT_SIZE, entry_price, exit_price])
-    log.info(f"[GENERATE] Written: {out_path} ({len(trades)} rows)")
+    new_lines = []
+    for t in trades:
+        entry = str(t.get("entry_datetime", ""))
+        exit_ = str(t.get("exit_datetime",  ""))
+        dirn  = str(t.get("direction",       ""))
+        entry_price = t.get("entry_price", "")
+        exit_price  = t.get("exit_price", "")
+        new_lines.append(f"{entry},{exit_},{dirn},{LOT_SIZE},{entry_price},{exit_price}\r\n")
+    new_content = "".join(new_lines)
+
+    # HARDENING (30-Sep-2026): skip write if unchanged - avoids needless
+    # rewrite/mtime bump that can race with a bot mid-read.
+    if os.path.exists(out_path):
+        with open(out_path, "r", newline="") as _ef:
+            if _ef.read() == new_content:
+                log.info(f"[GENERATE] Skipped (unchanged): {out_path} ({len(trades)} rows)")
+                return
+
+    # HARDENING (30-Sep-2026): atomic write via tmp+os.replace - a bot reading
+    # the file mid-write can no longer see a truncated/partial CSV.
+    _tmp_path = out_path + f".tmp_{os.getpid()}"
+    with open(_tmp_path, "w", newline="") as f:
+        f.write(new_content)
+    os.replace(_tmp_path, out_path)
+    log.info(f"[GENERATE] Written (_atomic_write): {out_path} ({len(trades)} rows)")
 
 if __name__ == "__main__":
     _skip_live = "--skip-live-signals" in sys.argv
