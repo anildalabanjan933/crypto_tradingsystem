@@ -5,9 +5,23 @@ Runs backtest for S4V2 and S4, exports signal CSVs to logs/
 Run daily at 3AM UTC via systemd or manually.
 Usage: .venv/bin/python3 scripts/generate_signals.py
 """
-import sys, os, warnings, io, contextlib, csv
+import sys, os, warnings, io, contextlib, csv, fcntl
 warnings.filterwarnings("ignore")
 sys.path.insert(0, ".")
+
+def _bg3gap1_locked_merge_write(new_trades, csv_path, tf_min):
+    # BUG3-GAP1 FIX (30-Sep-2026): hold an exclusive flock on csv_path+".lock"
+    # for the full read-merge-write cycle so the live engine (renko_state_engine.py
+    # _fire(), same lock file) cannot append/update a PENDING row between cron's
+    # read and its os.replace - prevents the lost-update race.
+    lock_path = csv_path + ".lock"
+    with open(lock_path, "a") as _lf:
+        fcntl.flock(_lf.fileno(), fcntl.LOCK_EX)
+        try:
+            merged = merge_signal_csv(new_trades, csv_path, tf_min=tf_min)
+            write_signal_csv(merged, csv_path)
+        finally:
+            fcntl.flock(_lf.fileno(), fcntl.LOCK_UN)
 
 from datetime import datetime, timezone, timedelta
 from strategies.backtest.renko_smiio_supertrend_strategy import RenkoSMIIOSupertrendStrategy
@@ -206,8 +220,7 @@ if __name__ == "__main__":
     s4v2_trades, s4v2_pending = run_backtest(RenkoSMIIOSupertrendV2Strategy, s4v2_params, "S4V2")
     s4v2_trades = [t for t in s4v2_trades if "entry_datetime" in t]
     if not _skip_live:
-        _s4v2_all = merge_signal_csv(s4v2_trades + ([s4v2_pending] if s4v2_pending else []), "logs/signals_s4v2.csv", tf_min=30)
-        write_signal_csv(_s4v2_all, "logs/signals_s4v2.csv")
+        _bg3gap1_locked_merge_write(s4v2_trades + ([s4v2_pending] if s4v2_pending else []), "logs/signals_s4v2.csv", tf_min=30)
     else:
         log.info("[GENERATE] Skipped logs/signals_s4v2.csv (dashboard-refresh-only mode)")
     write_trade_log_csv(s4v2_trades, "S4V2")
@@ -218,8 +231,7 @@ if __name__ == "__main__":
     s4_trades, s4_pending = run_backtest(RenkoSMIIOSupertrendStrategy, s4_params, "S4")
     s4_trades = [t for t in s4_trades if "entry_datetime" in t]
     if not _skip_live:
-        _s4_all = merge_signal_csv(s4_trades + ([s4_pending] if s4_pending else []), "logs/signals_s4.csv", tf_min=120)
-        write_signal_csv(_s4_all, "logs/signals_s4.csv")
+        _bg3gap1_locked_merge_write(s4_trades + ([s4_pending] if s4_pending else []), "logs/signals_s4.csv", tf_min=120)
     else:
         log.info("[GENERATE] Skipped logs/signals_s4.csv (dashboard-refresh-only mode)")
     write_trade_log_csv(s4_trades, "S4")
@@ -231,8 +243,7 @@ if __name__ == "__main__":
     s4v3_trades, s4v3_pending = run_backtest(RenkoSMIIOCrossV3Strategy, s4v3_params, "S4V3")
     s4v3_trades = [t for t in s4v3_trades if "entry_datetime" in t]
     if not _skip_live:
-        _s4v3_all = merge_signal_csv(s4v3_trades + ([s4v3_pending] if s4v3_pending else []), "logs/signals_s4v3.csv", tf_min=240)
-        write_signal_csv(_s4v3_all, "logs/signals_s4v3.csv")
+        _bg3gap1_locked_merge_write(s4v3_trades + ([s4v3_pending] if s4v3_pending else []), "logs/signals_s4v3.csv", tf_min=240)
     else:
         log.info("[GENERATE] Skipped logs/signals_s4v3.csv (dashboard-refresh-only mode)")
     write_trade_log_csv(s4v3_trades, "S4V3")
