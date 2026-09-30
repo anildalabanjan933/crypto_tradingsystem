@@ -11,8 +11,9 @@ Same CSV = Section 13/14 = Manual backtest = Bot signal = always identical.
 Backtest files NEVER touched - read only.
 """
 import os, sys, time, logging, glob
-sys.path.insert(0, "/home/anildalabanjan933/crypto_trading_system")
-os.chdir("/home/anildalabanjan933/crypto_trading_system")
+_PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, _PROJECT_ROOT)
+os.chdir(_PROJECT_ROOT)
 
 from datetime import datetime, timezone, timedelta
 import warnings, io, contextlib
