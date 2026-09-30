@@ -200,7 +200,7 @@ class TradeBuilder:
         cb["insurance"] = 0.0
         cb["tax"]       = 0.0
 
-        cb["total_charges"] = cb["taker_fees"] + cb["slippage"] + cb["funding"]
+        cb["total_charges"] = cb["taker_fees"] + cb["funding"]  # slippage already priced into entry/exit via _apply_slippage; kept out to avoid double-count
 
         net_pnl = gross_pnl - cb["total_charges"]
         return net_pnl, cb
