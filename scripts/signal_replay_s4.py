@@ -558,6 +558,12 @@ def _reject_nb(ts_str, now_str, kind):
             _bg_logged.clear()
         _bg_logged.add(_k)
         log.critical(f"REJECTED non-boundary signal: ts={ts_str} reason={reason} kind={kind} now={now_str} tf_min={_BG_TF_MIN}")
+        if reason == "off_grid":
+            try:
+                from engine.telegram_alert import send_alert
+                send_alert(f"CTS ALERT: permanent off-grid signal rejected | ts={ts_str} kind={kind} reason={reason} tf_min={_BG_TF_MIN} - row will stall until manually cleared")
+            except Exception:
+                pass
     return True
 
 
