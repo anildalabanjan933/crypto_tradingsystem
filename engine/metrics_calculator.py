@@ -138,7 +138,7 @@ class MetricsCalculator:
         # SECTION 6: FINAL NET PnL (post-tax)
         # This is the true final result after ALL charges including tax
         # ══════════════════════════════════════════════════════════════════════
-        total_pnl_final     = total_net_pnl_pretax - total_tax - self.metrics['total_slippage']
+        total_pnl_final     = total_net_pnl_pretax - total_tax  # BUGFIX: slippage already included in net_pnl per trade (trade_builder.py); removed double-count
         total_pnl_final_inr = usd_to_inr(total_pnl_final, self.usd_to_inr_rate)
 
         self.metrics['total_pnl']         = total_pnl_final
