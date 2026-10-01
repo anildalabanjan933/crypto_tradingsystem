@@ -521,7 +521,7 @@ def check_and_fire(state,is_s4=False):
                 except Exception:
                     pass
             if state.label=="S4V3" and sig.get("direction","")=="long":
-                log.critical(f"[S4V3] LONG signal ts={ts} type={sig.get('signal_type')} REJECTED - BT is short-only (wrong state-machine phase)")
+                log.critical(f"[S4V3] LONG signal ts={ts} type={sig.get('signal_type')} REJECTED - BT is short-only (wrong state-machine phase) - MISSED TRADE if BT regime ever changes")
                 continue
             new_sigs.append(sig)
         state._first_check_since_restart=False
