@@ -1064,6 +1064,7 @@ if __name__=="__main__":
                     log.info(f"[ENGINE] New 30m candle closed: {cur_s4v2_tf} - checking S4V2")
                     if _reconcile_gate("last_reconcile_s4v2"):
                         if _reconcile_window_from_rest(s4v2, 30):
+                            _reconcile_gate_commit("last_reconcile_s4v2")
                             check_and_fire(s4v2,is_s4=False)
                             _ws_state["last_s4v2_tf"]=cur_s4v2_tf
                         else:
@@ -1075,6 +1076,7 @@ if __name__=="__main__":
                     log.info(f"[ENGINE] New 2H candle closed: {cur_s4_tf} - checking S4")
                     if _reconcile_gate("last_reconcile_s4"):
                         if _reconcile_window_from_rest(s4, 120):
+                            _reconcile_gate_commit("last_reconcile_s4")
                             check_and_fire(s4,is_s4=True)
                             _ws_state["last_s4_tf"]=cur_s4_tf
                         else:
@@ -1087,6 +1089,7 @@ if __name__=="__main__":
                     if _reconcile_gate("last_reconcile_s4v3"):
                         if _reconcile_window_from_rest(s4v3, 240):
                             check_and_fire(s4v3,is_s4=False)
+                            _reconcile_gate_commit("last_reconcile_s4v3")
                             _ws_state["last_s4v3_tf"]=cur_s4v3_tf
                         else:
                             log.warning(f"[ENGINE] S4V3 boundary {cur_s4v3_tf} reconcile failed - NOT claimed, retrying next tick")
@@ -1127,6 +1130,7 @@ if __name__=="__main__":
                             if not _caught_up:
                                 log.critical(f"[ENGINE] S4 boundary {_dt} STILL not caught up after 6900s safety cap - reconcile incomplete, signal SKIPPED (not fired)")
                             if _reconcile_gate("last_reconcile_s4") and _reconcile_window_from_rest(s4, 120):
+                                _reconcile_gate_commit("last_reconcile_s4")
                                 check_and_fire(s4, is_s4=True)
                                 _ws_state["last_s4_tf"] = max(_ws_state["last_s4_tf"], _t4_dt_engine_label)
                             else:
@@ -1169,6 +1173,7 @@ if __name__=="__main__":
                             if not _caught_up:
                                 log.critical(f"[ENGINE] S4V2 boundary {_dt} STILL not caught up after 1500s safety cap - reconcile incomplete, signal SKIPPED (not fired)")
                             if _reconcile_gate("last_reconcile_s4v2") and _reconcile_window_from_rest(s4v2, 30):
+                                _reconcile_gate_commit("last_reconcile_s4v2")
                                 check_and_fire(s4v2, is_s4=False)
                                 _ws_state["last_s4v2_tf"] = max(_ws_state["last_s4v2_tf"], _tv2_dt_engine_label)
                             else:
@@ -1211,6 +1216,7 @@ if __name__=="__main__":
                             if not _caught_up:
                                 log.critical(f"[ENGINE] S4V3 boundary {_dt} STILL not caught up after 14100s safety cap - reconcile incomplete, signal SKIPPED (not fired)")
                             if _reconcile_gate("last_reconcile_s4v3") and _reconcile_window_from_rest(s4v3, 240):
+                                _reconcile_gate_commit("last_reconcile_s4v3")
                                 check_and_fire(s4v3, is_s4=False)
                                 _ws_state["last_s4v3_tf"] = max(_ws_state["last_s4v3_tf"], _tv3_dt_engine_label)
                             else:
