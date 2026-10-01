@@ -1113,7 +1113,7 @@ if __name__=="__main__":
                         try:
                             _start_s4 = time.time()
                             _cap_sec_s4 = 6900
-                            _fixed_waits_s4 = [2,5,10,20,30,60]
+                            _fixed_waits_s4 = [1,2,3,5,8]
                             _i_s4 = 0
                             _caught_up = False
                             while time.time() - _start_s4 < _cap_sec_s4:
@@ -1159,7 +1159,7 @@ if __name__=="__main__":
                         try:
                             _start_s4v2 = time.time()
                             _cap_sec_s4v2 = 1500
-                            _fixed_waits_s4v2 = [2,5,10,20,30,60]
+                            _fixed_waits_s4v2 = [1,2,3,5,8]
                             _i_s4v2 = 0
                             _caught_up = False
                             while time.time() - _start_s4v2 < _cap_sec_s4v2:
@@ -1205,7 +1205,7 @@ if __name__=="__main__":
                         try:
                             _start_s4v3 = time.time()
                             _cap_sec_s4v3 = 14100
-                            _fixed_waits_s4v3 = [2,5,10,20,30,60]
+                            _fixed_waits_s4v3 = [1,2,3,5,8]
                             _i_s4v3 = 0
                             _caught_up = False
                             while time.time() - _start_s4v3 < _cap_sec_s4v3:
