@@ -250,7 +250,7 @@ def append_new_candles(state):
         # Recompute recent window FULLY from accumulated 1m data (not just new_rows)
         # Prevents partial/incomplete OHLC on the currently-forming candle
         tf=state.params["renko_timeframe"]
-        tf_minutes_map={"30m":30,"1h":60,"2h":120}
+        tf_minutes_map={"30m":30,"1h":60,"2h":120,"4h":240}
         tf_minutes=tf_minutes_map.get(tf,120)
         window_start=(state.last_1m_ts-pd.Timedelta(minutes=tf_minutes*3)).floor(f"{tf_minutes}min")
         recent_1m=state.candles_1m[state.candles_1m["timestamp"]>=window_start]
@@ -859,7 +859,7 @@ if __name__=="__main__":
         state.candles_1m=pd.concat([state.candles_1m,new_row],ignore_index=True)
         state.last_1m_ts=dt
         tf=state.params["renko_timeframe"]
-        tf_minutes_map={"30m":30,"1h":60,"2h":120}
+        tf_minutes_map={"30m":30,"1h":60,"2h":120,"4h":240}
         tf_minutes=tf_minutes_map.get(tf,120)
         window_start=(dt-pd.Timedelta(minutes=tf_minutes*3)).floor(f"{tf_minutes}min")
         recent_1m=state.candles_1m[state.candles_1m["timestamp"]>=window_start]
