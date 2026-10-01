@@ -263,12 +263,29 @@ def check_stuck_pending(bot, csv_path):
                 return
             if not os.path.exists(flag_file):
                 log.critical(f"[{bot['name']}] STUCK PENDING CONFIRMED - AUTO-HEALING | entry={last[0]}")
-                exit_price = 0.0
+                direction = last[2] if len(last) > 2 else ""
+                exit_ts, exit_price, _p2_source = None, None, None
                 try:
-                    exit_price = om.get_current_price()
-                except Exception:
+                    if bot["name"] in _TF_MIN_MAP:
+                        _p2_tf = _TF_MIN_MAP[bot["name"]]
+                        _p2_window_end = _now_utc_str()
+                        real_ts, real_price = _find_real_exit_fill(
+                            om, direction, last[0], _p2_window_end,
+                            last[3] if len(last) > 3 else None, tf_min=_p2_tf
+                        )
+                        if real_ts and real_price:
+                            exit_ts, exit_price, _p2_source = real_ts, real_price, "real_fill_lookup"
+                except Exception as _p2_e:
+                    log.warning(f"[{bot['name']}] PASS2 real-fill lookup failed: {_p2_e}")
+                if exit_ts is None or exit_price is None:
                     exit_price = 0.0
-                exit_ts = _now_utc_str()
+                    try:
+                        exit_price = om.get_current_price()
+                    except Exception:
+                        exit_price = 0.0
+                    exit_ts = _now_utc_str()
+                    _p2_source = "current_price_fallback"
+                log.info(f"[{bot['name']}] PASS2 heal source={_p2_source} exit_ts={exit_ts} exit_price={exit_price}")
                 healed = False
                 _last_err = None
                 for _try in range(3):
