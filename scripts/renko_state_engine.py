@@ -109,7 +109,7 @@ class StrategyState:
         self.candles_1m=None; self.last_1m_ts=None
         self.bar_cap=None if label=="S4V3" else TF_BAR_CAP
         self.candles_tf=None  # pre-built 1H or 2H dataframe - built once on startup
-        self.current_direction=None; self.last_signal_ts=None; self.last_exit_ts=None; self.last_entry_ts=None; self._first_check_since_restart=True
+        self.current_direction=None; self.last_signal_ts=None; self.last_exit_ts=None; self.last_entry_ts=None; self._first_check_since_restart=True; self._rejected_long_ts=set()
         self.box_size=None
         self.open_entry_ts=None
         self.lock=threading.Lock()
@@ -521,7 +521,9 @@ def check_and_fire(state,is_s4=False):
                 except Exception:
                     pass
             if state.label=="S4V3" and sig.get("direction","")=="long":
-                log.critical(f"[S4V3] LONG signal ts={ts} type={sig.get('signal_type')} REJECTED - BT is short-only (wrong state-machine phase) - MISSED TRADE if BT regime ever changes")
+                if ts not in state._rejected_long_ts:
+                    state._rejected_long_ts.add(ts)
+                    log.critical(f"[S4V3] LONG signal ts={ts} type={sig.get('signal_type')} REJECTED - BT is short-only (wrong state-machine phase) - MISSED TRADE if BT regime ever changes")
                 continue
             new_sigs.append(sig)
         state._first_check_since_restart=False
