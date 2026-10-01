@@ -1129,12 +1129,15 @@ if __name__=="__main__":
                                 time.sleep(_wait_s4)
                             if not _caught_up:
                                 log.critical(f"[ENGINE] S4 boundary {_dt} STILL not caught up after 6900s safety cap - reconcile incomplete - proceeding to reconcile+fire attempt anyway (not actually skipped)")
-                            if _reconcile_gate("last_reconcile_s4") and _reconcile_window_from_rest(s4, 120):
-                                _reconcile_gate_commit("last_reconcile_s4")
-                                check_and_fire(s4, is_s4=True)
-                                _ws_state["last_s4_tf"] = max(_ws_state["last_s4_tf"], _t4_dt_engine_label)
+                            if _reconcile_gate("last_reconcile_s4"):
+                                if _reconcile_window_from_rest(s4, 120):
+                                    _reconcile_gate_commit("last_reconcile_s4")
+                                    check_and_fire(s4, is_s4=True)
+                                    _ws_state["last_s4_tf"] = max(_ws_state["last_s4_tf"], _t4_dt_engine_label)
+                                else:
+                                    log.warning(f"[ENGINE] S4 trigger boundary {_dt} reconcile failed (REST check) - NOT claimed, retrying next tick")
                             else:
-                                log.warning(f"[ENGINE] S4 trigger boundary {_dt} reconcile failed - NOT claimed, retrying next tick")
+                                log.info(f"[ENGINE] S4 trigger boundary {_dt} reconcile throttled (5s gate) - will retry next tick, not a failure")
                         except Exception as _e:
                             log.error(f"[ENGINE] S4 trigger thread error: {_e}", exc_info=True)
                     threading.Thread(target=_run_s4_trigger, daemon=True).start()
@@ -1172,12 +1175,15 @@ if __name__=="__main__":
                                 time.sleep(_wait_s4v2)
                             if not _caught_up:
                                 log.critical(f"[ENGINE] S4V2 boundary {_dt} STILL not caught up after 1500s safety cap - reconcile incomplete - proceeding to reconcile+fire attempt anyway (not actually skipped)")
-                            if _reconcile_gate("last_reconcile_s4v2") and _reconcile_window_from_rest(s4v2, 30):
-                                _reconcile_gate_commit("last_reconcile_s4v2")
-                                check_and_fire(s4v2, is_s4=False)
-                                _ws_state["last_s4v2_tf"] = max(_ws_state["last_s4v2_tf"], _tv2_dt_engine_label)
+                            if _reconcile_gate("last_reconcile_s4v2"):
+                                if _reconcile_window_from_rest(s4v2, 30):
+                                    _reconcile_gate_commit("last_reconcile_s4v2")
+                                    check_and_fire(s4v2, is_s4=False)
+                                    _ws_state["last_s4v2_tf"] = max(_ws_state["last_s4v2_tf"], _tv2_dt_engine_label)
+                                else:
+                                    log.warning(f"[ENGINE] S4V2 trigger boundary {_dt} reconcile failed (REST check) - NOT claimed, retrying next tick")
                             else:
-                                log.warning(f"[ENGINE] S4V2 trigger boundary {_dt} reconcile failed - NOT claimed, retrying next tick")
+                                log.info(f"[ENGINE] S4V2 trigger boundary {_dt} reconcile throttled (5s gate) - will retry next tick, not a failure")
                         except Exception as _e:
                             log.error(f"[ENGINE] S4V2 trigger thread error: {_e}", exc_info=True)
                     threading.Thread(target=_run_s4v2_trigger, daemon=True).start()
@@ -1215,12 +1221,15 @@ if __name__=="__main__":
                                 time.sleep(_wait_s4v3)
                             if not _caught_up:
                                 log.critical(f"[ENGINE] S4V3 boundary {_dt} STILL not caught up after 14100s safety cap - reconcile incomplete - proceeding to reconcile+fire attempt anyway (not actually skipped)")
-                            if _reconcile_gate("last_reconcile_s4v3") and _reconcile_window_from_rest(s4v3, 240):
-                                _reconcile_gate_commit("last_reconcile_s4v3")
-                                check_and_fire(s4v3, is_s4=False)
-                                _ws_state["last_s4v3_tf"] = max(_ws_state["last_s4v3_tf"], _tv3_dt_engine_label)
+                            if _reconcile_gate("last_reconcile_s4v3"):
+                                if _reconcile_window_from_rest(s4v3, 240):
+                                    _reconcile_gate_commit("last_reconcile_s4v3")
+                                    check_and_fire(s4v3, is_s4=False)
+                                    _ws_state["last_s4v3_tf"] = max(_ws_state["last_s4v3_tf"], _tv3_dt_engine_label)
+                                else:
+                                    log.warning(f"[ENGINE] S4V3 trigger boundary {_dt} reconcile failed (REST check) - NOT claimed, retrying next tick")
                             else:
-                                log.warning(f"[ENGINE] S4V3 trigger boundary {_dt} reconcile failed - NOT claimed, retrying next tick")
+                                log.info(f"[ENGINE] S4V3 trigger boundary {_dt} reconcile throttled (5s gate) - will retry next tick, not a failure")
                         except Exception as _e:
                             log.error(f"[ENGINE] S4V3 trigger thread error: {_e}", exc_info=True)
                     threading.Thread(target=_run_s4v3_trigger, daemon=True).start()
