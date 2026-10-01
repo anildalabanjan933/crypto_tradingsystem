@@ -92,7 +92,7 @@ def run_backtest(strategy_class, params, label):
             tf_df = engine.data_dict.get(tf)
             if tf_df is not None and len(tf_df) > 0:
                 ref_price = float(tf_df["close"].iloc[0])
-                sig_num = {"S4": "4", "S4V2": "4v2"}.get(label, "4")
+                sig_num = {"S4": "4", "S4V2": "4v2", "S4V3": "4v3", "S2": "2"}.get(label, "4")
                 with open(f"logs/box_ref_price_s{sig_num}.txt", "w") as _bf:
                     _bf.write(str(ref_price))
                 log.info(f"[GENERATE] {label}: box reference_price={ref_price} saved")
