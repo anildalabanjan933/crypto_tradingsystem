@@ -38,6 +38,7 @@ _last_alert_ts = {}
 ALERT_COOLDOWN = 300  # don't spam same bot alert more than once per 5 min
 
 _stuck_candidates = {}  # bot_name -> (first_flat_ts, entry_id)
+_stuck_critical_logged = {}  # bot_name -> entry_id already CRITICAL-logged (dedupe spam)
 
 _TF_MIN_MAP = {"S4": 120, "S4V2": 30, "S4V3": 240}
 BUG2_BUFFER_SEC = 60
@@ -262,7 +263,9 @@ def check_stuck_pending(bot, csv_path):
             if time.time() - cand[0] < 55:
                 return
             if not os.path.exists(flag_file):
-                log.critical(f"[{bot['name']}] STUCK PENDING CONFIRMED - AUTO-HEALING | entry={last[0]}")
+                if _stuck_critical_logged.get(bot["name"]) != last[0]:
+                    log.critical(f"[{bot['name']}] STUCK PENDING CONFIRMED - AUTO-HEALING | entry={last[0]}")
+                    _stuck_critical_logged[bot["name"]] = last[0]
                 direction = last[2] if len(last) > 2 else ""
                 if bot["name"] not in _TF_MIN_MAP:
                     log.warning(f"[{bot['name']}] PASS2 SKIP: bot not in _TF_MIN_MAP - cannot determine tf_min, leaving row untouched")
