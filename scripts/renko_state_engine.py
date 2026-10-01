@@ -1128,7 +1128,7 @@ if __name__=="__main__":
                                 log.info(f"[ENGINE] S4 data not caught up yet, retry {_i_s4} (elapsed={int(time.time()-_start_s4)}s)")
                                 time.sleep(_wait_s4)
                             if not _caught_up:
-                                log.critical(f"[ENGINE] S4 boundary {_dt} STILL not caught up after 6900s safety cap - reconcile incomplete, signal SKIPPED (not fired)")
+                                log.critical(f"[ENGINE] S4 boundary {_dt} STILL not caught up after 6900s safety cap - reconcile incomplete - proceeding to reconcile+fire attempt anyway (not actually skipped)")
                             if _reconcile_gate("last_reconcile_s4") and _reconcile_window_from_rest(s4, 120):
                                 _reconcile_gate_commit("last_reconcile_s4")
                                 check_and_fire(s4, is_s4=True)
@@ -1171,7 +1171,7 @@ if __name__=="__main__":
                                 log.info(f"[ENGINE] S4V2 data not caught up yet, retry {_i_s4v2} (elapsed={int(time.time()-_start_s4v2)}s)")
                                 time.sleep(_wait_s4v2)
                             if not _caught_up:
-                                log.critical(f"[ENGINE] S4V2 boundary {_dt} STILL not caught up after 1500s safety cap - reconcile incomplete, signal SKIPPED (not fired)")
+                                log.critical(f"[ENGINE] S4V2 boundary {_dt} STILL not caught up after 1500s safety cap - reconcile incomplete - proceeding to reconcile+fire attempt anyway (not actually skipped)")
                             if _reconcile_gate("last_reconcile_s4v2") and _reconcile_window_from_rest(s4v2, 30):
                                 _reconcile_gate_commit("last_reconcile_s4v2")
                                 check_and_fire(s4v2, is_s4=False)
@@ -1214,7 +1214,7 @@ if __name__=="__main__":
                                 log.info(f"[ENGINE] S4V3 data not caught up yet, retry {_i_s4v3} (elapsed={int(time.time()-_start_s4v3)}s)")
                                 time.sleep(_wait_s4v3)
                             if not _caught_up:
-                                log.critical(f"[ENGINE] S4V3 boundary {_dt} STILL not caught up after 14100s safety cap - reconcile incomplete, signal SKIPPED (not fired)")
+                                log.critical(f"[ENGINE] S4V3 boundary {_dt} STILL not caught up after 14100s safety cap - reconcile incomplete - proceeding to reconcile+fire attempt anyway (not actually skipped)")
                             if _reconcile_gate("last_reconcile_s4v3") and _reconcile_window_from_rest(s4v3, 240):
                                 _reconcile_gate_commit("last_reconcile_s4v3")
                                 check_and_fire(s4v3, is_s4=False)
