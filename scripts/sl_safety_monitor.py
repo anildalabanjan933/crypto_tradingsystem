@@ -444,8 +444,11 @@ def check_extra_risks(bot, csv_path):
                 # BUGFIX (30-Sep-2026, _bg_fix_getposition): get_position(bot) was
                 # undefined - caused NameError, caught as "check_extra_risks failed".
                 pos = om.get_position()
-                exch_dir = pos.get("direction", "").lower()
-                exch_size = abs(pos.get("size", 0))
+                if pos.get("success"):
+                    exch_dir = pos.get("direction", "").lower()
+                    exch_size = abs(pos.get("size", 0))
+                else:
+                    log.warning(f"[{bot['name']}] mismatch re-check: get_position failed - keeping pre-sleep values this cycle")
             if csv_dir != exch_dir or csv_size != exch_size:
                 if not os.path.exists(mismatch_flag):
                     with open(mismatch_flag, "w") as ff:
