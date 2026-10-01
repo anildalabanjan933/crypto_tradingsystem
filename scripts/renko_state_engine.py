@@ -552,6 +552,8 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
     try:
         import csv as _csv, os as _os, fcntl as _fcntl
         already = False
+        _deferred_snapshot_args = None
+        _deferred_lag_args = None
         sig_label = {"S2":"2","S4":"4","S4V2":"4v2","S4V3":"4v3"}.get(state.label,"4")
         sig_csv = f"logs/signals_s{sig_label}.csv"
         # BUG3-GAP1 FIX (30-Sep-2026): hold same exclusive flock cron uses
@@ -579,21 +581,16 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
             _os.replace(tmp, sig_csv)
             state.open_entry_ts = ts
             log.info(f"[{state.label}] INSTANT CSV append: {ts},PENDING,{direction}")
+            _deferred_snapshot_args = (state.label, state.candles_1m.copy(), ts, direction, sig_type)
             try:
-                from scripts.bt_snapshot_verify import save_snapshot
-                save_snapshot(state.label, state.candles_1m.copy(), ts, direction, sig_type)
-            except Exception as _e:
-                log.error(f"[{state.label}] snapshot-verify skipped (non-critical): {_e}")
-            try:
-                from scripts.confirmation_lag_tracker import log_lag_event
                 from datetime import datetime as _dt
                 _tf_map = {"S4":120,"S4V2":30,"S4V3":240,"S2":120}
                 _sig_ts_dt = _dt.strptime(ts, "%Y-%m-%dT%H:%M:%S")
                 _price_now = float(state.candles_1m["Close"].iloc[-1]) if state.candles_1m is not None and not state.candles_1m.empty else float(cl)
-                log_lag_event(state.label, _sig_ts_dt, now_utc.timestamp(),
+                _deferred_lag_args = (state.label, _sig_ts_dt, now_utc.timestamp(),
                               _tf_map.get(state.label,120), direction, float(cl), _price_now)
             except Exception as _e:
-                log.warning(f"[{state.label}] lag tracker skipped (non-critical): {_e}")
+                log.warning(f"[{state.label}] lag tracker arg-build skipped (non-critical): {_e}")
         elif sig_type=="EXIT":
             # Find the PENDING row matching the EXACT open entry (not first PENDING found)
             # Falls back to LAST PENDING row only if open_entry_ts unknown (e.g. restart)
@@ -629,21 +626,16 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
                             _w.writerow(r)
                     _os.replace(tmp, sig_csv)
                     log.info(f"[{state.label}] CSV exit updated to {ts} (matched entry {target_ts})")
+                    _deferred_snapshot_args = (state.label, state.candles_1m.copy(), ts, direction, "EXIT")
                     try:
-                        from scripts.bt_snapshot_verify import save_snapshot
-                        save_snapshot(state.label, state.candles_1m.copy(), ts, direction, "EXIT")
-                    except Exception as _e:
-                        log.error(f"[{state.label}] snapshot-verify skipped (non-critical): {_e}")
-                    try:
-                        from scripts.confirmation_lag_tracker import log_lag_event
                         from datetime import datetime as _dt
                         _tf_map = {"S4":120,"S4V2":30,"S4V3":240,"S2":120}
                         _sig_ts_dt = _dt.strptime(ts, "%Y-%m-%dT%H:%M:%S")
                         _price_now = float(state.candles_1m["Close"].iloc[-1]) if state.candles_1m is not None and not state.candles_1m.empty else float(cl)
-                        log_lag_event(state.label, _sig_ts_dt, now_utc.timestamp(),
+                        _deferred_lag_args = (state.label, _sig_ts_dt, now_utc.timestamp(),
                                       _tf_map.get(state.label,120), direction, float(cl), _price_now)
                     except Exception as _e:
-                        log.warning(f"[{state.label}] EXIT lag tracker skipped (non-critical): {_e}")
+                        log.warning(f"[{state.label}] EXIT lag tracker arg-build skipped (non-critical): {_e}")
                 else:
                     log.warning(f"[{state.label}] EXIT fired but no matching PENDING row (target_ts={target_ts})")
                 state.open_entry_ts = None
@@ -655,6 +647,21 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
             _bg3gap1_engine_lock.close()
         except Exception:
             pass
+    # BUG3-LOCKSPAN FIX (01-Oct-2026): run snapshot/lag-tracker AFTER lock
+    # released - these are diagnostic-only, do not touch sig_csv, no need
+    # to hold cron-shared lock while they run.
+    if _deferred_snapshot_args:
+        try:
+            from scripts.bt_snapshot_verify import save_snapshot
+            save_snapshot(*_deferred_snapshot_args)
+        except Exception as _e:
+            log.error(f"[{state.label}] snapshot-verify skipped (non-critical): {_e}")
+    if _deferred_lag_args:
+        try:
+            from scripts.confirmation_lag_tracker import log_lag_event
+            log_lag_event(*_deferred_lag_args)
+        except Exception as _e:
+            log.warning(f"[{state.label}] lag tracker skipped (non-critical): {_e}")
     write_signal_file(state.label,sig_type,direction,ts)
     if sig_type == "ENTRY" and not already:
         try:
