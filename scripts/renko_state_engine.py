@@ -1035,6 +1035,7 @@ if __name__=="__main__":
     # Startup check - fires only if current time is at 1H/2H boundary
     check_and_fire(s4,is_s4=True)
     check_and_fire(s4v2,is_s4=False)
+    check_and_fire(s4v3,is_s4=False)
 
     while True:
         try:
