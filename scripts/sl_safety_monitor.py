@@ -134,6 +134,7 @@ def check_stuck_pending(bot, csv_path):
         changed = False
         _om_p1 = None
         healed_sources = []
+        healed_rows = {}
         for i in range(len(rows) - 1):
             parts = rows[i].strip().split(",")
             if len(parts) >= 2 and parts[1] == "PENDING":
@@ -206,6 +207,7 @@ def check_stuck_pending(bot, csv_path):
                 rows[i] = ",".join(parts) + "\n"
                 changed = True
                 healed_sources.append(source)
+                healed_rows[parts[0]] = rows[i]
                 log.critical(f"[{bot['name']}] BACKLOG STUCK PENDING auto-healed ({source}) | entry={parts[0]} exit_ts={exit_ts} exit_price={exit_price}")
 
         if changed:
@@ -215,8 +217,20 @@ def check_stuck_pending(bot, csv_path):
                     lf = open(lock_path, "a")
                     fcntl.flock(lf, fcntl.LOCK_EX)
                     try:
+                        # BUG2-PASS1-RACE FIX (01-Oct-2026): re-read fresh file
+                        # INSIDE the lock before writing - rows[] was read at
+                        # top of function (before lock acquired). Writing it
+                        # back directly could overwrite a concurrent engine
+                        # append that landed in between. Apply only our healed
+                        # rows (keyed by entry_ts) onto a fresh re-read.
+                        with open(csv_path) as _rf:
+                            fresh_rows = _rf.readlines()
+                        for _j, _ln in enumerate(fresh_rows):
+                            _p = _ln.strip().split(",")
+                            if len(_p) > 0 and _p[0] in healed_rows:
+                                fresh_rows[_j] = healed_rows[_p[0]]
                         with open(csv_path, "w") as cf3:
-                            cf3.writelines(rows)
+                            cf3.writelines(fresh_rows)
                     finally:
                         fcntl.flock(lf, fcntl.LOCK_UN)
                         lf.close()
