@@ -96,6 +96,29 @@ def _offset_ts_audit(raw, strat_label):
     except Exception:
         return raw
 
+def _resolve_bt_csv_audit(strat_label):
+    """Pick the trade_log CSV whose mtime matches the official continuous
+    engine's signals_*.csv mtime, not just the newest file by name. This
+    prevents a stray Backtest-tab custom-run file (same filename pattern,
+    different timestamp) from silently hijacking the Audit tab's BT data."""
+    import glob as _gl2, os as _os2
+    _pattern = _BT_CSV_PATTERN_AUDIT.get(strat_label, "")
+    if not _pattern:
+        return _pattern
+    _files = _gl2.glob(_pattern)
+    if not _files:
+        return _pattern
+    _sig_map = {"S4": "logs/signals_s4.csv", "S4V2": "logs/signals_s4v2.csv", "S4V3": "logs/signals_s4v3.csv"}
+    _sig_path = _sig_map.get(strat_label, "")
+    try:
+        if _sig_path and _os2.path.exists(_sig_path):
+            _sig_mtime = _os2.path.getmtime(_sig_path)
+            _files_sorted = sorted(_files, key=lambda f: abs(_os2.path.getmtime(f) - _sig_mtime))
+            return _files_sorted[0]
+    except Exception:
+        pass
+    return sorted(_files, key=_os2.path.getmtime, reverse=True)[0]
+
 def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
     rows = []
     try:
@@ -105,7 +128,8 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
 
         _load_buffer_days = 3  # covers trades whose entry is before from_date but exit falls inside range
         _load_from = from_date - _dt_audit.timedelta(days=_load_buffer_days)
-        _df_container = load14_fn(_csv_pattern, str(_load_from))
+        _resolved_csv_audit = _resolve_bt_csv_audit(strat_label)
+        _df_container = load14_fn(_resolved_csv_audit, str(_load_from))
         if _df_container is None:
             return []
 
