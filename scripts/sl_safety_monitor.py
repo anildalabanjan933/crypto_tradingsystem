@@ -227,7 +227,7 @@ def check_stuck_pending(bot, csv_path):
                             fresh_rows = _rf.readlines()
                         for _j, _ln in enumerate(fresh_rows):
                             _p = _ln.strip().split(",")
-                            if len(_p) > 0 and _p[0] in healed_rows:
+                            if len(_p) > 1 and _p[0] in healed_rows and _p[1] == "PENDING":
                                 fresh_rows[_j] = healed_rows[_p[0]]
                         with open(csv_path, "w") as cf3:
                             cf3.writelines(fresh_rows)
