@@ -552,6 +552,7 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
     try:
         import csv as _csv, os as _os, fcntl as _fcntl
         already = False
+        exit_ts = None
         _deferred_snapshot_args = None
         _deferred_lag_args = None
         sig_label = {"S2":"2","S4":"4","S4V2":"4v2","S4V3":"4v3"}.get(state.label,"4")
