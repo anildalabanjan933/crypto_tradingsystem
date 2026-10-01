@@ -208,6 +208,16 @@ try:
 except Exception as _hb_e:
     log(f"[MAINTENANCE] Heartbeat check failed (isolated, other jobs unaffected): {_hb_e}")
 
+# ── S4V3 PHASE CANARY CHECK (isolated, cannot affect other maintenance jobs) ──
+try:
+    result_canary = subprocess.run(
+        [sys.executable, "scripts/s4v3_phase_canary.py"],
+        timeout=30, capture_output=True, text=True
+    )
+    log(f"[MAINTENANCE] S4V3 phase canary output: {result_canary.stdout.strip()}")
+except Exception as _canary_e:
+    log(f"[MAINTENANCE] S4V3 phase canary failed (isolated, other jobs unaffected): {_canary_e}")
+
 # Auto restart bots after maintenance
 import subprocess
 subprocess.run(["/bin/bash", "/home/anildalabanjan7/crypto_tradingsystem/bot_watchdog.sh"])
