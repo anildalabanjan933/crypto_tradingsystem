@@ -179,6 +179,13 @@ def merge_signal_csv(new_trades, csv_path, tf_min=0):
             except Exception as _bg3_e:
                 log.warning(f"[GENERATE] merge: could not parse entry/exit datetime for {key}: {_bg3_e} - skipping row for safety")
                 continue
+        # BUG3-GAP3-RESIDUAL FIX: normalize stored entry/exit datetime too,
+        # not just the compare/dict key - prevents raw space-format timestamps
+        # from landing in the CSV when BacktestEngine trades use that format.
+        t = dict(t, entry_datetime=key)
+        _bg3gap3_exit_raw = str(t.get("exit_datetime","")).strip()
+        if _bg3gap3_exit_raw and _bg3gap3_exit_raw.upper() != "PENDING":
+            t["exit_datetime"] = _bg3gap2_norm_key(_bg3gap3_exit_raw)
         merged[key] = t
     return [merged[k] for k in sorted(merged.keys())]
 
