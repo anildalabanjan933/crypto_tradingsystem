@@ -217,18 +217,20 @@ def main():
 
 def run_canary():
     try:
+        ping_ts = time.time()
         with open("logs/canary_ping.txt", "w") as f:
-            f.write(str(time.time()))
-        time.sleep(15)
-        if not os.path.exists("logs/canary_pong.txt"):
-            log_event("SYSTEM", "CANARY_FAIL", "No response within 15s")
-            return False
-        with open("logs/canary_pong.txt") as f:
-            pong_ts = float(f.read().strip())
-        if time.time() - pong_ts > 20:
-            log_event("SYSTEM", "CANARY_STALE", "Response too old")
-            return False
-        return True
+            f.write(str(ping_ts))
+        deadline = ping_ts + 20
+        while time.time() < deadline:
+            time.sleep(1)
+            try:
+                with open("logs/canary_pong.txt") as f:
+                    if float(f.read().strip()) >= ping_ts:
+                        return True
+            except Exception:
+                continue
+        log_event("SYSTEM", "CANARY_FAIL", "No fresh pong within 20s of ping")
+        return False
     except Exception as e:
         log_event("SYSTEM", "CANARY_CHECK_FAILED", str(e))
         return False

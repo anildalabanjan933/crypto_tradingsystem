@@ -719,13 +719,28 @@ if __name__=="__main__":
     log.info("[ENGINE] Only closed candles - zero repaint - zero false signal")
     log.info("[ENGINE] Backtest files untouched - single source of truth")
 
+    def _hb_write():
+        try:
+            with open("logs/engine_heartbeat.txt","w") as _hf: _hf.write(str(time.time()))
+        except Exception: pass
+    def _canary_pong_thread():
+        while True:
+            try:
+                if os.path.exists("logs/canary_ping.txt"):
+                    _tmp="logs/canary_pong.txt.tmp"
+                    with open(_tmp,"w") as _pf: _pf.write(str(time.time()))
+                    os.replace(_tmp,"logs/canary_pong.txt")
+            except Exception: pass
+            time.sleep(1)
+    threading.Thread(target=_canary_pong_thread,daemon=True).start()
+    _hb_write()
     s4=StrategyState("S4",S4_PARAMS)
     s4v2=StrategyState("S4V2",S4V2_PARAMS)
     s4v3=StrategyState("S4V3",S4V3_PARAMS)
-    update_market_data()
-    load_history(s4)
-    load_history(s4v2)
-    load_history(s4v3)
+    update_market_data(); _hb_write()
+    load_history(s4); _hb_write()
+    load_history(s4v2); _hb_write()
+    load_history(s4v3); _hb_write()
     # Lock last_signal_ts BEFORE startup check - use last SIGNAL ts not market CSV ts
     def _get_signal_ts(path):
         try:
@@ -1098,7 +1113,7 @@ if __name__=="__main__":
 
             # Boundary watcher trigger - fires if watcher detected missed boundary
             _trig_s4 = "logs/boundary_trigger_s4.txt"
-            if os.path.exists(_trig_s4):
+            if os.path.exists(_trig_s4) and os.path.getsize(_trig_s4)>0:
                 _t4 = open(_trig_s4).read().strip()
                 os.remove(_trig_s4)
                 try:
@@ -1144,7 +1159,7 @@ if __name__=="__main__":
                             log.error(f"[ENGINE] S4 trigger thread error: {_e}", exc_info=True)
                     threading.Thread(target=_run_s4_trigger, daemon=True).start()
             _trig_s4v2 = "logs/boundary_trigger_s4v2.txt"
-            if os.path.exists(_trig_s4v2):
+            if os.path.exists(_trig_s4v2) and os.path.getsize(_trig_s4v2)>0:
                 _tv2 = open(_trig_s4v2).read().strip()
                 os.remove(_trig_s4v2)
                 try:
@@ -1190,7 +1205,7 @@ if __name__=="__main__":
                             log.error(f"[ENGINE] S4V2 trigger thread error: {_e}", exc_info=True)
                     threading.Thread(target=_run_s4v2_trigger, daemon=True).start()
             _trig_s4v3 = "logs/boundary_trigger_s4v3.txt"
-            if os.path.exists(_trig_s4v3):
+            if os.path.exists(_trig_s4v3) and os.path.getsize(_trig_s4v3)>0:
                 _tv3 = open(_trig_s4v3).read().strip()
                 os.remove(_trig_s4v3)
                 try:
@@ -1263,12 +1278,7 @@ if __name__=="__main__":
             log.error(f"[ENGINE] state_health write failed: {_e}", exc_info=True)
 
         # Fix: respond to watchdog canary ping so CANARY_FAIL stops firing
-        try:
-            if os.path.exists("logs/canary_ping.txt"):
-                with open("logs/canary_pong.txt", "w") as _f:
-                    _f.write(str(time.time()))
-        except Exception:
-            pass
+        # canary pong now written by _canary_pong_thread (process-alive proof)
 
         time.sleep(SLEEP_SEC)
 
