@@ -329,3 +329,1152 @@ detected_at_utc,bot,check_class,detail
 2026-09-28T23:51:01.244705+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
 2026-09-28T23:56:02.025760+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
 2026-09-29T00:01:03.306292+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
+2026-09-29T00:06:04.161488+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
+2026-09-29T00:11:05.289330+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
+2026-09-29T00:16:06.398358+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
+2026-09-29T00:21:07.268983+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
+2026-09-29T00:26:08.424927+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
+2026-09-29T00:31:09.558802+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
+2026-09-29T00:36:10.812906+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
+2026-09-29T00:41:12.261243+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
+2026-09-29T00:46:13.299506+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
+2026-09-29T00:51:14.099685+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
+2026-09-29T00:56:14.922930+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
+2026-09-29T01:01:16.015944+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
+2026-09-29T01:06:17.354432+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
+2026-09-29T01:11:18.478699+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
+2026-09-29T01:16:19.445338+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
+2026-09-29T01:21:20.249115+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
+2026-09-29T01:26:21.345824+00:00,SYSTEM,ENV_HASH_ERROR,name 'check_env_hash_drift' is not defined
+2026-09-29T09:15:18.639525+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: Expecting value: line 1 column 1 (char 0)
+2026-09-29T09:15:18.976415+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: Expecting value: line 1 column 1 (char 0)
+2026-09-29T09:15:19.208718+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: Expecting value: line 1 column 1 (char 0)
+2026-09-29T12:00:52.689543+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T12:00:53.188433+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T12:00:53.434316+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T12:05:54.100000+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T12:05:54.340046+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T12:05:54.847561+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T12:10:55.230357+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T12:10:55.505820+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T12:10:55.791052+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T12:15:56.131291+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T12:15:56.358100+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T12:15:56.599068+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T12:20:57.218812+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T12:20:57.484977+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T12:20:57.747808+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T12:25:58.370542+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T12:25:58.593304+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T12:25:58.820170+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T12:30:59.420767+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T12:30:59.915715+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T12:31:00.293113+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T12:36:00.624934+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T12:36:00.851578+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T12:36:01.075939+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T12:41:01.446763+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T12:41:01.802525+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T12:41:02.051931+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T12:46:02.438299+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T12:46:02.697862+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T12:46:02.941067+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T12:51:03.497175+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T12:51:03.785532+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T12:51:04.203786+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T12:56:04.565584+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T12:56:05.084988+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T12:56:05.330401+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T13:01:05.723523+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T13:01:06.273500+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T13:01:06.547031+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T13:06:06.929236+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T13:06:07.182400+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T13:06:07.422670+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T13:11:07.778080+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T13:11:08.090714+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T13:11:08.617791+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T13:16:09.476332+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T13:16:09.700064+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T13:16:09.930629+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T13:21:10.307378+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T13:21:10.670326+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T13:21:10.998066+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T13:26:11.371361+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T13:26:11.596614+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T13:26:11.829698+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T13:31:12.171633+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T13:31:12.426604+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T13:31:12.655757+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T13:36:13.182977+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T13:36:13.438330+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T13:36:13.956033+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T13:41:14.333718+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T13:41:14.752965+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T13:41:15.252942+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T13:46:15.639109+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T13:46:15.887947+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T13:46:16.222625+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T13:51:16.851374+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T13:51:17.227142+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T13:51:17.722219+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T13:56:18.075853+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T13:56:18.331191+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T13:56:18.561024+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T14:01:18.949684+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T14:01:19.221286+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T14:01:19.511087+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T14:06:19.858688+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T14:06:20.391730+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T14:06:20.646156+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T14:11:21.224039+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T14:11:21.458992+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T14:11:21.971738+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T14:16:22.639691+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T14:16:23.141480+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T14:16:23.381632+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T14:21:23.708240+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T14:21:24.350210+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T14:21:24.578654+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T14:26:24.909170+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T14:26:25.140871+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T14:26:25.372144+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T14:31:26.026797+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T14:31:26.529687+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T14:31:27.017184+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T14:36:27.374092+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T14:36:27.632749+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T14:36:27.943594+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T14:41:28.294548+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T14:41:28.598693+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T14:41:28.824228+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T14:46:29.194623+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T14:46:29.683671+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T14:46:29.919685+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T14:51:30.232601+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T14:51:30.464798+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T14:51:30.691236+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T14:56:31.340393+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T14:56:31.574176+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T14:56:31.835818+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T15:01:32.171694+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T15:01:32.415814+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T15:01:32.648116+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T15:06:32.964978+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T15:06:33.197738+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T15:06:33.421862+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T15:11:33.792292+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T15:11:34.301874+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T15:11:34.796469+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T15:16:35.164410+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T15:16:35.395294+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T15:16:35.620539+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T15:21:35.981809+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T15:21:36.244016+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T15:21:36.791307+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T15:26:37.122824+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T15:26:37.695270+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T15:26:37.924444+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T15:31:38.304267+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T15:31:38.608091+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T15:31:38.854418+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T15:36:39.225691+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T15:36:39.474706+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T15:36:39.721582+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T15:41:40.095059+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T15:41:40.323660+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T15:41:40.652725+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T15:46:40.992376+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T15:46:41.480975+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T15:46:41.717776+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T15:51:42.341721+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T15:51:42.573092+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T15:51:43.068863+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T15:56:43.400039+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T15:56:43.646997+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T15:56:44.182237+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T16:01:44.793981+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T16:01:45.043986+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T16:01:45.541536+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T16:06:45.869350+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T16:06:46.117844+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T16:06:46.352042+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T16:11:46.942664+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T16:11:47.172992+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T16:11:47.403714+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T16:16:47.748208+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T16:16:48.257387+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T16:16:48.488937+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T16:21:48.809920+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T16:21:49.308536+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T16:21:49.800178+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T16:26:50.126895+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_contract'}
+2026-09-29T16:26:50.355022+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_contract'}
+2026-09-29T16:26:50.678838+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_contract'}
+2026-09-29T16:28:17.995262+00:00,SYSTEM,LEVERAGE_DRIFT,S4 live=4 expected=200
+2026-09-29T16:28:18.228229+00:00,SYSTEM,LEVERAGE_DRIFT,S4V2 live=4 expected=200
+2026-09-29T16:28:18.462102+00:00,SYSTEM,LEVERAGE_DRIFT,S4V3 live=10 expected=200
+2026-09-29T16:30:09.083077+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: {'code': 'invalid_api_key'}
+2026-09-29T16:30:09.371873+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: {'code': 'invalid_api_key'}
+2026-09-29T16:30:09.631060+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V3: {'code': 'invalid_api_key'}
+2026-09-29T16:32:45.828080+00:00,SYSTEM,LEVERAGE_DRIFT,S4 live=4 expected=200
+2026-09-29T16:32:46.408719+00:00,SYSTEM,LEVERAGE_DRIFT,S4V2 live=4 expected=200
+2026-09-29T16:32:46.688177+00:00,SYSTEM,LEVERAGE_DRIFT,S4V3 live=10 expected=200
+2026-09-29T16:37:47.251533+00:00,SYSTEM,LEVERAGE_DRIFT,S4 live=4 expected=200
+2026-09-29T16:37:47.479503+00:00,SYSTEM,LEVERAGE_DRIFT,S4V2 live=4 expected=200
+2026-09-29T16:37:47.962902+00:00,SYSTEM,LEVERAGE_DRIFT,S4V3 live=10 expected=200
+2026-09-29T16:40:49.241738+00:00,SYSTEM,LEVERAGE_DRIFT,S4 live=4 expected=200
+2026-09-29T16:40:49.747588+00:00,SYSTEM,LEVERAGE_DRIFT,S4V2 live=4 expected=200
+2026-09-29T16:40:50.003171+00:00,SYSTEM,LEVERAGE_DRIFT,S4V3 live=10 expected=200
+2026-09-29T16:45:09.923601+00:00,SYSTEM,LEVERAGE_DRIFT,S4V3 live=10 expected=4
+2026-09-29T16:50:11.529203+00:00,SYSTEM,LEVERAGE_DRIFT,S4V3 live=10 expected=4
+2026-09-29T16:55:12.745770+00:00,SYSTEM,LEVERAGE_DRIFT,S4V3 live=10 expected=4
+2026-09-29T16:55:15.304227+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T17:00:15.880315+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T17:05:16.695971+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T17:10:17.783962+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T17:15:18.454106+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T17:20:19.090706+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T17:25:19.662007+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T17:30:21.160844+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T17:35:22.034999+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T17:40:22.583231+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T17:45:23.134576+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T17:50:24.252258+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T17:55:25.088143+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T18:00:25.629583+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T18:05:26.223785+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T18:10:26.760762+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T18:15:27.333837+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T18:20:28.147399+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T18:25:28.993640+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T18:30:30.243997+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T18:35:30.834384+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T18:40:31.387876+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T18:45:32.199270+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T18:50:32.748935+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T18:55:33.347624+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T19:00:34.031915+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T19:05:34.648706+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T19:10:35.516562+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T19:15:36.144978+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T19:20:36.732136+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T19:25:37.337245+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T19:30:38.099122+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T19:35:39.112081+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T19:40:39.674390+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T19:45:40.262841+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T19:50:40.877230+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T19:55:41.510526+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T20:00:42.325290+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T20:05:42.926717+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T20:10:43.528276+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T20:15:44.656316+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T20:20:45.473828+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T20:25:46.143707+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T20:30:47.006566+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T20:35:47.922105+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T20:40:48.799544+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T20:45:49.775719+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T20:50:50.760014+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T20:55:51.364174+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T21:00:51.970144+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T21:05:52.524566+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T21:10:53.463118+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T21:15:54.257926+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T21:20:55.062755+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T21:25:55.914105+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T21:30:56.559181+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T21:35:57.465285+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T21:40:58.322005+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T21:45:59.150273+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T21:51:00.099042+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T21:56:01.192885+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T22:01:01.962242+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T22:06:02.843698+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T22:11:04.050441+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T22:16:04.687852+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T22:21:05.308151+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T22:26:06.116872+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T22:31:07.478644+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T22:36:08.158587+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T22:41:08.786593+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T22:46:09.433716+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T22:51:10.344173+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T22:56:11.310697+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T23:01:12.327090+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T23:06:13.383614+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T23:11:14.195639+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T23:16:14.802821+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T23:21:15.577840+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T23:26:16.293697+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T23:31:17.287818+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T23:36:17.914925+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T23:41:18.659608+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T23:46:19.267420+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T23:51:19.842224+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-29T23:56:20.452554+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T00:01:21.060410+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T00:06:21.890860+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T00:11:22.689069+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T00:16:23.440340+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T00:21:24.664336+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T00:26:25.266654+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T00:31:25.989965+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T00:36:26.632312+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T00:41:27.474949+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T00:46:28.329144+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T00:51:28.895962+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T00:56:29.478083+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T01:01:30.105006+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T01:06:30.988710+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T01:11:31.585256+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T01:16:32.162998+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T01:21:33.594979+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T01:26:35.070354+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T01:31:36.080236+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T01:36:36.924241+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T01:41:38.131326+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T01:46:39.362092+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T01:51:40.843541+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T01:56:42.120899+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T02:01:43.139763+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T02:06:46.109090+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T02:11:47.595198+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T02:16:49.129002+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T02:21:52.429594+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T02:26:53.916647+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T02:31:56.123588+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T02:36:58.646168+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T02:41:59.942546+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T02:47:01.204369+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T02:52:02.197602+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T02:57:02.883086+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T03:02:04.210339+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T03:07:05.526925+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T03:12:07.262657+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T03:17:08.473990+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T03:22:09.259252+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T03:27:11.308917+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T03:32:13.124973+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T03:37:14.521035+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T03:42:15.796427+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T03:47:17.295871+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T03:52:18.295687+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T03:57:19.821702+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T04:02:21.684414+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T04:07:23.843375+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T04:12:25.079693+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T04:17:26.336697+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T04:22:27.632512+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T04:27:28.247215+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T04:32:29.077439+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T04:37:30.178809+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T04:42:31.137261+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T04:47:31.702544+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T04:52:32.254607+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T04:57:33.131337+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T05:02:33.695387+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T05:07:35.552696+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T05:12:36.439654+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T05:17:37.867272+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T05:22:38.858867+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T05:27:40.343995+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T05:32:41.355645+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T05:37:41.968498+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T05:42:42.776524+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T05:47:43.928760+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T05:52:45.100928+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T05:57:45.793291+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T06:02:46.732344+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T06:07:47.687698+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T06:12:49.469567+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T06:17:50.494475+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T06:22:51.055519+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T06:27:51.659964+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T06:32:52.349707+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T06:37:53.725697+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T06:42:54.851255+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T06:47:56.163049+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T06:52:56.643587+00:00,S4,B_STALE_CODE,"scripts/signal_replay_s4.py modified after process start - running 772m on old code, needs restart"
+2026-09-30T06:52:58.917189+00:00,S4V2,B_STALE_CODE,"scripts/signal_replay_s4v2.py modified after process start - running 772m on old code, needs restart"
+2026-09-30T06:52:59.621795+00:00,S4V3,B_STALE_CODE,"scripts/signal_replay_s4v3.py modified after process start - running 743m on old code, needs restart"
+2026-09-30T06:53:01.410656+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T06:58:02.081316+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T07:03:02.719874+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T07:08:03.568289+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T07:13:04.457905+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T07:18:05.129357+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T07:23:05.999393+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T07:28:06.049501+00:00,S4,B_STALE_CODE,"scripts/signal_replay_s4.py modified after process start - running 7m on old code, needs restart"
+2026-09-30T07:28:06.997299+00:00,S4V2,B_STALE_CODE,"scripts/signal_replay_s4v2.py modified after process start - running 7m on old code, needs restart"
+2026-09-30T07:28:08.000883+00:00,S4V3,B_STALE_CODE,"scripts/signal_replay_s4v3.py modified after process start - running 7m on old code, needs restart"
+2026-09-30T07:28:10.014348+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T07:33:11.261470+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T07:38:12.320388+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T07:43:13.578728+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T07:48:14.899959+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T07:53:16.594109+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T07:58:20.121707+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T08:03:22.364026+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T08:08:23.175011+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T08:13:23.739898+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T08:18:24.824137+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T08:23:25.769667+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T08:28:26.441780+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T08:33:27.330952+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T08:38:28.347039+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T08:43:29.618353+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T08:48:30.174826+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T08:53:31.002124+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T08:58:31.830056+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T09:03:32.459081+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T09:08:33.150589+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T09:13:33.964704+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T09:18:34.514385+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T09:23:35.330620+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T09:28:36.523073+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T09:33:37.826502+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T09:38:39.137061+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T09:43:40.040197+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T09:48:40.599011+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T09:53:41.167811+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T09:58:42.205526+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T10:03:43.098954+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T10:08:43.910270+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T10:13:45.017276+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T10:18:45.725083+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T10:23:46.845163+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T10:28:47.592042+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T10:33:48.361509+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T10:38:49.248913+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T10:43:50.856952+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T10:48:51.696408+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T10:53:52.749616+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T10:58:53.708082+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T11:03:54.708358+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T11:08:55.270942+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T11:13:56.629405+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T11:18:57.526018+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T11:23:58.065442+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T11:28:58.822983+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T11:33:59.396227+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T11:39:00.868427+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T11:44:01.896486+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T11:49:02.849328+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T11:54:03.503250+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T11:59:04.221719+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T12:04:05.347334+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T12:09:06.571984+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T12:14:07.846794+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T12:19:08.830298+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T12:24:09.655075+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T12:29:10.299862+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T12:34:11.598760+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T12:39:12.549015+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T12:44:14.077545+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T12:49:14.785612+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T12:54:15.997956+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T12:59:16.583789+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T13:04:17.143180+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T13:09:17.761527+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: Expecting value: line 1 column 1 (char 0)
+2026-09-30T13:09:18.028142+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T13:14:18.831537+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T13:19:19.630100+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T13:24:21.525026+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T13:29:22.527492+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T13:34:23.770222+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T13:39:25.345510+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T13:44:26.541985+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T13:49:27.879594+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T13:54:29.595680+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T13:59:30.234089+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T14:04:32.648351+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T14:09:33.487530+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T14:14:37.748138+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T14:19:38.635793+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T14:24:40.812170+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T14:29:42.044417+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T14:34:42.597337+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T14:39:43.798314+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T14:44:44.747641+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T14:49:45.616698+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T14:54:46.963596+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T14:59:47.935507+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T15:04:48.936819+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T15:09:50.233462+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T15:14:51.457244+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T15:19:53.267745+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T15:24:53.830298+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T15:29:54.487400+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T15:34:55.376312+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T15:39:56.252799+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T15:44:56.853371+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T15:49:58.573125+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T15:54:59.456873+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T16:00:00.341735+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T16:05:01.881656+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T16:10:02.948581+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T16:15:04.024725+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T16:20:05.420088+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T16:25:06.145004+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T16:30:07.105625+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T16:35:08.354095+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T16:40:09.125193+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T16:45:11.090330+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T16:50:12.569147+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T16:55:13.586118+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T17:00:14.792364+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T17:05:16.044196+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T17:10:17.746771+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T17:15:19.068126+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T17:20:20.300855+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T17:25:21.322169+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T17:30:22.570542+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T17:35:24.632066+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T17:40:26.322783+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T17:45:27.616002+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T17:50:28.909095+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T17:55:30.183029+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T18:00:31.676526+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T18:05:33.234315+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T18:10:34.444246+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T18:15:35.518443+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T18:20:36.494213+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T18:25:38.524331+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T18:30:39.806750+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T18:35:41.321332+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T18:40:42.824169+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T18:45:45.363948+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T18:50:46.196305+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T18:55:48.698799+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T19:00:49.739914+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T19:05:50.815792+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T19:10:51.759355+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T19:15:52.745597+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T19:20:55.306588+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T19:25:56.820962+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T19:30:58.914254+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T19:36:00.171611+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T19:41:01.241852+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T19:46:03.735510+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T19:51:05.285578+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T19:56:06.487070+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T20:01:09.012649+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T20:06:11.312388+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T20:11:12.785523+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T20:16:13.609995+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T20:21:15.045820+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T20:26:16.093910+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T20:31:17.893327+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T20:36:19.156161+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T20:41:20.711073+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T20:46:23.195966+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T20:51:24.235417+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T20:56:25.492188+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T21:01:26.758937+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T21:06:27.536501+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T21:11:29.794362+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T21:16:31.298794+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T21:21:33.866809+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T21:26:36.116975+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T21:31:38.097330+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T21:36:39.868994+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T21:41:42.166129+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T21:46:42.943390+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T21:51:44.980952+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T21:56:46.745726+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T22:01:48.041231+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T22:06:48.933136+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T22:11:49.478199+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T22:16:50.259300+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T22:21:51.748765+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T22:26:52.647306+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T22:31:54.333478+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T22:36:55.319528+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T22:41:55.929117+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T22:46:56.494335+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T22:51:58.359521+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T22:56:58.975558+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T23:02:00.875344+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T23:07:01.764892+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T23:12:02.688199+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T23:17:03.239772+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T23:22:04.995320+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T23:27:05.789695+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T23:32:07.093772+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T23:37:09.106682+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T23:42:09.731297+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T23:47:10.819729+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T23:52:12.070181+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-09-30T23:57:13.597015+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T00:02:16.337833+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T00:07:16.886169+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T00:12:17.438914+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T00:17:18.021319+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T00:22:18.701379+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T00:27:19.827216+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T00:32:20.871531+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T00:37:22.851681+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T00:42:23.847693+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T00:47:24.414693+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T00:52:25.183210+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T00:57:26.082841+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T01:02:26.903025+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T01:07:27.471754+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T01:12:28.291128+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T01:17:29.252530+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T01:22:30.070272+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T01:27:30.907705+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T01:32:31.957879+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T01:37:32.897022+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T01:42:33.521252+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T01:47:34.126758+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T01:52:34.787332+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T01:57:35.354714+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T02:02:36.210444+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T02:07:37.121981+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T02:12:37.959074+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T02:17:39.181304+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T02:22:40.030107+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T02:27:41.161738+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T02:32:42.058388+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T02:37:42.626946+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T02:42:43.411543+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T02:47:44.082049+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T02:52:45.140209+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T02:57:45.754939+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T03:02:46.819473+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T03:07:47.375747+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T03:12:48.294879+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T03:17:49.616442+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T03:22:50.797283+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T03:27:51.631948+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T03:32:52.869576+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T03:37:53.514474+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T03:42:54.082552+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T03:47:55.017313+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T03:52:56.380791+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T03:57:57.044270+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T04:03:00.461444+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T04:08:02.002264+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T04:13:02.754435+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T04:18:03.855976+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T04:23:04.498935+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T04:28:05.172966+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T04:33:06.062821+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T04:38:06.960978+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T04:43:07.856888+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T04:48:08.944601+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T04:53:09.558059+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T04:58:10.640906+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T05:03:11.781622+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T05:08:12.381857+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T05:13:13.372174+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T05:18:15.672394+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T05:23:16.953158+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T05:28:17.977241+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T05:33:18.618641+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T05:38:19.288586+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T05:43:20.350129+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T05:48:21.479206+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T05:53:22.025777+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T05:58:23.052542+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T06:03:24.337184+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T06:08:25.441897+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T06:13:26.097017+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T06:18:27.985074+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T06:23:28.897854+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T06:28:29.734583+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T06:33:31.292794+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T06:38:32.186241+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T06:43:33.301753+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T06:48:33.872176+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T06:53:34.837128+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T06:58:35.823139+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T07:03:36.416117+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T07:08:36.996191+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T07:13:37.630170+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T07:18:38.195965+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T07:23:39.254874+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T07:28:40.137779+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T07:33:40.962130+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T07:38:42.069784+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T07:43:42.710420+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T07:48:44.053986+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T07:53:44.700335+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T07:58:45.735152+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T08:03:46.853207+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T08:08:48.161392+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T08:13:48.701507+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T08:18:49.278299+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T08:23:50.293992+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T08:28:51.351256+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T08:33:52.209223+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T08:38:53.678373+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T08:43:54.948543+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T08:48:55.881436+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T08:53:56.472821+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T08:58:57.144313+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T09:03:57.750116+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T09:08:59.398789+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T09:14:00.351080+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T09:19:00.985603+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T09:24:01.702627+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T09:29:02.637236+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T09:34:03.543874+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T09:39:04.337351+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T09:44:05.154266+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T09:49:05.921872+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T09:54:06.878147+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T09:59:07.769275+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T10:04:08.969072+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T10:09:10.494800+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T10:14:11.769226+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T10:19:12.604950+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T10:24:13.849808+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T10:29:14.821711+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T10:34:15.370941+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T10:39:15.989101+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T10:44:17.033407+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T10:49:18.126624+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T10:54:18.679030+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T10:59:19.373307+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T11:04:20.295346+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T11:09:21.159398+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T11:14:21.756154+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T11:19:22.615109+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T11:24:23.450994+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T11:29:24.848641+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T11:34:25.593113+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T11:39:26.399893+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T11:44:27.320319+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T11:49:28.747097+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T11:54:30.234675+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T11:59:31.054178+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T12:04:31.816848+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T12:09:33.097645+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T12:14:34.073382+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T12:19:35.319300+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T12:24:35.975673+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T12:29:36.739363+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: Expecting value: line 1 column 1 (char 0)
+2026-10-01T12:29:36.964591+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: Expecting value: line 1 column 1 (char 0)
+2026-10-01T12:29:36.969343+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T12:34:37.325722+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: Expecting value: line 1 column 1 (char 0)
+2026-10-01T12:34:37.823368+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: Expecting value: line 1 column 1 (char 0)
+2026-10-01T12:34:37.827918+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T12:39:38.452357+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T12:44:39.007420+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T12:49:39.335248+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4: Expecting value: line 1 column 1 (char 0)
+2026-10-01T12:49:39.855694+00:00,SYSTEM,LEVERAGE_CHECK_FAILED,S4V2: Expecting value: line 1 column 1 (char 0)
+2026-10-01T12:49:39.859412+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T12:54:40.435761+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T12:59:40.983220+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T13:04:42.299294+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T13:09:42.896394+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T13:14:43.849304+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T13:19:44.827511+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T13:24:45.698270+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T13:29:46.278424+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T13:34:47.575208+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T13:39:50.069746+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T13:44:52.108953+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T13:49:53.090260+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T13:54:55.108571+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T13:59:56.598603+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T14:04:57.650101+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T14:09:59.068741+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T14:14:59.993391+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T14:20:00.585290+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T14:25:01.597151+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T14:30:02.628987+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T14:35:03.615773+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T14:40:05.448667+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T14:45:06.556884+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T14:50:07.998147+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T14:55:10.307707+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T15:00:11.496868+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T15:05:13.576803+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T15:10:15.346316+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T15:15:17.155082+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T15:20:20.135249+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T15:25:22.230944+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T15:30:24.076368+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T15:35:25.527770+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T15:40:26.800665+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T15:45:28.570527+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T15:50:31.068553+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T15:55:32.347254+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T16:00:34.432694+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T16:05:36.647107+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T16:10:38.757254+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T16:15:40.563354+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T16:20:41.769330+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T16:25:42.544525+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T16:30:44.846274+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T16:35:45.513839+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T16:40:47.821133+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T16:45:48.369839+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T16:50:49.827419+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T16:55:50.443923+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T17:00:53.152295+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T17:05:54.044322+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T17:10:55.872924+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T17:15:56.985176+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T17:20:59.221647+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T17:26:01.040413+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T17:31:03.318747+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T17:36:04.848505+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T17:41:06.597599+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T17:46:08.845461+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T17:51:10.611420+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T17:56:12.069091+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T18:01:13.657684+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T18:06:14.597183+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T18:11:15.409608+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T18:16:16.416060+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T18:21:17.194881+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T18:26:20.752958+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T18:31:25.543102+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T18:36:28.072251+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T18:41:29.838138+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T18:46:30.775665+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T18:51:31.776521+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T18:56:32.615277+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T19:01:33.584740+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T19:06:34.256032+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T19:11:35.874957+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T19:16:37.437396+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T19:21:39.489014+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T19:26:41.252430+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T19:31:49.312323+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T19:36:51.111965+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T19:41:52.344388+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T19:46:53.545062+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T19:51:55.831952+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T19:56:58.340057+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T20:02:00.365713+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T20:07:02.883868+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T20:12:05.929519+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T20:17:08.372017+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T20:22:10.128580+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T20:27:11.933102+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T20:32:14.474764+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T20:37:15.909645+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T20:42:17.423632+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T20:47:19.131611+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T20:52:20.148102+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T20:57:21.137702+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T21:02:22.388176+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T21:07:23.959391+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T21:12:25.387538+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T21:17:26.639099+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T21:22:27.294574+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T21:27:27.908819+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T21:32:28.472627+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T21:37:29.014357+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T21:42:29.549905+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T21:47:30.191775+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T21:52:30.878849+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T21:57:32.042613+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T22:02:32.626016+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T22:07:33.367169+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T22:12:34.258114+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T22:17:34.996913+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T22:22:35.874060+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T22:27:37.110010+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T22:32:38.139001+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T22:37:39.127266+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T22:42:40.222366+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T22:47:40.777142+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T22:52:42.333171+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T22:57:43.199119+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T23:02:43.838894+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T23:07:44.795661+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T23:12:45.853465+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T23:17:46.428779+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T23:22:47.318435+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T23:27:48.139003+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T23:32:49.369398+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T23:37:50.338673+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T23:42:51.398570+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T23:47:52.522918+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T23:52:53.503143+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-01T23:57:54.382049+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T00:02:55.539514+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T00:07:56.120575+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T00:12:57.416644+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T00:17:58.623884+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T00:22:59.394799+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T00:28:00.094384+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T00:33:01.352857+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T00:38:03.121333+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T00:43:04.593825+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T00:48:05.609192+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T00:53:06.337988+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T00:58:07.663230+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T01:03:08.578741+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T01:08:09.919727+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T01:13:11.669073+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T01:18:12.928528+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T01:23:13.956233+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T01:28:15.493017+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T01:33:17.170547+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T01:38:18.918382+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T01:43:20.418416+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T01:48:22.168797+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T01:53:23.418711+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T01:58:24.668400+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T02:03:26.242643+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T02:08:27.205041+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T02:13:28.716324+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T02:18:29.934479+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T02:23:31.196480+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T02:28:32.181844+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T02:33:33.668791+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T02:38:35.220088+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T02:43:36.670438+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T02:48:37.707219+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T02:53:38.948155+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T02:58:40.443630+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T03:03:41.696307+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T03:08:42.755258+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T03:13:44.436186+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T03:18:45.450018+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T03:23:46.433361+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T03:28:47.705044+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T03:33:49.419317+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T03:38:50.431335+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T03:43:51.729705+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T03:48:52.929396+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T03:53:53.919208+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T03:58:55.419262+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T04:03:56.457535+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T04:08:58.429230+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T04:13:59.939108+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T04:19:01.176422+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T04:24:02.203509+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T04:29:03.170944+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T04:34:04.198085+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T04:39:05.421546+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T04:44:06.669727+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T04:49:07.669494+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T04:54:09.241009+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T04:59:10.169206+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T05:04:11.423101+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T05:09:12.419352+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T05:14:13.220899+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T05:19:14.956868+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T05:24:16.242637+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T05:29:17.962661+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T05:34:19.017281+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T05:39:20.459189+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T05:44:21.957267+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T05:49:23.234893+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T05:54:24.459307+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T05:59:25.713960+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T06:04:27.509674+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T06:09:29.459956+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T06:14:30.733005+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T06:19:31.962178+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T06:24:32.969147+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T06:29:34.484402+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T06:34:35.998509+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T06:39:37.710557+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T06:44:39.219137+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T06:49:40.463104+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T06:54:41.485716+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T06:59:42.983014+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T07:04:44.253361+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T07:09:45.770653+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T07:14:47.214032+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T07:19:48.222576+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T07:24:49.470065+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T07:29:50.466375+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T07:34:51.766292+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T07:39:53.214551+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T07:44:54.964169+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T07:49:55.967801+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T07:54:57.465615+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T07:59:58.716696+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T08:04:59.971797+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T08:10:00.993258+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T08:15:01.993961+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T08:20:03.223290+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T08:25:04.249812+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T08:30:05.749517+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T08:35:07.281214+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T08:40:08.501311+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T08:45:09.722876+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T08:50:11.218618+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T08:55:12.718991+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T09:00:14.218554+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T09:05:15.720523+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T09:10:17.218160+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T09:15:18.761774+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T09:20:19.988948+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T09:25:21.974184+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T09:30:23.268620+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T09:35:24.480726+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T09:40:25.406309+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T09:45:26.557037+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T09:50:27.523716+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T09:55:28.343409+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T10:00:29.331347+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T10:05:30.593743+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T10:10:32.118439+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T10:15:33.218613+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T10:20:34.498879+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T10:25:35.522432+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T10:30:37.068432+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T10:35:38.818938+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T10:40:39.827279+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T10:45:40.879640+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T10:50:41.820748+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T10:55:43.093579+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T11:00:44.409518+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T11:05:45.451722+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T11:10:46.943682+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T11:15:48.980263+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T11:20:49.980822+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T11:25:51.012863+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T11:30:52.718100+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T11:35:53.493050+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T11:40:54.743435+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T11:45:56.058734+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T11:50:57.318516+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T11:55:58.074968+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T12:00:59.346368+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T12:06:00.894199+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T12:11:02.174555+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T12:16:03.646514+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T12:21:04.450741+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T12:26:05.226106+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T12:31:06.489513+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T12:36:07.500338+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T12:41:08.795296+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T12:46:09.610086+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T12:51:10.846359+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T12:56:11.839091+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T13:01:12.861041+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T13:06:13.871723+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T13:11:15.122933+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T13:16:16.267401+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T13:21:17.672245+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T13:26:19.169599+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T13:31:20.169604+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T13:36:21.176020+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T13:41:22.927891+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T13:46:24.001742+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T13:51:26.188972+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T13:56:27.195805+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T14:01:28.669828+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T14:06:29.697318+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T14:11:30.936063+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T14:16:32.244229+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T14:21:33.217903+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T14:26:33.966065+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T14:31:35.189003+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T14:36:36.724649+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T14:41:38.004570+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T14:46:39.200628+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T14:51:40.502925+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T14:56:41.959852+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T15:01:42.963915+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T15:06:43.978685+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T15:11:45.236898+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T15:16:46.456680+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T15:21:47.489159+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T15:26:49.006251+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T15:31:49.965046+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T15:36:51.195435+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T15:41:52.195433+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T15:46:53.447240+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T15:51:54.710144+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T15:56:56.443788+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T16:01:57.951165+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T16:06:59.235148+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T16:12:00.694896+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T16:17:01.975955+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T16:22:03.196839+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T16:27:04.450505+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T16:32:05.448949+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T16:37:07.196070+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T16:42:08.445421+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T16:47:09.715323+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T16:52:10.720165+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T16:57:12.196695+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T17:02:13.453172+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T17:07:15.717941+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T17:12:16.700691+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T17:17:18.203062+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T17:22:19.711408+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T17:27:21.238822+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T17:32:22.201698+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T17:37:24.459560+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T17:42:25.483260+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T17:47:26.459015+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T17:52:27.741976+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T17:57:29.965595+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T18:02:30.878493+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T18:07:33.213341+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T18:12:34.965096+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T18:17:36.724199+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T18:22:38.467831+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T18:27:40.026263+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T18:32:41.713790+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T18:37:42.726316+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T18:42:44.244590+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T18:47:45.505124+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T18:52:47.975685+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T18:57:49.516203+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T19:02:51.969077+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T19:07:53.469687+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T19:12:55.973656+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T19:17:58.558894+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T19:23:02.248527+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T19:28:04.472898+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T19:33:05.971274+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T19:38:07.718771+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T19:43:09.258693+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T19:48:10.748983+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T19:53:11.969422+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T19:58:13.718787+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T20:03:15.219891+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T20:08:16.472788+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T20:13:18.731505+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T20:18:20.470134+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T20:23:22.482059+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T20:28:24.783284+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T20:33:26.770672+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T20:38:28.720213+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T20:43:30.264276+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T20:48:31.470199+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T20:53:33.470416+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T20:58:35.220718+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T21:03:36.801391+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T21:08:38.720085+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T21:13:40.264622+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T21:18:42.000510+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T21:23:43.472171+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T21:28:44.977379+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T21:33:46.000596+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T21:38:48.742150+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T21:43:50.477500+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T21:48:52.977079+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T21:53:54.975385+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T21:58:57.278126+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T22:03:59.986925+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T22:09:00.978445+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T22:14:03.002757+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T22:19:04.260176+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T22:24:05.759027+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T22:29:07.234141+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T22:34:09.490085+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T22:39:11.261583+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T22:44:12.732584+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T22:49:14.761432+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T22:54:16.238379+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T22:59:17.999503+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T23:04:20.515237+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
+2026-10-02T23:09:21.369463+00:00,SYSTEM,LEVERAGE_CHECK_SKIPPED,S4V3: portfolio margin mode - fixed leverage check not applicable
