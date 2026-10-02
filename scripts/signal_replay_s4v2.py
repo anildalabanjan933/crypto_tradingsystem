@@ -1025,4 +1025,8 @@ if sys._sync_counter >= 60:
             log.warning(f"[SYNC] Exchange has position but bot thinks FLAT. Syncing to {exchange_pos['direction']}.")
             position = exchange_pos['direction'].lower()
             open_lot_size = abs(exchange_pos['size'])
+        elif exchange_pos['direction'] != 'FLAT' and position is not None and position != exchange_pos['direction'].lower():
+            log.critical(f"[SYNC] DIRECTION MISMATCH: bot={position} but exchange={exchange_pos['direction']}. Force-syncing to exchange direction.")
+            position = exchange_pos['direction'].lower()
+            open_lot_size = abs(exchange_pos['size'])
 
