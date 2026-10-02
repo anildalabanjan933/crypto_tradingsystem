@@ -82,7 +82,7 @@ _BT_CSV_PATTERN_AUDIT = {
     "S4V3": "output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv",
 }
 
-def _offset_ts_audit(raw, strat_label):
+def _offset_ts_audit(raw, strat_label, force_offset=False):
     try:
         tf = TF_MIN_AUDIT.get(strat_label, 0)
         s = str(raw).strip()
@@ -90,7 +90,7 @@ def _offset_ts_audit(raw, strat_label):
         s = s.replace("T", " ", 1)
         t = _dt_audit.datetime.fromisoformat(s)
         t_off = t + _dt_audit.timedelta(minutes=tf)
-        if t_off > _dt_audit.datetime.utcnow():
+        if not force_offset and t_off > _dt_audit.datetime.utcnow():
             return raw
         return t_off.isoformat()
     except Exception:
@@ -181,12 +181,12 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                 "trade_no"     : _trade_no,
                 "label"        : strat_label,
                 "dir"          : _dir_raw,
-                "date"         : _ist_date_audit(_offset_ts_audit(_entry_ts_raw, strat_label)),
+                "date"         : _ist_date_audit(_offset_ts_audit(_entry_ts_raw, strat_label, force_offset=True)),
                 "symbol"       : "BTCUSD",
                 "entry_ts_raw" : _entry_ts_raw,
                 "exit_ts_raw"  : _exit_ts_raw,
-                "entry_ist"    : _to_ist_audit(_offset_ts_audit(_entry_ts_raw, strat_label)),
-                "exit_ist"     : _to_ist_audit(_offset_ts_audit(_exit_ts_raw, strat_label)) if _exit_ts_raw not in ("", "PENDING", "nan") else "-",
+                "entry_ist"    : _to_ist_audit(_offset_ts_audit(_entry_ts_raw, strat_label, force_offset=True)),
+                "exit_ist"     : _to_ist_audit(_offset_ts_audit(_exit_ts_raw, strat_label, force_offset=True)) if _exit_ts_raw not in ("", "PENDING", "nan") else "-",
                 "entry_p"      : _entry_p,
                 "exit_p"       : _exit_p,
                 "lot"          : 1,
@@ -207,7 +207,7 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
         # row, the entry_ts_raw match above skips the fallback automatically.
         _sig_csv_map = {"S4": "logs/signals_s4.csv", "S4V2": "logs/signals_s4v2.csv", "S4V3": "logs/signals_s4v3.csv"}
         _sig_path = _sig_csv_map.get(strat_label)
-        _today_end = _dt_audit.date.today()
+        _today_end = (_dt_audit.datetime.utcnow() + _dt_audit.timedelta(hours=5, minutes=30)).date()
         if _sig_path:
             try:
                 with open(_sig_path) as _sf:
@@ -338,12 +338,12 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                             "trade_no"     : _trade_no,
                             "label"        : strat_label,
                             "dir"          : _p_dir.upper(),
-                            "date"         : _ist_date_audit(_offset_ts_audit(_p_et, strat_label)),
+                            "date"         : _ist_date_audit(_offset_ts_audit(_p_et, strat_label, force_offset=True)),
                             "symbol"       : "BTCUSD",
                             "entry_ts_raw" : _p_et,
                             "exit_ts_raw"  : _p_xt,
-                            "entry_ist"    : _to_ist_audit(_offset_ts_audit(_p_et, strat_label)),
-                            "exit_ist"     : _to_ist_audit(_offset_ts_audit(_p_xt, strat_label)),
+                            "entry_ist"    : _to_ist_audit(_offset_ts_audit(_p_et, strat_label, force_offset=True)),
+                            "exit_ist"     : _to_ist_audit(_offset_ts_audit(_p_xt, strat_label, force_offset=True)),
                             "entry_p"      : _ep_f,
                             "exit_p"       : _xp_f,
                             "lot"          : 1,
