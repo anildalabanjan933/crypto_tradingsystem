@@ -874,10 +874,11 @@ def _get_open_live_rows_audit(strat_label, from_date, to_date, fetch_fills_fn, p
 
         try:
             _entry_dt = _pd_audit.to_datetime(str(entry_time).replace("T", " "))
+            _entry_dt_ist = _entry_dt + _dt_audit.timedelta(hours=5, minutes=30)
         except Exception:
             return []
 
-        if not (from_date <= _entry_dt.date() <= to_date):
+        if not (from_date <= _entry_dt_ist.date() <= to_date):
             return []
 
         _dir = "LONG" if entry_side == "BUY" else "SHORT"
