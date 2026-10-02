@@ -3161,3 +3161,1613 @@ WARNING:root:[OrderManager] GET attempt 2/3 failed: Expecting value: line 1 colu
 [watchdog_fast] started, 3 bots, poll=30s
 [watchdog_fast] started, 3 bots, poll=30s
 [watchdog_fast] started, 3 bots, poll=30s
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4V2 | failed to read logs/state_health_S4V2.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4 | failed to read logs/state_health_S4.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4V2 | failed to read logs/state_health_S4V2.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_CHECK_FAILED | SYSTEM | could not convert string to float: ''
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_CHECK_FAILED | SYSTEM | could not convert string to float: ''
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4V2 | failed to read logs/state_health_S4V2.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+WARNING:root:[OrderManager] GET attempt 1/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 1/3 failed: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] E_ERROR | S4 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V2 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V3 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] E_ERROR | S4 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V2 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V3 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V2 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V3 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] E_ERROR | S4 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V2 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V3 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4V2 | failed to read logs/state_health_S4V2.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4 | failed to read logs/state_health_S4.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4V2 | failed to read logs/state_health_S4V2.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4V2 | failed to read logs/state_health_S4V2.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4V2 | failed to read logs/state_health_S4V2.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4V3 | failed to read logs/state_health_S4V3.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4 | failed to read logs/state_health_S4.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4 | failed to read logs/state_health_S4.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] A_ERROR | S4V2 | failed to read logs/state_health_S4V2.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4 | failed to read logs/state_health_S4.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4 | failed to read logs/state_health_S4.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4V3 | failed to read logs/state_health_S4V3.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] E_ERROR | S4 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V2 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V3 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] E_ERROR | S4 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V2 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V3 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V2 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V3 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+WARNING:root:[OrderManager] GET attempt 1/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 1/3 failed: Expecting value: line 1 column 1 (char 0)
+WARNING:root:[OrderManager] GET attempt 2/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 2/3 failed: Expecting value: line 1 column 1 (char 0)
+WARNING:root:[OrderManager] GET attempt 3/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 3/3 failed: Expecting value: line 1 column 1 (char 0)
+ERROR:root:[OrderManager] GET failed after 3 attempts: /v2/positions
+[watchdog_fast] E_ERROR | S4 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+WARNING:root:[OrderManager] GET attempt 1/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 1/3 failed: Expecting value: line 1 column 1 (char 0)
+WARNING:root:[OrderManager] GET attempt 2/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 2/3 failed: Expecting value: line 1 column 1 (char 0)
+WARNING:root:[OrderManager] GET attempt 3/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 3/3 failed: Expecting value: line 1 column 1 (char 0)
+ERROR:root:[OrderManager] GET failed after 3 attempts: /v2/positions
+[watchdog_fast] E_ERROR | S4V2 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+WARNING:root:[OrderManager] GET attempt 1/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 1/3 failed: Expecting value: line 1 column 1 (char 0)
+WARNING:root:[OrderManager] GET attempt 2/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 2/3 failed: Expecting value: line 1 column 1 (char 0)
+WARNING:root:[OrderManager] GET attempt 3/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 3/3 failed: Expecting value: line 1 column 1 (char 0)
+ERROR:root:[OrderManager] GET failed after 3 attempts: /v2/positions
+[watchdog_fast] E_ERROR | S4V3 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+WARNING:root:[OrderManager] GET attempt 1/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 1/3 failed: Expecting value: line 1 column 1 (char 0)
+WARNING:root:[OrderManager] GET attempt 2/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 2/3 failed: Expecting value: line 1 column 1 (char 0)
+WARNING:root:[OrderManager] GET attempt 3/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 3/3 failed: Expecting value: line 1 column 1 (char 0)
+ERROR:root:[OrderManager] GET failed after 3 attempts: /v2/positions
+[watchdog_fast] E_ERROR | S4 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+WARNING:root:[OrderManager] GET attempt 1/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 1/3 failed: Expecting value: line 1 column 1 (char 0)
+WARNING:root:[OrderManager] GET attempt 2/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 2/3 failed: Expecting value: line 1 column 1 (char 0)
+WARNING:root:[OrderManager] GET attempt 3/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 3/3 failed: Expecting value: line 1 column 1 (char 0)
+ERROR:root:[OrderManager] GET failed after 3 attempts: /v2/positions
+[watchdog_fast] E_ERROR | S4V2 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+WARNING:root:[OrderManager] GET attempt 1/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 1/3 failed: Expecting value: line 1 column 1 (char 0)
+WARNING:root:[OrderManager] GET attempt 2/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 2/3 failed: Expecting value: line 1 column 1 (char 0)
+WARNING:root:[OrderManager] GET attempt 3/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 3/3 failed: Expecting value: line 1 column 1 (char 0)
+ERROR:root:[OrderManager] GET failed after 3 attempts: /v2/positions
+[watchdog_fast] E_ERROR | S4V3 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+WARNING:root:[OrderManager] GET attempt 1/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 1/3 failed: Expecting value: line 1 column 1 (char 0)
+WARNING:root:[OrderManager] GET attempt 2/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 2/3 failed: Expecting value: line 1 column 1 (char 0)
+WARNING:root:[OrderManager] GET attempt 3/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 3/3 failed: Expecting value: line 1 column 1 (char 0)
+ERROR:root:[OrderManager] GET failed after 3 attempts: /v2/positions
+[watchdog_fast] E_ERROR | S4 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+WARNING:root:[OrderManager] GET attempt 1/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 1/3 failed: Expecting value: line 1 column 1 (char 0)
+WARNING:root:[OrderManager] GET attempt 2/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 2/3 failed: Expecting value: line 1 column 1 (char 0)
+WARNING:root:[OrderManager] GET attempt 3/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 3/3 failed: Expecting value: line 1 column 1 (char 0)
+ERROR:root:[OrderManager] GET failed after 3 attempts: /v2/positions
+[watchdog_fast] E_ERROR | S4V2 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+WARNING:root:[OrderManager] GET attempt 1/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 1/3 failed: Expecting value: line 1 column 1 (char 0)
+WARNING:root:[OrderManager] GET attempt 2/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 2/3 failed: Expecting value: line 1 column 1 (char 0)
+WARNING:root:[OrderManager] GET attempt 3/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 3/3 failed: Expecting value: line 1 column 1 (char 0)
+ERROR:root:[OrderManager] GET failed after 3 attempts: /v2/positions
+[watchdog_fast] E_ERROR | S4V3 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+WARNING:root:[OrderManager] GET attempt 1/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 1/3 failed: Expecting value: line 1 column 1 (char 0)
+WARNING:root:[OrderManager] GET attempt 2/3 JSON parse failed: Expecting value: line 1 column 1 (char 0) | status=502 body='<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>nginx/1.18.0 (Ubuntu)</center>\r\n</body>\r\n</html>\r\n'
+WARNING:root:[OrderManager] GET attempt 2/3 failed: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] E_ERROR | S4 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V2 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V3 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V2 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V3 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V2 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V3 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V2 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] E_ERROR | S4V3 | get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_CHECK_FAILED | SYSTEM | could not convert string to float: ''
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1203s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1255s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1304s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1353s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1402s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1451s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1246s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1296s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1345s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1394s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1443s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1492s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1542s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1592s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1641s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1690s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1738s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1787s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1837s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1887s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1936s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1985s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2034s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2083s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2132s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2182s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2230s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_CHECK_FAILED | SYSTEM | could not convert string to float: ''
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2280s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2329s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2378s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2427s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2477s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2527s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2579s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2628s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2677s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2726s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2776s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2825s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2874s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2923s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2972s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3020s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3070s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3120s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3170s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3220s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3269s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3318s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3367s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3416s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3465s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3514s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3563s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1245s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1295s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1345s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1394s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1443s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1493s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1542s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1591s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1640s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_ERROR | S4 | failed to read logs/state_health_S4.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1690s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1739s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1788s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1208s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1258s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1307s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1357s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1405s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1454s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1503s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1553s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1603s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1653s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1702s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1751s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1800s (count=3) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4 | failed to read logs/state_health_S4.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4V3 | failed to read logs/state_health_S4V3.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1228s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1280s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1330s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1380s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1428s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1477s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1527s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1576s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1625s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1674s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1723s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1772s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1822s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1872s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_CHECK_FAILED | SYSTEM | could not convert string to float: ''
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1922s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1971s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2020s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2069s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2118s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2168s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2217s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2266s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2315s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2364s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2414s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2464s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2514s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2563s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2612s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2662s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2712s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2762s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2811s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2860s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2909s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=2959s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3009s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3058s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3108s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3157s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3207s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3256s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3306s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3356s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3406s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3456s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3506s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3557s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3607s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3656s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3706s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3757s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3807s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3859s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3909s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=3958s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4008s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4058s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4108s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4158s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4208s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4259s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4309s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4358s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4409s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4459s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4509s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4561s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4610s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4659s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4708s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4758s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4808s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4860s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4909s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=4959s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5009s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5059s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5109s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5158s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5209s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5259s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5309s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5359s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5409s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5459s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5508s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5558s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5607s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5657s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5708s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5757s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5807s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5857s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5908s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=5959s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6011s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6062s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6112s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6162s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6213s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6264s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6315s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6365s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6415s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6466s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6516s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6567s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6617s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6667s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6716s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6766s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6815s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6864s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6915s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=6965s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=7015s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=7065s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=7115s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=7165s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=7215s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=7265s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=7315s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=7364s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=7414s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=7464s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=7514s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=7564s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=7613s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=7663s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=7713s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=7762s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1241s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1291s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1340s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1389s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1438s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1488s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1537s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1586s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1635s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1684s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1233s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_CHECK_FAILED | SYSTEM | could not convert string to float: ''
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1282s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1331s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1380s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1430s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1479s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1529s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1578s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1627s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1676s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1726s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1775s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1226s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1276s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1325s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1374s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1424s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1474s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1523s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1572s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1621s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1671s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1720s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1234s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1284s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1334s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1382s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1431s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1481s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1530s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1579s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1628s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1677s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1726s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1236s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1286s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1335s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1384s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1434s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1484s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1533s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1582s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1631s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1681s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1730s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1247s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1297s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1347s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1397s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1446s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1496s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1546s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1596s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1646s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1696s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1746s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1795s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1223s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1273s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1322s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1372s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1421s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1471s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1521s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1571s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1620s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1670s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1720s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1769s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4V3 | failed to read logs/state_health_S4V3.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1202s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1256s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1305s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1355s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1404s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1453s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1503s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1552s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1601s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1651s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1700s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_CHECK_FAILED | SYSTEM | could not convert string to float: ''
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1750s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1799s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1228s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1278s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1329s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1378s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1428s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1478s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1527s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1576s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1626s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1675s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1725s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1774s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1243s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1294s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1343s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1393s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1442s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1491s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1540s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1590s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1639s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1689s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1738s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1788s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1221s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1272s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1321s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1370s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1420s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1469s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1519s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1569s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1619s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1668s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1717s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1766s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1201s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1251s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1300s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1350s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1399s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1449s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1498s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1547s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1596s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1646s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1694s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1744s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1793s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1229s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1280s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1329s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1379s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1429s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1478s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1527s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1578s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1627s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1677s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1726s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_STATE_DESYNC | S4V2 | mismatch_since age=1775s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4V2 | failed to read logs/state_health_S4V2.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4V2 | failed to read logs/state_health_S4V2.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] A_ERROR | S4 | failed to read logs/state_health_S4.json: Expecting value: line 1 column 1 (char 0)
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] C_MISSED_SIGNAL | S4V2 | 2026-10-02 17:02:33,731 WARNING [MISSED TRADE] entry=2026-10-02T08:30:00 exit=2026-10-02T09:30:00 dir=short reason=bot_restart
+[watchdog_fast] C_MISSED_SIGNAL | S4V2 | 2026-10-02 17:02:34,503 INFO [TELEGRAM] Alert sent: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE
+[watchdog_fast] C_MISSED_SIGNAL | S4V2 | 2026-10-02 17:02:34,505 WARNING [MISSED TRADE] entry=2026-10-02T09:30:00 exit=2026-10-02T10:30:00 dir=long reason=bot_restart
+[watchdog_fast] C_MISSED_SIGNAL | S4V2 | 2026-10-02 17:02:34,529 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE
+[watchdog_fast] C_MISSED_SIGNAL | S4V2 | 2026-10-02 17:02:34,530 WARNING [MISSED TRADE] entry=2026-10-02T10:30:00 exit=2026-10-02T11:00:00 dir=short reason=bot_restart
+[watchdog_fast] C_MISSED_SIGNAL | S4V2 | 2026-10-02 17:02:34,552 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE
+[watchdog_fast] C_MISSED_SIGNAL | S4V2 | 2026-10-02 17:02:34,552 WARNING [MISSED TRADE] entry=2026-10-02T11:00:00 exit=2026-10-02T13:00:00 dir=long reason=bot_restart
+[watchdog_fast] C_MISSED_SIGNAL | S4V2 | 2026-10-02 17:02:34,702 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE
+[watchdog_fast] C_MISSED_SIGNAL | S4V2 | 2026-10-02 17:02:34,702 WARNING [MISSED TRADE] Total 4 trade(s) missed during offline period
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] C_MISSED_SIGNAL | S4V2 | 2026-10-02 17:02:46,245 INFO [TELEGRAM] Alert sent: CTS S4V2 MISSED TRADE - signal entry=2026-10-02T08
+[watchdog_fast] C_MISSED_SIGNAL | S4V2 | 2026-10-02 17:02:46,998 INFO [TELEGRAM] Alert sent: CTS S4V2 MISSED TRADE - signal entry=2026-10-02T09
+[watchdog_fast] C_MISSED_SIGNAL | S4V2 | 2026-10-02 17:02:47,748 INFO [TELEGRAM] Alert sent: CTS S4V2 MISSED TRADE - signal entry=2026-10-02T10
+[watchdog_fast] C_MISSED_SIGNAL | S4V2 | 2026-10-02 17:02:49,772 INFO [TELEGRAM] Alert sent: CTS S4V2 MISSED TRADE - signal entry=2026-10-02T11
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
+[watchdog_fast] CANARY_STALE | SYSTEM | Response too old
