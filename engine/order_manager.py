@@ -654,6 +654,7 @@ class OrderManager:
             }
         else:
             _err = str(resp.get("error", ""))
+            logging.error("[OrderManager] get_position FAILED - raw_error=%r full_resp=%r" % (_err, resp))
             if "invalid_api_key" in _err.lower() or "InvalidApiKey" in _err:
                 try:
                     send_alert(f"CTS CRITICAL: invalid_api_key\nBot cannot trade - API key rejected\nCheck key immediately")
