@@ -308,6 +308,7 @@ def build_csv_report(now, entry_table, exit_table, rt_table, roll_entry, roll_ex
     with open(REPORT_CSV_PATH, "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["Report Time", now.isoformat()])
+        w.writerow(["Script Start Time", START_TIME.isoformat()])
         w.writerow([])
 
         for title, table in [("ENTRY SIDE", entry_table), ("EXIT SIDE", exit_table), ("ROUNDTRIP", rt_table)]:
