@@ -27,6 +27,7 @@ os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(REPORT_DIR, exist_ok=True)
 
 CSV_HEADER = ["timestamp","symbol","delay","env","side","slip_price","slip_100lot"]
+START_TIME = datetime.now(timezone.utc)
 
 def get_best_bid_ask(base_url):
     r = requests.get(f"{base_url}/v2/l2orderbook/{SYMBOL}", timeout=(3,10))
@@ -264,7 +265,7 @@ def build_html(now, entry_table, exit_table, rt_table, roll_entry, roll_exit, ro
     h2 {{ background:#2c3e50; color:white; padding:8px; }}
     h3.hs {{ background:#8b0000; color:white; padding:8px; }}
     </style></head><body>
-    <h2>Orderbook Report - {SYMBOL} - {now.isoformat()}</h2>
+    <h2>Orderbook Report - {SYMBOL} &nbsp;|&nbsp; Started: {START_TIME.strftime('%d-%b-%Y %H:%M UTC')} &nbsp;|&nbsp; Latest Update: {now.strftime('%d-%b-%Y %H:%M:%S UTC')}</h2>
 
     <h3>Entry Side</h3>
     <table><tr><th>Delay</th><th>T_SlipPrice</th><th>T_Slip$100lot</th><th>P_SlipPrice</th><th>P_Slip$100lot</th></tr>
