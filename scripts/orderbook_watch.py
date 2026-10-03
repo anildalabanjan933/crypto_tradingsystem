@@ -266,6 +266,13 @@ def build_html(now, entry_table, exit_table, rt_table, roll_entry, roll_exit, ro
     h3.hs {{ background:#8b0000; color:white; padding:10px 14px; border-radius:6px; }}
     </style></head><body>
     <h2>Orderbook Report - {SYMBOL} &nbsp;|&nbsp; Started: {START_TIME.strftime('%d-%b-%Y %H:%M UTC')} &nbsp;|&nbsp; Latest Update: {now.strftime('%d-%b-%Y %H:%M:%S UTC')}</h2>
+    <h3>Fast Checklist</h3>
+    <table><tr><th>Check</th><th>Status</th></tr>
+    <tr><td>Prod Roundtrip Slip @50s</td><td class='p'>${rt_table[-1][4]:.2f}/100lot</td></tr>
+    <tr><td>High Slip Events (this cycle)</td><td class='{"p" if len(latest_events)==0 else "t"}'>{len(latest_events)}</td></tr>
+    <tr><td>Overall</td><td class='{"p" if len(latest_events)==0 else "t"}'>{"OK" if len(latest_events)==0 else "CHECK"}</td></tr>
+    </table>
+
 
     <h3>Entry Side</h3>
     <table><tr><th>Delay</th><th>T_SlipPrice</th><th>T_Slip$100lot</th><th>P_SlipPrice</th><th>P_Slip$100lot</th></tr>
