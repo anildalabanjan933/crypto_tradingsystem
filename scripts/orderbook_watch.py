@@ -256,14 +256,14 @@ def build_html(now, entry_table, exit_table, rt_table, roll_entry, roll_exit, ro
 
     html = f"""
     <html><head><style>
-    body {{ background:white; font-family:Arial; color:#111; }}
-    table {{ border-collapse: collapse; margin-bottom:30px; width:100%; }}
-    th, td {{ border:1px solid #ccc; padding:6px 10px; text-align:center; }}
-    th {{ background:#2c3e50; color:white; }}
-    td.t {{ background:#fdf3d1; }}
-    td.p {{ background:#d4f0d4; }}
-    h2 {{ background:#2c3e50; color:white; padding:8px; }}
-    h3.hs {{ background:#8b0000; color:white; padding:8px; }}
+    body {{ background:#fafbfc; font-family:"Segoe UI",Arial,sans-serif; color:#1a1a2e; margin:20px; }}
+    table {{ border-collapse: collapse; margin-bottom:28px; width:100%; box-shadow:0 1px 4px rgba(0,0,0,0.1); border-radius:6px; overflow:hidden; }}
+    th, td {{ border:1px solid #e0e4e8; padding:8px 12px; text-align:center; font-size:13px; }}
+    th {{ background:#2c3e50; color:white; font-weight:600; }}
+    td.t {{ background:#fff8e1; color:#8a6d00; }}
+    td.p {{ background:#e8f8ec; color:#1a7a3d; }}
+    h2 {{ background:linear-gradient(90deg,#2c3e50,#34495e); color:white; padding:14px 18px; border-radius:6px; font-size:17px; }}
+    h3.hs {{ background:#8b0000; color:white; padding:10px 14px; border-radius:6px; }}
     </style></head><body>
     <h2>Orderbook Report - {SYMBOL} &nbsp;|&nbsp; Started: {START_TIME.strftime('%d-%b-%Y %H:%M UTC')} &nbsp;|&nbsp; Latest Update: {now.strftime('%d-%b-%Y %H:%M:%S UTC')}</h2>
 
