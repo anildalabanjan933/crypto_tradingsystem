@@ -257,8 +257,11 @@ def _pair_fills_local(fills):
     return _aggregate_partial_exits_local(pairs)
 
 def get_bt_rows(bot, date_str):
-    pattern = BT_CSV_PATTERN[bot]
-    files = sorted(glob.glob(os.path.join(PROJECT_ROOT, pattern)), reverse=True)
+    from dashboard.trade_audit_tab import _resolve_bt_csv_audit
+    _strat_label_map = {'s4': 'S4', 's4v2': 'S4V2', 's4v3': 'S4V3'}
+    _strat_label = _strat_label_map.get(bot, bot.upper())
+    _resolved = _resolve_bt_csv_audit(_strat_label)
+    files = [_resolved] if _resolved and os.path.exists(_resolved) else []
     if not files:
         return []
     dfs = []
@@ -285,7 +288,7 @@ def get_bt_rows(bot, date_str):
         _gap_min = (_dt.datetime.now(_dt.timezone.utc).replace(tzinfo=None) - _last_exit_raw).total_seconds() / 60.0
         if _gap_min > (_tf_f * 2):
             print(f"!! BT STALE for {bot.upper()} - last BT exit={_last_exit_raw} (raw), gap={_gap_min:.0f}min > {_tf_f*2}min threshold")
-            print(f"!! Re-run backtest to regenerate matching file(s) for pattern: {pattern}")
+            print(f"!! Re-run backtest to regenerate matching file(s) for path: {_resolved}")
             print("!! Comparison below may show false mismatches due to stale BT data.")
     entry_ist_date = (df['entry_datetime'] + _off_f + IST_OFFSET).dt.date
     exit_ist_date = (df['exit_datetime'] + _off_f + IST_OFFSET).dt.date
