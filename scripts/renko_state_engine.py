@@ -388,6 +388,7 @@ def _write_state_health(state):
     import json
     try:
         fname = f"logs/state_health_{state.label}.json"
+        tmp_fname = fname + ".tmp"
         payload = {
             "label": state.label,
             "current_direction": state.current_direction,
@@ -395,8 +396,9 @@ def _write_state_health(state):
             "mismatch_since": state._mismatch_since,
             "written_at": time.time(),
         }
-        with open(fname, "w") as f:
+        with open(tmp_fname, "w") as f:
             json.dump(payload, f)
+        os.replace(tmp_fname, fname)
     except Exception as _e:
         log.error(f"[{state.label}] Failed to write state_health file: {_e}")
 
