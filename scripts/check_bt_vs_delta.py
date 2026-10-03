@@ -283,13 +283,10 @@ def get_bt_rows(bot, date_str):
     _tf_f = 240 if bot == 's4v3' else (120 if bot == 's4' else 30)
     _off_f = timedelta(minutes=_tf_f)
     import datetime as _dt
-    _last_exit_raw = df['exit_datetime'].max()
-    if pd.notna(_last_exit_raw):
-        _gap_min = (_dt.datetime.now(_dt.timezone.utc).replace(tzinfo=None) - _last_exit_raw).total_seconds() / 60.0
-        if _gap_min > (_tf_f * 2):
-            print(f"!! BT STALE for {bot.upper()} - last BT exit={_last_exit_raw} (raw), gap={_gap_min:.0f}min > {_tf_f*2}min threshold")
-            print(f"!! Re-run backtest to regenerate matching file(s) for path: {_resolved}")
-            print("!! Comparison below may show false mismatches due to stale BT data.")
+    _file_age_min = (_dt.datetime.now(_dt.timezone.utc).timestamp() - os.path.getmtime(_resolved)) / 60.0
+    if _file_age_min > (_tf_f * 2):
+        print(f"!! BT STALE for {bot.upper()} - file not regenerated in {_file_age_min:.0f}min > {_tf_f*2}min threshold (file={_resolved})")
+        print("!! Comparison below may show false mismatches due to stale BT file.")
     entry_ist_date = (df['entry_datetime'] + _off_f + IST_OFFSET).dt.date
     exit_ist_date = (df['exit_datetime'] + _off_f + IST_OFFSET).dt.date
     df = df[(entry_ist_date == target) | (exit_ist_date == target)]
