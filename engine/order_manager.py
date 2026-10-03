@@ -442,8 +442,13 @@ class OrderManager:
         if _retry_state.get("first_failure_ts") and (_now_wall - _retry_state["first_failure_ts"]) > _STALE_STATE_SEC:
             logging.warning(f"[OrderManager] close_retry_state stale (>{_STALE_STATE_SEC}s old) - resetting as new incident")
             _retry_state = {}
+        if _retry_state.get("side") != side or _retry_state.get("size") != size:
+            logging.warning(f"[OrderManager] close_retry_state belongs to a different trade (saved side={_retry_state.get('side')} size={_retry_state.get('size')} vs this close side={side} size={size}) - resetting as new incident")
+            _retry_state = {}
         if not _retry_state.get("first_failure_ts"):
             _retry_state["first_failure_ts"] = _now_wall
+            _retry_state["side"] = side
+            _retry_state["size"] = size
             self._save_close_retry_state(_retry_state)
         _elapsed_total = _now_wall - _retry_state["first_failure_ts"]
 
