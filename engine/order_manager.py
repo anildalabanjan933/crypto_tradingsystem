@@ -341,8 +341,9 @@ class OrderManager:
             _filled   = size - _unfilled
 
             if _filled == 0:
-                logging.error(f"[OrderManager] ENTRY UNFILLED - price moved beyond $250 band | ref_price={_ref_price} limit={_limit_price}")
-                send_alert(f"CTS ENTRY UNFILLED\nSide: {side.upper()}\nRef price: ${_ref_price:,.1f}\nBand limit: ${_limit_price:,.1f}\nPrice moved beyond $250 band before fill - order skipped")
+                logging.error(f"[OrderManager] ENTRY UNFILLED - nothing filled within ${_band:.0f} band (attempt {attempt+1}) | ref_price={_ref_price} limit={_limit_price}")
+                self._log_book_on_miss(side, size, _ref_price, _limit_price, "ENTRY")
+                send_alert(f"CTS ENTRY UNFILLED\nSide: {side.upper()}\nRef price: ${_ref_price:,.1f}\nBand limit: ${_limit_price:,.1f}\nNo fill within ${_band:.0f} band (attempt {attempt+1}) - order skipped")
                 return {"success": False, "error": "unfilled_beyond_band", "order_id": result.get("id")}
 
             logging.info(f"[OrderManager] Order filled | id={result['id']} state={result['state']} filled={_filled}/{size}")
@@ -451,10 +452,12 @@ class OrderManager:
         _ESCALATED_MAX   = 500.0
         _TIME_CAP_SEC    = 60.0
         _LOSS_CAP_BAND   = 1000.0
-        _REST_POLL_SEC   = 2.0
-        _REST_POLLS      = 5
+        _REST_POLL_SEC   = 0.5
+        _REST_POLLS      = 20
 
+        _ZERO_FILL_PACE_SEC = 5.0   # spacing after a zero-fill IOC: gives the book time to refill; cap tier lands ~33s, not 9s
         for attempt in range(1, max_attempts + 1):
+            _zero_fill = False
             _now_wall = time.time()
             _elapsed_total = _now_wall - _retry_state["first_failure_ts"]
             _final_cap_active = _elapsed_total >= _TIME_CAP_SEC or attempt >= 7
@@ -575,7 +578,14 @@ class OrderManager:
                     result = resp["result"]
                     last_order_id = result["id"]
                     logging.info(f"[OrderManager] Close order placed | attempt={attempt} id={result['id']} state={result['state']}")
-                    _avg = self._get_avg_fill_price(result["id"])
+                    _unf_c = result.get("unfilled_size")
+                    _zero_fill = (result.get("state") == "cancelled" and _unf_c is not None and int(_unf_c) >= int(close_size))
+                    if _zero_fill:
+                        logging.warning(f"[OrderManager] Close attempt {attempt} IOC cancelled with ZERO fill (band=${_current_band:.0f}) - skipping fill lookup, escalating")
+                        self._log_book_on_miss(side, close_size, ref_price, limit_price, "CLOSE")
+                        _avg = 0.0
+                    else:
+                        _avg = self._get_avg_fill_price(result["id"])
                     if _avg:
                         last_avg_fill = float(_avg)
                         try:
@@ -585,14 +595,15 @@ class OrderManager:
                                 send_alert(f"CTS WARNING - Close fill deviated ${abs(last_avg_fill-_post_close_ref):.1f} from mark\nFill: ${last_avg_fill:,.1f}\nMark: ${_post_close_ref:,.1f}")
                         except Exception as _dce:
                             logging.warning(f"[OrderManager] Close-fill deviation check failed (non-critical): {_dce}")
-                    _comm = self._get_order_commission(result["id"])
-                    if _comm:
-                        last_commission += float(_comm)
+                    if not _zero_fill:
+                        _comm = self._get_order_commission(result["id"])
+                        if _comm:
+                            last_commission += float(_comm)
                 else:
                     logging.error(f"[OrderManager] Close order FAILED | attempt={attempt}/{max_attempts} | error={resp.get('error')}")
 
             if attempt < max_attempts:
-                time.sleep(retry_delay)
+                time.sleep(max(retry_delay, _ZERO_FILL_PACE_SEC) if _zero_fill else retry_delay)
 
         final_check = self.get_position()
         final_size = abs(final_check.get("size", 0)) if final_check.get("success") else None
@@ -659,6 +670,55 @@ class OrderManager:
             mark = result.get("mark_price") or result.get("close") or 0
             return float(mark) if mark else 0.0
         return 0.0
+
+    def _book_walk(self, side: str, size: float, depth: int = 20):
+        """Read-only L2 snapshot. side = ORDER side ('buy' consumes asks).
+        Returns dict or None on ANY problem (callers must treat None as unknown)."""
+        try:
+            resp = self._get(f"/v2/l2orderbook/{self.PRODUCT_SYMBOL}", {"depth": depth}, retries=1)
+            if not resp.get("success"):
+                return None
+            res = resp.get("result", {}) or {}
+            lv = res.get("sell" if side == "buy" else "buy", []) or []
+            lv = sorted(((float(l["price"]), float(l["size"])) for l in lv), reverse=(side == "sell"))
+            if not lv:
+                return {"best": None, "worst": None, "avg": None, "unfilled": float(size), "levels": 0}
+            rem, cost, worst = float(size), 0.0, None
+            for px, sz in lv:
+                take = min(sz, rem)
+                cost += px * take
+                rem -= take
+                worst = px
+                if rem <= 0:
+                    break
+            got = float(size) - rem
+            return {"best": lv[0][0], "worst": worst, "avg": (cost / got) if got > 0 else None,
+                    "unfilled": rem, "levels": len(lv)}
+        except Exception as _e:
+            logging.warning(f"[OrderManager] _book_walk failed (non-critical): {_e}")
+            return None
+
+    def _log_book_on_miss(self, side, size, ref_price, limit_price, tag):
+        """Diagnostic only - runs ONLY after an IOC miss, never on the fill path.
+        Never raises, never changes order behaviour."""
+        try:
+            b = self._book_walk(side, size)
+            if b is None:
+                logging.warning(f"[BOOK-MISS][{tag}] book unavailable | ref={ref_price} limit={limit_price}")
+                return
+            if b["best"] is None:
+                logging.warning(f"[BOOK-MISS][{tag}] opposite side of book EMPTY | ref={ref_price} limit={limit_price}")
+                return
+            sgn = 1.0 if side == "buy" else -1.0
+            d_best = (b["best"] - ref_price) * sgn
+            d_worst = (b["worst"] - ref_price) * sgn if b["worst"] is not None else None
+            logging.warning(
+                f"[BOOK-MISS][{tag}] side={side} size={size} ref={ref_price:.1f} limit={limit_price} "
+                f"best_touch={b['best']:.1f} (${d_best:+.0f} vs mark) "
+                f"walk_worst={b['worst']} (${d_worst if d_worst is None else round(d_worst)} vs mark) "
+                f"walk_avg={b['avg']} unfilled_in_top_levels={b['unfilled']:.0f} levels={b['levels']}")
+        except Exception as _e:
+            logging.warning(f"[BOOK-MISS][{tag}] logging failed (non-critical): {_e}")
 
     def cancel_all_orders(self) -> dict:
         """Cancel all open orders for BTCUSD."""
