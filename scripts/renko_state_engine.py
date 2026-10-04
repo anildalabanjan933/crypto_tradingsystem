@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+load_dotenv()
 import threading
 #!/usr/bin/env python3
 import os,sys,time,logging,glob,threading,json
