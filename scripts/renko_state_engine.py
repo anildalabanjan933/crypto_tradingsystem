@@ -717,6 +717,17 @@ def update_market_data():
     except Exception as e:
         log.error(f"[ENGINE] update error: {e}")
 
+_market_data_update_lock = threading.Lock()
+
+def _spawn_market_data_update():
+    if _market_data_update_lock.locked():
+        log.info("[ENGINE] Market data update already running - skip duplicate trigger")
+        return
+    def _run():
+        with _market_data_update_lock:
+            update_market_data()
+    threading.Thread(target=_run, daemon=True).start()
+
 if __name__=="__main__":
     log.info("[ENGINE] Renko State Engine starting - TradingView style")
     log.info("[ENGINE] Loads history ONCE - only new bricks checked - zero recalculation")
@@ -962,7 +973,7 @@ if __name__=="__main__":
                         log.warning(f"[WS] S4V3 boundary {_cur_s4v3} reconcile failed - NOT claimed, retrying next tick")
             # Background REST sync for CSV file persistence only - runs AFTER signals checked
             _ws_state["last_dl"]=time.time()
-            threading.Thread(target=update_market_data, daemon=True).start()
+            _spawn_market_data_update()
         except Exception as e:
             log.error(f"[WS] Message error: {e}")
 
@@ -974,7 +985,7 @@ if __name__=="__main__":
         _ws_last_heartbeat[0]=time.time()
         ws.send(json.dumps({"type":"enable_heartbeat"}))
         ws.send(json.dumps({"type":"subscribe","payload":{"channels":[{"name":"candlestick_1m","symbols":["BTCUSD"]}]}}))
-        threading.Thread(target=update_market_data, daemon=True).start()
+        _spawn_market_data_update()
 
     _ws_fail_count=[0]
     def _ws_thread():
