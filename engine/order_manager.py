@@ -439,7 +439,11 @@ class OrderManager:
         _retry_state = self._load_close_retry_state()
         _now_wall = time.time()
         _STALE_STATE_SEC = 6 * 3600
-        if _retry_state.get("first_failure_ts") and (_now_wall - _retry_state["first_failure_ts"]) > _STALE_STATE_SEC:
+        _IDLE_RESET_SEC = 600  # Bug3 fix: 10min gap since last actual close attempt means new incident
+        if _retry_state.get("last_attempt_ts") and (_now_wall - _retry_state["last_attempt_ts"]) > _IDLE_RESET_SEC:
+            logging.warning(f"[OrderManager] close_retry_state idle (>{_IDLE_RESET_SEC}s since last attempt) - resetting as new incident")
+            _retry_state = {}
+        elif _retry_state.get("first_failure_ts") and (_now_wall - _retry_state["first_failure_ts"]) > _STALE_STATE_SEC:
             logging.warning(f"[OrderManager] close_retry_state stale (>{_STALE_STATE_SEC}s old) - resetting as new incident")
             _retry_state = {}
         if _retry_state.get("side") != side or _retry_state.get("size") != size:
@@ -449,7 +453,8 @@ class OrderManager:
             _retry_state["first_failure_ts"] = _now_wall
             _retry_state["side"] = side
             _retry_state["size"] = size
-            self._save_close_retry_state(_retry_state)
+        _retry_state["last_attempt_ts"] = _now_wall
+        self._save_close_retry_state(_retry_state)
         _elapsed_total = _now_wall - _retry_state["first_failure_ts"]
 
         _BAND_STEP_SEC   = 15.0
@@ -464,6 +469,8 @@ class OrderManager:
         for attempt in range(1, max_attempts + 1):
             _zero_fill = False
             _now_wall = time.time()
+            _retry_state["last_attempt_ts"] = _now_wall
+            self._save_close_retry_state(_retry_state)
             _elapsed_total = _now_wall - _retry_state["first_failure_ts"]
             _final_cap_active = _elapsed_total >= _TIME_CAP_SEC or attempt >= 7
             if _final_cap_active:
