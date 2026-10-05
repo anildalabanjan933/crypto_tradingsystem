@@ -4,6 +4,7 @@ import csv, os, sys
 from datetime import datetime, timedelta
 sys.path.insert(0, os.path.expanduser("~/crypto_trading_system"))
 from engine.order_manager import OrderManager
+from scripts.cts_env import IS_TESTNET as _CTS_IS_TESTNET
 
 BOTS = {
     "S4":   ("logs/signals_s4.csv",   "S4_API_KEY",   "S4_API_SECRET",   120),
@@ -32,7 +33,7 @@ for name, (path, kkey, skey, tf) in BOTS.items():
     k = os.getenv(kkey); s = os.getenv(skey)
     if not k or not s:
         print(f"{name}: no API keys, skip"); continue
-    om = OrderManager(k, s, testnet=True)
+    om = OrderManager(k, s, testnet=_CTS_IS_TESTNET)
     pos = om.get_position()
     ex_dir = pos.get("direction", "FLAT")
     csv_dir = direction.upper()

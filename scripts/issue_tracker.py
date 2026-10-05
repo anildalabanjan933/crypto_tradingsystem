@@ -34,6 +34,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from engine.order_manager import OrderManager
+from scripts.cts_env import IS_TESTNET as _CTS_IS_TESTNET
+from scripts.cts_env import PRODUCT_ID as _CTS_PRODUCT_ID
 
 BOTS = ["S4", "S4V2", "S4V3"]
 
@@ -63,7 +65,7 @@ BT_CSV_PATTERN = {
     "S4V3":   "output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv",
 }
 
-PRODUCT_ID = 84
+PRODUCT_ID = _CTS_PRODUCT_ID   # resolved via CTS_ENV
 INR_RATE = 84.0
 CONTRACT_MULT = 100 * 0.001
 
@@ -533,7 +535,7 @@ def check_orphan_stuck_pending(bot):
     if not k or not s:
         return
     try:
-        om = OrderManager(k, s, testnet=True)
+        om = OrderManager(k, s, testnet=_CTS_IS_TESTNET)
         pos = om.get_position()
     except Exception as e:
         log.warning(f"[{bot}] orphan check get_position failed: {e}")

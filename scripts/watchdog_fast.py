@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from engine.order_manager import OrderManager
+from scripts.cts_env import IS_TESTNET as _CTS_IS_TESTNET
 from engine.telegram_alert import send_alert as _raw_send_alert
 
 _ALERT_COOLDOWN_SEC = 600
@@ -142,7 +143,7 @@ def _read_last_fill_row(fill_csv):
         return None
 
 def check_position_mismatch(bot):
-    om = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
+    om = OrderManager(bot["api_key"], bot["api_secret"], testnet=_CTS_IS_TESTNET)
     try:
         pos = call_with_timeout(om.get_position, API_TIMEOUT_SEC)
     except TimeoutException:

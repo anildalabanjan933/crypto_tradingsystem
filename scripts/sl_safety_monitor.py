@@ -18,6 +18,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from engine.order_manager import OrderManager
+from scripts.cts_env import IS_TESTNET as _CTS_IS_TESTNET
 from engine.telegram_alert import send_alert
 
 logging.basicConfig(
@@ -143,7 +144,7 @@ def check_stuck_pending(bot, csv_path):
                 _bg2_skip = False
                 try:
                     if _om_p1 is None:
-                        _om_p1 = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
+                        _om_p1 = OrderManager(bot["api_key"], bot["api_secret"], testnet=_CTS_IS_TESTNET)
                     _bg2_pos = _om_p1.get_position()
                     if not _bg2_pos.get("success") or _bg2_pos.get("size", 0) != 0:
                         _bg2_skip = True
@@ -170,7 +171,7 @@ def check_stuck_pending(bot, csv_path):
                 exit_ts, exit_price, source = None, None, None
                 try:
                     if _om_p1 is None:
-                        _om_p1 = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
+                        _om_p1 = OrderManager(bot["api_key"], bot["api_secret"], testnet=_CTS_IS_TESTNET)
                     direction = parts[2] if len(parts) > 2 else ""
                     if bot["name"] not in _TF_MIN_MAP:
                         log.warning(f"[{bot['name']}] PASS1 skip heal row {parts[0]}: no _bg2gap TF_MIN mapping")
@@ -250,7 +251,7 @@ def check_stuck_pending(bot, csv_path):
                 os.remove(flag_file)
             _stuck_candidates.pop(bot["name"], None)
             return
-        om = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
+        om = OrderManager(bot["api_key"], bot["api_secret"], testnet=_CTS_IS_TESTNET)
         pos = om.get_position()
         if not pos.get("success"):
             return
@@ -351,7 +352,7 @@ def _append_orphan_pending_row(csv_path, direction, entry_price, size):
 def check_orphan_position(bot, csv_path):
     flag_file = f"logs/orphan_flag_{bot['name']}.txt"
     try:
-        om = OrderManager(bot['api_key'], bot['api_secret'], testnet=True)
+        om = OrderManager(bot['api_key'], bot['api_secret'], testnet=_CTS_IS_TESTNET)
         pos = om.get_position()
         if not pos.get('success'):
             return
@@ -408,7 +409,7 @@ def check_extra_risks(bot, csv_path):
     """Isolated checks: API auth failure streak, low balance, size/direction mismatch.
     Read-only + own API calls - does not touch other logic."""
     try:
-        om = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
+        om = OrderManager(bot["api_key"], bot["api_secret"], testnet=_CTS_IS_TESTNET)
         pos = om.get_position()
 
         # 1. API/auth failure streak
@@ -482,7 +483,7 @@ def check_extra_risks(bot, csv_path):
         log.error(f"[{bot['name']}] check_extra_risks failed: {e}")
 
 def check_bot(bot):
-    om = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
+    om = OrderManager(bot["api_key"], bot["api_secret"], testnet=_CTS_IS_TESTNET)
     pos = om.get_position()
     if not pos.get("success"):
         log.warning(f"[{bot['name']}] Could not fetch position: {pos}")
