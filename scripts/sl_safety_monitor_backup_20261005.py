@@ -18,9 +18,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from engine.order_manager import OrderManager
-from scripts.cts_env import IS_TESTNET as _CTS_IS_TESTNET
 from engine.telegram_alert import send_alert
-from scripts.signal_patch_queue import propose as _propose
 
 logging.basicConfig(
     level=logging.INFO,
@@ -138,7 +136,6 @@ def check_stuck_pending(bot, csv_path):
         _om_p1 = None
         healed_sources = []
         healed_rows = {}
-        healed_ops = []
         for i in range(len(rows) - 1):
             parts = rows[i].strip().split(",")
             if len(parts) >= 2 and parts[1] == "PENDING":
@@ -146,7 +143,7 @@ def check_stuck_pending(bot, csv_path):
                 _bg2_skip = False
                 try:
                     if _om_p1 is None:
-                        _om_p1 = OrderManager(bot["api_key"], bot["api_secret"], testnet=_CTS_IS_TESTNET)
+                        _om_p1 = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
                     _bg2_pos = _om_p1.get_position()
                     if not _bg2_pos.get("success") or _bg2_pos.get("size", 0) != 0:
                         _bg2_skip = True
@@ -173,7 +170,7 @@ def check_stuck_pending(bot, csv_path):
                 exit_ts, exit_price, source = None, None, None
                 try:
                     if _om_p1 is None:
-                        _om_p1 = OrderManager(bot["api_key"], bot["api_secret"], testnet=_CTS_IS_TESTNET)
+                        _om_p1 = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
                     direction = parts[2] if len(parts) > 2 else ""
                     if bot["name"] not in _TF_MIN_MAP:
                         log.warning(f"[{bot['name']}] PASS1 skip heal row {parts[0]}: no _bg2gap TF_MIN mapping")
@@ -212,7 +209,6 @@ def check_stuck_pending(bot, csv_path):
                 changed = True
                 healed_sources.append(source)
                 healed_rows[parts[0]] = rows[i]
-                healed_ops.append({"op": "close_row", "entry_ts": parts[0], "exit_ts": exit_ts, "exit_price": exit_price})
                 log.critical(f"[{bot['name']}] BACKLOG STUCK PENDING auto-healed ({source}) | entry={parts[0]} exit_ts={exit_ts} exit_price={exit_price}")
 
         if changed:
@@ -234,15 +230,15 @@ def check_stuck_pending(bot, csv_path):
                             _p = _ln.strip().split(",")
                             if len(_p) > 1 and _p[0] in healed_rows and _p[1] == "PENDING":
                                 fresh_rows[_j] = healed_rows[_p[0]]
-                        for _op in healed_ops:
-                            _propose(csv_path, _op)  # BUG8: propose-only
+                        with open(csv_path, "w") as cf3:
+                            cf3.writelines(fresh_rows)
                     finally:
                         fcntl.flock(lf, fcntl.LOCK_UN)
                         lf.close()
                     if changed:
                         real_count = healed_sources.count("real_fill_lookup")
                         fallback_count = healed_sources.count("fallback_next_row_copy")
-                        send_alert(f"CTS {bot['name']} BACKLOG CSV CLEANUP - proposed close of stale PENDING row(s) (engine applies them) (real exchange fill used: {real_count}, next-row fallback used: {fallback_count}). This is routine CSV bookkeeping on old superseded rows, NOT a live trading stall. No action needed.")
+                        send_alert(f"CTS {bot['name']} BACKLOG CSV CLEANUP - closed stale PENDING row(s) in log file (real exchange fill used: {real_count}, next-row fallback used: {fallback_count}). This is routine CSV bookkeeping on old superseded rows, NOT a live trading stall. No action needed.")
                     break
                 except Exception:
                     time.sleep(2)
@@ -254,7 +250,7 @@ def check_stuck_pending(bot, csv_path):
                 os.remove(flag_file)
             _stuck_candidates.pop(bot["name"], None)
             return
-        om = OrderManager(bot["api_key"], bot["api_secret"], testnet=_CTS_IS_TESTNET)
+        om = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
         pos = om.get_position()
         if not pos.get("success"):
             return
@@ -301,7 +297,13 @@ def check_stuck_pending(bot, csv_path):
                             with open(csv_path) as cf2:
                                 all_rows = cf2.readlines()
                             if all_rows and all_rows[-1].strip().split(",")[1] == "PENDING":
-                                _propose(csv_path, {"op": "close_row", "entry_ts": last[0], "exit_ts": exit_ts, "exit_price": exit_price})  # BUG8
+                                fixed = all_rows[-1].strip().split(",")
+                                fixed[1] = exit_ts
+                                if len(fixed) >= 6:
+                                    fixed[5] = str(exit_price)
+                                all_rows[-1] = ",".join(fixed) + "\n"
+                                with open(csv_path, "w") as cf3:
+                                    cf3.writelines(all_rows)
                             healed = True
                         finally:
                             fcntl.flock(lf, fcntl.LOCK_UN)
@@ -333,14 +335,23 @@ def _now_utc_str():
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
 
 def _append_orphan_pending_row(csv_path, direction, entry_price, size):
-    entry_ts = _now_utc_str()
-    _propose(csv_path, {"op": "append_pending", "entry_ts": entry_ts, "direction": direction, "size": size, "entry_price": entry_price})  # BUG8
-    return entry_ts
+    lock_path = csv_path + ".lock"
+    lf = open(lock_path, "a")
+    fcntl.flock(lf, fcntl.LOCK_EX)
+    try:
+        entry_ts = _now_utc_str()
+        with open(csv_path, "a", newline="") as f:
+            w = _csv_mod.writer(f)
+            w.writerow([entry_ts, "PENDING", direction, size, entry_price, ""])
+        return entry_ts
+    finally:
+        fcntl.flock(lf, fcntl.LOCK_UN)
+        lf.close()
 
 def check_orphan_position(bot, csv_path):
     flag_file = f"logs/orphan_flag_{bot['name']}.txt"
     try:
-        om = OrderManager(bot['api_key'], bot['api_secret'], testnet=_CTS_IS_TESTNET)
+        om = OrderManager(bot['api_key'], bot['api_secret'], testnet=True)
         pos = om.get_position()
         if not pos.get('success'):
             return
@@ -397,7 +408,7 @@ def check_extra_risks(bot, csv_path):
     """Isolated checks: API auth failure streak, low balance, size/direction mismatch.
     Read-only + own API calls - does not touch other logic."""
     try:
-        om = OrderManager(bot["api_key"], bot["api_secret"], testnet=_CTS_IS_TESTNET)
+        om = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
         pos = om.get_position()
 
         # 1. API/auth failure streak
@@ -471,7 +482,7 @@ def check_extra_risks(bot, csv_path):
         log.error(f"[{bot['name']}] check_extra_risks failed: {e}")
 
 def check_bot(bot):
-    om = OrderManager(bot["api_key"], bot["api_secret"], testnet=_CTS_IS_TESTNET)
+    om = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
     pos = om.get_position()
     if not pos.get("success"):
         log.warning(f"[{bot['name']}] Could not fetch position: {pos}")

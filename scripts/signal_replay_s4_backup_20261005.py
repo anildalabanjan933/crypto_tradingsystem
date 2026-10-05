@@ -6,7 +6,6 @@ Places orders when current UTC time matches signal entry/exit time.
 Zero Renko recalculation. 100% match with backtest guaranteed.
 """
 import os
-from scripts.cts_env import LOT_SIZE as _CTS_LOT_SIZE, IS_TESTNET as _CTS_IS_TESTNET, BASE_URL as _CTS_BASE_URL, PRODUCT_ID as _CTS_PRODUCT_ID
 try:
     import subprocess as _sp_ver
     _commit = _sp_ver.check_output(["git","log","-1","--format=%H","--","scripts/signal_replay_s4.py"], cwd="/home/anildalabanjan7/crypto_tradingsystem").decode().strip()
@@ -209,7 +208,7 @@ def _send_live_entry_alert(label, direction, entry_ts, fill_price, sl_price, lot
     pass  # PHASE-A: neutered, round-trip-only message
 # --- Config ---
 SYMBOL       = "BTCUSD"
-LOT_SIZE     = _CTS_LOT_SIZE   # resolved via CTS_ENV
+LOT_SIZE     = 100
 SIGNAL_CSV   = "logs/signals_s4.csv"
 TS_FILE      = "logs/last_known_ts_s4.txt"
 BASELINE_FILE= "logs/valid_from_baseline.txt"
@@ -231,7 +230,7 @@ log = logging.getLogger(__name__)
 # --- Order Manager ---
 API_KEY    = os.getenv("S4_API_KEY", "")
 API_SECRET = os.getenv("S4_API_SECRET", "")
-om = OrderManager(API_KEY, API_SECRET, testnet=_CTS_IS_TESTNET)
+om = OrderManager(API_KEY, API_SECRET, testnet=True)
 
 TS_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$")
 
@@ -503,10 +502,10 @@ log.info("[STARTUP] Entering main loop. Checking every 10 seconds.")
 # Validate API key on startup
 try:
     import requests as _rq_val, time as _t_val, hmac as _hm_val, hashlib as _hs_val
-    _base_val = _CTS_BASE_URL
+    _base_val = "https://cdn-ind.testnet.deltaex.org"  # testnet
     _ts_val = str(int(_t_val.time()))
     _path_val = "/v2/orders"
-    _qs_val = f"?product_id={_CTS_PRODUCT_ID}&state=open"
+    _qs_val = "?product_id=27&state=open"
     _msg_val = f"GET{_ts_val}{_path_val}{_qs_val}"
     _sig_val = _hm_val.new(API_SECRET.encode(), _msg_val.encode(), _hs_val.sha256).hexdigest()
     _hdrs_val = {"api-key": API_KEY, "timestamp": _ts_val, "signature": _sig_val}

@@ -58,6 +58,12 @@ def run_backtest(strategy_class, params, label):
             strategy_params=params,
             slippage=5.0
         )
+        _orig_aggregate = engine._aggregate_timeframes
+        def _trimmed_aggregate():
+            _orig_aggregate()
+            for _tf in engine.data_dict:
+                engine.data_dict[_tf] = engine.data_dict[_tf].iloc[-800:].reset_index()
+        engine._aggregate_timeframes = _trimmed_aggregate
         result = engine.run()
     trades = result.get("trades", [])
     log.info(f"[GENERATE] {label}: {len(trades)} trades generated")
@@ -216,15 +222,6 @@ def write_signal_csv(trades, out_path):
         f.write(new_content)
     os.replace(_tmp_path, out_path)
     log.info(f"[GENERATE] Written (_atomic_write): {out_path} ({len(trades)} rows)")
-
-# BUG8: propose-only - engine is the sole signals_*.csv writer
-def write_signal_csv(*_a, **_k):
-    from scripts.signal_patch_queue import propose_diff
-    return propose_diff(_a[1], _a[0])
-
-def _bg3gap1_locked_merge_write(*_a, **_k):
-    from scripts.signal_patch_queue import propose_diff
-    return propose_diff(_a[1], _a[0])
 
 if __name__ == "__main__":
     _skip_live = "--skip-live-signals" in sys.argv
