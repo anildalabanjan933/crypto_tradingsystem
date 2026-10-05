@@ -1004,15 +1004,6 @@ if __name__=="__main__":
                     log.error(f"[WS] Force close failed: {e}")
                 _ws_last_heartbeat[0]=time.time()
 
-    if WS_AVAILABLE:
-        _t=threading.Thread(target=_ws_thread,daemon=True)
-        _t.start()
-        _t_hb=threading.Thread(target=_ws_heartbeat_watchdog,daemon=True)
-        _t_hb.start()
-        log.info("[ENGINE] WebSocket thread + heartbeat watchdog started")
-    else:
-        log.warning("[ENGINE] websocket-client not installed - polling only")
-
     import pandas as _pd2
     from datetime import datetime as _dt2,timezone as _tz2
 
@@ -1051,6 +1042,15 @@ if __name__=="__main__":
             _ws_state["last_dl"] = _now_dl
             return True
         return False
+    if WS_AVAILABLE:
+        _t=threading.Thread(target=_ws_thread,daemon=True)
+        _t.start()
+        _t_hb=threading.Thread(target=_ws_heartbeat_watchdog,daemon=True)
+        _t_hb.start()
+        log.info("[ENGINE] WebSocket thread + heartbeat watchdog started")
+    else:
+        log.warning("[ENGINE] websocket-client not installed - polling only")
+
     # Startup check - fires only if current time is at 1H/2H boundary
     check_and_fire(s4,is_s4=True)
     check_and_fire(s4v2,is_s4=False)
