@@ -6,6 +6,7 @@ Places orders when current UTC time matches signal entry/exit time.
 Zero Renko recalculation. 100% match with backtest guaranteed.
 """
 import os
+from scripts.cts_env import LOT_SIZE as _CTS_LOT_SIZE, IS_TESTNET as _CTS_IS_TESTNET
 try:
     import subprocess as _sp_ver
     _commit = _sp_ver.check_output(["git","log","-1","--format=%H","--","scripts/signal_replay_s4.py"], cwd="/home/anildalabanjan7/crypto_tradingsystem").decode().strip()
@@ -208,7 +209,7 @@ def _send_live_entry_alert(label, direction, entry_ts, fill_price, sl_price, lot
     pass  # PHASE-A: neutered, round-trip-only message
 # --- Config ---
 SYMBOL       = "BTCUSD"
-LOT_SIZE     = 100
+LOT_SIZE     = _CTS_LOT_SIZE   # resolved via CTS_ENV
 SIGNAL_CSV   = "logs/signals_s4.csv"
 TS_FILE      = "logs/last_known_ts_s4.txt"
 BASELINE_FILE= "logs/valid_from_baseline.txt"
@@ -230,7 +231,7 @@ log = logging.getLogger(__name__)
 # --- Order Manager ---
 API_KEY    = os.getenv("S4_API_KEY", "")
 API_SECRET = os.getenv("S4_API_SECRET", "")
-om = OrderManager(API_KEY, API_SECRET, testnet=True)
+om = OrderManager(API_KEY, API_SECRET, testnet=_CTS_IS_TESTNET)
 
 TS_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$")
 

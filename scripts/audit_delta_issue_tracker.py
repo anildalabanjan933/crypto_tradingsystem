@@ -2,6 +2,7 @@ import csv
 import sys
 from collections import defaultdict
 from datetime import datetime
+from scripts.cts_env import PRODUCT_ID as _CTS_PRODUCT_ID
 
 sys.path.insert(0, ".")
 import dashboard.trade_audit_tab as tat  # noqa: E402
@@ -11,7 +12,7 @@ CSV_FILES = {
     "S4V2": "/home/anildalabanjan933/Delta-TransactionLog-OrderHistory (12).csv",
 }
 
-PRODUCT_ID = 84
+PRODUCT_ID = _CTS_PRODUCT_ID   # resolved via CTS_ENV
 LOOKBACK_HOURS = 24 * 30 + 24
 DIFF_TOLERANCE_USD = 1.0
 TOP_N_RESIDUALS = 15

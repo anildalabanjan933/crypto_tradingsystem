@@ -30,6 +30,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from engine.order_manager import OrderManager
+from scripts.cts_env import IS_TESTNET as _CTS_IS_TESTNET
 from engine.telegram_alert import send_alert
 
 logging.basicConfig(
@@ -78,7 +79,7 @@ def _timeout_handler(signum, frame):
 
 
 def check_bot(bot):
-    om = OrderManager(bot["api_key"], bot["api_secret"], testnet=True)
+    om = OrderManager(bot["api_key"], bot["api_secret"], testnet=_CTS_IS_TESTNET)
 
     pos_resp = om._get("/v2/positions/margined", {"product_ids": str(om.PRODUCT_ID)})
     if not pos_resp.get("success"):

@@ -12,6 +12,7 @@ import logging
 import os
 import fcntl
 from engine.telegram_alert import send_alert
+from scripts.cts_env import PRODUCT_ID as _CTS_PRODUCT_ID, IS_TESTNET as _CTS_IS_TESTNET
 from datetime import datetime
 
 
@@ -28,13 +29,13 @@ class OrderManager:
     """
 
     PRODUCT_SYMBOL = "BTCUSD"
-    PRODUCT_ID     = 84          # BTCUSD perpetual on Delta Exchange Testnet
+    PRODUCT_ID     = _CTS_PRODUCT_ID   # resolved via CTS_ENV (scripts/cts_env.py)
     _ENTRY_BAND_TIERS = [250.0, 250.0, 500.0, 500.0, 750.0]
     _ALERT_COOLDOWN_SEC = 300  # 5 min - prevents Telegram flood on repeated API failures
     _ALERT_STATE_FILE = "logs/api_fail_alert_state.json"
     _alert_file_lock = threading.Lock()
 
-    def __init__(self, api_key: str, api_secret: str, testnet: bool = True):
+    def __init__(self, api_key: str, api_secret: str, testnet: bool = _CTS_IS_TESTNET):
         """
         Parameters
         ----------

@@ -33,6 +33,7 @@ load_dotenv()
 
 import websocket
 from engine.order_manager import OrderManager
+from scripts.cts_env import IS_TESTNET as _CTS_IS_TESTNET
 from engine.telegram_alert import send_alert
 
 WS_URL = "wss://public-socket.india.delta.exchange"
@@ -98,7 +99,7 @@ def close_all_positions(trigger_reason):
             log.warning(f"[MaintenanceWatcher] {name} skipped - API key/secret not provisioned")
             continue
         try:
-            om = OrderManager(key, secret, testnet=True)
+            om = OrderManager(key, secret, testnet=_CTS_IS_TESTNET)
             pos = om.get_position()
             if not pos.get("success"):
                 log.error(f"[MaintenanceWatcher] {name} get_position failed: {pos.get('error')}")
@@ -168,7 +169,7 @@ def handle_maintenance_finished():
             price = None
             try:
                 if probe_key and probe_secret:
-                    om = OrderManager(probe_key, probe_secret, testnet=True)
+                    om = OrderManager(probe_key, probe_secret, testnet=_CTS_IS_TESTNET)
                     price = om.get_current_price()
             except Exception as e:
                 log.warning(f"[MaintenanceWatcher] Resume check exception: {e}")

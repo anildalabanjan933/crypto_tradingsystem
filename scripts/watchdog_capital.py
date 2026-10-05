@@ -29,8 +29,9 @@ except Exception:
     send_alert = None
 
 # ------------------------------ CONFIG ------------------------------
-BASE = "https://cdn-ind.testnet.deltaex.org"      # testnet, same as the rest of CTS
-PRODUCT_ID = 84                                   # testnet BTCUSD
+from scripts.cts_env import BASE_URL as _CTS_BASE_URL, PRODUCT_ID as _CTS_PRODUCT_ID
+BASE = _CTS_BASE_URL                               # resolved via CTS_ENV
+PRODUCT_ID = _CTS_PRODUCT_ID                      # resolved via CTS_ENV
 SYMBOL = "BTCUSD"
 POLL_SEC = 30
 BOTS = {  # tf = candle minutes; sig = live signals CSV (bar-OPEN timestamps)
