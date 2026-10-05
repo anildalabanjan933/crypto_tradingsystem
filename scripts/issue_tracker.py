@@ -676,7 +676,10 @@ def process_bot(bot, from_date, to_date, existing_rows):
         flip_damage = round(entry_slip + exit_slip, 2) if flip_yn == "Y" else 0.0
 
         verdict = build_verdict(system_flag, close_escalation_yn, missed_yn, flip_yn, flip_damage)
-        repeat_count = 1 + sum(1 for k, v in existing_rows.items() if v.get("bot") == bot and v.get("system_side_flag") == system_flag and k[1] != str(entry_ts))
+        if system_flag:
+            repeat_count = 1 + sum(1 for k, v in existing_rows.items() if v.get("bot") == bot and v.get("system_side_flag") == system_flag and k[1] != str(entry_ts))
+        else:
+            repeat_count = 1  # BUGFIX 05-Oct-2026: empty system_flag matched every other empty-flag row, inflating repeat_count to 269+ on MARKET-SIDE rows
 
         row = {
             "date": str(entry_ts)[:10], "bot": bot, "entry_ts": entry_ts, "exit_ts": exit_ts,
