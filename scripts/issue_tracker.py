@@ -36,6 +36,7 @@ load_dotenv()
 from engine.order_manager import OrderManager
 from scripts.cts_env import IS_TESTNET as _CTS_IS_TESTNET
 from scripts.cts_env import PRODUCT_ID as _CTS_PRODUCT_ID
+from scripts.cts_env import BASE_URL as _CTS_BASE_URL
 
 BOTS = ["S4", "S4V2", "S4V3"]
 
@@ -258,7 +259,7 @@ def fetch_fills(bot, window_hours=48):
     if not k or not s:
         return []
 
-    base = "https://cdn-ind.testnet.deltaex.org"
+    base = _CTS_BASE_URL
     path = "/v2/fills"
     start = int((now - window_hours * 3600) * 1e6)
     end = int((now + 300) * 1e6)

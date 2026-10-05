@@ -708,6 +708,77 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
 
 
 
+def _apply_pending_patches(state):
+    """BUG8: sole applier of proposed signals-CSV edits (sl_safety_monitor / generate_signals only PROPOSE)."""
+    import json as _j, csv as _c, os as _o, fcntl as _f
+    lab = {"S4": "s4", "S4V2": "s4v2", "S4V3": "s4v3"}.get(state.label)
+    if not lab:
+        return
+    q = f"logs/pending_patch_{lab}.jsonl"
+    try:
+        if not _o.path.exists(q) or _o.path.getsize(q) == 0:
+            return
+        ql = open(q + ".lock", "a"); _f.flock(ql.fileno(), _f.LOCK_EX)
+        try:
+            with open(q) as _fh:
+                lines = _fh.read().splitlines()
+            open(q, "w").close()
+        finally:
+            _f.flock(ql.fileno(), _f.LOCK_UN); ql.close()
+        ops = []
+        for ln in lines:
+            try: ops.append(_j.loads(ln))
+            except Exception: log.warning(f"[{state.label}] PATCH bad line skipped: {ln[:80]}")
+        if not ops:
+            return
+        sig_csv = f"logs/signals_{lab}.csv"
+        cl = open(sig_csv + ".lock", "a"); _f.flock(cl.fileno(), _f.LOCK_EX)
+        try:
+            rows = []
+            if _o.path.exists(sig_csv):
+                with open(sig_csv) as _fh:
+                    rows = list(_c.reader(_fh))
+            changed = False
+            now_iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S")
+            for op in ops:
+                kind = op.get("op")
+                if kind == "close_row":
+                    for r in rows:
+                        if len(r) >= 2 and r[0] == op["entry_ts"] and r[1] == "PENDING":
+                            while len(r) < 6: r.append("")
+                            r[1] = op["exit_ts"]; r[5] = round(float(op["exit_price"]), 2)
+                            changed = True; log.info(f"[{state.label}] PATCH applied close_row entry={op['entry_ts']} exit={op['exit_ts']}")
+                            break
+                    else:
+                        log.info(f"[{state.label}] PATCH close_row skipped (no matching PENDING) entry={op.get('entry_ts')}")
+                elif kind == "append_pending":
+                    dup = any(r and r[0] == op["entry_ts"] for r in rows)
+                    open_last = bool(rows) and len(rows[-1]) >= 2 and rows[-1][1] == "PENDING"
+                    if dup or open_last:
+                        log.info(f"[{state.label}] PATCH append_pending skipped (dup={dup} open_last={open_last})")
+                    else:
+                        rows.append([op["entry_ts"], "PENDING", op["direction"], op["size"], round(float(op["entry_price"]), 2), ""])
+                        changed = True; log.info(f"[{state.label}] PATCH applied append_pending entry={op['entry_ts']}")
+                elif kind == "append_closed":
+                    have = {r[0] for r in rows if r}
+                    mx = max([r[0].replace(" ", "T") for r in rows if r] or [""])
+                    for nr in op.get("rows", []):
+                        k0 = str(nr[0]).replace(" ", "T")
+                        if len(nr) >= 6 and nr[1] not in ("", "PENDING") and nr[0] not in have and k0 > mx and str(nr[1]).replace(" ", "T") <= now_iso:
+                            rows.append(nr); changed = True; log.info(f"[{state.label}] PATCH applied append_closed entry={nr[0]}")
+                else:
+                    log.warning(f"[{state.label}] PATCH unknown op skipped: {op}")
+            if changed:
+                tmp = sig_csv + ".tmp"
+                with open(tmp, "w", newline="") as _fh:
+                    _w = _c.writer(_fh)
+                    for r in rows: _w.writerow(r)
+                _o.replace(tmp, sig_csv)
+        finally:
+            _f.flock(cl.fileno(), _f.LOCK_UN); cl.close()
+    except Exception as _e:
+        log.error(f"[{state.label}] apply_pending_patches failed: {_e}", exc_info=True)
+
 def update_market_data():
     import io,contextlib
     from data.download_market_data import download_or_update
@@ -1133,6 +1204,8 @@ if __name__=="__main__":
                         log.info(f"[ENGINE] Boundary watcher trigger {_cfg['state'].label}: {_t_raw} - checking (independent retry, decoupled from WS claim)")
                         threading.Thread(target=_run_boundary_trigger,args=(_cfg,_t_dt),daemon=True).start()
 
+            for _pst in (s4, s4v2, s4v3):
+                _apply_pending_patches(_pst)
             touch_signal_file("S2")
             touch_signal_file("S4")
             touch_signal_file("S4V2")

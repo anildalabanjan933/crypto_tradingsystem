@@ -217,6 +217,15 @@ def write_signal_csv(trades, out_path):
     os.replace(_tmp_path, out_path)
     log.info(f"[GENERATE] Written (_atomic_write): {out_path} ({len(trades)} rows)")
 
+# BUG8: propose-only - engine is the sole signals_*.csv writer
+def write_signal_csv(*_a, **_k):
+    from scripts.signal_patch_queue import propose_diff
+    return propose_diff(_a[1], _a[0])
+
+def _bg3gap1_locked_merge_write(*_a, **_k):
+    from scripts.signal_patch_queue import propose_diff
+    return propose_diff(_a[1], _a[0])
+
 if __name__ == "__main__":
     _skip_live = "--skip-live-signals" in sys.argv
     update_csv()

@@ -77,7 +77,7 @@ def log_event(bot_name, check_class, detail):
     now = now_dt.isoformat()
     now_ts = now_dt.timestamp()
 
-    key = (bot_name, check_class)
+    key = (bot_name, check_class, str(detail)[:120])
     state = _log_dedup_state.get(key)
     if state and (now_ts - state["last_write_ts"]) < _DEDUP_WINDOW_SEC:
         state["count"] += 1

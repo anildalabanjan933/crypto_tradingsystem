@@ -68,7 +68,7 @@ def main():
     df["timestamp"] = pd.to_datetime(df["Date"] + " " + df["Time"])
     df = df.sort_values("timestamp").reset_index(drop=True)
     df_tf = resample_to_tf(df, tf).iloc[:-1].reset_index(drop=True)  # drop last (possibly partial) bar
-    ref = float(df_tf["close"].iloc[0]) if tfm is not None else None
+    ref = float(df_tf["close"].iloc[0])
     print(f"[{a.bot}] bars={len(df_tf)} ref_price={ref} tf={tf}")
 
     t0 = time.time()

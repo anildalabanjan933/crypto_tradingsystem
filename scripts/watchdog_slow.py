@@ -37,7 +37,7 @@ def ensure_csv_header():
 MAX_LOG_SIZE = 20 * 1024 * 1024
 
 _log_dedup_state = {}  # (bot_name, check_class) -> {"first_ts": float, "count": int, "last_write_ts": float}
-_DEDUP_WINDOW_SEC = 300  # fold repeats of same signature into one row per 5min
+_DEDUP_WINDOW_SEC = 1800  # BUG3: must exceed POLL_SECONDS(300) or nothing is ever suppressed
 
 def log_event(bot_name, check_class, detail):
     if os.path.exists(OUT_CSV) and os.path.getsize(OUT_CSV) > MAX_LOG_SIZE:
@@ -46,7 +46,7 @@ def log_event(bot_name, check_class, detail):
     now = now_dt.isoformat()
     now_ts = now_dt.timestamp()
 
-    key = (bot_name, check_class)
+    key = (bot_name, check_class, str(detail)[:120])
     state = _log_dedup_state.get(key)
     if state and (now_ts - state["last_write_ts"]) < _DEDUP_WINDOW_SEC:
         state["count"] += 1
@@ -193,8 +193,9 @@ def check_clock_drift():
 import requests, hashlib, hmac
 
 EXPECTED_LEVERAGE = {"S4": 4, "S4V2": 4, "S4V3": 4}
-PRODUCT_ID_MAP = {"S4": 84, "S4V2": 84, "S4V3": 84}
-TESTNET_BASE_URL = "https://cdn-ind.testnet.deltaex.org"
+from scripts.cts_env import PRODUCT_ID as _CTS_PRODUCT_ID, BASE_URL as _CTS_BASE_URL
+PRODUCT_ID_MAP = {"S4": _CTS_PRODUCT_ID, "S4V2": _CTS_PRODUCT_ID, "S4V3": _CTS_PRODUCT_ID}
+TESTNET_BASE_URL = _CTS_BASE_URL  # name kept for minimal diff; now CTS_ENV-driven
 PORTFOLIO_MODE_BOTS = {"S4V3"}  # accounts on Portfolio margin mode - fixed leverage check not applicable
 
 def _gen_sig(secret, message):

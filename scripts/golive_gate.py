@@ -22,6 +22,10 @@ CRITICAL_FILES = [
     "scripts/signal_replay_s4v2.py",
     "scripts/signal_replay_s4v3.py",
     "scripts/sl_safety_monitor.py",
+    "scripts/cts_env.py",
+    "scripts/position_risk_monitor.py",
+    "bot_watchdog.sh",
+    "scripts/watchdog_capital.py",
 ]
 WINDOW_DAYS = 14
 RESULTS = []
@@ -71,9 +75,12 @@ def main():
     if baseline:
         for r in tracker_rows:
             try:
-                row_date = datetime.strptime(r.get("date", ""), "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                row_date = datetime.fromisoformat(str(r.get("entry_ts", "")).replace("T", " ").split(".")[0]).replace(tzinfo=timezone.utc)
             except Exception:
-                continue
+                try:
+                    row_date = datetime.strptime(r.get("date", ""), "%Y-%m-%d").replace(tzinfo=timezone.utc) + timedelta(hours=23, minutes=59)
+                except Exception:
+                    continue
             if row_date >= baseline and r.get("verdict") in ("SYSTEM-SIDE", "UNEXPLAINED"):
                 bad_verdicts.append(r)
     record("a_bug_log", len(bad_verdicts) == 0,
@@ -138,9 +145,13 @@ def main():
     if os.path.exists(drills_path):
         with open(drills_path) as f:
             drills = json.load(f)
+        REQUIRED_DRILLS = ["sl_delete_autoplace", "sl_placement_fail_emergency_close", "auto_resync",
+                           "manual_flatten_all", "watchdog_capital_slippage_alert",
+                           "tier1_speed_autoclose", "tier2_liqdist_autoclose"]
         failed_drills = [k for k, v in drills.items() if not v.get("passed")]
-        record("g_protection_drills", len(failed_drills) == 0,
-               f"{len(drills)} drills checked, failed/pending: {failed_drills}")
+        missing_drills = [k for k in REQUIRED_DRILLS if k not in drills]
+        record("g_protection_drills", not failed_drills and not missing_drills,
+               f"{len(drills)} drills logged, missing={missing_drills} failed={failed_drills}")
     else:
         record("g_protection_drills", False, "logs/drills.json not found")
 
