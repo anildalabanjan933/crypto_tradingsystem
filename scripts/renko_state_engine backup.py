@@ -934,24 +934,43 @@ if __name__=="__main__":
             # Completed candle detected instantly via WebSocket - use live data directly, zero REST wait
             log.info(f"[WS] Completed candle detected - fast in-memory update (no REST wait)")
             try:
-                for _cfg in _BOT_CFG:
-                    _append_ws_candle(_cfg["state"],_closed_candle["start"],_closed_candle["o"],_closed_candle["h"],_closed_candle["l"],_closed_candle["c"],_closed_candle["v"])
+                _append_ws_candle(s4,_closed_candle["start"],_closed_candle["o"],_closed_candle["h"],_closed_candle["l"],_closed_candle["c"],_closed_candle["v"])
+                _append_ws_candle(s4v2,_closed_candle["start"],_closed_candle["o"],_closed_candle["h"],_closed_candle["l"],_closed_candle["c"],_closed_candle["v"])
+                _append_ws_candle(s4v3,_closed_candle["start"],_closed_candle["o"],_closed_candle["h"],_closed_candle["l"],_closed_candle["c"],_closed_candle["v"])
             except Exception as _e:
                 log.error(f"[WS] Fast append error: {_e}",exc_info=True)
                 return
             # Signal-critical work FIRST - no CPU competition from background thread
-            for _cfg in _BOT_CFG:
-                _cur_tf=_last_closed_tf(_cfg["tf_min"]); _skey=f"last_{_cfg['key']}_tf"
-                if _cur_tf>_ws_state[_skey]:
-                    log.info(f"[WS] New {_cfg['tf_min']}m candle closed: {_cur_tf} - checking {_cfg['state'].label}")
-                    _gkey=f"last_reconcile_{_cfg['key']}"
-                    if _reconcile_gate(_gkey):
-                        if _reconcile_window_from_rest(_cfg["state"],_cfg["tf_min"]):
-                            _reconcile_gate_commit(_gkey)
-                            check_and_fire(_cfg["state"],is_s4=_cfg["is_s4"])
-                            _ws_state[_skey]=_cur_tf
-                        else:
-                            log.warning(f"[WS] {_cfg['state'].label} boundary {_cur_tf} reconcile failed - NOT claimed, retrying next tick")
+            _cur_s4v2=_last_closed_tf(30)
+            if _cur_s4v2>_ws_state["last_s4v2_tf"]:
+                log.info(f"[WS] New 30m candle closed: {_cur_s4v2} - checking S4V2")
+                if _reconcile_gate("last_reconcile_s4v2"):
+                    if _reconcile_window_from_rest(s4v2, 30):
+                        _reconcile_gate_commit("last_reconcile_s4v2")
+                        check_and_fire(s4v2,is_s4=False)
+                        _ws_state["last_s4v2_tf"]=_cur_s4v2
+                    else:
+                        log.warning(f"[WS] S4V2 boundary {_cur_s4v2} reconcile failed - NOT claimed, retrying next tick")
+            _cur_s4=_last_closed_tf(120)
+            if _cur_s4>_ws_state["last_s4_tf"]:
+                log.info(f"[WS] New 2H candle closed: {_cur_s4} - checking S4")
+                if _reconcile_gate("last_reconcile_s4"):
+                    if _reconcile_window_from_rest(s4, 120):
+                        _reconcile_gate_commit("last_reconcile_s4")
+                        check_and_fire(s4,is_s4=True)
+                        _ws_state["last_s4_tf"]=_cur_s4
+                    else:
+                        log.warning(f"[WS] S4 boundary {_cur_s4} reconcile failed - NOT claimed, retrying next tick")
+            _cur_s4v3=_last_closed_tf(240)
+            if _cur_s4v3>_ws_state["last_s4v3_tf"]:
+                log.info(f"[WS] New 4H candle closed: {_cur_s4v3} - checking S4V3")
+                if _reconcile_gate("last_reconcile_s4v3"):
+                    if _reconcile_window_from_rest(s4v3, 240):
+                        _reconcile_gate_commit("last_reconcile_s4v3")
+                        check_and_fire(s4v3,is_s4=False)
+                        _ws_state["last_s4v3_tf"]=_cur_s4v3
+                    else:
+                        log.warning(f"[WS] S4V3 boundary {_cur_s4v3} reconcile failed - NOT claimed, retrying next tick")
             # Background REST sync for CSV file persistence only - runs AFTER signals checked
             _ws_state["last_dl"]=time.time()
             _spawn_market_data_update()
@@ -1030,11 +1049,6 @@ if __name__=="__main__":
     _last_s4v3_tf=_last_closed_tf(240)
     # State dict for ws thread - defined after tf vars
     _ws_state={"last_s2_tf":_last_s2_tf,"last_s4_tf":_last_s4_tf,"last_s4v2_tf":_last_s2_tf,"last_s4v3_tf":_last_s4v3_tf,"last_dl":0.0,"last_reconcile_s4":0.0,"last_reconcile_s4v2":0.0,"last_reconcile_s4v3":0.0}
-    _BOT_CFG = [
-        {"state": s4,   "key": "s4",   "tf_min": 120, "cap_sec": 6900,  "is_s4": True},
-        {"state": s4v2, "key": "s4v2", "tf_min": 30,  "cap_sec": 1500,  "is_s4": False},
-        {"state": s4v3, "key": "s4v3", "tf_min": 240, "cap_sec": 14100, "is_s4": False},
-    ]
     _reconcile_throttle_lock = threading.Lock()
     def _reconcile_gate(_key):
         with _reconcile_throttle_lock:
@@ -1076,61 +1090,181 @@ if __name__=="__main__":
                 append_new_candles(s4v2)
                 append_new_candles(s4v3)
 
-                for _cfg in _BOT_CFG:
-                    _cur_tf=_last_closed_tf(_cfg["tf_min"]); _skey=f"last_{_cfg['key']}_tf"
-                    if _cur_tf>_ws_state[_skey]:
-                        log.info(f"[ENGINE] New {_cfg['tf_min']}m candle closed: {_cur_tf} - checking {_cfg['state'].label}")
-                        _gkey=f"last_reconcile_{_cfg['key']}"
-                        if _reconcile_gate(_gkey):
-                            if _reconcile_window_from_rest(_cfg["state"],_cfg["tf_min"]):
-                                _reconcile_gate_commit(_gkey)
-                                check_and_fire(_cfg["state"],is_s4=_cfg["is_s4"])
-                                _ws_state[_skey]=_cur_tf
-                            else:
-                                log.warning(f"[ENGINE] {_cfg['state'].label} boundary {_cur_tf} reconcile failed - NOT claimed, retrying next tick")
+                # S4V2: fire only on new closed 30m candle (shared state with WS)
+                cur_s4v2_tf=_last_closed_tf(30)
+                if cur_s4v2_tf>_ws_state["last_s4v2_tf"]:
+                    log.info(f"[ENGINE] New 30m candle closed: {cur_s4v2_tf} - checking S4V2")
+                    if _reconcile_gate("last_reconcile_s4v2"):
+                        if _reconcile_window_from_rest(s4v2, 30):
+                            _reconcile_gate_commit("last_reconcile_s4v2")
+                            check_and_fire(s4v2,is_s4=False)
+                            _ws_state["last_s4v2_tf"]=cur_s4v2_tf
+                        else:
+                            log.warning(f"[ENGINE] S4V2 boundary {cur_s4v2_tf} reconcile failed - NOT claimed, retrying next tick")
+
+                # S4: fire only on new closed 2H candle (shared state with WS)
+                cur_s4_tf=_last_closed_tf(120)
+                if cur_s4_tf>_ws_state["last_s4_tf"]:
+                    log.info(f"[ENGINE] New 2H candle closed: {cur_s4_tf} - checking S4")
+                    if _reconcile_gate("last_reconcile_s4"):
+                        if _reconcile_window_from_rest(s4, 120):
+                            _reconcile_gate_commit("last_reconcile_s4")
+                            check_and_fire(s4,is_s4=True)
+                            _ws_state["last_s4_tf"]=cur_s4_tf
+                        else:
+                            log.warning(f"[ENGINE] S4 boundary {cur_s4_tf} reconcile failed - NOT claimed, retrying next tick")
+
+                # S4V3: fire only on new closed 4H candle (shared state with WS)
+                cur_s4v3_tf=_last_closed_tf(240)
+                if cur_s4v3_tf>_ws_state["last_s4v3_tf"]:
+                    log.info(f"[ENGINE] New 4H candle closed: {cur_s4v3_tf} - checking S4V3")
+                    if _reconcile_gate("last_reconcile_s4v3"):
+                        if _reconcile_window_from_rest(s4v3, 240):
+                            check_and_fire(s4v3,is_s4=False)
+                            _reconcile_gate_commit("last_reconcile_s4v3")
+                            _ws_state["last_s4v3_tf"]=cur_s4v3_tf
+                        else:
+                            log.warning(f"[ENGINE] S4V3 boundary {cur_s4v3_tf} reconcile failed - NOT claimed, retrying next tick")
 
             # Boundary watcher trigger - fires if watcher detected missed boundary
-            def _run_boundary_trigger(cfg, trig_dt):
-                state=cfg["state"]; tf_min=cfg["tf_min"]; cap_sec=cfg["cap_sec"]
-                _fixed_waits=[1,2,3,5,8]
+            _trig_s4 = "logs/boundary_trigger_s4.txt"
+            if os.path.exists(_trig_s4) and os.path.getsize(_trig_s4)>0:
+                _t4 = open(_trig_s4).read().strip()
+                os.remove(_trig_s4)
                 try:
-                    _start=time.time(); _i=0; _caught_up=False
-                    while time.time()-_start<cap_sec:
-                        _caught_up = state.last_1m_ts is not None and state.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= trig_dt - timedelta(minutes=1)
-                        if _caught_up: break
-                        if _throttled_download():
-                            append_new_candles(state)
-                            _caught_up = state.last_1m_ts is not None and state.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= trig_dt - timedelta(minutes=1)
-                            if _caught_up: break
-                        _wait=_fixed_waits[_i] if _i<len(_fixed_waits) else 30
-                        _i+=1
-                        log.info(f"[ENGINE] {state.label} data not caught up yet, retry {_i} (elapsed={int(time.time()-_start)}s)")
-                        time.sleep(_wait)
-                    if not _caught_up:
-                        log.critical(f"[ENGINE] {state.label} boundary {trig_dt} STILL not caught up after {cap_sec}s safety cap - reconcile incomplete - proceeding to reconcile+fire attempt anyway (not actually skipped)")
-                    _gkey=f"last_reconcile_{cfg['key']}"; _skey=f"last_{cfg['key']}_tf"
-                    _label_ts=trig_dt-timedelta(minutes=tf_min)
-                    if _reconcile_gate(_gkey):
-                        if _reconcile_window_from_rest(state,tf_min):
-                            _reconcile_gate_commit(_gkey); check_and_fire(state,is_s4=cfg["is_s4"])
-                            _ws_state[_skey]=max(_ws_state[_skey],_label_ts)
-                        else:
-                            log.warning(f"[ENGINE] {state.label} trigger boundary {trig_dt} reconcile failed (REST check) - NOT claimed, retrying next tick")
-                    else:
-                        log.info(f"[ENGINE] {state.label} trigger boundary {trig_dt} reconcile throttled (5s gate) - will retry next tick, not a failure")
-                except Exception as _e:
-                    log.error(f"[ENGINE] {state.label} trigger thread error: {_e}", exc_info=True)
-
-            for _cfg in _BOT_CFG:
-                _trig_file=f"logs/boundary_trigger_{_cfg['key']}.txt"
-                if os.path.exists(_trig_file) and os.path.getsize(_trig_file)>0:
-                    _t_raw=open(_trig_file).read().strip(); os.remove(_trig_file)
-                    try: _t_dt=datetime.strptime(_t_raw,'%Y-%m-%d %H:%M:%S')
-                    except: _t_dt=datetime.strptime(_t_raw,'%Y-%m-%dT%H:%M:%S')
-                    _already=_cfg["state"].last_1m_ts is not None and _cfg["state"].last_1m_ts.to_pydatetime().replace(tzinfo=None) >= (_t_dt - timedelta(minutes=1))
-                    if not _already:
-                        log.info(f"[ENGINE] Boundary watcher trigger {_cfg['state'].label}: {_t_raw} - checking (independent retry, decoupled from WS claim)")
-                        threading.Thread(target=_run_boundary_trigger,args=(_cfg,_t_dt),daemon=True).start()
+                    _t4_dt = __import__('datetime').datetime.strptime(_t4, '%Y-%m-%d %H:%M:%S')
+                except:
+                    _t4_dt = __import__('datetime').datetime.strptime(_t4, '%Y-%m-%dT%H:%M:%S')
+                _s4_already_caught_up = s4.last_1m_ts is not None and s4.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= (_t4_dt - __import__('datetime').timedelta(minutes=1))
+                _t4_dt_engine_label = _t4_dt - __import__('datetime').timedelta(minutes=120)
+                if not _s4_already_caught_up:
+                    log.info(f"[ENGINE] Boundary watcher trigger S4: {_t4} - checking S4 (independent retry, decoupled from WS claim)")
+                    def _run_s4_trigger(_dt=_t4_dt):
+                        try:
+                            _start_s4 = time.time()
+                            _cap_sec_s4 = 6900
+                            _fixed_waits_s4 = [1,2,3,5,8]
+                            _i_s4 = 0
+                            _caught_up = False
+                            while time.time() - _start_s4 < _cap_sec_s4:
+                                _caught_up = s4.last_1m_ts is not None and s4.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
+                                if _caught_up:
+                                    break
+                                if _throttled_download():
+                                    append_new_candles(s4)
+                                    _caught_up = s4.last_1m_ts is not None and s4.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
+                                    if _caught_up:
+                                        break
+                                _wait_s4 = _fixed_waits_s4[_i_s4] if _i_s4 < len(_fixed_waits_s4) else 30
+                                _i_s4 += 1
+                                log.info(f"[ENGINE] S4 data not caught up yet, retry {_i_s4} (elapsed={int(time.time()-_start_s4)}s)")
+                                time.sleep(_wait_s4)
+                            if not _caught_up:
+                                log.critical(f"[ENGINE] S4 boundary {_dt} STILL not caught up after 6900s safety cap - reconcile incomplete - proceeding to reconcile+fire attempt anyway (not actually skipped)")
+                            if _reconcile_gate("last_reconcile_s4"):
+                                if _reconcile_window_from_rest(s4, 120):
+                                    _reconcile_gate_commit("last_reconcile_s4")
+                                    check_and_fire(s4, is_s4=True)
+                                    _ws_state["last_s4_tf"] = max(_ws_state["last_s4_tf"], _t4_dt_engine_label)
+                                else:
+                                    log.warning(f"[ENGINE] S4 trigger boundary {_dt} reconcile failed (REST check) - NOT claimed, retrying next tick")
+                            else:
+                                log.info(f"[ENGINE] S4 trigger boundary {_dt} reconcile throttled (5s gate) - will retry next tick, not a failure")
+                        except Exception as _e:
+                            log.error(f"[ENGINE] S4 trigger thread error: {_e}", exc_info=True)
+                    threading.Thread(target=_run_s4_trigger, daemon=True).start()
+            _trig_s4v2 = "logs/boundary_trigger_s4v2.txt"
+            if os.path.exists(_trig_s4v2) and os.path.getsize(_trig_s4v2)>0:
+                _tv2 = open(_trig_s4v2).read().strip()
+                os.remove(_trig_s4v2)
+                try:
+                    _tv2_dt = __import__('datetime').datetime.strptime(_tv2, '%Y-%m-%d %H:%M:%S')
+                except:
+                    _tv2_dt = __import__('datetime').datetime.strptime(_tv2, '%Y-%m-%dT%H:%M:%S')
+                _s4v2_already_caught_up = s4v2.last_1m_ts is not None and s4v2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= (_tv2_dt - __import__('datetime').timedelta(minutes=1))
+                _tv2_dt_engine_label = _tv2_dt - __import__('datetime').timedelta(minutes=30)
+                if not _s4v2_already_caught_up:
+                    log.info(f"[ENGINE] Boundary watcher trigger S4V2: {_tv2} - checking S4V2 (independent retry, decoupled from WS claim)")
+                    def _run_s4v2_trigger(_dt=_tv2_dt):
+                        try:
+                            _start_s4v2 = time.time()
+                            _cap_sec_s4v2 = 1500
+                            _fixed_waits_s4v2 = [1,2,3,5,8]
+                            _i_s4v2 = 0
+                            _caught_up = False
+                            while time.time() - _start_s4v2 < _cap_sec_s4v2:
+                                _caught_up = s4v2.last_1m_ts is not None and s4v2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
+                                if _caught_up:
+                                    break
+                                if _throttled_download():
+                                    append_new_candles(s4v2)
+                                    _caught_up = s4v2.last_1m_ts is not None and s4v2.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
+                                    if _caught_up:
+                                        break
+                                _wait_s4v2 = _fixed_waits_s4v2[_i_s4v2] if _i_s4v2 < len(_fixed_waits_s4v2) else 30
+                                _i_s4v2 += 1
+                                log.info(f"[ENGINE] S4V2 data not caught up yet, retry {_i_s4v2} (elapsed={int(time.time()-_start_s4v2)}s)")
+                                time.sleep(_wait_s4v2)
+                            if not _caught_up:
+                                log.critical(f"[ENGINE] S4V2 boundary {_dt} STILL not caught up after 1500s safety cap - reconcile incomplete - proceeding to reconcile+fire attempt anyway (not actually skipped)")
+                            if _reconcile_gate("last_reconcile_s4v2"):
+                                if _reconcile_window_from_rest(s4v2, 30):
+                                    _reconcile_gate_commit("last_reconcile_s4v2")
+                                    check_and_fire(s4v2, is_s4=False)
+                                    _ws_state["last_s4v2_tf"] = max(_ws_state["last_s4v2_tf"], _tv2_dt_engine_label)
+                                else:
+                                    log.warning(f"[ENGINE] S4V2 trigger boundary {_dt} reconcile failed (REST check) - NOT claimed, retrying next tick")
+                            else:
+                                log.info(f"[ENGINE] S4V2 trigger boundary {_dt} reconcile throttled (5s gate) - will retry next tick, not a failure")
+                        except Exception as _e:
+                            log.error(f"[ENGINE] S4V2 trigger thread error: {_e}", exc_info=True)
+                    threading.Thread(target=_run_s4v2_trigger, daemon=True).start()
+            _trig_s4v3 = "logs/boundary_trigger_s4v3.txt"
+            if os.path.exists(_trig_s4v3) and os.path.getsize(_trig_s4v3)>0:
+                _tv3 = open(_trig_s4v3).read().strip()
+                os.remove(_trig_s4v3)
+                try:
+                    _tv3_dt = __import__('datetime').datetime.strptime(_tv3, '%Y-%m-%d %H:%M:%S')
+                except:
+                    _tv3_dt = __import__('datetime').datetime.strptime(_tv3, '%Y-%m-%dT%H:%M:%S')
+                _s4v3_already_caught_up = s4v3.last_1m_ts is not None and s4v3.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= (_tv3_dt - __import__('datetime').timedelta(minutes=1))
+                _tv3_dt_engine_label = _tv3_dt - __import__('datetime').timedelta(minutes=240)
+                if not _s4v3_already_caught_up:
+                    log.info(f"[ENGINE] Boundary watcher trigger S4V3: {_tv3} - checking S4V3 (independent retry, decoupled from WS claim)")
+                    def _run_s4v3_trigger(_dt=_tv3_dt):
+                        try:
+                            _start_s4v3 = time.time()
+                            _cap_sec_s4v3 = 14100
+                            _fixed_waits_s4v3 = [1,2,3,5,8]
+                            _i_s4v3 = 0
+                            _caught_up = False
+                            while time.time() - _start_s4v3 < _cap_sec_s4v3:
+                                _caught_up = s4v3.last_1m_ts is not None and s4v3.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
+                                if _caught_up:
+                                    break
+                                if _throttled_download():
+                                    append_new_candles(s4v3)
+                                    _caught_up = s4v3.last_1m_ts is not None and s4v3.last_1m_ts.to_pydatetime().replace(tzinfo=None) >= _dt - __import__('datetime').timedelta(minutes=1)
+                                    if _caught_up:
+                                        break
+                                _wait_s4v3 = _fixed_waits_s4v3[_i_s4v3] if _i_s4v3 < len(_fixed_waits_s4v3) else 30
+                                _i_s4v3 += 1
+                                log.info(f"[ENGINE] S4V3 data not caught up yet, retry {_i_s4v3} (elapsed={int(time.time()-_start_s4v3)}s)")
+                                time.sleep(_wait_s4v3)
+                            if not _caught_up:
+                                log.critical(f"[ENGINE] S4V3 boundary {_dt} STILL not caught up after 14100s safety cap - reconcile incomplete - proceeding to reconcile+fire attempt anyway (not actually skipped)")
+                            if _reconcile_gate("last_reconcile_s4v3"):
+                                if _reconcile_window_from_rest(s4v3, 240):
+                                    _reconcile_gate_commit("last_reconcile_s4v3")
+                                    check_and_fire(s4v3, is_s4=False)
+                                    _ws_state["last_s4v3_tf"] = max(_ws_state["last_s4v3_tf"], _tv3_dt_engine_label)
+                                else:
+                                    log.warning(f"[ENGINE] S4V3 trigger boundary {_dt} reconcile failed (REST check) - NOT claimed, retrying next tick")
+                            else:
+                                log.info(f"[ENGINE] S4V3 trigger boundary {_dt} reconcile throttled (5s gate) - will retry next tick, not a failure")
+                        except Exception as _e:
+                            log.error(f"[ENGINE] S4V3 trigger thread error: {_e}", exc_info=True)
+                    threading.Thread(target=_run_s4v3_trigger, daemon=True).start()
 
             touch_signal_file("S2")
             touch_signal_file("S4")
@@ -1162,3 +1296,4 @@ if __name__=="__main__":
         # canary pong now written by _canary_pong_thread (process-alive proof)
 
         time.sleep(SLEEP_SEC)
+
