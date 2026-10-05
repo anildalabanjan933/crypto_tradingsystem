@@ -36,16 +36,33 @@ def ensure_csv_header():
 
 MAX_LOG_SIZE = 20 * 1024 * 1024
 
+_log_dedup_state = {}  # (bot_name, check_class) -> {"first_ts": float, "count": int, "last_write_ts": float}
+_DEDUP_WINDOW_SEC = 300  # fold repeats of same signature into one row per 5min
+
 def log_event(bot_name, check_class, detail):
     if os.path.exists(OUT_CSV) and os.path.getsize(OUT_CSV) > MAX_LOG_SIZE:
         os.rename(OUT_CSV, OUT_CSV + ".1")
-    now = datetime.now(timezone.utc).isoformat()
+    now_dt = datetime.now(timezone.utc)
+    now = now_dt.isoformat()
+    now_ts = now_dt.timestamp()
+
+    key = (bot_name, check_class)
+    state = _log_dedup_state.get(key)
+    if state and (now_ts - state["last_write_ts"]) < _DEDUP_WINDOW_SEC:
+        state["count"] += 1
+        return
+
+    count_suffix = ""
+    if state and state["count"] > 0:
+        count_suffix = f" (suppressed {state['count']} repeat(s) in prior {_DEDUP_WINDOW_SEC}s)"
+
     with open(OUT_CSV, "a", newline="") as f:
         w = csv.writer(f)
-        w.writerow([now, bot_name, check_class, detail])
+        w.writerow([now, bot_name, check_class, detail + count_suffix])
         f.flush()
         os.fsync(f.fileno())
-    print(f"[watchdog_slow] {check_class} | {bot_name} | {detail}")
+    print(f"[watchdog_slow] {check_class} | {bot_name} | {detail}{count_suffix}")
+    _log_dedup_state[key] = {"first_ts": now_ts, "count": 0, "last_write_ts": now_ts}
 
 def get_python_pid(script_name):
     try:
