@@ -22,6 +22,7 @@ try:
         _f_ver.write(_commit)
 except Exception:
     pass
+from scripts.cts_env import LOT_SIZE as _CTS_LOT_SIZE, IS_TESTNET as _CTS_IS_TESTNET
 from indicators.renko import RenkoBuilder,SupertrendIndicator
 from data.download_market_data import download_or_update
 from strategies.backtest.renko_reversal_strategy import RenkoReversalStrategy
@@ -40,7 +41,7 @@ logging.basicConfig(level=logging.INFO,handlers=[_handler])
 log=logging.getLogger(__name__)
 
 CSV_PATH="data/btc_1m_delta.csv"
-LOT_SIZE=100
+LOT_SIZE=_CTS_LOT_SIZE   # resolved via CTS_ENV
 SLEEP_SEC=0.5
 S4_PARAMS=dict(renko_box_pct=0.001,renko_timeframe="2h",st_atr_length=5,st_factor=2.0,smiio_shortlen=10,smiio_longlen=10,smiio_siglen=3)
 S4V2_PARAMS=dict(renko_box_pct=0.001,renko_timeframe="30m",st_atr_length=5,st_factor=1.5,smiio_shortlen=10,smiio_longlen=20,smiio_siglen=3)
@@ -422,7 +423,7 @@ def _bump_mismatch_and_maybe_resync(state, tfm, ts, sig_type, direction, blocked
             _api_secret=os.getenv(f"{state.label}_API_SECRET","")
             if _api_key and _api_secret:
                 from engine.order_manager import OrderManager
-                _om=OrderManager(_api_key,_api_secret,testnet=True)
+                _om=OrderManager(_api_key,_api_secret,testnet=_CTS_IS_TESTNET)
                 _pos=_om.get_position()
                 if _pos.get("success"):
                     _d=_pos.get("direction","FLAT")
