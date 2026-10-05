@@ -134,7 +134,7 @@ check_and_start live_s4v2 scripts/signal_replay_s4v2.py logs/live_trading_s4v2.l
 check_version_drift live_s4v3 scripts/signal_replay_s4v3.py
 check_heartbeat_stale live_s4v3 logs/heartbeat_s4v3.txt 300
 check_and_start live_s4v3 scripts/signal_replay_s4v3.py logs/live_trading_s4v3.log
-check_and_start band_tier_watch "python3 scripts/band_tier_watch.py"
+check_and_start band_tier_watch "scripts/band_tier_watch.py" logs/band_tier_watch.log
 check_and_start watchdog_fast "scripts/watchdog_fast.py" logs/watchdog_fast.log
 check_and_start watchdog_slow "scripts/watchdog_slow.py" logs/watchdog_slow.log
 check_and_start watchdog_capital "scripts/watchdog_capital.py" logs/watchdog_capital.log
