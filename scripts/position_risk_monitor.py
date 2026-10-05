@@ -100,11 +100,16 @@ def check_bot(bot):
         margin    = float(p.get("margin") or 0)
         mark_price = om.get_current_price()
 
-        if liq_price <= 0 or mark_price <= 0:
-            log.warning(f"[{bot['name']}] Missing liq_price or mark_price - skipping this cycle")
+        # BUG4/5 FIX: Tier1 (speed) only needs mark_price - must not be blocked
+        # by missing liq_price (liq_price is always empty on Portfolio-margin
+        # accounts per Delta docs, e.g. S4V3). Tier2 (liq-distance) still
+        # requires liq_price and is skipped separately when unavailable.
+        if mark_price <= 0:
+            log.warning(f"[{bot['name']}] Missing mark_price - skipping this cycle")
             continue
 
-        dist_pct = abs(mark_price - liq_price) / mark_price * 100
+        tier2_available = liq_price > 0
+        dist_pct = (abs(mark_price - liq_price) / mark_price * 100) if tier2_available else None
 
         # TIER 1 - speed check using rolling price history (no extra API call)
         _hist = _price_history.setdefault(bot["name"], [])
@@ -141,7 +146,9 @@ def check_bot(bot):
         last = _last_alert_ts.get(bot["name"], 0)
         cooldown_ok = (now - last) > ALERT_COOLDOWN
 
-        if dist_pct <= CRITICAL_DIST_PCT:
+        if not tier2_available:
+            log.info(f"[{bot['name']}] Tier2 skipped (no liq_price - Portfolio margin mode)")
+        elif dist_pct <= CRITICAL_DIST_PCT:
             log.critical(f"[{bot['name']}] LIQUIDATION RISK CRITICAL | dist_to_liq={dist_pct:.1f}% mark={mark_price} liq={liq_price} bal_ratio={bal_ratio:.2f}")
             close_side = "sell" if size > 0 else "buy"
             close_result = om.close_position(size=abs(size), side=close_side)
