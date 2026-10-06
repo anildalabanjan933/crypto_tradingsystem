@@ -113,6 +113,36 @@ def _append_fill_log(csv_path, entry_ts, exit_ts, direction, lots, bt_ep, lv_ep,
             _w.writerow([entry_ts, exit_ts, direction, lots, bt_ep, lv_ep, bt_xp, lv_xp, total_charges, prod_entry_fill if prod_entry_fill is not None else "NA", prod_exit_fill if prod_exit_fill is not None else "NA"])
     except Exception as _e:
         log.warning(f'[FILL-LOG] Could not write fill log: {_e}')
+def _write_open_fill_log(csv_path, entry_ts, direction, lots, prod_entry_fill):
+    import csv as _csv_fl
+    try:
+        with open(csv_path, "w", newline="") as _f:
+            _w = _csv_fl.writer(_f)
+            _w.writerow(["entry_ts", "dir", "lots", "prod_entry_fill"])
+            _w.writerow([entry_ts, direction, lots, prod_entry_fill if prod_entry_fill is not None else "NA"])
+    except Exception as _e:
+        log.warning(f"[FILL-LOG] Could not write open fill log: {_e}")
+
+def _clear_open_fill_log(csv_path):
+    import os as _os_fl
+    try:
+        if _os_fl.path.exists(csv_path):
+            _os_fl.remove(csv_path)
+    except Exception as _e:
+        log.warning(f"[FILL-LOG] Could not clear open fill log: {_e}")
+
+def _get_prod_l2_fill_price_async_entry(symbol, side, lots, result_holder, open_csv_path, entry_ts, direction):
+    def _worker():
+        try:
+            result_holder['v'] = _get_prod_l2_fill_price(symbol, side, lots)
+        except Exception as _e:
+            log.warning(f"[PROD-L2-ASYNC] thread failed: {_e}")
+            result_holder['v'] = None
+        _write_open_fill_log(open_csv_path, entry_ts, direction, lots, result_holder.get('v'))
+    t = threading.Thread(target=_worker, daemon=True)
+    t.start()
+    return t
+
 def _get_prod_l2_fill_price(symbol, side, lots):
     try:
         resp = requests.get(f"https://api.india.delta.exchange/v2/l2orderbook/{symbol}", timeout=3)
@@ -778,6 +808,7 @@ while True:
                             _prod_entry_fill_for_log = prod_entry_fill
                             open_entry_price = 0.0
                             prod_entry_fill = None
+                            _clear_open_fill_log("logs/fill_prices_open_s4v2.csv")
                             _exit_fill_price = result.get("avg_fill_price", 0.0)
                             if _exit_fill_price == 0.0:
                                 for _i in range(5):
@@ -941,7 +972,7 @@ while True:
                                 _send_entry_match_alert("S4V2", direction, sig_ts, _bt_ep, real_entry, _bt_xt, _bt_xp, lots)
                             open_entry_price = real_entry
                             _prod_entry_holder = {'v': None}
-                            _get_prod_l2_fill_price_async(SYMBOL, side, lots, _prod_entry_holder)
+                            _get_prod_l2_fill_price_async_entry(SYMBOL, side, lots, _prod_entry_holder, "logs/fill_prices_open_s4v2.csv", sig_ts, direction)
                             prod_entry_fill = _prod_entry_holder
                             try:
                                 with open("logs/entry_price_s4v2.txt","w") as _epf:
