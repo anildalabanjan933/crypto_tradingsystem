@@ -1143,6 +1143,46 @@ def _get_prod_rows_audit(strat_label, from_date, to_date, inr_rate):
     return rows
 
 
+def _get_prod_open_row_audit(strat_label):
+    """
+    Reads logs/fill_prices_open_{strat}.csv (single-row, reporting-only file
+    written by the async entry-fill thread in signal_replay_s4*.py). Returns
+    a list with one dict matching the Production Fill table's row shape for
+    an in-progress trade, or [] if no open production trade / file missing.
+    """
+    import csv as _csv_audit
+    _csv_path = f"logs/fill_prices_open_{strat_label.lower()}.csv"
+    if not _os_audit.path.exists(_csv_path):
+        return []
+    try:
+        with open(_csv_path, "r", newline="") as _fh:
+            _reader = _csv_audit.DictReader(_fh)
+            for _row in _reader:
+                _pe = _row.get("prod_entry_fill", "NA")
+                _ep_f = float(_pe) if _pe not in (None, "", "NA") else 0.0
+                return [{
+                    "trade_no"     : "-",
+                    "label"        : strat_label,
+                    "dir"          : (_row.get("dir") or "").strip().upper(),
+                    "date"         : _ist_date_audit(_row.get("entry_ts", "")),
+                    "symbol"       : "BTCUSD",
+                    "entry_ts_raw" : _row.get("entry_ts", ""),
+                    "exit_ts_raw"  : "PENDING",
+                    "entry_ist"    : _to_ist_audit(_row.get("entry_ts", "")),
+                    "exit_ist"     : "-",
+                    "entry_p"      : _ep_f,
+                    "exit_p"       : None,
+                    "lot"          : float(_row.get("lots", 0) or 0),
+                    "charges"      : 0.0,
+                    "pnl_usd"      : None,
+                    "net_pnl_inr"  : None,
+                    "cum_pnl_inr"  : None,
+                }]
+    except Exception:
+        pass
+    return []
+
+
 def _fast_date_audit_local(raw):
     s = str(raw).strip()
     if s.endswith("Z"):
@@ -1328,7 +1368,7 @@ def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn,
             if _pnl is not None:
                 _total_run -= _pnl
 
-    prod_rows = _load_audit_prod_cached(strat_label, from_date, to_date, inr_rate, _prod_mtime_audit(strat_label))
+    prod_rows = _get_prod_open_row_audit(strat_label) + _load_audit_prod_cached(strat_label, from_date, to_date, inr_rate, _prod_mtime_audit(strat_label))
     if time_start is not None:
         prod_rows = [r for r in prod_rows if _t_ok_audit(r)]
     _prod_total_run = sum(r.get("net_pnl_inr") or 0.0 for r in prod_rows if r.get("net_pnl_inr") is not None)
