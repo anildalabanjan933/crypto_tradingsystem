@@ -804,6 +804,29 @@ class OrderManager:
         except Exception as e:
             logging.warning(f"[OrderManager] Could not save active_sl_id: {e}")
 
+    def check_sl_order_closed(self, expected_side):
+        """Read-only check: did the saved emergency SL order (10% dead-man
+        switch) actually get filled (state==closed)? Returns True if yes,
+        False if it exists but is still open/pending/cancelled, None if no
+        saved SL id file found. Does not place, cancel or modify any order."""
+        try:
+            key_hash = hashlib.md5(self.api_key.encode()).hexdigest()[:12]
+            id_file = f"logs/active_sl_id_{key_hash}.txt"
+            if not os.path.exists(id_file):
+                return None
+            with open(id_file) as f:
+                saved_id = f.read().strip()
+            if not saved_id:
+                return None
+            chk = self._get(f"/v2/orders/{saved_id}", {})
+            if chk.get("success"):
+                o = chk.get("result", {})
+                if o.get("stop_order_type") == "stop_loss_order" and o.get("side") == expected_side:
+                    return o.get("state") == "closed"
+        except Exception as e:
+            logging.warning(f"[OrderManager] check_sl_order_closed failed: {e}")
+        return None
+
     def _get_confirmed_sl_via_id_file(self, expected_side):
         """Check the specific SL order_id saved from last successful placement -
         avoids side-only matching which can wrongly pick a stale order when
