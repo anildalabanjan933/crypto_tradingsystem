@@ -1087,12 +1087,23 @@ while True:
                 with open("logs/manual_override_s4v3.txt", "w") as _f:
                     _f.write(f"{int(time.time())}|synced_flat|entry_ts={last_known_ts}")
                 log.info("[SYNC] manual_override_s4v3.txt written - next entry signal will be skipped")
-                send_alert(
-                    f"CTS ALERT - Position Closed on Exchange\n"
-                    f"Bot: S4V3\n"
-                    f"What happened: Exchange shows no open position, reason not confirmed (could be stop-loss or manual close)\n"
-                    f"Action: Bot updated itself to match exchange (now flat)"
-                )
+                try:
+                    _sl_side = "sell" if position == "long" else "buy"
+                    _sl_closed = om.check_sl_order_closed(_sl_side)
+                except Exception:
+                    _sl_closed = None
+                if _sl_closed is True:
+                    send_alert(
+                        f"CTS S4V3 - Emergency SL Hit\n"
+                        f"What happened: The 10% safety switch closed this trade automatically to protect your money\n"
+                        f"Action: Bot updated itself to match exchange (now flat)"
+                    )
+                else:
+                    send_alert(
+                        f"CTS S4V3 - Position Closed on Exchange\n"
+                        f"What happened: Position was closed manually or by another process (not the emergency SL)\n"
+                        f"Action: Bot updated itself to match exchange (now flat)"
+                    )
             elif _exch_size > 0 and position is None:
                 _exch_side = _exch.get("side","")
                 position = "long" if _exch_side == "buy" else "short"
