@@ -1075,6 +1075,91 @@ def _render_bt_table_html(rows_html):
     return header + rows_html + "</table>"
 
 
+def _get_prod_rows_audit(strat_label, from_date, to_date, inr_rate):
+    """
+    Builds Production L2 Fill rows for a strategy from logs/fill_prices_*.csv.
+    Mirrors _get_live_rows_audit's PnL convention (gross pnl minus charges = net),
+    using prod_entry_fill/prod_exit_fill in place of testnet lv_entry/lv_exit.
+    Read-only CSV parse - no network/API calls, so no dashboard load impact.
+    """
+    import csv as _csv_audit
+    rows = []
+    _csv_path = f"logs/fill_prices_{strat_label.lower()}.csv"
+    try:
+        if not _os_audit.path.exists(_csv_path):
+            return []
+        with open(_csv_path, "r", newline="") as _fh:
+            _reader = _csv_audit.DictReader(_fh)
+            _trade_no = 0
+            _cum_pnl = 0.0
+            for _row in _reader:
+                _pe = _row.get("prod_entry_fill", "NA")
+                _px = _row.get("prod_exit_fill", "NA")
+                if _pe in (None, "", "NA") or _px in (None, "", "NA"):
+                    continue
+                try:
+                    _ep_f = float(_pe)
+                    _xp_f = float(_px)
+                    _lots_f = float(_row.get("lots", 0) or 0)
+                    _dirn = (_row.get("dir") or "").strip().lower()
+                    _charges_usd = float(_row.get("total_charges", 0) or 0)
+                except Exception:
+                    continue
+
+                try:
+                    _entry_date = _fast_date_audit_local(_row.get("entry_ts", ""))
+                except Exception:
+                    continue
+                if not (from_date <= _entry_date <= to_date):
+                    continue
+
+                _dir_sign = 1.0 if _dirn == "long" else -1.0
+                _pnl_usd = (_xp_f - _ep_f) * _dir_sign * _lots_f * 0.001
+                _net_pnl_inr = (_pnl_usd - _charges_usd) * inr_rate
+                _trade_no += 1
+                _cum_pnl += _net_pnl_inr
+
+                rows.append({
+                    "trade_no"     : _trade_no,
+                    "label"        : strat_label,
+                    "dir"          : _dirn.upper(),
+                    "date"         : _ist_date_audit(_row.get("entry_ts", "")),
+                    "symbol"       : "BTCUSD",
+                    "entry_ts_raw" : _row.get("entry_ts", ""),
+                    "exit_ts_raw"  : _row.get("exit_ts", ""),
+                    "entry_ist"    : _to_ist_audit(_row.get("entry_ts", "")),
+                    "exit_ist"     : _to_ist_audit(_row.get("exit_ts", "")),
+                    "entry_p"      : _ep_f,
+                    "exit_p"       : _xp_f,
+                    "lot"          : _lots_f,
+                    "charges"      : _charges_usd * inr_rate,
+                    "pnl_usd"      : _pnl_usd,
+                    "net_pnl_inr"  : _net_pnl_inr,
+                    "cum_pnl_inr"  : _cum_pnl,
+                })
+    except Exception:
+        pass
+    rows.sort(key=lambda r: str(r.get("entry_ts_raw", "")), reverse=True)
+    return rows
+
+
+def _fast_date_audit_local(raw):
+    s = str(raw).strip()
+    if s.endswith("Z"):
+        s = s[:-1]
+    s = s.replace("T", " ", 1)
+    _d = _dt_audit.datetime.fromisoformat(s)
+    return (_d + _dt_audit.timedelta(hours=5, minutes=30)).date()
+
+
+def _prod_mtime_audit(strat_label):
+    _p = f"logs/fill_prices_{strat_label.lower()}.csv"
+    try:
+        return _os_audit.path.getmtime(_p) if _os_audit.path.exists(_p) else 0.0
+    except Exception:
+        return 0.0
+
+
 import glob as _glob_audit
 import os as _os_audit
 
@@ -1109,6 +1194,11 @@ def _load_audit_lv_cached(_fetch_fills_fn, strat_label, from_date, to_date, inr_
 @st.cache_data(ttl=180, show_spinner=False)
 def _load_audit_lv_open_cached(_fetch_fills_fn, strat_label, from_date, to_date, _bust=None):
     return _get_open_live_rows_audit(strat_label, from_date, to_date, _fetch_fills_fn)
+
+
+@st.cache_data(ttl=180, show_spinner=False)
+def _load_audit_prod_cached(strat_label, from_date, to_date, inr_rate, _bust=None):
+    return _get_prod_rows_audit(strat_label, from_date, to_date, inr_rate)
 
 
 def _metric_pnl_html_audit(label, value):
@@ -1237,6 +1327,43 @@ def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn,
             _r["cum_pnl_inr"] = _total_run
             if _pnl is not None:
                 _total_run -= _pnl
+
+    prod_rows = _load_audit_prod_cached(strat_label, from_date, to_date, inr_rate, _prod_mtime_audit(strat_label))
+    if time_start is not None:
+        prod_rows = [r for r in prod_rows if _t_ok_audit(r)]
+    _prod_total_run = sum(r.get("net_pnl_inr") or 0.0 for r in prod_rows if r.get("net_pnl_inr") is not None)
+    for _r in prod_rows:
+        _pnl = _r.get("net_pnl_inr")
+        _r["cum_pnl_inr"] = _prod_total_run
+        if _pnl is not None:
+            _prod_total_run -= _pnl
+
+    col_prod, col_bt_top = st.columns(2)
+    with col_prod:
+        st.markdown(f"**{strat_label} - Production Fill**")
+        _total_trade_prod = len(prod_rows)
+        _total_pnl_prod = sum(r["net_pnl_inr"] for r in prod_rows if r.get("net_pnl_inr") is not None)
+        _total_charge_prod = sum(r["charges"] for r in prod_rows if r.get("charges") is not None)
+        p1, p2, p3 = st.columns(3)
+        p1.metric("Total Trade", _total_trade_prod)
+        with p2:
+            st.markdown(_metric_pnl_html_audit("Total Net PnL", _total_pnl_prod), unsafe_allow_html=True)
+        p3.metric("Total Charge", f"Rs {_fmt_num_audit(_total_charge_prod)}")
+        rows_html_prod = "".join(_render_bt_row_html(r) for r in prod_rows)
+        st.markdown(_clean_html_audit(f'<div style="overflow-x:auto;">{_render_bt_table_html(rows_html_prod)}</div>'), unsafe_allow_html=True)
+
+    with col_bt_top:
+        st.markdown(f"**{strat_label} - BT**")
+        _total_trade_bt_top = len(bt_rows)
+        _total_pnl_bt_top = sum(r["net_pnl_inr"] for r in bt_rows if r.get("net_pnl_inr") is not None)
+        _total_charge_bt_top = sum(r["charges"] for r in bt_rows if r.get("charges") is not None)
+        q1, q2, q3 = st.columns(3)
+        q1.metric("Total Trade", _total_trade_bt_top)
+        with q2:
+            st.markdown(_metric_pnl_html_audit("Total Net PnL", _total_pnl_bt_top), unsafe_allow_html=True)
+        q3.metric("Total Charge", f"Rs {_fmt_num_audit(_total_charge_bt_top)}")
+        rows_html_bt_top = "".join(_render_bt_row_html(r) for r in bt_rows)
+        st.markdown(_clean_html_audit(f'<div style="overflow-x:auto;">{_render_bt_table_html(rows_html_bt_top)}</div>'), unsafe_allow_html=True)
 
     col_lv, col_bt = st.columns(2)
 
