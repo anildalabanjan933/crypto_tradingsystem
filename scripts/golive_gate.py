@@ -245,33 +245,6 @@ def main():
     except Exception as e:
         record("i_env_config", False, f"cts_env import failed: {e}")
 
-    # --- Criterion d: fire delay p90<=5s, max<=15s (if lag events exist) ---
-    lag_rows = read_csv_rows("logs/confirmation_lag_events.csv")
-    if lag_rows:
-        lags = []
-        for r in lag_rows:
-            if baseline:
-                try:
-                    ts = datetime.fromisoformat(r.get("detected_at", "").replace("Z", "+00:00"))
-                    if ts < baseline:
-                        continue
-                except Exception:
-                    continue
-            try:
-                lags.append(float(r.get("lag_sec", "")))
-            except Exception:
-                continue
-        if lags:
-            lags.sort()
-            p90 = lags[int(len(lags) * 0.9)] if len(lags) > 1 else lags[0]
-            max_lag = max(lags)
-            record("d_fire_delay", p90 <= 5 and max_lag <= 15,
-                   f"p90={p90:.1f}s max={max_lag:.1f}s (n={len(lags)}) - need p90<=5s, max<=15s")
-        else:
-            pass  # replaced below by check_fire_delay(window_start)
-    else:
-        record("d_fire_delay", None, "logs/confirmation_lag_events.csv empty/missing")
-
     # --- Print report ---
     print("=" * 70)
     print("GOLIVE_GATE REPORT -", now.isoformat())
