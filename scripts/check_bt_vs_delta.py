@@ -432,6 +432,16 @@ def match_and_log(bt_rows, lv_rows, bot, date_str):
                 if lv_dt.tzinfo is None:
                     lv_dt = lv_dt.tz_localize('UTC')
                 diff = abs((bt_dt - lv_dt).total_seconds())
+                lv_exit_dt = pd.to_datetime(lv['exit_ts_raw'])
+                if lv_exit_dt.tzinfo is None:
+                    lv_exit_dt = lv_exit_dt.tz_localize('UTC')
+                lv_hold_sec = (lv_exit_dt - lv_dt).total_seconds()
+                bt_hold_sec = tf_min * 60
+                # BUG-FIX: reject pairing if live hold duration is wildly
+                # shorter than BT's expected hold (e.g. 30s live vs 4hr BT) -
+                # that is an unrelated trade, not a real counterpart.
+                if lv_hold_sec < 0.25 * bt_hold_sec:
+                    continue
             except Exception:
                 continue
             if diff <= match_window_sec and (best_dt is None or diff < best_dt):
