@@ -17,6 +17,7 @@ except Exception:
 import time, sys, time, csv, logging, re
 from datetime import datetime, timezone
 sys.path.insert(0, ".")
+import requests
 from engine.order_manager import OrderManager
 from engine.maintenance_flag import check_maintenance_flag
 from engine.telegram_alert import send_alert
@@ -104,17 +105,48 @@ def _send_entry_match_alert(label, direction, entry_ts, bt_entry_price, lv_fill_
 
 
     pass  # PHASE-A: neutered, round-trip-only message
-def _append_fill_log(csv_path, entry_ts, exit_ts, direction, lots, bt_ep, lv_ep, bt_xp, lv_xp, total_charges=0.0):
+def _append_fill_log(csv_path, entry_ts, exit_ts, direction, lots, bt_ep, lv_ep, bt_xp, lv_xp, total_charges=0.0, prod_entry_fill=None, prod_exit_fill=None):
     import csv as _csv_fl, os as _os_fl
     try:
         file_exists = _os_fl.path.exists(csv_path)
         with open(csv_path, "a", newline="") as _f:
             _w = _csv_fl.writer(_f)
             if not file_exists:
-                _w.writerow(["entry_ts","exit_ts","dir","lots","bt_entry","lv_entry","bt_exit","lv_exit","total_charges"])
-            _w.writerow([entry_ts, exit_ts, direction, lots, bt_ep, lv_ep, bt_xp, lv_xp, total_charges])
+                _w.writerow(["entry_ts","exit_ts","dir","lots","bt_entry","lv_entry","bt_exit","lv_exit","total_charges","prod_entry_fill","prod_exit_fill"])
+            _w.writerow([entry_ts, exit_ts, direction, lots, bt_ep, lv_ep, bt_xp, lv_xp, total_charges, prod_entry_fill if prod_entry_fill is not None else "NA", prod_exit_fill if prod_exit_fill is not None else "NA"])
     except Exception as _e:
         log.warning(f'[FILL-LOG] Could not write fill log: {_e}')
+
+def _get_prod_l2_fill_price(symbol, side, lots):
+    try:
+        resp = requests.get(f"https://api.india.delta.exchange/v2/l2orderbook/{symbol}", timeout=3)
+        data = resp.json()
+        if not data.get("success"):
+            return None
+        book = data.get("result", {})
+        levels = book.get("sell") if side == "buy" else book.get("buy")
+        if not levels:
+            return None
+        remaining = float(lots)
+        total_cost = 0.0
+        filled = 0.0
+        for lvl in levels:
+            lvl_price = float(lvl.get("limit_price") or lvl.get("price") or 0)
+            lvl_size = float(lvl.get("size") or 0)
+            take = min(remaining, lvl_size)
+            if take <= 0 or lvl_price <= 0:
+                continue
+            total_cost += take * lvl_price
+            filled += take
+            remaining -= take
+            if remaining <= 0:
+                break
+        if filled <= 0:
+            return None
+        return round(total_cost / filled, 2)
+    except Exception as _e:
+        log.warning(f"[PROD-L2] fill price calc failed: {_e}")
+        return None
 
 def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
                                  bt_entry_price, bt_exit_price, lots=100,
@@ -356,6 +388,7 @@ if position is not None:
         log.warning(f"[STARTUP] entry_price file missing/invalid - recovered from live exchange position: {open_entry_price}")
 else:
     open_entry_price = 0.0
+    prod_entry_fill = None
 
 last_known_ts = load_ts_file(TS_FILE)
 valid_from    = get_valid_from()
@@ -407,6 +440,7 @@ else:
 open_lot_size   = LOT_SIZE
 if position is None:
     open_entry_price = 0.0
+    prod_entry_fill = None
 else:
     _recovered_size = abs(pos.get("size", 0)) if pos.get("success") else 0
     if _recovered_size > 0:
@@ -733,7 +767,9 @@ while True:
                             last_known_ts = safe_ts(_xt)
                             _entry_price_for_alert = open_entry_price
                             _entry_commission_for_log = _entry_commission if '_entry_commission' in dir() else 0.0
+                            _prod_entry_fill_for_log = prod_entry_fill
                             open_entry_price = 0.0
+                            prod_entry_fill = None
                             _exit_fill_price = result.get("avg_fill_price", 0.0)
                             if _exit_fill_price == 0.0:
                                 for _i in range(5):
@@ -742,6 +778,7 @@ while True:
                                     _exit_fill_price = _exit_pos.get("exit_price", 0.0) if _exit_pos.get("success") else 0.0
                                     if _exit_fill_price > 0:
                                         break
+                            prod_exit_fill = _get_prod_l2_fill_price(SYMBOL, side, lots)
                             log.info(f"[ORDER] EXIT confirmed | position=None | exit={_exit_fill_price}")
                             _send_live_exit_alert("S4V3", dirn, _xt, _exit_fill_price, _entry_price_for_alert, lots)
                             _bt_ep2 = 0.0
@@ -765,7 +802,7 @@ while True:
                             _exit_commission = result.get("commission", 0.0)
                             _total_charges = float(_entry_commission_for_log) + float(_exit_commission)
                             if _exit_fill_price > 0:
-                                _append_fill_log("logs/fill_prices_s4v3.csv", sig_ts, _xt, dirn, lots, _bt_ep_log, _lv_ep_log, _bt_xp_log, _exit_fill_price, _total_charges)
+                                _append_fill_log("logs/fill_prices_s4v3.csv", sig_ts, _xt, dirn, lots, _bt_ep_log, _lv_ep_log, _bt_xp_log, _exit_fill_price, _total_charges, _prod_entry_fill_for_log, prod_exit_fill)
                             else:
                                 log.warning(f"[FILL-LOG] exit_fill_price is 0 for sig_ts={sig_ts} - skipping fill log row entirely")
                         else:
@@ -904,6 +941,7 @@ while True:
                             if _bt_ep > 0 and real_entry > 0:
                                 _send_entry_match_alert("S4V3", direction, sig_ts, _bt_ep, real_entry, _bt_xt, _bt_xp, lots)
                             open_entry_price = real_entry
+                            prod_entry_fill = _get_prod_l2_fill_price(SYMBOL, side, lots)
                             try:
                                 with open("logs/entry_price_s4v3.txt","w") as _epf:
                                     _epf.write(str(real_entry))
