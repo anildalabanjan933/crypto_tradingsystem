@@ -104339,3 +104339,11 @@ timestamp
 06-Oct-2026 12:28:22 PM IST INFO [ENGINE] New candle: 2026-10-06 06:55:00
 06-Oct-2026 12:28:56 PM IST INFO [ENGINE] Market data updated
 06-Oct-2026 12:28:56 PM IST INFO [ENGINE] New candle: 2026-10-06 06:57:00
+06-Oct-2026 12:29:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+06-Oct-2026 12:30:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+06-Oct-2026 12:30:01 PM IST INFO [WS] New 30m candle closed: 2026-10-06 06:30:00 - checking S4V2
+06-Oct-2026 12:30:01 PM IST INFO [S4V2] REST reconcile window clipped: 2026-10-06 02:30:00 -> 2026-10-06 05:30:00 (locked signal boundary, avoiding history repaint)
+06-Oct-2026 12:30:03 PM IST INFO [S4V2] REST reconcile OK window 2026-10-06 05:30:00..2026-10-06 07:00:00 mismatches=3 critical_covered=True
+06-Oct-2026 12:30:03 PM IST WARNING [S4V2] REST reconcile corrected 3 candle(s) with WS/REST drift in window 2026-10-06 05:30:00..2026-10-06 07:00:00
+06-Oct-2026 12:30:05 PM IST INFO [S4V2] Strategy returned 401 signals | gen_signals_took=1.49s
+06-Oct-2026 12:30:05 PM IST INFO [ENGINE] Market data update already running - skip duplicate trigger
