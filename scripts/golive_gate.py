@@ -33,19 +33,101 @@ RESULTS = []
 def record(name, passed, detail):
     RESULTS.append({"criterion": name, "passed": passed, "detail": detail})
 
+def load_exempt():
+    exempt = set()
+    exempt_path = "scripts/baseline_exempt.txt"
+    if os.path.exists(exempt_path):
+        with open(exempt_path) as ef:
+            for line in ef:
+                line = line.strip()
+                if not line:
+                    continue
+                h = line.split("|")[0].strip()
+                if h:
+                    exempt.add(h)
+    return exempt
+
 def get_baseline_commit_date():
     try:
+        exempt = load_exempt()
         dates = []
         for f in CRITICAL_FILES:
             out = subprocess.check_output(
-                ["git", "log", "-1", "--format=%ad", "--date=iso", "--", f],
+                ["git", "log", "--format=%H|||%ad", "--date=iso", "--", f],
                 stderr=subprocess.DEVNULL
             ).decode().strip()
-            if out:
-                dates.append(datetime.fromisoformat(out))
+            if not out:
+                continue
+            for line in out.splitlines():
+                parts = line.split("|||", 1)
+                if len(parts) != 2:
+                    continue
+                commit_hash, date_str = parts
+                if commit_hash.strip() in exempt:
+                    continue
+                dates.append(datetime.fromisoformat(date_str.strip()))
+                break
         return max(dates) if dates else None
     except Exception as e:
         return None
+
+def read_startups():
+    log_files = {
+        "S4": "logs/live_trading_s4.log",
+        "S4V2": "logs/live_trading_s4v2.log",
+        "S4V3": "logs/live_trading_s4v3.log",
+    }
+    startups = []
+    for bot, lpath in log_files.items():
+        if not os.path.exists(lpath):
+            continue
+        with open(lpath, errors="ignore") as f:
+            for line in f:
+                if "[STARTUP]" in line and "Bot starting" in line:
+                    try:
+                        ts_str = line.split(" INFO")[0].strip()
+                        ts = datetime.strptime(ts_str, "%Y-%m-%d %H:%M:%S,%f").replace(tzinfo=timezone.utc)
+                        startups.append((bot, ts))
+                    except Exception:
+                        continue
+    return startups
+
+def read_planned():
+    ppath = "logs/planned_restarts.txt"
+    planned = []
+    if os.path.exists(ppath):
+        with open(ppath) as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                parts = [p.strip() for p in line.split("|")]
+                if len(parts) < 2:
+                    continue
+                ts_str, bot = parts[0], parts[1]
+                try:
+                    ts = datetime.fromisoformat(ts_str).replace(tzinfo=timezone.utc)
+                    planned.append((bot, ts))
+                except Exception:
+                    continue
+    return planned
+
+def unplanned_restarts(baseline):
+    startups = read_startups()
+    planned = read_planned()
+    tolerance_min = 10
+    unplanned = []
+    for bot, ts in startups:
+        if baseline and ts < baseline:
+            continue
+        matched = False
+        for pbot, pts in planned:
+            if pbot == bot and abs((ts - pts).total_seconds()) <= tolerance_min * 60:
+                matched = True
+                break
+        if not matched:
+            unplanned.append((bot, ts))
+    return unplanned
 
 def read_csv_rows(path):
     if not os.path.exists(path):
@@ -144,6 +226,11 @@ def main():
     if window_start:
         check_bt_live_match(window_start)
         check_fire_delay(window_start)
+
+    unplanned = unplanned_restarts(window_start)
+    record("j_unplanned_restarts", len(unplanned) == 0,
+           f"{len(unplanned)} unplanned restart(s): " +
+           "; ".join(f"{b}@{t.isoformat()}" for b, t in unplanned))
 
     # --- Criterion a: zero new SYSTEM-SIDE / UNEXPLAINED verdicts since baseline ---
     tracker_rows = read_csv_rows("logs/issue_tracker_trades.csv")
