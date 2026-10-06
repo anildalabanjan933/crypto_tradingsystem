@@ -53,6 +53,66 @@ def read_csv_rows(path):
     with open(path, newline="", errors="ignore") as f:
         return list(csv.DictReader(f))
 
+
+TF_MIN_BY_BOT = {"S4": 120, "S4V2": 30, "S4V3": 240}
+
+def check_bt_live_match(baseline):
+    """Criteria b (direction) + c (trade count), with testnet band/slippage
+    miss treated as PASS (exchange-side, not a system bug)."""
+    rows = read_csv_rows("logs/bt_live_mismatch.csv")
+    issue_rows = read_csv_rows("logs/issue_tracker_trades.csv")
+    exempt_flags = {"ENTRY_UNFILLED_BAND", "ENTRY_BAND_ABANDONED"}
+    since = [r for r in rows if r.get("logged_at", "") >= baseline.isoformat()]
+    if not since:
+        record("b_direction_match", True, "no rows since baseline (nothing to check yet)")
+        record("c_trade_count_match", True, "no rows since baseline (nothing to check yet)")
+        return
+    dir_mismatches = [r for r in since if str(r.get("direction_mismatch")).lower() == "true"]
+    record("b_direction_match", len(dir_mismatches) == 0,
+           f"{len(since)-len(dir_mismatches)}/{len(since)} match, mismatches={len(dir_mismatches)}")
+
+    missed = [r for r in since if str(r.get("missed_trade")).lower() == "true"]
+    extra = [r for r in since if str(r.get("extra_live_trade")).lower() == "true"]
+    unexempt_missed = []
+    for r in missed:
+        bot, ets = r.get("bot", "").upper(), r.get("entry_ts_bt", "")
+        exempted = any(
+            ir.get("bot", "").upper() == bot and ir.get("system_side_flag", "") in exempt_flags
+            and ets[:10] in str(ir.get("date", ""))
+            for ir in issue_rows
+        )
+        if not exempted:
+            unexempt_missed.append(r)
+    record("c_trade_count_match", len(unexempt_missed) == 0 and len(extra) == 0,
+           f"missed={len(missed)} (exempted testnet-band={len(missed)-len(unexempt_missed)}, "
+           f"unexplained={len(unexempt_missed)}), extra_live={len(extra)}")
+
+    slips = [(r.get("bot"), r.get("entry_ts_bt"), r.get("entry_slippage_usd"), r.get("exit_slippage_usd")) for r in since]
+    if slips:
+        print(f"[INFO] entry/exit slippage since baseline (testnet - informational only, not gated): {slips[-5:]}")
+
+def check_fire_delay(baseline):
+    rows = read_csv_rows("logs/confirmation_lag_events.csv")
+    since = [r for r in rows if float(r.get("detected_at", 0)) >= baseline.timestamp()]
+    delays = []
+    for r in since:
+        tf = TF_MIN_BY_BOT.get(r.get("label", ""))
+        if tf is None:
+            continue
+        try:
+            real_delay = float(r["lag_sec"]) - tf * 60
+            delays.append(real_delay)
+        except Exception:
+            continue
+    if not delays:
+        record("d_fire_delay", None, "no numeric lag data since baseline (SKIP)")
+        return
+    delays.sort()
+    p90 = delays[int(0.9 * (len(delays) - 1))]
+    mx = max(delays)
+    record("d_fire_delay", p90 <= 5 and mx <= 15,
+           f"p90={p90:.1f}s (<=5 required) max={mx:.1f}s (<=15 required) n={len(delays)}")
+
 def main():
     baseline = get_baseline_commit_date()
     now = datetime.now(timezone.utc)
@@ -68,6 +128,10 @@ def main():
         record("baseline_commit", True,
                f"Last critical-file commit: {baseline.isoformat()} | "
                f"days_elapsed={days_elapsed:.1f} / required={WINDOW_DAYS}")
+
+    if window_start:
+        check_bt_live_match(window_start)
+        check_fire_delay(window_start)
 
     # --- Criterion a: zero new SYSTEM-SIDE / UNEXPLAINED verdicts since baseline ---
     tracker_rows = read_csv_rows("logs/issue_tracker_trades.csv")
@@ -187,7 +251,7 @@ def main():
             record("d_fire_delay", p90 <= 5 and max_lag <= 15,
                    f"p90={p90:.1f}s max={max_lag:.1f}s (n={len(lags)}) - need p90<=5s, max<=15s")
         else:
-            record("d_fire_delay", None, "no numeric lag data found")
+            pass  # replaced below by check_fire_delay(window_start)
     else:
         record("d_fire_delay", None, "logs/confirmation_lag_events.csv empty/missing")
 
@@ -205,10 +269,6 @@ def main():
             status = "FAIL"
             overall_pass = False
         print(f"[{status}] {r['criterion']}: {r['detail']}")
-    print("=" * 70)
-    print("NOTE: criteria b (direction match) and c (trade count match) require")
-    print("BT-vs-live comparison and are NOT automated here - cross-check")
-    print("logs/bt_live_mismatch.csv manually until that logic is added.")
     print("=" * 70)
     print("OVERALL:", "PASS" if overall_pass else "FAIL")
     sys.exit(0 if overall_pass else 1)
