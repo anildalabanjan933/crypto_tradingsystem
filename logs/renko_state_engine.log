@@ -104347,3 +104347,18 @@ timestamp
 06-Oct-2026 12:30:03 PM IST WARNING [S4V2] REST reconcile corrected 3 candle(s) with WS/REST drift in window 2026-10-06 05:30:00..2026-10-06 07:00:00
 06-Oct-2026 12:30:05 PM IST INFO [S4V2] Strategy returned 401 signals | gen_signals_took=1.49s
 06-Oct-2026 12:30:05 PM IST INFO [ENGINE] Market data update already running - skip duplicate trigger
+06-Oct-2026 12:31:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+06-Oct-2026 12:31:00 PM IST INFO [ENGINE] Market data update already running - skip duplicate trigger
+06-Oct-2026 12:31:18 PM IST INFO [ENGINE] Market data updated
+06-Oct-2026 12:32:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+06-Oct-2026 12:32:36 PM IST INFO [ENGINE] Market data updated
+06-Oct-2026 12:32:36 PM IST INFO [ENGINE] New candle: 2026-10-06 06:58:00
+06-Oct-2026 12:33:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+06-Oct-2026 12:33:01 PM IST INFO [ENGINE] Market data update already running - skip duplicate trigger
+06-Oct-2026 12:33:12 PM IST INFO [ENGINE] Market data updated
+06-Oct-2026 12:33:12 PM IST INFO [ENGINE] New candle: 2026-10-06 07:01:00
+06-Oct-2026 12:34:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+06-Oct-2026 12:34:54 PM IST INFO [ENGINE] Market data updated
+06-Oct-2026 12:34:54 PM IST INFO [ENGINE] New candle: 2026-10-06 07:02:00
+06-Oct-2026 12:35:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+06-Oct-2026 12:35:01 PM IST INFO [ENGINE] Market data update already running - skip duplicate trigger
