@@ -196,3 +196,967 @@
 2026-09-23 06:00:09,293 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=86467.17966138 | band=$250.0 | limit=86217.2 | cid=S4E20260923T040000_a0
 2026-09-23 06:00:09,732 INFO [OrderManager] Order filled | id=2173277532 state=closed filled=100/100
 2026-09-23 06:00:11,630 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-23 11:51:50,017 INFO [OrderManager] LOSS-CAPPED resting order FILLED | id=2173310495 avg_fill=85611.5
+2026-09-23 11:51:52,107 INFO [ORDER] EXIT confirmed | position=None | exit=85611.5
+2026-09-23 15:16:23,557 INFO [OrderManager] LOSS-CAPPED resting order FILLED | id=2173339584 avg_fill=84717.5
+2026-09-23 15:16:25,715 INFO [ORDER] EXIT confirmed | position=None | exit=84717.5
+2026-09-24 15:00:02,483 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83654.75900042 | band=$250.0 | limit=83404.8 | cid=S4V2E20260924T143000_a0
+2026-09-24 15:00:03,283 INFO [OrderManager] Order filled | id=2173448979 state=closed filled=100/100
+2026-09-24 15:00:06,410 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-24 15:24:36,642 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84191.62630244 | band=$250.0 | limit=83941.6 | cid=S4E20260924T140000_a0
+2026-09-24 15:24:37,394 INFO [OrderManager] Order filled | id=2173452920 state=closed filled=100/100
+2026-09-24 15:24:40,680 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-24 15:25:46,160 INFO [OrderManager] Close using IOC-banded limit | ref_price=84132.6824223 limit_price=84282.7 band=$150 (elapsed=0s)
+2026-09-24 15:25:50,892 INFO [ORDER] EXIT confirmed | position=None | exit=84117.0
+2026-09-24 15:25:55,201 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84109.59365731 | band=$250.0 | limit=84359.6 | cid=S4V2E20260924T150000_a0
+2026-09-24 15:25:55,904 INFO [OrderManager] Order filled | id=2173453246 state=closed filled=100/100
+2026-09-24 15:25:58,907 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-24 16:00:04,924 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84306.48426034 | band=$250.0 | limit=84556.5 | cid=S4V3E20260924T120000_a0
+2026-09-24 16:00:09,340 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84306.48426034 | band=$250.0 | limit=84556.5 | cid=S4V3E20260924T120000_a1
+2026-09-24 16:00:15,315 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84306.48426034 | band=$500.0 | limit=84806.5 | cid=S4V3E20260924T120000_a2
+2026-09-24 16:00:20,683 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84306.48426034 | band=$500.0 | limit=84806.5 | cid=S4V3E20260924T120000_a3
+2026-09-24 16:00:26,524 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84306.48426034 | band=$750.0 | limit=85056.5 | cid=S4V3E20260924T120000_a4
+2026-09-24 17:00:05,915 INFO [OrderManager] LOSS-CAPPED resting order FILLED | id=2173457992 avg_fill=84418.0
+2026-09-24 17:00:08,268 INFO [ORDER] EXIT confirmed | position=None | exit=84418.0
+2026-09-24 17:00:10,706 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84418.90018484 | band=$250.0 | limit=84168.9 | cid=S4V2E20260924T163000_a0
+2026-09-24 17:00:11,064 INFO [OrderManager] Order filled | id=2173458036 state=closed filled=100/100
+2026-09-24 17:00:13,864 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-24 18:27:39,752 INFO [OrderManager] LOSS-CAPPED resting order FILLED | id=2173467100 avg_fill=84435.0
+2026-09-24 18:27:42,182 INFO [ORDER] EXIT confirmed | position=None | exit=84435.0
+2026-09-24 18:27:58,271 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84450.40195187 | band=$250.0 | limit=84700.4 | cid=S4E20260924T180000_a0
+2026-09-24 18:27:58,898 INFO [OrderManager] Order filled | id=2173467110 state=closed filled=100/100
+2026-09-24 18:28:01,496 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-24 18:28:33,023 INFO [OrderManager] Close using IOC-banded limit | ref_price=84411.81742032 limit_price=84561.8 band=$150 (elapsed=0s)
+2026-09-24 18:28:38,091 INFO [ORDER] EXIT confirmed | position=None | exit=84430.0
+2026-09-24 18:28:40,769 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84428.54328548 | band=$250.0 | limit=84678.5 | cid=S4V2E20260924T180000_a0
+2026-09-24 18:28:41,434 INFO [OrderManager] Order filled | id=2173467141 state=closed filled=100/100
+2026-09-24 18:28:44,022 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-24 20:00:02,667 INFO [OrderManager] Close using IOC-banded limit | ref_price=84387.3100308 limit_price=84237.3 band=$150 (elapsed=0s)
+2026-09-24 20:00:08,814 INFO [ORDER] EXIT confirmed | position=None | exit=84355.5
+2026-09-24 20:00:10,862 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84348.27326423 | band=$250.0 | limit=84098.3 | cid=S4V2E20260924T193000_a0
+2026-09-24 20:00:11,538 INFO [OrderManager] Order filled | id=2173471480 state=closed filled=100/100
+2026-09-24 20:00:14,287 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-24 21:30:02,884 INFO [OrderManager] Close using IOC-banded limit | ref_price=84392.40978637 limit_price=84542.4 band=$150 (elapsed=0s)
+2026-09-24 21:30:08,019 INFO [ORDER] EXIT confirmed | position=None | exit=84395.5
+2026-09-24 22:00:07,387 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84310.04518798 | band=$250.0 | limit=84060.0 | cid=S4V2E20260924T213000_a0
+2026-09-24 22:00:08,168 INFO [OrderManager] Order filled | id=2173475251 state=closed filled=100/100
+2026-09-24 22:00:08,295 INFO [OrderManager] Close using IOC-banded limit | ref_price=84310.04518798 limit_price=84160.0 band=$150 (elapsed=0s)
+2026-09-24 22:00:11,305 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-24 22:00:11,721 INFO [ORDER] EXIT confirmed | position=None | exit=84305.0
+2026-09-24 22:00:14,037 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84306.22932138 | band=$250.0 | limit=84056.2 | cid=S4E20260924T200000_a0
+2026-09-24 22:00:14,704 INFO [OrderManager] Order filled | id=2173475260 state=closed filled=100/100
+2026-09-24 22:00:17,761 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-24 23:00:01,655 INFO [OrderManager] Close using IOC-banded limit | ref_price=84248.65989564 limit_price=84398.7 band=$150 (elapsed=0s)
+2026-09-24 23:00:05,520 INFO [ORDER] EXIT confirmed | position=None | exit=84256.5
+2026-09-24 23:30:04,907 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84415.82709374 | band=$250.0 | limit=84665.8 | cid=S4V2E20260924T230000_a0
+2026-09-24 23:30:05,606 INFO [OrderManager] Order filled | id=2173476242 state=closed filled=100/100
+2026-09-24 23:30:08,909 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-25 00:00:05,853 INFO [OrderManager] Close using IOC-banded limit | ref_price=84384.81728242 limit_price=84534.8 band=$150 (elapsed=0s)
+2026-09-25 00:00:09,923 INFO [ORDER] EXIT confirmed | position=None | exit=84386.5
+2026-09-25 00:00:12,041 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84386.40347979 | band=$250.0 | limit=84636.4 | cid=S4E20260924T220000_a0
+2026-09-25 00:00:12,863 INFO [OrderManager] Order filled | id=2173476679 state=closed filled=100/100
+2026-09-25 00:00:16,026 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-25 01:30:03,570 INFO [OrderManager] Close using IOC-banded limit | ref_price=84514.57571006 limit_price=84364.6 band=$150 (elapsed=0s)
+2026-09-25 01:30:08,535 INFO [ORDER] EXIT confirmed | position=None | exit=84512.0
+2026-09-25 02:00:03,136 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84590.52239508 | band=$250.0 | limit=84840.5 | cid=S4V2E20260925T013000_a0
+2026-09-25 02:00:03,888 INFO [OrderManager] Order filled | id=2173480720 state=closed filled=100/100
+2026-09-25 02:00:06,583 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-25 03:00:01,699 INFO [OrderManager] Close using IOC-banded limit | ref_price=84193.93792165 limit_price=84043.9 band=$150 (elapsed=0s)
+2026-09-25 03:00:06,394 INFO [ORDER] EXIT confirmed | position=None | exit=84189.0
+2026-09-25 03:00:09,104 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84189.16558225 | band=$250.0 | limit=83939.2 | cid=S4V2E20260925T023000_a0
+2026-09-25 03:00:09,464 INFO [OrderManager] Order filled | id=2173486154 state=closed filled=100/100
+2026-09-25 03:00:12,775 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-25 03:15:32,237 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84258.21992576 | band=$250.0 | limit=84008.2 | cid=S4V3E20260925T000000_a0
+2026-09-25 03:15:32,894 INFO [OrderManager] Order filled | id=2173487641 state=closed filled=100/100
+2026-09-25 03:15:36,085 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-25 03:15:48,087 INFO [OrderManager] Close using IOC-banded limit | ref_price=84276.24422129 limit_price=84126.2 band=$150 (elapsed=0s)
+2026-09-25 03:15:52,495 INFO [ORDER] EXIT confirmed | position=None | exit=84299.5
+2026-09-25 03:15:53,976 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84310.16697719 | band=$250.0 | limit=84060.2 | cid=S4E20260925T020000_a0
+2026-09-25 03:15:54,328 INFO [OrderManager] Order filled | id=2173487693 state=closed filled=100/100
+2026-09-25 03:15:56,868 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-25 08:30:02,158 INFO [OrderManager] Close using IOC-banded limit | ref_price=84394.58360678 limit_price=84544.6 band=$150 (elapsed=0s)
+2026-09-25 08:30:06,968 INFO [ORDER] EXIT confirmed | position=None | exit=84399.5
+2026-09-25 08:30:09,253 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84402.78805445 | band=$250.0 | limit=84652.8 | cid=S4V2E20260925T080000_a0
+2026-09-25 08:30:09,619 INFO [OrderManager] Order filled | id=2173515202 state=closed filled=100/100
+2026-09-25 08:30:12,081 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-25 09:51:50,201 INFO [OrderManager] Close using IOC-banded limit | ref_price=84563.9033718 limit_price=84713.9 band=$150 (elapsed=0s)
+2026-09-25 09:51:54,087 INFO [ORDER] EXIT confirmed | position=None | exit=84567.5
+2026-09-25 09:51:59,727 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84565.46424152 | band=$250.0 | limit=84815.5 | cid=S4E20260925T080000_a0
+2026-09-25 09:52:00,410 INFO [OrderManager] Order filled | id=2173523290 state=closed filled=100/100
+2026-09-25 09:52:02,687 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-25 09:52:12,867 INFO [OrderManager] Close using IOC-banded limit | ref_price=84560.99014333 limit_price=84411.0 band=$150 (elapsed=0s)
+2026-09-25 09:52:17,405 INFO [ORDER] EXIT confirmed | position=None | exit=84560.0
+2026-09-25 09:52:19,833 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84562.37531043 | band=$250.0 | limit=84312.4 | cid=S4V2E20260925T093000_a0
+2026-09-25 09:52:20,511 INFO [OrderManager] Order filled | id=2173523318 state=closed filled=100/100
+2026-09-25 09:52:23,769 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-25 10:20:06,325 INFO [OrderManager] Close using IOC-banded limit | ref_price=84426.33798034 limit_price=84276.3 band=$150 (elapsed=0s)
+2026-09-25 10:20:11,201 INFO [ORDER] EXIT confirmed | position=None | exit=84415.0
+2026-09-25 10:20:24,139 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84419.51700351 | band=$250.0 | limit=84169.5 | cid=S4E20260925T100000_a0
+2026-09-25 10:20:24,791 INFO [OrderManager] Order filled | id=2173526320 state=closed filled=100/100
+2026-09-25 10:20:27,376 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-25 10:30:03,563 INFO [OrderManager] Close using IOC-banded limit | ref_price=84690.58576456 limit_price=84840.6 band=$150 (elapsed=0s)
+2026-09-25 10:30:08,256 INFO [ORDER] EXIT confirmed | position=None | exit=84678.5
+2026-09-25 10:50:46,824 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84750.41000338 | band=$250.0 | limit=85000.4 | cid=S4V2E20260925T103000_a0
+2026-09-25 10:50:47,445 INFO [OrderManager] Order filled | id=2173529485 state=closed filled=100/100
+2026-09-25 10:50:49,340 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-25 12:00:02,296 INFO [OrderManager] Close using IOC-banded limit | ref_price=84554.8542796 limit_price=84404.9 band=$150 (elapsed=0s)
+2026-09-25 12:00:06,593 INFO [ORDER] EXIT confirmed | position=None | exit=84568.0
+2026-09-25 12:00:08,990 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84568.05799231 | band=$250.0 | limit=84318.1 | cid=S4V2E20260925T113000_a0
+2026-09-25 12:00:09,362 INFO [OrderManager] Order filled | id=2173539308 state=closed filled=100/100
+2026-09-25 12:00:11,868 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-25 15:00:02,877 INFO [OrderManager] Close using IOC-banded limit | ref_price=83993.83366662 limit_price=84143.8 band=$150 (elapsed=0s)
+2026-09-25 15:00:07,163 INFO [ORDER] EXIT confirmed | position=None | exit=83968.5
+2026-09-25 15:00:09,375 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83970.05706288 | band=$250.0 | limit=84220.1 | cid=S4V2E20260925T143000_a0
+2026-09-25 15:00:09,823 INFO [OrderManager] Order filled | id=2173569149 state=closed filled=100/100
+2026-09-25 15:00:12,740 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-25 15:30:05,092 INFO [OrderManager] Close using IOC-banded limit | ref_price=83750.96472717 limit_price=83601.0 band=$150 (elapsed=0s)
+2026-09-25 15:30:09,496 INFO [ORDER] EXIT confirmed | position=None | exit=83774.5
+2026-09-25 15:30:12,777 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83818.94195363 | band=$250.0 | limit=83568.9 | cid=S4V2E20260925T150000_a0
+2026-09-25 15:30:13,492 INFO [OrderManager] Order filled | id=2173573042 state=closed filled=100/100
+2026-09-25 15:30:15,784 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-25 16:30:03,367 INFO [OrderManager] Close using IOC-banded limit | ref_price=83962.31240696 limit_price=84112.3 band=$150 (elapsed=0s)
+2026-09-25 16:30:07,661 INFO [ORDER] EXIT confirmed | position=None | exit=83970.5
+2026-09-25 16:30:09,241 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83965.3470405 | band=$250.0 | limit=84215.3 | cid=S4V2E20260925T160000_a0
+2026-09-25 16:30:09,639 INFO [OrderManager] Order filled | id=2173582066 state=closed filled=100/100
+2026-09-25 16:30:11,809 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-25 16:46:52,717 INFO [OrderManager] Close using IOC-banded limit | ref_price=83860.15305126 limit_price=84010.2 band=$150 (elapsed=0s)
+2026-09-25 16:46:57,159 INFO [ORDER] EXIT confirmed | position=None | exit=83867.5
+2026-09-25 16:47:26,871 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83821.60203324 | band=$250.0 | limit=84071.6 | cid=S4E20260925T160000_a0
+2026-09-25 16:47:27,617 INFO [OrderManager] Order filled | id=2173584231 state=closed filled=100/100
+2026-09-25 16:47:27,632 INFO [OrderManager] Close using IOC-banded limit | ref_price=83821.60203324 limit_price=83671.6 band=$150 (elapsed=0s)
+2026-09-25 16:47:29,916 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-25 16:47:31,117 INFO [ORDER] EXIT confirmed | position=None | exit=83817.0
+2026-09-25 17:00:02,322 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83720.69253044 | band=$250.0 | limit=83470.7 | cid=S4V2E20260925T163000_a0
+2026-09-25 17:00:04,007 INFO [OrderManager] Order filled | id=2173585764 state=closed filled=100/100
+2026-09-25 17:00:06,428 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-25 17:29:21,818 INFO [OrderManager] Close using IOC-banded limit | ref_price=83697.14993425 limit_price=83847.1 band=$150 (elapsed=0s)
+2026-09-25 17:29:25,817 INFO [ORDER] EXIT confirmed | position=None | exit=83697.5
+2026-09-25 17:29:55,316 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83672.77435876 | band=$250.0 | limit=83922.8 | cid=S4V2E20260925T170000_a0
+2026-09-25 17:29:55,921 INFO [OrderManager] Order filled | id=2173588706 state=closed filled=100/100
+2026-09-25 17:29:58,645 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-25 21:00:03,477 INFO [OrderManager] Close using IOC-banded limit | ref_price=83859.62129937 limit_price=83709.6 band=$150 (elapsed=0s)
+2026-09-25 21:00:06,853 INFO [ORDER] EXIT confirmed | position=None | exit=83853.5
+2026-09-25 21:00:08,299 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83859.62129937 | band=$250.0 | limit=83609.6 | cid=S4V2E20260925T203000_a0
+2026-09-25 21:00:08,699 INFO [OrderManager] Order filled | id=2173598814 state=closed filled=100/100
+2026-09-25 21:00:10,745 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-25 22:00:03,558 INFO [OrderManager] Close using IOC-banded limit | ref_price=83768.94473767 limit_price=83618.9 band=$150 (elapsed=0s)
+2026-09-25 22:00:08,388 INFO [ORDER] EXIT confirmed | position=None | exit=83761.5
+2026-09-25 22:00:10,126 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83765.29282228 | band=$250.0 | limit=83515.3 | cid=S4E20260925T200000_a0
+2026-09-25 22:00:10,753 INFO [OrderManager] Order filled | id=2173600556 state=closed filled=100/100
+2026-09-25 22:00:13,192 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-25 23:00:05,267 INFO [OrderManager] Close using IOC-banded limit | ref_price=84055.04207682 limit_price=84205.0 band=$150 (elapsed=0s)
+2026-09-25 23:00:10,185 INFO [ORDER] EXIT confirmed | position=None | exit=84051.5
+2026-09-25 23:00:13,533 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84052.39448922 | band=$250.0 | limit=84302.4 | cid=S4V2E20260925T223000_a0
+2026-09-25 23:00:14,202 INFO [OrderManager] Order filled | id=2173601107 state=closed filled=100/100
+2026-09-25 23:00:16,679 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-26 00:00:03,880 INFO [OrderManager] Close using IOC-banded limit | ref_price=84071.90903022 limit_price=84221.9 band=$150 (elapsed=0s)
+2026-09-26 00:00:07,465 INFO [ORDER] EXIT confirmed | position=None | exit=84070.5
+2026-09-26 00:00:09,386 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84067.84804616 | band=$250.0 | limit=84317.8 | cid=S4E20260925T220000_a0
+2026-09-26 00:00:10,340 INFO [OrderManager] Order filled | id=2173601631 state=closed filled=100/100
+2026-09-26 00:00:13,585 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-26 00:30:02,756 INFO [OrderManager] Close using IOC-banded limit | ref_price=83930.94937632 limit_price=83780.9 band=$150 (elapsed=0s)
+2026-09-26 00:30:08,125 INFO [ORDER] EXIT confirmed | position=None | exit=83930.5
+2026-09-26 00:30:10,134 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83932.88655895 | band=$250.0 | limit=83682.9 | cid=S4V2E20260926T000000_a0
+2026-09-26 00:30:10,534 INFO [OrderManager] Order filled | id=2173602071 state=closed filled=100/100
+2026-09-26 00:30:12,647 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-26 02:00:03,312 INFO [OrderManager] Close using IOC-banded limit | ref_price=84058.36556013 limit_price=84208.4 band=$150 (elapsed=0s)
+2026-09-26 02:00:08,014 INFO [ORDER] EXIT confirmed | position=None | exit=84060.0
+2026-09-26 02:00:09,786 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84059.05931577 | band=$250.0 | limit=84309.1 | cid=S4V2E20260926T013000_a0
+2026-09-26 02:00:10,154 INFO [OrderManager] Order filled | id=2173604092 state=closed filled=100/100
+2026-09-26 02:00:12,635 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-26 03:15:40,418 INFO [OrderManager] Close using IOC-banded limit | ref_price=83918.45154465 limit_price=84068.5 band=$150 (elapsed=0s)
+2026-09-26 03:15:48,203 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83918.67910042 | band=$250.0 | limit=83668.7 | cid=S4V3E20260926T000000_a0
+2026-09-26 03:15:48,781 INFO [OrderManager] Order filled | id=2173607838 state=closed filled=100/100
+2026-09-26 03:15:52,701 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-26 03:16:21,307 INFO [OrderManager] Close using IOC-banded limit | ref_price=83917.6366181 limit_price=83767.6 band=$150 (elapsed=0s)
+2026-09-26 03:16:24,661 INFO [OrderManager] Close using IOC-banded limit | ref_price=83917.6073338 limit_price=83767.6 band=$150 (elapsed=0s)
+2026-09-26 03:16:25,413 INFO [ORDER] EXIT confirmed | position=None | exit=83914.0
+2026-09-26 03:16:26,727 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83917.6073338 | band=$250.0 | limit=83667.6 | cid=S4E20260926T020000_a0
+2026-09-26 03:16:27,141 INFO [OrderManager] Order filled | id=2173607893 state=closed filled=100/100
+2026-09-26 03:16:29,004 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-26 03:16:29,334 INFO [ORDER] EXIT confirmed | position=None | exit=83914.0
+2026-09-26 03:16:30,868 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83917.30634329 | band=$250.0 | limit=83667.3 | cid=S4V2E20260926T030000_a0
+2026-09-26 03:16:31,270 INFO [OrderManager] Order filled | id=2173607899 state=closed filled=100/100
+2026-09-26 03:16:32,745 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-26 04:00:03,544 INFO [OrderManager] Close using IOC-banded limit | ref_price=83925.38583941 limit_price=84075.4 band=$150 (elapsed=0s)
+2026-09-26 04:00:10,109 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83925.4086858 | band=$250.0 | limit=83675.4 | cid=S4V2E20260926T033000_a0
+2026-09-26 04:00:10,465 INFO [OrderManager] Order filled | id=2173610277 state=closed filled=100/100
+2026-09-26 04:00:13,433 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-26 07:30:02,784 INFO [OrderManager] Close using IOC-banded limit | ref_price=83992.9960301 limit_price=84143.0 band=$150 (elapsed=0s)
+2026-09-26 07:30:06,711 INFO [ORDER] EXIT confirmed | position=None | exit=83993.5
+2026-09-26 07:30:08,297 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83992.9904363 | band=$250.0 | limit=84243.0 | cid=S4V2E20260926T070000_a0
+2026-09-26 07:30:08,657 INFO [OrderManager] Order filled | id=2173624425 state=closed filled=100/100
+2026-09-26 07:30:10,237 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-26 08:00:03,097 INFO [OrderManager] Close using IOC-banded limit | ref_price=84100.41761066 limit_price=84250.4 band=$150 (elapsed=0s)
+2026-09-26 08:00:06,342 INFO [ORDER] EXIT confirmed | position=None | exit=84094.605
+2026-09-26 08:00:08,331 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84100.41761066 | band=$250.0 | limit=84350.4 | cid=S4E20260926T060000_a0
+2026-09-26 08:00:08,738 INFO [OrderManager] Order filled | id=2173626737 state=closed filled=100/100
+2026-09-26 08:00:11,562 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-26 09:30:02,942 INFO [OrderManager] Close using IOC-banded limit | ref_price=84010.03045175 limit_price=83860.0 band=$150 (elapsed=0s)
+2026-09-26 09:30:08,120 INFO [ORDER] EXIT confirmed | position=None | exit=84005.0
+2026-09-26 09:30:10,279 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84007.89230769 | band=$250.0 | limit=83757.9 | cid=S4V2E20260926T090000_a0
+2026-09-26 09:30:15,334 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84006.22190785 | band=$250.0 | limit=83756.2 | cid=S4V2E20260926T090000_a1
+2026-09-26 09:30:20,918 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84006.61374845 | band=$500.0 | limit=83506.6 | cid=S4V2E20260926T090000_a2
+2026-09-26 09:30:26,239 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84005.28084774 | band=$500.0 | limit=83505.3 | cid=S4V2E20260926T090000_a3
+2026-09-26 09:30:31,583 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84004.40615227 | band=$750.0 | limit=83254.4 | cid=S4V2E20260926T090000_a4
+2026-09-26 10:00:02,352 INFO [OrderManager] Close using IOC-banded limit | ref_price=83987.99678805 limit_price=83838.0 band=$150 (elapsed=0s)
+2026-09-26 10:00:07,059 INFO [ORDER] EXIT confirmed | position=None | exit=83992.5
+2026-09-26 10:00:09,102 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83999.80486143 | band=$250.0 | limit=83749.8 | cid=S4E20260926T080000_a0
+2026-09-26 10:00:09,802 INFO [OrderManager] Order filled | id=2173640913 state=closed filled=100/100
+2026-09-26 10:00:11,597 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-26 10:30:04,172 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84141.17626272 | band=$250.0 | limit=84391.2 | cid=S4V2E20260926T100000_a0
+2026-09-26 10:30:10,489 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84141.36845048 | band=$250.0 | limit=84391.4 | cid=S4V2E20260926T100000_a1
+2026-09-26 10:30:15,421 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84141.19202391 | band=$500.0 | limit=84641.2 | cid=S4V2E20260926T100000_a2
+2026-09-26 10:30:20,763 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84141.4503039 | band=$500.0 | limit=84641.5 | cid=S4V2E20260926T100000_a3
+2026-09-26 10:30:26,593 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84141.46333839 | band=$750.0 | limit=84891.5 | cid=S4V2E20260926T100000_a4
+2026-09-26 11:38:27,362 INFO [OrderManager] Close using IOC-banded limit | ref_price=84255.51868971 limit_price=84405.5 band=$150 (elapsed=0s)
+2026-09-26 11:38:40,412 INFO [OrderManager] Close using IOC-banded limit | ref_price=84255.51868971 limit_price=84405.5 band=$150 (elapsed=13s)
+2026-09-26 11:38:43,724 INFO [OrderManager] Close using IOC-banded limit | ref_price=84255.51868971 limit_price=84505.5 band=$250 (elapsed=17s)
+2026-09-26 11:38:47,422 INFO [OrderManager] Close using IOC-banded limit | ref_price=84256.41933662 limit_price=84506.4 band=$250 (elapsed=20s)
+2026-09-26 11:38:50,668 INFO [OrderManager] Close using IOC-banded limit | ref_price=84256.41933662 limit_price=84506.4 band=$250 (elapsed=24s)
+2026-09-26 11:39:03,169 INFO [OrderManager] Close using IOC-banded limit | ref_price=84260.02192427 limit_price=84610.0 band=$350 (elapsed=36s)
+2026-09-26 11:39:07,037 INFO [ORDER] EXIT confirmed | position=None | exit=84241.08
+2026-09-26 11:39:08,081 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84259.52156488 | band=$250.0 | limit=84509.5 | cid=S4E20260926T100000_a0
+2026-09-26 11:39:08,882 INFO [OrderManager] Order filled | id=2173648962 state=cancelled filled=62/100
+2026-09-26 11:39:11,100 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-26 13:00:09,220 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84025.72515586 | band=$250.0 | limit=83775.7 | cid=S4V2E20260926T123000_a0
+2026-09-26 13:00:14,845 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84026.11717926 | band=$250.0 | limit=83776.1 | cid=S4V2E20260926T123000_a1
+2026-09-26 13:00:20,444 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84026.52878882 | band=$500.0 | limit=83526.5 | cid=S4V2E20260926T123000_a2
+2026-09-26 13:00:25,870 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84026.92963489 | band=$500.0 | limit=83526.9 | cid=S4V2E20260926T123000_a3
+2026-09-26 13:00:31,361 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84027.16007759 | band=$750.0 | limit=83277.2 | cid=S4V2E20260926T123000_a4
+2026-09-26 14:00:02,958 INFO [OrderManager] Close using IOC-banded limit | ref_price=83925.64597907 limit_price=83775.6 band=$150 (elapsed=0s)
+2026-09-26 14:00:08,131 INFO [ORDER] EXIT confirmed | position=None | exit=83921.5
+2026-09-26 14:00:10,710 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83910.49160796 | band=$250.0 | limit=83660.5 | cid=S4E20260926T120000_a0
+2026-09-26 14:00:11,126 INFO [OrderManager] Order filled | id=2173662260 state=closed filled=100/100
+2026-09-26 14:00:13,573 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-26 16:00:04,243 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84222.69188061 | band=$250.0 | limit=84472.7 | cid=S4V2E20260926T153000_a0
+2026-09-26 16:00:05,671 INFO [OrderManager] Close using IOC-banded limit | ref_price=84222.69188061 limit_price=84372.7 band=$150 (elapsed=0s)
+2026-09-26 16:00:08,998 INFO [ORDER] EXIT confirmed | position=None | exit=84135.375
+2026-09-26 16:00:10,241 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84224.28651704 | band=$250.0 | limit=84474.3 | cid=S4V2E20260926T153000_a1
+2026-09-26 16:00:10,856 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84224.28651704 | band=$250.0 | limit=84474.3 | cid=S4E20260926T140000_a0
+2026-09-26 16:00:11,263 INFO [OrderManager] Order filled | id=2173673703 state=closed filled=100/100
+2026-09-26 16:00:14,070 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-26 16:00:15,340 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84229.52732074 | band=$500.0 | limit=84729.5 | cid=S4V2E20260926T153000_a2
+2026-09-26 16:00:20,788 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84236.40036759 | band=$500.0 | limit=84736.4 | cid=S4V2E20260926T153000_a3
+2026-09-26 16:00:26,897 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84243.91548878 | band=$750.0 | limit=84993.9 | cid=S4V2E20260926T153000_a4
+2026-09-26 18:46:15,421 INFO [OrderManager] Close using IOC-banded limit | ref_price=83991.50381096 limit_price=83841.5 band=$150 (elapsed=0s)
+2026-09-26 18:46:19,639 INFO [ORDER] EXIT confirmed | position=None | exit=83982.5
+2026-09-26 18:46:35,134 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83990.64900591 | band=$250.0 | limit=83740.6 | cid=S4E20260926T180000_a0
+2026-09-26 18:46:35,797 INFO [OrderManager] Order filled | id=2173685566 state=closed filled=100/100
+2026-09-26 18:46:39,460 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-26 18:46:57,896 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83991.69628165 | band=$250.0 | limit=83741.7 | cid=S4V2E20260926T183000_a0
+2026-09-26 18:47:03,392 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83990.64721457 | band=$250.0 | limit=83740.6 | cid=S4V2E20260926T183000_a1
+2026-09-26 18:47:08,642 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83992.00135414 | band=$500.0 | limit=83492.0 | cid=S4V2E20260926T183000_a2
+2026-09-26 18:47:14,392 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83990.37862211 | band=$500.0 | limit=83490.4 | cid=S4V2E20260926T183000_a3
+2026-09-26 18:47:19,392 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83998.86263298 | band=$750.0 | limit=83248.9 | cid=S4V2E20260926T183000_a4
+2026-09-26 21:30:04,041 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84183.10069952 | band=$250.0 | limit=84433.1 | cid=S4V2E20260926T210000_a0
+2026-09-26 21:30:08,061 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84183.10069952 | band=$250.0 | limit=84433.1 | cid=S4V2E20260926T210000_a1
+2026-09-26 21:30:14,882 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84229.20775053 | band=$500.0 | limit=84729.2 | cid=S4V2E20260926T210000_a2
+2026-09-26 21:30:20,185 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84230.68773861 | band=$500.0 | limit=84730.7 | cid=S4V2E20260926T210000_a3
+2026-09-26 21:30:25,260 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84227.03135254 | band=$750.0 | limit=84977.0 | cid=S4V2E20260926T210000_a4
+2026-09-26 22:00:06,094 INFO [OrderManager] Close using IOC-banded limit | ref_price=84139.11567838 limit_price=84289.1 band=$150 (elapsed=0s)
+2026-09-26 22:00:10,902 INFO [ORDER] EXIT confirmed | position=None | exit=84137.5
+2026-09-26 22:00:12,631 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84139.22454271 | band=$250.0 | limit=84389.2 | cid=S4E20260926T200000_a0
+2026-09-26 22:00:13,123 INFO [OrderManager] Order filled | id=2173690391 state=closed filled=100/100
+2026-09-26 22:00:15,025 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-27 00:30:04,665 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84246.37581505 | band=$250.0 | limit=83996.4 | cid=S4V2E20260927T000000_a0
+2026-09-27 00:30:06,527 INFO [OrderManager] Order filled | id=2173691765 state=closed filled=100/100
+2026-09-27 00:30:09,630 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-27 01:30:08,791 INFO [OrderManager] Close using IOC-banded limit | ref_price=84315.92468221 limit_price=84465.9 band=$150 (elapsed=0s)
+2026-09-27 01:30:12,837 INFO [ORDER] EXIT confirmed | position=None | exit=84313.5
+2026-09-27 01:30:14,202 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84315.39251938 | band=$250.0 | limit=84565.4 | cid=S4V2E20260927T010000_a0
+2026-09-27 01:30:14,940 INFO [OrderManager] Order filled | id=2173692690 state=closed filled=100/100
+2026-09-27 01:30:17,860 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-27 03:15:36,123 INFO [OrderManager] Close using IOC-banded limit | ref_price=84468.20720058 limit_price=84618.2 band=$150 (elapsed=0s)
+2026-09-27 03:30:01,869 INFO [OrderManager] Close using IOC-banded limit | ref_price=84367.12512755 limit_price=84217.1 band=$150 (elapsed=0s)
+2026-09-27 03:30:08,919 INFO [ORDER] EXIT confirmed | position=None | exit=84366.5
+2026-09-27 03:30:10,315 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84369.2379981 | band=$250.0 | limit=84119.2 | cid=S4V2E20260927T030000_a0
+2026-09-27 03:30:10,689 INFO [OrderManager] Order filled | id=2173698180 state=closed filled=100/100
+2026-09-27 03:30:13,116 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-27 06:00:03,382 INFO [OrderManager] Close using IOC-banded limit | ref_price=84650.15962786 limit_price=84800.2 band=$150 (elapsed=0s)
+2026-09-27 06:00:07,052 INFO [ORDER] EXIT confirmed | position=None | exit=84496.72099999999
+2026-09-27 06:00:08,121 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84650.15962786 | band=$250.0 | limit=84900.2 | cid=S4V2E20260927T053000_a0
+2026-09-27 06:00:08,666 INFO [OrderManager] Order filled | id=2173710285 state=cancelled filled=38/100
+2026-09-27 06:00:11,182 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-27 13:00:03,161 INFO [OrderManager] Close using IOC-banded limit | ref_price=84776.02926752 limit_price=84626.0 band=$150 (elapsed=0s)
+2026-09-27 13:00:07,069 INFO [ORDER] EXIT confirmed | position=None | exit=84733.0
+2026-09-27 13:00:09,530 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84743.16740341 | band=$250.0 | limit=84493.2 | cid=S4V2E20260927T123000_a0
+2026-09-27 13:00:10,184 INFO [OrderManager] Order filled | id=2173749361 state=closed filled=100/100
+2026-09-27 13:00:12,844 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-27 13:30:02,279 INFO [OrderManager] Close using IOC-banded limit | ref_price=84918.18143498 limit_price=85068.2 band=$150 (elapsed=0s)
+2026-09-27 13:30:06,804 INFO [ORDER] EXIT confirmed | position=None | exit=84929.5
+2026-09-27 13:30:09,082 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84929.33475438 | band=$250.0 | limit=85179.3 | cid=S4V2E20260927T130000_a0
+2026-09-27 13:30:09,732 INFO [OrderManager] Order filled | id=2173753064 state=closed filled=100/100
+2026-09-27 13:30:11,700 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-27 14:30:04,382 INFO [OrderManager] Close using IOC-banded limit | ref_price=84682.49065227 limit_price=84532.5 band=$150 (elapsed=0s)
+2026-09-27 14:30:08,519 INFO [ORDER] EXIT confirmed | position=None | exit=84672.0
+2026-09-27 14:30:10,889 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84677.16364235 | band=$250.0 | limit=84427.2 | cid=S4V2E20260927T140000_a0
+2026-09-27 14:30:11,286 INFO [OrderManager] Order filled | id=2173759381 state=closed filled=100/100
+2026-09-27 14:30:13,734 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-27 16:00:03,968 INFO [OrderManager] Close using IOC-banded limit | ref_price=84440.99364576 limit_price=84291.0 band=$150 (elapsed=0s)
+2026-09-27 16:00:08,911 INFO [ORDER] EXIT confirmed | position=None | exit=84449.5
+2026-09-27 16:00:11,592 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84456.23256498 | band=$250.0 | limit=84206.2 | cid=S4E20260927T140000_a0
+2026-09-27 16:00:12,155 INFO [OrderManager] Order filled | id=2173770444 state=closed filled=100/100
+2026-09-27 16:00:14,590 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-27 18:00:02,820 INFO [OrderManager] Close using IOC-banded limit | ref_price=84551.18337329 limit_price=84701.2 band=$150 (elapsed=0s)
+2026-09-27 18:00:03,264 INFO [OrderManager] Close using IOC-banded limit | ref_price=84551.18337329 limit_price=84701.2 band=$150 (elapsed=0s)
+2026-09-27 18:00:06,874 INFO [ORDER] EXIT confirmed | position=None | exit=84540.5
+2026-09-27 18:00:07,876 INFO [ORDER] EXIT confirmed | position=None | exit=84538.5
+2026-09-27 18:00:08,806 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84545.82418662 | band=$250.0 | limit=84795.8 | cid=S4E20260927T160000_a0
+2026-09-27 18:00:09,172 INFO [OrderManager] Order filled | id=2173780524 state=closed filled=100/100
+2026-09-27 18:00:11,375 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-27 18:30:03,097 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84719.15588286 | band=$250.0 | limit=84969.2 | cid=S4V2E20260927T180000_a0
+2026-09-27 18:30:03,809 INFO [OrderManager] Order filled | id=2173782266 state=closed filled=100/100
+2026-09-27 18:30:07,220 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-27 20:00:07,388 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84713.98854621 | band=$250.0 | limit=84964.0 | cid=S4V3E20260927T160000_a0
+2026-09-27 20:00:08,096 INFO [OrderManager] Order filled | id=2173785692 state=closed filled=100/100
+2026-09-27 20:00:10,945 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-27 20:30:05,315 INFO [OrderManager] Close using IOC-banded limit | ref_price=84596.30992941 limit_price=84446.3 band=$150 (elapsed=0s)
+2026-09-27 20:30:09,644 INFO [ORDER] EXIT confirmed | position=None | exit=84599.0
+2026-09-27 20:30:12,316 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84598.31239113 | band=$250.0 | limit=84348.3 | cid=S4V2E20260927T200000_a0
+2026-09-27 20:30:12,930 INFO [OrderManager] Order filled | id=2173786327 state=closed filled=100/100
+2026-09-27 20:30:15,069 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-27 22:54:44,122 INFO [OrderManager] Close using IOC-banded limit | ref_price=84187.41956626 limit_price=84037.4 band=$150 (elapsed=0s)
+2026-09-27 22:54:48,107 INFO [ORDER] EXIT confirmed | position=None | exit=84187.0
+2026-09-27 22:54:56,355 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84197.83836687 | band=$250.0 | limit=83947.8 | cid=S4E20260927T220000_a0
+2026-09-27 22:54:57,043 INFO [OrderManager] Order filled | id=2173788888 state=closed filled=100/100
+2026-09-27 22:54:59,870 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-27 23:30:03,960 INFO [OrderManager] Close using IOC-banded limit | ref_price=84372.91204456 limit_price=84522.9 band=$150 (elapsed=0s)
+2026-09-27 23:30:09,829 INFO [ORDER] EXIT confirmed | position=None | exit=84378.5
+2026-09-27 23:30:11,357 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84374.51403768 | band=$250.0 | limit=84624.5 | cid=S4V2E20260927T230000_a0
+2026-09-27 23:30:11,739 INFO [OrderManager] Order filled | id=2173789282 state=closed filled=100/100
+2026-09-27 23:30:14,973 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-28 00:00:04,423 INFO [OrderManager] Close using IOC-banded limit | ref_price=84450.16551214 limit_price=84300.2 band=$150 (elapsed=0s)
+2026-09-28 00:00:10,053 INFO [ORDER] EXIT confirmed | position=None | exit=84442.0
+2026-09-28 01:00:03,029 INFO [OrderManager] Close using IOC-banded limit | ref_price=84108.62065727 limit_price=83958.6 band=$150 (elapsed=0s)
+2026-09-28 01:00:08,459 INFO [ORDER] EXIT confirmed | position=None | exit=84071.0
+2026-09-28 01:00:11,263 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84029.55140238 | band=$250.0 | limit=83779.6 | cid=S4V2E20260928T003000_a0
+2026-09-28 01:00:11,928 INFO [OrderManager] Order filled | id=2173792256 state=closed filled=100/100
+2026-09-28 01:00:14,355 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-28 03:15:24,865 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83404.06695196 | band=$250.0 | limit=83154.1 | cid=S4V3E20260927T200000_a0
+2026-09-28 03:15:25,458 INFO [OrderManager] Order filled | id=2173800300 state=closed filled=100/100
+2026-09-28 03:15:29,747 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-28 04:30:03,521 INFO [OrderManager] Close using IOC-banded limit | ref_price=83457.99697572 limit_price=83608.0 band=$150 (elapsed=0s)
+2026-09-28 04:30:09,116 INFO [ORDER] EXIT confirmed | position=None | exit=83451.0
+2026-09-28 04:30:11,225 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83452.52857079 | band=$250.0 | limit=83702.5 | cid=S4V2E20260928T040000_a0
+2026-09-28 04:30:11,865 INFO [OrderManager] Order filled | id=2173806119 state=closed filled=100/100
+2026-09-28 04:30:13,817 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-28 05:30:02,175 INFO [OrderManager] Close using IOC-banded limit | ref_price=83047.25400587 limit_price=82897.3 band=$150 (elapsed=0s)
+2026-09-28 05:30:07,716 INFO [ORDER] EXIT confirmed | position=None | exit=83036.5
+2026-09-28 05:30:10,256 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83033.95680945 | band=$250.0 | limit=82784.0 | cid=S4V2E20260928T050000_a0
+2026-09-28 05:30:10,907 INFO [OrderManager] Order filled | id=2173811123 state=closed filled=100/100
+2026-09-28 05:30:13,968 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-28 06:00:02,665 INFO [OrderManager] Close using IOC-banded limit | ref_price=83154.96096868 limit_price=83305.0 band=$150 (elapsed=0s)
+2026-09-28 06:00:07,435 INFO [ORDER] EXIT confirmed | position=None | exit=83155.0
+2026-09-28 06:00:09,250 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83152.50900293 | band=$250.0 | limit=83402.5 | cid=S4V2E20260928T053000_a0
+2026-09-28 06:00:09,666 INFO [OrderManager] Order filled | id=2173814638 state=closed filled=100/100
+2026-09-28 06:00:12,659 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-28 06:30:03,383 INFO [OrderManager] Close using IOC-banded limit | ref_price=83032.72008459 limit_price=82882.7 band=$150 (elapsed=0s)
+2026-09-28 06:30:09,497 INFO [ORDER] EXIT confirmed | position=None | exit=83024.0
+2026-09-28 07:00:04,480 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83136.33713712 | band=$250.0 | limit=83386.3 | cid=S4V2E20260928T063000_a0
+2026-09-28 07:00:05,168 INFO [OrderManager] Order filled | id=2173820180 state=closed filled=100/100
+2026-09-28 07:00:08,266 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-28 07:30:04,000 INFO [OrderManager] Close using IOC-banded limit | ref_price=82921.61078171 limit_price=82771.6 band=$150 (elapsed=0s)
+2026-09-28 07:30:08,686 INFO [ORDER] EXIT confirmed | position=None | exit=82914.0
+2026-09-28 07:30:11,443 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=82924.18396686 | band=$250.0 | limit=82674.2 | cid=S4V2E20260928T070000_a0
+2026-09-28 07:30:11,871 INFO [OrderManager] Order filled | id=2173822928 state=closed filled=100/100
+2026-09-28 07:30:14,777 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-28 10:30:02,772 INFO [OrderManager] Close using IOC-banded limit | ref_price=82797.68997398 limit_price=82947.7 band=$150 (elapsed=0s)
+2026-09-28 10:30:07,688 INFO [ORDER] EXIT confirmed | position=None | exit=82804.5
+2026-09-28 10:30:09,961 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=82808.92465821 | band=$250.0 | limit=83058.9 | cid=S4V2E20260928T100000_a0
+2026-09-28 10:30:10,693 INFO [OrderManager] Order filled | id=2173838795 state=closed filled=100/100
+2026-09-28 10:30:13,629 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-28 12:00:03,769 INFO [OrderManager] Close using IOC-banded limit | ref_price=83066.88779429 limit_price=83216.9 band=$150 (elapsed=0s)
+2026-09-28 12:00:04,764 INFO [OrderManager] Close using IOC-banded limit | ref_price=83066.88779429 limit_price=83216.9 band=$150 (elapsed=0s)
+2026-09-28 12:00:10,592 INFO [ORDER] EXIT confirmed | position=None | exit=83044.5
+2026-09-28 12:00:12,838 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83050.6930584 | band=$250.0 | limit=83300.7 | cid=S4V3E20260928T080000_a0
+2026-09-28 12:00:13,041 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83050.6930584 | band=$250.0 | limit=83300.7 | cid=S4E20260928T100000_a0
+2026-09-28 12:00:13,228 INFO [OrderManager] Order filled | id=2173848392 state=closed filled=100/100
+2026-09-28 12:00:13,622 INFO [OrderManager] Order filled | id=2173848393 state=closed filled=100/100
+2026-09-28 12:00:15,141 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-28 12:00:16,444 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-28 14:30:05,334 INFO [OrderManager] Close using IOC-banded limit | ref_price=83222.58366106 limit_price=83072.6 band=$150 (elapsed=0s)
+2026-09-28 14:30:10,007 INFO [ORDER] EXIT confirmed | position=None | exit=83195.0
+2026-09-28 14:30:13,185 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83226.37112957 | band=$250.0 | limit=82976.4 | cid=S4V2E20260928T140000_a0
+2026-09-28 14:30:13,885 INFO [OrderManager] Order filled | id=2173870255 state=closed filled=100/100
+2026-09-28 14:30:16,999 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-28 14:42:47,388 INFO [OrderManager] Close using IOC-banded limit | ref_price=83042.78555186 limit_price=82892.8 band=$150 (elapsed=0s)
+2026-09-28 14:42:53,932 INFO [ORDER] EXIT confirmed | position=None | exit=83007.48
+2026-09-28 14:42:55,714 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=82971.56941211 | band=$250.0 | limit=82721.6 | cid=S4E20260928T140000_a0
+2026-09-28 14:42:56,122 INFO [OrderManager] Order filled | id=2173873109 state=closed filled=100/100
+2026-09-28 14:42:58,724 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-28 16:00:03,061 INFO [OrderManager] Close using IOC-banded limit | ref_price=83372.04094341 limit_price=83522.0 band=$150 (elapsed=0s)
+2026-09-28 16:00:06,733 INFO [ORDER] EXIT confirmed | position=None | exit=83349.0
+2026-09-28 16:00:09,470 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83356.08785961 | band=$250.0 | limit=83606.1 | cid=S4V2E20260928T153000_a0
+2026-09-28 16:00:09,950 INFO [OrderManager] Order filled | id=2173886432 state=closed filled=100/100
+2026-09-28 16:00:12,413 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-28 17:00:01,818 INFO [OrderManager] Close using IOC-banded limit | ref_price=83680.6605543 limit_price=83530.7 band=$150 (elapsed=0s)
+2026-09-28 17:00:06,251 INFO [ORDER] EXIT confirmed | position=None | exit=83688.0
+2026-09-28 17:00:08,058 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83688.65833319 | band=$250.0 | limit=83438.7 | cid=S4V2E20260928T163000_a0
+2026-09-28 17:00:08,462 INFO [OrderManager] Order filled | id=2173895856 state=closed filled=100/100
+2026-09-28 17:00:11,529 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-28 17:30:02,584 INFO [OrderManager] Close using IOC-banded limit | ref_price=83886.09328905 limit_price=84036.1 band=$150 (elapsed=0s)
+2026-09-28 17:30:08,835 INFO [ORDER] EXIT confirmed | position=None | exit=83880.0
+2026-09-28 18:00:05,460 INFO [OrderManager] Close using IOC-banded limit | ref_price=83853.065499 limit_price=84003.1 band=$150 (elapsed=0s)
+2026-09-28 18:00:10,176 INFO [ORDER] EXIT confirmed | position=None | exit=83861.5
+2026-09-28 18:00:13,043 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83846.67337132 | band=$250.0 | limit=84096.7 | cid=S4E20260928T160000_a0
+2026-09-28 18:00:13,462 INFO [OrderManager] Order filled | id=2173903130 state=closed filled=100/100
+2026-09-28 18:00:16,829 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-28 19:00:05,747 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84014.53573636 | band=$250.0 | limit=84264.5 | cid=S4V2E20260928T183000_a0
+2026-09-28 19:00:06,629 INFO [OrderManager] Order filled | id=2173907037 state=closed filled=100/100
+2026-09-28 19:00:09,130 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-28 19:30:03,673 INFO [OrderManager] Close using IOC-banded limit | ref_price=83615.86312201 limit_price=83465.9 band=$150 (elapsed=0s)
+2026-09-28 19:30:07,788 INFO [ORDER] EXIT confirmed | position=None | exit=83615.5
+2026-09-28 19:30:11,115 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83616.1211746 | band=$250.0 | limit=83366.1 | cid=S4V2E20260928T190000_a0
+2026-09-28 19:30:11,510 INFO [OrderManager] Order filled | id=2173908754 state=closed filled=100/100
+2026-09-28 19:30:13,337 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-28 20:00:05,310 INFO [OrderManager] Close using IOC-banded limit | ref_price=83358.54189655 limit_price=83208.5 band=$150 (elapsed=0s)
+2026-09-28 20:00:09,499 INFO [ORDER] EXIT confirmed | position=None | exit=83370.5
+2026-09-28 20:00:12,705 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83371.30095244 | band=$250.0 | limit=83121.3 | cid=S4E20260928T180000_a0
+2026-09-28 20:00:13,325 INFO [OrderManager] Order filled | id=2173910269 state=closed filled=100/100
+2026-09-28 20:00:15,985 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-28 20:30:02,543 INFO [OrderManager] Close using IOC-banded limit | ref_price=83472.42993219 limit_price=83622.4 band=$150 (elapsed=0s)
+2026-09-28 20:30:06,083 INFO [ORDER] EXIT confirmed | position=None | exit=83476.5
+2026-09-28 22:00:03,954 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83191.86108004 | band=$250.0 | limit=82941.9 | cid=S4V2E20260928T213000_a0
+2026-09-28 22:00:04,937 INFO [OrderManager] Order filled | id=2173912445 state=closed filled=100/100
+2026-09-28 22:00:07,790 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-28 23:00:03,811 INFO [OrderManager] Close using IOC-banded limit | ref_price=83529.54523965 limit_price=83679.5 band=$150 (elapsed=0s)
+2026-09-28 23:00:08,094 INFO [ORDER] EXIT confirmed | position=None | exit=83531.0
+2026-09-28 23:00:10,592 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83526.18667653 | band=$250.0 | limit=83776.2 | cid=S4V2E20260928T223000_a0
+2026-09-28 23:00:11,209 INFO [OrderManager] Order filled | id=2173913109 state=closed filled=100/100
+2026-09-28 23:00:14,316 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-29 00:00:03,661 INFO [OrderManager] Close using IOC-banded limit | ref_price=83476.43497613 limit_price=83626.4 band=$150 (elapsed=0s)
+2026-09-29 00:00:08,098 INFO [ORDER] EXIT confirmed | position=None | exit=83478.0
+2026-09-29 00:00:10,738 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83470.81701174 | band=$250.0 | limit=83720.8 | cid=S4E20260928T220000_a0
+2026-09-29 00:00:11,106 INFO [OrderManager] Order filled | id=2173913810 state=closed filled=100/100
+2026-09-29 00:00:14,511 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-29 00:54:07,810 INFO [OrderManager] Close using IOC-banded limit | ref_price=83262.40876536 limit_price=83112.4 band=$150 (elapsed=0s)
+2026-09-29 00:54:11,892 INFO [ORDER] EXIT confirmed | position=None | exit=83262.0
+2026-09-29 00:54:24,314 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83252.33241043 | band=$250.0 | limit=83002.3 | cid=S4E20260929T000000_a0
+2026-09-29 00:54:25,138 INFO [OrderManager] Order filled | id=2173915020 state=closed filled=100/100
+2026-09-29 00:54:27,678 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-29 00:54:40,268 INFO [OrderManager] Close using IOC-banded limit | ref_price=83240.49562974 limit_price=83090.5 band=$150 (elapsed=0s)
+2026-09-29 00:54:44,338 INFO [ORDER] EXIT confirmed | position=None | exit=83235.0
+2026-09-29 00:54:54,504 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83231.3694185 | band=$250.0 | limit=82981.4 | cid=S4V2E20260929T003000_a0
+2026-09-29 00:54:55,249 INFO [OrderManager] Order filled | id=2173915031 state=closed filled=100/100
+2026-09-29 00:54:58,633 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-29 02:00:05,412 INFO [OrderManager] Close using IOC-banded limit | ref_price=83046.14735134 limit_price=83196.1 band=$150 (elapsed=0s)
+2026-09-29 02:00:08,462 INFO [ORDER] EXIT confirmed | position=None | exit=83051.5
+2026-09-29 02:00:11,136 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83063.69008292 | band=$250.0 | limit=83313.7 | cid=S4V2E20260929T013000_a0
+2026-09-29 02:00:11,792 INFO [OrderManager] Order filled | id=2173917900 state=closed filled=100/100
+2026-09-29 02:00:13,898 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-29 02:30:03,556 INFO [OrderManager] Close using IOC-banded limit | ref_price=82954.10875818 limit_price=82804.1 band=$150 (elapsed=0s)
+2026-09-29 02:30:07,170 INFO [ORDER] EXIT confirmed | position=None | exit=82954.5
+2026-09-29 03:30:02,060 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83194.83236123 | band=$250.0 | limit=83444.8 | cid=S4V2E20260929T030000_a0
+2026-09-29 03:30:02,918 INFO [OrderManager] Order filled | id=2173923049 state=closed filled=100/100
+2026-09-29 03:30:04,919 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-29 04:00:02,348 INFO [OrderManager] Close using IOC-banded limit | ref_price=83055.18120168 limit_price=82905.2 band=$150 (elapsed=0s)
+2026-09-29 04:00:06,775 INFO [ORDER] EXIT confirmed | position=None | exit=83047.0
+2026-09-29 04:00:09,275 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83064.90827446 | band=$250.0 | limit=82814.9 | cid=S4V2E20260929T033000_a0
+2026-09-29 04:00:09,633 INFO [OrderManager] Order filled | id=2173925610 state=closed filled=100/100
+2026-09-29 04:00:12,462 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-29 04:30:02,435 INFO [OrderManager] Close using IOC-banded limit | ref_price=83202.23002266 limit_price=83352.2 band=$150 (elapsed=0s)
+2026-09-29 04:30:06,213 INFO [ORDER] EXIT confirmed | position=None | exit=83194.5
+2026-09-29 04:30:07,293 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83202.23002266 | band=$250.0 | limit=83452.2 | cid=S4V2E20260929T040000_a0
+2026-09-29 04:30:07,728 INFO [OrderManager] Order filled | id=2173928235 state=closed filled=100/100
+2026-09-29 04:30:10,350 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-29 06:00:02,293 INFO [OrderManager] Close using IOC-banded limit | ref_price=83414.24959117 limit_price=83564.2 band=$150 (elapsed=0s)
+2026-09-29 06:00:06,733 INFO [ORDER] EXIT confirmed | position=None | exit=83416.5
+2026-09-29 06:00:09,215 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83415.800014 | band=$250.0 | limit=83665.8 | cid=S4E20260929T040000_a0
+2026-09-29 06:00:09,629 INFO [OrderManager] Order filled | id=2173937356 state=closed filled=100/100
+2026-09-29 06:00:13,556 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-29 09:00:04,586 INFO [OrderManager] Close using IOC-banded limit | ref_price=83855.94531561 limit_price=83705.9 band=$150 (elapsed=0s)
+2026-09-29 09:00:08,988 INFO [ORDER] EXIT confirmed | position=None | exit=83843.5
+2026-09-29 09:00:11,603 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83848.53990701 | band=$250.0 | limit=83598.5 | cid=S4V2E20260929T083000_a0
+2026-09-29 09:00:12,265 INFO [OrderManager] Order filled | id=2173956009 state=closed filled=100/100
+2026-09-29 09:00:16,385 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-29 10:00:02,191 INFO [OrderManager] Close using IOC-banded limit | ref_price=84226.1292392 limit_price=84376.1 band=$150 (elapsed=0s)
+2026-09-29 10:00:06,874 INFO [ORDER] EXIT confirmed | position=None | exit=84230.0
+2026-09-29 10:00:09,346 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84227.31150334 | band=$250.0 | limit=84477.3 | cid=S4V2E20260929T093000_a0
+2026-09-29 10:00:09,742 INFO [OrderManager] Order filled | id=2173959703 state=closed filled=100/100
+2026-09-29 10:00:12,437 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-29 10:30:02,506 INFO [OrderManager] Close using IOC-banded limit | ref_price=84127.88623791 limit_price=83977.9 band=$150 (elapsed=0s)
+2026-09-29 10:30:08,525 INFO [ORDER] EXIT confirmed | position=None | exit=84130.5
+2026-09-29 10:30:11,286 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84129.70618061 | band=$250.0 | limit=83879.7 | cid=S4V2E20260929T100000_a0
+2026-09-29 10:30:12,235 INFO [OrderManager] Order filled | id=2173962648 state=closed filled=100/100
+2026-09-29 10:30:15,056 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-29 12:00:06,321 INFO [OrderManager] Close using IOC-banded limit | ref_price=84328.37162278 limit_price=84478.4 band=$150 (elapsed=0s)
+2026-09-29 12:00:09,700 INFO [ORDER] EXIT confirmed | position=None | exit=84333.5
+2026-09-29 12:00:13,533 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84307.9586293 | band=$250.0 | limit=84558.0 | cid=S4V2E20260929T113000_a0
+2026-09-29 12:00:14,212 INFO [OrderManager] Order filled | id=2173972512 state=closed filled=100/100
+2026-09-29 12:00:16,652 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-29 12:30:01,700 INFO [OrderManager] Close using IOC-banded limit | ref_price=84169.8525566 limit_price=84019.9 band=$150 (elapsed=0s)
+2026-09-29 12:30:06,020 INFO [ORDER] EXIT confirmed | position=None | exit=84182.5
+2026-09-29 12:30:08,372 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84182.72824776 | band=$250.0 | limit=83932.7 | cid=S4V2E20260929T120000_a0
+2026-09-29 12:30:08,991 INFO [OrderManager] Order filled | id=2173975968 state=closed filled=100/100
+2026-09-29 12:30:12,402 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-29 13:00:02,260 INFO [OrderManager] Close using IOC-banded limit | ref_price=84302.15336424 limit_price=84452.2 band=$150 (elapsed=0s)
+2026-09-29 13:00:07,088 INFO [ORDER] EXIT confirmed | position=None | exit=84295.0
+2026-09-29 13:00:08,726 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84294.73322474 | band=$250.0 | limit=84544.7 | cid=S4V2E20260929T123000_a0
+2026-09-29 13:00:09,387 INFO [OrderManager] Order filled | id=2173979243 state=closed filled=100/100
+2026-09-29 13:00:12,433 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-29 14:00:02,511 INFO [OrderManager] Close using IOC-banded limit | ref_price=84177.2836877 limit_price=84027.3 band=$150 (elapsed=0s)
+2026-09-29 14:00:07,796 INFO [ORDER] EXIT confirmed | position=None | exit=84194.0
+2026-09-29 14:00:09,170 INFO [OrderManager] LOSS-CAPPED resting order FILLED | id=2173987259 avg_fill=84181.0
+2026-09-29 14:00:09,889 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84180.32980168 | band=$250.0 | limit=83930.3 | cid=S4V2E20260929T133000_a0
+2026-09-29 14:00:10,507 INFO [OrderManager] Order filled | id=2173987278 state=closed filled=100/100
+2026-09-29 14:00:11,349 INFO [ORDER] EXIT confirmed | position=None | exit=84181.0
+2026-09-29 14:00:12,452 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-29 14:00:13,724 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84180.32980168 | band=$250.0 | limit=83930.3 | cid=S4E20260929T120000_a0
+2026-09-29 14:00:14,129 INFO [OrderManager] Order filled | id=2173987294 state=closed filled=100/100
+2026-09-29 14:00:16,092 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-29 16:30:04,295 INFO [OrderManager] Close using IOC-banded limit | ref_price=83231.41659835 limit_price=83381.4 band=$150 (elapsed=0s)
+2026-09-29 16:30:08,271 INFO [ORDER] EXIT confirmed | position=None | exit=83231.5
+2026-09-29 16:30:10,210 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83217.32787603 | band=$250.0 | limit=83467.3 | cid=S4V2E20260929T160000_a0
+2026-09-29 16:30:10,877 INFO [OrderManager] Order filled | id=2174012958 state=closed filled=100/100
+2026-09-29 16:30:13,309 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-29 17:00:02,634 INFO [OrderManager] Close using IOC-banded limit | ref_price=83034.74457998 limit_price=82884.7 band=$150 (elapsed=0s)
+2026-09-29 17:00:07,603 INFO [ORDER] EXIT confirmed | position=None | exit=83042.0
+2026-09-29 17:00:10,158 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83035.44428692 | band=$250.0 | limit=82785.4 | cid=S4V2E20260929T163000_a0
+2026-09-29 17:00:10,878 INFO [OrderManager] Order filled | id=2174017230 state=closed filled=100/100
+2026-09-29 17:00:14,167 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-29 17:30:02,432 INFO [OrderManager] Close using IOC-banded limit | ref_price=83156.90106136 limit_price=83306.9 band=$150 (elapsed=0s)
+2026-09-29 17:30:06,055 INFO [ORDER] EXIT confirmed | position=None | exit=83164.0
+2026-09-29 17:30:07,249 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83156.90106136 | band=$250.0 | limit=83406.9 | cid=S4V2E20260929T170000_a0
+2026-09-29 17:30:07,655 INFO [OrderManager] Order filled | id=2174020882 state=closed filled=100/100
+2026-09-29 17:30:09,626 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-29 18:00:03,529 INFO [OrderManager] Close using IOC-banded limit | ref_price=83052.73252083 limit_price=82902.7 band=$150 (elapsed=0s)
+2026-09-29 18:00:07,708 INFO [ORDER] EXIT confirmed | position=None | exit=83105.5
+2026-09-29 18:30:02,298 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83416.5331516 | band=$250.0 | limit=83666.5 | cid=S4V2E20260929T180000_a0
+2026-09-29 18:30:03,029 INFO [OrderManager] Order filled | id=2174026679 state=closed filled=100/100
+2026-09-29 18:30:05,736 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-29 20:00:03,981 INFO [OrderManager] Close using IOC-banded limit | ref_price=83561.81873981 limit_price=83711.8 band=$150 (elapsed=0s)
+2026-09-29 20:00:09,120 INFO [ORDER] EXIT confirmed | position=None | exit=83572.5
+2026-09-29 20:00:12,871 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83568.08330181 | band=$250.0 | limit=83818.1 | cid=S4E20260929T180000_a0
+2026-09-29 20:00:13,259 INFO [OrderManager] Order filled | id=2174031140 state=closed filled=100/100
+2026-09-29 20:00:17,285 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-29 21:30:05,369 INFO [OrderManager] Close using IOC-banded limit | ref_price=83392.23234702 limit_price=83242.2 band=$150 (elapsed=0s)
+2026-09-29 21:30:09,534 INFO [ORDER] EXIT confirmed | position=None | exit=83395.5
+2026-09-29 21:30:11,989 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83392.8740744 | band=$250.0 | limit=83142.9 | cid=S4V2E20260929T210000_a0
+2026-09-29 21:30:12,655 INFO [OrderManager] Order filled | id=2174033166 state=closed filled=100/100
+2026-09-29 21:30:14,984 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-29 22:00:03,393 INFO [OrderManager] Close using IOC-banded limit | ref_price=83486.81353989 limit_price=83636.8 band=$150 (elapsed=0s)
+2026-09-29 22:00:07,483 INFO [ORDER] EXIT confirmed | position=None | exit=83488.5
+2026-09-29 22:00:07,541 INFO [OrderManager] Close using IOC-banded limit | ref_price=83487.35796826 limit_price=83337.4 band=$150 (elapsed=0s)
+2026-09-29 22:00:11,616 INFO [ORDER] EXIT confirmed | position=None | exit=83484.0
+2026-09-29 22:00:14,481 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83486.56794697 | band=$250.0 | limit=83236.6 | cid=S4E20260929T200000_a0
+2026-09-29 22:00:15,238 INFO [OrderManager] Order filled | id=2174033628 state=closed filled=100/100
+2026-09-29 22:00:20,291 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-29 22:30:03,563 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83573.99370919 | band=$250.0 | limit=83824.0 | cid=S4V2E20260929T220000_a0
+2026-09-29 22:30:04,226 INFO [OrderManager] Order filled | id=2174034093 state=closed filled=100/100
+2026-09-29 22:30:07,083 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-30 00:00:04,307 INFO [OrderManager] Close using IOC-banded limit | ref_price=83636.63103137 limit_price=83786.6 band=$150 (elapsed=0s)
+2026-09-30 00:00:08,400 INFO [ORDER] EXIT confirmed | position=None | exit=83663.0
+2026-09-30 00:00:10,213 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83656.95127141 | band=$250.0 | limit=83907.0 | cid=S4E20260929T220000_a0
+2026-09-30 00:00:10,615 INFO [OrderManager] Order filled | id=2174035474 state=closed filled=100/100
+2026-09-30 00:00:13,324 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-30 00:30:05,487 INFO [OrderManager] Close using IOC-banded limit | ref_price=83549.91154394 limit_price=83399.9 band=$150 (elapsed=0s)
+2026-09-30 00:30:10,827 INFO [ORDER] EXIT confirmed | position=None | exit=83547.5
+2026-09-30 00:30:12,403 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83536.17676828 | band=$250.0 | limit=83286.2 | cid=S4V2E20260930T000000_a0
+2026-09-30 00:30:13,020 INFO [OrderManager] Order filled | id=2174036180 state=closed filled=100/100
+2026-09-30 00:30:15,795 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-30 01:19:06,563 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83402.64285147 | band=$250.0 | limit=83152.6 | cid=S4V3E20260930T000000_a0
+2026-09-30 01:19:07,267 INFO [OrderManager] Order filled | id=2174037762 state=closed filled=100/100
+2026-09-30 01:19:11,018 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-30 01:19:51,650 INFO [OrderManager] Close using IOC-banded limit | ref_price=83377.51014054 limit_price=83227.5 band=$150 (elapsed=0s)
+2026-09-30 01:20:00,869 INFO [ORDER] EXIT confirmed | position=None | exit=83376.0
+2026-09-30 01:20:03,412 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83379.44606904 | band=$250.0 | limit=83129.4 | cid=S4E20260930T000000_a0
+2026-09-30 01:20:04,104 INFO [OrderManager] Order filled | id=2174037806 state=closed filled=100/100
+2026-09-30 01:20:07,252 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-30 05:30:08,816 INFO [OrderManager] Close using IOC-banded limit | ref_price=83379.15735245 limit_price=83529.2 band=$150 (elapsed=0s)
+2026-09-30 05:30:12,818 INFO [ORDER] EXIT confirmed | position=None | exit=83377.5
+2026-09-30 05:30:15,322 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83370.80649772 | band=$250.0 | limit=83620.8 | cid=S4V2E20260930T050000_a0
+2026-09-30 05:30:15,820 INFO [OrderManager] Order filled | id=2174054560 state=closed filled=100/100
+2026-09-30 05:30:20,918 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-30 06:10:45,238 INFO [OrderManager] Close using IOC-banded limit | ref_price=83260.94126102 limit_price=83110.9 band=$150 (elapsed=0s)
+2026-09-30 06:10:50,218 INFO [ORDER] EXIT confirmed | position=None | exit=83249.0
+2026-09-30 06:10:51,467 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83253.43492701 | band=$250.0 | limit=83003.4 | cid=S4V2E20260930T060000_a0
+2026-09-30 06:10:52,218 INFO [OrderManager] Order filled | id=2174058133 state=closed filled=100/100
+2026-09-30 06:10:54,002 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-30 07:30:03,556 INFO [OrderManager] Close using IOC-banded limit | ref_price=83279.69979569 limit_price=83429.7 band=$150 (elapsed=0s)
+2026-09-30 07:30:06,914 INFO [ORDER] EXIT confirmed | position=None | exit=83271.0
+2026-09-30 07:30:08,861 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83279.42281578 | band=$250.0 | limit=83529.4 | cid=S4V2E20260930T070000_a0
+2026-09-30 07:30:09,284 INFO [OrderManager] Order filled | id=2174066418 state=closed filled=100/100
+2026-09-30 07:30:11,742 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-30 08:30:03,602 INFO [OrderManager] Close using IOC-banded limit | ref_price=83111.5683084 limit_price=82961.6 band=$150 (elapsed=0s)
+2026-09-30 08:30:08,074 INFO [ORDER] EXIT confirmed | position=None | exit=83093.0
+2026-09-30 08:30:11,306 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83094.77340056 | band=$250.0 | limit=82844.8 | cid=S4V2E20260930T080000_a0
+2026-09-30 08:30:11,791 INFO [OrderManager] Order filled | id=2174072295 state=closed filled=100/100
+2026-09-30 08:30:14,864 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-30 09:30:02,463 INFO [OrderManager] Close using IOC-banded limit | ref_price=83403.88350441 limit_price=83553.9 band=$150 (elapsed=0s)
+2026-09-30 09:30:06,338 INFO [ORDER] EXIT confirmed | position=None | exit=83410.5
+2026-09-30 09:30:09,405 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83414.6430772 | band=$250.0 | limit=83664.6 | cid=S4V2E20260930T090000_a0
+2026-09-30 09:30:10,036 INFO [OrderManager] Order filled | id=2174077623 state=closed filled=100/100
+2026-09-30 09:30:13,014 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-30 10:00:05,022 INFO [OrderManager] Close using IOC-banded limit | ref_price=83611.79539953 limit_price=83761.8 band=$150 (elapsed=0s)
+2026-09-30 10:00:10,898 INFO [ORDER] EXIT confirmed | position=None | exit=83618.0
+2026-09-30 10:00:15,447 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83620.61063359 | band=$250.0 | limit=83870.6 | cid=S4E20260930T080000_a0
+2026-09-30 10:00:16,194 INFO [OrderManager] Order filled | id=2174080715 state=closed filled=100/100
+2026-09-30 10:00:19,979 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-30 12:00:14,356 INFO [OrderManager] Close using IOC-banded limit | ref_price=83899.01157972 limit_price=84049.0 band=$150 (elapsed=0s)
+2026-09-30 12:00:18,090 INFO [ORDER] EXIT confirmed | position=None | exit=83883.5
+2026-09-30 14:00:11,181 INFO [OrderManager] Close using IOC-banded limit | ref_price=84610.16961439 limit_price=84460.2 band=$150 (elapsed=0s)
+2026-09-30 14:00:15,625 INFO [ORDER] EXIT confirmed | position=None | exit=84604.5
+2026-09-30 14:00:19,617 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84621.22894828 | band=$250.0 | limit=84371.2 | cid=S4V2E20260930T133000_a0
+2026-09-30 14:00:20,231 INFO [OrderManager] Order filled | id=2174107333 state=closed filled=100/100
+2026-09-30 14:00:23,384 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-30 15:30:03,614 INFO [OrderManager] Close using IOC-banded limit | ref_price=83881.083479 limit_price=84031.1 band=$150 (elapsed=0s)
+2026-09-30 15:30:07,807 INFO [ORDER] EXIT confirmed | position=None | exit=83916.0
+2026-09-30 15:30:12,492 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83901.84694454 | band=$250.0 | limit=84151.8 | cid=S4V2E20260930T150000_a0
+2026-09-30 15:30:13,241 INFO [OrderManager] Order filled | id=2174123628 state=closed filled=100/100
+2026-09-30 15:30:16,332 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-30 16:00:09,041 INFO [OrderManager] LOSS-CAPPED resting order FILLED | id=2174128222 avg_fill=84136.5
+2026-09-30 16:00:11,021 INFO [ORDER] EXIT confirmed | position=None | exit=84136.5
+2026-09-30 16:00:20,067 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84146.31918531 | band=$250.0 | limit=83896.3 | cid=S4E20260930T140000_a0
+2026-09-30 16:00:20,820 INFO [OrderManager] Order filled | id=2174128270 state=closed filled=100/100
+2026-09-30 16:00:24,899 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-30 18:00:03,055 INFO [OrderManager] Close using IOC-banded limit | ref_price=84033.37016265 limit_price=83883.4 band=$150 (elapsed=0s)
+2026-09-30 18:00:06,272 INFO [ORDER] EXIT confirmed | position=None | exit=83992.0
+2026-09-30 18:00:08,231 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84033.37016265 | band=$250.0 | limit=83783.4 | cid=S4V2E20260930T173000_a0
+2026-09-30 18:00:08,667 INFO [OrderManager] Order filled | id=2174141715 state=closed filled=100/100
+2026-09-30 18:00:11,022 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-30 20:00:52,314 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83611.5143182 | band=$250.0 | limit=83361.5 | cid=S4V3E20260930T160000_a0
+2026-09-30 20:00:53,287 INFO [OrderManager] Order filled | id=2174147812 state=closed filled=100/100
+2026-09-30 20:01:00,334 INFO [ORDER] ENTRY confirmed | position=short
+2026-09-30 20:30:06,836 INFO [OrderManager] Close using IOC-banded limit | ref_price=83717.79553613 limit_price=83867.8 band=$150 (elapsed=0s)
+2026-09-30 20:30:11,082 INFO [ORDER] EXIT confirmed | position=None | exit=83704.5
+2026-09-30 20:30:13,155 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83702.18095129 | band=$250.0 | limit=83952.2 | cid=S4V2E20260930T200000_a0
+2026-09-30 20:30:13,570 INFO [OrderManager] Order filled | id=2174148484 state=closed filled=100/100
+2026-09-30 20:30:17,963 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-30 22:00:13,592 INFO [OrderManager] Close using IOC-banded limit | ref_price=83746.69326279 limit_price=83896.7 band=$150 (elapsed=0s)
+2026-09-30 22:00:17,614 INFO [ORDER] EXIT confirmed | position=None | exit=83760.5
+2026-09-30 22:00:26,496 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83758.07538042 | band=$250.0 | limit=84008.1 | cid=S4E20260930T200000_a0
+2026-09-30 22:00:27,102 INFO [OrderManager] Order filled | id=2174149454 state=closed filled=100/100
+2026-09-30 22:00:30,262 INFO [ORDER] ENTRY confirmed | position=long
+2026-09-30 23:00:13,139 INFO [OrderManager] Close using IOC-banded limit | ref_price=83660.42403183 limit_price=83510.4 band=$150 (elapsed=0s)
+2026-09-30 23:00:17,621 INFO [ORDER] EXIT confirmed | position=None | exit=83659.5
+2026-10-01 00:00:08,103 INFO [OrderManager] Close using IOC-banded limit | ref_price=83589.32848934 limit_price=83439.3 band=$150 (elapsed=0s)
+2026-10-01 00:00:11,939 INFO [ORDER] EXIT confirmed | position=None | exit=83592.0
+2026-10-01 00:30:10,102 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83454.39335862 | band=$250.0 | limit=83204.4 | cid=S4V2E20261001T000000_a0
+2026-10-01 00:30:10,907 INFO [OrderManager] Order filled | id=2174151494 state=closed filled=100/100
+2026-10-01 00:30:15,613 INFO [ORDER] ENTRY confirmed | position=short
+2026-10-01 04:00:08,492 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83747.9779324 | band=$250.0 | limit=83998.0 | cid=S4V2E20261001T033000_a0
+2026-10-01 04:00:09,216 INFO [OrderManager] Order filled | id=2174161814 state=closed filled=100/100
+2026-10-01 04:00:14,308 INFO [ORDER] ENTRY confirmed | position=long
+2026-10-01 04:00:24,026 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83746.12640596 | band=$250.0 | limit=83996.1 | cid=S4E20261001T020000_a0
+2026-10-01 04:00:25,465 INFO [OrderManager] Order filled | id=2174161835 state=closed filled=100/100
+2026-10-01 04:00:34,763 INFO [ORDER] ENTRY confirmed | position=long
+2026-10-01 07:00:28,847 INFO [OrderManager] Close using IOC-banded limit | ref_price=84093.27351776 limit_price=83943.3 band=$150 (elapsed=0s)
+2026-10-01 07:00:34,372 INFO [ORDER] EXIT confirmed | position=None | exit=84092.5
+2026-10-01 07:00:40,120 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84114.91171804 | band=$250.0 | limit=83864.9 | cid=S4V2E20261001T063000_a0
+2026-10-01 07:00:40,819 INFO [OrderManager] Order filled | id=2174176570 state=closed filled=100/100
+2026-10-01 07:00:43,626 INFO [ORDER] ENTRY confirmed | position=short
+2026-10-01 08:00:15,288 INFO [OrderManager] Close using IOC-banded limit | ref_price=83430.08038504 limit_price=83280.1 band=$150 (elapsed=0s)
+2026-10-01 08:00:21,226 INFO [ORDER] EXIT confirmed | position=None | exit=83417.5
+2026-10-01 08:00:26,525 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83439.93721065 | band=$250.0 | limit=83189.9 | cid=S4V3E20261001T040000_a0
+2026-10-01 08:00:27,517 INFO [OrderManager] Order filled | id=2174183703 state=closed filled=100/100
+2026-10-01 08:00:33,919 INFO [ORDER] ENTRY confirmed | position=short
+2026-10-01 08:00:39,723 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83458.32125268 | band=$250.0 | limit=83208.3 | cid=S4E20261001T060000_a0
+2026-10-01 08:00:40,469 INFO [OrderManager] Order filled | id=2174183732 state=closed filled=100/100
+2026-10-01 08:00:44,672 INFO [ORDER] ENTRY confirmed | position=short
+2026-10-01 09:00:04,595 INFO [OrderManager] Close using IOC-banded limit | ref_price=83539.49348671 limit_price=83689.5 band=$150 (elapsed=0s)
+2026-10-01 09:00:08,901 INFO [ORDER] EXIT confirmed | position=None | exit=83556.0
+2026-10-01 09:00:11,343 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83559.98263241 | band=$250.0 | limit=83810.0 | cid=S4V2E20261001T083000_a0
+2026-10-01 09:00:12,092 INFO [OrderManager] Order filled | id=2174189601 state=closed filled=100/100
+2026-10-01 09:00:15,628 INFO [ORDER] ENTRY confirmed | position=long
+2026-10-01 10:00:03,628 INFO [OrderManager] Close using IOC-banded limit | ref_price=83760.23136236 limit_price=83910.2 band=$150 (elapsed=0s)
+2026-10-01 10:00:08,230 INFO [ORDER] EXIT confirmed | position=None | exit=83770.5
+2026-10-01 10:00:11,950 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=83755.65133124 | band=$250.0 | limit=84005.7 | cid=S4E20261001T080000_a0
+2026-10-01 10:00:12,462 INFO [OrderManager] Order filled | id=2174195006 state=closed filled=100/100
+2026-10-01 10:00:15,457 INFO [ORDER] ENTRY confirmed | position=long
+2026-10-01 12:00:06,054 INFO [OrderManager] Close using IOC-banded limit | ref_price=83901.40283921 limit_price=84051.4 band=$150 (elapsed=0s)
+2026-10-01 12:00:11,131 INFO [ORDER] EXIT confirmed | position=None | exit=83912.0
+2026-10-01 13:00:04,896 INFO [OrderManager] Close using IOC-banded limit | ref_price=83846.95669915 limit_price=83697.0 band=$150 (elapsed=0s)
+2026-10-01 13:00:16,852 INFO [OrderManager] Close using IOC-banded limit | ref_price=83846.95669915 limit_price=83697.0 band=$150 (elapsed=12s)
+2026-10-01 13:00:26,051 INFO [OrderManager] Close using IOC-banded limit | ref_price=83846.95669915 limit_price=83597.0 band=$250 (elapsed=21s)
+2026-10-01 13:00:35,795 INFO [OrderManager] Close using IOC-banded limit | ref_price=83846.95669915 limit_price=83497.0 band=$350 (elapsed=31s)
+2026-10-01 13:00:45,793 INFO [OrderManager] Close using IOC-banded limit | ref_price=83846.95669915 limit_price=83497.0 band=$350 (elapsed=40s)
+2026-10-01 13:00:55,545 INFO [OrderManager] Close using IOC-banded limit | ref_price=83846.95669915 limit_price=83397.0 band=$450 (elapsed=51s)
+2026-10-01 13:13:28,213 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83846.95669915 | band=$250.0 | limit=83597.0 | cid=S4V2E20261001T123000_a0
+2026-10-01 13:13:38,773 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83846.95669915 | band=$250.0 | limit=83597.0 | cid=S4V2E20261001T123000_a1
+2026-10-01 13:13:44,701 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83846.95669915 | band=$500.0 | limit=83347.0 | cid=S4V2E20261001T123000_a2
+2026-10-01 13:13:50,391 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83846.95669915 | band=$500.0 | limit=83347.0 | cid=S4V2E20261001T123000_a3
+2026-10-01 13:13:55,043 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=83846.95669915 | band=$750.0 | limit=83097.0 | cid=S4V2E20261001T123000_a4
+2026-10-01 19:00:20,663 INFO [OrderManager] Close using IOC-banded limit | ref_price=84770.76746564 limit_price=84920.8 band=$150 (elapsed=0s)
+2026-10-01 19:00:23,317 INFO [OrderManager] Close using IOC-banded limit | ref_price=84787.57988666 limit_price=84937.6 band=$150 (elapsed=2s)
+2026-10-01 19:00:25,337 INFO [OrderManager] Close using IOC-banded limit | ref_price=84787.57988666 limit_price=84937.6 band=$150 (elapsed=5s)
+2026-10-01 19:00:27,585 INFO [OrderManager] Close using IOC-banded limit | ref_price=84787.57988666 limit_price=85037.6 band=$250 (elapsed=7s)
+2026-10-01 19:00:30,316 INFO [OrderManager] Close using IOC-banded limit | ref_price=84777.18959219 limit_price=85027.2 band=$250 (elapsed=9s)
+2026-10-01 19:00:32,587 INFO [OrderManager] Close using IOC-banded limit | ref_price=84777.18959219 limit_price=85027.2 band=$250 (elapsed=12s)
+2026-10-01 19:00:41,652 INFO [OrderManager] Close using IOC-banded limit | ref_price=84790.4452289 limit_price=85040.4 band=$250 (elapsed=21s)
+2026-10-01 19:00:44,103 INFO [OrderManager] Close using IOC-banded limit | ref_price=84791.94858738 limit_price=85041.9 band=$250 (elapsed=24s)
+2026-10-01 19:00:46,332 INFO [OrderManager] Close using IOC-banded limit | ref_price=84791.94858738 limit_price=85041.9 band=$250 (elapsed=26s)
+2026-10-01 19:00:49,125 INFO [OrderManager] Close using IOC-banded limit | ref_price=84805.7677193 limit_price=85055.8 band=$250 (elapsed=28s)
+2026-10-01 19:00:51,410 INFO [OrderManager] Close using IOC-banded limit | ref_price=84805.7677193 limit_price=85155.8 band=$350 (elapsed=31s)
+2026-10-01 19:00:53,670 INFO [OrderManager] Close using IOC-banded limit | ref_price=84805.7677193 limit_price=85155.8 band=$350 (elapsed=33s)
+2026-10-01 19:01:02,104 INFO [OrderManager] Close using IOC-banded limit | ref_price=84799.36653006 limit_price=85149.4 band=$350 (elapsed=41s)
+2026-10-01 19:01:04,083 INFO [OrderManager] Close using IOC-banded limit | ref_price=84799.36653006 limit_price=85149.4 band=$350 (elapsed=44s)
+2026-10-01 19:01:06,086 INFO [OrderManager] Close using IOC-banded limit | ref_price=84799.36653006 limit_price=85249.4 band=$450 (elapsed=46s)
+2026-10-01 19:01:08,369 INFO [OrderManager] Close using IOC-banded limit | ref_price=84799.25336775 limit_price=85249.3 band=$450 (elapsed=48s)
+2026-10-01 19:01:10,334 INFO [OrderManager] Close using IOC-banded limit | ref_price=84799.25336775 limit_price=85249.3 band=$450 (elapsed=50s)
+2026-10-01 19:01:12,272 INFO [OrderManager] Close using IOC-banded limit | ref_price=84799.25336775 limit_price=85249.3 band=$450 (elapsed=52s)
+2026-10-01 19:01:18,587 INFO [OrderManager] Close using IOC-banded limit | ref_price=84771.66328252 limit_price=85221.7 band=$450 (elapsed=58s)
+2026-10-01 20:00:41,107 INFO [OrderManager] Close using IOC-banded limit | ref_price=84671.80687929 limit_price=84521.8 band=$150 (elapsed=0s)
+2026-10-01 20:00:48,151 INFO [ORDER] EXIT confirmed | position=None | exit=84666.0
+2026-10-01 20:01:10,034 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84732.48803297 | band=$250.0 | limit=84482.5 | cid=S4E20261001T180000_a0
+2026-10-01 20:01:10,702 INFO [OrderManager] Order filled | id=2174256871 state=closed filled=100/100
+2026-10-01 20:01:18,554 INFO [ORDER] ENTRY confirmed | position=short
+2026-10-02 00:00:26,454 INFO [OrderManager] Close using IOC-banded limit | ref_price=84808.71036195 limit_price=84958.7 band=$150 (elapsed=0s)
+2026-10-02 00:00:31,335 INFO [ORDER] EXIT confirmed | position=None | exit=84813.5
+2026-10-02 00:00:34,352 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84809.20232252 | band=$250.0 | limit=85059.2 | cid=S4E20261001T220000_a0
+2026-10-02 00:00:35,033 INFO [OrderManager] Order filled | id=2174259730 state=closed filled=100/100
+2026-10-02 00:00:39,608 INFO [ORDER] ENTRY confirmed | position=long
+2026-10-02 01:00:35,885 INFO [OrderManager] Close using IOC-banded limit | ref_price=84747.77233479 limit_price=84897.8 band=$150 (elapsed=0s)
+2026-10-02 01:00:38,621 INFO [OrderManager] Close using IOC-banded limit | ref_price=84738.37994918 limit_price=84888.4 band=$150 (elapsed=2s)
+2026-10-02 01:00:40,900 INFO [OrderManager] Close using IOC-banded limit | ref_price=84738.37994918 limit_price=84888.4 band=$150 (elapsed=5s)
+2026-10-02 01:00:43,871 INFO [OrderManager] Close using IOC-banded limit | ref_price=84739.53169742 limit_price=84989.5 band=$250 (elapsed=7s)
+2026-10-02 01:00:45,887 INFO [OrderManager] Close using IOC-banded limit | ref_price=84739.53169742 limit_price=84989.5 band=$250 (elapsed=10s)
+2026-10-02 01:00:48,875 INFO [OrderManager] Close using IOC-banded limit | ref_price=84730.46112123 limit_price=84980.5 band=$250 (elapsed=12s)
+2026-10-02 01:00:55,683 INFO [OrderManager] Close using IOC-banded limit | ref_price=84730.73707391 limit_price=84980.7 band=$250 (elapsed=20s)
+2026-10-02 01:00:57,896 INFO [OrderManager] Close using IOC-banded limit | ref_price=84730.73707391 limit_price=84980.7 band=$250 (elapsed=22s)
+2026-10-02 01:01:00,212 INFO [OrderManager] Close using IOC-banded limit | ref_price=84722.28624177 limit_price=84972.3 band=$250 (elapsed=24s)
+2026-10-02 01:01:02,193 INFO [OrderManager] Close using IOC-banded limit | ref_price=84722.28624177 limit_price=84972.3 band=$250 (elapsed=26s)
+2026-10-02 01:01:04,869 INFO [OrderManager] Close using IOC-banded limit | ref_price=84722.28624177 limit_price=84972.3 band=$250 (elapsed=29s)
+2026-10-02 01:01:07,620 INFO [OrderManager] Close using IOC-banded limit | ref_price=84722.7581251 limit_price=85072.8 band=$350 (elapsed=31s)
+2026-10-02 01:01:15,135 INFO [OrderManager] Close using IOC-banded limit | ref_price=84728.8939766 limit_price=85078.9 band=$350 (elapsed=39s)
+2026-10-02 01:01:17,873 INFO [OrderManager] Close using IOC-banded limit | ref_price=84733.34060184 limit_price=85083.3 band=$350 (elapsed=41s)
+2026-10-02 01:01:20,150 INFO [OrderManager] Close using IOC-banded limit | ref_price=84733.34060184 limit_price=85083.3 band=$350 (elapsed=44s)
+2026-10-02 01:01:23,116 INFO [OrderManager] Close using IOC-banded limit | ref_price=84729.57708169 limit_price=85179.6 band=$450 (elapsed=47s)
+2026-10-02 01:01:25,235 INFO [OrderManager] Close using IOC-banded limit | ref_price=84729.57708169 limit_price=85179.6 band=$450 (elapsed=49s)
+2026-10-02 01:01:27,634 INFO [OrderManager] Close using IOC-banded limit | ref_price=84729.57708169 limit_price=85179.6 band=$450 (elapsed=52s)
+2026-10-02 01:01:34,641 INFO [OrderManager] Close using IOC-banded limit | ref_price=84731.1937482 limit_price=85181.2 band=$450 (elapsed=59s)
+2026-10-02 07:00:50,803 INFO [OrderManager] Close using IOC-banded limit | ref_price=85926.75812854 limit_price=86076.8 band=$150 (elapsed=0s)
+2026-10-02 07:00:53,524 INFO [OrderManager] Close using IOC-banded limit | ref_price=85917.41020819 limit_price=86067.4 band=$150 (elapsed=3s)
+2026-10-02 07:00:55,808 INFO [OrderManager] Close using IOC-banded limit | ref_price=85917.41020819 limit_price=86067.4 band=$150 (elapsed=5s)
+2026-10-02 07:00:58,007 INFO [OrderManager] Close using IOC-banded limit | ref_price=85917.41020819 limit_price=86167.4 band=$250 (elapsed=7s)
+2026-10-02 07:01:00,710 INFO [OrderManager] Close using IOC-banded limit | ref_price=85909.78497778 limit_price=86159.8 band=$250 (elapsed=10s)
+2026-10-02 07:01:02,742 INFO [OrderManager] Close using IOC-banded limit | ref_price=85909.78497778 limit_price=86159.8 band=$250 (elapsed=12s)
+2026-10-02 07:01:09,709 INFO [OrderManager] Close using IOC-banded limit | ref_price=85909.41595864 limit_price=86159.4 band=$250 (elapsed=19s)
+2026-10-02 07:01:12,216 INFO [OrderManager] Close using IOC-banded limit | ref_price=85918.87060361 limit_price=86168.9 band=$250 (elapsed=21s)
+2026-10-02 07:01:14,811 INFO [OrderManager] Close using IOC-banded limit | ref_price=85918.87060361 limit_price=86168.9 band=$250 (elapsed=24s)
+2026-10-02 07:01:17,770 INFO [OrderManager] Close using IOC-banded limit | ref_price=85967.49679905 limit_price=86217.5 band=$250 (elapsed=26s)
+2026-10-02 07:01:20,009 INFO [OrderManager] Close using IOC-banded limit | ref_price=85967.49679905 limit_price=86217.5 band=$250 (elapsed=30s)
+2026-10-02 07:01:22,772 INFO [OrderManager] Close using IOC-banded limit | ref_price=85947.4050207 limit_price=86297.4 band=$350 (elapsed=32s)
+2026-10-02 07:01:30,479 INFO [OrderManager] Close using IOC-banded limit | ref_price=85948.45913687 limit_price=86298.5 band=$350 (elapsed=40s)
+2026-10-02 07:01:33,233 INFO [OrderManager] Close using IOC-banded limit | ref_price=85953.38615868 limit_price=86303.4 band=$350 (elapsed=42s)
+2026-10-02 07:01:35,479 INFO [OrderManager] Close using IOC-banded limit | ref_price=85953.38615868 limit_price=86303.4 band=$350 (elapsed=45s)
+2026-10-02 07:01:37,475 INFO [OrderManager] Close using IOC-banded limit | ref_price=85953.38615868 limit_price=86403.4 band=$450 (elapsed=47s)
+2026-10-02 07:01:40,210 INFO [OrderManager] Close using IOC-banded limit | ref_price=85950.36092012 limit_price=86400.4 band=$450 (elapsed=49s)
+2026-10-02 07:01:42,475 INFO [OrderManager] Close using IOC-banded limit | ref_price=85950.36092012 limit_price=86400.4 band=$450 (elapsed=52s)
+2026-10-02 07:01:50,515 INFO [OrderManager] Close using IOC-banded limit | ref_price=85966.15516595 limit_price=86416.2 band=$450 (elapsed=60s)
+2026-10-02 13:00:51,613 INFO [OrderManager] Close using IOC-banded limit | ref_price=86753.98075677 limit_price=86904.0 band=$150 (elapsed=0s)
+2026-10-02 13:00:53,671 INFO [OrderManager] Close using IOC-banded limit | ref_price=86753.98075677 limit_price=86904.0 band=$150 (elapsed=3s)
+2026-10-02 13:00:55,861 INFO [OrderManager] Close using IOC-banded limit | ref_price=86753.98075677 limit_price=86904.0 band=$150 (elapsed=5s)
+2026-10-02 13:00:58,596 INFO [OrderManager] Close using IOC-banded limit | ref_price=86781.20437152 limit_price=87031.2 band=$250 (elapsed=7s)
+2026-10-02 13:01:01,111 INFO [OrderManager] Close using IOC-banded limit | ref_price=86781.20437152 limit_price=87031.2 band=$250 (elapsed=10s)
+2026-10-02 13:01:03,592 INFO [OrderManager] Close using IOC-banded limit | ref_price=86797.68816591 limit_price=87047.7 band=$250 (elapsed=13s)
+2026-10-02 13:01:10,092 INFO [OrderManager] Close using IOC-banded limit | ref_price=86796.75985931 limit_price=87046.8 band=$250 (elapsed=19s)
+2026-10-02 13:01:12,109 INFO [OrderManager] Close using IOC-banded limit | ref_price=86796.75985931 limit_price=87046.8 band=$250 (elapsed=21s)
+2026-10-02 13:01:14,365 INFO [OrderManager] Close using IOC-banded limit | ref_price=86796.75985931 limit_price=87046.8 band=$250 (elapsed=23s)
+2026-10-02 13:01:16,612 INFO [OrderManager] Close using IOC-banded limit | ref_price=86827.51476469 limit_price=87077.5 band=$250 (elapsed=26s)
+2026-10-02 13:01:18,940 INFO [OrderManager] Close using IOC-banded limit | ref_price=86827.51476469 limit_price=87077.5 band=$250 (elapsed=28s)
+2026-10-02 13:01:21,627 INFO [OrderManager] Close using IOC-banded limit | ref_price=86827.1270307 limit_price=87177.1 band=$350 (elapsed=30s)
+2026-10-02 13:01:28,654 INFO [OrderManager] Close using IOC-banded limit | ref_price=86837.21472037 limit_price=87187.2 band=$350 (elapsed=37s)
+2026-10-02 13:01:30,860 INFO [OrderManager] Close using IOC-banded limit | ref_price=86837.21472037 limit_price=87187.2 band=$350 (elapsed=40s)
+2026-10-02 13:01:33,592 INFO [OrderManager] Close using IOC-banded limit | ref_price=86847.32014115 limit_price=87197.3 band=$350 (elapsed=42s)
+2026-10-02 13:01:35,861 INFO [OrderManager] Close using IOC-banded limit | ref_price=86847.32014115 limit_price=87197.3 band=$350 (elapsed=45s)
+2026-10-02 13:01:38,592 INFO [OrderManager] Close using IOC-banded limit | ref_price=86871.44806362 limit_price=87321.4 band=$450 (elapsed=47s)
+2026-10-02 13:01:40,864 INFO [OrderManager] Close using IOC-banded limit | ref_price=86871.44806362 limit_price=87321.4 band=$450 (elapsed=50s)
+2026-10-02 13:01:48,592 INFO [OrderManager] Close using IOC-banded limit | ref_price=86887.80468727 limit_price=87337.8 band=$450 (elapsed=57s)
+2026-10-02 13:01:50,861 INFO [OrderManager] Close using IOC-banded limit | ref_price=86887.80468727 limit_price=87337.8 band=$450 (elapsed=60s)
+2026-10-02 16:00:27,249 INFO [OrderManager] Close using IOC-banded limit | ref_price=85339.61790875 limit_price=85189.6 band=$150 (elapsed=0s)
+2026-10-02 16:00:32,444 INFO [ORDER] EXIT confirmed | position=None | exit=85315.0
+2026-10-02 16:00:45,056 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=85300.33120444 | band=$250.0 | limit=85050.3 | cid=S4E20261002T140000_a0
+2026-10-02 16:00:46,297 INFO [OrderManager] Order filled | id=2174374451 state=closed filled=100/100
+2026-10-02 16:00:50,258 INFO [ORDER] ENTRY confirmed | position=short
+2026-10-02 16:00:51,245 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=85304.71596157 | band=$250.0 | limit=85054.7 | cid=S4V3E20261002T120000_a0
+2026-10-02 16:00:52,448 INFO [OrderManager] Order filled | id=2174374470 state=closed filled=100/100
+2026-10-02 16:01:02,226 INFO [ORDER] ENTRY confirmed | position=short
+2026-10-02 17:02:40,202 INFO [OrderManager] LOSS-CAPPED resting order FILLED | id=2174382793 avg_fill=85233.0
+2026-10-02 17:02:51,199 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=85232.34620042 | band=$250.0 | limit=84982.3 | cid=S4V2E20261002T130000_a0
+2026-10-02 17:02:51,949 INFO [OrderManager] Order filled | id=2174382827 state=closed filled=100/100
+2026-10-02 17:02:54,477 INFO [ORDER] ENTRY confirmed | position=short
+2026-10-02 18:00:04,531 INFO [OrderManager] Close using IOC-banded limit | ref_price=84776.95174463 limit_price=84927.0 band=$150 (elapsed=0s)
+2026-10-02 18:00:08,520 INFO [ORDER] EXIT confirmed | position=None | exit=84762.0
+2026-10-02 18:00:11,965 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84766.43412823 | band=$250.0 | limit=85016.4 | cid=S4V2E20261002T173000_a0
+2026-10-02 18:00:12,457 INFO [OrderManager] Order filled | id=2174389756 state=closed filled=100/100
+2026-10-02 18:00:14,789 INFO [ORDER] ENTRY confirmed | position=long
+2026-10-02 18:30:03,013 INFO [OrderManager] Close using IOC-banded limit | ref_price=84864.88240307 limit_price=84714.9 band=$150 (elapsed=0s)
+2026-10-02 18:30:08,225 INFO [ORDER] EXIT confirmed | position=None | exit=84803.5
+2026-10-02 19:00:03,732 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84915.29529135 | band=$250.0 | limit=84665.3 | cid=S4V2E20261002T183000_a0
+2026-10-02 19:00:05,281 INFO [OrderManager] Order filled | id=2174394163 state=closed filled=100/100
+2026-10-02 19:00:08,523 INFO [ORDER] ENTRY confirmed | position=short
+2026-10-02 20:00:03,805 INFO [OrderManager] Close using IOC-banded limit | ref_price=85196.57893794 limit_price=85346.6 band=$150 (elapsed=0s)
+2026-10-02 20:00:17,481 INFO [OrderManager] Close using IOC-banded limit | ref_price=85239.6250178 limit_price=85389.6 band=$150 (elapsed=14s)
+2026-10-02 20:00:31,238 INFO [OrderManager] Close using IOC-banded limit | ref_price=85227.60040864 limit_price=85477.6 band=$250 (elapsed=28s)
+2026-10-02 20:00:45,759 INFO [OrderManager] Close using IOC-banded limit | ref_price=85248.1129772 limit_price=85598.1 band=$350 (elapsed=42s)
+2026-10-02 20:00:51,001 INFO [ORDER] EXIT confirmed | position=None | exit=85502.8
+2026-10-02 20:00:54,216 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85247.50669439 | band=$250.0 | limit=85497.5 | cid=S4V2E20261002T193000_a0
+2026-10-02 20:00:55,049 ERROR [OrderManager] ENTRY UNFILLED - price moved beyond $250 band | ref_price=85247.50669439 limit=85497.5
+2026-10-02 20:01:01,222 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85250.74020273 | band=$250.0 | limit=85500.7 | cid=S4V2E20261002T193000_a1
+2026-10-02 20:01:01,969 ERROR [OrderManager] ENTRY UNFILLED - price moved beyond $250 band | ref_price=85250.74020273 limit=85500.7
+2026-10-02 20:01:06,513 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85247.91088293 | band=$500.0 | limit=85747.9 | cid=S4V2E20261002T193000_a2
+2026-10-02 20:01:07,216 INFO [OrderManager] Order filled | id=2174397080 state=closed filled=100/100
+2026-10-02 20:01:09,495 INFO [ORDER] ENTRY confirmed | position=long
+2026-10-02 22:00:15,583 INFO [OrderManager] Close using IOC-banded limit | ref_price=85418.78158957 limit_price=85568.8 band=$150 (elapsed=0s)
+2026-10-02 22:00:31,098 INFO [OrderManager] Close using IOC-banded limit | ref_price=85414.23446846 limit_price=85664.2 band=$250 (elapsed=16s)
+2026-10-02 22:00:45,989 INFO [OrderManager] Close using IOC-banded limit | ref_price=85409.28315881 limit_price=85759.3 band=$350 (elapsed=31s)
+2026-10-02 22:00:59,478 INFO [OrderManager] Close using IOC-banded limit | ref_price=85410.29363016 limit_price=85760.3 band=$350 (elapsed=45s)
+2026-10-02 22:01:14,078 INFO [OrderManager] Close using IOC-banded limit | ref_price=85416.55855258 limit_price=85866.6 band=$450 (elapsed=59s)
+2026-10-02 22:01:35,759 INFO [OrderManager] LOSS-CAPPED resting order FILLED | id=2174399748 avg_fill=86415.8
+2026-10-02 22:01:38,537 INFO [ORDER] EXIT confirmed | position=None | exit=86415.8
+2026-10-02 22:01:48,050 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85411.00096011 | band=$250.0 | limit=85661.0 | cid=S4E20261002T200000_a0
+2026-10-02 22:01:48,834 ERROR [OrderManager] ENTRY UNFILLED - price moved beyond $250 band | ref_price=85411.00096011 limit=85661.0
+2026-10-02 22:01:55,024 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85427.06745471 | band=$250.0 | limit=85677.1 | cid=S4E20261002T200000_a1
+2026-10-02 22:01:55,803 ERROR [OrderManager] ENTRY UNFILLED - price moved beyond $250 band | ref_price=85427.06745471 limit=85677.1
+2026-10-02 22:01:59,978 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85415.7501755 | band=$500.0 | limit=85915.8 | cid=S4E20261002T200000_a2
+2026-10-02 22:02:00,477 ERROR [OrderManager] ENTRY UNFILLED - price moved beyond $250 band | ref_price=85415.7501755 limit=85915.8
+2026-10-02 22:02:09,976 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85414.73970414 | band=$500.0 | limit=85914.7 | cid=S4E20261002T200000_a3
+2026-10-02 22:02:10,726 ERROR [OrderManager] ENTRY UNFILLED - price moved beyond $250 band | ref_price=85414.73970414 limit=85914.7
+2026-10-02 22:02:14,239 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85413.32504424 | band=$750.0 | limit=86163.3 | cid=S4E20261002T200000_a4
+2026-10-02 22:02:14,978 ERROR [OrderManager] ENTRY UNFILLED - price moved beyond $250 band | ref_price=85413.32504424 limit=86163.3
+2026-10-03 00:00:22,733 INFO [OrderManager] Close using IOC-banded limit | ref_price=85406.25174473 limit_price=85556.3 band=$150 (elapsed=0s)
+2026-10-03 00:00:28,643 INFO [OrderManager] Close using IOC-banded limit | ref_price=85406.1506976 limit_price=85556.2 band=$150 (elapsed=6s)
+2026-10-03 00:00:42,410 INFO [OrderManager] Close using IOC-banded limit | ref_price=85406.1506976 limit_price=85656.2 band=$250 (elapsed=21s)
+2026-10-03 00:00:57,183 INFO [OrderManager] Close using IOC-banded limit | ref_price=85400.08786945 limit_price=85750.1 band=$350 (elapsed=35s)
+2026-10-03 00:01:10,663 INFO [OrderManager] Close using IOC-banded limit | ref_price=85397.9658796 limit_price=85848.0 band=$450 (elapsed=49s)
+2026-10-03 00:01:15,393 INFO [OrderManager] Close using IOC-banded limit | ref_price=85398.97635095 limit_price=85849.0 band=$450 (elapsed=54s)
+2026-10-03 00:01:48,894 INFO [OrderManager] LOSS-CAPPED resting order FILLED | id=2174400998 avg_fill=86384.7
+2026-10-03 00:01:49,697 INFO [ORDER] EXIT confirmed | position=None | exit=86384.7
+2026-10-03 00:33:22,873 INFO [OrderManager] Close using IOC-banded limit | ref_price=85498.81092113 limit_price=85348.8 band=$150 (elapsed=0s)
+2026-10-03 00:33:33,931 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85494.97112996 | band=$250.0 | limit=85745.0 | cid=S4V2E20261002T193000_a0
+2026-10-03 00:33:34,507 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $250 band (attempt 1) | ref_price=85494.97112996 limit=85745.0
+2026-10-03 00:33:39,249 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85495.57741278 | band=$250.0 | limit=85745.6 | cid=S4V2E20261002T193000_a1
+2026-10-03 00:33:39,866 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $250 band (attempt 2) | ref_price=85495.57741278 limit=85745.6
+2026-10-03 00:33:45,091 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85495.67845992 | band=$500.0 | limit=85995.7 | cid=S4V2E20261002T193000_a2
+2026-10-03 00:33:45,592 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $500 band (attempt 3) | ref_price=85495.67845992 limit=85995.7
+2026-10-03 00:33:50,845 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85503.35804224 | band=$500.0 | limit=86003.4 | cid=S4V2E20261002T193000_a3
+2026-10-03 00:33:51,344 INFO [OrderManager] Order filled | id=2174401467 state=closed filled=100/100
+2026-10-03 00:33:55,099 INFO [ORDER] ENTRY confirmed | position=long
+2026-10-03 04:30:04,944 INFO [OrderManager] Close using IOC-banded limit | ref_price=85413.2239971 limit_price=85263.2 band=$150 (elapsed=0s)
+2026-10-03 04:30:13,202 INFO [OrderManager] Close using IOC-banded limit | ref_price=85413.2239971 limit_price=85263.2 band=$150 (elapsed=8s)
+2026-10-03 04:30:19,995 INFO [OrderManager] Close using IOC-banded limit | ref_price=85413.2239971 limit_price=85263.2 band=$150 (elapsed=15s)
+2026-10-03 04:30:26,450 INFO [OrderManager] Close using IOC-banded limit | ref_price=85423.02556927 limit_price=85173.0 band=$250 (elapsed=22s)
+2026-10-03 04:30:33,195 INFO [OrderManager] Close using IOC-banded limit | ref_price=85422.62138073 limit_price=85172.6 band=$250 (elapsed=28s)
+2026-10-03 04:30:39,693 INFO [OrderManager] Close using IOC-banded limit | ref_price=85422.72242787 limit_price=85072.7 band=$350 (elapsed=35s)
+2026-10-03 04:30:48,711 INFO [OrderManager] LOSS-CAPPED resting order FILLED | id=2174410758 avg_fill=84752.6
+2026-10-03 04:30:50,947 INFO [ORDER] EXIT confirmed | position=None | exit=84752.6
+2026-10-03 05:30:09,308 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85514.17008577 | band=$250.0 | limit=85764.2 | cid=S4V2E20261003T050000_a0
+2026-10-03 05:30:10,080 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $250 band (attempt 1) | ref_price=85514.17008577 limit=85764.2
+2026-10-03 05:30:15,292 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85513.9679915 | band=$250.0 | limit=85764.0 | cid=S4V2E20261003T050000_a1
+2026-10-03 05:30:16,049 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $250 band (attempt 2) | ref_price=85513.9679915 limit=85764.0
+2026-10-03 05:30:21,042 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85513.9679915 | band=$500.0 | limit=86014.0 | cid=S4V2E20261003T050000_a2
+2026-10-03 05:30:21,795 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $500 band (attempt 3) | ref_price=85513.9679915 limit=86014.0
+2026-10-03 05:30:26,317 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85516.08998135 | band=$500.0 | limit=86016.1 | cid=S4V2E20261003T050000_a3
+2026-10-03 05:30:27,055 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $500 band (attempt 4) | ref_price=85516.08998135 limit=86016.1
+2026-10-03 05:30:32,044 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85516.29207562 | band=$750.0 | limit=86266.3 | cid=S4V2E20261003T050000_a4
+2026-10-03 05:30:32,543 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $750 band (attempt 5) | ref_price=85516.29207562 limit=86266.3
+2026-10-03 08:00:08,688 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=85448.7925889 | band=$250.0 | limit=85198.8 | cid=S4E20261003T060000_a0
+2026-10-03 08:00:09,381 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $250 band (attempt 1) | ref_price=85448.7925889 limit=85198.8
+2026-10-03 08:00:11,921 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=85448.7925889 | band=$250.0 | limit=85198.8 | cid=S4V3E20261003T040000_a0
+2026-10-03 08:00:12,459 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $250 band (attempt 1) | ref_price=85448.7925889 limit=85198.8
+2026-10-03 08:00:14,233 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=85456.6742655 | band=$250.0 | limit=85206.7 | cid=S4E20261003T060000_a1
+2026-10-03 08:00:14,834 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $250 band (attempt 2) | ref_price=85456.6742655 limit=85206.7
+2026-10-03 08:00:17,394 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=85456.6742655 | band=$250.0 | limit=85206.7 | cid=S4V3E20261003T040000_a1
+2026-10-03 08:00:17,707 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $250 band (attempt 2) | ref_price=85456.6742655 limit=85206.7
+2026-10-03 08:00:19,346 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=85458.18997253 | band=$500.0 | limit=84958.2 | cid=S4E20261003T060000_a2
+2026-10-03 08:00:19,738 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $500 band (attempt 3) | ref_price=85458.18997253 limit=84958.2
+2026-10-03 08:00:23,041 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=85458.18997253 | band=$500.0 | limit=84958.2 | cid=S4V3E20261003T040000_a2
+2026-10-03 08:00:23,642 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $500 band (attempt 3) | ref_price=85458.18997253 limit=84958.2
+2026-10-03 08:00:25,291 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=85447.58002327 | band=$500.0 | limit=84947.6 | cid=S4E20261003T060000_a3
+2026-10-03 08:00:25,655 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $500 band (attempt 4) | ref_price=85447.58002327 limit=84947.6
+2026-10-03 08:00:28,291 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=85447.58002327 | band=$500.0 | limit=84947.6 | cid=S4V3E20261003T040000_a3
+2026-10-03 08:00:29,041 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $500 band (attempt 4) | ref_price=85447.58002327 limit=84947.6
+2026-10-03 08:00:31,041 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=85444.75070347 | band=$750.0 | limit=84694.8 | cid=S4E20261003T060000_a4
+2026-10-03 08:00:31,791 INFO [OrderManager] Order filled | id=2174422625 state=closed filled=100/100
+2026-10-03 08:00:33,803 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=85444.75070347 | band=$750.0 | limit=84694.8 | cid=S4V3E20261003T040000_a4
+2026-10-03 08:00:34,363 INFO [OrderManager] Order filled | id=2174422628 state=closed filled=100/100
+2026-10-03 08:00:34,599 INFO [ORDER] ENTRY confirmed | position=short
+2026-10-03 08:00:37,109 INFO [ORDER] ENTRY confirmed | position=short
+2026-10-03 12:00:03,251 INFO [OrderManager] Close using IOC-banded limit | ref_price=85560.04548542 limit_price=85710.0 band=$150 (elapsed=0s)
+2026-10-03 12:00:07,073 INFO [OrderManager] Close using IOC-banded limit | ref_price=85559.94443829 limit_price=85709.9 band=$150 (elapsed=0s)
+2026-10-03 12:00:09,288 INFO [OrderManager] Close using IOC-banded limit | ref_price=85559.94443829 limit_price=85709.9 band=$150 (elapsed=6s)
+2026-10-03 12:00:13,518 INFO [OrderManager] Close using IOC-banded limit | ref_price=85559.1360612 limit_price=85709.1 band=$150 (elapsed=7s)
+2026-10-03 12:00:15,051 INFO [OrderManager] Close using IOC-banded limit | ref_price=85559.1360612 limit_price=85709.1 band=$150 (elapsed=12s)
+2026-10-03 12:00:19,792 INFO [OrderManager] Close using IOC-banded limit | ref_price=85560.85386251 limit_price=85710.9 band=$150 (elapsed=13s)
+2026-10-03 12:00:21,039 INFO [OrderManager] Close using IOC-banded limit | ref_price=85560.85386251 limit_price=85810.9 band=$250 (elapsed=18s)
+2026-10-03 12:00:26,589 INFO [OrderManager] Close using IOC-banded limit | ref_price=85567.62402061 limit_price=85817.6 band=$250 (elapsed=19s)
+2026-10-03 12:00:26,786 INFO [OrderManager] Close using IOC-banded limit | ref_price=85567.62402061 limit_price=85817.6 band=$250 (elapsed=24s)
+2026-10-03 12:00:33,047 INFO [OrderManager] Close using IOC-banded limit | ref_price=85567.62402061 limit_price=85817.6 band=$250 (elapsed=26s)
+2026-10-03 12:00:33,102 INFO [OrderManager] Close using IOC-banded limit | ref_price=85567.62402061 limit_price=85817.6 band=$250 (elapsed=30s)
+2026-10-03 12:00:39,536 INFO [OrderManager] Close using IOC-banded limit | ref_price=85567.62402061 limit_price=85917.6 band=$350 (elapsed=32s)
+2026-10-03 12:03:25,272 INFO [OrderManager] LOSS-CAPPED resting order FILLED | id=2174435751 avg_fill=86578.5
+2026-10-03 12:03:25,768 INFO [OrderManager] LOSS-CAPPED resting order FILLED | id=2174435749 avg_fill=86578.5
+2026-10-03 12:03:27,849 INFO [ORDER] EXIT confirmed | position=None | exit=86578.5
+2026-10-03 12:03:28,037 INFO [ORDER] EXIT confirmed | position=None | exit=86578.5
+2026-10-03 12:03:31,768 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85581.97271389 | band=$250.0 | limit=85832.0 | cid=S4E20261003T100000_a0
+2026-10-03 12:03:32,121 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $250 band (attempt 1) | ref_price=85581.97271389 limit=85832.0
+2026-10-03 12:03:37,267 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85581.97271389 | band=$250.0 | limit=85832.0 | cid=S4E20261003T100000_a1
+2026-10-03 12:03:38,019 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $250 band (attempt 2) | ref_price=85581.97271389 limit=85832.0
+2026-10-03 12:03:43,016 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85581.87166675 | band=$500.0 | limit=86081.9 | cid=S4E20261003T100000_a2
+2026-10-03 12:03:43,631 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $500 band (attempt 3) | ref_price=85581.87166675 limit=86081.9
+2026-10-03 12:03:48,021 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85581.87166675 | band=$500.0 | limit=86081.9 | cid=S4E20261003T100000_a3
+2026-10-03 12:03:48,766 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $500 band (attempt 4) | ref_price=85581.87166675 limit=86081.9
+2026-10-03 12:03:53,767 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85581.87166675 | band=$750.0 | limit=86331.9 | cid=S4E20261003T100000_a4
+2026-10-03 12:03:54,517 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $750 band (attempt 5) | ref_price=85581.87166675 limit=86331.9
+2026-10-03 19:30:07,779 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84901.4884429 | band=$250.0 | limit=84651.5 | cid=S4V2E20261003T190000_a0
+2026-10-03 19:30:08,788 INFO [OrderManager] Order filled | id=2174459584 state=closed filled=100/100
+2026-10-03 19:30:12,351 INFO [ORDER] ENTRY confirmed | position=short
+2026-10-03 20:00:06,128 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84900.9476363 | band=$250.0 | limit=84650.9 | cid=S4E20261003T180000_a0
+2026-10-03 20:00:06,715 INFO [OrderManager] Order filled | id=2174460034 state=closed filled=100/100
+2026-10-03 20:00:08,840 INFO [ORDER] ENTRY confirmed | position=short
+2026-10-03 20:30:02,856 INFO [OrderManager] Close using IOC-banded limit | ref_price=84902.34885358 limit_price=85052.3 band=$150 (elapsed=0s)
+2026-10-03 20:30:09,414 INFO [OrderManager] Close using IOC-banded limit | ref_price=84902.29499262 limit_price=85052.3 band=$150 (elapsed=7s)
+2026-10-03 20:30:15,869 INFO [OrderManager] Close using IOC-banded limit | ref_price=84897.70791009 limit_price=85047.7 band=$150 (elapsed=13s)
+2026-10-03 20:30:22,372 INFO [OrderManager] Close using IOC-banded limit | ref_price=84900.38828265 limit_price=85150.4 band=$250 (elapsed=20s)
+2026-10-03 20:30:27,869 INFO [ORDER] EXIT confirmed | position=None | exit=85053.0
+2026-10-03 21:00:04,077 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84902.04031057 | band=$250.0 | limit=84652.0 | cid=S4V2E20261003T203000_a0
+2026-10-03 21:00:04,791 INFO [OrderManager] Order filled | id=2174460726 state=closed filled=100/100
+2026-10-03 21:00:08,119 INFO [ORDER] ENTRY confirmed | position=short
+2026-10-04 00:00:15,872 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=84928.19732798 | band=$250.0 | limit=84678.2 | cid=S4V3E20261003T200000_a0
+2026-10-04 00:00:16,537 INFO [OrderManager] Order filled | id=2174461721 state=closed filled=100/100
+2026-10-04 00:00:18,596 INFO [ORDER] ENTRY confirmed | position=short
+2026-10-04 02:30:13,423 INFO [OrderManager] Close using IOC-banded limit | ref_price=84977.13989534 limit_price=85127.1 band=$150 (elapsed=0s)
+2026-10-04 02:30:19,382 INFO [OrderManager] Close using IOC-banded limit | ref_price=84977.03973369 limit_price=85127.0 band=$150 (elapsed=7s)
+2026-10-04 02:30:25,379 INFO [OrderManager] Close using IOC-banded limit | ref_price=84977.03973369 limit_price=85127.0 band=$150 (elapsed=13s)
+2026-10-04 02:30:32,093 INFO [OrderManager] Close using IOC-banded limit | ref_price=84976.93957205 limit_price=85226.9 band=$250 (elapsed=19s)
+2026-10-04 02:30:36,391 INFO [ORDER] EXIT confirmed | position=None | exit=85181.1
+2026-10-04 04:00:07,607 INFO [OrderManager] Close using IOC-banded limit | ref_price=84834.02009527 limit_price=84984.0 band=$150 (elapsed=0s)
+2026-10-04 04:00:10,525 INFO [OrderManager] Close using IOC-banded limit | ref_price=84834.02009527 limit_price=84984.0 band=$150 (elapsed=0s)
+2026-10-04 04:00:14,284 INFO [OrderManager] Close using IOC-banded limit | ref_price=84834.62004096 limit_price=84984.6 band=$150 (elapsed=7s)
+2026-10-04 04:00:17,048 INFO [OrderManager] Close using IOC-banded limit | ref_price=84834.62004096 limit_price=84984.6 band=$150 (elapsed=7s)
+2026-10-04 04:00:20,717 INFO [OrderManager] Close using IOC-banded limit | ref_price=84833.82011338 limit_price=84983.8 band=$150 (elapsed=13s)
+2026-10-04 04:00:23,003 INFO [OrderManager] Close using IOC-banded limit | ref_price=84833.82011338 limit_price=84983.8 band=$150 (elapsed=13s)
+2026-10-04 04:00:27,242 INFO [OrderManager] Close using IOC-banded limit | ref_price=84834.62004096 limit_price=85084.6 band=$250 (elapsed=20s)
+2026-10-04 04:00:29,253 INFO [OrderManager] Close using IOC-banded limit | ref_price=84834.62004096 limit_price=85084.6 band=$250 (elapsed=18s)
+2026-10-04 04:00:33,469 INFO [OrderManager] Close using IOC-banded limit | ref_price=84834.62004096 limit_price=85084.6 band=$250 (elapsed=26s)
+2026-10-04 04:00:35,801 INFO [OrderManager] Close using IOC-banded limit | ref_price=84834.62004096 limit_price=85084.6 band=$250 (elapsed=25s)
+2026-10-04 04:00:39,972 INFO [OrderManager] Close using IOC-banded limit | ref_price=84834.62004096 limit_price=85184.6 band=$350 (elapsed=32s)
+2026-10-04 04:00:42,267 INFO [OrderManager] Close using IOC-banded limit | ref_price=84834.62004096 limit_price=85184.6 band=$350 (elapsed=32s)
+2026-10-04 04:00:49,544 INFO [OrderManager] LOSS-CAPPED resting order FILLED | id=2174467098 avg_fill=85341.4
+2026-10-04 04:00:51,004 INFO [OrderManager] LOSS-CAPPED resting order FILLED | id=2174467105 avg_fill=85341.4
+2026-10-04 04:00:52,274 INFO [ORDER] EXIT confirmed | position=None | exit=85341.4
+2026-10-04 04:00:53,041 INFO [ORDER] EXIT confirmed | position=None | exit=85341.4
+2026-10-04 06:30:04,134 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=84910.78414551 | band=$250.0 | limit=85160.8 | cid=S4V2E20261004T060000_a0
+2026-10-04 06:30:05,216 INFO [OrderManager] Order filled | id=2174474347 state=closed filled=100/100
+2026-10-04 06:30:07,915 INFO [ORDER] ENTRY confirmed | position=long
+2026-10-04 08:00:05,684 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85082.84574739 | band=$250.0 | limit=85332.8 | cid=S4E20261004T060000_a0
+2026-10-04 08:00:06,423 INFO [OrderManager] Order filled | id=2174478380 state=closed filled=100/100
+2026-10-04 08:00:08,602 INFO [ORDER] ENTRY confirmed | position=long
+2026-10-04 11:00:04,636 INFO [OrderManager] Close using IOC-banded limit | ref_price=85236.47227653 limit_price=85086.5 band=$150 (elapsed=0s)
+2026-10-04 11:00:09,483 INFO [ORDER] EXIT confirmed | position=None | exit=85233.5
+2026-10-04 11:00:12,117 INFO [OrderManager] Placing SELL banded order | size=100 lots | ref_price=85238.10072938 | band=$250.0 | limit=84988.1 | cid=S4V2E20261004T103000_a0
+2026-10-04 11:00:12,921 INFO [OrderManager] Order filled | id=2174487838 state=closed filled=100/100
+2026-10-04 11:00:16,485 INFO [ORDER] ENTRY confirmed | position=short
+2026-10-04 15:00:05,327 INFO [OrderManager] Close using IOC-banded limit | ref_price=85264.91271043 limit_price=85414.9 band=$150 (elapsed=0s)
+2026-10-04 15:00:27,016 INFO [ORDER] EXIT confirmed | position=None | exit=85265.875
+2026-10-04 17:30:02,575 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85617.07856616 | band=$250.0 | limit=85867.1 | cid=S4V2E20261004T170000_a0
+2026-10-04 17:30:16,391 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $250 band (attempt 1) | ref_price=85617.07856616 limit=85867.1
+2026-10-04 17:30:24,393 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85617.1788369 | band=$250.0 | limit=85867.2 | cid=S4V2E20261004T170000_a1
+2026-10-04 17:30:25,143 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $250 band (attempt 2) | ref_price=85617.1788369 limit=85867.2
+2026-10-04 17:30:28,892 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85617.1788369 | band=$500.0 | limit=86117.2 | cid=S4V2E20261004T170000_a2
+2026-10-04 17:30:29,642 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $500 band (attempt 3) | ref_price=85617.1788369 limit=86117.2
+2026-10-04 17:30:34,142 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85622.59345716 | band=$500.0 | limit=86122.6 | cid=S4V2E20261004T170000_a3
+2026-10-04 17:30:34,892 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $500 band (attempt 4) | ref_price=85622.59345716 limit=86122.6
+2026-10-04 17:30:44,394 INFO [OrderManager] Placing BUY banded order | size=100 lots | ref_price=85621.99183269 | band=$750.0 | limit=86372.0 | cid=S4V2E20261004T170000_a4
+2026-10-04 17:30:45,643 ERROR [OrderManager] ENTRY UNFILLED - nothing filled within $750 band (attempt 5) | ref_price=85621.99183269 limit=86372.0
