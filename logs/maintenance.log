@@ -23124,3 +23124,5 @@ NO DRIFT - engine matches backtest formula exactly
 [2026-10-06T06:57:27] testmember1_s4 heartbeat STALE (805502s > 300s) - force killing for restart
 [2026-10-06T06:58:39] VERSION DRIFT: running=e1dae4bf204abf6402f57221b9e4d66a95b4ef5d disk=b2db32149c22fcfdc08e662f51d532b12f21d3bd - DEFERRED (open PENDING position, waiting for safe boundary)
 [2026-10-06T06:58:39] testmember1_s4 heartbeat STALE (805574s > 300s) - force killing for restart
+[2026-10-06T06:59:45] VERSION DRIFT: running=e1dae4bf204abf6402f57221b9e4d66a95b4ef5d disk=b2db32149c22fcfdc08e662f51d532b12f21d3bd - DEFERRED (open PENDING position, waiting for safe boundary)
+[2026-10-06T06:59:46] testmember1_s4 heartbeat STALE (805641s > 300s) - force killing for restart
