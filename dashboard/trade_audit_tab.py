@@ -1106,8 +1106,10 @@ def _get_prod_rows_audit(strat_label, from_date, to_date, inr_rate):
                 except Exception:
                     continue
 
+                _entry_ts_off = _offset_ts_audit(_row.get("entry_ts", ""), strat_label, force_offset=True)
+                _exit_ts_off = _offset_ts_audit(_row.get("exit_ts", ""), strat_label, force_offset=True)
                 try:
-                    _entry_date = _fast_date_audit_local(_row.get("entry_ts", ""))
+                    _entry_date = _fast_date_audit_local(_entry_ts_off)
                 except Exception:
                     continue
                 if not (from_date <= _entry_date <= to_date):
@@ -1123,12 +1125,12 @@ def _get_prod_rows_audit(strat_label, from_date, to_date, inr_rate):
                     "trade_no"     : _trade_no,
                     "label"        : strat_label,
                     "dir"          : _dirn.upper(),
-                    "date"         : _ist_date_audit(_row.get("entry_ts", "")),
+                    "date"         : _ist_date_audit(_entry_ts_off),
                     "symbol"       : "BTCUSD",
-                    "entry_ts_raw" : _row.get("entry_ts", ""),
-                    "exit_ts_raw"  : _row.get("exit_ts", ""),
-                    "entry_ist"    : _to_ist_audit(_row.get("entry_ts", "")),
-                    "exit_ist"     : _to_ist_audit(_row.get("exit_ts", "")),
+                    "entry_ts_raw" : _entry_ts_off,
+                    "exit_ts_raw"  : _exit_ts_off,
+                    "entry_ist"    : _to_ist_audit(_entry_ts_off),
+                    "exit_ist"     : _to_ist_audit(_exit_ts_off),
                     "entry_p"      : _ep_f,
                     "exit_p"       : _xp_f,
                     "lot"          : _lots_f,
