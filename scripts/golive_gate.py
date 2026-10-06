@@ -212,10 +212,17 @@ def main():
         REQUIRED_DRILLS = ["sl_delete_autoplace", "sl_placement_fail_emergency_close", "auto_resync",
                            "manual_flatten_all", "watchdog_capital_slippage_alert",
                            "tier1_speed_autoclose", "tier2_liqdist_autoclose"]
+        FORWARD_TEST_EXCEPTIONS = {
+            "tier2_liqdist_autoclose": "S4V3 Portfolio margin mode returns null liquidation_price (Delta Exchange API design) - accepted forward-test exception, must verify at live go-live",
+        }
         failed_drills = [k for k, v in drills.items() if not v.get("passed")]
         missing_drills = [k for k in REQUIRED_DRILLS if k not in drills]
-        record("g_protection_drills", not failed_drills and not missing_drills,
-               f"{len(drills)} drills logged, missing={missing_drills} failed={failed_drills}")
+        missing_blocking = [k for k in missing_drills if k not in FORWARD_TEST_EXCEPTIONS]
+        missing_excepted = [k for k in missing_drills if k in FORWARD_TEST_EXCEPTIONS]
+        detail = f"{len(drills)} drills logged, missing_blocking={missing_blocking} failed={failed_drills}"
+        if missing_excepted:
+            detail += f", accepted_exceptions={missing_excepted}"
+        record("g_protection_drills", not failed_drills and not missing_blocking, detail)
     else:
         record("g_protection_drills", False, "logs/drills.json not found")
 
