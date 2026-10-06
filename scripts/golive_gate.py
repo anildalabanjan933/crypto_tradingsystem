@@ -87,9 +87,16 @@ def check_bt_live_match(baseline):
            f"missed={len(missed)} (exempted testnet-band={len(missed)-len(unexempt_missed)}, "
            f"unexplained={len(unexempt_missed)}), extra_live={len(extra)}")
 
-    slips = [(r.get("bot"), r.get("entry_ts_bt"), r.get("entry_slippage_usd"), r.get("exit_slippage_usd")) for r in since]
-    if slips:
-        print(f"[INFO] entry/exit slippage since baseline (testnet - informational only, not gated): {slips[-5:]}")
+    detail_rows = [{
+        "bot": r.get("bot"), "entry_ts_bt": r.get("entry_ts_bt"), "entry_ts_live": r.get("entry_ts_live"),
+        "entry_price_bt": r.get("entry_price_bt"), "entry_price_live": r.get("entry_price_live"),
+        "entry_slippage_usd": r.get("entry_slippage_usd"),
+        "exit_ts_bt": r.get("exit_ts_bt"), "exit_ts_live": r.get("exit_ts_live"),
+        "exit_price_bt": r.get("exit_price_bt"), "exit_price_live": r.get("exit_price_live"),
+        "exit_slippage_usd": r.get("exit_slippage_usd"),
+    } for r in since]
+    if detail_rows:
+        print(f"[INFO] entry/exit fill ts+price+slippage since baseline (testnet - informational only, not gated): {detail_rows[-5:]}")
 
 def check_fire_delay(baseline):
     rows = read_csv_rows("logs/confirmation_lag_events.csv")
@@ -229,9 +236,12 @@ def main():
     # --- Criterion i: production readiness config checks ---
     try:
         from scripts.cts_env import CTS_ENV, IS_TESTNET, PRODUCT_ID, LOT_SIZE
+        lot_note = "accepted forward-test exception, must switch to 1 at live go-live" if LOT_SIZE != 1 else "OK"
         record("i_env_config", True,
-               f"CTS_ENV={CTS_ENV} PRODUCT_ID={PRODUCT_ID} LOT_SIZE={LOT_SIZE} "
-               f"(testnet={IS_TESTNET} - expected before Stage B)")
+               f"CTS_ENV={CTS_ENV} PRODUCT_ID={PRODUCT_ID} LOT_SIZE={LOT_SIZE} ({lot_note}) "
+               f"(testnet={IS_TESTNET} - expected before Stage B); "
+               f"S4V3 Portfolio margin mode retained (accepted forward-test exception, Delta Exchange 2-account "
+               f"limit per margin mode, re-check at live go-live)")
     except Exception as e:
         record("i_env_config", False, f"cts_env import failed: {e}")
 
