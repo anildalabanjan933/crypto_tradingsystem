@@ -6095,3 +6095,362 @@ detected_at_utc,bot,check_class,detail
 2026-10-03T20:47:30.713525+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44250s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
 2026-10-03T20:48:06.215389+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44285s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
 2026-10-03T20:48:41.324948+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44320s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T20:49:17.779533+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44357s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T20:49:52.735001+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44392s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T20:50:27.492651+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44426s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T20:51:02.696429+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44461s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T20:51:38.449359+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44497s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T20:52:13.691418+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44532s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T20:52:49.432338+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44568s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T20:53:24.724598+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44604s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T20:53:59.705078+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44638s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T20:54:34.470001+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44673s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T20:55:09.972260+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44709s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T20:55:45.498626+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44744s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T20:56:21.233044+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44780s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T20:56:57.062056+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44816s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T20:57:34.623257+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44853s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T20:58:09.793587+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44889s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T20:58:45.515176+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44924s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T20:59:20.705064+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44959s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T20:59:56.028825+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=44995s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:00:32.273519+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45031s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:01:08.342972+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45067s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:01:45.269969+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45104s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:02:22.020927+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45141s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:02:57.864582+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45177s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:03:33.283320+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45212s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:04:08.331831+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45247s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:04:43.601102+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45282s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:05:18.682561+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45317s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:05:54.329514+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45353s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:06:38.825192+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45398s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:07:20.351657+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45439s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:08:03.636382+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45482s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:08:53.679786+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45532s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:09:29.635666+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45568s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:10:07.692782+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45606s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:10:48.848698+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45648s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:11:23.854808+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45683s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:12:02.001360+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45721s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:12:46.035319+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45765s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:13:28.414785+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45807s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:14:03.753495+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45843s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:14:39.766827+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45879s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:15:15.325278+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45914s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:15:50.815444+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45950s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:16:26.260675+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=45985s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:17:01.556684+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46020s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:17:37.224910+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46056s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:18:12.866019+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46092s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:18:48.081968+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46127s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:19:23.972210+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46163s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:19:59.285895+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46198s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:20:35.077951+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46234s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:21:11.295373+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46270s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:21:47.472069+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46306s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:22:22.958701+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46342s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:22:58.851553+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46378s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:23:35.666372+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46414s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:24:11.359295+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46450s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:24:47.336774+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46486s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:25:22.783145+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46522s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:25:58.774690+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46558s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:26:34.526043+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46593s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:27:10.137422+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46629s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:27:46.587600+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46665s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:28:22.599477+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46701s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:28:58.707092+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46738s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:29:33.800826+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46773s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:30:09.854423+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46809s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:30:45.593444+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46844s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:31:21.294800+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46880s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:31:57.090640+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46916s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-03T21:32:32.834352+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=46952s (count=110) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-04T18:39:27.782694+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T18:40:33.094520+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T18:41:33.334967+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T18:43:31.469074+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T18:45:13.615848+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T18:46:16.130328+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T18:47:18.022329+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T18:48:21.843955+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T18:49:35.561838+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T18:50:34.334897+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T18:51:31.779206+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T18:52:26.789889+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T18:53:24.602530+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T18:54:26.867591+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T18:55:25.556567+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T18:56:30.873388+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T18:57:36.894707+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T18:59:12.712306+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:00:28.146488+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:03:22.462429+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:04:51.061092+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:05:28.649402+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 2124s - engine may be dead
+2026-10-04T19:07:16.614759+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:07:57.079096+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 2273s - engine may be dead
+2026-10-04T19:08:22.527526+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:09:35.221633+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 2371s - engine may be dead
+2026-10-04T19:09:59.530370+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:10:34.482156+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 2430s - engine may be dead
+2026-10-04T19:11:25.736124+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 2481s - engine may be dead
+2026-10-04T19:12:20.222412+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 2536s - engine may be dead
+2026-10-04T19:13:10.054750+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:13:49.667265+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 2625s - engine may be dead
+2026-10-04T19:14:16.830930+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:14:51.295252+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 2687s - engine may be dead
+2026-10-04T19:15:15.272864+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:15:52.625124+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 2748s - engine may be dead
+2026-10-04T19:16:20.538214+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:16:52.309855+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 2808s - engine may be dead
+2026-10-04T19:17:35.399294+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 2851s - engine may be dead
+2026-10-04T19:17:59.976973+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:18:43.938256+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 2920s - engine may be dead
+2026-10-04T19:19:08.665907+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:19:43.778289+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 2979s - engine may be dead
+2026-10-04T19:20:30.665258+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 3026s - engine may be dead
+2026-10-04T19:21:01.485285+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:21:41.887325+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 3098s - engine may be dead
+2026-10-04T19:22:06.324292+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:22:39.894952+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 3156s - engine may be dead
+2026-10-04T19:23:07.828009+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:23:45.407593+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 3221s - engine may be dead
+2026-10-04T19:24:13.695369+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:24:47.928284+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 3284s - engine may be dead
+2026-10-04T19:25:10.759884+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:25:44.646679+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 3340s - engine may be dead
+2026-10-04T19:26:10.388444+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:26:42.203747+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 3398s - engine may be dead
+2026-10-04T19:27:14.842556+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:27:50.607194+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 3466s - engine may be dead
+2026-10-04T19:28:16.154605+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:28:52.772729+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 3528s - engine may be dead
+2026-10-04T19:29:17.961212+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:29:59.232614+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 3595s - engine may be dead
+2026-10-04T19:30:53.015136+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 3649s - engine may be dead
+2026-10-04T19:31:16.674092+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:31:52.418118+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 3708s - engine may be dead
+2026-10-04T19:36:22.799928+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:36:23.841272+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 3980s - engine may be dead
+2026-10-04T19:36:24.677191+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:36:25.931056+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:36:46.943721+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T19:37:17.203368+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:37:18.208842+00:00,S4V2,A_HEALTHFILE_STALE,state_health file not updated in 4034s - engine may be dead
+2026-10-04T19:37:18.466733+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:37:19.728607+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:37:52.163098+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:37:53.409231+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:37:54.656661+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:38:26.955505+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:38:28.360225+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:38:29.965758+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:39:02.466976+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:39:03.712251+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:39:04.950985+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:39:37.180619+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:39:38.413948+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:39:39.648828+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:40:12.018075+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:40:13.373623+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:40:14.765310+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:40:47.229292+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:40:48.575186+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:40:50.168427+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:41:22.414369+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:41:23.656561+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:41:24.888597+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:41:57.603387+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:41:58.870234+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:42:00.367752+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:42:33.008371+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:42:34.729625+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:42:35.991192+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:43:08.729481+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:43:10.233231+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:43:11.729529+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:43:44.017244+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:43:45.480194+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:43:46.760897+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:44:19.230648+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T19:44:20.491152+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:51:09.567590+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:51:10.858658+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:51:12.104016+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:51:33.119577+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T21:52:03.436194+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:52:04.936205+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:52:06.255287+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:52:38.521482+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:52:39.801087+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:52:41.075337+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:53:13.357604+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:53:15.263943+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:53:16.863637+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:53:49.220365+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:53:50.612681+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:53:51.987794+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:54:24.257325+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:54:25.495789+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:54:26.730292+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:54:59.392488+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:55:00.874533+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:55:02.295247+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:55:34.937935+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:55:36.272971+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:55:37.632427+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:56:10.216103+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:56:11.716119+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:56:13.466151+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:56:46.247017+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:56:48.465987+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:56:49.966331+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:57:22.465975+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:57:23.990973+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:57:25.465743+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:57:57.996819+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:57:59.504101+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:58:00.966788+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:58:33.466546+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:58:35.279321+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:58:36.778470+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:59:09.997639+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:59:12.219656+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:59:13.732866+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:59:46.310711+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:59:47.966525+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T21:59:49.966557+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:00:22.496983+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:00:24.278317+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:00:26.246703+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:00:59.262359+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:01:01.012614+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:01:03.023462+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:01:35.724388+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:01:37.797923+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:01:39.470263+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:02:12.969566+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:02:14.466670+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:02:15.743925+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:02:48.784834+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:02:50.415980+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:02:51.968721+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:03:24.469129+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:03:25.968740+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:03:27.468685+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:04:00.230638+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:04:01.968906+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:04:03.719456+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:04:36.470219+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:04:38.256092+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:04:39.799186+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:05:12.280594+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:05:14.221511+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:05:15.734844+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:05:48.218986+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:05:49.719679+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:05:51.228342+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:06:24.014626+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:06:25.781440+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:06:28.003418+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:07:00.469596+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:07:01.969002+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:07:03.469217+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:07:36.003330+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:07:37.470410+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:07:39.472683+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:08:12.223925+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:08:14.222614+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:08:15.720634+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:08:48.001880+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:08:49.470878+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:08:51.004378+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:09:23.471781+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:09:24.985350+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:09:26.473382+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:09:59.009385+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:10:00.470364+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:10:02.001599+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:10:34.970511+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:10:36.754692+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:10:38.746377+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:11:12.055434+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:11:13.721327+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:11:15.284384+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:11:49.001982+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:11:50.971587+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:11:52.720941+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:12:25.220849+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:12:26.754086+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:12:28.545416+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:13:01.223031+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:13:02.721025+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:13:04.220484+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:13:37.509599+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:13:38.971207+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:13:40.514711+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:14:12.972424+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:14:14.553962+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:14:16.220398+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:14:49.723734+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:14:51.220707+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:14:52.720600+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:15:25.227597+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:15:26.971366+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:15:28.506021+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:16:01.720987+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:16:03.220857+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:16:04.721062+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:16:37.220636+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:16:38.724498+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:16:40.220800+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:17:12.970770+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:17:14.720564+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:17:16.220703+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:17:48.721443+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:17:50.471118+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:17:51.972016+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:18:24.484113+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:18:25.972231+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:18:27.470646+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:18:59.751945+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:19:01.471582+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:19:02.970688+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:19:35.471380+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:19:37.476335+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:19:38.749529+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:20:11.721032+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:20:13.502759+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:20:14.974364+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:20:48.220737+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:20:49.751463+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:20:51.470731+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:21:24.034186+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:21:27.780702+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:21:30.481609+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:22:04.759173+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:22:06.722093+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:22:08.248235+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:22:41.471500+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:22:43.545173+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:22:45.775624+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:23:18.472344+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:23:19.970707+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:23:21.516439+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:23:54.786731+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:23:56.471852+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:23:57.970651+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:24:30.473224+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:24:31.970852+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:24:33.748496+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:25:11.949975+00:00,S4,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:25:18.995345+00:00,S4V2,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:25:26.019549+00:00,S4V3,E_ERROR,"get_position() returned success=False: {'success': False, 'size': 0, 'entry_price': 0.0, 'direction': 'UNKNOWN'}"
+2026-10-04T22:28:19.993968+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-04T23:05:53.120666+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-05T00:00:11.728169+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-05 00:00:11,226 INFO [TELEGRAM] Alert sent: CTS S4V2 MISSED TRADE - signal entry=2026-10-04T17"
+2026-10-05T02:00:36.867873+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-05 02:00:08,567 INFO [TELEGRAM] Alert sent: CTS S4V2 MISSED TRADE - signal entry=2026-10-05T00"
+2026-10-05T08:00:29.864480+00:00,S4,C_MISSED_SIGNAL,"2026-10-05 08:00:03,704 INFO [TELEGRAM] Alert sent: CTS MISSED TRADE - signal entry=2026-10-05T02:00:0"
+2026-10-05T08:00:35.384314+00:00,S4V3,C_MISSED_SIGNAL,"2026-10-05 08:00:07,592 INFO [TELEGRAM] Alert sent: CTS S4V3 MISSED TRADE - signal entry=2026-10-05T00"
