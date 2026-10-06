@@ -1473,14 +1473,14 @@ def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn,
     _eq_today = (_dt_audit.datetime.utcnow() + _dt_audit.timedelta(hours=5, minutes=30)).date()
     _eq_from = _eq_today.replace(day=1)
     _eq_to = _eq_today
-    _eq_lv_rows = _load_audit_lv_cached(fetch_fills_fn, strat_label, _eq_from, _eq_to, inr_rate, _bt_mtime_audit(strat_label))
+    _eq_prod_rows = _load_audit_prod_cached(strat_label, _eq_from, _eq_to, inr_rate, _prod_mtime_audit(strat_label))
     _eq_bt_rows_raw = _load_audit_bt_cached(load14_fn, strat_label, _eq_from, _eq_to, inr_rate, _bt_mtime_audit(strat_label))
     _eq_bt_rows = _apply_bt_adjustments_audit(_eq_bt_rows_raw, bt_lot_input, bt_slippage_input, inr_rate)
 
     eqc1, eqc2 = st.columns(2)
     with eqc1:
-        st.markdown("##### Equity Curve - Delta Fill (This Month)")
-        _eq_render_audit(_eq_lv_rows, f"{strat_label}_lv", "Delta Fill")
+        st.markdown("##### Equity Curve - Production Fill (This Month)")
+        _eq_render_audit(_eq_prod_rows, f"{strat_label}_prod", "Production Fill")
     with eqc2:
         st.markdown("##### Equity Curve - Backtest (This Month)")
         _eq_render_audit(_eq_bt_rows, f"{strat_label}_bt", "Backtest")
