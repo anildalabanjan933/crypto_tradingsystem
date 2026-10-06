@@ -1030,7 +1030,7 @@ while True:
                     log.warning(f"[SYNC] False FLAT detected (transient) - exchange size confirmed={_exch_size2} - skipping sync")
                     _exch_size = _exch_size2
             if _exch_size == 0 and position is not None:
-                log.warning(f"[SYNC] Exchange FLAT but bot={position} - SL hit or manual close - syncing to FLAT")
+                log.warning(f"[SYNC] Exchange FLAT but bot={position} - position closed on exchange, reason not confirmed (could be SL or manual) - syncing to FLAT")
                 # FIX: advance last_known_ts past this signal's exit_time so it
                 # is not matched again next loop (prevents duplicate re-entry
                 # after SL hit or manual close from dashboard).
@@ -1088,10 +1088,10 @@ while True:
                     _f.write(f"{int(time.time())}|synced_flat|entry_ts={last_known_ts}")
                 log.info("[SYNC] manual_override_s4v3.txt written - next entry signal will be skipped")
                 send_alert(
-                    f"CTS SL HIT DETECTED\n"
+                    f"CTS ALERT - Position Closed on Exchange\n"
                     f"Bot: S4V3\n"
-                    f"Action: Position closed by SL on exchange\n"
-                    f"Status: Synced to FLAT"
+                    f"What happened: Exchange shows no open position, reason not confirmed (could be stop-loss or manual close)\n"
+                    f"Action: Bot updated itself to match exchange (now flat)"
                 )
             elif _exch_size > 0 and position is None:
                 _exch_side = _exch.get("side","")
