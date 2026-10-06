@@ -102,10 +102,15 @@ def check_fire_delay(baseline):
     rows = read_csv_rows("logs/confirmation_lag_events.csv")
     since = [r for r in rows if float(r.get("detected_at", 0)) >= baseline.timestamp()]
     delays = []
+    seen = set()
     for r in since:
         tf = TF_MIN_BY_BOT.get(r.get("label", ""))
         if tf is None:
             continue
+        dedup_key = (r.get("label", ""), r.get("detected_at", ""))
+        if dedup_key in seen:
+            continue  # BUG-FIX: exit+flip-entry fire in same cycle, share detected_at - count once
+        seen.add(dedup_key)
         try:
             real_delay = float(r["lag_sec"]) - tf * 60
             delays.append(real_delay)
