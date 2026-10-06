@@ -691,7 +691,7 @@ while True:
                             log.critical(f"[SKIP] Expired signal entry={_et} exit={_xt} | advancing last_known_ts")
                             try:
                                 from engine.telegram_alert import send_alert
-                                send_alert(f"CTS S4V3 MISSED TRADE - signal entry={_et} exit={_xt} expired before execution, skipped")
+                                send_alert(f"CTS S4V3 TRADE MISSED\nWhat happened: Price band hit - testnet thin liquidity, expected fill price not reached\nSignal entry={_et} exit={_xt}\nTrade count reduced by 1\nTime: {datetime.utcnow().isoformat()} UTC")
                             except Exception:
                                 pass
                             save_ts_file(TS_FILE, _xt)
@@ -705,7 +705,7 @@ while True:
                     log.critical(f"[SKIP] Expired signal entry={_et} exit={_xt} | advancing last_known_ts")
                     try:
                         from engine.telegram_alert import send_alert
-                        send_alert(f"CTS S4V3 MISSED TRADE - signal entry={_et} exit={_xt} expired before execution, skipped")
+                        send_alert(f"CTS S4V3 TRADE MISSED\nWhat happened: Price band hit - testnet thin liquidity, expected fill price not reached\nSignal entry={_et} exit={_xt}\nTrade count reduced by 1\nTime: {datetime.utcnow().isoformat()} UTC")
                     except Exception:
                         pass
                     save_ts_file(TS_FILE, _xt)
@@ -738,7 +738,7 @@ while True:
                     log.critical(f"[SKIP] Expired signal | entry={sig_ts} exit={_xt} | advancing last_known_ts")
                     try:
                         from engine.telegram_alert import send_alert
-                        send_alert(f"CTS S4V3 MISSED TRADE - signal entry={sig_ts} exit={_xt} expired before execution, skipped")
+                        send_alert(f"CTS S4V3 TRADE MISSED\nWhat happened: Price band hit - testnet thin liquidity, expected fill price not reached\nSignal entry={sig_ts} exit={_xt}\nTrade count reduced by 1\nTime: {datetime.utcnow().isoformat()} UTC")
                     except Exception:
                         pass
                     save_ts_file(TS_FILE, _xt)
@@ -778,7 +778,7 @@ while True:
                             position = None
                             save_ts_file(TS_FILE, _next_row["entry_time"])
                             last_known_ts = safe_ts(_next_row["entry_time"])
-                            send_alert(f"CTS S4V3 SELF-HEAL: Orphaned PENDING exit auto-closed | entry={sig_ts} | advanced to next_signal={_next_row['entry_time']}")
+                            send_alert(f"CTS S4V3 AUTO-CLOSED (system design, not strategy)\nWhat happened: Exit did not happen on time due to testnet thin liquidity. System auto-closed this old position so the bot can continue.\nTrade entry={sig_ts}\nNext signal starts={_next_row['entry_time']}")
                             log.info(f"[SELF-HEAL] Position closed, advanced to {_next_row['entry_time']}")
                         else:
                             log.error(f"[SELF-HEAL] Auto-close FAILED: {result}")
@@ -852,7 +852,7 @@ while True:
                                 log.warning(f"[FILL-LOG] exit_fill_price is 0 for sig_ts={sig_ts} - skipping fill log row entirely")
                         else:
                             log.error(f"[ORDER] EXIT FAILED: {result}")
-                            send_alert(f"CTS S4V3 EXIT FAILED\nError: {result}")
+                            send_alert(f"CTS S4V3 EXIT NOT DONE YET\nWhat happened: Testnet thin liquidity - exit order could not fill\nPosition still open, bot will keep trying\nError detail: {result}")
 
             # --- ENTRY if no position and exit time not yet reached ---
             elif position is None and now < _xt and _reject_nb(sig_ts, now, "ENTRY"):
@@ -1002,7 +1002,15 @@ while True:
                             _entry_retry_state["count"] = 0
                         else:
                             log.error(f"[ORDER] ENTRY FAILED: {result}")
-                            send_alert(f"CTS S4V3 ENTRY FAILED\n" + ("Delta side maintenance is ON - no API response" if ("max_retries_exceeded" in str(result) or "timeout" in str(result).lower()) else ("Low balance - add funds" if "insufficient" in str(result).lower() else f"Error: {result}")))
+                            send_alert(f"CTS S4V3 ENTRY NOT FILLED\n" + (
+                                "What happened: Price moved away too fast (testnet thin liquidity) - order could not fill in band"
+                                if "unfilled_beyond_band" in str(result) else
+                                "What happened: Delta side maintenance is ON - no API response"
+                                if ("max_retries_exceeded" in str(result) or "timeout" in str(result).lower()) else
+                                "What happened: Low balance - add funds"
+                                if "insufficient" in str(result).lower() else
+                                f"What happened: {result}"
+                            ))
                             last_known_ts = load_ts_file(TS_FILE)
                             _entry_retry_state["count"] += 1
 

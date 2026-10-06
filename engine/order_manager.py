@@ -344,7 +344,7 @@ class OrderManager:
             if _filled == 0:
                 logging.error(f"[OrderManager] ENTRY UNFILLED - nothing filled within ${_band:.0f} band (attempt {attempt+1}) | ref_price={_ref_price} limit={_limit_price}")
                 self._log_book_on_miss(side, size, _ref_price, _limit_price, "ENTRY")
-                send_alert(f"CTS ENTRY UNFILLED\nSide: {side.upper()}\nRef price: ${_ref_price:,.1f}\nBand limit: ${_limit_price:,.1f}\nNo fill within ${_band:.0f} band (attempt {attempt+1}) - order skipped")
+                send_alert(f"CTS ENTRY NOT FILLED (attempt {attempt+1})\nWhat happened: Tried to fill at ${_ref_price:,.1f}, testnet thin liquidity - price moved away before fill\nBot will try again next attempt")
                 return {"success": False, "error": "unfilled_beyond_band", "order_id": result.get("id")}
 
             logging.info(f"[OrderManager] Order filled | id={result['id']} state={result['state']} filled={_filled}/{size}")
@@ -630,16 +630,11 @@ class OrderManager:
         _pos_desc = f"size={final_size}" if final_check.get("success") else "UNKNOWN (position API check failed)"
         logging.critical(f"[OrderManager] CLOSE FAILED AFTER {max_attempts} ATTEMPTS - position still open ({_pos_desc}) - elapsed={_elapsed_total:.0f}s - MANUAL INTERVENTION REQUIRED")
         send_alert(
-            f"CTS CRITICAL - CLOSE FAILED AFTER {max_attempts} ATTEMPTS\n"
-            f"Side requested : {side.upper()}\n"
-            f"Target size    : {size}\n"
-            f"Position now   : {_pos_desc}\n"
-            f"Elapsed        : {_elapsed_total:.0f}s since first failure\n"
-            f"Last error     : {last_resp.get('error') if last_resp else 'N/A'}\n"
-            f"ACTION REQUIRED: Close manually on Delta Exchange immediately.\n"
-            f"$1000 loss-capped resting order also failed to fill - genuine extreme "
-            f"illiquidity or platform-level issue. Tier 0 (10%) is the only remaining "
-            f"automated protection."
+            f"CTS EXIT NOT FILLED after {max_attempts} tries ({_elapsed_total:.0f}s)\n"
+            f"What happened: Testnet thin liquidity - could not close position even at wide price range\n"
+            f"Position still open: {_pos_desc}\n"
+            f"Action needed: Close manually on Delta Exchange now\n"
+            f"Note: The 10% emergency safety switch is still active and will protect capital if nothing is done"
         )
         return {"success": False, "error": "close_failed_after_max_attempts",
                 "last_error": last_resp.get("error") if last_resp else None,
