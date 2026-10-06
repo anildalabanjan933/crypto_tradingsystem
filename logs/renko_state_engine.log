@@ -104362,3 +104362,12 @@ timestamp
 06-Oct-2026 12:34:54 PM IST INFO [ENGINE] New candle: 2026-10-06 07:02:00
 06-Oct-2026 12:35:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
 06-Oct-2026 12:35:01 PM IST INFO [ENGINE] Market data update already running - skip duplicate trigger
+06-Oct-2026 12:36:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+06-Oct-2026 12:36:01 PM IST INFO [ENGINE] Market data update already running - skip duplicate trigger
+06-Oct-2026 12:36:08 PM IST INFO [ENGINE] Market data updated
+06-Oct-2026 12:37:01 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+06-Oct-2026 12:37:04 PM IST INFO [ENGINE] Market data updated
+06-Oct-2026 12:37:04 PM IST INFO [ENGINE] New candle: 2026-10-06 07:04:00
+06-Oct-2026 12:37:43 PM IST INFO [ENGINE] New candle: 2026-10-06 07:05:00
+06-Oct-2026 12:38:00 PM IST INFO [WS] Completed candle detected - fast in-memory update (no REST wait)
+06-Oct-2026 12:38:01 PM IST INFO [ENGINE] Market data update already running - skip duplicate trigger
