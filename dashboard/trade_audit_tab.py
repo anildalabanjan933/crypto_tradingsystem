@@ -1351,6 +1351,8 @@ def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn,
         p3.metric("Total Charge", f"Rs {_fmt_num_audit(_total_charge_prod)}")
         rows_html_prod = "".join(_render_bt_row_html(r) for r in prod_rows)
         st.markdown(_clean_html_audit(f'<div style="overflow-x:auto;">{_render_bt_table_html(rows_html_prod)}</div>'), unsafe_allow_html=True)
+        if not prod_rows:
+            st.caption("No completed production trades yet in this date range (production L2 fill tracking recently enabled).")
 
     with col_bt_top:
         st.markdown(f"**{strat_label} - BT**")
@@ -1368,7 +1370,7 @@ def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn,
     col_lv, col_bt = st.columns(2)
 
     with col_lv:
-        st.markdown(f"**{strat_label}**")
+        st.markdown(f"**{strat_label} - Delta Live Filled**")
         _total_trade_lv = len(lv_all_rows)
         _total_pnl_lv = sum(r["net_pnl_inr"] for r in lv_all_rows if r.get("net_pnl_inr") is not None)
         _total_charge_lv = sum(r["charges"] for r in lv_all_rows if r.get("charges") is not None)
@@ -1452,7 +1454,7 @@ def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn,
             st.caption("No unfilled/failed order alerts in this date range.")
 
     with col_bt:
-        st.markdown(f"**{strat_label}**")
+        st.markdown(f"**{strat_label} - BT**")
         _total_trade_bt = len(bt_rows)
         _total_pnl_bt = sum(r["net_pnl_inr"] for r in bt_rows if r.get("net_pnl_inr") is not None)
         _total_charge_bt = sum(r["charges"] for r in bt_rows if r.get("charges") is not None)
