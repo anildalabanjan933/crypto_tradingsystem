@@ -189,6 +189,18 @@ def _get_prod_l2_fill_price_async(symbol, side, lots, result_holder):
     return t
 
 
+def _get_match_count_s4v2():
+    try:
+        v = open("logs/match_count_s4v2.txt").read().strip()
+        return int(v)
+    except Exception:
+        return 0
+
+def _increment_match_count():
+    c = _get_match_count_s4v2() + 1
+    open("logs/match_count_s4v2.txt", "w").write(str(c))
+    return c
+
 def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
                                  bt_entry_price, bt_exit_price, lots=100,
                                  entry_ts=None, exit_ts=None, total_charges=0.0,
