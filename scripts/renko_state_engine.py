@@ -439,7 +439,7 @@ def _bump_mismatch_and_maybe_resync(state, tfm, ts, sig_type, direction, blocked
             log.critical(f"[{state.label}] AUTO-RESYNC: internal current_direction={state.current_direction} disagreed with signals for {_stale_sec:.0f}s ({state._mismatch_count} rejects) - correcting to exchange-reported={_real_dir}")
             try:
                 from engine.telegram_alert import send_alert
-                send_alert(f"CTS {state.label} AUTO-RESYNC fired - state was stuck {_stale_sec:.0f}s, corrected direction {state.current_direction}->{_real_dir}")
+                send_alert(f"[{state.label}] FIXED: Bot's position info was wrong for {_stale_sec:.0f} seconds. It self-corrected automatically (was tracking {state.current_direction}, now shows {_real_dir}). No action needed.")
             except Exception:
                 pass
             if state.current_direction != _real_dir:
