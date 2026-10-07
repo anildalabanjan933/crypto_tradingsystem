@@ -179,6 +179,8 @@ def _get_prod_l2_fill_price_async(symbol, side, lots, result_holder):
     def _worker():
         try:
             result_holder['v'] = _get_prod_l2_fill_price(symbol, side, lots)
+            if result_holder['v'] is None:
+                log.warning(f"[PROD-L2-ASYNC] fill price returned None (empty book or no fill) symbol={symbol} side={side} lots={lots}")
         except Exception as _e:
             log.warning(f"[PROD-L2-ASYNC] thread failed: {_e}")
             result_holder['v'] = None
