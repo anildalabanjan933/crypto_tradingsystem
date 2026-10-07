@@ -492,6 +492,7 @@ def check_and_fire(state,is_s4=False):
         _tf_minutes_map={"S4":120,"S4V2":30,"S4V3":240,"S2":120}
         _tfm=_tf_minutes_map.get(state.label,120)
         _is_startup=getattr(state,"_first_check_since_restart",False)
+        _mm_bumped=False
         for sig in signals:
             ts=sig.get("timestamp","")
             if not ts: continue
@@ -521,6 +522,7 @@ def check_and_fire(state,is_s4=False):
                     _age_min=(now_utc.replace(tzinfo=None)-_sig_dt).total_seconds()/60.0
                     if _age_min > _tfm*1.5:
                         log.critical(f"[{state.label}] REPAINT GUARD: signal ts={ts} type={sig.get('signal_type')} is {_age_min:.0f}min old (threshold {_tfm*1.5:.0f}min) - already-locked history repaint attempt blocked")
+                        _mm_bumped=True
                         _bump_mismatch_and_maybe_resync(state, _tfm, ts, sig.get("signal_type"), sig.get("direction",""), blocked_by_repaint_guard=True)
                         continue
                 except Exception:
@@ -532,7 +534,11 @@ def check_and_fire(state,is_s4=False):
                 continue
             new_sigs.append(sig)
         state._first_check_since_restart=False
-        if not new_sigs: return
+        if not new_sigs:
+            if not _mm_bumped:
+                state._mismatch_count=0
+                state._mismatch_since=None
+            return
         new_sigs.sort(key=lambda s: (s.get("timestamp",""), 0 if s.get("signal_type")=="EXIT" else 1))
         # Fire ONE signal at a time - EXIT before ENTRY - oldest first
         for sig in new_sigs:
@@ -546,6 +552,7 @@ def check_and_fire(state,is_s4=False):
             elif sig_type in ("BUY_A","BUY_B","SELL_A","SELL_B","ENTRY") and state.current_direction is None:
                 _fire(state,ts,price,direction,"ENTRY",box,now_utc,signals)
             else:
+                _mm_bumped=True
                 _bump_mismatch_and_maybe_resync(state, _tfm, ts, sig_type, direction)
     except Exception as e:
         log.error(f"[{state.label}] check error: {e}",exc_info=True)
@@ -703,6 +710,8 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
     if sig_type=="EXIT": state.last_exit_ts=ts
     else: state.last_entry_ts=ts
     state.current_direction=direction if sig_type=="ENTRY" else None
+    state._mismatch_count=0
+    state._mismatch_since=None
     log.info(f"[{state.label}] {sig_type} {direction} at {ts}")
 
 
