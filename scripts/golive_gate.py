@@ -29,9 +29,48 @@ CRITICAL_FILES = [
 ]
 WINDOW_DAYS = 14
 RESULTS = []
+KNOWN_ISSUES_PATH = "logs/golive_gate_known_issues.json"
 
 def record(name, passed, detail):
     RESULTS.append({"criterion": name, "passed": passed, "detail": detail})
+
+def load_known_issues():
+    if not os.path.exists(KNOWN_ISSUES_PATH):
+        return {}
+    try:
+        with open(KNOWN_ISSUES_PATH) as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+def save_known_issues(data):
+    os.makedirs("logs", exist_ok=True)
+    with open(KNOWN_ISSUES_PATH, "w") as f:
+        json.dump(data, f, indent=2)
+
+def update_known_issues(now_iso):
+    """Log every FAIL today. Keep any FAIL from before that has not been
+    explicitly marked resolved_commit, even if today's run shows it as
+    PASS due to a baseline reset (does NOT alter RESULTS/exit code)."""
+    issues = load_known_issues()
+    carryover = []
+    for r in RESULTS:
+        key = r["criterion"]
+        if r["passed"] is False:
+            issues[key] = {
+                "first_seen": issues.get(key, {}).get("first_seen", now_iso),
+                "last_seen_fail": now_iso,
+                "detail": r["detail"],
+                "resolved_commit": None,
+            }
+    for key, rec in issues.items():
+        if rec.get("resolved_commit"):
+            continue
+        today_result = next((r for r in RESULTS if r["criterion"] == key), None)
+        if today_result is None or today_result["passed"] is not False:
+            carryover.append((key, rec))
+    save_known_issues(issues)
+    return carryover
 
 def load_exempt():
     exempt = set()
@@ -144,7 +183,18 @@ def check_bt_live_match(baseline):
     rows = read_csv_rows("logs/bt_live_mismatch.csv")
     issue_rows = read_csv_rows("logs/issue_tracker_trades.csv")
     exempt_flags = {"ENTRY_UNFILLED_BAND", "ENTRY_BAND_ABANDONED"}
-    since = [r for r in rows if r.get("logged_at", "") >= baseline.isoformat()]
+    def _naive(s):
+        s = str(s).strip().replace("Z", "").split("+")[0].replace(" ", "T").split(".")[0]
+        try:
+            return datetime.fromisoformat(s)
+        except Exception:
+            return None
+    bl = baseline.astimezone(timezone.utc).replace(tzinfo=None)
+    since = []
+    for r in rows:
+        t = _naive(r.get("entry_ts_bt") or r.get("entry_ts_live") or "")
+        if t is not None and t >= bl:
+            since.append(r)
     if not since:
         record("b_direction_match", True, "no rows since baseline (nothing to check yet)")
         record("c_trade_count_match", True, "no rows since baseline (nothing to check yet)")
@@ -198,8 +248,15 @@ def check_fire_delay(baseline):
             delays.append(real_delay)
         except Exception:
             continue
-    if not delays:
-        record("d_fire_delay", None, "no numeric lag data since baseline (SKIP)")
+    if len(delays) < 20:
+        if delays:
+            delays.sort()
+            p90 = delays[int(0.9 * (len(delays) - 1))]
+            mx = max(delays)
+            record("d_fire_delay", None,
+                   f"INSUFFICIENT SAMPLE n={len(delays)} (<20) - p90={p90:.1f}s max={mx:.1f}s so far")
+        else:
+            record("d_fire_delay", None, "no numeric lag data since baseline (SKIP)")
         return
     delays.sort()
     p90 = delays[int(0.9 * (len(delays) - 1))]
@@ -351,6 +408,14 @@ def main():
             status = "FAIL"
             overall_pass = False
         print(f"[{status}] {r['criterion']}: {r['detail']}")
+
+    carryover = update_known_issues(now.isoformat())
+    for key, rec in carryover:
+        print(f"[CARRYOVER-FAIL] {key}: unresolved since {rec['first_seen']} "
+              f"(last failed {rec['last_seen_fail']}) - baseline reset does not clear this. "
+              f"last detail: {rec['detail']}")
+        overall_pass = False
+
     print("=" * 70)
     print("OVERALL:", "PASS" if overall_pass else "FAIL")
     sys.exit(0 if overall_pass else 1)
