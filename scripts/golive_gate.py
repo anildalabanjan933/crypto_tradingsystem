@@ -395,7 +395,21 @@ def main():
         record("i_env_config", False, f"cts_env import failed: {e}")
 
     # --- Print report ---
-    print("=" * 70)
+    if window_start:
+        golive_date = window_start + timedelta(days=WINDOW_DAYS)
+        remaining = golive_date - now
+        if remaining.total_seconds() > 0:
+            days_left = remaining.days
+            hours_left = remaining.seconds // 3600
+            print("=" * 70)
+            print(f"STAGE A COUNTDOWN: {days_left} day(s) {hours_left} hour(s) remaining")
+            print(f"Clock started (baseline): {window_start.isoformat()}")
+            print(f"Go-live eligible on:       {golive_date.isoformat()}")
+            print("=" * 70)
+        else:
+            print("=" * 70)
+            print(f"STAGE A COUNTDOWN: COMPLETE - 14-day window finished on {golive_date.isoformat()}")
+            print("=" * 70)
     print("GOLIVE_GATE REPORT -", now.isoformat())
     print("=" * 70)
     overall_pass = True
