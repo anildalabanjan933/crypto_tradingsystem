@@ -118,6 +118,7 @@ class StrategyState:
         self.lock=threading.Lock()
         self._mismatch_count=0
         self._mismatch_since=None
+        self._resync_floor_ts=None
 
 
 
@@ -516,6 +517,8 @@ def check_and_fire(state,is_s4=False):
                 if state.last_entry_ts and ts<=state.last_entry_ts:
                     log.debug(f"[{state.label}] DROPPED ENTRY sig ts={ts} <= last_entry_ts={state.last_entry_ts} - signal silently skipped")
                     continue
+            if state._resync_floor_ts and ts<state._resync_floor_ts:
+                continue
             if not _is_startup:
                 try:
                     _sig_dt=datetime.strptime(ts,"%Y-%m-%dT%H:%M:%S")
@@ -524,6 +527,9 @@ def check_and_fire(state,is_s4=False):
                         log.critical(f"[{state.label}] REPAINT GUARD: signal ts={ts} type={sig.get('signal_type')} is {_age_min:.0f}min old (threshold {_tfm*1.5:.0f}min) - already-locked history repaint attempt blocked")
                         _mm_bumped=True
                         _bump_mismatch_and_maybe_resync(state, _tfm, ts, sig.get("signal_type"), sig.get("direction",""), blocked_by_repaint_guard=True)
+                        if state._mismatch_count==0:
+                            state._resync_floor_ts=(now_utc.replace(tzinfo=None)-timedelta(minutes=_tfm*1.5)).strftime("%Y-%m-%dT%H:%M:%S")
+                            log.critical(f"[{state.label}] AUTO-RESYNC done via repaint path - stale signals older than {state._resync_floor_ts} now ignored (no re-bump loop)")
                         continue
                 except Exception:
                     pass
