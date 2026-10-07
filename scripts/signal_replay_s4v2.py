@@ -605,6 +605,17 @@ try:
 except Exception as _e_val:
     log.error(f"[CRITICAL] API key validation error: {_e_val}")
 
+# PEF-RESTORE: prod_entry_fill undefined/lost if bot restarted with open position
+if 'prod_entry_fill' not in globals():
+    prod_entry_fill = None
+if position is not None and prod_entry_fill is None:
+    try:
+        import csv as _csv_pef
+        for _r_pef in _csv_pef.reader(open('logs/fill_prices_open_s4v2.csv')):
+            if len(_r_pef) >= 4 and _r_pef[0] == last_known_ts and _r_pef[3] not in ('NA',''):
+                prod_entry_fill = {'v': float(_r_pef[3])}
+    except Exception:
+        pass
 _prod_snap_entry = {}
 _prod_snap_exit = {}
 # --- Signal CSV mtime cache (perf fix, no logic change) ---
