@@ -1223,22 +1223,22 @@ def _bt_mtime_audit(strat_label):
     return max(_mtimes)
 
 
-@st.cache_data(ttl=180, show_spinner=False)
+@st.cache_data(ttl=300, show_spinner=False)
 def _load_audit_bt_cached(_load14_fn, strat_label, from_date, to_date, inr_rate, _bust=None):
     return _get_bt_rows_audit(strat_label, from_date, to_date, _load14_fn, inr_rate)
 
 
-@st.cache_data(ttl=180, show_spinner=False)
+@st.cache_data(ttl=300, show_spinner=False)
 def _load_audit_lv_cached(_fetch_fills_fn, strat_label, from_date, to_date, inr_rate, _bust=None):
     return _get_live_rows_audit(strat_label, from_date, to_date, _fetch_fills_fn, inr_rate)
 
 
-@st.cache_data(ttl=180, show_spinner=False)
+@st.cache_data(ttl=300, show_spinner=False)
 def _load_audit_lv_open_cached(_fetch_fills_fn, strat_label, from_date, to_date, _bust=None):
     return _get_open_live_rows_audit(strat_label, from_date, to_date, _fetch_fills_fn)
 
 
-@st.cache_data(ttl=180, show_spinner=False)
+@st.cache_data(ttl=300, show_spinner=False)
 def _load_audit_prod_cached(strat_label, from_date, to_date, inr_rate, _bust=None):
     return _get_prod_rows_audit(strat_label, from_date, to_date, inr_rate)
 
@@ -1527,6 +1527,18 @@ def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn,
         st.markdown("##### Equity Curve - Backtest (This Month)")
         _eq_render_audit(_eq_bt_rows, f"{strat_label}_bt", "Backtest")
 
+    _eq_lv_rows_raw = _load_audit_lv_cached(fetch_fills_fn, strat_label, _eq_from, _eq_to, inr_rate, _bt_mtime_audit(strat_label))
+    _eq_lv_open_rows = _load_audit_lv_open_cached(fetch_fills_fn, strat_label, _eq_from, _eq_to, _bt_mtime_audit(strat_label))
+    _eq_lv_rows = _eq_lv_open_rows + _eq_lv_rows_raw
+
+    eqc3, eqc4 = st.columns(2)
+    with eqc3:
+        st.markdown("##### Equity Curve - Delta Live Filled (This Month)")
+        _eq_render_audit(_eq_lv_rows, f"{strat_label}_lv", "Delta Live Filled")
+    with eqc4:
+        st.markdown("##### Equity Curve - Backtest (This Month)")
+        _eq_render_audit(_eq_bt_rows, f"{strat_label}_bt2", "Backtest")
+
     return bt_rows, lv_all_rows
 
 
@@ -1604,15 +1616,43 @@ def render_trade_audit_tab(load14_fn, fetch_fills_fn, read_log_fn, inr_rate=_INR
             _row["source"] = "BACKTEST"
             _csv_rows.append(_row)
 
-    if _csv_rows:
-        _csv_df = _pd_audit.DataFrame(_csv_rows, columns=_csv_cols)
-        st.download_button(
-            label="Download CSV (Delta Fill vs Backtest)",
-            data=_csv_df.to_csv(index=False).encode("utf-8"),
-            file_name=f"audit_trade_{strat_label}_{from_date}_{to_date}.csv",
-            mime="text/csv",
-            key="audit_csv_download_btn",
-        )
+    _csv_rows_prod = []
+    for _s_csv in _strats_for_csv:
+        _bt_raw_csv2 = _load_audit_bt_cached(load14_fn, _s_csv, from_date, to_date, inr_rate, _bt_mtime_audit(_s_csv))
+        _bt_csv2 = _apply_bt_adjustments_audit(_bt_raw_csv2, bt_lot_input, bt_slippage_input, inr_rate)
+        _prod_csv = _load_audit_prod_cached(_s_csv, from_date, to_date, inr_rate, _prod_mtime_audit(_s_csv))
+        _bt_csv2 = [r for r in _bt_csv2 if _t_ok_audit_csv(r)]
+        _prod_csv = [r for r in _prod_csv if _t_ok_audit_csv(r)]
+        for _r in _prod_csv:
+            _row = {k: _r.get(k) for k in _csv_cols if k != "source"}
+            _row["source"] = "PRODUCTION_FILL"
+            _csv_rows_prod.append(_row)
+        for _r in _bt_csv2:
+            _row = {k: _r.get(k) for k in _csv_cols if k != "source"}
+            _row["source"] = "BACKTEST"
+            _csv_rows_prod.append(_row)
+
+    _dl_col1, _dl_col2 = st.columns(2)
+    with _dl_col1:
+        if _csv_rows:
+            _csv_df = _pd_audit.DataFrame(_csv_rows, columns=_csv_cols)
+            st.download_button(
+                label="Download CSV (Delta Fill vs Backtest)",
+                data=_csv_df.to_csv(index=False).encode("utf-8"),
+                file_name=f"audit_trade_{strat_label}_{from_date}_{to_date}.csv",
+                mime="text/csv",
+                key="audit_csv_download_btn",
+            )
+    with _dl_col2:
+        if _csv_rows_prod:
+            _csv_df_prod = _pd_audit.DataFrame(_csv_rows_prod, columns=_csv_cols)
+            st.download_button(
+                label="Download CSV (Production Fill vs Backtest)",
+                data=_csv_df_prod.to_csv(index=False).encode("utf-8"),
+                file_name=f"audit_trade_prod_{strat_label}_{from_date}_{to_date}.csv",
+                mime="text/csv",
+                key="audit_csv_download_prod_btn",
+            )
     hcol1, hcol2 = st.columns(2)
     with hcol1:
         st.markdown("### DELTA LIVE FILLED")
