@@ -106,7 +106,7 @@ def check_stale_code(bot):
         age_min = (time.time() - proc_start) / 60
         detail = f"{bot['script']} modified after process start - running {age_min:.0f}m on old code, needs restart"
         log_event(bot["name"], "B_STALE_CODE", detail)
-        send_alert(f"WATCHDOG [{bot['name']}] Class B - STALE CODE:\n{detail}")
+        send_alert(f"[{bot['name']}] ALERT: Bot is running old code. New code was saved {age_min:.0f} minutes ago but not loaded yet. Please restart it.\n{detail}")
     else:
         _stale_alerted.pop(key, None)
 
@@ -139,7 +139,7 @@ def check_liquidity_frequency(bot):
     if len(events) >= LIQ_THRESHOLD:
         detail = f"{len(events)} thin-liquidity IOC cancels in last {LIQ_WINDOW_MIN}m (threshold {LIQ_THRESHOLD})"
         log_event(bot["name"], "D_LIQUIDITY_FREQ", detail)
-        send_alert(f"WATCHDOG [{bot['name']}] Class D - HIGH LIQUIDITY-FREQ:\n{detail}")
+        send_alert(f"[{bot['name']}] ALERT: Order got cancelled {len(events)} times in {LIQ_WINDOW_MIN} minutes. Market has too few buyers/sellers right now.\n{detail}")
         events.clear()
 
 def main():
