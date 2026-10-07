@@ -158,11 +158,12 @@ def _get_prod_l2_fill_price(symbol, side, lots):
         levels = book.get("sell") if side == "buy" else book.get("buy")
         if not levels:
             return None
+        levels = sorted(levels, key=lambda l: float(l.get("price") or l.get("limit_price") or 0), reverse=(side != "buy"))
         remaining = float(lots)
         total_cost = 0.0
         filled = 0.0
         for lvl in levels:
-            lvl_price = float(lvl.get("limit_price") or lvl.get("price") or 0)
+            lvl_price = float(lvl.get("price") or lvl.get("limit_price") or 0)
             lvl_size = float(lvl.get("size") or 0)
             take = min(remaining, lvl_size)
             if take <= 0 or lvl_price <= 0:
@@ -608,6 +609,8 @@ try:
 except Exception as _e_val:
     log.error(f"[CRITICAL] API key validation error: {_e_val}")
 
+_prod_snap_entry = {}
+_prod_snap_exit = {}
 # --- Signal CSV mtime cache (perf fix, no logic change) ---
 _repl_sig_cache = None
 _repl_sig_cache_mtime = None
@@ -802,6 +805,10 @@ while True:
                     if not check_engine_heartbeat():
                         log.warning("[ORDER] EXIT blocked - engine heartbeat stale")
                     else:
+                        if _prod_snap_exit.get("key") != (sig_ts, _xt):
+                            _prod_snap_exit["key"] = (sig_ts, _xt)
+                            _prod_snap_exit["holder"] = {"v": None}
+                            _prod_snap_exit["thread"] = _get_prod_l2_fill_price_async(SYMBOL, side, lots, _prod_snap_exit["holder"])
                         result = om.close_position(size=close_size, side=side)
                         if result.get("success"):
                             position = None
@@ -821,8 +828,8 @@ while True:
                                     _exit_fill_price = _exit_pos.get("exit_price", 0.0) if _exit_pos.get("success") else 0.0
                                     if _exit_fill_price > 0:
                                         break
-                            _prod_exit_holder = {'v': None}
-                            _prod_exit_thread = _get_prod_l2_fill_price_async(SYMBOL, side, lots, _prod_exit_holder)
+                            _prod_exit_holder = _prod_snap_exit['holder']
+                            _prod_exit_thread = _prod_snap_exit['thread']
                             prod_exit_fill = _prod_exit_holder
                             log.info(f"[ORDER] EXIT confirmed | position=None | exit={_exit_fill_price}")
                             _send_live_exit_alert("S4V3", dirn, _xt, _exit_fill_price, _entry_price_for_alert, lots)
@@ -953,6 +960,10 @@ while True:
                         log.warning("[ORDER] ENTRY blocked - engine heartbeat stale")
                     else:
                         _cid = 'S4V3E' + sig_ts.replace('-','').replace(':','') + f'_a{_entry_retry_state["count"]}'
+                        if _prod_snap_entry.get("ts") != sig_ts:
+                            _prod_snap_entry["ts"] = sig_ts
+                            _prod_snap_entry["holder"] = {"v": None}
+                            _prod_snap_entry["thread"] = _get_prod_l2_fill_price_async(SYMBOL, side, lots, _prod_snap_entry["holder"])
                         result = om.place_market_order(side=side, size=lots, client_order_id=_cid, attempt=_entry_retry_state["count"])
                         if result.get("success"):
                             position = direction
@@ -986,9 +997,9 @@ while True:
                             if _bt_ep > 0 and real_entry > 0:
                                 _send_entry_match_alert("S4V3", direction, sig_ts, _bt_ep, real_entry, _bt_xt, _bt_xp, lots)
                             open_entry_price = real_entry
-                            _prod_entry_holder = {'v': None}
-                            _get_prod_l2_fill_price_async_entry(SYMBOL, side, lots, _prod_entry_holder, "logs/fill_prices_open_s4v3.csv", sig_ts, direction)
+                            _prod_entry_holder = _prod_snap_entry['holder']
                             prod_entry_fill = _prod_entry_holder
+                            threading.Thread(target=lambda t=_prod_snap_entry['thread'],h=_prod_entry_holder,pp="logs/fill_prices_open_s4v3.csv",e=sig_ts,d=direction,l=lots:(t.join(timeout=4),_write_open_fill_log(pp,e,d,l,h.get('v'))),daemon=True).start()
                             try:
                                 with open("logs/entry_price_s4v3.txt","w") as _epf:
                                     _epf.write(str(real_entry))
