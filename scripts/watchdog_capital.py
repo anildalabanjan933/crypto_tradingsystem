@@ -82,7 +82,7 @@ def log_event(path, bot, etype, sev, ref, details, alert=True):
         os.fsync(f.fileno())
     if alert and send_alert:
         try:
-            send_alert(f"CTS [{bot}] {etype} ({sev}) - {details}")
+            send_alert(f"[{bot}] ALERT: {details}")
         except Exception:
             pass
     print(f"{now_utc().isoformat()} [{bot}] {etype} {sev} {details}", flush=True)

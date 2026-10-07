@@ -112,7 +112,7 @@ def check_missed_signals(bot):
         for line in new_data.splitlines():
             if "MISSED TRADE" in line:
                 log_event(bot["name"], "C_MISSED_SIGNAL", line.strip()[:200])
-                send_alert_throttled(f"C_{bot['name']}", f"WATCHDOG [{bot['name']}] Class C - MISSED TRADE detected:\n{line.strip()[:200]}")
+                send_alert_throttled(f"C_{bot['name']}", f"[{bot['name']}] ALERT: Bot may have missed a trade. Please check.\n{line.strip()[:200]}")
     else:
         _log_positions[path] = size
 
@@ -134,7 +134,7 @@ def check_state_desync(bot):
     written_at = data.get('written_at')
     if written_at is not None and (now - written_at) > bot.get("stale_sec", HEALTH_FILE_STALE_SEC):
         log_event(bot['name'], 'A_HEALTHFILE_STALE', f"state_health file not updated in {now - written_at:.0f}s - engine may be dead")
-        send_alert_throttled(f"A_STALE_{bot['name']}", f"WATCHDOG [{bot['name']}] Class A - state_health file STALE for {now - written_at:.0f}s, engine may be dead")
+        send_alert_throttled(f"A_STALE_{bot['name']}", f"[{bot['name']}] ALERT: Bot has been silent for {now - written_at:.0f} seconds. It may have stopped. Please check.")
         return
 
     mismatch_since = data.get('mismatch_since')
@@ -144,7 +144,7 @@ def check_state_desync(bot):
         if stale_sec > MISMATCH_CRITICAL_SEC:
             detail = f"mismatch_since age={stale_sec:.0f}s (count={mismatch_count}) exceeds critical threshold {MISMATCH_CRITICAL_SEC}s - auto-resync may be failing"
             log_event(bot['name'], 'A_STATE_DESYNC', detail)
-            send_alert_throttled(f"A_DESYNC_{bot['name']}", f"WATCHDOG [{bot['name']}] Class A - STATE DESYNC CRITICAL:\n{detail}")
+            send_alert_throttled(f"A_DESYNC_{bot['name']}", f"[{bot['name']}] ALERT: Bot's position info looks wrong for {stale_sec:.0f} seconds. Self-fix is taking too long. Please check.\n{detail}")
 
 # ---------- Class E: position mismatch vs believed state (fill_prices CSV) ----------
 def _read_last_fill_row(fill_csv):
@@ -201,7 +201,7 @@ def check_position_mismatch(bot):
         if _mismatch_streak[bot["name"]] >= 2:
             detail = f"CSV believed={csv_dir}/{csv_size} vs exchange={exch_dir}/{exch_size} (2 consecutive polls)"
             log_event(bot["name"], "E_POSITION_MISMATCH", detail)
-            send_alert_throttled(f"E_{bot['name']}", f"WATCHDOG [{bot['name']}] Class E - POSITION MISMATCH (2 consecutive polls):\n{detail}")
+            send_alert_throttled(f"E_{bot['name']}", f"[{bot['name']}] ALERT: Bot thinks position is {csv_dir}/{csv_size}, but exchange shows {exch_dir}/{exch_size}. These don't match. Please check.\n{detail}")
     else:
         _mismatch_streak[bot["name"]] = 0
 
