@@ -485,8 +485,8 @@ def match_and_log(bt_rows, lv_rows, bot, date_str):
     if os.path.exists(MISMATCH_CSV):
         with open(MISMATCH_CSV, newline="") as f:
             for r in csv.DictReader(f):
-                existing_keys.add((r.get("bot",""), r.get("date",""), r.get("entry_ts_bt",""), r.get("entry_ts_live","")))
-    rows_to_write = [row for row in rows_to_write if (row[1], row[2], row[6], row[7]) not in existing_keys]
+                existing_keys.add((r.get("bot",""), r.get("entry_ts_bt",""), r.get("entry_ts_live","")))
+    rows_to_write = [row for row in rows_to_write if (row[1], row[6], row[7]) not in existing_keys]
 
     with open(MISMATCH_CSV, "a", newline="") as f:
         w = csv.writer(f)
