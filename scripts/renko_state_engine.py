@@ -118,6 +118,7 @@ class StrategyState:
         self.lock=threading.Lock()
         self._mismatch_count=0
         self._mismatch_since=None
+        self._mismatch_ts=None
         self._resync_floor_ts=None
 
 
@@ -526,6 +527,7 @@ def check_and_fire(state,is_s4=False):
                     if _age_min > _tfm*1.5:
                         log.critical(f"[{state.label}] REPAINT GUARD: signal ts={ts} type={sig.get('signal_type')} is {_age_min:.0f}min old (threshold {_tfm*1.5:.0f}min) - already-locked history repaint attempt blocked")
                         _mm_bumped=True
+                        if state._mismatch_count==0: state._mismatch_ts=ts
                         _bump_mismatch_and_maybe_resync(state, _tfm, ts, sig.get("signal_type"), sig.get("direction",""), blocked_by_repaint_guard=True)
                         if state._mismatch_count==0:
                             state._resync_floor_ts=(now_utc.replace(tzinfo=None)-timedelta(minutes=_tfm*1.5)).strftime("%Y-%m-%dT%H:%M:%S")
@@ -544,6 +546,7 @@ def check_and_fire(state,is_s4=False):
             if not _mm_bumped:
                 state._mismatch_count=0
                 state._mismatch_since=None
+                state._mismatch_ts=None
             return
         new_sigs.sort(key=lambda s: (s.get("timestamp",""), 0 if s.get("signal_type")=="EXIT" else 1))
         # Fire ONE signal at a time - EXIT before ENTRY - oldest first
@@ -559,6 +562,7 @@ def check_and_fire(state,is_s4=False):
                 _fire(state,ts,price,direction,"ENTRY",box,now_utc,signals)
             else:
                 _mm_bumped=True
+                if state._mismatch_count==0: state._mismatch_ts=ts
                 _bump_mismatch_and_maybe_resync(state, _tfm, ts, sig_type, direction)
     except Exception as e:
         log.error(f"[{state.label}] check error: {e}",exc_info=True)
@@ -716,8 +720,6 @@ def _fire(state,ts,cl,direction,sig_type,box,now_utc,signals=None):
     if sig_type=="EXIT": state.last_exit_ts=ts
     else: state.last_entry_ts=ts
     state.current_direction=direction if sig_type=="ENTRY" else None
-    state._mismatch_count=0
-    state._mismatch_since=None
     log.info(f"[{state.label}] {sig_type} {direction} at {ts}")
 
 
