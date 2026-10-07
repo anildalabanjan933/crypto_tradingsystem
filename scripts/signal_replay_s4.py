@@ -815,7 +815,7 @@ while True:
                                     if _exit_fill_price > 0:
                                         break
                             _prod_exit_holder = {'v': None}
-                            _get_prod_l2_fill_price_async(SYMBOL, side, lots, _prod_exit_holder)
+                            _prod_exit_thread = _get_prod_l2_fill_price_async(SYMBOL, side, lots, _prod_exit_holder)
                             prod_exit_fill = _prod_exit_holder
                             log.info(f"[ORDER] EXIT confirmed | position=None | exit={_exit_fill_price}")
                             _send_live_exit_alert("S4", dirn, _xt, _exit_fill_price, _entry_price_for_alert, lots)
@@ -840,7 +840,7 @@ while True:
                             _exit_commission = result.get("commission", 0.0)
                             _total_charges = float(_entry_commission_for_log) + float(_exit_commission)
                             if _exit_fill_price > 0:
-                                _append_fill_log("logs/fill_prices_s4.csv", sig_ts, _xt, dirn, lots, _bt_ep_log, _lv_ep_log, _bt_xp_log, _exit_fill_price, _total_charges, (_prod_entry_fill_for_log.get("v") if isinstance(_prod_entry_fill_for_log, dict) else _prod_entry_fill_for_log), (prod_exit_fill.get("v") if isinstance(prod_exit_fill, dict) else prod_exit_fill))
+                                _append_fill_log("logs/fill_prices_s4.csv", sig_ts, _xt, dirn, lots, _bt_ep_log, _lv_ep_log, _bt_xp_log, _exit_fill_price, _total_charges, (_prod_entry_fill_for_log.get("v") if isinstance(_prod_entry_fill_for_log, dict) else _prod_entry_fill_for_log), (_prod_exit_thread.join(timeout=3.5) or (prod_exit_fill.get("v") if isinstance(prod_exit_fill, dict) else prod_exit_fill)))
                             else:
                                 log.warning(f"[FILL-LOG] exit_fill_price is 0 for sig_ts={sig_ts} - skipping fill log row entirely")
                         else:
