@@ -1661,6 +1661,26 @@ def render_trade_audit_tab(load14_fn, fetch_fills_fn, read_log_fn, inr_rate=_INR
 
     _all_bt_rows, _all_lv_rows = [], []
     if strat_label == "ALL STRATEGY":
+        # PERM-FIX 2026-10-08: prewarm fetch_fills_fn/fetch_orders_fn cache for all 3
+        # strategies IN PARALLEL (threads) before the serial render loop below.
+        # This only pre-populates @st.cache_data - no rendering, no logic change.
+        # Render loop stays serial/untouched (Streamlit UI calls are not thread-safe).
+        try:
+            import concurrent.futures as _cf_audit
+            def _prewarm_audit(_s):
+                try:
+                    fetch_fills_fn(_s, 84, 744)
+                except Exception:
+                    pass
+                try:
+                    if fetch_orders_fn is not None:
+                        fetch_orders_fn(_s, 84)
+                except Exception:
+                    pass
+            with _cf_audit.ThreadPoolExecutor(max_workers=3) as _ex_audit:
+                list(_ex_audit.map(_prewarm_audit, ["S4", "S4V2", "S4V3"]))
+        except Exception:
+            pass
         for _idx, _s in enumerate(["S4", "S4V2", "S4V3"]):
             _bt_r, _lv_r = _render_one_strategy_block_audit(_s, from_date, to_date, load14_fn, fetch_fills_fn, read_log_fn, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn, time_start=time_start)
             _all_bt_rows.extend(_bt_r or [])
