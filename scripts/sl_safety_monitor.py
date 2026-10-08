@@ -478,14 +478,13 @@ def check_extra_risks(bot, csv_path):
                 else:
                     log.warning(f"[{bot['name']}] mismatch re-check: get_position failed - keeping pre-sleep values this cycle")
             if csv_dir != exch_dir or csv_size != exch_size:
-                if not os.path.exists(mismatch_flag):
+                if abs(float(exch_size or 0)) == 0 and _in_entry_grace(bot['name']):
+                    log.info(f"[{bot['name']}] MISMATCH suppressed - entry in progress (within 180s of candle close)")
+                elif not os.path.exists(mismatch_flag):
                     with open(mismatch_flag, "w") as ff:
                         ff.write(str(time.time()))
-                    if abs(float(exch_size or 0)) == 0 and _in_entry_grace(bot['name']):
-                        log.info(f"[{bot['name']}] MISMATCH suppressed - entry in progress (within 180s of candle close)")
-                    else:
-                        log.critical(f"[{bot['name']}] MISMATCH - CSV dir={csv_dir} size={csv_size} vs exchange dir={exch_dir} size={exch_size}")
-                        send_alert(f"CTS {bot['name']} MISMATCH - CSV vs exchange differ\nCSV: {csv_dir} {csv_size}\nExchange: {exch_dir} {exch_size}\nCheck manually")
+                    log.critical(f"[{bot['name']}] MISMATCH - CSV dir={csv_dir} size={csv_size} vs exchange dir={exch_dir} size={exch_size}")
+                    send_alert(f"CTS {bot['name']} MISMATCH - CSV vs exchange differ\nCSV: {csv_dir} {csv_size}\nExchange: {exch_dir} {exch_size}\nCheck manually")
             else:
                 if os.path.exists(mismatch_flag):
                     os.remove(mismatch_flag)

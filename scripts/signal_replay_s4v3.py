@@ -477,13 +477,14 @@ signals = load_signals()
 # signal row for that direction. If mismatched (corrupted ts), auto-correct
 # so safety-override exit match doesn't deadlock.
 if position is not None:
+    _match = None
     for _row in signals:
         if _row["direction"] == position and _row["exit_time"] == "PENDING":
-            if _row["entry_time"] != last_known_ts:
-                log.warning(f"[SELF-HEAL] last_known_ts mismatch: had={last_known_ts} correct={_row['entry_time']} | correcting")
-                last_known_ts = safe_ts(_row["entry_time"])
-                save_ts_file(TS_FILE, last_known_ts)
-            break
+            _match = _row
+    if _match and _match["entry_time"] != last_known_ts:
+        log.warning(f"[SELF-HEAL] last_known_ts mismatch: had={last_known_ts} correct={_match['entry_time']} | correcting")
+        last_known_ts = safe_ts(_match["entry_time"])
+        save_ts_file(TS_FILE, last_known_ts)
 else:
     for _row in signals:
         if _row.get("entry_time") == last_known_ts and _row.get("exit_time") == "PENDING":
