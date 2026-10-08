@@ -212,7 +212,7 @@ def check_fills(bot, fills, seen, refs, tick, cval, first_run):
                     log_event(LOSS_CSV, bot, "ABNORMAL_SLIPPAGE", sev, fid,
                               f"{side} fill {price:.2f} vs expected {ref_p:.2f} = {adverse:.2f} pts "
                               f"({adverse / tick:.0f} ticks, ~${adverse * size * cval:.2f} impact) "
-                              f"size={size} - possible spike/thin liquidity")
+                              f"size={size} - price jump, Delta testnet thin liquidity, not a CTS bug")
         except Exception:
             pass
 
@@ -234,7 +234,7 @@ def check_fills(bot, fills, seen, refs, tick, cval, first_run):
             filled = sum(float(x.get("size", 0) or 0) for x in fl)
             log_event(LOSS_CSV, bot, "THIN_LIQUIDITY_PARTIAL_FILL", "WARN", oid,
                       f"filled={filled:.0f} unfilled={unfilled:.0f} side={last.get('side')} "
-                      f"- position size may not match strategy lots")
+                      f"- only part of order filled (Delta testnet thin liquidity, not a CTS bug)")
 
 
 # ------------------------------ B. SUGGESTED EXTRAS (system stability) ------------------------------
