@@ -1099,7 +1099,9 @@ while True:
                     try:
                         import csv as _csv3, os as _os3
                         from datetime import datetime as _dt3, timezone as _tz3
-                        _sync_exit_ts = _dt3.now(_tz3.utc).strftime("%Y-%m-%dT%H:%M:%S")
+                        _now3 = _dt3.now(_tz3.utc)
+                        _mod3 = ((_now3.hour * 60 + _now3.minute) // _BG_TF_MIN) * _BG_TF_MIN
+                        _sync_exit_ts = _now3.replace(hour=_mod3 // 60, minute=_mod3 % 60, second=0, microsecond=0).strftime("%Y-%m-%dT%H:%M:%S")
                         _sync_price = om.get_current_price()
                         _sig_csv = "logs/signals_s4v3.csv"
                         with open(_sig_csv, "r") as _f3:
