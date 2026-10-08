@@ -175,7 +175,7 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                 + float(r.get("tax_usd", 0))
             ) * inr_rate  # slippage excluded: already priced into entry/exit via _apply_slippage
 
-            _net_pnl_inr = _pnl_inr - (max(_pnl_inr, 0) * 0.10)
+            _net_pnl_inr = _pnl_inr
 
             rows.append({
                 "trade_no"     : _trade_no,
@@ -310,7 +310,7 @@ def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
                         try:
                             _pnl_usd_calc = (_xp_f - _ep_f) * _dir_sign * _lots_f * 0.001
                             _pnl_inr_calc = _pnl_usd_calc * inr_rate
-                            _net_pnl_inr_calc = _pnl_inr_calc - (max(_pnl_inr_calc, 0) * 0.10)
+                            _net_pnl_inr_calc = _pnl_inr_calc
                         except Exception:
                             _pnl_usd_calc = 0.0
                             _net_pnl_inr_calc = 0.0
@@ -963,7 +963,7 @@ def _apply_bt_adjustments_audit(bt_rows, lot_input, slippage_usd, inr_rate):
             continue
         scaled_usd = pnl_usd * (lot_input / 100.0)
         before_tax_inr = scaled_usd * inr_rate
-        after_tax_inr = before_tax_inr - (max(before_tax_inr, 0) * 0.10)
+        after_tax_inr = before_tax_inr
         slip_deduction_inr = slippage_usd * (lot_input / 100.0) * inr_rate
         final_net_inr = after_tax_inr - slip_deduction_inr
         r2["lot"] = lot_input
@@ -1722,7 +1722,7 @@ def _fetch_account_fills_cached_audit(acc, product_id=84, window_hours=48):
                 break
         except Exception:
             break
-    return _all_fills
+    return [f for f in _all_fills if not str(f.get("client_order_id","")).startswith("DRILL")]
 
 
 @st.cache_data(ttl=180, show_spinner=False)
@@ -1764,7 +1764,7 @@ def _fetch_account_orders_history_cached_audit(acc, _product_id=84, _window_hour
                 break
         except Exception:
             break
-    return _all_orders
+    return [o for o in _all_orders if not str(o.get("client_order_id","")).startswith("DRILL")]
 
 
 @st.cache_data(ttl=180, show_spinner=False)
