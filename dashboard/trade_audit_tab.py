@@ -537,7 +537,7 @@ def _get_live_rows_audit(strat_label, from_date, to_date, fetch_fills_fn, inr_ra
         if not acc_label:
             return []
 
-        _window_hours = max(24, (_dt_audit.datetime.utcnow().date() - from_date).days * 24 + 48)
+        _window_hours = 744  # PERM-FIX 2026-10-08: fixed window = fixed cache key, so filter switch reuses cache instead of re-fetching
         fills = _fetch_fills_audit(fetch_fills_fn, acc_label, product_id, _window_hours)
         if not fills:
             return []
@@ -842,7 +842,7 @@ def _get_open_live_rows_audit(strat_label, from_date, to_date, fetch_fills_fn, p
         if not acc_label:
             return []
 
-        _window_hours = max(24, (_dt_audit.datetime.utcnow().date() - from_date).days * 24 + 48)
+        _window_hours = 744  # PERM-FIX 2026-10-08: fixed window = fixed cache key, so filter switch reuses cache instead of re-fetching
         fills = _fetch_fills_audit(fetch_fills_fn, acc_label, product_id, _window_hours)
         if not fills:
             return []
