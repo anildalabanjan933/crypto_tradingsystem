@@ -702,6 +702,79 @@ def _match_audit(bt, lv):
     return f"{_entry_line} | {_exit_line}", _slip_fav, _slip_unfav
 
 
+_PARSE_SL_LOG_CACHE_AUDIT = {}
+def _parse_sl_log_cached_audit(_path, _mtime, _tag, _lines_tuple):
+    _key = (_path, _mtime, _tag)
+    if _key in _PARSE_SL_LOG_CACHE_AUDIT:
+        return _PARSE_SL_LOG_CACHE_AUDIT[_key]
+    import datetime as _dt_m
+    out = []
+    for _line in _lines_tuple:
+        if _tag not in _line:
+            continue
+        try:
+            _ts_str = _line.split(",")[0].strip()
+            _ts = _dt_m.datetime.strptime(_ts_str, "%Y-%m-%d %H:%M:%S,%f")
+        except Exception:
+            continue
+        out.append((_ts, _line))
+    if len(_PARSE_SL_LOG_CACHE_AUDIT) > 50:
+        _PARSE_SL_LOG_CACHE_AUDIT.clear()
+    _PARSE_SL_LOG_CACHE_AUDIT[_key] = out
+    return out
+
+_PARSE_WS_LOG_CACHE_AUDIT = {}
+def _parse_ws_log_cached_audit(_path, _mtime, _lines_tuple):
+    _key = (_path, _mtime)
+    if _key in _PARSE_WS_LOG_CACHE_AUDIT:
+        return _PARSE_WS_LOG_CACHE_AUDIT[_key]
+    import datetime as _dt_m
+    out = []
+    for _line in _lines_tuple:
+        if "[WS] Reconnecting" not in _line:
+            continue
+        try:
+            _ts_str = _line.split(" IST")[0].strip()
+            _ts = _dt_m.datetime.strptime(_ts_str, "%d-%b-%Y %I:%M:%S %p")
+        except Exception:
+            continue
+        out.append((_ts, _line))
+    if len(_PARSE_WS_LOG_CACHE_AUDIT) > 50:
+        _PARSE_WS_LOG_CACHE_AUDIT.clear()
+    _PARSE_WS_LOG_CACHE_AUDIT[_key] = out
+    return out
+
+_LINES_TUPLE_CACHE_AUDIT = {}
+def _as_tuple_cached_audit(_path, _mtime, _lines):
+    _key = (_path, _mtime)
+    if _key in _LINES_TUPLE_CACHE_AUDIT:
+        return _LINES_TUPLE_CACHE_AUDIT[_key]
+    _t = tuple(_lines)
+    if len(_LINES_TUPLE_CACHE_AUDIT) > 50:
+        _LINES_TUPLE_CACHE_AUDIT.clear()
+    _LINES_TUPLE_CACHE_AUDIT[_key] = _t
+    return _t
+
+_PARSE_BOTLOG_CACHE_AUDIT = {}
+def _parse_bot_log_cached_audit(_path, _mtime, _lines_tuple):
+    _key = (_path, _mtime)
+    if _key in _PARSE_BOTLOG_CACHE_AUDIT:
+        return _PARSE_BOTLOG_CACHE_AUDIT[_key]
+    import datetime as _dt_m
+    out = []
+    for _line in _lines_tuple:
+        try:
+            _ts_str = _line[:23]
+            _ts = _dt_m.datetime.strptime(_ts_str, "%Y-%m-%d %H:%M:%S,%f")
+        except Exception:
+            continue
+        out.append((_ts, _line))
+    if len(_PARSE_BOTLOG_CACHE_AUDIT) > 50:
+        _PARSE_BOTLOG_CACHE_AUDIT.clear()
+    _PARSE_BOTLOG_CACHE_AUDIT[_key] = out
+    return out
+
+
 def _get_trade_issues_audit(strat_label, entry_dt, exit_dt=None, read_log_fn=None):
     """
     Scans log files for root-cause issues near a trade's entry/exit time.
@@ -717,16 +790,15 @@ def _get_trade_issues_audit(strat_label, entry_dt, exit_dt=None, read_log_fn=Non
         _window_end = (exit_dt if exit_dt is not None else entry_dt) + _pd_audit.Timedelta(minutes=10)
         _bot_tag = strat_label  # "S4", "S4V2", "S4V3"
 
+        import os as _os_fix2_audit
         # ---- CTS SIDE issues: safety monitor log ----
-        _sl_lines = read_log_fn("logs/sl_safety_monitor.log")
-        for _line in _sl_lines:
-            if _bot_tag not in _line:
-                continue
-            try:
-                _ts_str = _line.split(",")[0].strip()
-                _line_ts = __import__("datetime").datetime.strptime(_ts_str, "%Y-%m-%d %H:%M:%S,%f")
-            except Exception:
-                continue
+        _sl_path = "logs/sl_safety_monitor.log"
+        _sl_lines = read_log_fn(_sl_path)
+        try:
+            _sl_mtime = _os_fix2_audit.path.getmtime(_sl_path)
+        except Exception:
+            _sl_mtime = 0
+        for _line_ts, _line in _parse_sl_log_cached_audit(_sl_path, _sl_mtime, _bot_tag, _as_tuple_cached_audit(_sl_path, _sl_mtime, _sl_lines)):
             if not (_window_start <= _line_ts <= _window_end):
                 continue
             if "AUTO-PLACED SUCCESS" in _line or "RECOVERED - SL WAS MISSING" in _line:
@@ -739,27 +811,24 @@ def _get_trade_issues_audit(strat_label, entry_dt, exit_dt=None, read_log_fn=Non
                 issues.append("CTS SIDE - SL placement failed, position auto-closed for safety")
 
         # ---- CTS SIDE issues: connection drops ----
-        _eng_lines = read_log_fn("logs/renko_state_engine.log")
-        for _line in _eng_lines:
-            if "[WS] Reconnecting" not in _line:
-                continue
-            try:
-                _ts_str = _line.split(" IST")[0].strip()
-                _line_ts = __import__("datetime").datetime.strptime(_ts_str, "%d-%b-%Y %I:%M:%S %p")
-            except Exception:
-                continue
+        _eng_path = "logs/renko_state_engine.log"
+        _eng_lines = read_log_fn(_eng_path)
+        try:
+            _eng_mtime = _os_fix2_audit.path.getmtime(_eng_path)
+        except Exception:
+            _eng_mtime = 0
+        for _line_ts, _line in _parse_ws_log_cached_audit(_eng_path, _eng_mtime, _as_tuple_cached_audit(_eng_path, _eng_mtime, _eng_lines)):
             if _window_start <= _line_ts <= _window_end:
                 issues.append("CTS SIDE - Brief connection drop near this trade, auto-reconnected within 5s")
 
         # ---- CTS SIDE / DELTA SIDE issues: bot log ----
         _bot_log_path = f"logs/live_trading_{_bot_tag.lower()}.log"
         _bot_lines = read_log_fn(_bot_log_path)
-        for _line in _bot_lines:
-            _ts_raw = _line[:23]
-            try:
-                _line_ts2 = __import__("datetime").datetime.strptime(_ts_raw, "%Y-%m-%d %H:%M:%S,%f")
-            except Exception:
-                continue
+        try:
+            _bot_mtime = _os_fix2_audit.path.getmtime(_bot_log_path)
+        except Exception:
+            _bot_mtime = 0
+        for _line_ts2, _line in _parse_bot_log_cached_audit(_bot_log_path, _bot_mtime, _as_tuple_cached_audit(_bot_log_path, _bot_mtime, _bot_lines)):
             if not (_window_start <= _line_ts2 <= _window_end):
                 continue
             if "[STARTUP]" in _line and "Bot starting" in _line:
@@ -785,6 +854,29 @@ def _get_trade_issues_audit(strat_label, entry_dt, exit_dt=None, read_log_fn=Non
 # and detects live entry orders with no matching exit yet.)
 # ============================================================
 
+_PARSE_LOG_TS_CACHE_AUDIT = {}
+
+def _parse_log_ts_cached_audit(_path, _mtime, _strat_label, _lines_tuple):
+    _key = (_path, _mtime, _strat_label)
+    if _key in _PARSE_LOG_TS_CACHE_AUDIT:
+        return _PARSE_LOG_TS_CACHE_AUDIT[_key]
+    import datetime as _dt_p
+    out = []
+    for _line in _lines_tuple:
+        if _strat_label not in _line:
+            continue
+        try:
+            _ts_str = _line.split(",")[0].strip()
+            _ts = _dt_p.datetime.strptime(_ts_str, "%Y-%m-%d %H:%M:%S,%f")
+        except Exception:
+            continue
+        out.append((_ts, _line))
+    if len(_PARSE_LOG_TS_CACHE_AUDIT) > 50:
+        _PARSE_LOG_TS_CACHE_AUDIT.clear()
+    _PARSE_LOG_TS_CACHE_AUDIT[_key] = out
+    return out
+
+
 def _get_trade_issues_audit_full(strat_label, entry_dt, exit_dt=None, read_log_fn=None):
     issues = _get_trade_issues_audit(strat_label, entry_dt, exit_dt, read_log_fn)
     if read_log_fn is None:
@@ -804,19 +896,18 @@ def _get_trade_issues_audit_full(strat_label, entry_dt, exit_dt=None, read_log_f
                 "MARGIN LOW": "CTS SIDE - Low margin detected, position sizing may be affected",
             }),
         ]
+        import os as _os_fix_audit
         for _log_path, _tag_map in _extra_sources:
             try:
                 _lines = read_log_fn(_log_path)
+                _mtime = _os_fix_audit.path.getmtime(_log_path)
             except Exception:
                 continue
-            for _line in _lines:
-                if strat_label not in _line:
-                    continue
-                try:
-                    _ts_str = _line.split(",")[0].strip()
-                    _line_ts = __import__("datetime").datetime.strptime(_ts_str, "%Y-%m-%d %H:%M:%S,%f")
-                except Exception:
-                    continue
+            try:
+                _parsed = _parse_log_ts_cached_audit(_log_path, _mtime, strat_label, _as_tuple_cached_audit(_log_path, _mtime, _lines))
+            except Exception:
+                continue
+            for _line_ts, _line in _parsed:
                 if not (_window_start <= _line_ts <= _window_end):
                     continue
                 for _kw, _msg in _tag_map.items():
@@ -1543,6 +1634,15 @@ def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn,
 
 
 def render_trade_audit_tab(load14_fn, fetch_fills_fn, read_log_fn, inr_rate=_INR_RATE_AUDIT, fetch_orders_fn=None):
+    import time as _time_spy_audit
+    _t_spy_start = _time_spy_audit.time()
+    def _spy_log(msg):
+        try:
+            with open("/tmp/audit_tab_spy.log", "a") as _f:
+                _f.write(f"{_time_spy_audit.time():.3f} | +{_time_spy_audit.time()-_t_spy_start:.2f}s | {msg}\n")
+        except Exception:
+            pass
+    _spy_log("=== RENDER START ===")
     st.markdown("### TRADE AUDIT - Delta Live Filled vs Backtest")
 
     c1, c2, c3, c4, c5 = st.columns([1, 1, 1, 1, 1.4])
@@ -1564,6 +1664,16 @@ def render_trade_audit_tab(load14_fn, fetch_fills_fn, read_log_fn, inr_rate=_INR
     with c6:
         _time_start_enabled = st.checkbox("Filter by start time", key="audit_time_start_enabled")
         time_start = st.time_input("Show trades from", key="audit_time_start_val") if _time_start_enabled else None
+
+    import os as _os_snap_audit
+    _mtime_snapshot_audit = {}
+    def _frozen_read_log_fn_audit(_path):
+        if _path not in _mtime_snapshot_audit:
+            try:
+                _mtime_snapshot_audit[_path] = _os_snap_audit.path.getmtime(_path)
+            except Exception:
+                _mtime_snapshot_audit[_path] = 0
+        return _read_log_lines_cached_audit(_path, _mtime_snapshot_audit[_path])
 
     from_date, to_date = _get_date_range_audit(range_choice, custom_start, custom_end)
     if from_date is None or to_date is None:
@@ -1682,13 +1792,15 @@ def render_trade_audit_tab(load14_fn, fetch_fills_fn, read_log_fn, inr_rate=_INR
         except Exception:
             pass
         for _idx, _s in enumerate(["S4", "S4V2", "S4V3"]):
-            _bt_r, _lv_r = _render_one_strategy_block_audit(_s, from_date, to_date, load14_fn, fetch_fills_fn, read_log_fn, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn, time_start=time_start)
+            _spy_log(f"BEFORE render block {_s}")
+            _bt_r, _lv_r = _render_one_strategy_block_audit(_s, from_date, to_date, load14_fn, fetch_fills_fn, _frozen_read_log_fn_audit, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn, time_start=time_start)
+            _spy_log(f"AFTER render block {_s}")
             _all_bt_rows.extend(_bt_r or [])
             _all_lv_rows.extend(_lv_r or [])
             if _idx < 2:
                 st.markdown("---")
     else:
-        _bt_r, _lv_r = _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn, fetch_fills_fn, read_log_fn, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn, time_start=time_start)
+        _bt_r, _lv_r = _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn, fetch_fills_fn, _frozen_read_log_fn_audit, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn, time_start=time_start)
         _all_bt_rows.extend(_bt_r or [])
         _all_lv_rows.extend(_lv_r or [])
 
