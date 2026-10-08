@@ -449,6 +449,36 @@ def _bump_mismatch_and_maybe_resync(state, tfm, ts, sig_type, direction, blocked
             state._mismatch_since=None
     _write_state_health(state)
 
+def _resync_if_stale(state, tfm):
+    if state._mismatch_since is None or time.time()-state._mismatch_since <= tfm*60*1.5:
+        return
+    if time.time()-getattr(state,"_last_resync_try",0) < 30:
+        return
+    if not state.lock.acquire(blocking=False):
+        return
+    try:
+        state._last_resync_try=time.time()
+        if state._mismatch_since is None: return
+        _real_dir=None; _ok=False
+        try:
+            _k=os.getenv(f"{state.label}_API_KEY",""); _s=os.getenv(f"{state.label}_API_SECRET","")
+            if _k and _s:
+                from engine.order_manager import OrderManager
+                _p=OrderManager(_k,_s,testnet=_CTS_IS_TESTNET).get_position()
+                if _p.get("success"):
+                    _real_dir={"LONG":"long","SHORT":"short","FLAT":None}.get(_p.get("direction","FLAT")); _ok=True
+        except Exception as _e:
+            log.error(f"[{state.label}] STALE-RESYNC exchange read failed: {_e}")
+        if not _ok:
+            log.error(f"[{state.label}] STALE-RESYNC skipped - exchange query unavailable"); return
+        log.critical(f"[{state.label}] STALE-RESYNC: mismatch open {time.time()-state._mismatch_since:.0f}s with check_and_fire not clearing it - forcing current_direction={_real_dir}")
+        if state.current_direction!=_real_dir: state.open_entry_ts=None
+        state.current_direction=_real_dir
+        state._mismatch_count=0; state._mismatch_since=None; state._mismatch_ts=None
+        state._resync_floor_ts=(datetime.now(timezone.utc).replace(tzinfo=None)-timedelta(minutes=tfm*1.5)).strftime("%Y-%m-%dT%H:%M:%S")
+    finally:
+        state.lock.release()
+
 def check_and_fire(state,is_s4=False):
     import pandas as pd
     from datetime import datetime,timezone
@@ -1243,9 +1273,9 @@ if __name__=="__main__":
         # Fix: refresh state_health files every cycle so watchdog Class A check
         # doesn't false-alarm between candle closes (was only written in check_and_fire)
         try:
-            _write_state_health(s4)
-            _write_state_health(s4v2)
-            _write_state_health(s4v3)
+            for _st,_tf in ((s4,120),(s4v2,30),(s4v3,240)):
+                _resync_if_stale(_st,_tf)
+            _write_state_health(s4); _write_state_health(s4v2); _write_state_health(s4v3)
         except Exception as _e:
             log.error(f"[ENGINE] state_health write failed: {_e}", exc_info=True)
 

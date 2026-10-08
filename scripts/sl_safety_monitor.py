@@ -17,6 +17,28 @@ sys.path.insert(0, ".")
 from dotenv import load_dotenv
 load_dotenv()
 
+_GRACE_CSV = {"S4": ("logs/signals_s4.csv", 120),
+              "S4V2": ("logs/signals_s4v2.csv", 30),
+              "S4V3": ("logs/signals_s4v3.csv", 240)}
+
+def _in_entry_grace(bot_name, grace_sec=180):
+    """True if the last CSV row is a PENDING entry whose candle closed < grace_sec ago
+    (engine writes the row at the boundary, the bot needs ~30s to fill). Fails closed:
+    any error returns False, so the alert still fires."""
+    import csv
+    from datetime import datetime, timezone
+    try:
+        path, tf = _GRACE_CSV[str(bot_name).upper()]
+        with open(path) as f:
+            rows = [r for r in csv.reader(f) if len(r) >= 3]
+        if not rows or rows[-1][1] != "PENDING":
+            return False
+        t = datetime.strptime(rows[-1][0][:19].replace(" ", "T"), "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc)
+        age = (datetime.now(timezone.utc) - t).total_seconds() - tf * 60
+        return 0 <= age < grace_sec
+    except Exception:
+        return False
+
 from engine.order_manager import OrderManager
 from scripts.cts_env import IS_TESTNET as _CTS_IS_TESTNET
 from engine.telegram_alert import send_alert
@@ -459,8 +481,11 @@ def check_extra_risks(bot, csv_path):
                 if not os.path.exists(mismatch_flag):
                     with open(mismatch_flag, "w") as ff:
                         ff.write(str(time.time()))
-                    log.critical(f"[{bot['name']}] MISMATCH - CSV dir={csv_dir} size={csv_size} vs exchange dir={exch_dir} size={exch_size}")
-                    send_alert(f"CTS {bot['name']} MISMATCH - CSV vs exchange differ\nCSV: {csv_dir} {csv_size}\nExchange: {exch_dir} {exch_size}\nCheck manually")
+                    if abs(float(exch_size or 0)) == 0 and _in_entry_grace(bot['name']):
+                        log.info(f"[{bot['name']}] MISMATCH suppressed - entry in progress (within 180s of candle close)")
+                    else:
+                        log.critical(f"[{bot['name']}] MISMATCH - CSV dir={csv_dir} size={csv_size} vs exchange dir={exch_dir} size={exch_size}")
+                        send_alert(f"CTS {bot['name']} MISMATCH - CSV vs exchange differ\nCSV: {csv_dir} {csv_size}\nExchange: {exch_dir} {exch_size}\nCheck manually")
             else:
                 if os.path.exists(mismatch_flag):
                     os.remove(mismatch_flag)
