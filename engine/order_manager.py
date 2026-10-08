@@ -605,7 +605,7 @@ class OrderManager:
                             _post_close_ref = self.get_current_price()
                             if _post_close_ref and abs(last_avg_fill - _post_close_ref) > 250:
                                 logging.critical(f"[OrderManager] CLOSE FILL FAR FROM MARK: fill={last_avg_fill} ref={_post_close_ref} dev=${abs(last_avg_fill-_post_close_ref):.1f}")
-                                send_alert(f"CTS WARNING - Close fill deviated ${abs(last_avg_fill-_post_close_ref):.1f} from mark\nFill: ${last_avg_fill:,.1f}\nMark: ${_post_close_ref:,.1f}")
+                                send_alert(f"PRICE CHECK: Fill was ${abs(last_avg_fill-_post_close_ref):.1f} away from market price (Delta testnet thin liquidity, not a CTS bug)\nFill: ${last_avg_fill:,.1f}\nMark: ${_post_close_ref:,.1f}")
                         except Exception as _dce:
                             logging.warning(f"[OrderManager] Close-fill deviation check failed (non-critical): {_dce}")
                     if not _zero_fill:

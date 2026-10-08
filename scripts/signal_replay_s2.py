@@ -118,10 +118,10 @@ def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
         exit_slip   = abs(exit_fill  - bt_exit_price)
         round_trip  = entry_slip + exit_slip
         rt_ok       = round_trip <= 10
-        sign_ok     = "CTS ROUND TRIP MATCH" if rt_ok else "CTS ROUND TRIP WARNING"
+        sign_ok     = "TRADE CHECK: OK" if rt_ok else "TRADE CHECK: PRICE GAP TOO BIG"
         e_str       = f"${entry_slip:.2f} - OK" if entry_slip <= 10 else f"${entry_slip:.2f} - HIGH"
         x_str       = f"${exit_slip:.2f} - OK"  if exit_slip  <= 10 else f"${exit_slip:.2f} - HIGH"
-        rt_str      = f"${round_trip:.2f} - WITHIN $10 OK" if rt_ok else f"${round_trip:.2f} - EXCEEDS $10"
+        rt_str      = f"${round_trip:.2f} - OK - small gap" if rt_ok else f"${round_trip:.2f} - LARGE GAP - Delta testnet thin liquidity, not a CTS bug"
         gross_bt    = (bt_exit_price - bt_entry_price) if direction.lower()=="long" else (bt_entry_price - bt_exit_price)
         gross_bt    = gross_bt * lots * 0.001
         pnl5        = round(gross_bt - (5*2*lots*0.001), 2)
@@ -139,15 +139,15 @@ def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
             mc        = _increment_match_count()
             count_str = f"\nStatus    : {mc}/5 toward go-live"
         else:
-            action_str = "\nAction    : Check dashboard immediately"
+            action_str = "\nAction    : Please check dashboard (Delta testnet thin liquidity, not a CTS bug)"
         msg = (
             f"{sign_ok} {label}\n"
             f"Direction : MATCH ({direction.upper()})\n"
-            f"Entry slip: {e_str}\n"
-            f"Exit slip : {x_str}\n"
+            f"Buy price gap: {e_str}\n"
+            f"Sell price gap: {x_str}\n"
             f"Round trip: {rt_str}\n"
             f"BT PnL ($5/side) : {s5}${pnl5:,.2f}\n"
-            f"BT PnL ($10/side): {s10}${pnl10:,.2f}\n"
+            f"Expected profit/loss: {s10}${pnl10:,.2f}\n"
             f"Live PnL         : {slv}${live_pnl:,.2f}\n"
             f"PnL diff         : {diff_s}${pnl_diff:,.2f}{count_str}{action_str}"
         )

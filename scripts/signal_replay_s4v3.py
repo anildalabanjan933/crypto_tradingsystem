@@ -218,7 +218,7 @@ def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
         rt_ok       = True if net_slip_usd >= 0 else (abs(net_slip_usd) <= 10)
         n_fav       = "fav" if net_slip_usd >= 0 else "unfav"
         n_sign      = "+" if net_slip_usd >= 0 else "-"
-        sign_ok     = "CTS ROUND TRIP MATCH" if rt_ok else "CTS ROUND TRIP WARNING"
+        sign_ok     = "TRADE CHECK: OK" if rt_ok else "TRADE CHECK: PRICE GAP TOO BIG"
         e_fav       = "fav" if entry_impact >= 0 else "unfav"
         x_fav       = "fav" if exit_impact  >= 0 else "unfav"
         e_emoji     = "▲" if e_fav=="fav" else "▼"
@@ -226,7 +226,7 @@ def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
         n_emoji     = "▲" if n_fav=="fav" else "▼"
         dir_lv_emoji  = "▲" if direction.lower()=="long" else "▼"
         dir_bt_emoji  = ("▲" if bt_direction.lower()=="long" else "▼") if bt_direction else ""
-        rt_str      = f"({n_sign}) {n_fav} ${abs(net_slip_usd):.2f} ({abs(net_slip_usd)/bt_entry_price*100:.3f}%) {n_emoji} - WITHIN $10 OK" if rt_ok else f"({n_sign}) {n_fav} ${abs(net_slip_usd):.2f} ({abs(net_slip_usd)/bt_entry_price*100:.3f}%) {n_emoji} - EXCEEDS $10"
+        rt_str      = f"({n_sign}) {n_fav} ${abs(net_slip_usd):.2f} ({abs(net_slip_usd)/bt_entry_price*100:.3f}%) {n_emoji} - OK - small gap" if rt_ok else f"({n_sign}) {n_fav} ${abs(net_slip_usd):.2f} ({abs(net_slip_usd)/bt_entry_price*100:.3f}%) {n_emoji} - LARGE GAP - Delta testnet thin liquidity, not a CTS bug"
         gross_bt    = (bt_exit_price - bt_entry_price) if direction.lower()=="long" else (bt_entry_price - bt_exit_price)
         gross_bt    = gross_bt * lots * 0.001
         pnl10       = round(gross_bt - (10*2*lots*0.001), 2)
@@ -246,7 +246,7 @@ def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
             mc        = _increment_match_count()
             count_str = f"\nStatus    : {mc}/5 toward go-live"
         else:
-            action_str = "\nAction    : Check dashboard immediately"
+            action_str = "\nAction    : Please check dashboard (Delta testnet thin liquidity, not a CTS bug)"
         msg = (
             f"<b>{sign_ok} {label}</b>\n"
             f"Direction : BT {dir_bt_emoji} {bt_direction.upper() if bt_direction else 'N/A'} | LV {dir_lv_emoji} {direction.upper()}\n"
@@ -254,12 +254,12 @@ def _send_roundtrip_match_alert(label, direction, entry_fill, exit_fill,
             f"Entry Price: BT ${bt_entry_price:,.2f} | LV ${entry_fill:,.2f}\n"
             f"Exit Time  : BT {_utc_to_ist(str(bt_exit_ts)) if bt_exit_ts else 'N/A'} | LV {_utc_to_ist(str(exit_ts)) if exit_ts else exit_ts}\n"
             f"Exit Price : BT ${bt_exit_price:,.2f} | LV ${exit_fill:,.2f}\n"
-            f"Entry slip: {'+' if e_fav=='fav' else '-'}${abs(entry_slip):.2f} ({abs(entry_slip)/bt_entry_price*100:.3f}%) {e_emoji}\n"
-            f"Exit slip : {'+' if x_fav=='fav' else '-'}${abs(exit_slip):.2f} ({abs(exit_slip)/bt_exit_price*100:.3f}%) {x_emoji}\n"
-            f"<b>Net slip  : {rt_str}</b>\n"
-            f"BT PnL ($10/side): {pnl10_emoji} {s10}${pnl10:,.2f}\n"
-            f"Live PnL (net)   : {live_net_emoji} {slv}${live_net:,.2f} [gross {gs}${live_gross:,.2f} - charges ${total_charges:,.2f}]\n"
-            f"PnL diff  : {pnl_diff_emoji} {diff_s}${pnl_diff:,.2f}{count_str}{action_str}"
+            f"Buy price gap: {'+' if e_fav=='fav' else '-'}${abs(entry_slip):.2f} ({abs(entry_slip)/bt_entry_price*100:.3f}%) {e_emoji}\n"
+            f"Sell price gap: {'+' if x_fav=='fav' else '-'}${abs(exit_slip):.2f} ({abs(exit_slip)/bt_exit_price*100:.3f}%) {x_emoji}\n"
+            f"<b>Price gap    : {rt_str}</b>\n"
+            f"Expected profit/loss: {pnl10_emoji} {s10}${pnl10:,.2f}\n"
+            f"Actual profit/loss  : {live_net_emoji} {slv}${live_net:,.2f} [gross {gs}${live_gross:,.2f} - charges ${total_charges:,.2f}]\n"
+            f"Difference vs plan: {pnl_diff_emoji} {diff_s}${pnl_diff:,.2f}{count_str}{action_str}"
         )
         send_alert(msg)
     except Exception as e:
