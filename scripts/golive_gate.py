@@ -10,6 +10,10 @@ Usage: .venv/bin/python3 scripts/golive_gate.py
 Exit code 0 = all PASS, 1 = at least one FAIL.
 """
 import os, sys, csv, json, subprocess
+import importlib.util
+_VPY="/home/anildalabanjan7/crypto_tradingsystem/.venv/bin/python3"
+if importlib.util.find_spec("dotenv") is None and os.path.exists(_VPY) and sys.executable != _VPY:
+    os.execv(_VPY, [_VPY] + sys.argv)
 from datetime import datetime, timezone, timedelta
 
 sys.path.insert(0, "/home/anildalabanjan7/crypto_tradingsystem")
