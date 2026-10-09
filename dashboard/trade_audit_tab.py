@@ -1321,22 +1321,22 @@ def _bt_mtime_audit(strat_label):
     return max(_mtimes)
 
 
-@st.cache_data(ttl=300, show_spinner=False)
+@st.cache_data(ttl=300, max_entries=20, show_spinner=False)
 def _load_audit_bt_cached(_load14_fn, strat_label, from_date, to_date, inr_rate, _bust=None):
     return _get_bt_rows_audit(strat_label, from_date, to_date, _load14_fn, inr_rate)
 
 
-@st.cache_data(ttl=300, show_spinner=False)
+@st.cache_data(ttl=300, max_entries=20, show_spinner=False)
 def _load_audit_lv_cached(_fetch_fills_fn, strat_label, from_date, to_date, inr_rate, _bust=None):
     return _get_live_rows_audit(strat_label, from_date, to_date, _fetch_fills_fn, inr_rate)
 
 
-@st.cache_data(ttl=300, show_spinner=False)
+@st.cache_data(ttl=300, max_entries=20, show_spinner=False)
 def _load_audit_lv_open_cached(_fetch_fills_fn, strat_label, from_date, to_date, _bust=None):
     return _get_open_live_rows_audit(strat_label, from_date, to_date, _fetch_fills_fn)
 
 
-@st.cache_data(ttl=300, show_spinner=False)
+@st.cache_data(ttl=300, max_entries=20, show_spinner=False)
 def _load_audit_prod_cached(strat_label, from_date, to_date, inr_rate, _bust=None):
     return _get_prod_rows_audit(strat_label, from_date, to_date, inr_rate)
 
@@ -1822,7 +1822,7 @@ def render_trade_audit_tab(load14_fn, fetch_fills_fn, read_log_fn, inr_rate=_INR
 
 import streamlit as st
 
-@st.cache_data(ttl=180, show_spinner=False)
+@st.cache_data(ttl=180, max_entries=20, show_spinner=False)
 def _fetch_account_fills_cached_audit(acc, product_id=84, window_hours=48):
     import hmac as _hmlf_a, hashlib as _hslf_a, time as _tmlf_a, requests as _rqlf_a, os as _os_a
     _k = _os_a.environ.get(f'{acc}_API_KEY', '')
@@ -1864,7 +1864,7 @@ def _fetch_account_fills_cached_audit(acc, product_id=84, window_hours=48):
     return [f for f in _all_fills if not str(f.get("client_order_id","")).startswith("DRILL")]
 
 
-@st.cache_data(ttl=180, show_spinner=False)
+@st.cache_data(ttl=180, max_entries=20, show_spinner=False)
 def _fetch_account_orders_history_cached_audit(acc, _product_id=84, _window_hours=48):
     import hmac as _hmoh_a, hashlib as _hsoh_a, time as _tmoh_a, requests as _rqoh_a, os as _osoh_a
     _k = _osoh_a.environ.get(f'{acc}_API_KEY', '')
@@ -1906,7 +1906,7 @@ def _fetch_account_orders_history_cached_audit(acc, _product_id=84, _window_hour
     return [o for o in _all_orders if not str(o.get("client_order_id","")).startswith("DRILL")]
 
 
-@st.cache_data(ttl=180, show_spinner=False)
+@st.cache_data(ttl=180, max_entries=20, show_spinner=False)
 def _read_log_lines_cached_audit(_path, _mtime):
     try:
         with open(_path) as _f:
