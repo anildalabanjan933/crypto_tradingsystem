@@ -84,7 +84,7 @@ def check_all():
                     f"LOW MARGIN WARNING - {label}\n"
                     f"Available balance: ${bal:.2f}\n"
                     f"Safe threshold: ${threshold:.2f}\n"
-                    f"Action: Top up this subaccount before next signal fires\n"
+                    f"ACCOUNT SIDE, action needed: Add funds to this subaccount before next trade fires\n"
                     f"(repeats every {ALERT_COOLDOWN_SEC//3600}h while still low, not spam)"
                 )
                 _last_alert_ts[label] = now

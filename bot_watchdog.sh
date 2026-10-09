@@ -76,7 +76,7 @@ check_and_start() {
         [ -f "$alert_ts_file" ] && last_alert=$(cat "$alert_ts_file")
         local diff=$((now_ts - last_alert))
         if [ $diff -gt 3600 ]; then
-            local msg="⚠️ CTS WATCHDOG ALERT%0A━━━━━━━━━━━━━━━━━━%0AScreen : ${name}%0AScript : ${script}%0AStatus : DOWN - restarting now%0ATime   : $(date -u +%Y-%m-%dT%H:%M:%S) UTC%0A━━━━━━━━━━━━━━━━━━"
+            local msg="⚠️ CTS WATCHDOG ALERT%0A━━━━━━━━━━━━━━━━━━%0AScreen : ${name}%0AScript : ${script}%0AStatus : Bot stopped, auto-restarting now - SYSTEM SIDE, no action needed%0ATime   : $(date -u +%Y-%m-%dT%H:%M:%S) UTC%0A━━━━━━━━━━━━━━━━━━"
             echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] DEBUG pre-send for $name" >> logs/maintenance.log
             send_telegram "$msg"
             echo "$now_ts" > "$alert_ts_file"

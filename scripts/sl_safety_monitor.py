@@ -534,7 +534,7 @@ def check_bot(bot):
         if now - last > ALERT_COOLDOWN:
             if sl_result.get("success"):
                 log.info(f"[{bot['name']}] AUTO-SL PLACED OK | order_id={sl_result.get('order_id')}")
-                send_alert(f"CTS {bot['name']} RECOVERED - SL WAS MISSING, AUTO-PLACED SUCCESSFULLY\nSize: {size}\nOrder ID: {sl_result.get('order_id')}")
+                send_alert(f"CTS {bot['name']} - STOP-LOSS FIXED BY ITSELF - SYSTEM SIDE, no action needed\nWhy: Safety monitor found a missing stop-loss and placed it again.\nSize: {size}\nOrder ID: {sl_result.get('order_id')}")
             else:
                 log.critical(f"[{bot['name']}] AUTO-SL PLACEMENT FAILED: {sl_result}")
                 send_alert(f"CTS {bot['name']} WARNING - SL auto-place retrying, system will keep attempting automatically, no action needed. Size: {size} Error: {sl_result.get('error')}")

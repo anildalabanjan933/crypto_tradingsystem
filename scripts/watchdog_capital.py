@@ -279,7 +279,7 @@ def check_equity_drop(bot, key, secret, st):
     if peak > 0 and (peak - eq) / peak * 100 >= EQUITY_DROP_PCT and cooled(st, bot, "EQUITY_DROP"):
         log_event(LOSS_CSV, bot, "EQUITY_DROP", "CRITICAL", "",
                   f"balance {peak:.2f} -> {eq:.2f} ({(peak - eq) / peak * 100:.1f}%) within "
-                  f"{EQUITY_WINDOW_SEC // 60} min - big loss, unknown cause")
+                  f"{EQUITY_WINDOW_SEC // 60} min - big balance drop - SYSTEM SIDE, action needed, please check dashboard")
 
 
 def check_disk(st):
