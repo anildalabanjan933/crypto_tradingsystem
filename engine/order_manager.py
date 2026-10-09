@@ -489,7 +489,7 @@ class OrderManager:
                 logging.info(f"[OrderManager] Close CONFIRMED FLAT | attempt={attempt} | last_order_id={last_order_id}")
                 self._clear_close_retry_state()
                 try:
-                    _cleanup = self._delete("/orders/all", {"product_id": self.PRODUCT_ID, "cancel_stop_orders": "true"})
+                    _cleanup = self._delete("/v2/orders/all", {"product_id": self.PRODUCT_ID, "cancel_stop_orders": True})
                     if not _cleanup.get("success"):
                         logging.warning(f"[OrderManager] Stop order cleanup failed (non-critical): {_cleanup.get('error')}")
                 except Exception as _ce:
@@ -871,6 +871,9 @@ class OrderManager:
             _pos = self.get_position()
             if _pos.get("success") and _pos.get("size", 0) != 0:
                 _sl_size = abs(int(_pos["size"]))
+            elif _pos.get("success") and _pos.get("size", 0) == 0:
+                logging.warning("[OrderManager] SL SKIPPED - exchange position already FLAT (no orphan SL placed)")
+                return {"success": True, "skipped": True, "sl_price": 0.0, "order_id": None, "attempts": 0}
         except Exception as _e:
             logging.error(f"[OrderManager] SL size fetch failed, using fallback 100: {_e}")
 
