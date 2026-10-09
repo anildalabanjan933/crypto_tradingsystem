@@ -48,6 +48,14 @@ S4_PARAMS = dict(renko_box_pct=0.001, renko_timeframe="2h", st_atr_length=10, st
 _candles_df = None
 _last_candle_ts = None
 
+def _release_memory():
+    import gc, ctypes
+    gc.collect()
+    try:
+        ctypes.CDLL('libc.so.6').malloc_trim(0)
+    except Exception:
+        pass
+
 def get_trade_csv(label):
     if label == "S2":
         pattern = "output/trade_log_RenkoReversalStrategy_BTCUSD_*.csv"
@@ -105,7 +113,7 @@ def load_full_history():
         now_utc = datetime.now(timezone.utc).replace(second=0, microsecond=0)
         current_min = now_utc.strftime("%Y-%m-%d %H:%M:%S")
         df = df[df['timestamp'].astype(str) < current_min]
-        _candles_df = df
+        _candles_df = df.tail(2000).reset_index(drop=True)
         _last_candle_ts = df['timestamp'].iloc[-1] if not df.empty else None
         log.info(f"[CHART] Loaded {len(df):,} closed candles | last={_last_candle_ts}")
         return True
@@ -137,7 +145,7 @@ def fetch_new_candles():
         df_new = df_new[df_new['timestamp'].astype(str) < current_min]
 
         if _last_candle_ts is None:
-            _candles_df = df_new
+            _candles_df = df_new.tail(2000).reset_index(drop=True)
             _last_candle_ts = df_new['timestamp'].iloc[-1] if not df_new.empty else None
             log.info(f"[CHART] Initialized {len(df_new):,} candles")
             return
@@ -149,7 +157,7 @@ def fetch_new_candles():
             return
 
         # Append new closed candles to memory
-        _candles_df = pd.concat([_candles_df, new_rows], ignore_index=True)
+        _candles_df = pd.concat([_candles_df, new_rows], ignore_index=True).tail(2000).reset_index(drop=True)
         _last_candle_ts = _candles_df['timestamp'].iloc[-1]
         log.info(f"[CHART] +{len(new_rows)} new candles | total={len(_candles_df):,} | last={_last_candle_ts}")
 
@@ -269,13 +277,14 @@ if __name__ == "__main__":
                 log.info(f"[CHART] New candle: {_csv_last} - fetching + running backtest")
                 fetch_new_candles()
 
-                log.info("[CHART] Running S2 backtest...")
-                s2_trades = run_backtest_on_memory(RenkoReversalStrategy, S2_PARAMS, "S2")
-                check_and_append(s2_trades, "S2")
+                if os.environ.get("CHART_RUN_S2") == "1":  # S2 retired 07-Aug
+                    s2_trades = run_backtest_on_memory(RenkoReversalStrategy, S2_PARAMS, "S2")
+                    check_and_append(s2_trades, "S2")
 
                 log.info("[CHART] Running S4 backtest...")
                 s4_trades = run_backtest_on_memory(RenkoSMIIOSupertrendStrategy, S4_PARAMS, "S4")
                 check_and_append(s4_trades, "S4")
+                _release_memory()
             else:
                 # Touch signal files to keep dashboard FRESH
                 for lbl in ["S2","S4"]:
