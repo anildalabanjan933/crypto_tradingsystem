@@ -522,6 +522,21 @@ class OrderManager:
                     time.sleep(retry_delay)
                 continue
 
+            if _final_cap_active:
+                _stage_pct = 0.0
+                if _elapsed_total >= 300:
+                    _stage_pct = 0.03
+                elif _elapsed_total >= 180:
+                    _stage_pct = 0.02
+                if _stage_pct > 0:
+                    _wide_band = round(ref_price * _stage_pct, 1)
+                    if _wide_band > _current_band:
+                        _current_band = _wide_band
+                        logging.critical(f"[OrderManager] CLOSE GRADUATED ESCALATION - elapsed={_elapsed_total:.0f}s band widened to ${_current_band:.0f} ({_stage_pct*100:.0f}% of mark, limit order, capped well below 10% SL)")
+                        try:
+                            send_alert(f"CTS CLOSE ESCALATION (stage {int(_stage_pct*100)}%)\nExit still not filled after {_elapsed_total:.0f}s - widening limit band to ${_current_band:.0f} (still a limit order, far below 10% emergency SL)\nSide: {side.upper()} | Size: {close_size}")
+                        except Exception:
+                            pass
             limit_price = round(ref_price - _current_band, 1) if side == "sell" else round(ref_price + _current_band, 1)
 
             if _final_cap_active:
