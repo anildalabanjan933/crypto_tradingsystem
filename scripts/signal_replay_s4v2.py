@@ -1082,6 +1082,12 @@ while True:
                         if _cand_xt and _cand_xt not in ("PENDING", ""):
                             _manual_exit_ts = _cand_xt
                         break
+                try:
+                    _cl = om._delete("/v2/orders/all", {"product_id": om.PRODUCT_ID, "cancel_stop_orders": True})
+                    log.info(f"[CLEANUP] SYNC-flat: orphan orders cancel success={_cl.get('success')}")
+                except Exception as _ce:
+                    log.warning(f"[CLEANUP] SYNC-flat cancel failed (non-blocking): {_ce}")
+                _clear_open_fill_log(SIGNAL_CSV.replace('signals_', 'fill_prices_open_'))
                 position = None
                 if _manual_exit_ts:
                     save_ts_file(TS_FILE, _manual_exit_ts)
