@@ -3,6 +3,7 @@ import json
 import time
 import requests
 import logging
+import sys
 from dotenv import load_dotenv
 
 load_dotenv(dotenv_path="/home/anildalabanjan7/crypto_tradingsystem/.env")
@@ -20,7 +21,8 @@ def _rate_limited(message: str) -> bool:
     import fcntl
     lock_path = _RATE_STATE_FILE + ".lock"
     try:
-        key = message.strip().split("\n")[0][:60]
+        bot_tag = os.path.basename(sys.argv[0])
+        key = bot_tag + "::" + message.strip().split("\n")[0][:60]
         now = time.time()
         with open(lock_path, "w") as lockf:
             fcntl.flock(lockf, fcntl.LOCK_EX)
