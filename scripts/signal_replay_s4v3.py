@@ -118,6 +118,47 @@ def _append_fill_log(csv_path, entry_ts, exit_ts, direction, lots, bt_ep, lv_ep,
     except Exception as _e:
         log.warning(f'[FILL-LOG] Could not write fill log: {_e}')
 
+def _fill_log_fallback(ets, xts, exit_px, tag):
+    """Bug6: write a fill_prices row on paths that close without the normal EXIT branch."""
+    global open_entry_price, prod_entry_fill
+    try:
+        import csv as _c, os as _o
+        _p = SIGNAL_CSV.replace('signals_', 'fill_prices_')
+        _op = SIGNAL_CSV.replace('signals_', 'fill_prices_open_')
+        if _o.path.exists(_p):
+            with open(_p, newline="") as _f:
+                for _r in _c.reader(_f):
+                    if _r and _r[0] == ets:
+                        _clear_open_fill_log(_op)
+                        return
+        _bt = None
+        if _o.path.exists(SIGNAL_CSV):
+            with open(SIGNAL_CSV, newline="") as _f:
+                for _r in _c.reader(_f):
+                    if len(_r) >= 5 and _r[0] == ets:
+                        _bt = _r
+        def _num(v):
+            try:
+                v = str(v).strip()
+                return float(v) if v not in ("", "PENDING") else "PENDING"
+            except Exception:
+                return "PENDING"
+        _dir = _bt[2] if _bt else ""
+        _lots = _bt[3] if (_bt and len(_bt) > 3) else LOT_SIZE
+        _bt_ep = _num(_bt[4]) if _bt else "PENDING"
+        _bt_xp = _num(_bt[5]) if (_bt and len(_bt) > 5) else "PENDING"
+        _lv_ep = open_entry_price if (open_entry_price and open_entry_price > 0) else "PENDING"
+        _lv_xp = round(float(exit_px), 2) if exit_px else "PENDING"
+        _chg = float(globals().get("_entry_commission", 0.0) or 0.0)
+        _pef = prod_entry_fill.get("v") if isinstance(prod_entry_fill, dict) else prod_entry_fill
+        _append_fill_log(_p, ets, xts, _dir, _lots, _bt_ep, _lv_ep, _bt_xp, _lv_xp, _chg, _pef, None)
+        _clear_open_fill_log(_op)
+        open_entry_price = 0.0
+        prod_entry_fill = None
+        log.warning(f"[FILL-LOG] {tag} close logged: entry={ets} exit={xts} lv_exit={_lv_xp}")
+    except Exception as _fe:
+        log.warning(f"[FILL-LOG] {tag} fallback failed: {_fe}")
+
 def _write_open_fill_log(csv_path, entry_ts, direction, lots, prod_entry_fill):
     import csv as _csv_fl
     try:
@@ -794,6 +835,7 @@ while True:
                     actual = om.get_position()
                     _ex_size = abs(actual.get("size", 0)) if actual.get("success") else 0
                     if _ex_size == 0:
+                        _fill_log_fallback(sig_ts, _next_row["entry_time"], None, 'SELF-HEAL-FLAT')
                         position = None
                         save_ts_file(TS_FILE, _next_row["entry_time"])
                         last_known_ts = safe_ts(_next_row["entry_time"])
@@ -818,6 +860,7 @@ while True:
                 _ex_size = abs(actual.get("size", 0)) if actual.get("success") else 0
                 if _ex_size == 0:
                     log.info(f"[ORDER] EXIT skipped - exchange already FLAT | ts={_xt}")
+                    _fill_log_fallback(sig_ts, _xt, None, 'EXIT-SKIPPED-FLAT')
                     _send_live_exit_alert('S4V3', dirn, _xt, 0.0)
                     position = None
                     save_ts_file(TS_FILE, _xt)
@@ -1092,6 +1135,7 @@ while True:
                 _clear_open_fill_log(SIGNAL_CSV.replace('signals_', 'fill_prices_open_'))
                 position = None
                 if _manual_exit_ts:
+                    _fill_log_fallback(last_known_ts, _manual_exit_ts, None, 'SYNC-MANUAL-EXIT')
                     save_ts_file(TS_FILE, _manual_exit_ts)
                     last_known_ts = safe_ts(_manual_exit_ts)
                     log.info(f"[SYNC] Lock advanced past manually-closed signal to exit_time={_manual_exit_ts}")
