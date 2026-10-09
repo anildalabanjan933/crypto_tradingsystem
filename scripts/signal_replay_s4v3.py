@@ -1107,10 +1107,12 @@ while True:
                         with open(_sig_csv, "r") as _f3:
                             _rows3 = list(_csv3.reader(_f3))
                         _updated3 = False
+                        _fl_snap = None
                         for _r3 in _rows3:
                             if len(_r3) >= 2 and _r3[0] == last_known_ts and _r3[1] == "PENDING":
                                 while len(_r3) < 6:
                                     _r3.append("")
+                                _fl_snap = (_r3[0], _r3[2] if len(_r3) > 2 else '', _r3[3] if len(_r3) > 3 else '', _r3[4] if len(_r3) > 4 else '')
                                 _r3[1] = _sync_exit_ts
                                 _r3[5] = round(float(_sync_price), 2) if _sync_price else ""
                                 _updated3 = True
@@ -1125,6 +1127,24 @@ while True:
                             log.info(f"[SYNC] CSV PENDING row exit filled: entry={last_known_ts} exit={_sync_exit_ts} price={_sync_price}")
                         save_ts_file(TS_FILE, _sync_exit_ts)
                         last_known_ts = safe_ts(_sync_exit_ts)
+                        if _fl_snap is not None:
+                            try:
+                                _fl_ets, _fl_dir, _fl_lots, _fl_bt_ep = _fl_snap
+                                _fl_path = _sig_csv.replace('signals_', 'fill_prices_')
+                                _fl_open = _sig_csv.replace('signals_', 'fill_prices_open_')
+                                _fl_bt_ep = float(_fl_bt_ep) if str(_fl_bt_ep).strip() not in ('', 'PENDING') else 'PENDING'
+                                _fl_lv_ep = open_entry_price if (open_entry_price and open_entry_price > 0) else 'PENDING'
+                                _fl_lv_xp = round(float(_sync_price), 2) if _sync_price else 'PENDING'
+                                _fl_chg = float(_entry_commission) if '_entry_commission' in dir() else 0.0
+                                _fl_pef = (prod_entry_fill.get('v') if isinstance(prod_entry_fill, dict) else prod_entry_fill)
+                                # lv_exit = price at SYNC detection (estimate, NOT a real fill); prod_exit = NA (no bot exit happened)
+                                _append_fill_log(_fl_path, _fl_ets, _sync_exit_ts, _fl_dir, _fl_lots, _fl_bt_ep, _fl_lv_ep, 'PENDING', _fl_lv_xp, _fl_chg, _fl_pef, None)
+                                _clear_open_fill_log(_fl_open)
+                                open_entry_price = 0.0
+                                prod_entry_fill = None
+                                log.warning(f'[FILL-LOG] SYNC-flat close logged: entry={_fl_ets} exit={_sync_exit_ts} lv_exit=ESTIMATE({_fl_lv_xp})')
+                            except Exception as _fl_e:
+                                log.warning(f'[FILL-LOG] SYNC-flat fill log failed: {_fl_e}')
                         log.info(f"[SYNC] Lock advanced past synced-flat signal to exit_time={_sync_exit_ts}")
                     except Exception as _sync_e:
                         save_ts_file(TS_FILE, last_known_ts)
