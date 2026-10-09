@@ -49,6 +49,8 @@ def _rate_limited(message: str) -> bool:
 
 def send_alert(message: str) -> bool:
     """Send Telegram alert message."""
+    _bot_tag = os.path.basename(sys.argv[0]).replace(".py", "").upper()
+    message = f"[{_bot_tag}] {message}"
     if not TELEGRAM_BOT_TOKEN or not TELEGRAM_CHAT_ID:
         logging.warning("[TELEGRAM] Token or Chat ID not configured")
         return False
