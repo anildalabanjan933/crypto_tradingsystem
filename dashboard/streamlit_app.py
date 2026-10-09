@@ -101,7 +101,7 @@ def _fetch_disk():
     total, used, free = _sh2.disk_usage(".")
     return int(used / total * 100), round(free / 1024**3, 1)
 
-@st.cache_data(ttl=60)
+@st.cache_data(ttl=60, max_entries=20)
 def _fetch_git():
     r = subprocess.run(["git","log","--oneline","-1"], capture_output=True, text=True)
     return r.stdout.strip()[:10] if r.stdout else "unknown"
@@ -817,7 +817,7 @@ _PLNH14= "padding:5px 8px;border:1px solid #90CAF9;background:#2962FF;font-size:
 _PLND14= "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;color:#131722;text-align:left;"
 _PLNV14= "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;color:#131722;font-weight:700;text-align:center;"
 
-@st.cache_data(ttl=60)
+@st.cache_data(ttl=60, max_entries=20)
 def _load14(csv_pattern, from_dt=None):
     try:
         files = sorted(_gl14.glob(csv_pattern), reverse=True)
@@ -963,7 +963,7 @@ def _load14(csv_pattern, from_dt=None):
     except Exception as _e14:
         return None
 
-@st.cache_data(ttl=60)
+@st.cache_data(ttl=60, max_entries=20)
 def _delta_get_auth_top(api_key, api_secret, base_url, path, params={}):
     import hmac as _hm, hashlib as _hs, time as _tm, requests as _rq
     try:
@@ -1063,7 +1063,7 @@ def _pair_orders_top(orders):
             })
     return pairs
 
-@st.cache_data(ttl=30)
+@st.cache_data(ttl=120, max_entries=20)
 def _parse_log_trades(log_path, log_path_bak=None):
     import re, datetime as _dtp
     pairs = []
@@ -1443,7 +1443,7 @@ def _tbl14(d2, d4, label, period_str, df2=None, df4=None, d2_label="S4V2"):
 # Load data - defined as function so every tab reloads fresh on page load
 import glob as _gl14, pandas as _pd14, datetime as _dt14, numpy as _npf14, os as _os14
 
-@st.cache_data(ttl=30)
+@st.cache_data(ttl=120, max_entries=20)
 def _load_signals_lookup(label):
     _sig_map = {"LV S4V2": "logs/signals_s4v2.csv", "BT S4V2": "logs/signals_s4v2.csv",
                 "LV S4": "logs/signals_s4.csv", "BT S4": "logs/signals_s4.csv"}
@@ -1461,7 +1461,7 @@ def _load_signals_lookup(label):
             pass
     return _lookup
 
-@st.cache_data(ttl=30)
+@st.cache_data(ttl=120, max_entries=20)
 def _reload_all_data():
     _now14 = _dt14.datetime.utcnow()
     _1yr_from = (_now14 - _dt14.timedelta(days=365)).strftime("%Y-%m-%d")
@@ -4105,7 +4105,7 @@ if _active_tab == "TRADING":
                 total_fund_all += fund
 
             total_pnl_oh     = sum(p['pnl'] for p in all_pairs)
-            total_tax_oh     = total_pnl_oh * 0.30 if total_pnl_oh > 0 else 0.0
+            total_tax_oh     = 0.0
             total_charges_oh = total_comm_all + total_fund_all + total_tax_oh
             wins_oh          = len([p for p in all_pairs if p['pnl'] > 0])
             losses_oh        = len([p for p in all_pairs if p['pnl'] < 0])
@@ -4133,7 +4133,7 @@ if _active_tab == "TRADING":
             cum_csv  = 0.0
             for p in sorted(all_pairs, key=lambda x: x['buy_time']):
                 cum_csv      += p['pnl']
-                trade_tax     = p['pnl'] * 0.30 if p['pnl'] > 0 else 0.0
+                trade_tax     = 0.0
                 trade_charge  = p['commission'] + fund_per_trade + trade_tax
                 csv_rows.append({
                     'DateTime':    p['buy_time'],
@@ -4193,7 +4193,7 @@ if _active_tab == "TRADING":
                 cum_pnl = 0.0
                 for i, p in enumerate(sorted(all_pairs, key=lambda x: x['buy_time']), 1):
                     rc           = [None]*14  # replaced by HTML grid
-                    trade_tax    = p['pnl'] * 0.30 if p['pnl'] > 0 else 0.0
+                    trade_tax    = 0.0
                     trade_charge = p['commission'] + fund_per_trade + trade_tax
                     cum_pnl     += p['pnl']
                     side_label   = 'LONG' if p['entry'] < p['exit'] else 'SHORT'
@@ -6060,7 +6060,7 @@ if _active_tab == "ANALYSIS":
                 pass
             return sorted(pairs, key=lambda p: p["ets"])
 
-        @st.cache_data(ttl=300)
+        @st.cache_data(ttl=300, max_entries=20)
         def _pair13_fills(k, s, vf_str):
             import datetime as _dtf13
             pairs = []
@@ -6199,7 +6199,7 @@ if _active_tab == "ANALYSIS":
                 nu  = df['net_pnl'].sum()
                 ni_pretax = df['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else nu*_INR13
                 _win_inr13 = df[df['net_pnl_inr']>0]['net_pnl_inr'].sum() if 'net_pnl_inr' in df.columns else 0
-                ni = ni_pretax - _win_inr13*0.10
+                ni = ni_pretax
                 cm  = df['total_charges_usd'].sum() if 'total_charges_usd' in df.columns else (df['charges'].sum() if 'charges' in df.columns else 0)
                 pls = df['net_pnl'].tolist()
                 cum,pk,dd = 0,0,0
@@ -7208,7 +7208,7 @@ if _active_tab == "ANALYSIS":
         import glob as _gl14, pandas as _pd14, datetime as _dt14
 
         # TODAY'S TRADES TABLE AT TOP
-        @st.cache_data(ttl=30)
+        @st.cache_data(ttl=120, max_entries=20)
         def _today_trades_html(df2, df4, df2_fwd, df4_fwd, df3=None, df3_fwd=None):
             import datetime as _dtt
             _INR = 84.0
@@ -7283,7 +7283,7 @@ if _active_tab == "ANALYSIS":
                         })
                 except: pass
                 return rows
-            @st.cache_data(ttl=30)
+            @st.cache_data(ttl=120, max_entries=20)
             def _get_fwd_rows(df_fwd, label):
                 rows = []
                 try:
@@ -7533,7 +7533,7 @@ if _active_tab == "ANALYSIS":
             TDN = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;text-align:center;background:#f7f9fc;font-weight:700;color:#555;vertical-align:middle;"
             def _pnl_color(v): return "#089981" if v>=0 else "#F23645"
             def _dir_color(d): return "#089981" if d=="LONG" else "#F23645"
-            @st.cache_data(ttl=30)
+            @st.cache_data(ttl=120, max_entries=20)
             def _read_log_lines_cached(_path, _mtime):
                 try:
                     with open(_path) as _f:
@@ -7541,7 +7541,7 @@ if _active_tab == "ANALYSIS":
                 except Exception:
                     return []
 
-            @st.cache_data(ttl=30)
+            @st.cache_data(ttl=120, max_entries=20)
             def _read_snapshot_verify_cached(_mtime):
                 import os as _os_sv
                 _p = "logs/snapshot_verify_results.csv"
@@ -7552,7 +7552,7 @@ if _active_tab == "ANALYSIS":
                         return _pd14.DataFrame()
                 return _pd14.DataFrame()
 
-            @st.cache_data(ttl=30)
+            @st.cache_data(ttl=120, max_entries=20)
             def _dash_repeat_tag(_bot_lower, _key, _today_date):
                 try:
                     import os as _os_rpt, re as _re_rpt
@@ -7889,7 +7889,7 @@ if _active_tab == "ANALYSIS":
                                     best = (_px, _fee); best_diff = _diff; best_key = _key
                             if best_key: _used_hist_fills.add(best_key)
                             return best
-                        @st.cache_data(ttl=30)
+                        @st.cache_data(ttl=120, max_entries=20)
                         def _fetch_account_fills_cached(_acc, _product_id=84, _window_hours=48):
                             import hmac as _hmlf, hashlib as _hslf, time as _tmlf, requests as _rqlf
                             _k = os.environ.get(f'{_acc}_API_KEY','')
@@ -8186,13 +8186,13 @@ def _month_trades_html(df2, df4, df2_fwd, df4_fwd):
         except: return "-"
     _month_now = _dtm.datetime.utcnow().strftime("%Y-%m")
 
-    @st.cache_data(ttl=30)
+    @st.cache_data(ttl=120, max_entries=20)
     def _rll_m(_path, _mtime):
         try:
             with open(_path) as _f: return _f.readlines()
         except Exception: return []
 
-    @st.cache_data(ttl=30)
+    @st.cache_data(ttl=120, max_entries=20)
     def _rsv_m(_mtime):
         _p = "logs/snapshot_verify_results.csv"
         if _osm.path.exists(_p):
@@ -8333,7 +8333,7 @@ def _month_trades_html(df2, df4, df2_fwd, df4_fwd):
             _persist_issue_m(_lbl, _entry_dt, _im)
         return _issues
 
-    @st.cache_data(ttl=60)
+    @st.cache_data(ttl=60, max_entries=20)
     def _fills_month_m(k, s, vf_str, label):
         import hmac as _hmm, hashlib as _hsm, time as _tmm, requests as _rqm, datetime as _dtfm
         pairs = []
