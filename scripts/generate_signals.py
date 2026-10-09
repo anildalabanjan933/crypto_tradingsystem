@@ -60,6 +60,25 @@ def run_backtest(strategy_class, params, label):
         )
         result = engine.run()
     trades = result.get("trades", [])
+    # BUG7: drop trades whose exit bar has not closed yet (forming candle) - trade_log only
+    try:
+        import pandas as _pd_b7
+        _tfm_b7 = {"30m": 30, "1h": 60, "2h": 120, "4h": 240}.get(params.get("renko_timeframe"), 0)
+        if _tfm_b7:
+            _now_b7 = _pd_b7.Timestamp(datetime.now(timezone.utc).replace(tzinfo=None))
+            _kept_b7 = []
+            for _t7 in trades:
+                try:
+                    _x7 = _pd_b7.Timestamp(str(_t7.get("exit_datetime", "")).replace("T", " ")[:19])
+                    if _x7 + _pd_b7.Timedelta(minutes=_tfm_b7) > _now_b7:
+                        log.info(f"[GENERATE] {label}: BUG7 dropped trade with unclosed exit bar entry={_t7.get('entry_datetime')} exit={_t7.get('exit_datetime')}")
+                        continue
+                except Exception:
+                    pass
+                _kept_b7.append(_t7)
+            trades = _kept_b7
+    except Exception as _e7:
+        log.warning(f"[GENERATE] {label}: BUG7 filter failed (trades kept as-is): {_e7}")
     log.info(f"[GENERATE] {label}: {len(trades)} trades generated")
     # Detect trailing open ENTRY (dropped by TradeBuilder) - build PENDING row for signal CSV only
     # Does NOT touch trades list (PnL/dashboard) - only affects signal file bots read
