@@ -1282,4 +1282,11 @@ if __name__=="__main__":
         # Fix: respond to watchdog canary ping so CANARY_FAIL stops firing
         # canary pong now written by _canary_pong_thread (process-alive proof)
 
+        try:
+            import gc, ctypes
+            gc.collect()
+            ctypes.CDLL("libc.so.6").malloc_trim(0)
+        except Exception:
+            pass
+
         time.sleep(SLEEP_SEC)
