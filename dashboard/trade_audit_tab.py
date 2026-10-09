@@ -765,7 +765,11 @@ def _parse_bot_log_cached_audit(_path, _mtime, _lines_tuple):
     for _line in _lines_tuple:
         try:
             _ts_str = _line[:23]
-            _ts = _dt_m.datetime.strptime(_ts_str, "%Y-%m-%d %H:%M:%S,%f")
+            _ts = _dt_m.datetime(
+                int(_ts_str[0:4]), int(_ts_str[5:7]), int(_ts_str[8:10]),
+                int(_ts_str[11:13]), int(_ts_str[14:16]), int(_ts_str[17:19]),
+                int(_ts_str[20:23]) * 1000
+            )
         except Exception:
             continue
         out.append((_ts, _line))
@@ -867,7 +871,10 @@ def _parse_log_ts_cached_audit(_path, _mtime, _strat_label, _lines_tuple):
             continue
         try:
             _ts_str = _line.split(",")[0].strip()
-            _ts = _dt_p.datetime.strptime(_ts_str, "%Y-%m-%d %H:%M:%S,%f")
+            _ts = _dt_p.datetime(
+                int(_ts_str[0:4]), int(_ts_str[5:7]), int(_ts_str[8:10]),
+                int(_ts_str[11:13]), int(_ts_str[14:16]), int(_ts_str[17:19])
+            )
         except Exception:
             continue
         out.append((_ts, _line))
