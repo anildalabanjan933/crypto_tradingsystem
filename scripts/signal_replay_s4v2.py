@@ -716,7 +716,7 @@ while True:
                             log.critical(f"[SKIP] Expired signal entry={_et} exit={_xt} | advancing last_known_ts")
                             try:
                                 from engine.telegram_alert import send_alert
-                                send_alert(f"CTS S4V2 TRADE MISSED\nWhat happened: Price band hit - testnet thin liquidity, expected fill price not reached\nSignal entry={_et} exit={_xt}\nTrade count reduced by 1\nTime: {datetime.utcnow().isoformat()} UTC")
+                                send_alert(f"TRADE SKIPPED (price band protection) - DELTA SIDE, no action needed\nWhy: Bot tried to fill at expected price, but testnet market was too thin.\nSignal entry={_et} exit={_xt}\nNote: Trade count reduced by 1 - expected band-protection behavior, not a bug. For real price accuracy, check Production Fill table.\nTime: {datetime.utcnow().isoformat()} UTC")
                             except Exception:
                                 pass
                             save_ts_file(TS_FILE, _xt)
@@ -730,7 +730,7 @@ while True:
                     log.critical(f"[SKIP] Expired signal entry={_et} exit={_xt} | advancing last_known_ts")
                     try:
                         from engine.telegram_alert import send_alert
-                        send_alert(f"CTS S4V2 TRADE MISSED\nWhat happened: Price band hit - testnet thin liquidity, expected fill price not reached\nSignal entry={_et} exit={_xt}\nTrade count reduced by 1\nTime: {datetime.utcnow().isoformat()} UTC")
+                        send_alert(f"TRADE SKIPPED (price band protection) - DELTA SIDE, no action needed\nWhy: Bot tried to fill at expected price, but testnet market was too thin.\nSignal entry={_et} exit={_xt}\nNote: Trade count reduced by 1 - expected band-protection behavior, not a bug. For real price accuracy, check Production Fill table.\nTime: {datetime.utcnow().isoformat()} UTC")
                     except Exception:
                         pass
                     save_ts_file(TS_FILE, _xt)
@@ -763,7 +763,7 @@ while True:
                     log.critical(f"[SKIP] Expired signal | entry={sig_ts} exit={_xt} | advancing last_known_ts")
                     try:
                         from engine.telegram_alert import send_alert
-                        send_alert(f"CTS S4V2 TRADE MISSED\nWhat happened: Price band hit - testnet thin liquidity, expected fill price not reached\nSignal entry={sig_ts} exit={_xt}\nTrade count reduced by 1\nTime: {datetime.utcnow().isoformat()} UTC")
+                        send_alert(f"TRADE SKIPPED (price band protection) - DELTA SIDE, no action needed\nWhy: Bot tried to fill at expected price, but testnet market was too thin.\nSignal entry={sig_ts} exit={_xt}\nNote: Trade count reduced by 1 - expected band-protection behavior, not a bug. For real price accuracy, check Production Fill table.\nTime: {datetime.utcnow().isoformat()} UTC")
                     except Exception:
                         pass
                     save_ts_file(TS_FILE, _xt)
@@ -1163,7 +1163,7 @@ while True:
                     )
                 else:
                     send_alert(
-                        f"CTS S4V2 - Position Closed on Exchange\n"
+                        f"TRADE ALREADY CLOSED - SYSTEM SIDE, no action needed\nWhy: Exchange shows FLAT - NO TRADE OPEN. Closed outside bot logic (SL, manual, or exchange event). Bot updated its own records to match.\n"
                         f"What happened: Position was closed manually or by another process (not the emergency SL)\n"
                         f"Action: Bot updated itself to match exchange (now flat)"
                     )

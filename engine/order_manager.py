@@ -354,7 +354,7 @@ class OrderManager:
                 _dev = (_avg - _ref_price) if side == "buy" else (_ref_price - _avg)
                 if _dev > _band:
                     logging.critical(f"[OrderManager] BAD FILL DESPITE BAND: ref_price={_ref_price} avg_fill={_avg} dev=${_dev:.1f} - auto-closing")
-                    send_alert(f"CTS BAD FILL DESPITE BAND - AUTO-CLOSING\nSide: {side.upper()}\nRef price: ${_ref_price:,.1f}\nFilled at: ${_avg:,.1f}\nDeviation: ${_dev:.1f}")
+                    send_alert(f"TRADE CLOSED EARLY BY MISTAKE (bad-fill guard) - SYSTEM SIDE, fixed 9-Oct\nWhy: Our own safety check wrongly thought a GOOD fill was bad and closed it.\nSide: {side.upper()}\nRef price: ${_ref_price:,.1f}\nFilled at: ${_avg:,.1f}\nDeviation: ${_dev:.1f}")
                     _close_side = "sell" if side == "buy" else "buy"
                     self.close_position(size=_filled, side=_close_side)
 

@@ -1100,7 +1100,7 @@ if __name__=="__main__":
                     if _ws_fail_count[0]>=10:
                         try:
                             from engine.telegram_alert import send_alert
-                            _msg = "CTS ENGINE WARNING - WebSocket disconnected " + str(_ws_fail_count[0]) + " times. Engine still running via polling. Check VM if alerts stop."
+                            _msg = "CTS ENGINE WARNING - WebSocket disconnected " + str(_ws_fail_count[0]) + " times - SYSTEM SIDE, just watching. Engine still working fine using backup method. Only worry if alerts stop completely."
                             send_alert(_msg)
                         except: pass
                         log.warning(f"[WS] ENGINE WARNING - disconnected {_ws_fail_count[0]} times")
