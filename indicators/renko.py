@@ -91,7 +91,7 @@ class RenkoBuilder:
             return pd.DataFrame(columns=cols)
 
         _anchor = self.reference_price if self.reference_price is not None else closes[0]
-        key = (box, _anchor)
+        key = (box, _anchor, 'v2_fixed_reversal_overshoot')
         cached = RenkoBuilder._cache.get(key)
 
         start_i = 0
@@ -120,7 +120,10 @@ class RenkoBuilder:
                 dn_thresh = r_open - box
 
             if close >= up_thresh:
-                boxes_up = int((close - r_open) / box)
+                if r_dir < 0:
+                    boxes_up = int((close - (r_open + box)) / box)
+                else:
+                    boxes_up = int((close - r_open) / box)
                 for _ in range(boxes_up):
                     r_open = r_open if r_dir >= 0 else r_open + box
                     r_close = r_open + box
@@ -129,7 +132,10 @@ class RenkoBuilder:
                     r_open = r_close
 
             elif close <= dn_thresh:
-                boxes_dn = int((r_open - close) / box)
+                if r_dir > 0:
+                    boxes_dn = int(((r_open - box) - close) / box)
+                else:
+                    boxes_dn = int((r_open - close) / box)
                 for _ in range(boxes_dn):
                     r_open = r_open if r_dir <= 0 else r_open - box
                     r_close = r_open - box
