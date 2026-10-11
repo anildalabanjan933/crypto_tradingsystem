@@ -5,7 +5,7 @@ import pandas as pd
 from indicators.renko import RenkoBuilder
 
 TF_TD = {'1m': '1min', '5m': '5min', '15m': '15min', '30m': '30min',
-         '1h': '1h', '2h': '2h', '4h': '4h', '1d': '1D'}
+         '1h': '1h', '2h': '2h', '4h': '4h', '1d': '1D', 'daily': '1D'}
 
 
 def tf_delta(tf: str) -> pd.Timedelta:
