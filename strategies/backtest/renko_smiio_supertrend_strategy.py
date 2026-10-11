@@ -153,6 +153,7 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
         _max_idx = len(_ts_values) - 1
         _idx_arr[_idx_arr > _max_idx] = _max_idx
         renko_raw['timestamp'] = _ts_values[_idx_arr]
+        renko_raw['real_close'] = closes[_idx_arr]
         return renko_raw
 
     # -----------------------------------------------------------------------
@@ -164,6 +165,7 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
         n = len(df)
 
         closes    = df['renko_close'].values
+        real_closes = df['real_close'].values
         renko_dir = df['renko_dir'].values
         current_price = closes[0] if len(closes) > 0 else 100000.0
         box = max(1, round((self.reference_price if self.reference_price else closes[0]) * self.renko_box_pct))
@@ -217,7 +219,7 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
             if current_direction == 'long' and st_flip_red and r_dir == -1:
                 signals.append({
                     'signal_type': 'EXIT',
-                    'price':       self._apply_slippage(close, 'long', False),
+                    'price':       self._apply_slippage(real_closes[i], 'long', False),
                     'timestamp':   ts,
                     'sl_price':    close - box,
                     'entry_type':  '',
@@ -232,7 +234,7 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
             elif current_direction == 'short' and st_flip_green and r_dir == 1:
                 signals.append({
                     'signal_type': 'EXIT',
-                    'price':       self._apply_slippage(close, 'short', False),
+                    'price':       self._apply_slippage(real_closes[i], 'short', False),
                     'timestamp':   ts,
                     'sl_price':    close + box,
                     'entry_type':  '',
@@ -283,7 +285,7 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
                 elif side == 'long' and r_dir == 1:
                     signals.append({
                         'signal_type': 'ENTRY',
-                        'price':       self._apply_slippage(close, 'long', True),
+                        'price':       self._apply_slippage(real_closes[i], 'long', True),
                         'timestamp':   ts,
                         'sl_price':    close - box * 2,
                         'entry_type':  pending['entry_type'],
@@ -297,7 +299,7 @@ class RenkoSMIIOSupertrendStrategy(BaseStrategy):
                 elif side == 'short' and r_dir == -1:
                     signals.append({
                         'signal_type': 'ENTRY',
-                        'price':       self._apply_slippage(close, 'short', True),
+                        'price':       self._apply_slippage(real_closes[i], 'short', True),
                         'timestamp':   ts,
                         'sl_price':    close + box * 2,
                         'entry_type':  pending['entry_type'],
