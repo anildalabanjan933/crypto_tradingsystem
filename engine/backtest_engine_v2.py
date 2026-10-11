@@ -154,6 +154,7 @@ class BacktestEngine:
             self.trades = [
                 t for t in self.trades
                 if self.start_date <= t.get("entry_datetime","")[:10] <= self.end_date
+                and self.start_date <= t.get("exit_datetime","")[:10] <= self.end_date
             ]
         print(f"✅ Built {len(self.trades)} trades (filtered to date range, full-history Renko)")
 
