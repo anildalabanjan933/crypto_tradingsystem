@@ -37,6 +37,7 @@ _STRAT_CLASS_OVERRIDE = {
     "renko_smiio_supertrend_v2_strategy": "RenkoSMIIOSupertrendV2Strategy",
     "renko_smiio_cross_v3_strategy": "RenkoSMIIOCrossV3Strategy",
     "tf1_supertrend_ema_strategy": "TF1SupertrendEMAStrategy",
+    "renko_htf_smiio_cross_v5_strategy": "RenkoHTFSmiioCrossV5Strategy",
 }
 
 def _check_terminal_run(html_files, csv_files, tracker_name, dash_session_key, label):
