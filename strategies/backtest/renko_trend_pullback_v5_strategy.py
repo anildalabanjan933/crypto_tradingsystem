@@ -12,8 +12,8 @@ from indicators.renko import SupertrendIndicator
 class RenkoTrendPullbackV5Strategy(BaseStrategy):
     def __init__(self, data_dict: dict, lot_size: float = 1.0, **kw):
         super().__init__(data_dict=data_dict, lot_size=lot_size)
-        self.renko_timeframe = kw.get('renko_timeframe', '2h')
-        self.renko_box_pct = kw.get('renko_box_pct', 0.001)
+        self.renko_timeframe = kw.get('renko_timeframe', '4h')
+        self.renko_box_pct = kw.get('renko_box_pct', 0.005)
         self.reference_price = kw.get('reference_price', None)
         self.st_atr_length = kw.get('st_atr_length', 5)
         self.st_factor = kw.get('st_factor', 3.0)
