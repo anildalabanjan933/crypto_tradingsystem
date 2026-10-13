@@ -6,6 +6,8 @@ Single engine, auto-switches strategy mode based on 3-day price trend (mood).
 All strikes kept within 2000 points of spot (SAFE zone, confirmed by data
 availability test: 33-100% real data coverage vs 77-87% gaps beyond 2000pts).
 
+UPDATED: LOT_SIZE=100, real fees (taker + GST) and option-selling slippage added.
+
 Modes:
   SIDEWAYS        -> ATM straddle (sell both)
   MILD_BULLISH    -> strangle, put 500pts, call 1500pts
@@ -13,19 +15,23 @@ Modes:
   MILD_BEARISH    -> strangle, call 500pts, put 1500pts
   STRONG_BEARISH  -> sell call only, 1000pts
 
-Risk rules implemented:
-  - Leg-wise SL: 50% of collected premium
-  - One re-entry per leg on SL hit, same side only
-  - Daily portfolio loss cap: configurable (default Rs 2000 equiv)
-  - Gap risk kill-switch: if spot moves >3% within 1h, exit everything
-  - Fixed lot size per leg (10 lots default)
-  - No overall SL/TP beyond leg-wise and daily cap
+COST MODEL (verified via Delta product spec + docs, not guessed):
+  - Commission per fill = min(taker_commission_rate * spot_price,
+                               premium_commission_rate * option_price)
+                           * contract_value * lots
+  - GST = 18% on top of commission (fee * 1.18)
+  - Applied on BOTH entry (sell) and exit (buy back) fills
+  - Slippage: 5% of premium per leg per fill (option-selling norm, thin books)
+    entry fill price reduced by slippage, exit fill price increased by slippage
 
 IMPORTANT ASSUMPTIONS (flagged, not guessed silently):
-  - CONTRACT_BTC_PER_LOT = 0.001 (confirmed earlier via getProductBySymbol)
+  - CONTRACT_BTC_PER_LOT = 0.001 (confirmed via getProductBySymbol)
+  - taker_commission_rate = 0.00015, premium_commission_rate = 0.05
+    (confirmed via getProductBySymbol on live BTC option contract)
+  - Spot price used for commission notional = daily spot close (approximation,
+    not tick-exact spot price at each fill time)
   - USD_TO_INR used only for reporting against Rs-based gates; verify current
     rate before trusting absolute Rs numbers.
-  - Entry time and expiry are same calendar day (Delta daily-expiry BTC options).
   - Missing option data (0 candles) for a leg => that leg is SKIPPED for that
     day and logged as NO_DATA, not silently treated as zero PnL.
 """
@@ -49,8 +55,8 @@ SUMMARY_FILE = os.path.join(OUTPUT_DIR, "mood_portfolio_summary.csv")
 REQUEST_TIMEOUT = (3, 27)
 
 # ---------------- CONFIG (confirm/adjust before trusting results) ----------------
-CONTRACT_BTC_PER_LOT = 0.001     # from product spec, verified earlier
-LOT_SIZE = 10                    # lots per leg, fixed per design
+CONTRACT_BTC_PER_LOT = 0.001     # from product spec, verified
+LOT_SIZE = 100                   # UPDATED per user request
 LEG_SL_PCT = 0.50                # exit leg if premium grows 50% against us
 STARTING_CAPITAL_USD = 227.0     # approx Rs 20,000 at ~88 USD/INR, VERIFY before trusting
 DAILY_LOSS_CAP_USD = 22.7        # approx Rs 2,000 equiv, VERIFY
@@ -58,6 +64,14 @@ GAP_RISK_PCT = 0.03              # 3% spot move in <1h triggers full exit
 STRIKE_ROUND = 1000
 MAX_REENTRY = 1
 RESOLUTION = "5m"
+
+# ---- REAL FEE MODEL (verified via Delta product spec) ----
+TAKER_COMMISSION_RATE = 0.00015   # 0.015% of underlying notional
+PREMIUM_COMMISSION_RATE = 0.05    # 5% of premium (cap)
+GST_MULTIPLIER = 1.18             # 18% GST on commission
+
+# ---- SLIPPAGE MODEL (option-selling norm, thin books) ----
+SLIPPAGE_PCT = 0.05                # 5% of premium per leg per fill
 
 MOOD_THRESHOLDS = {
     "strong_bullish": 0.05,
@@ -91,7 +105,6 @@ def build_option_symbol(option_type, strike, day):
 
 
 def get_daily_close(day):
-    """1d candle close for a given date (used for mood detection)."""
     start = datetime(day.year, day.month, day.day, 0, 0, tzinfo=timezone.utc)
     end = start + timedelta(days=1)
     candles = fetch_candles(UNDERLYING_SYMBOL, int(start.timestamp()), int(end.timestamp()), "1d")
@@ -101,7 +114,6 @@ def get_daily_close(day):
 
 
 def detect_mood(day):
-    """3-day % change ending at 'day' (uses day-3 close vs day-close)."""
     close_today = get_daily_close(day)
     close_3d_ago = get_daily_close(day - timedelta(days=3))
     if close_today is None or close_3d_ago is None or close_3d_ago == 0:
@@ -121,7 +133,6 @@ def detect_mood(day):
 
 
 def get_legs_for_mood(mood, atm_strike):
-    """Returns list of (option_type, strike) legs to SELL for given mood."""
     r = STRIKE_ROUND
     if mood == "SIDEWAYS":
         return [("C", atm_strike), ("P", atm_strike)]
@@ -139,7 +150,6 @@ def get_legs_for_mood(mood, atm_strike):
 
 
 def check_gap_risk(spot_candles):
-    """Returns the timestamp index where spot moved >GAP_RISK_PCT within 1h, else None."""
     for i in range(1, len(spot_candles)):
         prev = spot_candles[i - 1]["close"]
         cur = spot_candles[i]["close"]
@@ -148,11 +158,24 @@ def check_gap_risk(spot_candles):
     return None
 
 
-def simulate_leg(option_type, strike, day, gap_exit_time):
-    """
-    Simulate selling one option leg for the day.
-    Returns dict with pnl_usd, status, entry_price, exit_price, reentries_used.
-    """
+def compute_fee(option_price, spot_price, lots):
+    """Real Delta commission formula: min(notional-based, premium-based) * GST."""
+    notional_based = TAKER_COMMISSION_RATE * spot_price
+    premium_based = PREMIUM_COMMISSION_RATE * option_price
+    fee_per_unit = min(notional_based, premium_based)
+    fee = fee_per_unit * CONTRACT_BTC_PER_LOT * lots
+    return fee * GST_MULTIPLIER
+
+
+def apply_slippage(price, is_entry_sell):
+    """Entry (sell) receives less, exit (buy back) pays more."""
+    if is_entry_sell:
+        return price * (1 - SLIPPAGE_PCT)
+    else:
+        return price * (1 + SLIPPAGE_PCT)
+
+
+def simulate_leg(option_type, strike, day, gap_exit_time, spot_price_for_fees):
     symbol = build_option_symbol(option_type, strike, day)
     day_start = datetime(day.year, day.month, day.day, 0, 0, tzinfo=timezone.utc)
     day_end = day_start + timedelta(hours=23, minutes=59)
@@ -161,36 +184,43 @@ def simulate_leg(option_type, strike, day, gap_exit_time):
     candles = fetch_candles(f"MARK:{symbol}", start_ts, end_ts, RESOLUTION)
     if not candles:
         return {"symbol": symbol, "status": "NO_DATA", "pnl_usd": 0.0,
-                "entry_price": None, "exit_price": None, "reentries": 0}
+                "fees_usd": 0.0, "entry_price": None, "exit_price": None, "reentries": 0}
 
     pnl_total = 0.0
+    fees_total = 0.0
     reentries_used = 0
     idx = 0
     status = "HELD_TO_EXPIRY"
     entry_price_first = candles[0]["open"]
 
     while idx < len(candles):
-        entry_price = candles[idx]["open"]
-        sl_price = entry_price * (1 + LEG_SL_PCT)
-        exit_price = candles[-1]["close"]
+        raw_entry_price = candles[idx]["open"]
+        entry_price_eff = apply_slippage(raw_entry_price, is_entry_sell=True)
+        fees_total += compute_fee(raw_entry_price, spot_price_for_fees, LOT_SIZE)
+
+        sl_price = raw_entry_price * (1 + LEG_SL_PCT)
+        raw_exit_price = candles[-1]["close"]
         exit_reason = "EXPIRY"
 
         for j in range(idx, len(candles)):
             c = candles[j]
             if gap_exit_time and c["time"] >= gap_exit_time:
-                exit_price = c["close"]
+                raw_exit_price = c["close"]
                 exit_reason = "GAP_RISK_EXIT"
                 idx = len(candles)
                 break
             if c["high"] >= sl_price:
-                exit_price = sl_price
+                raw_exit_price = sl_price
                 exit_reason = "SL_HIT"
                 idx = j + 1
                 break
         else:
             idx = len(candles)
 
-        leg_pnl = (entry_price - exit_price) * LOT_SIZE * CONTRACT_BTC_PER_LOT
+        exit_price_eff = apply_slippage(raw_exit_price, is_entry_sell=False)
+        fees_total += compute_fee(raw_exit_price, spot_price_for_fees, LOT_SIZE)
+
+        leg_pnl = (entry_price_eff - exit_price_eff) * LOT_SIZE * CONTRACT_BTC_PER_LOT
         pnl_total += leg_pnl
 
         if exit_reason == "SL_HIT" and reentries_used < MAX_REENTRY and idx < len(candles):
@@ -201,8 +231,10 @@ def simulate_leg(option_type, strike, day, gap_exit_time):
             status = exit_reason
             break
 
-    return {"symbol": symbol, "status": status, "pnl_usd": pnl_total,
-            "entry_price": entry_price_first, "exit_price": exit_price,
+    net_pnl = pnl_total - fees_total
+
+    return {"symbol": symbol, "status": status, "pnl_usd": net_pnl, "fees_usd": fees_total,
+            "entry_price": entry_price_first, "exit_price": raw_exit_price,
             "reentries": reentries_used}
 
 
@@ -210,6 +242,7 @@ def run_backtest(start_date, end_date):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     trades = []
     daily_pnls = []
+    mode_counts = {}
     day = start_date
 
     while day <= end_date:
@@ -231,25 +264,30 @@ def run_backtest(start_date, end_date):
         legs = get_legs_for_mood(mood, atm_strike)
         gap_exit_time = check_gap_risk(spot_candles)
 
+        mode_counts[mood] = mode_counts.get(mood, 0) + 1
+
         day_pnl = 0.0
+        day_fees = 0.0
         for option_type, strike in legs:
-            result = simulate_leg(option_type, strike, day, gap_exit_time)
+            result = simulate_leg(option_type, strike, day, gap_exit_time, spot_close)
             result.update({"date": day.isoformat(), "mood": mood, "pct_change_3d": pct_change})
             trades.append(result)
             if result["status"] != "NO_DATA":
                 day_pnl += result["pnl_usd"]
+                day_fees += result.get("fees_usd", 0.0)
 
         if day_pnl < -DAILY_LOSS_CAP_USD:
-            day_pnl = -DAILY_LOSS_CAP_USD  # approximate cap enforcement
+            day_pnl = -DAILY_LOSS_CAP_USD  # approximate cap enforcement, flagged as such
 
-        daily_pnls.append({"date": day.isoformat(), "mood": mood, "pnl_usd": day_pnl})
-        print(f"{day.isoformat()} mood={mood} ({pct_change:.2%}) legs={legs} day_pnl=${day_pnl:.2f}")
+        daily_pnls.append({"date": day.isoformat(), "mood": mood, "pnl_usd": day_pnl, "fees_usd": day_fees})
+        print(f"{day.isoformat()} mood={mood} ({pct_change:.2%}) legs={legs} "
+              f"day_pnl=${day_pnl:.2f} fees=${day_fees:.2f}")
 
         day += timedelta(days=1)
         time.sleep(0.3)
 
     write_trade_log(trades)
-    write_summary(daily_pnls)
+    write_summary(daily_pnls, mode_counts)
     return daily_pnls
 
 
@@ -257,25 +295,27 @@ def write_trade_log(trades):
     with open(TRADE_LOG_FILE, "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=[
             "date", "mood", "pct_change_3d", "symbol", "status",
-            "entry_price", "exit_price", "reentries", "pnl_usd"
+            "entry_price", "exit_price", "reentries", "pnl_usd", "fees_usd"
         ])
         writer.writeheader()
         writer.writerows(trades)
 
 
-def write_summary(daily_pnls):
+def write_summary(daily_pnls, mode_counts):
     with open(SUMMARY_FILE, "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["date", "mood", "pnl_usd"])
+        writer = csv.DictWriter(f, fieldnames=["date", "mood", "pnl_usd", "fees_usd"])
         writer.writeheader()
         writer.writerows(daily_pnls)
 
     pnls = [d["pnl_usd"] for d in daily_pnls]
+    fees = [d["fees_usd"] for d in daily_pnls]
     n = len(pnls)
     if n == 0:
         print("No trading days processed.")
         return
 
     total_pnl = sum(pnls)
+    total_fees = sum(fees)
     mean_pnl = total_pnl / n
     variance = sum((p - mean_pnl) ** 2 for p in pnls) / n if n > 1 else 0
     std_pnl = math.sqrt(variance)
@@ -293,12 +333,14 @@ def write_summary(daily_pnls):
     max_dd_pct = (max_dd / STARTING_CAPITAL_USD) * 100 if STARTING_CAPITAL_USD > 0 else 0
 
     print("\n==================== PORTFOLIO REPORT ====================")
-    print(f"Days traded      : {n}")
-    print(f"Total PnL (USD)  : {total_pnl:.2f}")
-    print(f"Avg PnL/day (USD): {mean_pnl:.2f}")
-    print(f"Sharpe (ann.)    : {sharpe:.2f}")
-    print(f"Max Drawdown USD : {max_dd:.2f} ({max_dd_pct:.1f}% of capital)")
-    print(f"Final equity USD : {equity:.2f}")
+    print(f"Days traded          : {n}")
+    print(f"Total PnL net of fees: {total_pnl:.2f} USD")
+    print(f"Total fees paid      : {total_fees:.2f} USD")
+    print(f"Avg PnL/day (USD)    : {mean_pnl:.2f}")
+    print(f"Sharpe (ann.)        : {sharpe:.2f}")
+    print(f"Max Drawdown USD     : {max_dd:.2f} ({max_dd_pct:.1f}% of capital)")
+    print(f"Final equity USD     : {equity:.2f}")
+    print(f"Mode occurrence count: {mode_counts}")
     print("Gate check: Sharpe>=3.0 ->", "PASS" if sharpe >= 3.0 else "FAIL")
     print("Gate check: MaxDD<=10%  ->", "PASS" if max_dd_pct <= 10.0 else "FAIL")
     print("============================================================")
