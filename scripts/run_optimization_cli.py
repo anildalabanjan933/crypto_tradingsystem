@@ -61,8 +61,8 @@ PREDEFINED_RANGES = {
         "st_factor":       {"values": [1.5, 2.0, 3.0]}
     },
     "s4_combined": {
-        "renko_box_pct":   {"values": [0.001, 0.0015]},
-        "renko_timeframe": {"values": ["1m", "5m", "15m", "30m", "1h", "2h"]},
+        "renko_box_pct":   {"values": [0.001, 0.0015, 0.0025, 0.005, 0.01]},
+        "renko_timeframe": {"values": ["1m", "5m", "15m", "30m", "1h", "2h", "4h", "1d"]},
         "st_atr_length":   {"values": [5, 10]},
         "st_factor":       {"values": [1.5, 2.0, 3.0]},
         "smiio_shortlen":  {"values": [10, 20]},

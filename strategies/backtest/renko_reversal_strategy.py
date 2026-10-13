@@ -110,6 +110,9 @@ class RenkoReversalStrategy(BaseStrategy):
         renko_raw['timestamp'] = renko_raw['bar_index'].apply(
             lambda idx: timestamps[idx] if idx < len(timestamps) else timestamps[-1]
         )
+        renko_raw['real_close'] = renko_raw['bar_index'].apply(
+            lambda idx: closes[idx] if idx < len(closes) else closes[-1]
+        )
 
         # Add Supertrend
         st_indicator = SupertrendIndicator(atr_period=self.st_atr_length, factor=self.st_factor)
@@ -145,7 +148,9 @@ class RenkoReversalStrategy(BaseStrategy):
         signals = []
         n = len(df)
 
+        assert 'real_close' in df.columns, "BUG: real_close missing after Supertrend/Swing"
         renko_close = df['renko_close'].values
+        real_closes = df['real_close'].values
         renko_dir   = df['renko_dir'].values
         st_dir      = df['st_dir'].values
         last_sh     = df['last_swing_high'].values
@@ -183,7 +188,7 @@ class RenkoReversalStrategy(BaseStrategy):
             # ----------------------------------------------------------
             # LONG EXIT: ST flips green->red + 1 red brick close
             if current_direction == 'long' and prev_st == -1 and st == 1 and r_dir == -1:
-                exit_price = self._apply_slippage(close, 'long', is_entry=False)
+                exit_price = self._apply_slippage(real_closes[i], 'long', is_entry=False)
                 signals.append({
                     'signal_type' : 'EXIT',
                     'price'       : exit_price,
@@ -198,7 +203,7 @@ class RenkoReversalStrategy(BaseStrategy):
 
             # SHORT EXIT: ST flips red->green + 1 green brick close
             elif current_direction == 'short' and prev_st == 1 and st == -1 and r_dir == 1:
-                exit_price = self._apply_slippage(close, 'short', is_entry=False)
+                exit_price = self._apply_slippage(real_closes[i], 'short', is_entry=False)
                 signals.append({
                     'signal_type' : 'EXIT',
                     'price'       : exit_price,
@@ -278,7 +283,7 @@ class RenkoReversalStrategy(BaseStrategy):
             # ENTRY SIGNALS
             # ----------------------------------------------------------
             if buy_edge and current_direction != 'long':
-                entry_price = self._apply_slippage(close, 'long', is_entry=True)
+                entry_price = self._apply_slippage(real_closes[i], 'long', is_entry=True)
                 signals.append({
                     'signal_type' : 'ENTRY',
                     'price'       : entry_price,
@@ -291,7 +296,7 @@ class RenkoReversalStrategy(BaseStrategy):
                 current_direction = 'long'
 
             elif sell_edge and current_direction != 'short':
-                entry_price = self._apply_slippage(close, 'short', is_entry=True)
+                entry_price = self._apply_slippage(real_closes[i], 'short', is_entry=True)
                 signals.append({
                     'signal_type' : 'ENTRY',
                     'price'       : entry_price,

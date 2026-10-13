@@ -1,13 +1,2 @@
-[browser]
-gatherUsageStats = false
-
 [server]
-runOnSave = false
-headless = true
-
-[runner]
-fastReruns = true
-
-[client]
-showErrorDetails = true
-toolbarMode = "minimal"
+fileWatcherType = "none"

@@ -144,6 +144,9 @@ class RenkoBreakoutStrategy(BaseStrategy):
         renko_df['timestamp'] = renko_df['bar_index'].apply(
             lambda idx: timestamps[idx] if idx < len(timestamps) else timestamps[-1]
         )
+        renko_df['real_close'] = renko_df['bar_index'].apply(
+            lambda idx: closes[idx] if idx < len(closes) else closes[-1]
+        )
         renko_df = renko_df.reset_index(drop=True)
 
         # ---- 2. Supertrend ----
@@ -168,6 +171,7 @@ class RenkoBreakoutStrategy(BaseStrategy):
         for i in range(n):
             row      = renko_df.iloc[i]
             close    = row['renko_close']
+            real_close = row['real_close']
             bar_time = row['timestamp']
             is_green = close > row['renko_open']
             is_red   = close < row['renko_open']
@@ -189,7 +193,7 @@ class RenkoBreakoutStrategy(BaseStrategy):
                         'exit_type'  : 'ST_FLIP_RED',
                         'bar_index'  : i,
                         'timestamp'  : bar_time,
-                        'price'      : close,
+                        'price'      : real_close,
                         'entry_ref'  : entry_signal,
                     })
                     position     = None
@@ -202,7 +206,7 @@ class RenkoBreakoutStrategy(BaseStrategy):
                         'exit_type'  : 'ST_FLIP_GREEN',
                         'bar_index'  : i,
                         'timestamp'  : bar_time,
-                        'price'      : close,
+                        'price'      : real_close,
                         'entry_ref'  : entry_signal,
                     })
                     position     = None
@@ -253,7 +257,7 @@ class RenkoBreakoutStrategy(BaseStrategy):
                             'entry_type'  : 'BUY_A',
                             'bar_index'   : i,
                             'timestamp'   : bar_time,
-                            'price'       : close,
+                            'price'       : real_close,
                             'btl_val'     : btl_val,
                             'bltl_val'    : bltl_val,
                             'btl_touches' : btl_touches,
@@ -305,7 +309,7 @@ class RenkoBreakoutStrategy(BaseStrategy):
                                 'entry_type'   : 'SELL_A',
                                 'bar_index'    : i,
                                 'timestamp'    : bar_time,
-                                'price'        : close,
+                                'price'        : real_close,
                                 'bltl_val'     : bltl_val,
                                 'btl_val'      : btl_val,
                                 'bltl_touches' : bltl_touches,

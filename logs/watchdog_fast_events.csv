@@ -6454,3 +6454,1185 @@ detected_at_utc,bot,check_class,detail
 2026-10-05T02:00:36.867873+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-05 02:00:08,567 INFO [TELEGRAM] Alert sent: CTS S4V2 MISSED TRADE - signal entry=2026-10-05T00"
 2026-10-05T08:00:29.864480+00:00,S4,C_MISSED_SIGNAL,"2026-10-05 08:00:03,704 INFO [TELEGRAM] Alert sent: CTS MISSED TRADE - signal entry=2026-10-05T02:00:0"
 2026-10-05T08:00:35.384314+00:00,S4V3,C_MISSED_SIGNAL,"2026-10-05 08:00:07,592 INFO [TELEGRAM] Alert sent: CTS S4V3 MISSED TRADE - signal entry=2026-10-05T00"
+2026-10-06T09:18:00.123439+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-06 09:17:48,169 WARNING [MISSED TRADE] entry=2026-10-02T08:30:00 exit=2026-10-02T09:30:00 dir=short reason=bot_restart"
+2026-10-07T04:50:31.340277+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-07 04:50:00,123 WARNING [MISSED TRADE] entry=2026-10-02T08:30:00 exit=2026-10-02T09:30:00 dir=short reason=bot_restart (suppressed 86 repeat(s) in prior 300s)"
+2026-10-07T09:20:26.532270+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1225s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T09:25:54.258105+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1553s (count=2) exceeds critical threshold 1200s - auto-resync may be failing (suppressed 8 repeat(s) in prior 300s)
+2026-10-07T09:51:53.290283+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1215s (count=1) exceeds critical threshold 1200s - auto-resync may be failing (suppressed 6 repeat(s) in prior 300s)
+2026-10-07T09:57:22.545647+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1544s (count=1) exceeds critical threshold 1200s - auto-resync may be failing (suppressed 8 repeat(s) in prior 300s)
+2026-10-07T10:02:53.812430+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1875s (count=2) exceeds critical threshold 1200s - auto-resync may be failing (suppressed 8 repeat(s) in prior 300s)
+2026-10-07T10:08:21.051963+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2203s (count=2) exceeds critical threshold 1200s - auto-resync may be failing (suppressed 8 repeat(s) in prior 300s)
+2026-10-07T10:13:45.365336+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2527s (count=2) exceeds critical threshold 1200s - auto-resync may be failing (suppressed 8 repeat(s) in prior 300s)
+2026-10-07T10:19:14.585193+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2856s (count=2) exceeds critical threshold 1200s - auto-resync may be failing (suppressed 8 repeat(s) in prior 300s)
+2026-10-07T10:24:37.964195+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3179s (count=2) exceeds critical threshold 1200s - auto-resync may be failing (suppressed 8 repeat(s) in prior 300s)
+2026-10-07T11:20:11.626553+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1210s (count=2) exceeds critical threshold 1200s - auto-resync may be failing (suppressed 8 repeat(s) in prior 300s)
+2026-10-07T11:25:40.491206+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1539s (count=2) exceeds critical threshold 1200s - auto-resync may be failing (suppressed 8 repeat(s) in prior 300s)
+2026-10-07T12:20:14.028701+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1210s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T12:20:51.075905+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1247s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T12:21:28.285289+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1285s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T12:22:04.783602+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1321s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T12:22:41.028836+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1357s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T12:23:16.838616+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1393s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T12:23:52.819561+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1429s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T12:24:27.801333+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1464s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T12:25:03.573635+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1500s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T12:25:40.860674+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1537s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T12:26:17.801736+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1574s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T12:26:54.815350+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1611s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T12:27:31.555286+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1648s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T12:28:08.076483+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1684s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T12:28:44.628007+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1721s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T12:29:21.896799+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1758s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T12:29:58.566860+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1795s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T12:30:34.147562+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1830s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T12:31:13.340570+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1870s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:20:19.952520+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1218s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:20:58.230637+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1256s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:21:33.934441+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1292s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:22:09.940105+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1328s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:22:45.425545+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1363s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:23:21.027311+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1399s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:23:56.950383+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1435s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:24:34.012214+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1472s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:25:10.451812+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1508s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:25:46.773204+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1545s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:26:24.227468+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1582s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:26:59.954188+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1618s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:27:36.205174+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1654s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:28:11.972262+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1690s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:28:48.030392+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1726s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:29:23.207586+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1761s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:29:59.705579+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1798s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:30:37.454742+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1835s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:31:14.966401+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1873s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:31:51.206370+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1909s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:32:27.457504+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1945s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:33:03.464824+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1981s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:33:38.974937+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2017s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:34:14.457521+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2052s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:34:49.631968+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2088s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:35:24.982762+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2123s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:36:01.244485+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2159s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:36:39.046149+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2197s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:37:17.236254+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2235s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:37:54.480452+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2273s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:38:32.486388+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2311s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:39:07.925467+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2346s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:39:43.489086+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2382s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:40:21.057430+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2419s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:41:00.226439+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2458s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:41:39.265519+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2497s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:42:17.556450+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2536s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:42:53.283865+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2571s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:43:29.031350+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2607s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:44:05.261768+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2643s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:44:40.784577+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2679s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:45:16.278378+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2714s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:45:53.527434+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2752s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:46:29.279506+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2787s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:47:05.029126+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2823s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:47:42.537304+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2861s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:48:18.583376+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2897s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:48:53.921604+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2932s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:49:29.027295+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2967s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:50:05.287576+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3003s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:50:43.095703+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3041s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:51:19.604009+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3078s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:51:58.525935+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3117s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:52:34.867940+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3153s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:53:10.882715+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3189s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:53:47.859424+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3226s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:54:23.553866+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3262s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:54:58.873395+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3297s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:55:34.131501+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3332s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:56:10.303795+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3368s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:56:46.800604+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3405s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:57:23.592733+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3442s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:58:00.313591+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3478s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:58:36.076320+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3514s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:59:11.868745+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3550s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T13:59:48.053537+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3586s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T14:50:41.536717+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1231s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T14:51:21.237447+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1271s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T14:51:58.468644+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1308s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T14:52:34.958488+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1344s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T14:53:10.680598+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1380s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T14:53:46.926866+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1416s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T14:54:24.006315+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1453s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T14:55:00.697990+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1490s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T14:55:36.463259+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1526s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T14:56:12.964281+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1562s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T14:56:49.215706+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1599s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T14:57:25.437880+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1635s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T14:58:02.424554+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1672s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T14:58:38.926980+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1708s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T14:59:13.925926+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1743s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T14:59:49.677532+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1779s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:21:40.726300+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1201s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:22:18.288480+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1239s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:22:56.982366+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1277s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:23:32.463957+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1313s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:24:07.812904+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1348s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:24:44.275409+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1385s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:25:20.770163+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1421s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:25:56.758293+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1457s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:26:32.259134+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1493s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:27:09.264052+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1530s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:27:45.544621+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1566s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:28:22.302125+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1603s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:28:59.251846+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1640s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:29:34.760903+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1675s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:30:10.015074+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1711s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:30:46.501019+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1747s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:31:25.044558+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1786s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:32:02.762561+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1823s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:32:41.030725+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1862s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:33:16.779847+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1897s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:33:52.853710+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1933s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:34:28.590410+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1969s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:35:04.802704+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2005s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:35:41.377456+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2042s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:36:18.116462+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2079s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:36:54.533621+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2115s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:37:30.303933+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2151s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:38:06.577819+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2187s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:38:42.593433+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2223s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:39:18.859484+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2259s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:39:54.839813+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2295s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:40:30.299703+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2331s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:41:06.349331+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2367s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:41:43.361097+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2404s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:42:19.300068+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2440s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:42:56.818338+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2477s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:43:32.583780+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2513s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:44:08.916194+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2549s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:44:46.574805+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2587s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:45:23.328517+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2624s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:46:00.635346+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2661s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:46:39.162068+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2700s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:47:16.075617+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2737s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:47:51.898099+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2772s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:48:27.882544+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2808s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:49:03.827216+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2844s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:49:39.885476+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2880s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:50:17.087490+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2918s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:50:53.329905+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2954s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:51:30.075508+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2991s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:52:08.098845+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3029s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:52:44.325417+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3065s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:53:22.875922+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3103s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:53:58.886759+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3139s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:54:35.324829+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3176s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:55:11.575801+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3212s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:55:47.829807+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3248s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:56:24.327174+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3285s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:56:59.587514+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3320s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:57:35.326347+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3356s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:58:11.635308+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3392s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:58:49.580943+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3430s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T15:59:26.147352+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3467s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:00:03.580314+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3504s (count=2) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:20:43.915295+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1223s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:21:21.693957+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1260s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:21:58.114753+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1297s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:22:33.916720+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1333s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:23:09.357160+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1368s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:23:46.159278+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1405s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:24:24.401429+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1443s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:25:02.111958+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1481s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:25:38.680765+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1517s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:26:15.677615+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1554s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:26:53.870322+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1593s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:27:29.383284+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1628s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:28:05.601386+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1664s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:28:42.633277+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1701s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:29:19.101798+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1738s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:29:54.127984+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1773s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:30:29.697411+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1808s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:31:05.434368+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1844s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:31:43.385759+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1882s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:32:22.882373+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1922s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:32:59.180695+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1958s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:33:35.237790+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=1994s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:34:12.651861+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2031s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:34:51.374728+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2070s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:35:27.160021+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2106s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:36:04.379464+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2143s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:36:40.930730+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2180s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:37:16.930054+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2216s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:37:53.631351+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2252s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:38:30.416002+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2289s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:39:06.422379+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2325s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:39:41.626260+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2360s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:40:17.965710+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2397s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:40:54.667062+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2433s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:41:30.382002+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2469s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:42:07.677054+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2506s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:42:43.625637+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2542s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:43:19.732539+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2578s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:43:54.915476+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2614s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:44:31.272010+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2650s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:45:09.906311+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2689s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:45:45.959822+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2725s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:46:22.214308+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2761s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:46:58.477771+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2797s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:47:34.208375+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2833s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:48:09.920062+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2869s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:48:46.166695+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2905s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:49:24.261515+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2943s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:50:00.677785+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=2979s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:50:36.710093+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3015s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:51:14.417697+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3053s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:51:50.651573+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3089s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:52:27.419719+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3126s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:53:05.242831+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3164s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:53:41.950324+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3201s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:54:18.456344+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3237s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:54:54.228488+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3273s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:55:30.953634+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3310s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:56:07.405262+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3346s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:56:43.174615+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3382s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:57:20.153156+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3419s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:57:56.653271+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3455s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:58:32.901397+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3492s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:59:08.179025+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3527s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T16:59:44.966178+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3564s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:00:20.959461+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3600s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:00:58.150528+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3637s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:01:37.906984+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3677s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:02:14.667758+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3713s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:02:52.662337+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3751s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:03:27.723381+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3786s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:04:04.405408+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3823s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:04:40.213469+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3859s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:05:18.990500+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3898s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:05:56.155652+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3935s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:06:33.220496+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=3972s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:07:08.675634+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4007s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:07:44.650720+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4043s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:08:20.709703+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4079s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:08:57.220609+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4116s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:09:33.658691+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4152s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:10:09.663293+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4188s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:10:45.704798+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4224s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:11:22.655300+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4261s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:12:00.905041+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4300s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:12:36.662203+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4335s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:13:13.705047+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4372s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:13:49.403579+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4408s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:14:24.922843+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4444s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:15:02.719644+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4481s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:15:40.406417+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4519s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:16:16.685612+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4555s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:16:52.672460+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4591s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:17:29.972072+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4629s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:18:07.403645+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4666s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:18:44.959283+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4704s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:19:21.210396+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4740s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:19:57.661244+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4776s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:20:33.915513+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4813s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:21:10.150564+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4849s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:21:47.154883+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4886s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:22:22.958309+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4922s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:23:00.678516+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4959s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:23:38.953536+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=4998s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:24:14.905802+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5034s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:24:50.409436+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5069s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:25:26.442712+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5105s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:26:04.694204+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5143s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:26:40.661520+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5179s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:27:17.405566+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5216s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:27:54.684890+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5253s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:28:31.414550+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5290s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:29:07.658085+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5326s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:29:43.153511+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5362s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:30:18.669036+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5397s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:30:55.511112+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5434s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:31:32.905318+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5472s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:32:08.976704+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5508s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:32:46.169315+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5545s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:33:22.208394+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5581s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:33:58.905021+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5618s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:34:36.676989+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5655s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:35:12.652375+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5691s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:35:49.482143+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5728s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:36:26.484264+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5765s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:37:03.650520+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5802s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:37:40.222265+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5839s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:38:15.992583+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5875s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:38:51.654819+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5910s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:39:27.436665+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5946s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:40:04.468547+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=5983s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:40:41.209403+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6020s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:41:18.160895+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6057s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:41:53.667858+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6092s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:42:29.716465+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6128s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:43:06.162314+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6165s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:43:42.403675+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6201s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:44:18.657120+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6237s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:44:54.677676+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6273s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:45:30.910986+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6310s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:46:06.959623+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6346s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:46:42.921952+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6382s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:47:20.955001+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6420s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:47:58.654012+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6457s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:48:35.403355+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6494s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:49:12.715613+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6531s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:49:48.706569+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6567s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:50:24.406549+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6603s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:51:00.911267+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6640s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:51:38.157776+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6677s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:52:14.685442+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6713s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:52:50.951677+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6750s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:53:27.406450+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6786s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:54:04.325477+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6823s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:54:41.980515+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6861s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:55:20.415341+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6899s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:55:56.945037+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6936s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:56:35.238570+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=6974s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:57:11.739316+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7010s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:57:48.652572+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7047s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:58:24.199507+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7083s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:59:00.967413+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7120s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T17:59:37.213388+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7156s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:00:13.959484+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7193s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:00:49.949218+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7229s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:01:26.159771+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7265s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:02:02.192047+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7301s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:02:38.704725+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7337s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:03:14.660289+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7373s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:03:50.247781+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7409s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:04:25.687538+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7444s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:05:03.951825+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7483s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:05:41.966011+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7521s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:06:18.690530+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7557s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:06:57.744450+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7596s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:07:34.287630+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7633s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:08:11.768724+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7670s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:08:50.176823+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7709s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:09:25.979099+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7745s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:10:02.460911+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7781s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:10:39.749344+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7818s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:11:17.745398+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7856s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:11:55.942337+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7895s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:12:31.685686+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7930s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:13:07.185379+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=7966s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:13:42.936425+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8002s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:14:18.184158+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8037s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:14:53.709838+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8072s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:15:32.759320+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8111s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:16:10.682577+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8149s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:16:47.215032+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8186s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:17:23.934785+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8223s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:17:59.491142+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8258s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:18:36.435388+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8295s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:19:12.729323+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8331s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:19:48.995631+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8368s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:20:26.207819+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8405s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:21:02.979543+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8442s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:21:40.011120+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8479s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:22:16.945353+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8516s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:22:53.224812+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8552s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:23:29.731257+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8588s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:24:06.700969+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8625s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:24:43.450685+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8662s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:25:19.010536+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8698s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:25:56.948066+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8736s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:26:34.454818+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8773s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:27:11.007101+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8810s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:27:47.743121+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8846s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:28:26.196814+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8885s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:29:02.452911+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8921s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:29:37.555709+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8956s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:30:13.240166+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=8992s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:30:49.233562+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9028s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:31:25.751811+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9064s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:32:02.226154+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9101s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:32:38.982951+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9138s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:33:15.288019+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9174s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:33:52.023670+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9211s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:34:28.573019+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9247s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:35:04.498036+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9283s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:35:41.846150+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9321s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:36:19.033556+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9358s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:36:56.254280+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9395s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:37:33.274175+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9432s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:38:09.605706+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9468s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:38:46.029384+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9505s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:39:22.080532+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9541s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:39:58.791681+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9577s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:40:35.266367+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9614s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:41:12.063080+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9651s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:41:48.011881+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9687s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:42:26.785253+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9725s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:43:03.326533+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9762s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:43:40.007629+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9799s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:44:16.249821+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9835s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:44:52.510302+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9871s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:45:28.342833+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9907s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:46:04.602499+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9943s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:46:42.097320+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=9981s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:47:18.563950+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10017s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:47:56.058945+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10055s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:48:32.752533+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10091s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:49:09.580823+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10128s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:49:45.099513+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10164s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:50:22.557927+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10201s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:50:59.282988+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10238s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:51:35.843802+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10275s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:52:12.066495+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10311s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:52:48.025622+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10347s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:53:23.581850+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10382s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:53:59.367287+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10418s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:54:36.093782+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10455s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:55:14.043362+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10493s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:55:50.784403+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10529s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:56:27.038275+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10566s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:57:04.379972+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10603s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:57:41.778029+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10640s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:58:18.855295+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10678s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:58:55.374828+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10714s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T18:59:31.771064+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10750s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:00:07.861153+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10787s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:00:44.831266+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10823s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:01:23.774078+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10862s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:02:00.779175+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10899s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:02:37.068729+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10936s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:03:14.536490+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=10973s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:03:50.276159+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11009s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:04:26.099549+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11045s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:05:02.036870+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11081s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:05:38.841382+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11118s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:06:15.551708+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11154s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:06:52.085318+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11191s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:07:29.526580+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11228s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:08:05.800034+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11264s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:08:41.585433+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11300s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:09:18.283124+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11337s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:09:54.072785+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11373s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:10:30.585430+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11409s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:11:07.305803+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11446s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:11:43.824908+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11482s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:12:20.026476+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11519s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:12:55.362106+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11554s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:13:31.095851+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11590s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:14:07.055482+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11626s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:14:44.367995+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11663s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:15:24.068016+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11703s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:16:00.621293+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11739s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:16:39.111778+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11778s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:17:15.322998+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11814s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:17:52.073044+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11851s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:18:30.117716+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11889s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:19:07.112493+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11926s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:19:43.080212+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11962s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:20:19.158550+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=11998s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:20:56.471204+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12035s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:21:33.405985+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12072s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:22:08.852280+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12108s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:22:45.605199+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12144s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:23:21.668780+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12180s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:23:57.206503+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12216s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:24:32.132375+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12251s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:25:07.871690+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12287s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:25:45.599724+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12324s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:26:21.378319+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12360s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:26:58.698494+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12397s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:27:36.393200+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12435s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:28:14.100567+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12473s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:28:49.704614+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12508s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:29:24.953703+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12544s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:30:00.720190+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12579s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:30:36.964779+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12616s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:31:13.399946+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12652s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:31:49.654357+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12688s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:32:26.430971+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12725s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:33:02.760329+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12761s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:33:39.907636+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12799s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:34:15.210122+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12834s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:34:51.408601+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12870s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:35:28.726437+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12907s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:36:05.676411+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12944s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:36:44.412598+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=12983s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:37:21.408559+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13020s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:37:57.153686+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13056s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:38:33.708852+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13092s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:39:10.178107+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13129s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:39:46.399266+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13165s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:40:22.427591+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13201s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:40:59.011309+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13238s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:41:36.902058+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13276s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:42:12.968476+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13312s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:42:49.440838+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13348s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:43:25.155919+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13384s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:44:01.721763+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13420s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:44:38.423764+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13457s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:45:15.253758+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13494s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:45:51.902433+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13531s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:46:28.208822+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13567s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:47:05.991882+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13605s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:47:42.902343+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13642s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:48:19.501821+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13678s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:48:58.161738+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13717s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:49:36.416378+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13755s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:50:14.213149+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13793s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:50:51.209374+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13830s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:51:26.942311+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13866s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:52:03.508321+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13902s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:52:39.657371+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13938s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:53:15.405703+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=13974s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:53:50.923978+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14010s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:54:26.400267+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14045s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:55:02.155150+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14081s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:55:39.901972+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14119s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:56:17.657745+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14156s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:56:54.736467+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14193s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:57:32.400156+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14231s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:58:08.447890+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14267s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:58:44.973530+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14304s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:59:21.966636+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14341s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T19:59:58.942883+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14378s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:00:35.197980+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14414s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:01:11.512425+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14450s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:01:48.923681+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14488s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:02:25.153446+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14524s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:03:01.475176+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14560s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:03:37.453807+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14596s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:04:14.149789+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14633s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:04:49.910045+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14669s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:05:26.755123+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14705s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:06:03.899642+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14743s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:06:40.912429+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14780s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:07:17.150331+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14816s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:07:53.161644+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14852s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:08:29.716012+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14888s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:09:07.446460+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14926s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:09:46.691638+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=14965s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:10:25.189249+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15004s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:11:01.658837+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15040s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:11:38.686372+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15077s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:12:15.697886+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15114s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:12:51.918158+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15151s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:13:28.153902+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15187s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:14:03.810570+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15222s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:14:40.177777+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15259s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:15:16.167089+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15295s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:15:53.734383+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15332s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:16:30.150840+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15369s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:17:06.436132+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15405s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:17:42.447385+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15441s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:18:20.649305+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15479s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:18:56.400136+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15515s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:19:31.664052+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15550s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:20:08.233504+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15587s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:20:44.149814+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15623s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:21:20.396681+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15659s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:21:57.164538+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15696s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:22:34.400320+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15733s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:23:09.718578+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15768s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:23:45.166929+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15804s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:24:20.660671+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15839s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:24:56.150487+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15875s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:25:32.933777+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15912s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:26:10.734610+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15949s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:26:47.206781+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=15986s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:27:23.910296+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16023s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:28:00.206299+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16059s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:28:36.200276+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16095s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:29:12.189348+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16131s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:29:48.939179+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16168s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:30:30.226300+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16209s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:31:07.910400+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16247s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:31:43.904845+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16283s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:32:20.403257+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16319s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:32:56.446656+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16355s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:33:32.406512+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16391s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:34:09.973912+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16429s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:34:45.900584+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16465s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:35:22.898880+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16502s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:35:59.445632+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16538s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:36:37.723349+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16576s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:37:13.652888+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16612s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:37:49.650334+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16648s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:38:26.186600+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16685s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:39:03.243132+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16722s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:39:38.755736+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16757s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:40:14.197890+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16793s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:40:51.726309+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16830s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:41:29.196918+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16868s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:42:05.402420+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16904s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:42:42.953444+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16942s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:43:22.181761+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=16981s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:44:00.701582+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17019s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:44:37.904142+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17057s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:45:16.738617+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17095s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:45:56.149611+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17135s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:46:35.147106+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17174s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:47:15.462267+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17214s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:47:55.764304+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17254s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:48:34.693598+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17293s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:49:12.202558+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17331s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:49:48.499731+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17367s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:50:24.940604+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17404s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:51:01.420696+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17440s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:51:36.945710+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17476s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:52:13.192775+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17512s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:52:49.415165+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17548s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:53:25.902317+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17585s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:54:01.903834+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17621s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:54:37.715208+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17656s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:55:13.656510+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17692s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:55:49.459170+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17728s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:56:27.185536+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17766s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:57:03.415933+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17802s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:57:39.653669+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17838s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:58:16.714302+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17875s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:58:53.919266+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17913s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T20:59:29.939869+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17949s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:00:06.912868+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=17986s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:00:44.689438+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18023s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:01:23.403630+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18062s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:02:00.151062+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18099s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:02:36.431834+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18135s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:03:13.660492+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18172s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:03:49.222381+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18208s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:04:24.655188+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18243s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:05:00.204940+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18279s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:05:36.403318+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18315s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:06:13.400977+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18352s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:06:50.705911+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18389s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:07:28.914090+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18428s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:08:05.669393+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18464s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:08:41.731608+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18500s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:09:19.184686+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18538s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:09:55.970578+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18575s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:10:32.967034+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18612s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:11:09.941721+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18649s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:11:47.968844+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18687s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:12:24.664199+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18723s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:13:00.465835+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18759s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:13:37.453271+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18796s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:14:13.917638+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18833s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:14:49.525776+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18868s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:15:25.691835+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18904s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:16:02.925878+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18942s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:16:39.735374+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=18978s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:17:17.923609+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19017s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:17:55.209918+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19054s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:18:30.949169+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19090s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:19:06.175194+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19125s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:19:41.929304+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19161s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:20:17.940667+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19197s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:20:55.473544+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19234s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:21:32.194749+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19271s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:22:09.987932+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19309s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:22:46.925340+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19346s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:23:22.279862+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19381s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:23:57.938651+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19417s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:24:34.925679+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19454s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:25:10.924920+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19490s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:25:46.435365+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19525s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:26:22.427406+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19561s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:26:58.936768+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19598s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:27:35.972414+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19635s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:28:11.927060+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19671s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:28:48.431710+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19707s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:29:26.685316+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19745s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:30:01.945751+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19781s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:30:37.963871+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19817s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:31:15.509402+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19854s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:31:51.450284+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19890s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:32:28.017633+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19927s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:33:04.986107+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=19964s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:33:41.453140+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20000s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:34:16.975141+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20036s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:34:52.269319+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20071s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:35:28.234115+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20107s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:36:03.727703+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20142s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:36:40.250601+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20179s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:37:17.260155+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20216s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:37:54.261462+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20253s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:38:30.231685+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20289s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:39:06.004218+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20325s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:39:42.282870+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20361s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:40:18.000463+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20397s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:40:54.497425+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20433s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:41:30.997099+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20470s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:42:07.256239+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20506s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:42:45.283721+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20544s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:43:20.793476+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20579s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:43:56.003711+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20615s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:44:31.265372+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20650s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:45:09.342447+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20688s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:45:46.280355+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20725s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:46:22.308618+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20761s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:46:58.801492+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20797s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:47:34.763349+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20833s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:48:11.250265+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20870s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:48:48.788210+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20907s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:49:25.003071+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20944s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:50:01.319011+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=20980s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:50:37.263697+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21016s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:51:14.015839+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21053s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:51:50.260077+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21089s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:52:26.000534+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21125s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:53:02.797594+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21161s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:53:39.058096+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21198s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:54:14.283752+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21233s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:54:50.267808+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21269s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:55:26.252359+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21305s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:56:02.258402+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21341s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:56:38.563871+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21377s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:57:15.996537+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21415s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:57:55.777873+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21454s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:58:32.272359+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21491s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:59:07.781211+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21526s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T21:59:43.251287+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21562s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:00:18.799013+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21597s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:00:55.253012+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21634s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:01:32.308831+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21671s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:02:09.279620+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21708s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:02:46.813202+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21745s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:03:25.521297+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21784s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:04:01.798201+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21820s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:04:37.755588+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21856s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:05:13.278533+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21892s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:05:50.289487+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21929s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:06:26.521047+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=21965s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:07:03.513300+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22002s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:07:41.852094+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22041s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:08:19.756794+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22078s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:08:55.111583+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22114s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:09:31.047141+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22150s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:10:07.251115+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22186s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:10:43.604412+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22222s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:11:20.525667+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22259s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:11:57.302887+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22296s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:12:32.798445+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22331s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:13:09.537904+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22368s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:13:47.081506+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22406s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:14:24.052927+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22443s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:14:59.607917+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22478s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:15:35.031875+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22514s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:16:11.807636+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22550s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:16:48.255539+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22587s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:17:24.755457+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22623s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:18:02.059095+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22661s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:18:39.752859+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22698s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:19:16.251933+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22735s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:19:51.772071+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22770s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:20:28.050859+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22807s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:21:05.041665+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22844s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:21:41.547651+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22880s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:22:17.837125+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22917s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:22:54.764605+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22953s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:23:30.811622+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=22989s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:24:07.323744+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23026s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:24:43.554249+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23062s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:25:20.324751+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23099s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:25:57.362396+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23136s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:26:36.021298+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23175s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:27:13.845386+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23213s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:27:50.628890+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23249s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:28:28.299456+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23287s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:29:04.525788+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23323s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:29:40.554633+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23359s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:30:16.042890+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23395s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:30:53.050733+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23432s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:31:29.801477+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23468s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:32:06.820269+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23505s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:32:42.539023+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23541s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:33:18.040285+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23577s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:33:54.048129+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23613s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:34:31.544421+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23650s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:35:08.075470+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23687s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:35:45.789206+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23724s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:36:22.647476+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23761s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:36:59.306754+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23798s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:37:35.293126+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23834s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:38:12.050334+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23871s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:38:48.829841+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23907s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:39:25.042301+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23944s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:40:00.844479+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=23980s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:40:36.810428+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24015s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:41:14.077390+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24053s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:41:50.802770+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24089s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:42:28.910644+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24128s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:43:09.396757+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24168s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:43:45.554524+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24204s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:44:21.303508+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24240s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:44:57.608846+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24276s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:45:33.552538+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24312s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:46:10.053243+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24349s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:46:46.302490+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24385s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:47:23.600475+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24422s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:48:02.075179+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24461s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:48:37.859461+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24497s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:49:12.886439+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24532s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:49:47.892687+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24567s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:50:24.329006+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24603s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:51:00.099814+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24639s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:51:36.904318+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24676s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:52:13.327376+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24712s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:52:49.634497+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24748s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:53:25.134787+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24784s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:54:01.076747+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24820s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:54:37.827686+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24856s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:55:14.609866+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24893s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:55:52.886336+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24932s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:56:30.832553+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=24969s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:57:07.333487+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25006s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:57:43.937277+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25043s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:58:20.332216+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25079s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:58:55.881706+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25115s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T22:59:32.146720+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25151s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:00:08.676464+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25187s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:00:45.859366+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25225s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:01:22.149268+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25261s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:01:59.896342+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25299s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:02:36.662099+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25335s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:03:12.841345+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25372s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:03:49.657378+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25408s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:04:25.376769+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25444s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:05:01.150668+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25480s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:05:41.857261+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25521s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:06:18.444511+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25557s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:06:55.855989+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25595s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:07:32.373794+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25631s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:08:09.960089+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25669s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:08:47.704734+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25706s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:09:24.136384+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25743s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:09:59.688982+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25778s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:10:35.152348+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25814s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:11:12.376256+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25851s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:11:48.888170+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25888s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:12:26.180643+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25925s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:13:04.168698+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=25963s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:13:42.652946+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26001s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:14:18.606837+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26037s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:14:54.872484+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26074s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:15:30.889785+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26110s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:16:07.924911+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26147s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:16:44.355052+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26183s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:17:20.879353+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26220s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:17:57.622385+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26256s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:18:34.607925+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26293s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:19:10.891483+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26330s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:19:47.363098+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26366s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:20:24.113789+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26403s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:21:01.618377+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26440s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:21:38.131516+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26477s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:22:15.128755+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26514s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:22:50.715660+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26549s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:23:29.672658+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26588s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:24:06.372321+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26625s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:24:41.911208+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26661s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:25:17.131980+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26696s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:25:53.970873+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26733s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:26:32.223473+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26771s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:27:08.414175+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26807s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:27:44.924476+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26844s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:28:21.903348+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26881s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:28:58.445982+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26917s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:29:33.899872+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26953s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:30:10.180753+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=26989s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:30:46.636482+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27025s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:31:23.436818+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27062s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:32:00.706430+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27099s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:32:37.626218+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27136s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:33:14.183166+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27173s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:33:49.743808+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27208s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:34:25.444002+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27244s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:35:00.934268+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27280s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:35:36.942528+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27316s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:36:12.888457+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27352s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:36:51.444282+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27390s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:37:28.131621+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27427s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:38:04.702674+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27463s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:38:40.631897+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27499s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:39:16.194432+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27535s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:39:51.878702+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27571s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:40:28.721059+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27607s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:41:05.629263+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27644s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:41:42.129569+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27681s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:42:17.677268+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27716s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:42:53.126757+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27752s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:43:28.427891+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27787s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:44:04.380295+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27823s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:44:40.420721+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27859s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:45:18.644749+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27897s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:45:55.210533+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27934s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:46:32.139474+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=27971s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:47:09.960487+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28009s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:47:46.215250+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28045s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:48:23.187977+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28082s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:48:59.713501+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28118s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:49:36.911154+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28156s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:50:12.463852+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28191s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:50:50.962339+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28230s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:51:27.909927+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28267s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:52:06.161324+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28305s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:52:43.499497+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28342s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:53:22.461562+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28381s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:53:57.684653+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28416s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:54:33.655388+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28452s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:55:09.902159+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28489s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:55:46.464305+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28525s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:56:22.912966+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28562s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:57:00.212775+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28599s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:57:38.150051+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28637s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:58:14.151600+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28673s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:58:50.406312+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28709s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-07T23:59:27.190513+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28746s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:00:03.670202+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28782s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:00:41.406253+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28820s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:01:17.650572+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28856s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:01:55.209495+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28894s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:02:31.662995+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28930s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:03:08.153466+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=28967s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:03:44.091541+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29003s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:04:19.660139+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29038s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:04:56.661568+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29075s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:05:32.936745+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29112s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:06:09.415634+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29148s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:06:45.671297+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29184s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:07:23.465750+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29222s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:08:03.413299+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29262s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:08:39.976018+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29299s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:09:17.403953+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29336s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:09:52.665285+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29371s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:10:29.403468+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29408s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:11:05.421357+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29444s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:11:42.696297+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29481s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:12:20.454298+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29519s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:12:56.223989+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29555s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:13:32.420553+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29591s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:14:11.175019+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29630s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:14:47.734499+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29666s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:15:24.451737+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29703s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:16:03.151508+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29742s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:16:40.953830+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29780s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:17:17.176464+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29816s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:17:54.492485+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:30,675 WARNING [MISSED TRADE] entry=2026-10-02T08:30:00 exit=2026-10-02T09:30:00 dir=short reason=bot_restart"
+2026-10-08T00:17:55.648198+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,248 INFO [TELEGRAM] Alert sent: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:55.657396+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,259 WARNING [MISSED TRADE] entry=2026-10-02T09:30:00 exit=2026-10-02T10:30:00 dir=long reason=bot_restart"
+2026-10-08T00:17:55.668381+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,270 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:55.674404+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,271 WARNING [MISSED TRADE] entry=2026-10-02T10:30:00 exit=2026-10-02T11:00:00 dir=short reason=bot_restart"
+2026-10-08T00:17:55.683385+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,402 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:55.696394+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,404 WARNING [MISSED TRADE] entry=2026-10-02T11:00:00 exit=2026-10-02T13:00:00 dir=long reason=bot_restart"
+2026-10-08T00:17:55.704407+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,414 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:55.714387+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,416 WARNING [MISSED TRADE] entry=2026-10-02T13:00:00 exit=2026-10-02T17:30:00 dir=short reason=bot_restart"
+2026-10-08T00:17:55.719444+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,444 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:55.731491+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,444 WARNING [MISSED TRADE] entry=2026-10-02T17:30:00 exit=2026-10-02T18:00:00 dir=long reason=bot_restart"
+2026-10-08T00:17:55.743390+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,497 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:55.755506+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,498 WARNING [MISSED TRADE] entry=2026-10-02T18:30:00 exit=2026-10-02T19:30:00 dir=short reason=bot_restart"
+2026-10-08T00:17:55.769553+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,648 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:55.905410+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,765 WARNING [MISSED TRADE] entry=2026-10-02T19:30:00 exit=2026-10-03T04:00:00 dir=long reason=bot_restart"
+2026-10-08T00:17:55.912436+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,917 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:55.921390+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,917 WARNING [MISSED TRADE] entry=2026-10-03T05:00:00 exit=2026-10-03T19:00:00 dir=long reason=bot_restart"
+2026-10-08T00:17:55.928153+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,951 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:55.934098+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,951 WARNING [MISSED TRADE] entry=2026-10-03T07:30:00 exit=2026-10-03T08:00:00 dir=short reason=bot_restart"
+2026-10-08T00:17:55.942396+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,966 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:55.953528+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,968 WARNING [MISSED TRADE] entry=2026-10-03T19:00:00 exit=2026-10-03T20:00:00 dir=short reason=bot_restart"
+2026-10-08T00:17:55.962409+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,974 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:55.975398+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,974 WARNING [MISSED TRADE] entry=2026-10-03T20:30:00 exit=2026-10-04T02:00:00 dir=short reason=bot_restart"
+2026-10-08T00:17:55.984384+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,977 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:55.992395+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,982 WARNING [MISSED TRADE] entry=2026-10-04T06:00:00 exit=2026-10-04T10:30:00 dir=long reason=bot_restart"
+2026-10-08T00:17:56.001537+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,991 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.009445+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,991 WARNING [MISSED TRADE] entry=2026-10-04T10:30:00 exit=2026-10-04T14:30:00 dir=short reason=bot_restart"
+2026-10-08T00:17:56.145721+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:32,999 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.160381+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,004 WARNING [MISSED TRADE] entry=2026-10-04T17:00:00 exit=2026-10-04T23:30:00 dir=long reason=bot_restart"
+2026-10-08T00:17:56.170405+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,011 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.175401+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,011 WARNING [MISSED TRADE] entry=2026-10-04T23:30:00 exit=2026-10-05T00:30:00 dir=short reason=bot_restart"
+2026-10-08T00:17:56.187375+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,022 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.192514+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,022 WARNING [MISSED TRADE] entry=2026-10-05T00:30:00 exit=2026-10-05T01:30:00 dir=long reason=bot_restart"
+2026-10-08T00:17:56.202479+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,398 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.212405+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,399 WARNING [MISSED TRADE] entry=2026-10-05T01:30:00 exit=2026-10-05T05:30:00 dir=short reason=bot_restart"
+2026-10-08T00:17:56.224412+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,401 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.231257+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,401 WARNING [MISSED TRADE] entry=2026-10-05T05:30:00 exit=2026-10-05T08:30:00 dir=long reason=bot_restart"
+2026-10-08T00:17:56.235356+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,407 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.395681+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,407 WARNING [MISSED TRADE] entry=2026-10-05T08:30:00 exit=2026-10-05T09:30:00 dir=short reason=bot_restart"
+2026-10-08T00:17:56.406461+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,411 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.420386+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,411 WARNING [MISSED TRADE] entry=2026-10-05T10:30:00 exit=2026-10-05T12:00:00 dir=long reason=bot_restart"
+2026-10-08T00:17:56.428646+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,413 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.436466+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,414 WARNING [MISSED TRADE] entry=2026-10-05T12:00:00 exit=2026-10-05T13:00:00 dir=short reason=bot_restart"
+2026-10-08T00:17:56.442442+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,416 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.446415+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,416 WARNING [MISSED TRADE] entry=2026-10-05T13:00:00 exit=2026-10-05T14:00:00 dir=long reason=bot_restart"
+2026-10-08T00:17:56.453065+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,424 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.461440+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,424 WARNING [MISSED TRADE] entry=2026-10-05T14:30:00 exit=2026-10-05T16:30:00 dir=short reason=bot_restart"
+2026-10-08T00:17:56.467418+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,431 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.484794+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,431 WARNING [MISSED TRADE] entry=2026-10-05T16:30:00 exit=2026-10-05T23:30:00 dir=long reason=bot_restart"
+2026-10-08T00:17:56.491413+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,436 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.497653+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,436 WARNING [MISSED TRADE] entry=2026-10-05T23:30:00 exit=2026-10-06T00:30:00 dir=short reason=bot_restart"
+2026-10-08T00:17:56.502399+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,443 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.508469+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,444 WARNING [MISSED TRADE] entry=2026-10-06T01:00:00 exit=2026-10-06T01:30:00 dir=long reason=bot_restart"
+2026-10-08T00:17:56.514448+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,452 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.520527+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,452 WARNING [MISSED TRADE] entry=2026-10-06T01:30:00 exit=2026-10-06T04:30:00 dir=short reason=bot_restart"
+2026-10-08T00:17:56.656183+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,461 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.662406+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,461 WARNING [MISSED TRADE] entry=2026-10-06T05:30:00 exit=2026-10-06T07:30:00 dir=short reason=bot_restart"
+2026-10-08T00:17:56.670498+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,465 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.680449+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,468 WARNING [MISSED TRADE] entry=2026-10-06T07:30:00 exit=2026-10-06T09:00:00 dir=long reason=bot_restart"
+2026-10-08T00:17:56.685750+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,473 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.692777+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,473 WARNING [MISSED TRADE] entry=2026-10-06T09:00:00 exit=2026-10-06T09:30:00 dir=short reason=bot_restart"
+2026-10-08T00:17:56.712806+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,480 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.726525+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,480 WARNING [MISSED TRADE] entry=2026-10-06T09:30:00 exit=2026-10-06T12:00:00 dir=long reason=bot_restart"
+2026-10-08T00:17:56.735382+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,485 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.738703+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,485 WARNING [MISSED TRADE] entry=2026-10-06T12:00:00 exit=2026-10-06T12:30:00 dir=short reason=bot_restart"
+2026-10-08T00:17:56.759403+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,492 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.896570+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,493 WARNING [MISSED TRADE] entry=2026-10-06T13:00:00 exit=2026-10-06T13:30:00 dir=short reason=bot_restart"
+2026-10-08T00:17:56.906401+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,496 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.910403+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,498 WARNING [MISSED TRADE] entry=2026-10-06T13:30:00 exit=2026-10-06T14:00:00 dir=long reason=bot_restart"
+2026-10-08T00:17:56.920177+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,506 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.925564+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,507 WARNING [MISSED TRADE] entry=2026-10-06T14:00:00 exit=2026-10-06T14:30:00 dir=short reason=bot_restart"
+2026-10-08T00:17:56.931587+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,511 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.942441+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,513 WARNING [MISSED TRADE] entry=2026-10-06T14:30:00 exit=2026-10-06T15:00:00 dir=long reason=bot_restart"
+2026-10-08T00:17:56.946601+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,518 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.956422+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,519 WARNING [MISSED TRADE] entry=2026-10-06T15:00:00 exit=2026-10-06T17:30:00 dir=short reason=bot_restart"
+2026-10-08T00:17:56.966388+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,652 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.973532+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,652 WARNING [MISSED TRADE] entry=2026-10-06T17:30:00 exit=2026-10-06T18:30:00 dir=long reason=bot_restart"
+2026-10-08T00:17:56.982438+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,659 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:56.986988+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,659 WARNING [MISSED TRADE] entry=2026-10-06T18:30:00 exit=2026-10-06T19:30:00 dir=short reason=bot_restart"
+2026-10-08T00:17:56.995513+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,661 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:57.001404+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,662 WARNING [MISSED TRADE] entry=2026-10-06T19:30:00 exit=2026-10-06T22:00:00 dir=long reason=bot_restart"
+2026-10-08T00:17:57.008420+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,667 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:57.019403+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,667 WARNING [MISSED TRADE] entry=2026-10-07T00:00:00 exit=2026-10-07T00:30:00 dir=short reason=bot_restart"
+2026-10-08T00:17:57.157396+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,670 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:57.163693+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,670 WARNING [MISSED TRADE] entry=2026-10-07T00:30:00 exit=2026-10-07T01:00:00 dir=long reason=bot_restart"
+2026-10-08T00:17:57.173418+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,673 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:57.182384+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,673 WARNING [MISSED TRADE] entry=2026-10-07T01:00:00 exit=2026-10-07T03:00:00 dir=short reason=bot_restart"
+2026-10-08T00:17:57.191417+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,678 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:57.202390+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,678 WARNING [MISSED TRADE] entry=2026-10-07T03:00:00 exit=2026-10-07T04:30:00 dir=long reason=bot_restart"
+2026-10-08T00:17:57.209297+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,682 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:57.218411+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,684 WARNING [MISSED TRADE] entry=2026-10-07T17:00:00 exit=2026-10-07T18:00:00 dir=short reason=bot_restart"
+2026-10-08T00:17:57.229369+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,690 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:57.240376+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,690 WARNING [MISSED TRADE] entry=2026-10-07T18:00:00 exit=2026-10-07T20:30:00 dir=long reason=bot_restart"
+2026-10-08T00:17:57.250374+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,699 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:57.258388+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,700 WARNING [MISSED TRADE] entry=2026-10-07T21:00:00 exit=2026-10-07T22:00:00 dir=short reason=bot_restart"
+2026-10-08T00:17:57.402367+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,704 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:57.426409+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,705 WARNING [MISSED TRADE] entry=2026-10-07T22:00:00 exit=2026-10-07T22:30:00 dir=long reason=bot_restart"
+2026-10-08T00:17:57.433380+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,712 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:57.441394+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,713 WARNING [MISSED TRADE] entry=2026-10-07T22:30:00 exit=2026-10-07T23:00:00 dir=short reason=bot_restart"
+2026-10-08T00:17:57.452504+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,727 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T00:17:57.463389+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 00:17:33,727 WARNING [MISSED TRADE] Total 50 trade(s) missed during offline period"
+2026-10-08T00:17:57.470704+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29856s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:18:37.170784+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29896s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T00:19:13.654447+00:00,S4V2,A_STATE_DESYNC,mismatch_since age=29932s (count=1) exceeds critical threshold 1200s - auto-resync may be failing
+2026-10-08T02:52:12.697315+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:56,445 WARNING [MISSED TRADE] entry=2026-10-02T08:30:00 exit=2026-10-02T09:30:00 dir=short reason=bot_restart"
+2026-10-08T02:52:14.433429+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,176 INFO [TELEGRAM] Alert sent: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:14.442594+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,178 WARNING [MISSED TRADE] entry=2026-10-02T09:30:00 exit=2026-10-02T10:30:00 dir=long reason=bot_restart"
+2026-10-08T02:52:14.856913+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,181 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:14.865400+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,181 WARNING [MISSED TRADE] entry=2026-10-02T10:30:00 exit=2026-10-02T11:00:00 dir=short reason=bot_restart"
+2026-10-08T02:52:14.871377+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,184 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:14.880441+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,185 WARNING [MISSED TRADE] entry=2026-10-02T11:00:00 exit=2026-10-02T13:00:00 dir=long reason=bot_restart"
+2026-10-08T02:52:14.888577+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,189 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:14.892391+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,190 WARNING [MISSED TRADE] entry=2026-10-02T13:00:00 exit=2026-10-02T17:30:00 dir=short reason=bot_restart"
+2026-10-08T02:52:14.962382+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,192 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:14.968461+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,192 WARNING [MISSED TRADE] entry=2026-10-02T17:30:00 exit=2026-10-02T18:00:00 dir=long reason=bot_restart"
+2026-10-08T02:52:15.098971+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,195 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.104420+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,195 WARNING [MISSED TRADE] entry=2026-10-02T18:30:00 exit=2026-10-02T19:30:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.110414+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,200 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.116555+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,201 WARNING [MISSED TRADE] entry=2026-10-02T19:30:00 exit=2026-10-03T04:00:00 dir=long reason=bot_restart"
+2026-10-08T02:52:15.122393+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,204 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.128416+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,205 WARNING [MISSED TRADE] entry=2026-10-03T05:00:00 exit=2026-10-03T19:00:00 dir=long reason=bot_restart"
+2026-10-08T02:52:15.135419+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,210 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.139475+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,210 WARNING [MISSED TRADE] entry=2026-10-03T07:30:00 exit=2026-10-03T08:00:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.145532+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,213 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.151068+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,214 WARNING [MISSED TRADE] entry=2026-10-03T19:00:00 exit=2026-10-03T20:00:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.161427+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,217 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.168388+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,217 WARNING [MISSED TRADE] entry=2026-10-03T20:30:00 exit=2026-10-04T02:00:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.173386+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,221 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.179416+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,221 WARNING [MISSED TRADE] entry=2026-10-04T06:00:00 exit=2026-10-04T10:30:00 dir=long reason=bot_restart"
+2026-10-08T02:52:15.186390+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,224 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.193608+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,224 WARNING [MISSED TRADE] entry=2026-10-04T10:30:00 exit=2026-10-04T14:30:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.200441+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,228 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.207392+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,229 WARNING [MISSED TRADE] entry=2026-10-04T17:00:00 exit=2026-10-04T23:30:00 dir=long reason=bot_restart"
+2026-10-08T02:52:15.213410+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,348 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.218382+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,348 WARNING [MISSED TRADE] entry=2026-10-04T23:30:00 exit=2026-10-05T00:30:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.346531+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,352 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.351351+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,352 WARNING [MISSED TRADE] entry=2026-10-05T00:30:00 exit=2026-10-05T01:30:00 dir=long reason=bot_restart"
+2026-10-08T02:52:15.355262+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,356 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.361365+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,356 WARNING [MISSED TRADE] entry=2026-10-05T01:30:00 exit=2026-10-05T05:30:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.365360+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,360 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.371380+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,360 WARNING [MISSED TRADE] entry=2026-10-05T05:30:00 exit=2026-10-05T08:30:00 dir=long reason=bot_restart"
+2026-10-08T02:52:15.377391+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,364 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.383391+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,364 WARNING [MISSED TRADE] entry=2026-10-05T08:30:00 exit=2026-10-05T09:30:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.390387+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,368 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.395372+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,369 WARNING [MISSED TRADE] entry=2026-10-05T10:30:00 exit=2026-10-05T12:00:00 dir=long reason=bot_restart"
+2026-10-08T02:52:15.400376+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,372 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.406321+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,373 WARNING [MISSED TRADE] entry=2026-10-05T12:00:00 exit=2026-10-05T13:00:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.411377+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,377 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.417380+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,378 WARNING [MISSED TRADE] entry=2026-10-05T13:00:00 exit=2026-10-05T14:00:00 dir=long reason=bot_restart"
+2026-10-08T02:52:15.423379+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,383 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.429381+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,383 WARNING [MISSED TRADE] entry=2026-10-05T14:30:00 exit=2026-10-05T16:30:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.436475+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,387 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.443391+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,388 WARNING [MISSED TRADE] entry=2026-10-05T16:30:00 exit=2026-10-05T23:30:00 dir=long reason=bot_restart"
+2026-10-08T02:52:15.448375+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,390 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.454624+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,391 WARNING [MISSED TRADE] entry=2026-10-05T23:30:00 exit=2026-10-06T00:30:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.462603+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,395 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.471432+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,396 WARNING [MISSED TRADE] entry=2026-10-06T01:00:00 exit=2026-10-06T01:30:00 dir=long reason=bot_restart"
+2026-10-08T02:52:15.607975+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,399 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.614554+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,400 WARNING [MISSED TRADE] entry=2026-10-06T01:30:00 exit=2026-10-06T04:30:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.619554+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,403 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.627018+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,403 WARNING [MISSED TRADE] entry=2026-10-06T05:30:00 exit=2026-10-06T07:30:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.631398+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,408 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.635617+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,408 WARNING [MISSED TRADE] entry=2026-10-06T07:30:00 exit=2026-10-06T09:00:00 dir=long reason=bot_restart"
+2026-10-08T02:52:15.641818+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,412 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.676418+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,413 WARNING [MISSED TRADE] entry=2026-10-06T09:00:00 exit=2026-10-06T09:30:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.684379+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,415 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.693631+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,415 WARNING [MISSED TRADE] entry=2026-10-06T09:30:00 exit=2026-10-06T12:00:00 dir=long reason=bot_restart"
+2026-10-08T02:52:15.705621+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,418 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.714566+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,419 WARNING [MISSED TRADE] entry=2026-10-06T12:00:00 exit=2026-10-06T12:30:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.722735+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,423 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.849009+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,423 WARNING [MISSED TRADE] entry=2026-10-06T13:00:00 exit=2026-10-06T13:30:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.854501+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,426 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.860821+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,427 WARNING [MISSED TRADE] entry=2026-10-06T13:30:00 exit=2026-10-06T14:00:00 dir=long reason=bot_restart"
+2026-10-08T02:52:15.865431+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,430 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.872431+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,431 WARNING [MISSED TRADE] entry=2026-10-06T14:00:00 exit=2026-10-06T14:30:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.878425+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,434 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.884522+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,434 WARNING [MISSED TRADE] entry=2026-10-06T14:30:00 exit=2026-10-06T15:00:00 dir=long reason=bot_restart"
+2026-10-08T02:52:15.890425+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,438 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.896420+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,438 WARNING [MISSED TRADE] entry=2026-10-06T15:00:00 exit=2026-10-06T17:30:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.902491+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,441 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.907794+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,441 WARNING [MISSED TRADE] entry=2026-10-06T17:30:00 exit=2026-10-06T18:30:00 dir=long reason=bot_restart"
+2026-10-08T02:52:15.912707+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,445 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.918424+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,446 WARNING [MISSED TRADE] entry=2026-10-06T18:30:00 exit=2026-10-06T19:30:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.923645+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,449 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.930400+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,450 WARNING [MISSED TRADE] entry=2026-10-06T19:30:00 exit=2026-10-06T22:00:00 dir=long reason=bot_restart"
+2026-10-08T02:52:15.937266+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,453 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.943511+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,453 WARNING [MISSED TRADE] entry=2026-10-07T00:00:00 exit=2026-10-07T00:30:00 dir=short reason=bot_restart"
+2026-10-08T02:52:15.951629+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,455 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:15.962555+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,456 WARNING [MISSED TRADE] entry=2026-10-07T00:30:00 exit=2026-10-07T01:00:00 dir=long reason=bot_restart"
+2026-10-08T02:52:15.968507+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,460 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:16.097492+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,461 WARNING [MISSED TRADE] entry=2026-10-07T01:00:00 exit=2026-10-07T03:00:00 dir=short reason=bot_restart"
+2026-10-08T02:52:16.105437+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,464 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:16.217676+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,465 WARNING [MISSED TRADE] entry=2026-10-07T03:00:00 exit=2026-10-07T04:30:00 dir=long reason=bot_restart"
+2026-10-08T02:52:16.222077+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,468 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:16.351467+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,468 WARNING [MISSED TRADE] entry=2026-10-07T17:00:00 exit=2026-10-07T18:00:00 dir=short reason=bot_restart"
+2026-10-08T02:52:16.356422+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,597 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:16.362379+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,597 WARNING [MISSED TRADE] entry=2026-10-07T18:00:00 exit=2026-10-07T20:30:00 dir=long reason=bot_restart"
+2026-10-08T02:52:16.367784+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,600 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:16.373779+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,600 WARNING [MISSED TRADE] entry=2026-10-07T21:00:00 exit=2026-10-07T22:00:00 dir=short reason=bot_restart"
+2026-10-08T02:52:16.382401+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,605 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:16.387026+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,605 WARNING [MISSED TRADE] entry=2026-10-07T22:00:00 exit=2026-10-07T22:30:00 dir=long reason=bot_restart"
+2026-10-08T02:52:16.409452+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,610 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:16.414453+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,610 WARNING [MISSED TRADE] entry=2026-10-07T22:30:00 exit=2026-10-07T23:00:00 dir=short reason=bot_restart"
+2026-10-08T02:52:16.419463+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,614 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:16.423479+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,614 WARNING [MISSED TRADE] entry=2026-10-07T23:00:00 exit=2026-10-08T00:00:00 dir=long reason=bot_restart"
+2026-10-08T02:52:16.427135+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,619 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:16.430655+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,619 WARNING [MISSED TRADE] entry=2026-10-08T00:00:00 exit=2026-10-08T00:30:00 dir=short reason=bot_restart"
+2026-10-08T02:52:16.435613+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,624 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:16.440591+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,624 WARNING [MISSED TRADE] entry=2026-10-08T00:30:00 exit=2026-10-08T01:00:00 dir=long reason=bot_restart"
+2026-10-08T02:52:16.446522+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,627 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:16.451576+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:51:57,627 WARNING [MISSED TRADE] Total 53 trade(s) missed during offline period"
+2026-10-08T02:52:16.459634+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:52:08,174 WARNING [MISSED TRADE] entry=2026-10-08T00:30:00 exit=2026-10-08T01:00:00 dir=long reason=bot_restart"
+2026-10-08T02:52:16.467601+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:52:08,181 INFO [TELEGRAM] Rate-limited (max 1/1800s) - suppressed: ⚠️ CTS S4V2 BOT RESTART - MISSED TRADE"
+2026-10-08T02:52:16.471303+00:00,S4V2,C_MISSED_SIGNAL,"2026-10-08 02:52:08,181 WARNING [MISSED TRADE] Total 1 trade(s) missed during offline period"
+2026-10-09T14:43:45.585764+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-10T05:10:04.193292+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping (suppressed 1 repeat(s) in prior 300s)
+2026-10-10T05:15:39.400507+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-10T05:27:32.149549+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping
+2026-10-10T05:53:25.603215+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping (suppressed 1 repeat(s) in prior 300s)
+2026-10-10T06:08:49.100854+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping (suppressed 1 repeat(s) in prior 300s)
+2026-10-10T06:52:29.084843+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping (suppressed 1 repeat(s) in prior 300s)
+2026-10-10T06:58:48.367996+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping (suppressed 1 repeat(s) in prior 300s)
+2026-10-10T07:16:27.593431+00:00,SYSTEM,CANARY_FAIL,No fresh pong within 20s of ping

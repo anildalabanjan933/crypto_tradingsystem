@@ -59,6 +59,9 @@ class RenkoPatternBreakoutStrategy(BaseStrategy):
         renko_raw['timestamp'] = renko_raw['bar_index'].apply(
             lambda idx: timestamps[idx] if idx < len(timestamps) else timestamps[-1]
         )
+        renko_raw['real_close'] = renko_raw['bar_index'].apply(
+            lambda idx: closes[idx] if idx < len(closes) else closes[-1]
+        )
         return renko_raw
 
     # -----------------------------------------------------------------------
@@ -197,6 +200,7 @@ class RenkoPatternBreakoutStrategy(BaseStrategy):
 
         timestamps = df['timestamp'].tolist()
         closes     = df['renko_close'].values.astype(float)
+        real_closes = df['real_close'].values.astype(float)
         renko_dir  = df['renko_dir'].values
         n          = len(df)
         box_size   = self.renko_box
@@ -247,7 +251,7 @@ class RenkoPatternBreakoutStrategy(BaseStrategy):
                         'signal_type':    'trade',
                         'direction':      pos['direction'],
                         'price':          pos['entry_price'],
-                        'exit_price':     c,
+                        'exit_price':     real_closes[i],
                         'entry_type':     'PATTERN_BREAKOUT',
                         'sl_price':       0.0,
                         'exit_reason':    'ST_flip',
@@ -310,7 +314,7 @@ class RenkoPatternBreakoutStrategy(BaseStrategy):
                     continue
                 open_positions.append({
                     'direction':   'long',
-                    'entry_price': c,
+                    'entry_price': real_closes[i],
                     'entry_ts':    ts_pd,
                     'entry_bar':   i,
                 })
@@ -321,7 +325,7 @@ class RenkoPatternBreakoutStrategy(BaseStrategy):
                     continue
                 open_positions.append({
                     'direction':   'short',
-                    'entry_price': c,
+                    'entry_price': real_closes[i],
                     'entry_ts':    ts_pd,
                     'entry_bar':   i,
                 })
@@ -331,7 +335,7 @@ class RenkoPatternBreakoutStrategy(BaseStrategy):
         if open_positions and n > 0:
             last_i  = n - 1
             last_ts = pd.Timestamp(timestamps[last_i])
-            last_c  = closes[last_i]
+            last_c  = real_closes[last_i]
             for pos in open_positions:
                 if last_i - pos['entry_bar'] >= 4:
                     trades.append({
