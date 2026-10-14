@@ -1,0 +1,16 @@
+[Unit]
+Description=CTS Trading Bots Auto Restart
+After=network.target
+
+[Service]
+KillMode=none
+Type=oneshot
+User=anildalabanjan7
+Environment=HOME=/home/anildalabanjan7
+Environment=SCREENDIR=/run/screen/S-anildalabanjan7
+Environment=TERM=xterm
+ExecStart=/bin/bash /home/anildalabanjan7/crypto_tradingsystem/bot_watchdog.sh
+RemainAfterExit=no
+
+[Install]
+WantedBy=multi-user.target

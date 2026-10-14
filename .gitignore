@@ -1,1 +1,34 @@
+# Python
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment
+.env
+.venv/
+venv/
+
+# Data files
+data/*.csv
+data/*.lock
+
+# Output reports
+output/
+
+# Logs
+logs/
+
+# Backup files
+*.bak*
+*.lock
+
+# IDE
+.idea/
+*.swp
+
+# OS
+.DS_Store
+desktop.ini
+data/*.tmp
+.env.backup_local_only

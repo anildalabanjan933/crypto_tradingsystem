@@ -1,0 +1,340 @@
+26-Sep-2026 12:00:00 AM IST INFO [WS] New 30m candle closed: 2026-09-25 18:00:00 - checking S4V2
+26-Sep-2026 12:00:00 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 14:00:00..2026-09-25 18:30:00 mismatches=3 critical_covered=True
+26-Sep-2026 12:00:00 AM IST WARNING [S4V2] REST reconcile corrected 3 candle(s) with WS/REST drift in window 2026-09-25 14:00:00..2026-09-25 18:30:00
+26-Sep-2026 12:00:00 AM IST INFO [S4V2] Strategy returned 453 signals | gen_signals_took=0.06s
+26-Sep-2026 12:00:00 AM IST WARNING [S4V2] SKIPPED signal ts=2026-09-25T18:00:00 type=EXIT dir=short - state mismatch (current_direction=long)
+26-Sep-2026 12:00:00 AM IST WARNING [S4V2] SKIPPED signal ts=2026-09-25T18:00:00 type=ENTRY dir=long - state mismatch (current_direction=long)
+26-Sep-2026 12:30:01 AM IST INFO [WS] New 30m candle closed: 2026-09-25 18:30:00 - checking S4V2
+26-Sep-2026 12:30:01 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 14:30:00..2026-09-25 19:00:00 mismatches=3 critical_covered=True
+26-Sep-2026 12:30:01 AM IST WARNING [S4V2] REST reconcile corrected 3 candle(s) with WS/REST drift in window 2026-09-25 14:30:00..2026-09-25 19:00:00
+26-Sep-2026 12:30:01 AM IST INFO [S4V2] Strategy returned 449 signals | gen_signals_took=0.04s
+26-Sep-2026 12:30:01 AM IST CRITICAL [S4V2] REPAINT GUARD: signal ts=2026-09-25T18:00:00 type=EXIT is 60min old (threshold 45min) - already-locked history repaint attempt blocked
+26-Sep-2026 12:30:01 AM IST CRITICAL [S4V2] REPAINT GUARD: signal ts=2026-09-25T18:00:00 type=ENTRY is 60min old (threshold 45min) - already-locked history repaint attempt blocked
+26-Sep-2026 01:00:00 AM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-25T19:30:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 01:00:01 AM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+26-Sep-2026 01:00:01 AM IST INFO [WS] New 30m candle closed: 2026-09-25 19:00:00 - checking S4V2
+26-Sep-2026 01:00:01 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 15:00:00..2026-09-25 19:30:00 mismatches=2 critical_covered=True
+26-Sep-2026 01:00:01 AM IST WARNING [S4V2] REST reconcile corrected 2 candle(s) with WS/REST drift in window 2026-09-25 15:00:00..2026-09-25 19:30:00
+26-Sep-2026 01:00:01 AM IST INFO [S4V2] Strategy returned 449 signals | gen_signals_took=0.03s
+26-Sep-2026 01:00:01 AM IST CRITICAL [S4V2] REPAINT GUARD: signal ts=2026-09-25T18:00:00 type=EXIT is 90min old (threshold 45min) - already-locked history repaint attempt blocked
+26-Sep-2026 01:00:01 AM IST CRITICAL [S4V2] REPAINT GUARD: signal ts=2026-09-25T18:00:00 type=ENTRY is 90min old (threshold 45min) - already-locked history repaint attempt blocked
+26-Sep-2026 01:00:03 AM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-25 19:30:00 reconcile failed - NOT claimed, retrying next tick
+26-Sep-2026 01:30:00 AM IST INFO [WS] New 30m candle closed: 2026-09-25 19:30:00 - checking S4V2
+26-Sep-2026 01:30:01 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 15:30:00..2026-09-25 20:00:00 mismatches=4 critical_covered=True
+26-Sep-2026 01:30:01 AM IST WARNING [S4V2] REST reconcile corrected 4 candle(s) with WS/REST drift in window 2026-09-25 15:30:00..2026-09-25 20:00:00
+26-Sep-2026 01:30:01 AM IST INFO [S4V2] Strategy returned 449 signals | gen_signals_took=0.04s
+26-Sep-2026 01:30:01 AM IST CRITICAL [S4V2] REPAINT GUARD: signal ts=2026-09-25T18:00:00 type=EXIT is 120min old (threshold 45min) - already-locked history repaint attempt blocked
+26-Sep-2026 01:30:01 AM IST CRITICAL [S4V2] REPAINT GUARD: signal ts=2026-09-25T18:00:00 type=ENTRY is 120min old (threshold 45min) - already-locked history repaint attempt blocked
+26-Sep-2026 02:00:06 AM IST INFO [WS] New 30m candle closed: 2026-09-25 20:00:00 - checking S4V2
+26-Sep-2026 02:00:07 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 16:00:00..2026-09-25 20:30:00 mismatches=2 critical_covered=True
+26-Sep-2026 02:00:07 AM IST WARNING [S4V2] REST reconcile corrected 2 candle(s) with WS/REST drift in window 2026-09-25 16:00:00..2026-09-25 20:30:00
+26-Sep-2026 02:00:07 AM IST INFO [S4V2] Strategy returned 449 signals | gen_signals_took=0.13s
+26-Sep-2026 02:00:07 AM IST CRITICAL [S4V2] REPAINT GUARD: signal ts=2026-09-25T18:00:00 type=EXIT is 150min old (threshold 45min) - already-locked history repaint attempt blocked
+26-Sep-2026 02:00:07 AM IST CRITICAL [S4V2] REPAINT GUARD: signal ts=2026-09-25T18:00:00 type=ENTRY is 150min old (threshold 45min) - already-locked history repaint attempt blocked
+26-Sep-2026 02:07:10 AM IST INFO [S4V2] +1 candles | last=2026-09-25 20:36:00
+26-Sep-2026 02:30:01 AM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-25T21:00:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 02:30:01 AM IST INFO [WS] New 30m candle closed: 2026-09-25 20:30:00 - checking S4V2
+26-Sep-2026 02:30:01 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 16:30:00..2026-09-25 21:00:00 mismatches=4 critical_covered=True
+26-Sep-2026 02:30:01 AM IST WARNING [S4V2] REST reconcile corrected 4 candle(s) with WS/REST drift in window 2026-09-25 16:30:00..2026-09-25 21:00:00
+26-Sep-2026 02:30:01 AM IST INFO [S4V2] Strategy returned 451 signals | gen_signals_took=0.11s
+26-Sep-2026 02:30:01 AM IST CRITICAL [S4V2] REPAINT GUARD: signal ts=2026-09-25T18:00:00 type=EXIT is 180min old (threshold 45min) - already-locked history repaint attempt blocked
+26-Sep-2026 02:30:01 AM IST CRITICAL [S4V2] REPAINT GUARD: signal ts=2026-09-25T18:00:00 type=ENTRY is 180min old (threshold 45min) - already-locked history repaint attempt blocked
+26-Sep-2026 02:30:01 AM IST INFO [S4V2] CSV exit updated to 2026-09-25T20:30:00 (matched entry 2026-09-25T17:00:00)
+26-Sep-2026 02:30:02 AM IST INFO [S4V2] EXIT long at 2026-09-25T20:30:00
+26-Sep-2026 02:30:02 AM IST INFO [S4V2] INSTANT CSV append: 2026-09-25T20:30:00,PENDING,short
+26-Sep-2026 02:30:02 AM IST INFO [S4V2] ENTRY short at 2026-09-25T20:30:00
+26-Sep-2026 02:30:15 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 16:30:00..2026-09-25 21:00:00 mismatches=0 critical_covered=True
+26-Sep-2026 02:30:15 AM IST INFO [S4V2] Strategy returned 451 signals | gen_signals_took=0.14s
+26-Sep-2026 03:00:00 AM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-25T21:30:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 03:00:00 AM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+26-Sep-2026 03:00:02 AM IST INFO [ENGINE] S4V2 data not caught up yet, retry 2 (elapsed=2s)
+26-Sep-2026 03:00:02 AM IST INFO [WS] New 30m candle closed: 2026-09-25 21:00:00 - checking S4V2
+26-Sep-2026 03:00:03 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 17:00:00..2026-09-25 21:30:00 mismatches=2 critical_covered=True
+26-Sep-2026 03:00:03 AM IST WARNING [S4V2] REST reconcile corrected 2 candle(s) with WS/REST drift in window 2026-09-25 17:00:00..2026-09-25 21:30:00
+26-Sep-2026 03:00:03 AM IST INFO [S4V2] Strategy returned 447 signals | gen_signals_took=0.11s
+26-Sep-2026 03:00:07 AM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-25 21:30:00 reconcile failed - NOT claimed, retrying next tick
+26-Sep-2026 03:30:00 AM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-25T22:00:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 03:30:00 AM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+26-Sep-2026 03:30:01 AM IST INFO [WS] New 30m candle closed: 2026-09-25 21:30:00 - checking S4V2
+26-Sep-2026 03:30:01 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 17:30:00..2026-09-25 22:00:00 mismatches=2 critical_covered=True
+26-Sep-2026 03:30:01 AM IST WARNING [S4V2] REST reconcile corrected 2 candle(s) with WS/REST drift in window 2026-09-25 17:30:00..2026-09-25 22:00:00
+26-Sep-2026 03:30:01 AM IST INFO [S4V2] Strategy returned 447 signals | gen_signals_took=0.03s
+26-Sep-2026 03:30:02 AM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-25 22:00:00 reconcile failed - NOT claimed, retrying next tick
+26-Sep-2026 04:00:00 AM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-25T22:30:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 04:00:01 AM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+26-Sep-2026 04:00:03 AM IST INFO [ENGINE] S4V2 data not caught up yet, retry 2 (elapsed=2s)
+26-Sep-2026 04:00:08 AM IST INFO [ENGINE] S4V2 data not caught up yet, retry 3 (elapsed=7s)
+26-Sep-2026 04:00:13 AM IST INFO [WS] New 30m candle closed: 2026-09-25 22:00:00 - checking S4V2
+26-Sep-2026 04:00:14 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 18:00:00..2026-09-25 22:30:00 mismatches=1 critical_covered=True
+26-Sep-2026 04:00:14 AM IST WARNING [S4V2] REST reconcile corrected 1 candle(s) with WS/REST drift in window 2026-09-25 18:00:00..2026-09-25 22:30:00
+26-Sep-2026 04:00:14 AM IST INFO [S4V2] Strategy returned 447 signals | gen_signals_took=0.06s
+26-Sep-2026 04:00:18 AM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-25 22:30:00 reconcile failed - NOT claimed, retrying next tick
+26-Sep-2026 04:30:00 AM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-25T23:00:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 04:30:00 AM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+26-Sep-2026 04:30:02 AM IST INFO [ENGINE] S4V2 data not caught up yet, retry 2 (elapsed=2s)
+26-Sep-2026 04:30:03 AM IST INFO [WS] New 30m candle closed: 2026-09-25 22:30:00 - checking S4V2
+26-Sep-2026 04:30:03 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 18:30:00..2026-09-25 23:00:00 mismatches=0 critical_covered=True
+26-Sep-2026 04:30:03 AM IST INFO [S4V2] Strategy returned 449 signals | gen_signals_took=0.03s
+26-Sep-2026 04:30:04 AM IST INFO [S4V2] CSV exit updated to 2026-09-25T22:30:00 (matched entry 2026-09-25T20:30:00)
+26-Sep-2026 04:30:04 AM IST INFO [S4V2] EXIT short at 2026-09-25T22:30:00
+26-Sep-2026 04:30:04 AM IST INFO [S4V2] INSTANT CSV append: 2026-09-25T22:30:00,PENDING,long
+26-Sep-2026 04:30:04 AM IST INFO [S4V2] ENTRY long at 2026-09-25T22:30:00
+26-Sep-2026 04:30:07 AM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-25 23:00:00 reconcile failed - NOT claimed, retrying next tick
+26-Sep-2026 05:00:00 AM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-25T23:30:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 05:00:01 AM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+26-Sep-2026 05:00:02 AM IST INFO [WS] New 30m candle closed: 2026-09-25 23:00:00 - checking S4V2
+26-Sep-2026 05:00:02 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 19:00:00..2026-09-25 23:30:00 mismatches=1 critical_covered=True
+26-Sep-2026 05:00:02 AM IST WARNING [S4V2] REST reconcile corrected 1 candle(s) with WS/REST drift in window 2026-09-25 19:00:00..2026-09-25 23:30:00
+26-Sep-2026 05:00:03 AM IST INFO [S4V2] Strategy returned 449 signals | gen_signals_took=0.03s
+26-Sep-2026 05:00:03 AM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-25 23:30:00 reconcile failed - NOT claimed, retrying next tick
+26-Sep-2026 05:30:00 AM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-26T00:00:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 05:30:00 AM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+26-Sep-2026 05:30:01 AM IST INFO [WS] New 30m candle closed: 2026-09-25 23:30:00 - checking S4V2
+26-Sep-2026 05:30:01 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 19:30:00..2026-09-26 00:00:00 mismatches=2 critical_covered=True
+26-Sep-2026 05:30:01 AM IST WARNING [S4V2] REST reconcile corrected 2 candle(s) with WS/REST drift in window 2026-09-25 19:30:00..2026-09-26 00:00:00
+26-Sep-2026 05:30:01 AM IST INFO [S4V2] Strategy returned 449 signals | gen_signals_took=0.03s
+26-Sep-2026 05:30:02 AM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-26 00:00:00 reconcile failed - NOT claimed, retrying next tick
+26-Sep-2026 06:00:00 AM IST INFO [WS] New 30m candle closed: 2026-09-26 00:00:00 - checking S4V2
+26-Sep-2026 06:00:01 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 20:00:00..2026-09-26 00:30:00 mismatches=3 critical_covered=True
+26-Sep-2026 06:00:01 AM IST WARNING [S4V2] REST reconcile corrected 3 candle(s) with WS/REST drift in window 2026-09-25 20:00:00..2026-09-26 00:30:00
+26-Sep-2026 06:00:01 AM IST INFO [S4V2] Strategy returned 451 signals | gen_signals_took=0.03s
+26-Sep-2026 06:00:01 AM IST INFO [S4V2] CSV exit updated to 2026-09-26T00:00:00 (matched entry 2026-09-25T22:30:00)
+26-Sep-2026 06:00:01 AM IST INFO [S4V2] EXIT long at 2026-09-26T00:00:00
+26-Sep-2026 06:00:01 AM IST INFO [S4V2] INSTANT CSV append: 2026-09-26T00:00:00,PENDING,short
+26-Sep-2026 06:00:01 AM IST INFO [S4V2] ENTRY short at 2026-09-26T00:00:00
+26-Sep-2026 06:30:00 AM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-26T01:00:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 06:30:00 AM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+26-Sep-2026 06:30:01 AM IST INFO [WS] New 30m candle closed: 2026-09-26 00:30:00 - checking S4V2
+26-Sep-2026 06:30:01 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 20:30:00..2026-09-26 01:00:00 mismatches=1 critical_covered=True
+26-Sep-2026 06:30:01 AM IST WARNING [S4V2] REST reconcile corrected 1 candle(s) with WS/REST drift in window 2026-09-25 20:30:00..2026-09-26 01:00:00
+26-Sep-2026 06:30:02 AM IST INFO [S4V2] Strategy returned 451 signals | gen_signals_took=0.05s
+26-Sep-2026 06:30:02 AM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-26 01:00:00 reconcile failed - NOT claimed, retrying next tick
+26-Sep-2026 07:00:00 AM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-26T01:30:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 07:00:01 AM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+26-Sep-2026 07:00:03 AM IST INFO [ENGINE] S4V2 data not caught up yet, retry 2 (elapsed=2s)
+26-Sep-2026 07:00:05 AM IST INFO [WS] New 30m candle closed: 2026-09-26 01:00:00 - checking S4V2
+26-Sep-2026 07:00:05 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 21:00:00..2026-09-26 01:30:00 mismatches=4 critical_covered=True
+26-Sep-2026 07:00:05 AM IST WARNING [S4V2] REST reconcile corrected 4 candle(s) with WS/REST drift in window 2026-09-25 21:00:00..2026-09-26 01:30:00
+26-Sep-2026 07:00:05 AM IST INFO [S4V2] Strategy returned 447 signals | gen_signals_took=0.07s
+26-Sep-2026 07:00:08 AM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-26 01:30:00 reconcile failed - NOT claimed, retrying next tick
+26-Sep-2026 07:30:00 AM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-26T02:00:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 07:30:00 AM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+26-Sep-2026 07:30:01 AM IST INFO [WS] New 30m candle closed: 2026-09-26 01:30:00 - checking S4V2
+26-Sep-2026 07:30:01 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 21:30:00..2026-09-26 02:00:00 mismatches=1 critical_covered=True
+26-Sep-2026 07:30:01 AM IST WARNING [S4V2] REST reconcile corrected 1 candle(s) with WS/REST drift in window 2026-09-25 21:30:00..2026-09-26 02:00:00
+26-Sep-2026 07:30:01 AM IST INFO [S4V2] Strategy returned 449 signals | gen_signals_took=0.03s
+26-Sep-2026 07:30:01 AM IST INFO [S4V2] CSV exit updated to 2026-09-26T01:30:00 (matched entry 2026-09-26T00:00:00)
+26-Sep-2026 07:30:01 AM IST INFO [S4V2] EXIT short at 2026-09-26T01:30:00
+26-Sep-2026 07:30:01 AM IST INFO [S4V2] INSTANT CSV append: 2026-09-26T01:30:00,PENDING,long
+26-Sep-2026 07:30:01 AM IST INFO [S4V2] ENTRY long at 2026-09-26T01:30:00
+26-Sep-2026 07:30:02 AM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-26 02:00:00 reconcile failed - NOT claimed, retrying next tick
+26-Sep-2026 08:00:00 AM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-26T02:30:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 08:00:00 AM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+26-Sep-2026 08:00:01 AM IST INFO [WS] New 30m candle closed: 2026-09-26 02:00:00 - checking S4V2
+26-Sep-2026 08:00:01 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 22:00:00..2026-09-26 02:30:00 mismatches=0 critical_covered=True
+26-Sep-2026 08:00:01 AM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.04s
+26-Sep-2026 08:00:02 AM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-26 02:30:00 reconcile failed - NOT claimed, retrying next tick
+26-Sep-2026 08:30:00 AM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-26T03:00:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 08:30:00 AM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+26-Sep-2026 08:30:02 AM IST INFO [WS] New 30m candle closed: 2026-09-26 02:30:00 - checking S4V2
+26-Sep-2026 08:30:02 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 22:30:00..2026-09-26 03:00:00 mismatches=2 critical_covered=True
+26-Sep-2026 08:30:02 AM IST WARNING [S4V2] REST reconcile corrected 2 candle(s) with WS/REST drift in window 2026-09-25 22:30:00..2026-09-26 03:00:00
+26-Sep-2026 08:30:02 AM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.05s
+26-Sep-2026 08:30:02 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 22:30:00..2026-09-26 03:00:00 mismatches=0 critical_covered=True
+26-Sep-2026 08:30:02 AM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.04s
+26-Sep-2026 09:00:01 AM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-26T03:30:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 09:00:01 AM IST INFO [WS] New 30m candle closed: 2026-09-26 03:00:00 - checking S4V2
+26-Sep-2026 09:00:02 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 23:00:00..2026-09-26 03:30:00 mismatches=3 critical_covered=True
+26-Sep-2026 09:00:02 AM IST WARNING [S4V2] REST reconcile corrected 3 candle(s) with WS/REST drift in window 2026-09-25 23:00:00..2026-09-26 03:30:00
+26-Sep-2026 09:00:02 AM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.03s
+26-Sep-2026 09:00:11 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 23:00:00..2026-09-26 03:30:00 mismatches=0 critical_covered=True
+26-Sep-2026 09:00:11 AM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.14s
+26-Sep-2026 09:30:01 AM IST INFO [ENGINE] New 30m candle closed: 2026-09-26 03:30:00 - checking S4V2
+26-Sep-2026 09:30:01 AM IST INFO [S4V2] REST reconcile OK window 2026-09-25 23:30:00..2026-09-26 03:59:00 mismatches=0 critical_covered=True
+26-Sep-2026 09:30:01 AM IST INFO [S4V2] Strategy returned 447 signals | gen_signals_took=0.03s
+26-Sep-2026 09:30:01 AM IST WARNING [S4V2] EXIT fired but no matching PENDING row (target_ts=2026-09-26T01:30:00)
+26-Sep-2026 09:30:01 AM IST INFO [S4V2] EXIT long at 2026-09-26T03:30:00
+26-Sep-2026 09:30:01 AM IST INFO [S4V2] INSTANT CSV append: 2026-09-26T03:30:00,PENDING,short
+26-Sep-2026 09:30:01 AM IST INFO [S4V2] ENTRY short at 2026-09-26T03:30:00
+26-Sep-2026 10:00:00 AM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-26T04:30:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 10:00:00 AM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+26-Sep-2026 10:00:00 AM IST INFO [WS] New 30m candle closed: 2026-09-26 04:00:00 - checking S4V2
+26-Sep-2026 10:00:01 AM IST INFO [S4V2] REST reconcile OK window 2026-09-26 00:00:00..2026-09-26 04:30:00 mismatches=4 critical_covered=True
+26-Sep-2026 10:00:01 AM IST WARNING [S4V2] REST reconcile corrected 4 candle(s) with WS/REST drift in window 2026-09-26 00:00:00..2026-09-26 04:30:00
+26-Sep-2026 10:00:01 AM IST INFO [S4V2] Strategy returned 447 signals | gen_signals_took=0.03s
+26-Sep-2026 10:00:02 AM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-26 04:30:00 reconcile failed - NOT claimed, retrying next tick
+26-Sep-2026 10:30:01 AM IST INFO [WS] New 30m candle closed: 2026-09-26 04:30:00 - checking S4V2
+26-Sep-2026 10:30:01 AM IST INFO [S4V2] REST reconcile OK window 2026-09-26 00:30:00..2026-09-26 05:00:00 mismatches=1 critical_covered=True
+26-Sep-2026 10:30:01 AM IST WARNING [S4V2] REST reconcile corrected 1 candle(s) with WS/REST drift in window 2026-09-26 00:30:00..2026-09-26 05:00:00
+26-Sep-2026 10:30:01 AM IST INFO [S4V2] Strategy returned 447 signals | gen_signals_took=0.03s
+26-Sep-2026 11:00:00 AM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-26T05:30:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 11:00:00 AM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+26-Sep-2026 11:00:02 AM IST INFO [WS] New 30m candle closed: 2026-09-26 05:00:00 - checking S4V2
+26-Sep-2026 11:00:02 AM IST INFO [S4V2] REST reconcile OK window 2026-09-26 01:00:00..2026-09-26 05:30:00 mismatches=1 critical_covered=True
+26-Sep-2026 11:00:02 AM IST WARNING [S4V2] REST reconcile corrected 1 candle(s) with WS/REST drift in window 2026-09-26 01:00:00..2026-09-26 05:30:00
+26-Sep-2026 11:00:03 AM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.09s
+26-Sep-2026 11:00:03 AM IST INFO [S4V2] REST reconcile OK window 2026-09-26 01:00:00..2026-09-26 05:30:00 mismatches=0 critical_covered=True
+26-Sep-2026 11:00:03 AM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.03s
+26-Sep-2026 11:30:00 AM IST INFO [WS] New 30m candle closed: 2026-09-26 05:30:00 - checking S4V2
+26-Sep-2026 11:30:00 AM IST INFO [S4V2] REST reconcile OK window 2026-09-26 01:30:00..2026-09-26 06:00:00 mismatches=2 critical_covered=True
+26-Sep-2026 11:30:00 AM IST WARNING [S4V2] REST reconcile corrected 2 candle(s) with WS/REST drift in window 2026-09-26 01:30:00..2026-09-26 06:00:00
+26-Sep-2026 11:30:00 AM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.04s
+26-Sep-2026 12:00:00 PM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-26T06:30:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 12:00:00 PM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+26-Sep-2026 12:00:01 PM IST INFO [WS] New 30m candle closed: 2026-09-26 06:00:00 - checking S4V2
+26-Sep-2026 12:00:01 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 02:00:00..2026-09-26 06:30:00 mismatches=3 critical_covered=True
+26-Sep-2026 12:00:01 PM IST WARNING [S4V2] REST reconcile corrected 3 candle(s) with WS/REST drift in window 2026-09-26 02:00:00..2026-09-26 06:30:00
+26-Sep-2026 12:00:01 PM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.04s
+26-Sep-2026 12:00:02 PM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-26 06:30:00 reconcile failed - NOT claimed, retrying next tick
+26-Sep-2026 12:30:00 PM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-26T07:00:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 12:30:00 PM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+26-Sep-2026 12:30:01 PM IST INFO [WS] New 30m candle closed: 2026-09-26 06:30:00 - checking S4V2
+26-Sep-2026 12:30:01 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 02:30:00..2026-09-26 07:00:00 mismatches=1 critical_covered=True
+26-Sep-2026 12:30:01 PM IST WARNING [S4V2] REST reconcile corrected 1 candle(s) with WS/REST drift in window 2026-09-26 02:30:00..2026-09-26 07:00:00
+26-Sep-2026 12:30:01 PM IST INFO [S4V2] Strategy returned 441 signals | gen_signals_took=0.04s
+26-Sep-2026 12:30:02 PM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-26 07:00:00 reconcile failed - NOT claimed, retrying next tick
+26-Sep-2026 01:00:00 PM IST INFO [WS] New 30m candle closed: 2026-09-26 07:00:00 - checking S4V2
+26-Sep-2026 01:00:00 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 03:00:00..2026-09-26 07:30:00 mismatches=0 critical_covered=True
+26-Sep-2026 01:00:00 PM IST INFO [S4V2] Strategy returned 443 signals | gen_signals_took=0.03s
+26-Sep-2026 01:00:00 PM IST INFO [S4V2] CSV exit updated to 2026-09-26T07:00:00 (matched entry 2026-09-26T03:30:00)
+26-Sep-2026 01:00:00 PM IST INFO [S4V2] EXIT short at 2026-09-26T07:00:00
+26-Sep-2026 01:00:00 PM IST INFO [S4V2] INSTANT CSV append: 2026-09-26T07:00:00,PENDING,long
+26-Sep-2026 01:00:01 PM IST INFO [S4V2] ENTRY long at 2026-09-26T07:00:00
+26-Sep-2026 01:30:00 PM IST INFO [WS] New 30m candle closed: 2026-09-26 07:30:00 - checking S4V2
+26-Sep-2026 01:30:00 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 03:30:00..2026-09-26 08:00:00 mismatches=3 critical_covered=True
+26-Sep-2026 01:30:00 PM IST WARNING [S4V2] REST reconcile corrected 3 candle(s) with WS/REST drift in window 2026-09-26 03:30:00..2026-09-26 08:00:00
+26-Sep-2026 01:30:00 PM IST INFO [S4V2] Strategy returned 443 signals | gen_signals_took=0.03s
+26-Sep-2026 02:00:00 PM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-26T08:30:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 02:00:00 PM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+26-Sep-2026 02:00:00 PM IST INFO [WS] New 30m candle closed: 2026-09-26 08:00:00 - checking S4V2
+26-Sep-2026 02:00:00 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 04:00:00..2026-09-26 08:30:00 mismatches=2 critical_covered=True
+26-Sep-2026 02:00:00 PM IST WARNING [S4V2] REST reconcile corrected 2 candle(s) with WS/REST drift in window 2026-09-26 04:00:00..2026-09-26 08:30:00
+26-Sep-2026 02:00:00 PM IST INFO [S4V2] Strategy returned 443 signals | gen_signals_took=0.03s
+26-Sep-2026 02:00:02 PM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-26 08:30:00 reconcile failed - NOT claimed, retrying next tick
+26-Sep-2026 02:30:00 PM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-26T09:00:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 02:30:00 PM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+26-Sep-2026 02:30:01 PM IST INFO [WS] New 30m candle closed: 2026-09-26 08:30:00 - checking S4V2
+26-Sep-2026 02:30:01 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 04:30:00..2026-09-26 09:00:00 mismatches=4 critical_covered=True
+26-Sep-2026 02:30:01 PM IST WARNING [S4V2] REST reconcile corrected 4 candle(s) with WS/REST drift in window 2026-09-26 04:30:00..2026-09-26 09:00:00
+26-Sep-2026 02:30:01 PM IST INFO [S4V2] Strategy returned 443 signals | gen_signals_took=0.03s
+26-Sep-2026 02:30:02 PM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-26 09:00:00 reconcile failed - NOT claimed, retrying next tick
+26-Sep-2026 03:00:00 PM IST INFO [WS] New 30m candle closed: 2026-09-26 09:00:00 - checking S4V2
+26-Sep-2026 03:00:00 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 05:00:00..2026-09-26 09:30:00 mismatches=4 critical_covered=True
+26-Sep-2026 03:00:00 PM IST WARNING [S4V2] REST reconcile corrected 4 candle(s) with WS/REST drift in window 2026-09-26 05:00:00..2026-09-26 09:30:00
+26-Sep-2026 03:00:00 PM IST INFO [S4V2] Strategy returned 443 signals | gen_signals_took=0.04s
+26-Sep-2026 03:00:00 PM IST INFO [S4V2] CSV exit updated to 2026-09-26T09:00:00 (matched entry 2026-09-26T07:00:00)
+26-Sep-2026 03:00:00 PM IST INFO [S4V2] EXIT long at 2026-09-26T09:00:00
+26-Sep-2026 03:00:01 PM IST INFO [S4V2] INSTANT CSV append: 2026-09-26T09:00:00,PENDING,short
+26-Sep-2026 03:00:01 PM IST INFO [S4V2] ENTRY short at 2026-09-26T09:00:00
+26-Sep-2026 03:30:00 PM IST INFO [WS] New 30m candle closed: 2026-09-26 09:30:00 - checking S4V2
+26-Sep-2026 03:30:00 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 05:30:00..2026-09-26 10:00:00 mismatches=5 critical_covered=True
+26-Sep-2026 03:30:00 PM IST WARNING [S4V2] REST reconcile corrected 5 candle(s) with WS/REST drift in window 2026-09-26 05:30:00..2026-09-26 10:00:00
+26-Sep-2026 03:30:00 PM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.04s
+26-Sep-2026 04:00:00 PM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-26T10:30:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 04:00:00 PM IST INFO [ENGINE] S4V2 data not caught up yet, retry 1 (elapsed=0s)
+26-Sep-2026 04:00:01 PM IST INFO [WS] New 30m candle closed: 2026-09-26 10:00:00 - checking S4V2
+26-Sep-2026 04:00:02 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 06:00:00..2026-09-26 10:30:00 mismatches=6 critical_covered=True
+26-Sep-2026 04:00:02 PM IST WARNING [S4V2] REST reconcile corrected 6 candle(s) with WS/REST drift in window 2026-09-26 06:00:00..2026-09-26 10:30:00
+26-Sep-2026 04:00:02 PM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.05s
+26-Sep-2026 04:00:02 PM IST WARNING [S4V2] EXIT fired but no matching PENDING row (target_ts=2026-09-26T09:00:00)
+26-Sep-2026 04:00:02 PM IST INFO [S4V2] EXIT short at 2026-09-26T10:00:00
+26-Sep-2026 04:00:02 PM IST INFO [S4V2] INSTANT CSV append: 2026-09-26T10:00:00,PENDING,long
+26-Sep-2026 04:00:02 PM IST INFO [S4V2] ENTRY long at 2026-09-26T10:00:00
+26-Sep-2026 04:00:02 PM IST WARNING [ENGINE] S4V2 trigger boundary 2026-09-26 10:30:00 reconcile failed - NOT claimed, retrying next tick
+26-Sep-2026 04:30:01 PM IST INFO [WS] New 30m candle closed: 2026-09-26 10:30:00 - checking S4V2
+26-Sep-2026 04:30:02 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 06:30:00..2026-09-26 11:00:00 mismatches=3 critical_covered=True
+26-Sep-2026 04:30:02 PM IST WARNING [S4V2] REST reconcile corrected 3 candle(s) with WS/REST drift in window 2026-09-26 06:30:00..2026-09-26 11:00:00
+26-Sep-2026 04:30:02 PM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.13s
+26-Sep-2026 05:00:00 PM IST INFO [WS] New 30m candle closed: 2026-09-26 11:00:00 - checking S4V2
+26-Sep-2026 05:00:01 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 07:00:00..2026-09-26 11:30:00 mismatches=2 critical_covered=True
+26-Sep-2026 05:00:01 PM IST WARNING [S4V2] REST reconcile corrected 2 candle(s) with WS/REST drift in window 2026-09-26 07:00:00..2026-09-26 11:30:00
+26-Sep-2026 05:00:01 PM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.04s
+26-Sep-2026 05:08:18 PM IST INFO [S4V2] Loading full history...
+26-Sep-2026 05:08:21 PM IST INFO [S4V2] box_size=46 (matches backtest exactly)
+26-Sep-2026 05:08:21 PM IST INFO [S4V2] Loaded 1,394,632 candles | last=2026-09-26 11:37:00
+26-Sep-2026 05:08:21 PM IST INFO [S4V2] Pre-built 30m dataframe: 800 candles
+26-Sep-2026 05:08:25 PM IST INFO [ENGINE] S4V2 lock from bot ts file: 2026-09-26T10:31:52
+26-Sep-2026 05:08:25 PM IST INFO [ENGINE] S4V2 restart gap=67min - lock kept at ts_file (catch-up replay), NOT advanced: 2026-09-26T10:31:52
+26-Sep-2026 05:08:25 PM IST INFO [ENGINE] S4V2 startup lock ts: 2026-09-26T10:31:52
+26-Sep-2026 05:08:59 PM IST INFO [S4V2] Strategy returned 443 signals | gen_signals_took=0.12s
+26-Sep-2026 05:30:00 PM IST INFO [WS] New 30m candle closed: 2026-09-26 11:30:00 - checking S4V2
+26-Sep-2026 05:30:00 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 07:30:00..2026-09-26 12:00:00 mismatches=4 critical_covered=True
+26-Sep-2026 05:30:00 PM IST WARNING [S4V2] REST reconcile corrected 4 candle(s) with WS/REST drift in window 2026-09-26 07:30:00..2026-09-26 12:00:00
+26-Sep-2026 05:30:00 PM IST INFO [S4V2] Strategy returned 443 signals | gen_signals_took=0.03s
+26-Sep-2026 06:00:00 PM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-26T12:30:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 06:00:01 PM IST INFO [WS] New 30m candle closed: 2026-09-26 12:00:00 - checking S4V2
+26-Sep-2026 06:00:01 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 08:00:00..2026-09-26 12:30:00 mismatches=3 critical_covered=True
+26-Sep-2026 06:00:01 PM IST WARNING [S4V2] REST reconcile corrected 3 candle(s) with WS/REST drift in window 2026-09-26 08:00:00..2026-09-26 12:30:00
+26-Sep-2026 06:00:01 PM IST INFO [S4V2] Strategy returned 443 signals | gen_signals_took=0.03s
+26-Sep-2026 06:00:11 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 08:00:00..2026-09-26 12:30:00 mismatches=0 critical_covered=True
+26-Sep-2026 06:00:11 PM IST INFO [S4V2] Strategy returned 443 signals | gen_signals_took=0.13s
+26-Sep-2026 06:30:00 PM IST INFO [WS] New 30m candle closed: 2026-09-26 12:30:00 - checking S4V2
+26-Sep-2026 06:30:01 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 08:30:00..2026-09-26 13:00:00 mismatches=3 critical_covered=True
+26-Sep-2026 06:30:01 PM IST WARNING [S4V2] REST reconcile corrected 3 candle(s) with WS/REST drift in window 2026-09-26 08:30:00..2026-09-26 13:00:00
+26-Sep-2026 06:30:02 PM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.28s
+26-Sep-2026 06:30:02 PM IST WARNING [S4V2] SKIPPED signal ts=2026-09-26T12:30:00 type=EXIT dir=long - state mismatch (current_direction=None)
+26-Sep-2026 06:30:07 PM IST INFO [S4V2] INSTANT CSV append: 2026-09-26T12:30:00,PENDING,short
+26-Sep-2026 06:30:07 PM IST INFO [S4V2] ENTRY short at 2026-09-26T12:30:00
+26-Sep-2026 07:00:00 PM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-26T13:30:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 07:00:00 PM IST INFO [WS] New 30m candle closed: 2026-09-26 13:00:00 - checking S4V2
+26-Sep-2026 07:00:00 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 09:00:00..2026-09-26 13:30:00 mismatches=6 critical_covered=True
+26-Sep-2026 07:00:00 PM IST WARNING [S4V2] REST reconcile corrected 6 candle(s) with WS/REST drift in window 2026-09-26 09:00:00..2026-09-26 13:30:00
+26-Sep-2026 07:00:00 PM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.04s
+26-Sep-2026 07:00:00 PM IST WARNING [S4V2] Rejected stale EXIT sig ts=2026-09-26T12:30:00 <= open_entry_ts=2026-09-26T12:30:00 - would be chronologically-impossible
+26-Sep-2026 07:00:11 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 09:00:00..2026-09-26 13:30:00 mismatches=0 critical_covered=True
+26-Sep-2026 07:00:11 PM IST INFO [S4V2] Strategy returned 445 signals | gen_signals_took=0.08s
+26-Sep-2026 07:00:11 PM IST WARNING [S4V2] Rejected stale EXIT sig ts=2026-09-26T12:30:00 <= open_entry_ts=2026-09-26T12:30:00 - would be chronologically-impossible
+26-Sep-2026 07:30:00 PM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-26T14:00:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 07:30:00 PM IST INFO [WS] New 30m candle closed: 2026-09-26 13:30:00 - checking S4V2
+26-Sep-2026 07:30:00 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 09:30:00..2026-09-26 14:00:00 mismatches=4 critical_covered=True
+26-Sep-2026 07:30:00 PM IST WARNING [S4V2] REST reconcile corrected 4 candle(s) with WS/REST drift in window 2026-09-26 09:30:00..2026-09-26 14:00:00
+26-Sep-2026 07:30:00 PM IST INFO [S4V2] Strategy returned 441 signals | gen_signals_took=0.04s
+26-Sep-2026 07:30:00 PM IST WARNING [S4V2] Rejected stale EXIT sig ts=2026-09-26T12:30:00 <= open_entry_ts=2026-09-26T12:30:00 - would be chronologically-impossible
+26-Sep-2026 07:30:26 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 09:30:00..2026-09-26 14:00:00 mismatches=0 critical_covered=True
+26-Sep-2026 07:30:26 PM IST INFO [S4V2] Strategy returned 441 signals | gen_signals_took=0.03s
+26-Sep-2026 07:30:26 PM IST WARNING [S4V2] Rejected stale EXIT sig ts=2026-09-26T12:30:00 <= open_entry_ts=2026-09-26T12:30:00 - would be chronologically-impossible
+26-Sep-2026 08:00:00 PM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-26T14:30:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 08:00:00 PM IST INFO [WS] New 30m candle closed: 2026-09-26 14:00:00 - checking S4V2
+26-Sep-2026 08:00:01 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 10:00:00..2026-09-26 14:30:00 mismatches=5 critical_covered=True
+26-Sep-2026 08:00:01 PM IST WARNING [S4V2] REST reconcile corrected 5 candle(s) with WS/REST drift in window 2026-09-26 10:00:00..2026-09-26 14:30:00
+26-Sep-2026 08:00:01 PM IST INFO [S4V2] Strategy returned 441 signals | gen_signals_took=0.12s
+26-Sep-2026 08:00:01 PM IST WARNING [S4V2] Rejected stale EXIT sig ts=2026-09-26T12:30:00 <= open_entry_ts=2026-09-26T12:30:00 - would be chronologically-impossible
+26-Sep-2026 08:00:12 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 10:00:00..2026-09-26 14:30:00 mismatches=1 critical_covered=True
+26-Sep-2026 08:00:12 PM IST WARNING [S4V2] REST reconcile corrected 1 candle(s) with WS/REST drift in window 2026-09-26 10:00:00..2026-09-26 14:30:00
+26-Sep-2026 08:00:12 PM IST INFO [S4V2] Strategy returned 441 signals | gen_signals_took=0.12s
+26-Sep-2026 08:00:12 PM IST WARNING [S4V2] Rejected stale EXIT sig ts=2026-09-26T12:30:00 <= open_entry_ts=2026-09-26T12:30:00 - would be chronologically-impossible
+26-Sep-2026 08:30:00 PM IST INFO [WS] New 30m candle closed: 2026-09-26 14:30:00 - checking S4V2
+26-Sep-2026 08:30:00 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 10:30:00..2026-09-26 15:00:00 mismatches=4 critical_covered=True
+26-Sep-2026 08:30:00 PM IST WARNING [S4V2] REST reconcile corrected 4 candle(s) with WS/REST drift in window 2026-09-26 10:30:00..2026-09-26 15:00:00
+26-Sep-2026 08:30:00 PM IST INFO [S4V2] Strategy returned 441 signals | gen_signals_took=0.03s
+26-Sep-2026 08:30:00 PM IST WARNING [S4V2] Rejected stale EXIT sig ts=2026-09-26T12:30:00 <= open_entry_ts=2026-09-26T12:30:00 - would be chronologically-impossible
+26-Sep-2026 09:00:00 PM IST INFO [WS] New 30m candle closed: 2026-09-26 15:00:00 - checking S4V2
+26-Sep-2026 09:00:01 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 11:00:00..2026-09-26 15:30:00 mismatches=0 critical_covered=True
+26-Sep-2026 09:00:02 PM IST INFO [S4V2] Strategy returned 442 signals | gen_signals_took=1.29s
+26-Sep-2026 09:00:02 PM IST WARNING [S4V2] Rejected stale EXIT sig ts=2026-09-26T12:30:00 <= open_entry_ts=2026-09-26T12:30:00 - would be chronologically-impossible
+26-Sep-2026 09:00:02 PM IST WARNING [S4V2] EXIT fired but no matching PENDING row (target_ts=2026-09-26T12:30:00)
+26-Sep-2026 09:00:02 PM IST INFO [S4V2] EXIT short at 2026-09-26T15:00:00
+26-Sep-2026 09:30:00 PM IST INFO [ENGINE] Boundary watcher trigger S4V2: 2026-09-26T16:00:00 - checking S4V2 (independent retry, decoupled from WS claim)
+26-Sep-2026 09:30:02 PM IST INFO [WS] New 30m candle closed: 2026-09-26 15:30:00 - checking S4V2
+26-Sep-2026 09:30:02 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 11:30:00..2026-09-26 16:00:00 mismatches=5 critical_covered=True
+26-Sep-2026 09:30:02 PM IST WARNING [S4V2] REST reconcile corrected 5 candle(s) with WS/REST drift in window 2026-09-26 11:30:00..2026-09-26 16:00:00
+26-Sep-2026 09:30:02 PM IST INFO [S4V2] Strategy returned 443 signals | gen_signals_took=0.05s
+26-Sep-2026 09:30:02 PM IST INFO [S4V2] INSTANT CSV append: 2026-09-26T15:30:00,PENDING,long
+26-Sep-2026 09:30:03 PM IST INFO [S4V2] ENTRY long at 2026-09-26T15:30:00
+26-Sep-2026 09:30:23 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 11:30:00..2026-09-26 16:00:00 mismatches=0 critical_covered=True
+26-Sep-2026 09:30:23 PM IST INFO [S4V2] Strategy returned 443 signals | gen_signals_took=0.03s
+26-Sep-2026 10:00:00 PM IST INFO [WS] New 30m candle closed: 2026-09-26 16:00:00 - checking S4V2
+26-Sep-2026 10:00:01 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 12:00:00..2026-09-26 16:30:00 mismatches=4 critical_covered=True
+26-Sep-2026 10:00:01 PM IST WARNING [S4V2] REST reconcile corrected 4 candle(s) with WS/REST drift in window 2026-09-26 12:00:00..2026-09-26 16:30:00
+26-Sep-2026 10:00:01 PM IST INFO [S4V2] Strategy returned 443 signals | gen_signals_took=0.04s
+26-Sep-2026 10:30:00 PM IST INFO [WS] New 30m candle closed: 2026-09-26 16:30:00 - checking S4V2
+26-Sep-2026 10:30:01 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 12:30:00..2026-09-26 17:00:00 mismatches=3 critical_covered=True
+26-Sep-2026 10:30:01 PM IST WARNING [S4V2] REST reconcile corrected 3 candle(s) with WS/REST drift in window 2026-09-26 12:30:00..2026-09-26 17:00:00
+26-Sep-2026 10:30:01 PM IST INFO [S4V2] Strategy returned 443 signals | gen_signals_took=0.08s
+26-Sep-2026 11:00:00 PM IST INFO [WS] New 30m candle closed: 2026-09-26 17:00:00 - checking S4V2
+26-Sep-2026 11:00:01 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 13:00:00..2026-09-26 17:30:00 mismatches=2 critical_covered=True
+26-Sep-2026 11:00:01 PM IST WARNING [S4V2] REST reconcile corrected 2 candle(s) with WS/REST drift in window 2026-09-26 13:00:00..2026-09-26 17:30:00
+26-Sep-2026 11:00:01 PM IST INFO [S4V2] Strategy returned 437 signals | gen_signals_took=0.07s
+26-Sep-2026 11:30:00 PM IST INFO [WS] New 30m candle closed: 2026-09-26 17:30:00 - checking S4V2
+26-Sep-2026 11:30:00 PM IST INFO [S4V2] REST reconcile OK window 2026-09-26 13:30:00..2026-09-26 18:00:00 mismatches=0 critical_covered=True
+26-Sep-2026 11:30:01 PM IST INFO [S4V2] Strategy returned 437 signals | gen_signals_took=0.05s

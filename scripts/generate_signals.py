@@ -1,0 +1,284 @@
+#!/usr/bin/env python3
+"""
+generate_signals.py
+Runs backtest for S4V2 and S4, exports signal CSVs to logs/
+Run daily at 3AM UTC via systemd or manually.
+Usage: .venv/bin/python3 scripts/generate_signals.py
+"""
+import sys, os, warnings, io, contextlib, csv, fcntl
+warnings.filterwarnings("ignore")
+sys.path.insert(0, ".")
+
+def _bg3gap1_locked_merge_write(new_trades, csv_path, tf_min):
+    # BUG3-GAP1 FIX (30-Sep-2026): hold an exclusive flock on csv_path+".lock"
+    # for the full read-merge-write cycle so the live engine (renko_state_engine.py
+    # _fire(), same lock file) cannot append/update a PENDING row between cron's
+    # read and its os.replace - prevents the lost-update race.
+    lock_path = csv_path + ".lock"
+    with open(lock_path, "a") as _lf:
+        fcntl.flock(_lf.fileno(), fcntl.LOCK_EX)
+        try:
+            merged = merge_signal_csv(new_trades, csv_path, tf_min=tf_min)
+            write_signal_csv(merged, csv_path)
+        finally:
+            fcntl.flock(_lf.fileno(), fcntl.LOCK_UN)
+
+from datetime import datetime, timezone, timedelta
+from strategies.backtest.renko_smiio_supertrend_strategy import RenkoSMIIOSupertrendStrategy
+from strategies.backtest.renko_smiio_supertrend_v2_strategy import RenkoSMIIOSupertrendV2Strategy
+from strategies.backtest.renko_smiio_cross_v3_strategy import RenkoSMIIOCrossV3Strategy
+from engine.backtest_engine import BacktestEngine
+import subprocess, logging
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(message)s")
+log = logging.getLogger(__name__)
+
+CSV_PATH   = "data/btc_1m_delta.csv"
+START_DATE = "2024-01-10"
+LOT_SIZE   = 100
+
+def update_csv():
+    log.info("[GENERATE] Updating market data CSV...")
+    subprocess.run(
+        [sys.executable, "data/download_market_data.py"],
+        timeout=120, check=False
+    )
+    log.info("[GENERATE] CSV update done.")
+
+def run_backtest(strategy_class, params, label):
+    end = (datetime.now(timezone.utc) + timedelta(days=1)).strftime("%Y-%m-%d")
+    with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+        engine = BacktestEngine(
+            strategy_class=strategy_class,
+            symbol="BTCUSD",
+            lot_size=LOT_SIZE,
+            start_date=START_DATE,
+            end_date=end,
+            csv_path=CSV_PATH,
+            strategy_params=params,
+            slippage=5.0
+        )
+        result = engine.run()
+    trades = result.get("trades", [])
+    # BUG7: drop trades whose exit bar has not closed yet (forming candle) - trade_log only
+    try:
+        import pandas as _pd_b7
+        _tfm_b7 = {"30m": 30, "1h": 60, "2h": 120, "4h": 240}.get(params.get("renko_timeframe"), 0)
+        if _tfm_b7:
+            _now_b7 = _pd_b7.Timestamp(datetime.now(timezone.utc).replace(tzinfo=None))
+            _kept_b7 = []
+            for _t7 in trades:
+                try:
+                    _x7 = _pd_b7.Timestamp(str(_t7.get("exit_datetime", "")).replace("T", " ")[:19])
+                    if _x7 + _pd_b7.Timedelta(minutes=_tfm_b7) > _now_b7:
+                        log.info(f"[GENERATE] {label}: BUG7 dropped trade with unclosed exit bar entry={_t7.get('entry_datetime')} exit={_t7.get('exit_datetime')}")
+                        continue
+                except Exception:
+                    pass
+                _kept_b7.append(_t7)
+            trades = _kept_b7
+    except Exception as _e7:
+        log.warning(f"[GENERATE] {label}: BUG7 filter failed (trades kept as-is): {_e7}")
+    log.info(f"[GENERATE] {label}: {len(trades)} trades generated")
+    # Detect trailing open ENTRY (dropped by TradeBuilder) - build PENDING row for signal CSV only
+    # Does NOT touch trades list (PnL/dashboard) - only affects signal file bots read
+    pending_row = None
+    try:
+        raw_signals = sorted(result.get("signals", []), key=lambda x: x.get("timestamp",""))
+        _open = None
+        for _s in raw_signals:
+            _t = _s.get("signal_type","").upper()
+            if _t == "ENTRY":
+                _open = _s
+            elif _t == "EXIT":
+                _open = None
+        if _open is not None:
+            pending_row = {
+                "entry_datetime": _open.get("timestamp",""),
+                "exit_datetime":  "PENDING",
+                "direction":      _open.get("direction",""),
+                "entry_price":    _open.get("price",""),
+                "exit_price":     ""
+            }
+            log.info(f"[GENERATE] {label}: trailing open trade found at {_open.get('timestamp')} - added as PENDING to signal CSV only")
+    except Exception as _pe:
+        log.warning(f"[GENERATE] {label}: pending row detection failed: {_pe}")
+    # Capture exact reference price used for box_size - freeze for live engine
+    # Only update on REAL signal generation runs (3AM daily), never on dashboard-refresh-only runs
+    if "--skip-live-signals" not in sys.argv:
+        try:
+            tf = params.get("renko_timeframe")
+            tf_df = engine.data_dict.get(tf)
+            if tf_df is not None and len(tf_df) > 0:
+                ref_price = float(tf_df["close"].iloc[0])
+                sig_num = {"S4": "4", "S4V2": "4v2", "S4V3": "4v3", "S2": "2"}.get(label, "4")
+                with open(f"logs/box_ref_price_s{sig_num}.txt", "w") as _bf:
+                    _bf.write(str(ref_price))
+                log.info(f"[GENERATE] {label}: box reference_price={ref_price} saved")
+        except Exception as _e:
+            log.warning(f"[GENERATE] {label}: box reference_price capture failed: {_e}")
+    else:
+        log.info(f"[GENERATE] {label}: box reference_price capture skipped (dashboard-refresh-only mode)")
+    return trades, pending_row
+
+def write_trade_log_csv(trades, label):
+    import glob as _gl, pandas as _pd
+    from datetime import datetime as _dt
+    os.makedirs("output", exist_ok=True)
+    ts = _dt.now().strftime("%Y%m%d_%H%M%S")
+    if label == "S4V2":
+        out = f"output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_{ts}.csv"
+        pattern = "output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv"
+    elif label == "S4V3":
+        out = f"output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_{ts}.csv"
+        pattern = "output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv"
+    else:
+        out = f"output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_{ts}.csv"
+        pattern = "output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv"
+    for old_f in _gl.glob(pattern):
+        os.remove(old_f)
+    df = _pd.DataFrame(trades)
+    df.to_csv(out, index=False)
+    log.info(f"[GENERATE] Trade log saved: {out} ({len(trades)} rows)")
+
+def _bg3gap2_norm_key(s):
+    # BUG3-GAP2 FIX (30-Sep-2026): entry_datetime may arrive as ISO T-format
+    # ("...T08:00:00") or space-format ("... 08:00:00"). Space (0x20) sorts
+    # below 'T' (0x54) in ASCII, so mixed formats broke the cutoff <=
+    # string-compare and could duplicate/skip same-day rows. Normalize to
+    # T-format, truncated to seconds, before any compare or dict key use.
+    return str(s).strip()[:19].replace(" ", "T")
+
+def merge_signal_csv(new_trades, csv_path, tf_min=0):
+    import csv as _csv
+    merged = {}
+    if os.path.exists(csv_path):
+        with open(csv_path, "r") as f:
+            for row in _csv.reader(f):
+                if len(row) >= 3 and row[0]:
+                    _bg3gap2_k = _bg3gap2_norm_key(row[0])
+                    merged[_bg3gap2_k] = {
+                        "entry_datetime": row[0],
+                        "exit_datetime": row[1] if len(row) > 1 else "",
+                        "direction": row[2] if len(row) > 2 else "",
+                        "entry_price": row[4] if len(row) > 4 else "",
+                        "exit_price": row[5] if len(row) > 5 else "",
+                    }
+    # PERMANENT FIX (03-Sep-2026): append-only guard.
+    # Never rewrite/duplicate any row at or before the current last existing
+    # entry_datetime - only add genuinely new trades beyond that point.
+    # Prevents daily full-history rebuild from re-injecting stale/duplicate
+    # rows (differing price formatting) for periods already locked in by
+    # the live engine.
+    cutoff = max(merged.keys()) if merged else None
+    from datetime import datetime as _bg3_dt, timezone as _bg3_tz, timedelta as _bg3_td
+    _bg3_now = _bg3_dt.now(_bg3_tz.utc)
+    for t in new_trades:
+        _bg3gap2_raw_key = str(t.get("entry_datetime",""))
+        key = _bg3gap2_norm_key(_bg3gap2_raw_key) if _bg3gap2_raw_key else ""
+        if not key or (cutoff is not None and key <= cutoff):
+            continue
+        # BUG3 GUARD (30-Sep-2026): cron merge must never write open/PENDING
+        # rows or rows whose candle has not closed yet - live engine only.
+        if str(t.get("exit_datetime","")).strip().upper() == "PENDING":
+            log.info(f"[GENERATE] merge skip (still open/PENDING): entry={key}")
+            continue
+        if tf_min:
+            try:
+                _bg3_entry = _bg3_dt.strptime(key[:19].replace("T", " "), "%Y-%m-%d %H:%M:%S").replace(tzinfo=_bg3_tz.utc)
+                if _bg3_entry + _bg3_td(minutes=tf_min) > _bg3_now:
+                    log.info(f"[GENERATE] merge skip (entry candle not closed): entry={key}")
+                    continue
+                _bg3_exit_raw = str(t.get("exit_datetime","")).strip()
+                if _bg3_exit_raw and _bg3_exit_raw.upper() != "PENDING":
+                    _bg3_exit_dt = _bg3_dt.strptime(_bg3_exit_raw[:19].replace("T", " "), "%Y-%m-%d %H:%M:%S").replace(tzinfo=_bg3_tz.utc)
+                    if _bg3_exit_dt + _bg3_td(minutes=tf_min) > _bg3_now:
+                        log.info(f"[GENERATE] merge skip (exit candle not closed): entry={key} exit={_bg3_exit_raw}")
+                        continue
+            except Exception as _bg3_e:
+                log.warning(f"[GENERATE] merge: could not parse entry/exit datetime for {key}: {_bg3_e} - skipping row for safety")
+                continue
+        # BUG3-GAP3-RESIDUAL FIX: normalize stored entry/exit datetime too,
+        # not just the compare/dict key - prevents raw space-format timestamps
+        # from landing in the CSV when BacktestEngine trades use that format.
+        t = dict(t, entry_datetime=key)
+        _bg3gap3_exit_raw = str(t.get("exit_datetime","")).strip()
+        if _bg3gap3_exit_raw and _bg3gap3_exit_raw.upper() != "PENDING":
+            t["exit_datetime"] = _bg3gap2_norm_key(_bg3gap3_exit_raw)
+        merged[key] = t
+    return [merged[k] for k in sorted(merged.keys())]
+
+def write_signal_csv(trades, out_path):
+    os.makedirs(os.path.dirname(out_path), exist_ok=True)
+    new_lines = []
+    for t in trades:
+        entry = str(t.get("entry_datetime", ""))
+        exit_ = str(t.get("exit_datetime",  ""))
+        dirn  = str(t.get("direction",       ""))
+        entry_price = t.get("entry_price", "")
+        exit_price  = t.get("exit_price", "")
+        new_lines.append(f"{entry},{exit_},{dirn},{LOT_SIZE},{entry_price},{exit_price}\r\n")
+    new_content = "".join(new_lines)
+
+    # HARDENING (30-Sep-2026): skip write if unchanged - avoids needless
+    # rewrite/mtime bump that can race with a bot mid-read.
+    if os.path.exists(out_path):
+        with open(out_path, "r", newline="") as _ef:
+            if _ef.read() == new_content:
+                log.info(f"[GENERATE] Skipped (unchanged): {out_path} ({len(trades)} rows)")
+                return
+
+    # HARDENING (30-Sep-2026): atomic write via tmp+os.replace - a bot reading
+    # the file mid-write can no longer see a truncated/partial CSV.
+    _tmp_path = out_path + f".tmp_{os.getpid()}"
+    with open(_tmp_path, "w", newline="") as f:
+        f.write(new_content)
+    os.replace(_tmp_path, out_path)
+    log.info(f"[GENERATE] Written (_atomic_write): {out_path} ({len(trades)} rows)")
+
+# BUG8: propose-only - engine is the sole signals_*.csv writer
+def write_signal_csv(*_a, **_k):
+    from scripts.signal_patch_queue import propose_diff
+    return propose_diff(_a[1], _a[0])
+
+def _bg3gap1_locked_merge_write(*_a, **_k):
+    from scripts.signal_patch_queue import propose_diff
+    return propose_diff(_a[1], _a[0])
+
+if __name__ == "__main__":
+    _skip_live = "--skip-live-signals" in sys.argv
+    update_csv()
+
+    # S4V2 (replaces S2)
+    s4v2_params = dict(renko_box_pct=0.001, renko_timeframe="30m", st_atr_length=5, st_factor=1.5,
+                       smiio_shortlen=10, smiio_longlen=20, smiio_siglen=3)
+    s4v2_trades, s4v2_pending = run_backtest(RenkoSMIIOSupertrendV2Strategy, s4v2_params, "S4V2")
+    s4v2_trades = [t for t in s4v2_trades if "entry_datetime" in t]
+    if not _skip_live:
+        _bg3gap1_locked_merge_write(s4v2_trades + ([s4v2_pending] if s4v2_pending else []), "logs/signals_s4v2.csv", tf_min=30)
+    else:
+        log.info("[GENERATE] Skipped logs/signals_s4v2.csv (dashboard-refresh-only mode)")
+    write_trade_log_csv(s4v2_trades, "S4V2")
+
+    # S4
+    s4_params = dict(renko_box_pct=0.001, renko_timeframe="2h", st_atr_length=5, st_factor=2.0,
+                     smiio_shortlen=10, smiio_longlen=10, smiio_siglen=3)
+    s4_trades, s4_pending = run_backtest(RenkoSMIIOSupertrendStrategy, s4_params, "S4")
+    s4_trades = [t for t in s4_trades if "entry_datetime" in t]
+    if not _skip_live:
+        _bg3gap1_locked_merge_write(s4_trades + ([s4_pending] if s4_pending else []), "logs/signals_s4.csv", tf_min=120)
+    else:
+        log.info("[GENERATE] Skipped logs/signals_s4.csv (dashboard-refresh-only mode)")
+    write_trade_log_csv(s4_trades, "S4")
+
+    log.info("[GENERATE] All signal CSVs ready.")
+
+    # S4V3
+    s4v3_params = dict(renko_box_pct=0.001, renko_timeframe="4h", smiio_shortlen=5, smiio_longlen=10, smiio_siglen=3)
+    s4v3_trades, s4v3_pending = run_backtest(RenkoSMIIOCrossV3Strategy, s4v3_params, "S4V3")
+    s4v3_trades = [t for t in s4v3_trades if "entry_datetime" in t]
+    if not _skip_live:
+        _bg3gap1_locked_merge_write(s4v3_trades + ([s4v3_pending] if s4v3_pending else []), "logs/signals_s4v3.csv", tf_min=240)
+    else:
+        log.info("[GENERATE] Skipped logs/signals_s4v3.csv (dashboard-refresh-only mode)")
+    write_trade_log_csv(s4v3_trades, "S4V3")
