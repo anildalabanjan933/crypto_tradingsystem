@@ -1,0 +1,1924 @@
+# ============================================================
+# TRADE AUDIT TAB - CHUNK 1: Helper Functions & Constants
+# (Safe, independent copies - does NOT touch existing TODAY'S
+# TRADES tab code. All names use _audit suffix to avoid clashes.)
+# ============================================================
+
+import datetime as _dt_audit
+import re
+import pandas as _pd_audit
+
+_ORDERS_CACHE_AUDIT = {}  # in-process cache to avoid repeated Streamlit cache deep-copy per row
+
+# ---- Table styling (independent copies, same look as existing tables) ----
+THS_AUDIT = "padding:3px 6px;border:1px solid #90CAF9;background:#42A5F5;font-size:10px;font-weight:700;color:#fff;text-align:center;width:40px;vertical-align:middle;"
+TH_AUDIT  = "padding:3px 6px;border:1px solid #90CAF9;background:#42A5F5;font-size:10px;font-weight:700;color:#fff;text-align:center;vertical-align:middle;"
+TD_AUDIT  = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;text-align:center;vertical-align:middle;"
+TDN_AUDIT = "padding:5px 8px;border:1px solid #BBDEFB;font-size:11px;text-align:center;background:#f7f9fc;font-weight:700;color:#555;vertical-align:middle;"
+
+def _fast_parse_ts_audit(raw):
+    # PERF FIX (30-Aug-2026): avoid pd.to_datetime() regex format-guessing
+    # (confirmed via cProfile: _guess_datetime_format_for_array was 69-72%
+    # of _to_ist_audit's time). Tries fromisoformat first; falls back to
+    # pd.to_datetime for any format it can't handle, so behavior is unchanged.
+    try:
+        s = str(raw).strip()
+        if s.endswith("Z"):
+            s = s[:-1]
+        s = s.replace("T", " ", 1)
+        return _pd_audit.Timestamp(_dt_audit.datetime.fromisoformat(s))
+    except Exception:
+        return _pd_audit.to_datetime(raw)
+
+def _to_ist_audit(ts):
+    if ts in (None, "", "-", "PENDING"):
+        return "-"
+    try:
+        _t = _fast_parse_ts_audit(str(ts).replace("T", " "))
+        _t_ist = _t + _pd_audit.Timedelta(hours=5, minutes=30)
+        return _t_ist.strftime("%d-%b %I:%M:%S %p")
+    except Exception:
+        return str(ts)
+
+def _ist_date_audit(ts):
+    if ts in (None, "", "-", "PENDING"):
+        return "-"
+    try:
+        _t = _fast_parse_ts_audit(str(ts).replace("T", " "))
+        _t_ist = _t + _pd_audit.Timedelta(hours=5, minutes=30)
+        return _t_ist.strftime("%Y-%m-%d")
+    except Exception:
+        return str(ts)[:10]
+
+def _get_date_range_audit(range_choice, custom_start=None, custom_end=None):
+    _today = (_dt_audit.datetime.utcnow() + _dt_audit.timedelta(hours=5, minutes=30)).date()
+    if range_choice == "Today":
+        return _today, _today
+    elif range_choice == "2 Day":
+        _yesterday = _today - _dt_audit.timedelta(days=1)
+        return _yesterday, _today
+    elif range_choice == "1 Week":
+        _monday = _today - _dt_audit.timedelta(days=_today.weekday())
+        return _monday, _today
+    elif range_choice == "1 Month":
+        _month_start = _today.replace(day=1)
+        return _month_start, _today
+    elif range_choice == "Custom":
+        return custom_start, custom_end
+    return _today, _today
+
+_CONTRACT_MULT_AUDIT = 100 * 0.001
+TF_MIN_AUDIT = {"S4": 120, "S4V2": 30, "S4V3": 240}
+
+# ============================================================
+# TRADE AUDIT TAB - CHUNK 2: Backtest Row Builder
+# (Independent copy, generalized for date range instead of
+# hardcoded "today only". Reuses global _load14().)
+# ============================================================
+
+_BT_CSV_PATTERN_AUDIT = {
+    "S4":   "output/trade_log_RenkoSMIIOSupertrendStrategy_BTCUSD_*.csv",
+    "S4V2": "output/trade_log_RenkoSMIIOSupertrendV2Strategy_BTCUSD_*.csv",
+    "S4V3": "output/trade_log_RenkoSMIIOCrossV3Strategy_BTCUSD_*.csv",
+}
+
+def _offset_ts_audit(raw, strat_label, force_offset=False):
+    try:
+        tf = TF_MIN_AUDIT.get(strat_label, 0)
+        s = str(raw).strip()
+        if s.endswith("Z"): s = s[:-1]
+        s = s.replace("T", " ", 1)
+        t = _dt_audit.datetime.fromisoformat(s)
+        t_off = t + _dt_audit.timedelta(minutes=tf)
+        if not force_offset and t_off > _dt_audit.datetime.utcnow():
+            return raw
+        return t_off.isoformat()
+    except Exception:
+        return raw
+
+def _resolve_bt_csv_audit(strat_label):
+    """Pick the trade_log CSV whose mtime matches the official continuous
+    engine's signals_*.csv mtime, not just the newest file by name. This
+    prevents a stray Backtest-tab custom-run file (same filename pattern,
+    different timestamp) from silently hijacking the Audit tab's BT data."""
+    import glob as _gl2, os as _os2
+    _pattern = _BT_CSV_PATTERN_AUDIT.get(strat_label, "")
+    if not _pattern:
+        return _pattern
+    _files = _gl2.glob(_pattern)
+    if not _files:
+        return _pattern
+    _sig_map = {"S4": "logs/signals_s4.csv", "S4V2": "logs/signals_s4v2.csv", "S4V3": "logs/signals_s4v3.csv"}
+    _sig_path = _sig_map.get(strat_label, "")
+    try:
+        if _sig_path and _os2.path.exists(_sig_path):
+            _sig_mtime = _os2.path.getmtime(_sig_path)
+            _files_sorted = sorted(_files, key=lambda f: abs(_os2.path.getmtime(f) - _sig_mtime))
+            return _files_sorted[0]
+    except Exception:
+        pass
+    return sorted(_files, key=_os2.path.getmtime, reverse=True)[0]
+
+def _get_bt_rows_audit(strat_label, from_date, to_date, load14_fn, inr_rate):
+    rows = []
+    try:
+        _csv_pattern = _BT_CSV_PATTERN_AUDIT.get(strat_label)
+        if not _csv_pattern:
+            return []
+
+        _load_buffer_days = 3  # covers trades whose entry is before from_date but exit falls inside range
+        _load_from = from_date - _dt_audit.timedelta(days=_load_buffer_days)
+        _resolved_csv_audit = _resolve_bt_csv_audit(strat_label)
+        _df_container = load14_fn(_resolved_csv_audit, str(_load_from))
+        if _df_container is None:
+            return []
+
+        dfc = _df_container.get("raw_df") if isinstance(_df_container, dict) else _df_container
+        if dfc is None or not hasattr(dfc, "iterrows"):
+            return []
+
+        dfc = dfc.copy()
+        dfc["exit_datetime"]  = _pd_audit.to_datetime(dfc["exit_datetime"])
+        dfc["entry_datetime"] = _pd_audit.to_datetime(dfc["entry_datetime"])
+
+        # Date-boundary fix (29-Sep-2026): raw CSV timestamps are candle
+        # REFERENCE times, not actual fill times - the real fill/display
+        # time is reference + TF_minutes (same offset _offset_ts_audit
+        # applies for display). Filtering must use that same offset date,
+        # otherwise a trade whose displayed exit is "today" can be dropped
+        # because its raw reference date is "yesterday".
+        _tf_min_filt = TF_MIN_AUDIT.get(strat_label, 0)
+        _tf_delta_filt = _pd_audit.Timedelta(minutes=_tf_min_filt)
+        _entry_ist_d = (dfc["entry_datetime"] + _tf_delta_filt + _pd_audit.Timedelta(hours=5, minutes=30)).dt.date
+        _exit_ist_d  = (dfc["exit_datetime"] + _tf_delta_filt + _pd_audit.Timedelta(hours=5, minutes=30)).dt.date
+        dfc = dfc[
+            ((_entry_ist_d >= from_date) & (_entry_ist_d <= to_date)) |
+            ((_exit_ist_d >= from_date) & (_exit_ist_d <= to_date))
+        ]
+        dfc = dfc.sort_values("entry_datetime", ascending=False)
+
+        _cum_pnl = 0.0
+        _trade_no = 0
+        for _, r in dfc.iterrows():
+            _trade_no += 1
+            _dir_raw = str(r.get("direction", "")).upper()
+            _entry_ts_raw = str(r.get("entry_datetime", ""))
+            _exit_ts_raw  = str(r.get("exit_datetime", ""))
+
+            _entry_p = float(r.get("entry_price", 0))
+            _exit_p  = float(r.get("exit_price", 0))
+            _pnl_usd = float(r.get("net_pnl", 0))
+            _pnl_inr = float(r.get("net_pnl_inr", 0))
+            _tax_charges = (
+                float(r.get("taker_fees_usd", 0))
+                + float(r.get("funding_usd", 0))
+                + float(r.get("tax_usd", 0))
+            ) * inr_rate  # slippage excluded: already priced into entry/exit via _apply_slippage
+
+            _net_pnl_inr = _pnl_inr
+
+            rows.append({
+                "trade_no"     : _trade_no,
+                "label"        : strat_label,
+                "dir"          : _dir_raw,
+                "date"         : _ist_date_audit(_offset_ts_audit(_entry_ts_raw, strat_label, force_offset=True)),
+                "symbol"       : "BTCUSD",
+                "entry_ts_raw" : _entry_ts_raw,
+                "exit_ts_raw"  : _exit_ts_raw,
+                "entry_ist"    : _to_ist_audit(_offset_ts_audit(_entry_ts_raw, strat_label, force_offset=True)),
+                "exit_ist"     : _to_ist_audit(_offset_ts_audit(_exit_ts_raw, strat_label, force_offset=True)) if _exit_ts_raw not in ("", "PENDING", "nan") else "-",
+                "entry_p"      : _entry_p,
+                "exit_p"       : _exit_p,
+                "lot"          : 1,
+                "charges"      : _tax_charges,
+                "pnl_usd"      : _pnl_usd,
+                "net_pnl_inr"  : _net_pnl_inr,
+                "cum_pnl_inr"  : 0.0,
+            })
+
+
+        # Dynamic same-day fallback: static trade_log CSV may not yet include
+        # today's already-closed OR still-open signals (regenerated on its own
+        # schedule). Check the live signals CSV (same source Today's Trades tab
+        # already reads dynamically) for ANY row - open or closed - not yet
+        # present in trade_log, so BT side stays complete every page load
+        # without waiting for the next trade_log regeneration. Permanent,
+        # dynamic, self-correcting: once trade_log regenerates with the real
+        # row, the entry_ts_raw match above skips the fallback automatically.
+        _sig_csv_map = {"S4": "logs/signals_s4.csv", "S4V2": "logs/signals_s4v2.csv", "S4V3": "logs/signals_s4v3.csv"}
+        _sig_path = _sig_csv_map.get(strat_label)
+        _today_end = (_dt_audit.datetime.utcnow() + _dt_audit.timedelta(hours=5, minutes=30)).date()
+        if _sig_path:
+            try:
+                with open(_sig_path) as _sf:
+                    _sig_lines = [ln.strip().split(',') for ln in _sf if ln.strip()]
+                for _si, _sp in enumerate(_sig_lines):
+                    if len(_sp) < 5:
+                        continue
+                    _p_et, _p_xt, _p_dir, _p_lots, _p_ep = _sp[:5]
+                    _p_xp = _sp[5] if len(_sp) > 5 else ""
+                    def _parse_dt_dedup(_raw):
+                        try:
+                            _s = str(_raw).strip()
+                            if _s.endswith("Z"): _s = _s[:-1]
+                            _s = _s.replace("T", " ", 1)
+                            return _dt_audit.datetime.fromisoformat(_s).replace(second=0, microsecond=0)
+                        except Exception:
+                            return None
+                    _p_et_parsed = _parse_dt_dedup(_p_et)
+                    _dup_found = False
+                    if _p_et_parsed is not None:
+                        for _r in rows:
+                            _r_et_parsed = _parse_dt_dedup(_r["entry_ts_raw"])
+                            if _r_et_parsed is not None and _r_et_parsed == _p_et_parsed:
+                                _dup_found = True
+                                break
+                    if _dup_found:
+                        continue
+                    try:
+                        _et_date = (_dt_audit.datetime.fromisoformat(_p_et) + _dt_audit.timedelta(hours=5, minutes=30)).date()
+                    except Exception:
+                        continue
+                    if not (from_date <= _et_date <= to_date):
+                        continue
+                    _p_xp_check = 0.0
+                    try:
+                        _p_xp_check = float(_p_xp) if _p_xp else 0.0
+                    except Exception:
+                        _p_xp_check = 0.0
+                    # Guard: source signals CSV can contain rows whose own
+                    # exit timestamp is not later than their own entry
+                    # timestamp (bad write at the source). Such an exit is
+                    # not trustworthy - force it to be treated as missing so
+                    # the forward-scan lookahead below resolves the real
+                    # later exit (or correctly marks the row open).
+                    if _p_xp_check > 0.0:
+                        _own_xt_parsed = _parse_dt_dedup(_p_xt)
+                        if (_p_et_parsed is not None and _own_xt_parsed is not None
+                                and _own_xt_parsed <= _p_et_parsed):
+                            _p_xp_check = 0.0
+                    # Flip-strategy convention: if this row has no real exit yet,
+                    # but a later signal row already exists, that later row is the
+                    # actual flip/close for this trade - use its entry as this exit
+                    # instead of falsely marking this row open. Only the true last
+                    # row (no later row) stays open. Isolated to fallback path only.
+                    # Scan forward (not just _si+1) and require the candidate's own
+                    # entry timestamp to be strictly later than this row's entry -
+                    # guards against out-of-order appends in the signals CSV.
+                    if _p_xp_check <= 0.0:
+                        _fwd = _si + 1
+                        while _fwd < len(_sig_lines):
+                            _next_sp = _sig_lines[_fwd]
+                            if len(_next_sp) >= 5:
+                                _next_et_parsed = _parse_dt_dedup(_next_sp[0])
+                                if (_p_et_parsed is not None and _next_et_parsed is not None
+                                        and _next_et_parsed > _p_et_parsed):
+                                    _p_xt = _next_sp[0]
+                                    _p_xp = _next_sp[4]
+                                    try:
+                                        _p_xp_check = float(_p_xp) if _p_xp else 0.0
+                                    except Exception:
+                                        _p_xp_check = 0.0
+                                    break
+                            _fwd += 1
+                    _is_open = (_p_xt == "PENDING" or not _p_xp or _p_xp_check <= 0.0)
+                    _trade_no += 1
+                    if _is_open:
+                        rows.append({
+                            "trade_no"     : _trade_no,
+                            "label"        : strat_label,
+                            "dir"          : _p_dir.upper(),
+                            "date"         : _ist_date_audit(_offset_ts_audit(_p_et, strat_label, force_offset=True)),
+                            "symbol"       : "BTCUSD",
+                            "entry_ts_raw" : _p_et,
+                            "exit_ts_raw"  : "PENDING",
+                            "entry_ist"    : _to_ist_audit(_offset_ts_audit(_p_et, strat_label, force_offset=True)),
+                            "exit_ist"     : "-",
+                            "entry_p"      : float(_p_ep) if _p_ep else 0.0,
+                            "exit_p"       : 0.0,
+                            "lot"          : 1,
+                            "charges"      : 0.0,
+                            "pnl_usd"      : 0.0,
+                            "net_pnl_inr"  : 0.0,
+                            "cum_pnl_inr"  : 0.0,
+                        })
+                    else:
+                        _ep_f = float(_p_ep) if _p_ep else 0.0
+                        _xp_f = float(_p_xp) if _p_xp else 0.0
+                        _lots_f = float(_p_lots) if _p_lots else 100.0
+                        _dir_sign = 1.0 if _p_dir.lower() == "long" else -1.0
+                        try:
+                            _pnl_usd_calc = (_xp_f - _ep_f) * _dir_sign * _lots_f * 0.001
+                            _pnl_inr_calc = _pnl_usd_calc * inr_rate
+                            _net_pnl_inr_calc = _pnl_inr_calc
+                        except Exception:
+                            _pnl_usd_calc = 0.0
+                            _net_pnl_inr_calc = 0.0
+                        try:
+                            _size_value_calc = _ep_f * _lots_f * 0.001
+                            _taker_fee_calc = _size_value_calc * 0.0005 * 2
+                            _et_parsed_chg = _parse_dt_dedup(_p_et)
+                            _xt_parsed_chg = _parse_dt_dedup(_p_xt)
+                            _dur_hours_calc = (
+                                (_xt_parsed_chg - _et_parsed_chg).total_seconds() / 3600.0
+                                if (_et_parsed_chg is not None and _xt_parsed_chg is not None) else 8.0
+                            )
+                            _funding_rate_annual_calc = 0.1095
+                            _funding_interval_hours_calc = 8
+                            _intervals_per_year_calc = (365 * 24) / _funding_interval_hours_calc
+                            _rate_per_interval_calc = _funding_rate_annual_calc / _intervals_per_year_calc
+                            _funding_intervals_calc = _dur_hours_calc / _funding_interval_hours_calc
+                            _funding_calc = _size_value_calc * _rate_per_interval_calc * _funding_intervals_calc
+                            _charges_usd_calc = (_taker_fee_calc + _funding_calc) * inr_rate
+                        except Exception:
+                            _charges_usd_calc = 0.0
+                        _pnl_usd_calc = _pnl_usd_calc - (_charges_usd_calc / inr_rate if inr_rate else 0.0)
+                        _net_pnl_inr_calc = _net_pnl_inr_calc - _charges_usd_calc
+                        rows.append({
+                            "trade_no"     : _trade_no,
+                            "label"        : strat_label,
+                            "dir"          : _p_dir.upper(),
+                            "date"         : _ist_date_audit(_offset_ts_audit(_p_et, strat_label, force_offset=True)),
+                            "symbol"       : "BTCUSD",
+                            "entry_ts_raw" : _p_et,
+                            "exit_ts_raw"  : _p_xt,
+                            "entry_ist"    : _to_ist_audit(_offset_ts_audit(_p_et, strat_label, force_offset=True)),
+                            "exit_ist"     : _to_ist_audit(_offset_ts_audit(_p_xt, strat_label, force_offset=True)),
+                            "entry_p"      : _ep_f,
+                            "exit_p"       : _xp_f,
+                            "lot"          : 1,
+                            "charges"      : _charges_usd_calc,
+                            "pnl_usd"      : _pnl_usd_calc,
+                            "net_pnl_inr"  : _net_pnl_inr_calc,
+                            "cum_pnl_inr"  : 0.0,
+                        })
+                rows.sort(key=lambda r: str(r["entry_ts_raw"]), reverse=True)
+                for _i, _r in enumerate(rows):
+                    _r["trade_no"] = _i + 1
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+    _asc_rows_audit = sorted(rows, key=lambda _r: _r["entry_ts_raw"])
+    _running_pnl_audit = 0.0
+    for _r in _asc_rows_audit:
+        _running_pnl_audit += _r["net_pnl_inr"]
+        _r["cum_pnl_inr"] = _running_pnl_audit
+
+    return rows
+
+# ============================================================
+# TRADE AUDIT TAB - CHUNK 3: Live Fills Row Builder
+# (Independent copy - fetches real Delta fills via /fills API,
+# pairs entry/exit sequentially, builds rows for the given
+# date range. Caching is applied at the wiring stage, not here.)
+# ============================================================
+
+def _fetch_fills_audit(fetch_fills_fn, acc_label, product_id=84, window_hours=48):
+    """
+    fetch_fills_fn: the cached fetch function (passed in from main app,
+    e.g. wraps the /v2/fills API call with @st.cache_data already applied).
+    acc_label: "S4", "S4V2", or "S4V3" - used to pick correct API keys.
+    """
+    try:
+        return fetch_fills_fn(acc_label, product_id, window_hours)
+    except Exception:
+        return []
+
+
+
+def _merge_partial_fills_audit(fills_sorted):
+    """
+    Merges same-side fills that share the same order_id and occur within
+    1 second of each other (Delta partial-fill splitting) into a single
+    fill, so _pair_fills_audit() counts them as one trade, not multiple.
+    Size-weighted avg price, summed size+commission, earliest created_at.
+    Only touches fills list before pairing - pairing/PnL logic untouched.
+    """
+    if not fills_sorted:
+        return fills_sorted
+    merged = []
+    i = 0
+    while i < len(fills_sorted):
+        cur = dict(fills_sorted[i])
+        j = i + 1
+        while j < len(fills_sorted):
+            nxt = fills_sorted[j]
+            same_side = str(nxt.get("side","")).upper() == str(cur.get("side","")).upper()
+            same_order = str(nxt.get("order_id","")) == str(cur.get("order_id",""))
+            try:
+                t1 = _dt_audit.datetime.fromisoformat(str(cur.get("created_at","")).replace("Z",""))
+                t2 = _dt_audit.datetime.fromisoformat(str(nxt.get("created_at","")).replace("Z",""))
+                close_time = abs((t2 - t1).total_seconds()) <= 1.0
+            except Exception:
+                close_time = False
+            if same_side and same_order and close_time:
+                s1 = float(cur.get("size",0) or 0)
+                s2 = float(nxt.get("size",0) or 0)
+                tot = s1 + s2
+                if tot > 0:
+                    cur["price"] = (float(cur.get("price",0) or 0)*s1 + float(nxt.get("price",0) or 0)*s2) / tot
+                cur["size"] = tot
+                cur["commission"] = float(cur.get("commission",0) or 0) + float(nxt.get("commission",0) or 0)
+                cur["meta_data"] = nxt.get("meta_data", cur.get("meta_data", {}))
+                j += 1
+            else:
+                break
+        merged.append(cur)
+        i = j
+    return merged
+
+
+def _pair_fills_audit(fills):
+    """
+    Uses Delta's own per-fill realized PnL (meta_data.new_position.realized_pnl)
+    as the authoritative PnL source, instead of reconstructing PnL from raw
+    price differences via order pairing.
+
+    IMPORTANT (fixed): meta_data.new_position.realized_pnl is a CUMULATIVE
+    snapshot - "Net realized pnl since the position was opened" per Delta's
+    own /positions API doc wording - NOT the isolated PnL of that single fill.
+    Using it directly (as a prior version of this function did) double/triple
+    counts PnL for every multi-fill position. The correct extraction is a
+    baseline-delta: this fill's true PnL = raw_cumulative - baseline, where
+    baseline is the cumulative value observed just before this fill, and
+    baseline resets to 0 whenever the position returns to size == 0 (a new
+    position lifecycle). Verified against live CSV reconciliation in
+    scripts/audit_delta_issue_tracker.py (S4: 0.00 diff on PnL/charges/trades;
+    S4V2 residuals fully explained by CSV export-lag, not calculation error).
+
+    For each fill, we determine how much of its size actually CLOSES existing
+    opposite-side queue lots (closed_qty = min(fill_size, opposite_qty_available)).
+    The corrected fill_pnl corresponds entirely to that closed_qty (not the
+    full fill size) - critical for position-flip fills that both close an old
+    position and open a new opposite one in a single fill. Any leftover size
+    beyond closed_qty is a fresh opening lot pushed onto the FIFO queue.
+
+    Total PnL always sums to sum(all fills corrected fill_pnl) - sum(all
+    fills commission), i.e. exactly Delta's own accounting, for any date
+    range, any account, permanently (no CSV dependency).
+    """
+    fills_sorted = sorted(fills, key=lambda f: f.get("created_at", ""))
+    fills_sorted = _merge_partial_fills_audit(fills_sorted)
+
+    queue = []  # each: dict(remaining, price, time, side, comm_per_unit)
+    pairs = []
+    baseline = 0.0  # cumulative realized_pnl at start of current position lifecycle
+
+    for f in fills_sorted:
+        side = str(f.get("side", "")).upper()
+        size = float(f.get("size", 0) or 0)
+        if size <= 0:
+            continue
+        price = float(f.get("price", 0) or 0)
+        time = f.get("created_at", "")
+        commission = abs(float(f.get("commission", 0) or 0))
+        comm_per_unit = commission / size if size else 0.0
+        meta = f.get("meta_data", {}) or {}
+        new_pos = meta.get("new_position", {}) or {}
+        raw_cumulative = float(new_pos.get("realized_pnl", 0) or 0)
+        pos_size_after = new_pos.get("size", None)
+        _fill_order_id = str(f.get("order_id", ""))
+        _fill_order_unfilled = float(meta.get("order_unfilled_size", 0) or 0)
+        _fill_order_closed = _fill_order_unfilled <= 1e-9
+
+        # Corrected per-fill PnL: delta against lifecycle baseline, not raw cumulative value
+        realized_pnl = raw_cumulative - baseline
+
+        avail_opposite = sum(q["remaining"] for q in queue if q["side"] != side)
+        closed_qty = min(size, avail_opposite)
+        remaining_to_close = closed_qty
+
+        while remaining_to_close > 1e-9 and queue and queue[0]["side"] != side:
+            head = queue[0]
+            match_size = min(remaining_to_close, head["remaining"])
+            frac = (match_size / closed_qty) if closed_qty > 1e-9 else 0.0
+            chunk_pnl = realized_pnl * frac
+            chunk_exit_comm = comm_per_unit * match_size
+            chunk_entry_comm = head["comm_per_unit"] * match_size
+            _dir = "LONG" if head["side"] == "BUY" else "SHORT"
+            pairs.append({
+                "dir": _dir,
+                "entry_ts_raw": head["time"],
+                "exit_ts_raw": time,
+                "entry_p": head["price"],
+                "exit_p": price,
+                "lot": match_size,
+                "charges": chunk_exit_comm + chunk_entry_comm,
+                "pnl_usd": chunk_pnl,  # GROSS pnl (matches CSV "Realised P&L" convention); charges tracked separately
+                "exit_order_id": _fill_order_id,
+                "exit_order_closed": _fill_order_closed,
+            })
+            head["remaining"] -= match_size
+            remaining_to_close -= match_size
+            if head["remaining"] <= 1e-9:
+                queue.pop(0)
+
+        opening_qty = size - closed_qty
+        if opening_qty > 1e-9 and pos_size_after != 0:
+            queue.append({"remaining": opening_qty, "price": price, "time": time,
+                          "side": side, "comm_per_unit": comm_per_unit})
+
+        # Reset baseline when position returns to flat; a new lifecycle begins
+        baseline = 0.0 if pos_size_after == 0 else raw_cumulative
+
+    return pairs
+
+
+def _get_live_rows_audit(strat_label, from_date, to_date, fetch_fills_fn, inr_rate, product_id=84):
+    """
+    Builds Delta Live Filled rows for a strategy within [from_date, to_date].
+    """
+    rows = []
+    try:
+        acc_map = {"S4": "S4", "S4V2": "S4V2", "S4V3": "S4V3"}
+        acc_label = acc_map.get(strat_label)
+        if not acc_label:
+            return []
+
+        _window_hours = 744  # PERM-FIX 2026-10-08: fixed window = fixed cache key, so filter switch reuses cache instead of re-fetching
+        fills = _fetch_fills_audit(fetch_fills_fn, acc_label, product_id, _window_hours)
+        if not fills:
+            return []
+
+        pairs = _pair_fills_audit(fills)
+
+        # Filter to date range first (same logic as before).
+        # PERF FIX (30-Aug-2026): pd.to_datetime() re-guesses timestamp format on
+        # EVERY call via regex (confirmed via cProfile: 96% of 1-month load time was
+        # spent in pandas _guess_datetime_format_for_array, not real work). Replaced
+        # with direct datetime.fromisoformat (no format-guessing) - only used here
+        # for .date() comparison, so precision loss vs pandas is irrelevant.
+        def _fast_date_audit(raw):
+            s = str(raw).strip()
+            if s.endswith("Z"):
+                s = s[:-1]
+            s = s.replace("T", " ", 1)
+            try:
+                _d = _dt_audit.datetime.fromisoformat(s)
+            except Exception:
+                _d = _pd_audit.to_datetime(s).to_pydatetime()  # rare fallback, old slow path
+            return (_d + _dt_audit.timedelta(hours=5, minutes=30)).date()
+
+        _filtered = []
+        for p in pairs:
+            try:
+                _entry_date = _fast_date_audit(p["entry_ts_raw"])
+            except Exception:
+                continue
+            _in_range = (from_date <= _entry_date <= to_date)
+            if not _in_range:
+                try:
+                    _exit_raw = p.get("exit_ts_raw", "")
+                    if _exit_raw and _exit_raw not in ("PENDING", "nan"):
+                        _exit_date = _fast_date_audit(_exit_raw)
+                        _in_range = (from_date <= _exit_date <= to_date)
+                except Exception:
+                    pass
+            if _in_range:
+                _filtered.append(p)
+
+        # Aggregate FIFO chunks by exit_order_id so ONE Delta order = ONE trade row,
+        # matching Delta's own order-level "closed" definition (order_unfilled_size == 0)
+        # instead of counting per FIFO-matched chunk. This is what makes trade_no match
+        # the CSV order-level trade count permanently (verified in
+        # scripts/audit_delta_issue_tracker.py).
+        _order_groups = {}
+        _order_seq = []
+        for _oi, p in enumerate(_filtered):
+            # fall back to a unique per-trade key when exit_order_id is missing,
+            # so trades without an order id don't collapse into one merged row
+            oid = p.get("exit_order_id", "") or f"_no_exit_oid_{_oi}"
+            if oid not in _order_groups:
+                _order_groups[oid] = {
+                    "dir": p["dir"],
+                    "entry_ts_raw": p["entry_ts_raw"],
+                    "exit_ts_raw": p["exit_ts_raw"],
+                    "entry_p_num": 0.0,
+                    "exit_p": p["exit_p"],
+                    "lot": 0.0,
+                    "charges": 0.0,
+                    "pnl_usd": 0.0,
+                    "exit_order_closed": p.get("exit_order_closed", False),
+                }
+                _order_seq.append(oid)
+            g = _order_groups[oid]
+            g["lot"] += p["lot"]
+            g["charges"] += p["charges"]
+            g["pnl_usd"] += p["pnl_usd"]
+            g["entry_p_num"] += p["entry_p"] * p["lot"]
+            if str(p["entry_ts_raw"]) < str(g["entry_ts_raw"]):
+                g["entry_ts_raw"] = p["entry_ts_raw"]
+            g["exit_order_closed"] = g["exit_order_closed"] or p.get("exit_order_closed", False)
+
+        _cum_pnl = 0.0
+        _trade_no = 0
+        for oid in _order_seq:
+            g = _order_groups[oid]
+            if not g["exit_order_closed"]:
+                # Order not yet fully filled - not a completed trade by Delta's own
+                # order-state definition; exclude from trade count (matches CSV).
+                continue
+
+            _trade_no += 1
+            _entry_p = (g["entry_p_num"] / g["lot"]) if g["lot"] else 0.0
+            _net_pnl_inr = (g["pnl_usd"] - g["charges"]) * inr_rate  # gross pnl minus charges = true net
+            _cum_pnl += _net_pnl_inr
+
+            rows.append({
+                "trade_no"     : _trade_no,
+                "label"        : strat_label,
+                "dir"          : g["dir"],
+                "date"         : _ist_date_audit(g["entry_ts_raw"]),
+                "symbol"       : "BTCUSD",
+                "entry_ts_raw" : g["entry_ts_raw"],
+                "exit_ts_raw"  : g["exit_ts_raw"],
+                "entry_ist"    : _to_ist_audit(g["entry_ts_raw"]),
+                "exit_ist"     : _to_ist_audit(g["exit_ts_raw"]),
+                "entry_p"      : _entry_p,
+                "exit_p"       : g["exit_p"],
+                "lot"          : g["lot"],
+                "charges"      : g["charges"] * inr_rate,
+                "pnl_usd"      : g["pnl_usd"],
+                "net_pnl_inr"  : _net_pnl_inr,
+                "cum_pnl_inr"  : _cum_pnl,
+            })
+    except Exception:
+        pass
+    # Sort newest-first to match BT table's row order (dfc.sort_values(ascending=False)),
+    # so row N (LV) and row N (BT) represent the same time-position, not a coincidental
+    # count-match with different actual trades
+    rows.sort(key=lambda r: str(r["entry_ts_raw"]), reverse=True)
+    for _i, _r in enumerate(rows):
+        _r["trade_no"] = _i + 1
+    return rows
+
+# ============================================================
+# TRADE AUDIT TAB - CHUNK 4: Match + Message Logic
+# (Independent copy - compares a BT row vs a Live row, computes
+# slippage (Match column), and builds source-led issue text
+# (Message column) using [SOURCE] - [Cause] format.)
+# ============================================================
+
+def _match_audit(bt, lv):
+    """
+    Returns (match_text, slip_fav_usd, slip_unfav_usd) for a BT/LV pair.
+    match_text shows entry/exit slippage as raw price-point deltas.
+    """
+    if bt is None or lv is None:
+        return "-", 0.0, 0.0
+
+    _slip_fav = 0.0
+    _slip_unfav = 0.0
+    try:
+        _signed_entry = (bt["entry_p"] - lv["entry_p"]) if bt["dir"] == "LONG" else (lv["entry_p"] - bt["entry_p"])
+        _entry_diff = abs(_signed_entry)
+        _entry_sign = "+" if _signed_entry >= 0 else "-"
+        if _signed_entry >= 0:
+            _slip_fav += _entry_diff
+        else:
+            _slip_unfav += _entry_diff
+        _entry_line = f"Entry: {_entry_sign}{_entry_diff:.2f} pts"
+    except Exception:
+        _entry_line = "Entry: -"
+
+    _exit_line = "Exit: open"
+    try:
+        _bt_closed = bt.get("exit_ist") not in ("-", "", None)
+        _lv_closed = lv.get("exit_ist") not in ("-", "", None)
+        if _bt_closed and _lv_closed and bt.get("exit_p") and lv.get("exit_p"):
+            _signed_exit = (lv["exit_p"] - bt["exit_p"]) if bt["dir"] == "LONG" else (bt["exit_p"] - lv["exit_p"])
+            _exit_diff = abs(_signed_exit)
+            _exit_sign = "+" if _signed_exit >= 0 else "-"
+            if _signed_exit >= 0:
+                _slip_fav += _exit_diff
+            else:
+                _slip_unfav += _exit_diff
+            _exit_line = f"Exit: {_exit_sign}{_exit_diff:.2f} pts"
+    except Exception:
+        pass
+
+    return f"{_entry_line} | {_exit_line}", _slip_fav, _slip_unfav
+
+
+_PARSE_SL_LOG_CACHE_AUDIT = {}
+def _parse_sl_log_cached_audit(_path, _mtime, _tag, _lines_tuple):
+    _key = (_path, _mtime, _tag)
+    if _key in _PARSE_SL_LOG_CACHE_AUDIT:
+        return _PARSE_SL_LOG_CACHE_AUDIT[_key]
+    import datetime as _dt_m
+    out = []
+    for _line in _lines_tuple:
+        if _tag not in _line:
+            continue
+        try:
+            _ts_str = _line.split(",")[0].strip()
+            _ts = _dt_m.datetime.strptime(_ts_str, "%Y-%m-%d %H:%M:%S,%f")
+        except Exception:
+            continue
+        out.append((_ts, _line))
+    if len(_PARSE_SL_LOG_CACHE_AUDIT) > 50:
+        _PARSE_SL_LOG_CACHE_AUDIT.clear()
+    _PARSE_SL_LOG_CACHE_AUDIT[_key] = out
+    return out
+
+_PARSE_WS_LOG_CACHE_AUDIT = {}
+def _parse_ws_log_cached_audit(_path, _mtime, _lines_tuple):
+    _key = (_path, _mtime)
+    if _key in _PARSE_WS_LOG_CACHE_AUDIT:
+        return _PARSE_WS_LOG_CACHE_AUDIT[_key]
+    import datetime as _dt_m
+    out = []
+    for _line in _lines_tuple:
+        if "[WS] Reconnecting" not in _line:
+            continue
+        try:
+            _ts_str = _line.split(" IST")[0].strip()
+            _ts = _dt_m.datetime.strptime(_ts_str, "%d-%b-%Y %I:%M:%S %p")
+        except Exception:
+            continue
+        out.append((_ts, _line))
+    if len(_PARSE_WS_LOG_CACHE_AUDIT) > 50:
+        _PARSE_WS_LOG_CACHE_AUDIT.clear()
+    _PARSE_WS_LOG_CACHE_AUDIT[_key] = out
+    return out
+
+_LINES_TUPLE_CACHE_AUDIT = {}
+def _as_tuple_cached_audit(_path, _mtime, _lines):
+    _key = (_path, _mtime)
+    if _key in _LINES_TUPLE_CACHE_AUDIT:
+        return _LINES_TUPLE_CACHE_AUDIT[_key]
+    _t = tuple(_lines)
+    if len(_LINES_TUPLE_CACHE_AUDIT) > 50:
+        _LINES_TUPLE_CACHE_AUDIT.clear()
+    _LINES_TUPLE_CACHE_AUDIT[_key] = _t
+    return _t
+
+_PARSE_BOTLOG_CACHE_AUDIT = {}
+def _parse_bot_log_cached_audit(_path, _mtime, _lines_tuple):
+    _key = (_path, _mtime)
+    if _key in _PARSE_BOTLOG_CACHE_AUDIT:
+        return _PARSE_BOTLOG_CACHE_AUDIT[_key]
+    import datetime as _dt_m
+    out = []
+    for _line in _lines_tuple:
+        try:
+            _ts_str = _line[:23]
+            _ts = _dt_m.datetime(
+                int(_ts_str[0:4]), int(_ts_str[5:7]), int(_ts_str[8:10]),
+                int(_ts_str[11:13]), int(_ts_str[14:16]), int(_ts_str[17:19]),
+                int(_ts_str[20:23]) * 1000
+            )
+        except Exception:
+            continue
+        out.append((_ts, _line))
+    if len(_PARSE_BOTLOG_CACHE_AUDIT) > 50:
+        _PARSE_BOTLOG_CACHE_AUDIT.clear()
+    _PARSE_BOTLOG_CACHE_AUDIT[_key] = out
+    return out
+
+
+def _get_trade_issues_audit(strat_label, entry_dt, exit_dt=None, read_log_fn=None):
+    """
+    Scans log files for root-cause issues near a trade's entry/exit time.
+    read_log_fn: cached log-reading function passed in from main app
+    (e.g. wraps @st.cache_data log line reader already in use elsewhere).
+    Returns list of "[SOURCE] - [Cause]" strings.
+    """
+    issues = []
+    if read_log_fn is None:
+        return issues
+    try:
+        _window_start = entry_dt - _pd_audit.Timedelta(minutes=10)
+        _window_end = (exit_dt if exit_dt is not None else entry_dt) + _pd_audit.Timedelta(minutes=10)
+        _bot_tag = strat_label  # "S4", "S4V2", "S4V3"
+
+        import os as _os_fix2_audit
+        # ---- CTS SIDE issues: safety monitor log ----
+        _sl_path = "logs/sl_safety_monitor.log"
+        _sl_lines = read_log_fn(_sl_path)
+        try:
+            _sl_mtime = _os_fix2_audit.path.getmtime(_sl_path)
+        except Exception:
+            _sl_mtime = 0
+        for _line_ts, _line in _parse_sl_log_cached_audit(_sl_path, _sl_mtime, _bot_tag, _as_tuple_cached_audit(_sl_path, _sl_mtime, _sl_lines)):
+            if not (_window_start <= _line_ts <= _window_end):
+                continue
+            if "AUTO-PLACED SUCCESS" in _line or "RECOVERED - SL WAS MISSING" in _line:
+                issues.append("CTS SIDE - SL was missing, auto-fixed by safety monitor within 60s")
+            elif "ORPHAN POSITION" in _line:
+                issues.append("CTS SIDE - Exchange position was untracked, auto-flagged and fixed")
+            elif "STUCK PENDING" in _line:
+                issues.append("CTS SIDE - Position sync delay detected, self-healed automatically")
+            elif "EMERGENCY CLOSE" in _line:
+                issues.append("CTS SIDE - SL placement failed, position auto-closed for safety")
+
+        # ---- CTS SIDE issues: connection drops ----
+        _eng_path = "logs/renko_state_engine.log"
+        _eng_lines = read_log_fn(_eng_path)
+        try:
+            _eng_mtime = _os_fix2_audit.path.getmtime(_eng_path)
+        except Exception:
+            _eng_mtime = 0
+        for _line_ts, _line in _parse_ws_log_cached_audit(_eng_path, _eng_mtime, _as_tuple_cached_audit(_eng_path, _eng_mtime, _eng_lines)):
+            if _window_start <= _line_ts <= _window_end:
+                issues.append("CTS SIDE - Brief connection drop near this trade, auto-reconnected within 5s")
+
+        # ---- CTS SIDE / DELTA SIDE issues: bot log ----
+        _bot_log_path = f"logs/live_trading_{_bot_tag.lower()}.log"
+        _bot_lines = read_log_fn(_bot_log_path)
+        try:
+            _bot_mtime = _os_fix2_audit.path.getmtime(_bot_log_path)
+        except Exception:
+            _bot_mtime = 0
+        for _line_ts2, _line in _parse_bot_log_cached_audit(_bot_log_path, _bot_mtime, _as_tuple_cached_audit(_bot_log_path, _bot_mtime, _bot_lines)):
+            if not (_window_start <= _line_ts2 <= _window_end):
+                continue
+            if "[STARTUP]" in _line and "Bot starting" in _line:
+                issues.append(f"CTS SIDE - Bot restarted near this trade's time ({_line_ts2.strftime('%H:%M:%S')} UTC)")
+            elif "unfilled_beyond_band" in _line and "ENTRY FAILED" in _line:
+                issues.append("DELTA SIDE - Entry order rejected, price moved outside safety band")
+            elif "ENTRY FAILED" in _line:
+                issues.append("DELTA SIDE - Entry order failed, exchange rejected the order")
+            elif "ENTRY ABANDONED" in _line:
+                issues.append("CTS SIDE - Entry abandoned after 5 failed attempts, avoided infinite retry")
+            elif "ENTRY blocked - manual_override active" in _line:
+                issues.append("CTS SIDE - Entry skipped, manual override was active at signal time")
+            elif "ENTRY blocked - engine heartbeat stale" in _line:
+                issues.append("CTS SIDE - Entry blocked, engine heartbeat was stale")
+    except Exception:
+        pass
+    return list(dict.fromkeys(issues))
+
+# ============================================================
+# TRADE AUDIT TAB - CHUNK 4B: Extended Log Scan + Open Positions
+# (Independent additions - does not modify Chunk 3/4 functions.
+# Adds position_risk_monitor.log + margin_monitor.log scanning,
+# and detects live entry orders with no matching exit yet.)
+# ============================================================
+
+_PARSE_LOG_TS_CACHE_AUDIT = {}
+
+def _parse_log_ts_cached_audit(_path, _mtime, _strat_label, _lines_tuple):
+    _key = (_path, _mtime, _strat_label)
+    if _key in _PARSE_LOG_TS_CACHE_AUDIT:
+        return _PARSE_LOG_TS_CACHE_AUDIT[_key]
+    import datetime as _dt_p
+    out = []
+    for _line in _lines_tuple:
+        if _strat_label not in _line:
+            continue
+        try:
+            _ts_str = _line.split(",")[0].strip()
+            _ts = _dt_p.datetime(
+                int(_ts_str[0:4]), int(_ts_str[5:7]), int(_ts_str[8:10]),
+                int(_ts_str[11:13]), int(_ts_str[14:16]), int(_ts_str[17:19])
+            )
+        except Exception:
+            continue
+        out.append((_ts, _line))
+    if len(_PARSE_LOG_TS_CACHE_AUDIT) > 50:
+        _PARSE_LOG_TS_CACHE_AUDIT.clear()
+    _PARSE_LOG_TS_CACHE_AUDIT[_key] = out
+    return out
+
+
+def _get_trade_issues_audit_full(strat_label, entry_dt, exit_dt=None, read_log_fn=None):
+    issues = _get_trade_issues_audit(strat_label, entry_dt, exit_dt, read_log_fn)
+    if read_log_fn is None:
+        return issues
+    try:
+        _window_start = entry_dt - _pd_audit.Timedelta(minutes=10)
+        _window_end = (exit_dt if exit_dt is not None else entry_dt) + _pd_audit.Timedelta(minutes=10)
+
+        _extra_sources = [
+            ("logs/position_risk_monitor.log", {
+                "MARGIN CALL": "DELTA SIDE - Margin call triggered near this trade",
+                "RISK LIMIT": "CTS SIDE - Position risk limit breached, auto-action taken",
+                "LIQUIDATION WARNING": "DELTA SIDE - Liquidation risk flagged near this trade",
+            }),
+            ("logs/margin_monitor.log", {
+                "MARGIN REJECTED": "DELTA SIDE - Order rejected due to insufficient margin",
+                "MARGIN LOW": "CTS SIDE - Low margin detected, position sizing may be affected",
+            }),
+        ]
+        import os as _os_fix_audit
+        for _log_path, _tag_map in _extra_sources:
+            try:
+                _lines = read_log_fn(_log_path)
+                _mtime = _os_fix_audit.path.getmtime(_log_path)
+            except Exception:
+                continue
+            try:
+                _parsed = _parse_log_ts_cached_audit(_log_path, _mtime, strat_label, _as_tuple_cached_audit(_log_path, _mtime, _lines))
+            except Exception:
+                continue
+            for _line_ts, _line in _parsed:
+                if not (_window_start <= _line_ts <= _window_end):
+                    continue
+                for _kw, _msg in _tag_map.items():
+                    if _kw in _line:
+                        issues.append(_msg)
+    except Exception:
+        pass
+    return list(dict.fromkeys(issues))
+
+
+def _get_open_live_rows_audit(strat_label, from_date, to_date, fetch_fills_fn, product_id=84):
+    """
+    Detects the current open position (if any) using Delta's own
+    meta_data.new_position.size ledger from fills - same trusted field
+    already used for PnL in _pair_fills_audit. Does not touch pairing logic.
+    Finds the fill that started the current non-zero lifecycle (the fill
+    right after the most recent size==0 reset) and uses it as the open row.
+    """
+    rows = []
+    try:
+        acc_map = {"S4": "S4", "S4V2": "S4V2", "S4V3": "S4V3"}
+        acc_label = acc_map.get(strat_label)
+        if not acc_label:
+            return []
+
+        _window_hours = 744  # PERM-FIX 2026-10-08: fixed window = fixed cache key, so filter switch reuses cache instead of re-fetching
+        fills = _fetch_fills_audit(fetch_fills_fn, acc_label, product_id, _window_hours)
+        if not fills:
+            return []
+
+        fills_sorted = sorted(fills, key=lambda f: f.get("created_at", ""))
+
+        last_zero_idx = -1
+        for idx, f in enumerate(fills_sorted):
+            meta = f.get("meta_data", {}) or {}
+            new_pos = meta.get("new_position", {}) or {}
+            pos_size_after = new_pos.get("size", None)
+            if pos_size_after == 0:
+                last_zero_idx = idx
+
+        lifecycle_start_idx = last_zero_idx + 1
+        if lifecycle_start_idx >= len(fills_sorted):
+            return []
+
+        final_meta = fills_sorted[-1].get("meta_data", {}) or {}
+        final_new_pos = final_meta.get("new_position", {}) or {}
+        final_size = final_new_pos.get("size", 0)
+        if not final_size:
+            return []
+
+        entry_f = fills_sorted[lifecycle_start_idx]
+        entry_time = entry_f.get("created_at", "")
+        entry_side = str(entry_f.get("side", "")).upper()
+        entry_price = float(entry_f.get("price", 0) or 0)
+
+        try:
+            _entry_dt = _pd_audit.to_datetime(str(entry_time).replace("T", " "))
+            _entry_dt_ist = _entry_dt + _dt_audit.timedelta(hours=5, minutes=30)
+        except Exception:
+            return []
+
+        if not (from_date <= _entry_dt_ist.date() <= to_date):
+            return []
+
+        _dir = "LONG" if entry_side == "BUY" else "SHORT"
+        rows.append({
+            "trade_no": None, "label": strat_label, "dir": _dir,
+            "date": _ist_date_audit(entry_time), "symbol": "BTCUSD",
+            "entry_ts_raw": entry_time, "exit_ts_raw": None,
+            "entry_ist": _to_ist_audit(entry_time), "exit_ist": "OPEN",
+            "entry_p": entry_price, "exit_p": None,
+            "lot": abs(float(final_size)), "charges": 0.0,
+            "pnl_usd": None, "net_pnl_inr": None, "cum_pnl_inr": None,
+            "is_open": True,
+        })
+    except Exception:
+        pass
+    return rows
+
+
+# ============================================================
+# TRADE AUDIT TAB - CHUNK 5: Independent Tables + Main UI
+# (Two fully independent tables rendered side by side. No BT/LV
+# pairing anywhere. Message column on Live Filled side only,
+# from log scan. BT side has dynamic Lot + Slippage inputs.)
+# ============================================================
+
+import streamlit as st
+
+_STRATS_AUDIT = ["S4", "S4V2", "S4V3"]
+_INR_RATE_AUDIT_DEFAULT_UNUSED = None
+
+def _clean_html_audit(html):
+    """
+    Collapses multi-line indented HTML into a single continuous line.
+    Prevents Streamlit/Markdown from misreading whitespace-only lines
+    as blank lines, which breaks raw HTML block parsing and causes
+    tables to render as literal text instead of HTML.
+    """
+    return re.sub(r"\n\s*", "", html)
+
+_INR_RATE_AUDIT = 84.0
+
+
+def _fmt_num_audit(v, dec=2):
+    try:
+        return f"{float(v):,.{dec}f}"
+    except Exception:
+        return "-"
+
+
+def _cell_audit(row, key, dec=2, is_int=False, default="-"):
+    if row is None:
+        return default
+    v = row.get(key)
+    if v is None:
+        return default
+    if is_int:
+        try:
+            return str(int(v))
+        except Exception:
+            return default
+    return _fmt_num_audit(v, dec)
+
+
+def _apply_bt_adjustments_audit(bt_rows, lot_input, slippage_usd, inr_rate):
+    """
+    Scales backtest rows to a user-chosen lot size and deducts a
+    synthetic slippage cost ($ per lot). Pure what-if simulation on
+    the backtest side only - no live data involved.
+    Assumes CSV base figures represent 1 lot.
+    cum_pnl_inr is accumulated in ascending chronological order
+    (oldest trade first) regardless of input row order, so the
+    running total is correct even though rows display newest-first.
+    """
+    scaled = []
+    for r in bt_rows:
+        r2 = dict(r)
+        pnl_usd = r.get("pnl_usd")
+        if pnl_usd is None or r.get("exit_ist") in ("-", None):
+            r2["lot"] = lot_input
+            r2["net_pnl_inr"] = None
+            scaled.append(r2)
+            continue
+        scaled_usd = pnl_usd * (lot_input / 100.0)
+        before_tax_inr = scaled_usd * inr_rate
+        after_tax_inr = before_tax_inr
+        slip_deduction_inr = slippage_usd * (lot_input / 100.0) * inr_rate
+        final_net_inr = after_tax_inr - slip_deduction_inr
+        r2["lot"] = lot_input
+        r2["charges"] = (r.get("charges") or 0) * (lot_input / 100.0)  # real charges only (taker+funding+tax); BT Slip($) is a what-if impacting Net PnL only, not shown here
+        r2["net_pnl_inr"] = final_net_inr
+        scaled.append(r2)
+
+    _asc_order = sorted(range(len(scaled)), key=lambda i: str(scaled[i].get("entry_ts_raw", "")))
+    cum = 0.0
+    for i in _asc_order:
+        _npi = scaled[i].get("net_pnl_inr")
+        if _npi is not None:
+            cum += _npi
+        scaled[i]["cum_pnl_inr"] = cum
+
+    return scaled
+
+
+def _render_lv_row_html(row, strat_label, read_log_fn, fetch_orders_fn=None):
+    if row.get("is_open"):
+        try:
+            _entry_dt = _pd_audit.to_datetime(str(row.get("entry_ts_raw", "")).replace("T", " "))
+            message = "DELTA SIDE - Position Still Open (awaiting exit fill)"
+        except Exception:
+            message = "DELTA SIDE - Position Still Open (awaiting exit fill)"
+    else:
+        try:
+            _entry_dt = _pd_audit.to_datetime(str(row["entry_ts_raw"]).replace("T", " "))
+            _exit_raw = row.get("exit_ts_raw")
+            _exit_dt = _pd_audit.to_datetime(str(_exit_raw).replace("T", " ")) if _exit_raw not in (None, "", "PENDING", "nan") else None
+            _issues = _get_trade_issues_audit_full(strat_label, _entry_dt, _exit_dt, read_log_fn)
+            _all_msgs = _issues
+            message = " | ".join(_all_msgs) if _all_msgs else "OK - No issues detected"
+        except Exception:
+            message = "OK - No issues detected"
+
+    return f"""
+    <tr>
+      <td style="{TDN_AUDIT}">{row.get('trade_no') if row.get('trade_no') is not None else '-'}</td>
+      <td style="{TD_AUDIT}">{row.get('date','-')}</td>
+      <td style="{TD_AUDIT}">{row.get('symbol','-')}</td>
+      <td style="{TD_AUDIT}">{row.get('dir','-')}</td>
+      <td style="{TD_AUDIT}">{row.get('entry_ist','-')}</td>
+      <td style="{TD_AUDIT}">{row.get('exit_ist','-')}</td>
+      <td style="{TD_AUDIT}">{_fmt_num_audit(row.get('entry_p'))}</td>
+      <td style="{TD_AUDIT}">{_fmt_num_audit(row.get('exit_p')) if row.get('exit_p') is not None else 'OPEN'}</td>
+      <td style="{TD_AUDIT}">{_cell_audit(row, 'lot', is_int=True)}</td>
+      <td style="{TD_AUDIT}">{_fmt_num_audit(row.get('charges'))}</td>
+      {_pnl_td_audit(row.get('net_pnl_inr'))}
+      {_pnl_td_audit(row.get('cum_pnl_inr'))}
+      <td style="{TD_AUDIT};text-align:left;">{message}</td>
+    </tr>
+    """
+
+
+def _pnl_td_audit(value):
+    if value is None:
+        return f'<td style="{TD_AUDIT}">-</td>'
+    _color = "#2e7d32" if value >= 0 else "#c62828"
+    return f'<td style="{TD_AUDIT};color:{_color};font-weight:700;">{_fmt_num_audit(value)}</td>'
+
+
+def _render_bt_row_html(row):
+    return f"""
+    <tr>
+      <td style="{TDN_AUDIT}">{row.get('trade_no','-')}</td>
+      <td style="{TD_AUDIT}">{row.get('date','-')}</td>
+      <td style="{TD_AUDIT}">{row.get('symbol','-')}</td>
+      <td style="{TD_AUDIT}">{row.get('dir','-')}</td>
+      <td style="{TD_AUDIT}">{row.get('entry_ist','-')}</td>
+      <td style="{TD_AUDIT}">{row.get('exit_ist','-')}</td>
+      <td style="{TD_AUDIT}">{_fmt_num_audit(row.get('entry_p'))}</td>
+      <td style="{TD_AUDIT}">{_fmt_num_audit(row.get('exit_p')) if row.get('exit_p') else 'OPEN'}</td>
+      <td style="{TD_AUDIT}">{_cell_audit(row, 'lot', is_int=True)}</td>
+      <td style="{TD_AUDIT}">{_fmt_num_audit(row.get('charges'))}</td>
+      {_pnl_td_audit(row.get('net_pnl_inr'))}
+      {_pnl_td_audit(row.get('cum_pnl_inr'))}
+    </tr>
+    """
+
+
+def _render_lv_table_html(rows_html):
+    header = f"""
+    <table style="width:100%;border-collapse:collapse;margin-bottom:10px;">
+      <tr>
+        <th style="{TH_AUDIT}">Trade No</th><th style="{TH_AUDIT}">Date</th>
+        <th style="{TH_AUDIT}">Symbol</th><th style="{TH_AUDIT}">Dir</th><th style="{TH_AUDIT}">Entry Time</th>
+        <th style="{TH_AUDIT}">Exit Time</th><th style="{TH_AUDIT}">Entry Px</th>
+        <th style="{TH_AUDIT}">Exit Px</th><th style="{TH_AUDIT}">Lot</th>
+        <th style="{TH_AUDIT}">Charges</th><th style="{TH_AUDIT}">Net PnL</th>
+        <th style="{TH_AUDIT}">Cum PnL</th><th style="{TH_AUDIT}">Message</th>
+      </tr>
+    """
+    return header + rows_html + "</table>"
+
+
+def _render_bt_table_html(rows_html):
+    header = f"""
+    <table style="width:100%;border-collapse:collapse;margin-bottom:10px;">
+      <tr>
+        <th style="{TH_AUDIT}">Trade No</th><th style="{TH_AUDIT}">Date</th>
+        <th style="{TH_AUDIT}">Symbol</th><th style="{TH_AUDIT}">Dir</th><th style="{TH_AUDIT}">Entry Time</th>
+        <th style="{TH_AUDIT}">Exit Time</th><th style="{TH_AUDIT}">Entry Px</th>
+        <th style="{TH_AUDIT}">Exit Px</th><th style="{TH_AUDIT}">Lot</th>
+        <th style="{TH_AUDIT}">Charges</th><th style="{TH_AUDIT}">Net PnL</th>
+        <th style="{TH_AUDIT}">Cum PnL</th>
+      </tr>
+    """
+    return header + rows_html + "</table>"
+
+
+def _get_prod_rows_audit(strat_label, from_date, to_date, inr_rate):
+    """
+    Builds Production L2 Fill rows for a strategy from logs/fill_prices_*.csv.
+    Mirrors _get_live_rows_audit's PnL convention (gross pnl minus charges = net),
+    using prod_entry_fill/prod_exit_fill in place of testnet lv_entry/lv_exit.
+    Read-only CSV parse - no network/API calls, so no dashboard load impact.
+    """
+    import csv as _csv_audit
+    rows = []
+    _csv_path = f"logs/fill_prices_{strat_label.lower()}.csv"
+    try:
+        if not _os_audit.path.exists(_csv_path):
+            return []
+        with open(_csv_path, "r", newline="") as _fh:
+            _reader = _csv_audit.DictReader(_fh)
+            _trade_no = 0
+            _cum_pnl = 0.0
+            for _row in _reader:
+                _pe = _row.get("prod_entry_fill", "NA")
+                _px = _row.get("prod_exit_fill", "NA")
+                if _pe in (None, "", "NA") or _px in (None, "", "NA"):
+                    continue
+                try:
+                    _ep_f = float(_pe)
+                    _xp_f = float(_px)
+                    _lots_f = float(_row.get("lots", 0) or 0)
+                    _dirn = (_row.get("dir") or "").strip().lower()
+                    _charges_usd = float(_row.get("total_charges", 0) or 0)
+                except Exception:
+                    continue
+
+                _entry_ts_off = _offset_ts_audit(_row.get("entry_ts", ""), strat_label, force_offset=True)
+                _exit_ts_off = _offset_ts_audit(_row.get("exit_ts", ""), strat_label, force_offset=True)
+                try:
+                    _entry_date = _fast_date_audit_local(_entry_ts_off)
+                except Exception:
+                    continue
+                if not (from_date <= _entry_date <= to_date):
+                    continue
+
+                _dir_sign = 1.0 if _dirn == "long" else -1.0
+                _pnl_usd = (_xp_f - _ep_f) * _dir_sign * _lots_f * 0.001
+                _net_pnl_inr = (_pnl_usd - _charges_usd) * inr_rate
+                _trade_no += 1
+                _cum_pnl += _net_pnl_inr
+
+                rows.append({
+                    "trade_no"     : _trade_no,
+                    "label"        : strat_label,
+                    "dir"          : _dirn.upper(),
+                    "date"         : _ist_date_audit(_entry_ts_off),
+                    "symbol"       : "BTCUSD",
+                    "entry_ts_raw" : _entry_ts_off,
+                    "exit_ts_raw"  : _exit_ts_off,
+                    "entry_ist"    : _to_ist_audit(_entry_ts_off),
+                    "exit_ist"     : _to_ist_audit(_exit_ts_off),
+                    "entry_p"      : _ep_f,
+                    "exit_p"       : _xp_f,
+                    "lot"          : _lots_f,
+                    "charges"      : _charges_usd * inr_rate,
+                    "pnl_usd"      : _pnl_usd,
+                    "net_pnl_inr"  : _net_pnl_inr,
+                    "cum_pnl_inr"  : _cum_pnl,
+                })
+    except Exception:
+        pass
+    rows.sort(key=lambda r: str(r.get("entry_ts_raw", "")), reverse=True)
+    return rows
+
+
+def _get_prod_open_row_audit(strat_label):
+    """
+    Reads logs/fill_prices_open_{strat}.csv (single-row, reporting-only file
+    written by the async entry-fill thread in signal_replay_s4*.py). Returns
+    a list with one dict matching the Production Fill table's row shape for
+    an in-progress trade, or [] if no open production trade / file missing.
+    """
+    import csv as _csv_audit
+    _csv_path = f"logs/fill_prices_open_{strat_label.lower()}.csv"
+    if not _os_audit.path.exists(_csv_path):
+        return []
+    try:
+        with open(_csv_path, "r", newline="") as _fh:
+            _reader = _csv_audit.DictReader(_fh)
+            for _row in _reader:
+                _pe = _row.get("prod_entry_fill", "NA")
+                _ep_f = float(_pe) if _pe not in (None, "", "NA") else 0.0
+                return [{
+                    "trade_no"     : "-",
+                    "label"        : strat_label,
+                    "dir"          : (_row.get("dir") or "").strip().upper(),
+                    "date"         : _ist_date_audit(_offset_ts_audit(_row.get("entry_ts", ""), strat_label, force_offset=True)),
+                    "symbol"       : "BTCUSD",
+                    "entry_ts_raw" : _row.get("entry_ts", ""),
+                    "exit_ts_raw"  : "PENDING",
+                    "entry_ist"    : _to_ist_audit(_offset_ts_audit(_row.get("entry_ts", ""), strat_label, force_offset=True)),
+                    "exit_ist"     : "-",
+                    "entry_p"      : _ep_f,
+                    "exit_p"       : None,
+                    "lot"          : float(_row.get("lots", 0) or 0),
+                    "charges"      : 0.0,
+                    "pnl_usd"      : None,
+                    "net_pnl_inr"  : None,
+                    "cum_pnl_inr"  : None,
+                }]
+    except Exception:
+        pass
+    return []
+
+
+def _fast_date_audit_local(raw):
+    s = str(raw).strip()
+    if s.endswith("Z"):
+        s = s[:-1]
+    s = s.replace("T", " ", 1)
+    _d = _dt_audit.datetime.fromisoformat(s)
+    return (_d + _dt_audit.timedelta(hours=5, minutes=30)).date()
+
+
+def _prod_mtime_audit(strat_label):
+    _p = f"logs/fill_prices_{strat_label.lower()}.csv"
+    try:
+        return _os_audit.path.getmtime(_p) if _os_audit.path.exists(_p) else 0.0
+    except Exception:
+        return 0.0
+
+
+import glob as _glob_audit
+import os as _os_audit
+
+def _bt_mtime_audit(strat_label):
+    _pattern = _BT_CSV_PATTERN_AUDIT.get(strat_label, "")
+    _mtimes = [0.0]
+    try:
+        for _f in _glob_audit.glob(_pattern):
+            _mtimes.append(_os_audit.path.getmtime(_f))
+    except Exception:
+        pass
+    _sig_map = {"S4": "logs/signals_s4.csv", "S4V2": "logs/signals_s4v2.csv", "S4V3": "logs/signals_s4v3.csv"}
+    _sig_path = _sig_map.get(strat_label, "")
+    try:
+        if _sig_path and _os_audit.path.exists(_sig_path):
+            _mtimes.append(_os_audit.path.getmtime(_sig_path))
+    except Exception:
+        pass
+    return max(_mtimes)
+
+
+@st.cache_data(ttl=300, max_entries=20, show_spinner=False)
+def _load_audit_bt_cached(_load14_fn, strat_label, from_date, to_date, inr_rate, _bust=None):
+    return _get_bt_rows_audit(strat_label, from_date, to_date, _load14_fn, inr_rate)
+
+
+@st.cache_data(ttl=300, max_entries=20, show_spinner=False)
+def _load_audit_lv_cached(_fetch_fills_fn, strat_label, from_date, to_date, inr_rate, _bust=None):
+    return _get_live_rows_audit(strat_label, from_date, to_date, _fetch_fills_fn, inr_rate)
+
+
+@st.cache_data(ttl=300, max_entries=20, show_spinner=False)
+def _load_audit_lv_open_cached(_fetch_fills_fn, strat_label, from_date, to_date, _bust=None):
+    return _get_open_live_rows_audit(strat_label, from_date, to_date, _fetch_fills_fn)
+
+
+@st.cache_data(ttl=300, max_entries=20, show_spinner=False)
+def _load_audit_prod_cached(strat_label, from_date, to_date, inr_rate, _bust=None):
+    return _get_prod_rows_audit(strat_label, from_date, to_date, inr_rate)
+
+
+def _metric_pnl_html_audit(label, value):
+    _color = "#2e7d32" if value >= 0 else "#c62828"
+    return f'''
+    <div style="padding:0 0 4px 0;">
+      <div style="font-size:14px;color:#6b7280;">{label}</div>
+      <div style="font-size:14px;font-weight:600;color:{_color};">Rs {_fmt_num_audit(value)}</div>
+    </div>
+    '''
+
+
+def _eq_render_audit(rows, key_prefix, title):
+    """
+    Current-month-only equity curve (cumulative net PnL, INR) for audit rows.
+    Mirrors Section 13's _eq_render13 pattern (Plotly cumsum + INR hover),
+    hardcoded to current calendar month - no prev/next nav, no other-month data.
+    Data is reused from already-cached rows (no extra fetch), so no added load.
+    """
+    import plotly.graph_objects as _go_audit
+
+    _today = (_dt_audit.datetime.utcnow() + _dt_audit.timedelta(hours=5, minutes=30)).date()
+    _month_str = _today.strftime("%Y-%m")
+
+    _pts = []
+    for r in rows:
+        _ts_raw = r.get("exit_ts_raw", "")
+        if not _ts_raw or str(_ts_raw) in ("", "PENDING", "nan", "-"):
+            continue
+        try:
+            _s = str(_ts_raw).strip()
+            if _s.endswith("Z"):
+                _s = _s[:-1]
+            _s = _s.replace("T", " ", 1)
+            _dt_val = _dt_audit.datetime.fromisoformat(_s)
+        except Exception:
+            continue
+        if _dt_val.strftime("%Y-%m") != _month_str:
+            continue
+        _pnl = r.get("net_pnl_inr")
+        if _pnl is None:
+            continue
+        _pts.append((_dt_val, float(_pnl)))
+
+    if not _pts:
+        st.caption(f"{title}: no trades this month")
+        return
+
+    _pts.sort(key=lambda x: x[0])
+    _dates = [p[0] for p in _pts]
+    _cum = []
+    _run = 0.0
+    for p in _pts:
+        _run += p[1]
+        _cum.append(_run)
+
+    if len(_dates) == 1:
+        _dates = [_dates[0] - _dt_audit.timedelta(hours=1), _dates[0]]
+        _cum = [0.0, _cum[0]]
+
+    _pos = [v if v >= 0 else 0 for v in _cum]
+    _neg = [v if v < 0 else 0 for v in _cum]
+    _hover_text = [f"Rs {_fmt_num_audit(v)}" for v in _cum]
+
+    fig = _go_audit.Figure(data=[
+        _go_audit.Scatter(x=_dates, y=_pos, fill='tozeroy', fillcolor='rgba(39,174,96,0.2)',
+                           line=dict(width=0), mode='lines', showlegend=False, hoverinfo='skip'),
+        _go_audit.Scatter(x=_dates, y=_neg, fill='tozeroy', fillcolor='rgba(231,76,60,0.2)',
+                           line=dict(width=0), mode='lines', showlegend=False, hoverinfo='skip'),
+        _go_audit.Scatter(x=_dates, y=_cum, line=dict(color='#2c3e50', width=2),
+                           mode='lines', name='Cumulative PnL',
+                           text=_hover_text, hovertemplate='%{text}<extra></extra>')
+    ])
+    fig.update_layout(title=f'{title} - {_month_str}', xaxis_title='Date',
+                       yaxis_title='Cumulative PnL (Rs)', hovermode='x unified', height=300,
+                       margin=dict(l=40, r=20, t=40, b=30),
+                       hoverlabel=dict(bgcolor='#2c3e50', font=dict(color='white', size=13)))
+    st.plotly_chart(fig, use_container_width=True, key=f"{key_prefix}_audit_eq_chart")
+
+
+def _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn, fetch_fills_fn, read_log_fn, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn=None, time_start=None):
+    bt_rows_raw = _load_audit_bt_cached(load14_fn, strat_label, from_date, to_date, inr_rate, _bt_mtime_audit(strat_label))
+    lv_rows = _load_audit_lv_cached(fetch_fills_fn, strat_label, from_date, to_date, inr_rate, _bt_mtime_audit(strat_label))
+    lv_open_rows = _load_audit_lv_open_cached(fetch_fills_fn, strat_label, from_date, to_date, _bt_mtime_audit(strat_label))
+
+    bt_rows = _apply_bt_adjustments_audit(bt_rows_raw, bt_lot_input, bt_slippage_input, inr_rate)
+    lv_all_rows = lv_open_rows + lv_rows
+
+    if time_start is not None:
+        def _t_ok_audit(r):
+            try:
+                _ts = str(r.get("entry_ts_raw", "")).replace("T", " ")
+                _dtp_utc = _pd_audit.to_datetime(_ts)
+                _dtp_ist = _dtp_utc + _pd_audit.Timedelta(hours=5, minutes=30)
+                _ent_date = _dtp_ist.date()
+                if _ent_date > from_date:
+                    return True
+                if _ent_date == from_date:
+                    return _dtp_ist.time() >= time_start
+                # entry is before from_date - trade only qualifies (via exit-date
+                # inclusion) if it was still open past the start cutoff
+                _ex_raw = str(r.get("exit_ts_raw", "")).strip()
+                if not _ex_raw or _ex_raw in ("", "PENDING", "nan", "OPEN", "-"):
+                    return True
+                _ex_utc = _pd_audit.to_datetime(_ex_raw.replace("T", " "))
+                _ex_ist = _ex_utc + _pd_audit.Timedelta(hours=5, minutes=30)
+                _ex_date = _ex_ist.date()
+                if _ex_date > from_date:
+                    return True
+                if _ex_date == from_date:
+                    return _ex_ist.time() >= time_start
+                return False
+            except Exception:
+                return True
+        bt_rows = [r for r in bt_rows if _t_ok_audit(r)]
+        lv_all_rows = [r for r in lv_all_rows if _t_ok_audit(r)]
+
+    # Recompute Cum PnL so the newest (top) row's cum always equals that table's
+    # Total Net PnL, matching convention on both sides (BT previously accumulated
+    # in the opposite direction from LV). Runs for every date range / filter
+    # combination. Equity curves (below, always "This Month") are untouched.
+    for _rows in (bt_rows, lv_all_rows):
+        _total_run = sum(_r.get("net_pnl_inr") or 0.0 for _r in _rows if _r.get("net_pnl_inr") is not None)
+        for _r in _rows:
+            _pnl = _r.get("net_pnl_inr")
+            _r["cum_pnl_inr"] = _total_run
+            if _pnl is not None:
+                _total_run -= _pnl
+
+    prod_rows = _get_prod_open_row_audit(strat_label) + _load_audit_prod_cached(strat_label, from_date, to_date, inr_rate, _prod_mtime_audit(strat_label))
+    if time_start is not None:
+        prod_rows = [r for r in prod_rows if _t_ok_audit(r)]
+    _prod_total_run = sum(r.get("net_pnl_inr") or 0.0 for r in prod_rows if r.get("net_pnl_inr") is not None)
+    for _r in prod_rows:
+        _pnl = _r.get("net_pnl_inr")
+        _r["cum_pnl_inr"] = _prod_total_run
+        if _pnl is not None:
+            _prod_total_run -= _pnl
+
+    col_prod, col_bt_top = st.columns(2)
+    with col_prod:
+        st.markdown(f"**{strat_label} - Production Fill**")
+        _total_trade_prod = len(prod_rows)
+        _total_pnl_prod = sum(r["net_pnl_inr"] for r in prod_rows if r.get("net_pnl_inr") is not None)
+        _total_charge_prod = sum(r["charges"] for r in prod_rows if r.get("charges") is not None)
+        p1, p2, p3 = st.columns(3)
+        p1.metric("Total Trade", _total_trade_prod)
+        with p2:
+            st.markdown(_metric_pnl_html_audit("Total Net PnL", _total_pnl_prod), unsafe_allow_html=True)
+        p3.metric("Total Charge", f"Rs {_fmt_num_audit(_total_charge_prod)}")
+        rows_html_prod = "".join(_render_bt_row_html(r) for r in prod_rows)
+        st.markdown(_clean_html_audit(f'<div style="overflow-x:auto;">{_render_bt_table_html(rows_html_prod)}</div>'), unsafe_allow_html=True)
+        if not prod_rows:
+            st.caption("No completed production trades yet in this date range (production L2 fill tracking recently enabled).")
+
+    with col_bt_top:
+        st.markdown(f"**{strat_label} - BT**")
+        _total_trade_bt_top = len(bt_rows)
+        _total_pnl_bt_top = sum(r["net_pnl_inr"] for r in bt_rows if r.get("net_pnl_inr") is not None)
+        _total_charge_bt_top = sum(r["charges"] for r in bt_rows if r.get("charges") is not None)
+        q1, q2, q3 = st.columns(3)
+        q1.metric("Total Trade", _total_trade_bt_top)
+        with q2:
+            st.markdown(_metric_pnl_html_audit("Total Net PnL", _total_pnl_bt_top), unsafe_allow_html=True)
+        q3.metric("Total Charge", f"Rs {_fmt_num_audit(_total_charge_bt_top)}")
+        rows_html_bt_top = "".join(_render_bt_row_html(r) for r in bt_rows)
+        st.markdown(_clean_html_audit(f'<div style="overflow-x:auto;">{_render_bt_table_html(rows_html_bt_top)}</div>'), unsafe_allow_html=True)
+
+    col_lv, col_bt = st.columns(2)
+
+    with col_lv:
+        st.markdown(f"**{strat_label} - Delta Live Filled**")
+        _total_trade_lv = len(lv_all_rows)
+        _total_pnl_lv = sum(r["net_pnl_inr"] for r in lv_all_rows if r.get("net_pnl_inr") is not None)
+        _total_charge_lv = sum(r["charges"] for r in lv_all_rows if r.get("charges") is not None)
+        m1, m2, m3 = st.columns(3)
+        m1.metric("Total Trade", _total_trade_lv)
+        with m2:
+            st.markdown(_metric_pnl_html_audit("Total Net PnL", _total_pnl_lv), unsafe_allow_html=True)
+        m3.metric("Total Charge", f"Rs {_fmt_num_audit(_total_charge_lv)}")
+
+        rows_html = "".join(_render_lv_row_html(r, strat_label, read_log_fn, fetch_orders_fn) for r in lv_all_rows)
+        st.markdown(_clean_html_audit(f'<div style="overflow-x:auto;">{_render_lv_table_html(rows_html)}</div>'), unsafe_allow_html=True)
+
+        st.markdown("##### Unfilled / Failed Order Alerts (Delta Side)")
+        alerts = []
+        try:
+            _bot_log_path = f"logs/live_trading_{strat_label.lower()}.log"
+            _bot_lines = read_log_fn(_bot_log_path) if read_log_fn else []
+            for _line in _bot_lines:
+                _ts_raw = _line[:23]
+                try:
+                    _line_ts = __import__("datetime").datetime.strptime(_ts_raw, "%Y-%m-%d %H:%M:%S,%f")
+                except Exception:
+                    continue
+                if not (from_date <= _line_ts.date() <= to_date):
+                    continue
+                if "ENTRY FAILED" in _line and "unfilled_beyond_band" in _line:
+                    alerts.append((_line_ts, "DELTA SIDE - Entry order rejected, price moved outside safety band"))
+                elif "ENTRY FAILED" in _line:
+                    alerts.append((_line_ts, "DELTA SIDE - Entry order failed, exchange rejected the order"))
+                elif "ENTRY ABANDONED" in _line:
+                    alerts.append((_line_ts, "CTS SIDE - Entry abandoned after repeated failed attempts"))
+        except Exception:
+            pass
+
+        try:
+            if fetch_orders_fn is not None:
+                _acc_map_ord = {"S4": "S4", "S4V2": "S4V2", "S4V3": "S4V3"}
+                _acc_lbl_ord = _acc_map_ord.get(strat_label)
+                if _acc_lbl_ord:
+                    _orders_hist = fetch_orders_fn(_acc_lbl_ord, 84)
+                    for _o in (_orders_hist or []):
+                        try:
+                            _o_ts = _dt_audit.datetime.utcfromtimestamp(int(_o.get("created_at", 0)) / 1e6)
+                        except Exception:
+                            continue
+                        if not (from_date <= _o_ts.date() <= to_date):
+                            continue
+                        _state = _o.get("state", "")
+                        _size = _o.get("size", 0)
+                        _unfilled = _o.get("unfilled_size", 0)
+                        _sot = _o.get("stop_order_type")
+                        _tag = "SL" if _sot == "stop_loss_order" else "Order"
+                        try:
+                            _filled = float(_size) - float(_unfilled)
+                        except Exception:
+                            _filled = None
+                        if _state == "cancelled":
+                            if _filled and _filled > 0:
+                                alerts.append((_o_ts, f"DELTA SIDE - {_tag} Partially Filled then Cancelled ({int(_filled)}/{_size} filled)"))
+                            else:
+                                alerts.append((_o_ts, f"DELTA SIDE - {_tag} Cancelled, No Fill (0/{_size} filled)"))
+                        elif _state in ("open", "pending"):
+                            alerts.append((_o_ts, f"DELTA SIDE - {_tag} Still {_state.capitalize()}"))
+        except Exception:
+            pass
+
+        if alerts:
+            alerts_sorted = sorted(alerts, key=lambda x: x[0], reverse=True)
+            rows_a = "".join(
+                f'<tr><td style="{TD_AUDIT}">{_to_ist_audit(str(ts))}</td><td style="{TD_AUDIT};text-align:left;">{msg}</td></tr>'
+                for ts, msg in alerts_sorted
+            )
+            st.markdown(
+                _clean_html_audit(
+                    f'<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;">'
+                    f'<tr><th style="{TH_AUDIT}">Timestamp (IST)</th><th style="{TH_AUDIT}">Message</th></tr>{rows_a}</table></div>'
+                ),
+                unsafe_allow_html=True
+            )
+        else:
+            st.caption("No unfilled/failed order alerts in this date range.")
+
+    with col_bt:
+        st.markdown(f"**{strat_label} - BT**")
+        _total_trade_bt = len(bt_rows)
+        _total_pnl_bt = sum(r["net_pnl_inr"] for r in bt_rows if r.get("net_pnl_inr") is not None)
+        _total_charge_bt = sum(r["charges"] for r in bt_rows if r.get("charges") is not None)
+        n1, n2, n3 = st.columns(3)
+        n1.metric("Total Trade", _total_trade_bt)
+        with n2:
+            st.markdown(_metric_pnl_html_audit("Total Net PnL", _total_pnl_bt), unsafe_allow_html=True)
+        n3.metric("Total Charge", f"Rs {_fmt_num_audit(_total_charge_bt)}")
+
+        rows_html_bt = "".join(_render_bt_row_html(r) for r in bt_rows)
+        st.markdown(_clean_html_audit(f'<div style="overflow-x:auto;">{_render_bt_table_html(rows_html_bt)}</div>'), unsafe_allow_html=True)
+
+    # Equity curve is intentionally independent of the table date-range selector -
+    # always current month (1st -> today), regardless of Today/2 Day/1 Week/Custom
+    # chosen above. Tables above are untouched by this fetch.
+    _eq_today = (_dt_audit.datetime.utcnow() + _dt_audit.timedelta(hours=5, minutes=30)).date()
+    _eq_from = _eq_today.replace(day=1)
+    _eq_to = _eq_today
+    _eq_prod_rows = _load_audit_prod_cached(strat_label, _eq_from, _eq_to, inr_rate, _prod_mtime_audit(strat_label))
+    _eq_bt_rows_raw = _load_audit_bt_cached(load14_fn, strat_label, _eq_from, _eq_to, inr_rate, _bt_mtime_audit(strat_label))
+    _eq_bt_rows = _apply_bt_adjustments_audit(_eq_bt_rows_raw, bt_lot_input, bt_slippage_input, inr_rate)
+
+    eqc1, eqc2 = st.columns(2)
+    with eqc1:
+        st.markdown("##### Equity Curve - Production Fill (This Month)")
+        _eq_render_audit(_eq_prod_rows, f"{strat_label}_prod", "Production Fill")
+    with eqc2:
+        st.markdown("##### Equity Curve - Backtest (This Month)")
+        _eq_render_audit(_eq_bt_rows, f"{strat_label}_bt", "Backtest")
+
+    _eq_lv_rows_raw = _load_audit_lv_cached(fetch_fills_fn, strat_label, _eq_from, _eq_to, inr_rate, _bt_mtime_audit(strat_label))
+    _eq_lv_open_rows = _load_audit_lv_open_cached(fetch_fills_fn, strat_label, _eq_from, _eq_to, _bt_mtime_audit(strat_label))
+    _eq_lv_rows = _eq_lv_open_rows + _eq_lv_rows_raw
+
+    eqc3, eqc4 = st.columns(2)
+    with eqc3:
+        st.markdown("##### Equity Curve - Delta Live Filled (This Month)")
+        _eq_render_audit(_eq_lv_rows, f"{strat_label}_lv", "Delta Live Filled")
+    with eqc4:
+        st.markdown("##### Equity Curve - Backtest (This Month)")
+        _eq_render_audit(_eq_bt_rows, f"{strat_label}_bt2", "Backtest")
+
+    return bt_rows, lv_all_rows
+
+
+def render_trade_audit_tab(load14_fn, fetch_fills_fn, read_log_fn, inr_rate=_INR_RATE_AUDIT, fetch_orders_fn=None):
+    import time as _time_spy_audit
+    _t_spy_start = _time_spy_audit.time()
+    def _spy_log(msg):
+        try:
+            with open("/tmp/audit_tab_spy.log", "a") as _f:
+                _f.write(f"{_time_spy_audit.time():.3f} | +{_time_spy_audit.time()-_t_spy_start:.2f}s | {msg}\n")
+        except Exception:
+            pass
+    _spy_log("=== RENDER START ===")
+    st.markdown("### TRADE AUDIT - Delta Live Filled vs Backtest")
+
+    c1, c2, c3, c4, c5 = st.columns([1, 1, 1, 1, 1.4])
+    with c1:
+        strat_label = st.selectbox("Strategy", ["ALL STRATEGY", "S4", "S4V2", "S4V3"], key="audit_strat_select")
+    with c2:
+        range_choice = st.selectbox("Date Range", ["Today", "2 Day", "1 Week", "1 Month", "Custom"], index=0, key="audit_range_select")
+    with c3:
+        bt_lot_input = st.number_input("BT Lot", min_value=1, value=100, step=1, key="audit_bt_lot")
+    with c4:
+        bt_slippage_input = st.selectbox("BT Slip($)", [0, 5, 10, 15], index=1, key="audit_bt_slip")
+    custom_start, custom_end = None, None
+    with c5:
+        if range_choice == "Custom":
+            custom_start = st.date_input("From", key="audit_custom_from")
+            custom_end = st.date_input("To", key="audit_custom_to")
+
+    c6, _c7 = st.columns([1, 3])
+    with c6:
+        _time_start_enabled = st.checkbox("Filter by start time", key="audit_time_start_enabled")
+        time_start = st.time_input("Show trades from", key="audit_time_start_val") if _time_start_enabled else None
+
+    import os as _os_snap_audit
+    _mtime_snapshot_audit = {}
+    def _frozen_read_log_fn_audit(_path):
+        if _path not in _mtime_snapshot_audit:
+            try:
+                _mtime_snapshot_audit[_path] = _os_snap_audit.path.getmtime(_path)
+            except Exception:
+                _mtime_snapshot_audit[_path] = 0
+        return _read_log_lines_cached_audit(_path, _mtime_snapshot_audit[_path])
+
+    from_date, to_date = _get_date_range_audit(range_choice, custom_start, custom_end)
+    if from_date is None or to_date is None:
+        st.warning("Please select a valid custom date range.")
+        return
+
+    def _t_ok_audit_csv(r):
+        if time_start is None:
+            return True
+        try:
+            _ts = str(r.get("entry_ts_raw", "")).replace("T", " ")
+            _dtp_utc = _pd_audit.to_datetime(_ts)
+            _dtp_ist = _dtp_utc + _pd_audit.Timedelta(hours=5, minutes=30)
+            _ent_date = _dtp_ist.date()
+            if _ent_date > from_date:
+                return True
+            if _ent_date == from_date:
+                return _dtp_ist.time() >= time_start
+            _ex_raw = str(r.get("exit_ts_raw", "")).strip()
+            if not _ex_raw or _ex_raw in ("", "PENDING", "nan", "OPEN", "-"):
+                return True
+            _ex_utc = _pd_audit.to_datetime(_ex_raw.replace("T", " "))
+            _ex_ist = _ex_utc + _pd_audit.Timedelta(hours=5, minutes=30)
+            _ex_date = _ex_ist.date()
+            if _ex_date > from_date:
+                return True
+            if _ex_date == from_date:
+                return _ex_ist.time() >= time_start
+            return False
+        except Exception:
+            return True
+
+    _strats_for_csv = ["S4", "S4V2", "S4V3"] if strat_label == "ALL STRATEGY" else [strat_label]
+    _csv_cols = ["source","label","trade_no","dir","date","symbol","entry_ist","exit_ist","entry_p","exit_p","lot","charges","pnl_usd","net_pnl_inr","cum_pnl_inr"]
+    _csv_rows = []
+    for _s_csv in _strats_for_csv:
+        _bt_raw_csv = _load_audit_bt_cached(load14_fn, _s_csv, from_date, to_date, inr_rate, _bt_mtime_audit(_s_csv))
+        _bt_csv = _apply_bt_adjustments_audit(_bt_raw_csv, bt_lot_input, bt_slippage_input, inr_rate)
+        _lv_open_csv = _load_audit_lv_open_cached(fetch_fills_fn, _s_csv, from_date, to_date, _bt_mtime_audit(_s_csv))
+        _lv_closed_csv = _load_audit_lv_cached(fetch_fills_fn, _s_csv, from_date, to_date, inr_rate, _bt_mtime_audit(_s_csv))
+        _lv_csv = _lv_open_csv + _lv_closed_csv
+        _bt_csv = [r for r in _bt_csv if _t_ok_audit_csv(r)]
+        _lv_csv = [r for r in _lv_csv if _t_ok_audit_csv(r)]
+        for _r in _lv_csv:
+            _row = {k: _r.get(k) for k in _csv_cols if k != "source"}
+            _row["source"] = "DELTA_LIVE_FILLED"
+            _csv_rows.append(_row)
+        for _r in _bt_csv:
+            _row = {k: _r.get(k) for k in _csv_cols if k != "source"}
+            _row["source"] = "BACKTEST"
+            _csv_rows.append(_row)
+
+    _csv_rows_prod = []
+    for _s_csv in _strats_for_csv:
+        _bt_raw_csv2 = _load_audit_bt_cached(load14_fn, _s_csv, from_date, to_date, inr_rate, _bt_mtime_audit(_s_csv))
+        _bt_csv2 = _apply_bt_adjustments_audit(_bt_raw_csv2, bt_lot_input, bt_slippage_input, inr_rate)
+        _prod_csv = _load_audit_prod_cached(_s_csv, from_date, to_date, inr_rate, _prod_mtime_audit(_s_csv))
+        _bt_csv2 = [r for r in _bt_csv2 if _t_ok_audit_csv(r)]
+        _prod_csv = [r for r in _prod_csv if _t_ok_audit_csv(r)]
+        for _r in _prod_csv:
+            _row = {k: _r.get(k) for k in _csv_cols if k != "source"}
+            _row["source"] = "PRODUCTION_FILL"
+            _csv_rows_prod.append(_row)
+        for _r in _bt_csv2:
+            _row = {k: _r.get(k) for k in _csv_cols if k != "source"}
+            _row["source"] = "BACKTEST"
+            _csv_rows_prod.append(_row)
+
+    _dl_col1, _dl_col2 = st.columns(2)
+    with _dl_col1:
+        if _csv_rows:
+            _csv_df = _pd_audit.DataFrame(_csv_rows, columns=_csv_cols)
+            st.download_button(
+                label="Download CSV (Delta Fill vs Backtest)",
+                data=_csv_df.to_csv(index=False).encode("utf-8"),
+                file_name=f"audit_trade_{strat_label}_{from_date}_{to_date}.csv",
+                mime="text/csv",
+                key="audit_csv_download_btn",
+            )
+    with _dl_col2:
+        if _csv_rows_prod:
+            _csv_df_prod = _pd_audit.DataFrame(_csv_rows_prod, columns=_csv_cols)
+            st.download_button(
+                label="Download CSV (Production Fill vs Backtest)",
+                data=_csv_df_prod.to_csv(index=False).encode("utf-8"),
+                file_name=f"audit_trade_prod_{strat_label}_{from_date}_{to_date}.csv",
+                mime="text/csv",
+                key="audit_csv_download_prod_btn",
+            )
+    hcol1, hcol2 = st.columns(2)
+    with hcol1:
+        st.markdown("### DELTA LIVE FILLED")
+    with hcol2:
+        st.markdown("### BACKTEST")
+
+    _all_bt_rows, _all_lv_rows = [], []
+    if strat_label == "ALL STRATEGY":
+        # PERM-FIX 2026-10-08: prewarm fetch_fills_fn/fetch_orders_fn cache for all 3
+        # strategies IN PARALLEL (threads) before the serial render loop below.
+        # This only pre-populates @st.cache_data - no rendering, no logic change.
+        # Render loop stays serial/untouched (Streamlit UI calls are not thread-safe).
+        try:
+            import concurrent.futures as _cf_audit
+            def _prewarm_audit(_s):
+                try:
+                    fetch_fills_fn(_s, 84, 744)
+                except Exception:
+                    pass
+                try:
+                    if fetch_orders_fn is not None:
+                        fetch_orders_fn(_s, 84)
+                except Exception:
+                    pass
+            with _cf_audit.ThreadPoolExecutor(max_workers=3) as _ex_audit:
+                list(_ex_audit.map(_prewarm_audit, ["S4", "S4V2", "S4V3"]))
+        except Exception:
+            pass
+        for _idx, _s in enumerate(["S4", "S4V2", "S4V3"]):
+            _spy_log(f"BEFORE render block {_s}")
+            _bt_r, _lv_r = _render_one_strategy_block_audit(_s, from_date, to_date, load14_fn, fetch_fills_fn, _frozen_read_log_fn_audit, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn, time_start=time_start)
+            _spy_log(f"AFTER render block {_s}")
+            _all_bt_rows.extend(_bt_r or [])
+            _all_lv_rows.extend(_lv_r or [])
+            if _idx < 2:
+                st.markdown("---")
+    else:
+        _bt_r, _lv_r = _render_one_strategy_block_audit(strat_label, from_date, to_date, load14_fn, fetch_fills_fn, _frozen_read_log_fn_audit, inr_rate, bt_lot_input, bt_slippage_input, fetch_orders_fn, time_start=time_start)
+        _all_bt_rows.extend(_bt_r or [])
+        _all_lv_rows.extend(_lv_r or [])
+
+
+
+# ============================================================
+# TRADE AUDIT TAB - CHUNK 6: Standalone Fills Fetcher + Log Reader
+# (Independent copies - do NOT touch Section 14's closures.
+# Exact same logic/signature/base-url replicated so this tab
+# has zero dependency on _tab_today's internal functions.)
+# ============================================================
+
+import streamlit as st
+
+@st.cache_data(ttl=180, max_entries=20, show_spinner=False)
+def _fetch_account_fills_cached_audit(acc, product_id=84, window_hours=48):
+    import hmac as _hmlf_a, hashlib as _hslf_a, time as _tmlf_a, requests as _rqlf_a, os as _os_a
+    _k = _os_a.environ.get(f'{acc}_API_KEY', '')
+    _s = _os_a.environ.get(f'{acc}_API_SECRET', '')
+    if not _k or not _s:
+        return []
+    _base = "https://cdn-ind.testnet.deltaex.org"
+    _path = "/v2/fills"
+    _now = int(_tmlf_a.time())
+    _start = int((_now - window_hours * 3600) * 1e6)
+    _end   = int((_now + 300) * 1e6)
+    _all_fills = []
+    _after_cursor = None
+    for _page in range(1, 50):
+        _ts_ep = str(int(_tmlf_a.time()))
+        _p = {"product_id": product_id, "page_size": 50,
+              "start_time": _start, "end_time": _end}
+        if _after_cursor:
+            _p["after"] = _after_cursor
+        _qs = "&".join(f"{a}={b}" for a, b in sorted(_p.items()))
+        _msg = "GET" + _ts_ep + _path + "?" + _qs
+        _sig = _hmlf_a.new(_s.encode(), _msg.encode(), _hslf_a.sha256).hexdigest()
+        _hdr = {"api-key": _k, "timestamp": _ts_ep, "signature": _sig}
+        try:
+            _r = _rqlf_a.get(f"{_base}{_path}?{_qs}", headers=_hdr, timeout=10)
+            _d = _r.json()
+            if not _d.get("success"):
+                break
+            _page_fills = _d.get("result", [])
+            if not _page_fills:
+                break
+            _all_fills.extend(_page_fills)
+            _meta = _d.get("meta", {})
+            _after_cursor = _meta.get("after")
+            if not _after_cursor:
+                break
+        except Exception:
+            break
+    return [f for f in _all_fills if not str(f.get("client_order_id","")).startswith("DRILL")]
+
+
+@st.cache_data(ttl=180, max_entries=20, show_spinner=False)
+def _fetch_account_orders_history_cached_audit(acc, _product_id=84, _window_hours=48):
+    import hmac as _hmoh_a, hashlib as _hsoh_a, time as _tmoh_a, requests as _rqoh_a, os as _osoh_a
+    _k = _osoh_a.environ.get(f'{acc}_API_KEY', '')
+    _s = _osoh_a.environ.get(f'{acc}_API_SECRET', '')
+    if not _k or not _s:
+        return []
+    _base = "https://cdn-ind.testnet.deltaex.org"
+    _path = "/v2/orders/history"
+    _now = int(_tmoh_a.time())
+    _start = int((_now - _window_hours * 3600) * 1e6)
+    _end   = int((_now + 300) * 1e6)
+    _all_orders = []
+    _after_cursor = None
+    for _page in range(1, 50):
+        _ts_ep = str(int(_tmoh_a.time()))
+        _p = {"product_ids": str(_product_id), "page_size": 50,
+              "start_time": _start, "end_time": _end}
+        if _after_cursor:
+            _p["after"] = _after_cursor
+        _qs = "&".join(f"{a}={b}" for a, b in sorted(_p.items()))
+        _msg = "GET" + _ts_ep + _path + "?" + _qs
+        _sig = _hmoh_a.new(_s.encode(), _msg.encode(), _hsoh_a.sha256).hexdigest()
+        _hdr = {"api-key": _k, "timestamp": _ts_ep, "signature": _sig}
+        try:
+            _r = _rqoh_a.get(f"{_base}{_path}?{_qs}", headers=_hdr, timeout=10)
+            _d = _r.json()
+            if not _d.get("success"):
+                break
+            _page_orders = _d.get("result", [])
+            if not _page_orders:
+                break
+            _all_orders.extend(_page_orders)
+            _meta = _d.get("meta", {})
+            _after_cursor = _meta.get("after")
+            if not _after_cursor:
+                break
+        except Exception:
+            break
+    return [o for o in _all_orders if not str(o.get("client_order_id","")).startswith("DRILL")]
+
+
+@st.cache_data(ttl=180, max_entries=20, show_spinner=False)
+def _read_log_lines_cached_audit(_path, _mtime):
+    try:
+        with open(_path) as _f:
+            return _f.readlines()
+    except Exception:
+        return []
+
+
+def _read_log_lines_audit(_path):
+    import os as _os_audit2
+    try:
+        _mtime = _os_audit2.path.getmtime(_path)
+    except Exception:
+        _mtime = 0
+    return _read_log_lines_cached_audit(_path, _mtime)

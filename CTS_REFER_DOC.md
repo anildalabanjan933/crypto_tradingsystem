@@ -1,0 +1,281 @@
+
+----------------------------------------------------------------
+[14-Jul-2026] | v4.47 | Signal Replay Architecture - Permanent Match Fix
+----------------------------------------------------------------
+FILES: scripts/signal_replay_s2.py | scripts/signal_replay_s4.py |
+       scripts/generate_signals.py | scripts/auto_maintenance.py | start.sh
+Commits: 29c06ed, 975ab90
+
+ROOT CAUSE OF ALL MISMATCHES (FINAL - PERMANENT RECORD):
+- Live bots regenerated Renko signals every 60s from live candles
+- Incomplete last candle changed OHLC every minute
+- Signal count fluctuated: 14881 → 14961 → 14883 → 14881 every cycle
+- Fake signals fired when count spiked (e.g. 13:00, not in backtest)
+- No patch can fix this - architecture itself was wrong
+
+PERMANENT SOLUTION - SIGNAL REPLAY ARCHITECTURE:
+- Backtest runs once → exports entry_time, exit_time, direction to CSV
+- Live bot reads CSV → places order when clock matches entry_time
+- Zero Renko recalculation in live bot ever
+- Zero candle processing in live bot ever
+- 100% match guaranteed - same CSV = same trades
+
+NEW FILES:
+- scripts/generate_signals.py  : runs backtest, writes logs/signals_s2.csv + logs/signals_s4.csv
+- scripts/signal_replay_s2.py  : S2 live bot - reads signals_s2.csv, places orders on time match
+- scripts/signal_replay_s4.py  : S4 live bot - reads signals_s4.csv, places orders on time match
+- start.sh updated             : now starts signal_replay_s2.py + signal_replay_s4.py
+
+SIGNAL CSV FORMAT (logs/signals_s2.csv | logs/signals_s4.csv):
+  entry_time,exit_time,direction,lots
+  2026-07-14T07:00:00,2026-07-14T08:00:00,short,100
+
+AUTO REGENERATION:
+- scripts/auto_maintenance.py: calls generate_signals.py daily at 3AM UTC
+- New signals appended automatically - zero manual work ever
+
+SIGNAL REPLAY BOT LOGIC:
+- Startup: sync position from exchange, load last_known_ts, load signal CSV
+- Loop every 10 seconds: check if now >= entry_time and position=None → ENTRY
+- Loop every 10 seconds: check if now >= exit_time and position open → EXIT
+- Signals reloaded every 30 min to pick up daily regeneration
+- last_known_ts saved BEFORE order (duplicate prevention)
+- Position synced from exchange on startup (reconciliation)
+- ts file validated with regex on read
+
+VALID FORWARD TEST: 2026-07-14T15:00:00 onwards
+NEXT REVIEW DATE: 2026-08-01
+DAILY ACTION: Open dashboard → Section 4 → LIVE MATCH REPORT → GREEN
+
+WHAT IS NOW IMPOSSIBLE:
+- Signal count fluctuation: IMPOSSIBLE (reads fixed CSV)
+- Incomplete candle fake signals: IMPOSSIBLE (no candle processing)
+- UTC timezone bugs: IMPOSSIBLE (no timestamp conversion)
+- Wrong data URL: IMPOSSIBLE (no live data fetch)
+- Renko brick mismatch: IMPOSSIBLE (no Renko in live bot)
+----------------------------------------------------------------
+
+----------------------------------------------------------------
+[30-Jul-2026] | v5.44 | Today's Trades LV PnL Fix - Real Calculation
+----------------------------------------------------------------
+FILE: dashboard/streamlit_app.py | Commit: 9a6afb7
+
+ROOT CAUSE:
+- _parse_log_trades() returned hardcoded pnl=0, comm=0 for all trades
+- Today's Trades tab LV columns always showed $0 regardless of real gains/losses
+- Broke BT-vs-LV match validation (can't compare $0 to real backtest PnL)
+
+FIX:
+- Compute real pnl from entry_price/exit_price/side using 100 lots = 0.1 BTC
+- Formula: raw_pnl = (exit - entry) × 0.1 for LONG, (entry - exit) × 0.1 for SHORT
+- Deduct 0.05% taker fee both sides: fees = (entry + exit) × 0.1 × 0.0005
+- Deduct 10% tax on winning trades only: tax = max(net, 0) × 0.10
+- Final: pnl = raw_pnl - fees - tax (matches backtest tax formula exactly)
+- Open trades correctly stay pnl=0 (unrealized)
+
+VERIFIED:
+- Syntax OK, old code removed (grep count=0), new code present (grep count=3)
+- Dashboard restarted clean, commit 9a6afb7 pushed
+- Will validate on next live trade (no trades since 29-Jul baseline)
+
+PERMANENT RULE:
+- LV PnL must always match BT PnL formula (same fees, same tax, same lot size)
+- Today's Trades tab is single source of truth for forward test validation
+- Any mismatch between BT and LV PnL columns = investigate immediately
+
+PENDING VALIDATION:
+- Next trade fires → check Today's Trades tab → confirm LV PnL shows real number
+- Confirm LV PnL ≈ BT PnL (within $10 slippage tolerance)
+- If validated → mark v5.44 complete, proceed to next item
+----------------------------------------------------------------
+
+----------------------------------------------------------------
+[02-Aug-2026] | SECURITY - .env Was Tracked In Git Since Before v4.76
+----------------------------------------------------------------
+FOUND: .env was committed to git despite .gitignore listing it (gitignore
+added after .env was already tracked - does not retroactively untrack).
+Confirmed present in commits back through at least 4116347 (v4.76).
+
+FIXED: git rm --cached .env (commit a500d82) - file remains on disk,
+removed from git tracking going forward. Garbage 0-byte '^C' file also
+removed same commit.
+
+NOT FIXED: old commit history still contains .env content with real
+keys/secrets/Telegram token. This is a residual exposure risk if repo
+was ever public/shared. Recommend rotating all keys/tokens that were
+ever in .env (S2/S4/TM1 API keys, Telegram bot token) as precaution.
+Git history purge not performed - requires explicit decision (rewrites
+commit history, needs force-push, could break clone on other machines).
+
+NOTE: local machine .env was deleted by git pull (file was tracked,
+pull applied delete). VM .env confirmed intact/unaffected (1912 bytes,
+23 lines) - bots/dashboard unaffected. Recreate local .env manually if
+needed for local dev use.
+----------------------------------------------------------------
+
+----------------------------------------------------------------
+[06-Aug-2026] | S4 Full Optimization (432 combos) - PERMANENT RESULT
+----------------------------------------------------------------
+FILE: output/optimization_results_RenkoSMIIOSupertrendStrategy_BTCUSD_20260806_172419.csv
+FILE: output/optimization_results_RenkoSMIIOSupertrendStrategy_BTCUSD_20260806_172419.html
+STATUS: COMPLETE - 432/432 combos - DO NOT RE-RUN full s4_combined optimization
+        unless params intentionally changed. Use this CSV for all future queries.
+
+TOP 5 RESULTS (by total_pnl_inr):
+#1: tf=15m atr=10 factor=2.0 smiio=10/3 | PnL=Rs2,67,70,252 | Trades=22127 | Win=51.01% | Sharpe=6.37 | DD=-0.27% (Rs22,663)
+#2: tf=15m atr=5  factor=1.5 smiio=10/3 | PnL=Rs2,67,50,222 | Trades=22639 | Win=50.05% | Sharpe=6.36 | DD=-0.29% (Rs33,207)
+#3: tf=15m atr=10 factor=1.5 smiio=10/3 | PnL=Rs2,67,50,222 | Trades=22639 | Win=50.05% | Sharpe=6.36 | DD=-0.29% (Rs33,207)
+#4: tf=15m atr=5  factor=2.0 smiio=10/3 | PnL=Rs2,66,41,395 | Trades=21975 | Win=51.14% | Sharpe=6.30 | DD=-0.31% (Rs35,816)
+#5: tf=30m atr=5  factor=1.5 smiio=10/3 | PnL=Rs2,66,30,802 | Trades=13627 | Win=58.72% | Sharpe=7.67 | DD=-0.18% (Rs20,611)
+
+NOTE: Current live S4 uses tf=2h (NOT in top 5). All top-5 switched to 15m/30m
+      = far more trades = far more slippage exposure in live trading.
+#5 (30m) is safest choice: best win rate, best Sharpe, lowest DD, fewest trades.
+#1 (15m) has highest PnL but 22127 trades = high slippage risk on live deploy.
+
+DECISION: PENDING - user to choose #1 (max PnL) or #5 (safer/robust) for S4V2.
+Deploy target: S4RenkoV2 subaccount (not yet created).
+
+----------------------------------------------------------------
+[10-Aug-2026] | Today's Trades BT exit_ist Boundary Fix - CONFIRMED WORKING
+----------------------------------------------------------------
+FILE: dashboard/streamlit_app.py
+
+BUG: BT's exit_ist displayed raw candle-start time while entry_ist
+already used candle-close (+30min S4V2 / +2h S4). LV side was
+already correct (real wall-clock fire time from log). This
+asymmetry caused false pairing/mismatch display for S4V2.
+
+FIX: Applied same candle-close shift to BT's exit_ist that
+entry_ist already had. _closest_lv pairing function untouched.
+
+VERIFIED (screenshot + manual trace, 10-Aug-2026):
+- S4V2 entry_ist + exit_ist now align with LV within 4-12 sec
+  across multiple rows (row2: exact match, row3: 8s, row5: 12s)
+- Remaining flags (dir/price slip $9-$143) are GENUINE mismatches,
+  not display bugs - correctly still shown as mismatch
+
+NOT FIXED (separate issue, flagged only):
+- S4V2 row4: LV exit price = $0 ("exit price missing") - needs
+  own investigation, not touched today
+- S4 table: BT Trades=5 vs LV Trades=3 today - real trade-count
+  deficit causes pairing to force-match 2 BT rows to wrong LV
+  neighbors (shows as false 2-3hr dir mismatch). Confirmed NOT
+  caused by today's fix (entry_ist/_closest_lv untouched for S4).
+  Root cause of the deficit itself (engine/signal issue vs
+  genuinely fewer live signals) NOT YET INVESTIGATED.
+----------------------------------------------------------------
+[15-Aug-2026] | S4 signal reload lag (mtime cache stale, up to 5.5hr delay) | STATUS: FIXED
+[16-Aug-2026] | Dashboard false stale-signal warning (S4/S4V2) | STATUS: FIXED
+Warning suppressed only when position genuinely open (checked via last_known_ts file); stale-with-no-position still alerts normally.
+[16-Aug-2026] | SL order size hardcoded to 100 | STATUS: FIXED
+place_stop_loss_order() now fetches actual live position size via get_position() instead of hardcoded 100; falls back to 100 if fetch fails. Prevents future SL/position-size mismatch if entry size ever changes.
+[16-Aug-2026] | SL not placed if entry_price stays 0.0 (up to 5min gap) | STATUS: FIXED
+Retry window extended 1s->10s (20x0.5s) in signal_replay_s4.py and signal_replay_s4v2.py. If entry_price still 0 after 10s, or SL placement fails, now sends explicit Telegram CRITICAL alert instead of silent log-only skip.
+[16-Aug-2026] | Continuous SL-presence monitor (Phase 1, monitor-only) | STATUS: FIXED
+New scripts/sl_safety_monitor.py checks every 60s if every open S4/S4V2 position has a live SL order on exchange; sends Telegram CRITICAL alert if missing. Read-only, no auto-action, does not touch signal/entry/exit logic. Added to start.sh for persistence across restarts.
+[16-Aug-2026] | close_position() single-attempt gap | STATUS: FIXED
+close_position() now retries reduce_only market order up to 8x (1.5s apart, ~12s worst-case) verifying via get_position() until confirmed flat, instead of trusting single order-placement success. Escalates Telegram critical alert if still open after max attempts. Auto-close-on-bad-fill path (place_market_order) inherits fix automatically since it calls close_position().
+[16-Aug-2026] | Continuous position-risk/liquidation monitor (Phase 2 Task 2, monitor-only) | STATUS: FIXED
+New scripts/position_risk_monitor.py checks every 30s: distance from mark price to liquidation_price (WARN<=15%, CRITICAL<=8%) and available_balance/margin ratio (WARN<=1.5x, CRITICAL<=1.0x) for S4/S4V2. Sends Telegram alert on breach. Read-only, no auto-action. Thresholds are PLACEHOLDERS pending real liquidation-event data for calibration. Added to start.sh for persistence. Tested live - S4V2 correctly fired WARNING at 9.7% distance.
+[16-Aug-2026] | False exit-delay artifact (1804s type) - BT/LV timing source mismatch | STATUS: FIXED
+Root cause: trade_log_*.csv (BT source) and signals_s4v2.csv/signals_s4.csv (live bot's real source) can disagree by one candle when trade_log is regenerated independently (e.g. manual diagnostic run) after signals CSV was last written. Dashboard _get_bt_rows() now cross-checks entry_price+direction against signals CSV and overrides entry/exit timestamp with signals CSV value (live bot's ground truth) before delay calc. Applies dynamically to every trade, both S4/S4V2, permanent - not a one-off manual patch. Verified live: row previously showing 1804s exit delay now shows 4s.
+[19-Aug-2026] | Added Total Trades + Tax+Charges columns to Monthly Returns table (backtest_analyzer.py, metrics_calculator.py) | STATUS: FIXED
+[19-Aug-2026] | Renamed Monthly Returns PnL columns to Net PnL (₹) / Net PnL % for clarity | STATUS: FIXED
+[19-Aug-2026] | Section 13 FWD S4/S4V2 entry-exit mismatch fixed by switching from exchange-order FIFO pairing to signals CSV pairing | STATUS: FIXED
+
+[20-Aug-2026] | check_box_drift.py heartbeat gap - liveness check added | STATUS: FIXED
+Added heartbeat timestamp write (logs/box_drift_heartbeat.txt) at start of main() in
+check_box_drift.py, wrapped in try/except - purely additive, zero change to existing
+drift-detection/alert logic. Created new standalone scripts/check_heartbeat_stale.py
+that alerts via Telegram if heartbeat missing or older than 30h. NOT yet wired into
+auto_maintenance.py cron chain (moderate-risk step, pending separate approval) -
+must be run manually or scheduled separately for now.
+
+[20-Aug-2026] | check_heartbeat_stale.py wired into auto_maintenance.py 3AM chain | STATUS: FIXED
+Added isolated subprocess.run call for check_heartbeat_stale.py right after the
+existing box_size drift check in auto_maintenance.py, wrapped in its own try/except.
+A failure here cannot break bot restart or any other maintenance job. Heartbeat gap
+monitoring (logged 19-Aug-2026) is now fully automatic - no manual run needed.
+
+[19-Aug-2026] | STUCK PENDING detection added - CSV open but exchange flat | STATUS: FIXED
+Added isolated check_stuck_pending() in sl_safety_monitor.py - detects CSV PENDING row
+with exchange position flat (exact signature of pre-fix startup-lock bug), sends
+one-time Telegram alert, writes flag file. Dashboard Section 13 FWD table shows
+"STUCK" (red) instead of "OPEN" (orange) when flag present. Own isolated API call,
+does not touch existing SL-check logic. Both bots restarted clean, verified running.
+
+[22-Aug-2026] | FINAL CLOSURE - 12-Aug/13-Aug/S4V2 bt_exit=0.0/02-04Aug all 4 remaining checks | STATUS: CLOSED
+This supersedes the "NEW FINDING" blocks above (12-Aug off-schedule, 13-Aug
+liquidation) with fresh raw-fills verification done this session.
+
+CHECK 1 - 12-Aug -80,000 (off-schedule execution):
+Verified via live Delta /v2/fills (S4, product_id=84): 3 position flips in
+under 2 minutes (15:07:59, 15:08:04, 15:09:50, 15:09:54 UTC) - none align
+with any 2H boundary (00/02/04/06/08/10/12/14/16/18/20/22 UTC). boundary_watcher.log
+confirms watcher fired on-schedule at 14:00/16:00 with no crash - so trigger
+mechanism was healthy. margin_monitor.log/maintenance.log show nothing in
+window. S4V2 fills confirm zero cross-bot interference (S4V2 traded only its
+own 30-min marks that day). renko_state_engine.log and live_trading_s4.log
+both rotated away, no direct log trail exists for this date.
+ROOT CAUSE (by elimination + pattern match): matches signature of "manual UI
+close causes bot re-entry" bug - a manual close during this window likely
+triggered repeated re-entry attempts, since the override-flag protection for
+this exact scenario was only added 17-Aug-2026 (5 days after this incident).
+STATUS: Historical, pre-fix-era, root cause identified, no further action
+needed (fix already in place since 17-Aug).
+
+CHECK 2 - 13-Aug -79,000 (was mislabeled "double-entry causing liquidation"):
+Verified via live Delta /v2/fills (S4, product_id=84):
+  04:00:07.788 UTC - buy 100 @73000, closed prior short (realized_pnl -951.13)
+  04:19:15.098 UTC - buy 100 @72999, opened new LONG (mark price at that
+    instant was only ~63,785 per fill's own meta_data.mark field - i.e. the
+    fill price itself was ~9,200 points away from true market price)
+  04:19:15.901 UTC (0.8 sec later) - forced LIQUIDATION sell @63602.7
+    (fill_type=liquidation), realized_pnl -939.63 = approx -78,929 INR
+    (matches tracked -79,000)
+CORRECTION: this was NOT a double-entry bug. There was no duplicate open -
+the 04:00 fill closed an existing position, the 04:19 fill opened a fresh
+one. The real bug was a catastrophic bad-fill-on-entry (raw market order hit
+thin liquidity ~9,200pts from true price), immediately breaching margin and
+triggering instant liquidation. This is the same bug class already fixed
+15-Aug-2026 (IOC $250-band + auto-close-on-bad-fill) - likely the exact
+"$73k outlier" referenced in that fix's changelog entry.
+STATUS: Historical, pre-fix-era, root cause corrected and confirmed, already
+fixed 15-Aug-2026. No further action needed.
+
+CHECK 3 - S4V2 fill_prices_s4v2.csv bt_exit=0.0 rows (3 total):
+  21-Aug 02:00-03:00 short: lv_entry 75000 -> lv_exit 78000 = -300 USD real
+    loss (~-25,200 INR)
+  21-Aug 04:00-09:00 long: lv_entry 75180 -> lv_exit 77710 = +253 USD real
+    profit (~+21,252 INR)
+  22-Aug 02:00-03:30 long: lv_entry 78401 -> lv_exit 78413.7 = +1.27 USD
+    (negligible)
+Real live PnL is fully recoverable from lv_entry/lv_exit columns already in
+the CSV - bt_exit=0.0 only breaks the BT-side comparison, it does NOT hide
+or cause any additional trading loss. Confirmed cosmetic/logging bug only
+(async race: row written before BT exit price captured - matches existing
+Bug #2 already logged 21-Aug-2026).
+STATUS: Confirmed cosmetic logging bug, not a new accidental-loss source.
+No new fix needed beyond existing Bug #2 fix recommendation (fill logger
+should wait for both bt_exit and lv_exit non-zero before writing row).
+
+CHECK 4 - 02-04 Aug BT vs live/signal comparison:
+Verified via live Delta /v2/fills (S4, product_id=84) across 02-Aug 00:00
+to 05-Aug 00:00 UTC window: all fills show only small normal slippage
+losses (-$1.99 to -$10.58 per fill), no liquidation events, no off-schedule
+timestamps, no anomalous pattern.
+STATUS: CLOSED-NO-BUG. No hidden loss or bug found in this window.
+
+OVERALL: All 4 remaining accidental-loss investigation items for S4/S4V2
+are now closed. No new code fixes required beyond what is already applied
+(15-Aug bad-fill IOC-band fix, 17-Aug manual-close override-flag fix).
+Investigation phase for accidental losses is COMPLETE.
+[26-Sep-2026] | S4 reload-loop CPU fix | STATUS: FIXED
+Added mtime-cache in signal_replay_s4.py so CSV loads only on file change, not every 0.5s. CPU 3.4% -> 1.3%.
+[27-Sep-2026] | Bug D - REST reconcile repaint + frozen mismatch counter (S4/S4V2/S4V3) | STATUS: FIXED
+Root cause 1: REST reconcile rewrote candles at/before already-locked signal ts, flipping computed direction and creating false state mismatch. Root cause 2: mismatch_count only incremented in SKIP branch, froze once REPAINT GUARD took over - S4 (2H) never auto-resynced, S4V3 (4H) stuck 20+ hrs, S4V2 (30min) self-healed by luck only.
+Fix: clipped reconcile window at locked signal boundary + moved mismatch_count increment into shared helper called from both SKIP and REPAINT GUARD branches. Commit 6dd4c48. Restarted signal_generator PID 1885886 at 22:08 IST 27-Sep-2026.
+
+[05-Oct-2026] | 03-Oct S4V2 UNEXPLAINED rows (2x) - root-cause label corrected | STATUS: CLOSED-NO-BUG (historical, pre-fix)
+Corrects the earlier 05-Oct entry that blamed Bug 2 (state_health write crash). Bug 2 only broke the watchdog's read of state_health_S4V2.json and cannot make a bot miss trades. Real cause: Bug 1/Bug 6 resync-stuck window - get_position() failures were unlogged (Bug 1, fixed 5f3d62e) and S4V2_API_KEY was missing from the engine env (Bug 6, fixed 3c5cee4 on 04-Oct 17:43 UTC), so AUTO-RESYNC skipped every cycle (A_STATE_DESYNC count=110, 12+ hrs on 03-Oct). The 07:30-08:30 SHORT and 08:30-19:00 LONG rows were therefore never fired. Both fixes landed after these events = pre-fix artifacts; 05-Oct AUTO-RESYNC drill proved resync now works. DO NOT RE-INVESTIGATE.

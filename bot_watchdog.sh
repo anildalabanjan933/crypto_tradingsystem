@@ -1,0 +1,179 @@
+#!/bin/bash
+exec 200<"$0"
+flock -n 200 || exit 0
+date +%s > "$0.heartbeat" 2>/dev/null || true; date +%s > /home/anildalabanjan7/crypto_tradingsystem/logs/watchdog_top_heartbeat.txt
+export HOME=/home/anildalabanjan7
+export USER=anildalabanjan7
+export LOGNAME=anildalabanjan7
+export XDG_RUNTIME_DIR=/run/user/$(id -u anildalabanjan7)
+export SCREENDIR=/run/screen/S-anildalabanjan7
+export TERM=xterm
+cd /home/anildalabanjan7/crypto_tradingsystem
+
+REPO=/home/anildalabanjan7/crypto_tradingsystem
+DISK_COMMIT=$(git -C "$REPO" log -1 --format=%H -- scripts/renko_state_engine.py 2>/dev/null)
+RUNNING_COMMIT_FILE="$REPO/logs/engine_running_commit.txt"
+if [ -z "$DISK_COMMIT" ]; then
+    echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] VERSION DRIFT CHECK SKIPPED: signal_generator - git log returned empty, skipping this cycle" >> logs/maintenance.log
+elif [ -f "$RUNNING_COMMIT_FILE" ]; then
+    RUNNING_COMMIT=$(cat "$RUNNING_COMMIT_FILE" 2>/dev/null)
+    if [ -n "$RUNNING_COMMIT" ] && [ "$RUNNING_COMMIT" != "$DISK_COMMIT" ]; then
+        _any_pending=0
+        for _f in logs/signals_s4.csv logs/signals_s4v2.csv logs/signals_s4v3.csv; do
+            if [ -f "$_f" ] && tail -1 "$_f" | grep -q ",PENDING,"; then
+                _any_pending=1
+            fi
+        done
+        if [ "$_any_pending" = "1" ]; then
+            echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] VERSION DRIFT: running=$RUNNING_COMMIT disk=$DISK_COMMIT - DEFERRED (open PENDING position, waiting for safe boundary)" >> logs/maintenance.log
+        else
+            echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] VERSION DRIFT: running=$RUNNING_COMMIT disk=$DISK_COMMIT - restarting signal_generator" >> logs/maintenance.log
+            for _pid in $(/usr/bin/screen -list 2>/dev/null | grep -E "[0-9]+\.signal_generator[[:space:]]" | awk "{print \$1}" | cut -d. -f1); do
+                /usr/bin/screen -S "${_pid}.signal_generator" -X quit 2>/dev/null
+            done
+        fi
+    fi
+fi
+ALERT_FILE=$REPO/logs/watchdog_alert_sent.txt
+
+send_telegram() {
+    local msg=$1
+    local token=$(grep TELEGRAM_BOT_TOKEN $REPO/.env | cut -d= -f2)
+    local chat=$(grep TELEGRAM_CHAT_ID $REPO/.env | cut -d= -f2)
+    if [ -n "$token" ] && [ -n "$chat" ]; then
+        curl -s --max-time 10 -X POST "https://api.telegram.org/bot${token}/sendMessage"             -d "chat_id=${chat}"             -d "text=${msg}"             -d "parse_mode=HTML" > /dev/null 2>&1 200>&-
+    fi
+}
+
+
+screen_running() {
+    local name=$1
+    if timeout 15 /usr/bin/screen -list 2>/dev/null | grep -qE "[0-9]+\.${name}[[:space:]]"; then
+        return 0
+    fi
+    sleep 2
+    timeout 15 /usr/bin/screen -list 2>/dev/null | grep -qE "[0-9]+\.${name}[[:space:]]"
+}
+
+check_and_start() {
+    local name=$1
+    local script=$2
+    local log=$3
+    local alert_key=$REPO/logs/watchdog_down_${name}.txt
+    if ! screen_running "$name"; then
+        sleep 3
+        if screen_running "$name"; then
+            return
+        fi
+        if pgrep -f "$script" >/dev/null 2>&1; then
+            echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] $name screen-list flaked but process alive via pgrep - skip alert" >> logs/maintenance.log
+            return
+        fi
+        # Send Telegram alert only once per 30 minutes per screen
+        local alert_ts_file=$REPO/logs/watchdog_alert_${name}.txt
+        local now_ts=$(date +%s)
+        local last_alert=0
+        [ -f "$alert_ts_file" ] && last_alert=$(cat "$alert_ts_file")
+        local diff=$((now_ts - last_alert))
+        if [ $diff -gt 3600 ]; then
+            local msg="⚠️ CTS WATCHDOG ALERT%0A━━━━━━━━━━━━━━━━━━%0AScreen : ${name}%0AScript : ${script}%0AStatus : Bot stopped, auto-restarting now - SYSTEM SIDE, no action needed%0ATime   : $(date -u +%Y-%m-%dT%H:%M:%S) UTC%0A━━━━━━━━━━━━━━━━━━"
+            echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] DEBUG pre-send for $name" >> logs/maintenance.log
+            send_telegram "$msg"
+            echo "$now_ts" > "$alert_ts_file"
+            echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] DOWN alert sent for $name" >> logs/maintenance.log
+        fi
+        /usr/bin/screen -dmS "$name" /bin/bash -c "cd /home/anildalabanjan7/crypto_tradingsystem && set -a && source /home/anildalabanjan7/crypto_tradingsystem/.env && set +a && export PYTHONPATH=/home/anildalabanjan7/crypto_tradingsystem && .venv/bin/python3 $script >> $log 2>&1" 200>&-
+        echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] Started $name" >> logs/maintenance.log
+    fi
+}
+
+check_heartbeat_stale() {
+    local name=$1
+    local hb_file=$2
+    local max_age=$3
+    if [ -f "$REPO/$hb_file" ]; then
+        local hb_ts=$(cat "$REPO/$hb_file" 2>/dev/null | cut -d. -f1)
+        local now_ts=$(date +%s)
+        if [ -n "$hb_ts" ] && printf '%d' "$hb_ts" >/dev/null 2>&1 && [ "$(printf '%d' "$hb_ts" 2>/dev/null)" -gt 0 ]; then
+            local age=$((now_ts - hb_ts))
+            if [ $age -gt $max_age ]; then
+                echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] $name heartbeat STALE (${age}s > ${max_age}s) - force killing for restart" >> logs/maintenance.log
+                for _pid in $(/usr/bin/screen -list 2>/dev/null | grep -E "[0-9]+\.${name}[[:space:]]" | awk '{print $1}' | cut -d. -f1); do
+                    /usr/bin/screen -S "${_pid}.${name}" -X quit 2>/dev/null
+                done
+                sleep 1
+            fi
+        fi
+    fi
+}
+
+check_version_drift() {
+    local name=$1
+    local script=$2
+    local signal_csv=$3
+    local DISK_C=$(git -C "$REPO" log -1 --format=%H -- "$script" 2>/dev/null)
+    local RUN_FILE="$REPO/logs/running_commit_$(basename $script .py).txt"
+    if [ -z "$DISK_C" ]; then
+        echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] VERSION DRIFT CHECK SKIPPED: $name - git log returned empty, skipping this cycle" >> logs/maintenance.log
+        return
+    fi
+    if [ -f "$RUN_FILE" ]; then
+        local RUN_C=$(cat "$RUN_FILE" 2>/dev/null)
+        if [ -n "$RUN_C" ] && [ "$RUN_C" != "$DISK_C" ]; then
+            # BUGFIX 05-Oct-2026: open-position deferral, mirrors engine's own check
+            # (bot_watchdog.sh lines 14-33) - do not restart mid-position
+            if [ -n "$signal_csv" ] && [ -f "$signal_csv" ] && tail -1 "$signal_csv" | grep -q ",PENDING,"; then
+                echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] VERSION DRIFT: $name running=$RUN_C disk=$DISK_C - DEFERRED (open PENDING position, waiting for safe boundary)" >> logs/maintenance.log
+                return
+            fi
+            echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] VERSION DRIFT: $name running=$RUN_C disk=$DISK_C - restarting" >> logs/maintenance.log
+            for _pid in $(/usr/bin/screen -list 2>/dev/null | grep -E "[0-9]+\.${name}[[:space:]]" | awk '{print $1}' | cut -d. -f1); do
+                /usr/bin/screen -S "${_pid}.${name}" -X quit 2>/dev/null
+            done
+            sleep 1
+        fi
+    fi
+}
+
+check_version_drift live_s4v2 scripts/signal_replay_s4v2.py logs/signals_s4v2.csv
+check_heartbeat_stale live_s4v2 logs/heartbeat_s4v2.txt 300
+check_and_start live_s4v2 scripts/signal_replay_s4v2.py logs/live_trading_s4v2.log
+check_version_drift live_s4v3 scripts/signal_replay_s4v3.py logs/signals_s4v3.csv
+check_heartbeat_stale live_s4v3 logs/heartbeat_s4v3.txt 300
+check_and_start live_s4v3 scripts/signal_replay_s4v3.py logs/live_trading_s4v3.log
+check_and_start band_tier_watch "scripts/band_tier_watch.py" logs/band_tier_watch.log
+check_and_start watchdog_fast "scripts/watchdog_fast.py" logs/watchdog_fast.log
+check_and_start watchdog_slow "scripts/watchdog_slow.py" logs/watchdog_slow.log
+check_and_start watchdog_capital "scripts/watchdog_capital.py" logs/watchdog_capital.log
+check_version_drift live_s4 scripts/signal_replay_s4.py logs/signals_s4.csv
+check_heartbeat_stale live_s4 logs/heartbeat_s4.txt 300
+check_and_start live_s4 scripts/signal_replay_s4.py logs/live_trading_s4.log
+# DISABLED (24-Aug-2026, replaced by testmember1_s4, shared account rule): check_and_start testmember1_s4v2 scripts/signal_replay_testmember1_s4v2.py logs/live_trading_testmember1_s4v2.log
+check_heartbeat_stale testmember1_s4 logs/heartbeat_testmember1_s4.txt 300
+# DISABLED (27-Sep-2026, inactive bot): check_and_start testmember1_s4 scripts/signal_replay_testmember1_s4.py logs/live_trading_testmember1_s4.log
+check_heartbeat_stale signal_generator logs/engine_heartbeat.txt 300
+check_and_start signal_generator scripts/renko_state_engine.py logs/renko_state_engine.log
+check_and_start bt_chart_engine scripts/renko_chart_engine.py logs/renko_chart_engine.log
+check_heartbeat_stale boundary_watcher logs/boundary_watcher_heartbeat.txt 300
+check_and_start boundary_watcher scripts/boundary_watcher.py logs/boundary_watcher.log
+check_heartbeat_stale sl_safety_monitor logs/sl_safety_monitor_heartbeat.txt 300
+check_and_start sl_safety_monitor scripts/sl_safety_monitor.py logs/sl_safety_monitor.log
+check_heartbeat_stale position_risk_monitor logs/position_risk_monitor_heartbeat.txt 300
+check_and_start position_risk_monitor scripts/position_risk_monitor.py logs/position_risk_monitor.log
+check_heartbeat_stale issue_tracker logs/issue_tracker_heartbeat.txt 300
+check_and_start issue_tracker scripts/issue_tracker.py logs/issue_tracker.log
+check_heartbeat_stale margin_monitor logs/margin_monitor_heartbeat.txt 2100
+check_and_start margin_monitor scripts/margin_monitor.py logs/margin_monitor.log
+check_heartbeat_stale maintenance_watcher logs/maintenance_watcher_heartbeat.txt 300
+check_and_start maintenance_watcher scripts/maintenance_watcher.py logs/maintenance_watcher.log
+
+if ! /usr/bin/screen -list 2>/dev/null | grep -qE "[0-9]+\.dashboard[[:space:]]"; then
+    /usr/bin/screen -dmS dashboard /bin/bash -c "cd /home/anildalabanjan7/crypto_tradingsystem && PYTHONPATH=/home/anildalabanjan7/crypto_tradingsystem .venv/bin/python3 -m streamlit run dashboard/streamlit_app.py --server.port 8501 >> logs/dashboard.log 2>&1"
+    echo "[$(date -u +%Y-%m-%dT%H:%M:%S)] Started dashboard" >> logs/maintenance.log
+fi
+
+
+check_heartbeat_stale watchdog_fast logs/watchdog_fast_heartbeat.txt 120
+check_heartbeat_stale watchdog_slow logs/watchdog_slow_heartbeat.txt 900
+check_heartbeat_stale watchdog_capital logs/watchdog_capital_heartbeat.txt 120
+date +%s > /home/anildalabanjan7/crypto_tradingsystem/logs/watchdog_top_heartbeat.txt

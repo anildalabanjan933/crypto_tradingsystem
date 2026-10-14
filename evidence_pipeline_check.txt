@@ -1,0 +1,49 @@
+=== Bug 8 Fix Verification ===
+strategies/backtest/renko_smiio_supertrend_strategy.py:156:        renko_raw['real_close'] = closes[_idx_arr]
+strategies/backtest/renko_smiio_supertrend_strategy.py:168:        real_closes = df['real_close'].values
+strategies/backtest/renko_smiio_supertrend_strategy.py:222:                    'price':       self._apply_slippage(real_closes[i], 'long', False),
+strategies/backtest/renko_smiio_supertrend_strategy.py:237:                    'price':       self._apply_slippage(real_closes[i], 'short', False),
+strategies/backtest/renko_smiio_supertrend_strategy.py:288:                        'price':       self._apply_slippage(real_closes[i], 'long', True),
+strategies/backtest/renko_smiio_supertrend_strategy.py:302:                        'price':       self._apply_slippage(real_closes[i], 'short', True),
+strategies/backtest/renko_smiio_cross_v3_strategy.py:127:        renko_raw['real_close'] = closes[_idx_arr]
+strategies/backtest/renko_smiio_cross_v3_strategy.py:139:        real_closes = df['real_close'].values
+strategies/backtest/renko_smiio_cross_v3_strategy.py:169:                    'price':       self._apply_slippage(real_closes[i], 'long', False),
+strategies/backtest/renko_smiio_cross_v3_strategy.py:182:                    'price':       self._apply_slippage(real_closes[i], 'short', False),
+strategies/backtest/renko_smiio_cross_v3_strategy.py:200:                        'price':       self._apply_slippage(real_closes[i], 'long', True),
+strategies/backtest/renko_smiio_cross_v3_strategy.py:212:                        'price':       self._apply_slippage(real_closes[i], 'short', True),
+strategies/backtest/renko_reversal_strategy.py:113:        renko_raw['real_close'] = renko_raw['bar_index'].apply(
+strategies/backtest/renko_reversal_strategy.py:151:        assert 'real_close' in df.columns, "BUG: real_close missing after Supertrend/Swing"
+strategies/backtest/renko_reversal_strategy.py:153:        real_closes = df['real_close'].values
+strategies/backtest/renko_reversal_strategy.py:191:                exit_price = self._apply_slippage(real_closes[i], 'long', is_entry=False)
+strategies/backtest/renko_reversal_strategy.py:206:                exit_price = self._apply_slippage(real_closes[i], 'short', is_entry=False)
+strategies/backtest/renko_reversal_strategy.py:286:                entry_price = self._apply_slippage(real_closes[i], 'long', is_entry=True)
+strategies/backtest/renko_reversal_strategy.py:299:                entry_price = self._apply_slippage(real_closes[i], 'short', is_entry=True)
+strategies/backtest/renko_breakout_strategy.py:147:        renko_df['real_close'] = renko_df['bar_index'].apply(
+strategies/backtest/renko_breakout_strategy.py:174:            real_close = row['real_close']
+strategies/backtest/renko_breakout_strategy.py:196:                        'price'      : real_close,
+strategies/backtest/renko_breakout_strategy.py:209:                        'price'      : real_close,
+strategies/backtest/renko_breakout_strategy.py:260:                            'price'       : real_close,
+strategies/backtest/renko_breakout_strategy.py:312:                                'price'        : real_close,
+strategies/backtest/renko_pattern_breakout_strategy.py:62:        renko_raw['real_close'] = renko_raw['bar_index'].apply(
+strategies/backtest/renko_pattern_breakout_strategy.py:203:        real_closes = df['real_close'].values.astype(float)
+strategies/backtest/renko_pattern_breakout_strategy.py:254:                        'exit_price':     real_closes[i],
+strategies/backtest/renko_pattern_breakout_strategy.py:317:                    'entry_price': real_closes[i],
+strategies/backtest/renko_pattern_breakout_strategy.py:328:                    'entry_price': real_closes[i],
+strategies/backtest/renko_pattern_breakout_strategy.py:338:            last_c  = real_closes[last_i]
+=== Bug 9 Fix Verification ===
+94:        key = (box, _anchor, 'v2_fixed_reversal_overshoot')
+=== Slippage Path Verification ===
+engine/backtest_engine.py:17:                 csv_path, strategy_params=None, slippage=0):
+engine/backtest_engine.py:25:        self.slippage        = slippage
+engine/backtest_engine.py:146:            slippage        = self.slippage,
+engine/backtest_engine.py:167:                 csv_path, strategy_params=None, slippage=0):
+engine/backtest_engine.py:171:        slippage=slippage
+engine/trade_builder.py:15:                 margin_config=None, contract_unit=0.001, slippage=0):
+engine/trade_builder.py:21:        self.slippage           = slippage          # $ per side
+engine/trade_builder.py:167:            "slippage_usd"           : round_price(charges_breakdown["slippage"]),
+engine/trade_builder.py:168:            "slippage_applied"       : self.slippage,
+engine/trade_builder.py:180:        Slippage: self.slippage $ per side × 2 sides (entry + exit)
+engine/trade_builder.py:191:        cb["slippage"] = self.slippage * 2 * (self.size_qty / 100.0)
+engine/trade_builder.py:204:        cb["total_charges"] = cb["taker_fees"] + cb["funding"] + cb["slippage"]  # BUGFIX: slippage now included in net_pnl (was excluded, causing win_rate/profit_factor/drawdown/sharpe to ignore slippage)
+87:        self.slippage_usd   = kwargs.get('slippage_usd',   0.0)
+124:        slip = self.slippage_usd
