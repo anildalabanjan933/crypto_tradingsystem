@@ -16,7 +16,7 @@ ALIASES = {"vertical_spread": ["vertical_debit", "vertical_credit"],
 CAL_KIND = {"calendar_wm": "weekly", "calendar_mm": "monthly"}
 DEBIT_STRATS = ("calendar_wm", "calendar_mm", "vertical_debit")
 
-VARIANTS = ["5pct", "10pct", "20pct", "30pct", "50pct", "host"]
+VARIANTS = ["20pct", "30pct", "50pct", "host"]
 PCT = {"5pct": 0.05, "10pct": 0.10, "20pct": 0.20, "30pct": 0.30, "50pct": 0.50}
 HOST_TGT = 0.075
 HOST_SL = 0.075
@@ -192,7 +192,7 @@ def leg(role, t, k, e, r):
     return {"role": role, "type": t, "strike": k, "expiry": e, "symbol": r[0], "raw": r[1], "fill_ts": r[2]}
 
 
-ATM_ORDER = [0, 1, -1, 2, -2]
+ATM_ORDER = [0] + [x for i in range(1, 11) for x in (i, -i)]
 
 
 def build(strat, kind, exp, entry_ts, spot):
@@ -503,15 +503,27 @@ def run_group(strat, kind, dte, a, b):
             lvl = sl_level(v, strat, basis, legs)
             sl_d = lvl * MULT if lvl is not None else None
             sl_disp = f"${sl_d:.2f}" if sl_d is not None else "NA"
+            sc_leg = next((l for l in legs if l["role"] == "S" and l["type"] == "C"), None)
+            sp_leg = next((l for l in legs if l["role"] == "S" and l["type"] == "P"), None)
+            if sc_leg and sp_leg:
+                be_hi = sc_leg["strike"] + basis
+                be_lo = sp_leg["strike"] - basis
+                be_disp = f"be_range={(be_lo - spot_px) / spot_px * 100:+.2f}%/{(be_hi - spot_px) / spot_px * 100:+.2f}%"
+            elif sc_leg or sp_leg:
+                leg0 = sc_leg or sp_leg
+                be = leg0["strike"] + basis if leg0["type"] == "C" else leg0["strike"] - basis
+                be_disp = f"be={(be - spot_px) / spot_px * 100:+.2f}%"
+            else:
+                be_disp = "be=NA"
             if pnl_raw is None:
-                print(f"{tag} entry={entry_date} exp={exp} dte={dte} {info} {wtxt} "
-                      f"sl={sl_disp} tgt=${tgt_d:.2f} submode={mode} pnl=$0.00 fees=$0.00 equity=${accs[v].eq:.2f}")
+                print(f"{tag} entry={entry_date} exit={exp} dte={dte} {info} {wtxt} "
+                      f"{be_disp} sl={sl_disp} tgt=${tgt_d:.2f} slip={SLIP*100:.0f}% submode={mode} pnl=$0.00 fees=$0.00 equity=${accs[v].eq:.2f}")
                 accs[v].skips[mode] = accs[v].skips.get(mode, 0) + 1
                 continue
             net = (pnl_raw - fee_raw) * MULT
             accs[v].trade(exp, net, fee_raw * MULT)
-            print(f"{tag} entry={entry_date} exp={exp} dte={dte} {info} {wtxt} "
-                  f"sl={sl_disp} tgt=${tgt_d:.2f} submode={mode} pnl=${net:.2f} fees=${fee_raw * MULT:.2f} "
+            print(f"{tag} entry={entry_date} exit={exp} dte={dte} {info} {wtxt} "
+                  f"{be_disp} sl={sl_disp} tgt=${tgt_d:.2f} slip={SLIP*100:.0f}% submode={mode} pnl=${net:.2f} fees=${fee_raw * MULT:.2f} "
                   f"equity=${accs[v].eq:.2f} skew={skew}")
     years = max((b - a).days / 365.25, 0.01)
     for v in VARIANTS:
