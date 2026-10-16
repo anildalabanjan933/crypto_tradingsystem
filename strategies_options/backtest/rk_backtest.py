@@ -55,7 +55,7 @@ def get_candles(symbol, s, e):
         return _cache[key]
     seen, cur = {}, s
     while cur < e:
-        ce = min(cur + 5 * 86400, e)
+        ce = min(cur + 2000 * STEP, e)
         ok = False
         for att in range(1, 4):
             try:
