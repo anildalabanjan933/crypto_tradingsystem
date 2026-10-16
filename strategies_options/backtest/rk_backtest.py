@@ -8,13 +8,26 @@ MAX_FILL_GAP, MAX_MARK_AGE = 1800, 1800
 SLIP, HEDGE_RATIO = 0.05, 0.45
 TARGET_PREM = {"weekly": 200, "monthly": 1000}
 DTES = {"weekly": [8, 10], "monthly": [32, 35, 45]}
-STRATS = ["strangle", "straddle", "iron_condor", "iron_fly", "calendar"]
-VARIANTS = ["5pct", "10pct", "20pct", "30pct"]
+
+STRATS = ["strangle", "vertical_debit", "vertical_credit", "iron_condor", "straddle",
+          "iron_fly", "calendar_wm", "calendar_mm"]
+ALIASES = {"vertical_spread": ["vertical_debit", "vertical_credit"],
+           "calendar": ["calendar_wm", "calendar_mm"]}
+CAL_KIND = {"calendar_wm": "weekly", "calendar_mm": "monthly"}
+DEBIT_STRATS = ("calendar_wm", "calendar_mm", "vertical_debit")
+
+VARIANTS = ["5pct", "10pct", "host"]
+PCT = {"5pct": 0.05, "10pct": 0.10}
+HOST_TGT = 0.075
+HOST_SL = 0.075
+IC_HOST_HALF_MAXLOSS_SL = False
+VERT_WIDTH_STEPS = {"weekly": 2, "monthly": 3}
+
 TRAIN_END = datetime(2025, 7, 1, tzinfo=timezone.utc).date()
 
 ap = argparse.ArgumentParser()
-ap.add_argument("--start", default="2025-01-01")
-ap.add_argument("--end", default="2026-10-14")
+ap.add_argument("--start", default="2024-01-01")
+ap.add_argument("--end", default="2026-10-13")
 ap.add_argument("--strategies", default=",".join(STRATS))
 ap.add_argument("--kinds", default="weekly,monthly")
 ap.add_argument("--dte", type=int, default=None)
@@ -209,7 +222,18 @@ def build(strat, kind, exp, entry_ts, spot):
                 return "NO_FILL"
             legs += [leg("B", "C", hc[0], exp, hc[1]), leg("B", "P", hp[0], exp, hp[1])]
         return legs
-    if strat == "calendar":
+    if strat in ("vertical_debit", "vertical_credit"):
+        w = VERT_WIDTH_STEPS[kind]
+        for off in ATM_ORDER:
+            k1 = base + off * STRIKE_STEP
+            k2 = k1 + w * STRIKE_STEP
+            r1, r2 = premium_at("C", k1, exp, entry_ts), premium_at("C", k2, exp, entry_ts)
+            if r1 and r2 and r1[1] > r2[1]:
+                if strat == "vertical_debit":
+                    return [leg("B", "C", k1, exp, r1), leg("S", "C", k2, exp, r2)]
+                return [leg("S", "C", k1, exp, r1), leg("B", "C", k2, exp, r2)]
+        return "NO_FILL"
+    if strat in CAL_KIND:
         fars = monthly_exp(exp + timedelta(days=1), exp + timedelta(days=75))
         if not fars:
             return "NO_FAR_EXPIRY"
@@ -225,29 +249,59 @@ def build(strat, kind, exp, entry_ts, spot):
                 _, t, n, f = min(opts, key=lambda x: x[0])
                 return [leg("S", t, k, exp, n), leg("B", t, k, far, f)]
         return "NO_FILL"
+    return "NO_FILL"
 
 
 def basis_of(strat, legs):
     s = sum(l["raw"] for l in legs if l["role"] == "S")
     b = sum(l["raw"] for l in legs if l["role"] == "B")
-    return (b - s) if strat == "calendar" else (s - b)
+    return (b - s) if strat in DEBIT_STRATS else (s - b)
 
 
 def raw_pnl(legs, marks):
     return sum((l["raw"] - m) if l["role"] == "S" else (m - l["raw"]) for l, m in zip(legs, marks))
 
 
+def ic_max_loss(legs, basis):
+    sc = next(l for l in legs if l["role"] == "S" and l["type"] == "C")
+    sp = next(l for l in legs if l["role"] == "S" and l["type"] == "P")
+    hc = next(l for l in legs if l["role"] == "B" and l["type"] == "C")
+    hp = next(l for l in legs if l["role"] == "B" and l["type"] == "P")
+    return max(hc["strike"] - sc["strike"], sp["strike"] - hp["strike"]) - basis
+
+
+def exec_pnl(legs, marks):
+    pnl = 0.0
+    for l, m in zip(legs, marks):
+        if l["role"] == "S":
+            pnl += l["fill"] - m * (1 + SLIP)
+        else:
+            pnl += m * (1 - SLIP) - l["fill"]
+    return pnl
+
+
 def trigger(v, strat, basis, legs, marks):
-    sold = [(l, m) for l, m in zip(legs, marks) if l["role"] == "S"]
-    sold_entry = sum(l["raw"] for l, m in sold)
-    sold_mark = sum(m for l, m in sold)
-    credit = sum(l["raw"] for l in legs if l["role"] == "S") - sum(l["raw"] for l in legs if l["role"] == "B")
-    pnl = raw_pnl(legs, marks)
-    tg = {"5pct": 0.05, "10pct": 0.10, "20pct": 0.20, "30pct": 0.30}[v]
-    if pnl >= tg * credit:
+    pnl = exec_pnl(legs, marks)
+    if v in PCT:
+        p = PCT[v]
+        if pnl >= p * basis:
+            return "TARGET"
+        if pnl <= -p * basis:
+            return "SL"
+        return None
+    if pnl >= HOST_TGT * basis:
         return "TARGET"
-    if sold_mark >= 2 * sold_entry:
-        return "SL"
+    if strat == "strangle":
+        sold_entry = sum(l["raw"] for l in legs if l["role"] == "S")
+        sold_mark = sum(m for l, m in zip(legs, marks) if l["role"] == "S")
+        if sold_mark >= 2 * sold_entry:
+            return "SL"
+    elif strat in ("straddle", "iron_fly") or strat in CAL_KIND:
+        if pnl <= -HOST_SL * basis:
+            return "SL"
+    elif strat == "iron_condor":
+        if IC_HOST_HALF_MAXLOSS_SL and pnl <= -0.5 * ic_max_loss(legs, basis):
+            return "SL"
     return None
 
 
@@ -321,14 +375,14 @@ def simulate(strat, legs, basis, entry_fill_ts, spot_series, spot_px, settle_ts)
 class Acc:
     def __init__(s):
         s.eq = s.peak = CAP; s.mdd = 0.0; s.pnls = []; s.fees = []
-        s.skips = {}; s.breach = None; s.per = {"TRAIN": [0, 0.0], "HOLDOUT": [0, 0.0]}
+        s.skips = {}; s.breach = None; s.per = {"TRAIN": [0, 0.0], "TEST": [0, 0.0]}
 
     def trade(s, d, pnl, fe):
         s.eq += pnl; s.pnls.append(pnl); s.fees.append(fe)
         s.peak = max(s.peak, s.eq); s.mdd = max(s.mdd, s.peak - s.eq)
         if s.eq <= 0 and s.breach is None:
             s.breach = d
-        p = "TRAIN" if d < TRAIN_END else "HOLDOUT"
+        p = "TRAIN" if d < TRAIN_END else "TEST"
         s.per[p][0] += 1; s.per[p][1] += pnl
 
 
@@ -345,7 +399,7 @@ def summarize(tag, acc, years):
           f"avg_net=${mean:.2f} avg_fees=${sum(acc.fees) / n:.2f} final_equity=${acc.eq:.2f} "
           f"maxDD=${acc.mdd:.2f} sharpe(per-trade,ann.)={sharpe:.2f} first_breach={acc.breach} "
           f"TRAIN(n,net)={acc.per['TRAIN'][0]},{acc.per['TRAIN'][1]:.2f} "
-          f"HOLDOUT(n,net)={acc.per['HOLDOUT'][0]},{acc.per['HOLDOUT'][1]:.2f} skips[{sk}]")
+          f"TEST(n,net)={acc.per['TEST'][0]},{acc.per['TEST'][1]:.2f} skips[{sk}]")
 
 
 def run_group(strat, kind, dte, a, b):
@@ -381,30 +435,65 @@ def run_group(strat, kind, dte, a, b):
         if skew > args.max_skew:
             skip("SKEW"); continue
         res = simulate(strat, legs, basis, max(l["fill_ts"] for l in legs), spot_series, spot_px, settle_ts)
-        info = " ".join(f"{l['role']}{l['type']}{l['strike']}@{l['raw']:.0f}" for l in legs)
+        info = " ".join(f"{l['role']}{l['type']}{l['strike']}@{l['raw']:.0f}(d={l['strike']-spot_px:+.0f})" for l in legs)
+        strikes = [l["strike"] for l in legs]
+        width = max(strikes) - min(strikes)
+        entry_date = exp - timedelta(days=dte)
         for v in VARIANTS:
             mode, pnl_raw, fee_raw = res[v]
             tag = f"[{gtag} {v}]"
+            tgt_d = (PCT[v] if v in PCT else HOST_TGT) * basis * MULT
+            if v in PCT:
+                sl_d = PCT[v] * basis * MULT
+            elif strat == "strangle":
+                sl_d = sum(l["raw"] for l in legs if l["role"] == "S") * MULT
+            elif strat in ("straddle", "iron_fly") or strat in CAL_KIND:
+                sl_d = HOST_SL * basis * MULT
+            elif strat == "iron_condor":
+                sl_d = (0.5 * ic_max_loss(legs, basis) * MULT) if IC_HOST_HALF_MAXLOSS_SL else None
+            else:
+                sl_d = None
+            sl_disp = f"${sl_d:.2f}" if sl_d is not None else "NA"
             if pnl_raw is None:
-                print(f"{tag} {exp} submode={mode} day_pnl=$0.00 fees=$0.00 equity=${accs[v].eq:.2f}")
+                print(f"{tag} entry={entry_date} exp={exp} dte={dte} {info} width={width} "
+                      f"sl={sl_disp} tgt=${tgt_d:.2f} submode={mode} pnl=$0.00 fees=$0.00 equity=${accs[v].eq:.2f}")
                 accs[v].skips[mode] = accs[v].skips.get(mode, 0) + 1
                 continue
             net = (pnl_raw - fee_raw) * MULT
             accs[v].trade(exp, net, fee_raw * MULT)
-            print(f"{tag} {exp} submode={mode} day_pnl=${net:.2f} fees=${fee_raw * MULT:.2f} "
-                  f"equity=${accs[v].eq:.2f} skew={skew} {info}")
+            print(f"{tag} entry={entry_date} exp={exp} dte={dte} {info} width={width} "
+                  f"sl={sl_disp} tgt=${tgt_d:.2f} submode={mode} pnl=${net:.2f} fees=${fee_raw * MULT:.2f} "
+                  f"equity=${accs[v].eq:.2f} skew={skew}")
     years = max((b - a).days / 365.25, 0.01)
     for v in VARIANTS:
         summarize(f"[{gtag} {v}]", accs[v], years)
 
 
+def expand_strats(s):
+    out = []
+    for x in s.split(","):
+        x = x.strip()
+        if not x:
+            continue
+        for y in ALIASES.get(x, [x]):
+            if y not in STRATS:
+                raise SystemExit(f"Unknown strategy: {y}. Valid: {STRATS} + aliases {list(ALIASES)}")
+            if y not in out:
+                out.append(y)
+    return out
+
+
 if __name__ == "__main__":
     a = datetime.strptime(args.start, "%Y-%m-%d").date()
     b = datetime.strptime(args.end, "%Y-%m-%d").date()
-    print(f"WINDOW {a} to {b} | TRAIN<{TRAIN_END} HOLDOUT>= | lots={args.lots} max_skew={args.max_skew}")
+    strat_list = expand_strats(args.strategies)
+    print(f"WINDOW {a} to {b} | TRAIN<{TRAIN_END} TEST>= | lots={args.lots} max_skew={args.max_skew} "
+          f"| variants={VARIANTS} | strategies={strat_list}")
     for kind in args.kinds.split(","):
         for dte in DTES[kind]:
             if args.dte and dte != args.dte:
                 continue
-            for strat in args.strategies.split(","):
+            for strat in strat_list:
+                if strat in CAL_KIND and CAL_KIND[strat] != kind:
+                    continue
                 run_group(strat, kind, dte, a, b)
