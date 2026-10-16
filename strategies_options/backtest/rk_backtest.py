@@ -21,6 +21,7 @@ PCT = {"5pct": 0.05, "10pct": 0.10, "20pct": 0.20, "30pct": 0.30, "50pct": 0.50}
 HOST_TGT = 0.075
 HOST_SL = 0.075
 IC_HOST_HALF_MAXLOSS_SL = False
+SL_CAP_MULT = 1.5
 VERT_WIDTH_STEPS = {"weekly": 2, "monthly": 3}
 
 TRAIN_END = datetime(2025, 7, 1, tzinfo=timezone.utc).date()
@@ -281,6 +282,10 @@ def exec_pnl(legs, marks):
     return pnl
 
 
+def sl_level(v, strat, basis):
+    return (PCT[v] if v in PCT else HOST_SL) * basis
+
+
 def trigger(v, strat, basis, legs, marks):
     pnl = exec_pnl(legs, marks)
     if v in PCT:
@@ -372,6 +377,10 @@ def simulate(strat, legs, basis, entry_fill_ts, spot_series, spot_px, settle_ts)
                     else:
                         ef = px * (1 - SLIP); pnl += ef - l["fill"]
                     xf += fee(es, ef)
+                if reason == "SL" and SL_CAP_MULT > 0:
+                    cap = -SL_CAP_MULT * sl_level(v, strat, basis)
+                    if pnl < cap:
+                        pnl, reason = cap, "SL_CAP"
                 res[v] = (reason, pnl, entry_fee + xf)
                 active.remove(v)
         cur += STEP
@@ -469,6 +478,11 @@ def run_group(strat, kind, dte, a, b):
                         f"(d={l['strike']-spot_px:+.0f},{(l['strike']-spot_px)/spot_px*100:+.2f}%)" for l in legs)
         strikes = [l["strike"] for l in legs]
         width = max(strikes) - min(strikes)
+        if strat in CAL_KIND:
+            gap = (max(l["expiry"] for l in legs) - min(l["expiry"] for l in legs)).days
+            wtxt = f"far_near_gap_days={gap}"
+        else:
+            wtxt = f"width={width}({width / spot_px * 100:.2f}%)"
         entry_date = exp - timedelta(days=dte)
         for v in VARIANTS:
             mode, pnl_raw, fee_raw = res[v]
@@ -486,13 +500,13 @@ def run_group(strat, kind, dte, a, b):
                 sl_d = None
             sl_disp = f"${sl_d:.2f}" if sl_d is not None else "NA"
             if pnl_raw is None:
-                print(f"{tag} entry={entry_date} exp={exp} dte={dte} {info} width={width}({width / spot_px * 100:.2f}%) "
+                print(f"{tag} entry={entry_date} exp={exp} dte={dte} {info} {wtxt} "
                       f"sl={sl_disp} tgt=${tgt_d:.2f} submode={mode} pnl=$0.00 fees=$0.00 equity=${accs[v].eq:.2f}")
                 accs[v].skips[mode] = accs[v].skips.get(mode, 0) + 1
                 continue
             net = (pnl_raw - fee_raw) * MULT
             accs[v].trade(exp, net, fee_raw * MULT)
-            print(f"{tag} entry={entry_date} exp={exp} dte={dte} {info} width={width}({width / spot_px * 100:.2f}%) "
+            print(f"{tag} entry={entry_date} exp={exp} dte={dte} {info} {wtxt} "
                   f"sl={sl_disp} tgt=${tgt_d:.2f} submode={mode} pnl=${net:.2f} fees=${fee_raw * MULT:.2f} "
                   f"equity=${accs[v].eq:.2f} skew={skew}")
     years = max((b - a).days / 365.25, 0.01)
