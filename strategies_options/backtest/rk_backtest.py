@@ -145,6 +145,15 @@ def monthly_exp(a, b):
     return out
 
 
+def monthly_rank_step(entry_ts, expiry):
+    entry_date = datetime.fromtimestamp(entry_ts, tz=timezone.utc).date()
+    chain = monthly_exp(entry_date, expiry)
+    if not chain or chain[-1] != expiry:
+        return None
+    rank = len(chain) - 1
+    return {0: 1000, 1: 2000, 2: 5000}.get(rank)
+
+
 def osym(t, k, e):
     return f"{t}-BTC-{k}-{e.strftime('%d%m%y')}"
 
@@ -170,10 +179,10 @@ def premium_at(t, k, e, entry_ts):
     return None if (px is None or px <= 0) else (sym, px, ts)
 
 
-def find_by_target(t, start_k, direction, e, entry_ts, target, first_step):
+def find_by_target(t, start_k, direction, e, entry_ts, target, first_step, step=STRIKE_STEP):
     prev = None
-    for step in range(first_step, 21):
-        k = start_k + direction * step * STRIKE_STEP
+    for s in range(first_step, 21):
+        k = start_k + direction * s * step
         if k <= 0:
             break
         r = premium_at(t, k, e, entry_ts)
@@ -196,23 +205,31 @@ ATM_ORDER = [0] + [x for i in range(1, 11) for x in (i, -i)]
 
 
 def build(strat, kind, exp, entry_ts, spot):
-    base, tp = rstrike(spot), TARGET_PREM[kind]
+    tp = TARGET_PREM[kind]
     if strat in ("strangle", "iron_condor"):
-        c = find_by_target("C", base, 1, exp, entry_ts, tp, 0)
-        p = find_by_target("P", base, -1, exp, entry_ts, tp, 0)
+        step = STRIKE_STEP if kind == "weekly" else monthly_rank_step(entry_ts, exp)
+        if step is None:
+            return "NO_FILL"
+        base = int(round(spot / step) * step)
+        c = find_by_target("C", base, 1, exp, entry_ts, tp, 0, step)
+        p = find_by_target("P", base, -1, exp, entry_ts, tp, 0, step)
         if not c or not p:
             return "NO_FILL"
         legs = [leg("S", "C", c[0], exp, c[1]), leg("S", "P", p[0], exp, p[1])]
         if strat == "iron_condor":
-            hc = find_by_target("C", c[0], 1, exp, entry_ts, HEDGE_RATIO * c[1][1], 1)
-            hp = find_by_target("P", p[0], -1, exp, entry_ts, HEDGE_RATIO * p[1][1], 1)
+            hc = find_by_target("C", c[0], 1, exp, entry_ts, HEDGE_RATIO * c[1][1], 1, step)
+            hp = find_by_target("P", p[0], -1, exp, entry_ts, HEDGE_RATIO * p[1][1], 1, step)
             if not hc or not hp:
                 return "NO_FILL"
             legs += [leg("B", "C", hc[0], exp, hc[1]), leg("B", "P", hp[0], exp, hp[1])]
         return legs
     if strat in ("straddle", "iron_fly"):
+        step = STRIKE_STEP if kind == "weekly" else monthly_rank_step(entry_ts, exp)
+        if step is None:
+            return "NO_FILL"
+        base = int(round(spot / step) * step)
         for off in ATM_ORDER:
-            k = base + off * STRIKE_STEP
+            k = base + off * step
             c, p = premium_at("C", k, exp, entry_ts), premium_at("P", k, exp, entry_ts)
             if c and p:
                 break
@@ -220,17 +237,21 @@ def build(strat, kind, exp, entry_ts, spot):
             return "NO_FILL"
         legs = [leg("S", "C", k, exp, c), leg("S", "P", k, exp, p)]
         if strat == "iron_fly":
-            hc = find_by_target("C", k, 1, exp, entry_ts, HEDGE_RATIO * c[1], 1)
-            hp = find_by_target("P", k, -1, exp, entry_ts, HEDGE_RATIO * p[1], 1)
+            hc = find_by_target("C", k, 1, exp, entry_ts, HEDGE_RATIO * c[1], 1, step)
+            hp = find_by_target("P", k, -1, exp, entry_ts, HEDGE_RATIO * p[1], 1, step)
             if not hc or not hp:
                 return "NO_FILL"
             legs += [leg("B", "C", hc[0], exp, hc[1]), leg("B", "P", hp[0], exp, hp[1])]
         return legs
     if strat in ("vertical_debit", "vertical_credit"):
+        step = STRIKE_STEP if kind == "weekly" else monthly_rank_step(entry_ts, exp)
+        if step is None:
+            return "NO_FILL"
+        base = int(round(spot / step) * step)
         w = VERT_WIDTH_STEPS[kind]
         for off in ATM_ORDER:
-            k1 = base + off * STRIKE_STEP
-            k2 = k1 + w * STRIKE_STEP
+            k1 = base + off * step
+            k2 = k1 + w * step
             r1, r2 = premium_at("C", k1, exp, entry_ts), premium_at("C", k2, exp, entry_ts)
             if r1 and r2 and r1[1] > r2[1]:
                 if strat == "vertical_debit":
@@ -242,8 +263,15 @@ def build(strat, kind, exp, entry_ts, spot):
         if not fars:
             return "NO_FAR_EXPIRY"
         far = fars[0]
+        near_step = STRIKE_STEP if kind == "weekly" else monthly_rank_step(entry_ts, exp)
+        far_step = monthly_rank_step(entry_ts, far)
+        if near_step is None or far_step is None:
+            return "NO_FILL"
+        g = math.gcd(near_step, far_step)
+        step = near_step * far_step // g
+        base = int(round(spot / step) * step)
         for off in ATM_ORDER:
-            k = base + off * STRIKE_STEP
+            k = base + off * step
             opts = []
             for t in ("C", "P"):
                 n, f = premium_at(t, k, exp, entry_ts), premium_at(t, k, far, entry_ts)
