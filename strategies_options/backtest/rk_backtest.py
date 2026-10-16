@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, timezone
 
 BASE = "https://api.india.delta.exchange"
 SPOT = ".DEXBTUSD"
-CAP, STRIKE_STEP, STEP, CV = 227.0, 1000, 300, 0.001
+CAP, STRIKE_STEP, STEP, CV = 227.0, 1000, 60, 0.001
 MAX_FILL_GAP, MAX_MARK_AGE = 1800, 1800
 SLIP, HEDGE_RATIO = 0.05, 0.45
 TARGET_PREM = {"weekly": 200, "monthly": 1000}
@@ -60,7 +60,7 @@ def get_candles(symbol, s, e):
         for att in range(1, 4):
             try:
                 r = requests.get(BASE + "/v2/history/candles", timeout=(3, 27),
-                                 params={"symbol": symbol, "resolution": "5m", "start": cur, "end": ce})
+                                 params={"symbol": symbol, "resolution": "1m", "start": cur, "end": ce})
                 if r.status_code == 429 or r.status_code >= 500:
                     time.sleep(att); continue
                 d = r.json()
