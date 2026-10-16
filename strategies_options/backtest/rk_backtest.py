@@ -21,7 +21,7 @@ PCT = {"5pct": 0.05, "10pct": 0.10, "20pct": 0.20, "30pct": 0.30, "50pct": 0.50}
 HOST_TGT = 0.075
 HOST_SL = 0.075
 IC_HOST_HALF_MAXLOSS_SL = False
-SL_CAP_MULT = 1.5
+SL_CAP_MULT = 1.5   # overridden by --sl-cap (0 = off)
 VERT_WIDTH_STEPS = {"weekly": 2, "monthly": 3}
 
 TRAIN_END = datetime(2025, 7, 1, tzinfo=timezone.utc).date()
@@ -36,8 +36,10 @@ ap.add_argument("--lots", type=int, default=100)
 ap.add_argument("--max-skew", type=int, default=1800)
 ap.add_argument("--debug", action="store_true")
 ap.add_argument("--stale-max", type=int, default=14400)
+ap.add_argument("--sl-cap", type=float, default=1.5)
 args = ap.parse_args()
 MULT = args.lots * CV
+SL_CAP_MULT = args.sl_cap
 
 
 class FetchError(Exception):
@@ -282,8 +284,17 @@ def exec_pnl(legs, marks):
     return pnl
 
 
-def sl_level(v, strat, basis):
-    return (PCT[v] if v in PCT else HOST_SL) * basis
+def sl_level(v, strat, basis, legs):
+    """Intended SL size in raw price units, matching trigger(); None = this variant has no SL."""
+    if v in PCT:
+        return PCT[v] * basis
+    if strat == "strangle":
+        return sum(l["raw"] for l in legs if l["role"] == "S")   # host: SL when sold marks reach 2x => ~1x credit loss
+    if strat in ("straddle", "iron_fly") or strat in CAL_KIND:
+        return HOST_SL * basis
+    if strat == "iron_condor" and IC_HOST_HALF_MAXLOSS_SL:
+        return 0.5 * ic_max_loss(legs, basis)
+    return None
 
 
 def trigger(v, strat, basis, legs, marks):
@@ -377,8 +388,9 @@ def simulate(strat, legs, basis, entry_fill_ts, spot_series, spot_px, settle_ts)
                     else:
                         ef = px * (1 - SLIP); pnl += ef - l["fill"]
                     xf += fee(es, ef)
-                if reason == "SL" and SL_CAP_MULT > 0:
-                    cap = -SL_CAP_MULT * sl_level(v, strat, basis)
+                lvl = sl_level(v, strat, basis, legs)
+                if reason == "SL" and SL_CAP_MULT > 0 and lvl is not None:
+                    cap = -SL_CAP_MULT * lvl
                     if pnl < cap:
                         pnl, reason = cap, "SL_CAP"
                 res[v] = (reason, pnl, entry_fee + xf)
@@ -488,16 +500,8 @@ def run_group(strat, kind, dte, a, b):
             mode, pnl_raw, fee_raw = res[v]
             tag = f"[{gtag} {v}]"
             tgt_d = (PCT[v] if v in PCT else HOST_TGT) * basis * MULT
-            if v in PCT:
-                sl_d = PCT[v] * basis * MULT
-            elif strat == "strangle":
-                sl_d = sum(l["raw"] for l in legs if l["role"] == "S") * MULT
-            elif strat in ("straddle", "iron_fly") or strat in CAL_KIND:
-                sl_d = HOST_SL * basis * MULT
-            elif strat == "iron_condor":
-                sl_d = (0.5 * ic_max_loss(legs, basis) * MULT) if IC_HOST_HALF_MAXLOSS_SL else None
-            else:
-                sl_d = None
+            lvl = sl_level(v, strat, basis, legs)
+            sl_d = lvl * MULT if lvl is not None else None
             sl_disp = f"${sl_d:.2f}" if sl_d is not None else "NA"
             if pnl_raw is None:
                 print(f"{tag} entry={entry_date} exp={exp} dte={dte} {info} {wtxt} "
