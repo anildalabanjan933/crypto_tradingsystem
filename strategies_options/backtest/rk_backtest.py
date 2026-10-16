@@ -16,8 +16,8 @@ ALIASES = {"vertical_spread": ["vertical_debit", "vertical_credit"],
 CAL_KIND = {"calendar_wm": "weekly", "calendar_mm": "monthly"}
 DEBIT_STRATS = ("calendar_wm", "calendar_mm", "vertical_debit")
 
-VARIANTS = ["5pct", "10pct", "host"]
-PCT = {"5pct": 0.05, "10pct": 0.10}
+VARIANTS = ["5pct", "10pct", "20pct", "30pct", "50pct", "host"]
+PCT = {"5pct": 0.05, "10pct": 0.10, "20pct": 0.20, "30pct": 0.30, "50pct": 0.50}
 HOST_TGT = 0.075
 HOST_SL = 0.075
 IC_HOST_HALF_MAXLOSS_SL = False
@@ -34,6 +34,7 @@ ap.add_argument("--dte", type=int, default=None)
 ap.add_argument("--lots", type=int, default=100)
 ap.add_argument("--max-skew", type=int, default=1800)
 ap.add_argument("--debug", action="store_true")
+ap.add_argument("--stale-max", type=int, default=14400)
 args = ap.parse_args()
 MULT = args.lots * CV
 
@@ -320,6 +321,23 @@ def simulate(strat, legs, basis, entry_fill_ts, spot_series, spot_px, settle_ts)
         l["fill"] = l["raw"] * (1 - SLIP) if l["role"] == "S" else l["raw"] * (1 + SLIP)
     entry_fee = sum(fee(spot_px, l["fill"]) for l in legs)
     res, active, cur = {}, list(VARIANTS), entry_fill_ts + STEP
+    stale_since = None
+
+    def forced_exit(t):
+        pnl_, xf_, es_ = 0.0, 0.0, (spot_series.mark_price(t) or spot_px)
+        for l in legs:
+            px = l["series"].fill_at(t)[0]
+            if px is None:
+                px = l["series"].mark_with_age(t)[0]
+            if px is None:
+                return None
+            if l["role"] == "S":
+                ef = px * (1 + SLIP); pnl_ += l["fill"] - ef
+            else:
+                ef = px * (1 - SLIP); pnl_ += ef - l["fill"]
+            xf_ += fee(es_, ef)
+        return pnl_, xf_
+
     while cur < settle_ts and active:
         marks, bad = [], False
         for l in legs:
@@ -327,6 +345,18 @@ def simulate(strat, legs, basis, entry_fill_ts, spot_series, spot_px, settle_ts)
             if m is None or age > MAX_MARK_AGE:
                 bad = True; break
             marks.append(m)
+        if bad:
+            if stale_since is None:
+                stale_since = cur
+            elif cur - stale_since >= args.stale_max:
+                fx = forced_exit(cur)
+                if fx is not None:
+                    for v in list(active):
+                        res[v] = ("STALE_EXIT", fx[0], entry_fee + fx[1])
+                    active = []
+                    break
+        else:
+            stale_since = None
         if not bad:
             for v in list(active):
                 reason = trigger(v, strat, basis, legs, marks)
@@ -435,7 +465,8 @@ def run_group(strat, kind, dte, a, b):
         if skew > args.max_skew:
             skip("SKEW"); continue
         res = simulate(strat, legs, basis, max(l["fill_ts"] for l in legs), spot_series, spot_px, settle_ts)
-        info = " ".join(f"{l['role']}{l['type']}{l['strike']}@{l['raw']:.0f}(d={l['strike']-spot_px:+.0f})" for l in legs)
+        info = " ".join(f"{l['role']}{l['type']}{l['strike']}@{l['raw']:.0f}"
+                        f"(d={l['strike']-spot_px:+.0f},{(l['strike']-spot_px)/spot_px*100:+.2f}%)" for l in legs)
         strikes = [l["strike"] for l in legs]
         width = max(strikes) - min(strikes)
         entry_date = exp - timedelta(days=dte)
@@ -455,13 +486,13 @@ def run_group(strat, kind, dte, a, b):
                 sl_d = None
             sl_disp = f"${sl_d:.2f}" if sl_d is not None else "NA"
             if pnl_raw is None:
-                print(f"{tag} entry={entry_date} exp={exp} dte={dte} {info} width={width} "
+                print(f"{tag} entry={entry_date} exp={exp} dte={dte} {info} width={width}({width / spot_px * 100:.2f}%) "
                       f"sl={sl_disp} tgt=${tgt_d:.2f} submode={mode} pnl=$0.00 fees=$0.00 equity=${accs[v].eq:.2f}")
                 accs[v].skips[mode] = accs[v].skips.get(mode, 0) + 1
                 continue
             net = (pnl_raw - fee_raw) * MULT
             accs[v].trade(exp, net, fee_raw * MULT)
-            print(f"{tag} entry={entry_date} exp={exp} dte={dte} {info} width={width} "
+            print(f"{tag} entry={entry_date} exp={exp} dte={dte} {info} width={width}({width / spot_px * 100:.2f}%) "
                   f"sl={sl_disp} tgt=${tgt_d:.2f} submode={mode} pnl=${net:.2f} fees=${fee_raw * MULT:.2f} "
                   f"equity=${accs[v].eq:.2f} skew={skew}")
     years = max((b - a).days / 365.25, 0.01)
