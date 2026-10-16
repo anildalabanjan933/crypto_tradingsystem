@@ -22,7 +22,7 @@ HOST_TGT = 0.075
 HOST_SL = 0.075
 IC_HOST_HALF_MAXLOSS_SL = False
 SL_CAP_MULT = 1.5   # overridden by --sl-cap (0 = off)
-VERT_WIDTH_STEPS = {"weekly": 2, "monthly": 3}
+VERT_WIDTH_USD = {"weekly": 2000, "monthly": 5000}
 
 TRAIN_END = datetime(2025, 7, 1, tzinfo=timezone.utc).date()
 
@@ -147,7 +147,7 @@ def monthly_exp(a, b):
 
 def monthly_rank_step(entry_ts, expiry):
     entry_date = datetime.fromtimestamp(entry_ts, tz=timezone.utc).date()
-    chain = monthly_exp(entry_date, expiry)
+    chain = [e for e in monthly_exp(entry_date, expiry) if ts_of(e) > entry_ts]
     if not chain or chain[-1] != expiry:
         return None
     rank = len(chain) - 1
@@ -179,11 +179,11 @@ def premium_at(t, k, e, entry_ts):
     return None if (px is None or px <= 0) else (sym, px, ts)
 
 
-def find_by_target(t, start_k, direction, e, entry_ts, target, first_step, step=STRIKE_STEP):
+def find_by_target(t, start_k, direction, e, entry_ts, target, first_step, step=STRIKE_STEP, max_pct=0.07):
     prev = None
     for s in range(first_step, 21):
         k = start_k + direction * s * step
-        if k <= 0:
+        if k <= 0 or abs(k - start_k) > max_pct * start_k:
             break
         r = premium_at(t, k, e, entry_ts)
         if r is None:
@@ -230,6 +230,8 @@ def build(strat, kind, exp, entry_ts, spot):
         base = int(round(spot / step) * step)
         for off in ATM_ORDER:
             k = base + off * step
+            if abs(k - base) > 0.07 * spot:
+                continue
             c, p = premium_at("C", k, exp, entry_ts), premium_at("P", k, exp, entry_ts)
             if c and p:
                 break
@@ -248,10 +250,12 @@ def build(strat, kind, exp, entry_ts, spot):
         if step is None:
             return "NO_FILL"
         base = int(round(spot / step) * step)
-        w = VERT_WIDTH_STEPS[kind]
+        vw = VERT_WIDTH_USD[kind]
         for off in ATM_ORDER:
             k1 = base + off * step
-            k2 = k1 + w * step
+            if abs(k1 - base) > 0.07 * spot:
+                continue
+            k2 = int(round((k1 + vw) / step) * step)
             r1, r2 = premium_at("C", k1, exp, entry_ts), premium_at("C", k2, exp, entry_ts)
             if r1 and r2 and r1[1] > r2[1]:
                 if strat == "vertical_debit":
@@ -272,6 +276,8 @@ def build(strat, kind, exp, entry_ts, spot):
         base = int(round(spot / step) * step)
         for off in ATM_ORDER:
             k = base + off * step
+            if abs(k - base) > 0.07 * spot:
+                continue
             opts = []
             for t in ("C", "P"):
                 n, f = premium_at(t, k, exp, entry_ts), premium_at(t, k, far, entry_ts)
@@ -396,7 +402,7 @@ def simulate(strat, legs, basis, entry_fill_ts, spot_series, spot_px, settle_ts)
                 fx = forced_exit(cur)
                 if fx is not None:
                     for v in list(active):
-                        res[v] = ("STALE_EXIT", fx[0], entry_fee + fx[1])
+                        res[v] = ("STALE_EXIT", fx[0], entry_fee + fx[1], cur)
                     active = []
                     break
         else:
@@ -421,13 +427,13 @@ def simulate(strat, legs, basis, entry_fill_ts, spot_series, spot_px, settle_ts)
                     cap = -SL_CAP_MULT * lvl
                     if pnl < cap:
                         pnl, reason = cap, "SL_CAP"
-                res[v] = (reason, pnl, entry_fee + xf)
+                res[v] = (reason, pnl, entry_fee + xf, cur)
                 active.remove(v)
         cur += STEP
     if active:
         if settle_ts > int(time.time()):
             for v in active:
-                res[v] = ("UNSETTLED", None, None)
+                res[v] = ("UNSETTLED", None, None, None)
         else:
             pnl, xf, ok = 0.0, 0.0, True
             for l in legs:
@@ -447,7 +453,7 @@ def simulate(strat, legs, basis, entry_fill_ts, spot_series, spot_px, settle_ts)
                     pnl += ef - l["fill"]
                     xf += fee(spot_series.mark_price(settle_ts) or spot_px, ef)
             for v in active:
-                res[v] = ("EXPIRY", pnl, entry_fee + xf) if ok else ("UNSETTLED", None, None)
+                res[v] = ("EXPIRY", pnl, entry_fee + xf, settle_ts) if ok else ("UNSETTLED", None, None, None)
     return res
 
 
@@ -525,7 +531,8 @@ def run_group(strat, kind, dte, a, b):
             wtxt = f"width={width}({width / spot_px * 100:.2f}%)"
         entry_date = exp - timedelta(days=dte)
         for v in VARIANTS:
-            mode, pnl_raw, fee_raw = res[v]
+            mode, pnl_raw, fee_raw, exit_ts = res[v]
+            exit_date = datetime.fromtimestamp(exit_ts, tz=timezone.utc).date() if exit_ts else exp
             tag = f"[{gtag} {v}]"
             tgt_d = (PCT[v] if v in PCT else HOST_TGT) * basis * MULT
             lvl = sl_level(v, strat, basis, legs)
@@ -533,10 +540,16 @@ def run_group(strat, kind, dte, a, b):
             sl_disp = f"${sl_d:.2f}" if sl_d is not None else "NA"
             sc_leg = next((l for l in legs if l["role"] == "S" and l["type"] == "C"), None)
             sp_leg = next((l for l in legs if l["role"] == "S" and l["type"] == "P"), None)
-            if sc_leg and sp_leg:
+            bl_leg = next((l for l in legs if l["role"] == "B" and l["type"] == "C"), None)
+            if strat in CAL_KIND:
+                be_disp = "be=NA"
+            elif sc_leg and sp_leg:
                 be_hi = sc_leg["strike"] + basis
                 be_lo = sp_leg["strike"] - basis
                 be_disp = f"be_range={(be_lo - spot_px) / spot_px * 100:+.2f}%/{(be_hi - spot_px) / spot_px * 100:+.2f}%"
+            elif strat == "vertical_debit" and bl_leg:
+                be = bl_leg["strike"] + basis
+                be_disp = f"be={(be - spot_px) / spot_px * 100:+.2f}%"
             elif sc_leg or sp_leg:
                 leg0 = sc_leg or sp_leg
                 be = leg0["strike"] + basis if leg0["type"] == "C" else leg0["strike"] - basis
@@ -544,13 +557,13 @@ def run_group(strat, kind, dte, a, b):
             else:
                 be_disp = "be=NA"
             if pnl_raw is None:
-                print(f"{tag} entry={entry_date} exit={exp} dte={dte} {info} {wtxt} "
+                print(f"{tag} entry={entry_date} exit={exit_date} dte={dte} {info} {wtxt} "
                       f"{be_disp} sl={sl_disp} tgt=${tgt_d:.2f} slip={SLIP*100:.0f}% submode={mode} pnl=$0.00 fees=$0.00 equity=${accs[v].eq:.2f}")
                 accs[v].skips[mode] = accs[v].skips.get(mode, 0) + 1
                 continue
             net = (pnl_raw - fee_raw) * MULT
-            accs[v].trade(exp, net, fee_raw * MULT)
-            print(f"{tag} entry={entry_date} exit={exp} dte={dte} {info} {wtxt} "
+            accs[v].trade(exit_date, net, fee_raw * MULT)
+            print(f"{tag} entry={entry_date} exit={exit_date} dte={dte} {info} {wtxt} "
                   f"{be_disp} sl={sl_disp} tgt=${tgt_d:.2f} slip={SLIP*100:.0f}% submode={mode} pnl=${net:.2f} fees=${fee_raw * MULT:.2f} "
                   f"equity=${accs[v].eq:.2f} skew={skew}")
     years = max((b - a).days / 365.25, 0.01)
