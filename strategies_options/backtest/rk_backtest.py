@@ -158,9 +158,6 @@ def osym(t, k, e):
     return f"{t}-BTC-{k}-{e.strftime('%d%m%y')}"
 
 
-def rstrike(p):
-    return int(round(p / STRIKE_STEP) * STRIKE_STEP)
-
 
 def ts_of(d, h=12):
     return int(datetime(d.year, d.month, d.day, h, tzinfo=timezone.utc).timestamp())
