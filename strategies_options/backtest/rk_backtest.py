@@ -329,7 +329,7 @@ def sl_level(v, strat, basis, legs):
 
 
 def trigger(v, strat, basis, legs, marks):
-    pnl = exec_pnl(legs, marks)
+    pnl = raw_pnl(legs, marks)
     if v in PCT:
         p = PCT[v]
         if pnl >= p * basis:
