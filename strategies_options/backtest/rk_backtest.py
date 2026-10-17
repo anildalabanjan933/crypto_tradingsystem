@@ -332,12 +332,12 @@ def trigger(v, strat, basis, legs, marks):
     pnl = raw_pnl(legs, marks)
     if v in PCT:
         p = PCT[v]
-        if pnl >= p * basis + 2*SLIP*sum(l["raw"] for l in legs):
+        if pnl >= p * basis + sum(2*SLIP*l["raw"] + 2*fee(l["strike"], l["raw"]) for l in legs):
             return "TARGET"
         if pnl <= -p * basis:
             return "SL"
         return None
-    if pnl >= HOST_TGT * basis + 2*SLIP*sum(l["raw"] for l in legs):
+    if pnl >= HOST_TGT * basis + sum(2*SLIP*l["raw"] + 2*fee(l["strike"], l["raw"]) for l in legs):
         return "TARGET"
     if strat == "strangle":
         sold_entry = sum(l["raw"] for l in legs if l["role"] == "S")
