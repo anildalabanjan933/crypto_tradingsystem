@@ -489,6 +489,7 @@ def run_group(strat, kind, dte, a, b):
     accs = {v: Acc() for v in VARIANTS}
     gtag = f"{strat} {kind} {dte}DTE"
     for exp in exps:
+        _cache.clear()
         entry_ts, settle_ts = ts_of(exp - timedelta(days=dte)), ts_of(exp)
         def skip(reason):
             print(f"[{gtag}] {exp} submode={reason} day_pnl=$0.00 fees=$0.00 equity=(unchanged)")
@@ -531,7 +532,7 @@ def run_group(strat, kind, dte, a, b):
             mode, pnl_raw, fee_raw, exit_ts = res[v]
             exit_date = datetime.fromtimestamp(exit_ts, tz=timezone.utc).date() if exit_ts else exp
             tag = f"[{gtag} {v}]"
-            tgt_d = (PCT[v] if v in PCT else HOST_TGT) * basis * MULT
+            tgt_d = ((PCT[v] if v in PCT else HOST_TGT) * basis + sum(2*SLIP*l["raw"] + 2*fee(l["strike"], l["raw"]) for l in legs)) * MULT
             lvl = sl_level(v, strat, basis, legs)
             sl_d = lvl * MULT if lvl is not None else None
             sl_disp = f"${sl_d:.2f}" if sl_d is not None else "NA"
