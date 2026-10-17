@@ -36,7 +36,7 @@ ap.add_argument("--lots", type=int, default=100)
 ap.add_argument("--max-skew", type=int, default=1800)
 ap.add_argument("--debug", action="store_true")
 ap.add_argument("--stale-max", type=int, default=14400)
-ap.add_argument("--sl-cap", type=float, default=1.5)
+ap.add_argument("--sl-cap", type=float, default=0)
 args = ap.parse_args()
 MULT = args.lots * CV
 SL_CAP_MULT = args.sl_cap
@@ -332,12 +332,12 @@ def trigger(v, strat, basis, legs, marks):
     pnl = raw_pnl(legs, marks)
     if v in PCT:
         p = PCT[v]
-        if pnl >= p * basis:
+        if pnl >= p * basis + 2*SLIP*sum(l["raw"] for l in legs):
             return "TARGET"
         if pnl <= -p * basis:
             return "SL"
         return None
-    if pnl >= HOST_TGT * basis:
+    if pnl >= HOST_TGT * basis + 2*SLIP*sum(l["raw"] for l in legs):
         return "TARGET"
     if strat == "strangle":
         sold_entry = sum(l["raw"] for l in legs if l["role"] == "S")
