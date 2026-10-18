@@ -169,7 +169,7 @@ def find_cost_match(t, direction, exp, ts, target, start_k, max_steps=30):
 
 def leg(role, t, k, e, r):
     px = r[1] * (1 - SLIP) if role == "S" else r[1] * (1 + SLIP)
-    return {"role": role, "type": t, "strike": k, "expiry": e, "symbol": r[0], "raw": px, "fill_ts": r[2]}
+    return {"role": role, "type": t, "strike": k, "expiry": e, "symbol": r[0], "raw": px, "mkt": r[1], "fill_ts": r[2]}
 
 
 class Acc:
@@ -261,7 +261,7 @@ def run_recost_variant(entry_h, entry_m, a, b):
                         sl["fee"] += fee(spot_at(spot_series, fts, spot_px), ef)
                         if sl["reentries"] < 1:
                             direction = 1 if side == "C" else -1
-                            res = find_cost_match(side, direction, exp, fts, l["raw"], l["strike"])
+                            res = find_cost_match(side, direction, exp, fts, l["mkt"], l["strike"])
                             if res:
                                 nk, nr = res
                                 sl["active"] = leg("S", side, nk, exp, nr)
@@ -379,7 +379,7 @@ def run_lazy3_variant(entry_h, entry_m, a, b):
                                         lazy[side] = {
                                             "leg": lz_leg,
                                             "series": Series(get_candles(lz_leg["symbol"], fts, exit_ts + 2 * STEP)),
-                                            "trail_sl": lr[1] - SL_LAZY_PTS,
+                                            "trail_sl": lz_leg["raw"] - SL_LAZY_PTS,
                                             "done": False,
                                             "pnl": 0.0,
                                             "fee": fee(cur_spot, lr[1]),
