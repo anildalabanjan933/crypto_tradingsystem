@@ -1,4 +1,3 @@
-@'
 import time, argparse, math, bisect, requests
 from datetime import datetime, timedelta, timezone
 
@@ -141,6 +140,11 @@ def fee(spot, px):
     return min(0.00015 * spot, 0.05 * px) * 1.18
 
 
+def spot_at(series, ts, fallback):
+    v = series.mark_price(ts)
+    return v if v else fallback
+
+
 def premium_at(t, k, e, ts):
     sym = osym(t, k, e)
     c = get_candles(sym, ts, ts + MAX_FILL_GAP + STEP)
@@ -253,7 +257,7 @@ def run_recost_variant(entry_h, entry_m, a, b):
                             continue
                         ef = px * (1 + SLIP)
                         sl["pnl"] += l["raw"] - ef
-                        sl["fee"] += fee(spot_px, ef)
+                        sl["fee"] += fee(spot_at(spot_series, fts, spot_px), ef)
                         if sl["reentries"] < 1:
                             direction = 1 if side == "C" else -1
                             res = find_cost_match(side, direction, exp, fts, l["raw"], l["strike"])
@@ -261,7 +265,7 @@ def run_recost_variant(entry_h, entry_m, a, b):
                                 nk, nr = res
                                 sl["active"] = leg("S", side, nk, exp, nr)
                                 sl["reentries"] += 1
-                                sl["fee"] += fee(spot_px, nr[1])
+                                sl["fee"] += fee(spot_at(spot_series, fts, spot_px), nr[1])
                                 sl["series"] = Series(get_candles(sl["active"]["symbol"], fts, exit_ts + 2 * STEP))
                             else:
                                 sl["done"] = True
@@ -269,6 +273,7 @@ def run_recost_variant(entry_h, entry_m, a, b):
                             sl["done"] = True
                 cur += STEP
 
+            unsettled = False
             for side in ("C", "P"):
                 sl = slots[side]
                 if sl["done"]:
@@ -278,11 +283,15 @@ def run_recost_variant(entry_h, entry_m, a, b):
                 if px is None:
                     m, age = sl["series"].mark_with_age(exit_ts)
                     if m is None or age > MAX_MARK_AGE:
-                        skip("UNSETTLED"); continue
+                        unsettled = True
+                        break
                     px = m
                 ef = px * (1 + SLIP)
                 sl["pnl"] += l["raw"] - ef
-                sl["fee"] += fee(spot_px, ef)
+                sl["fee"] += fee(spot_at(spot_series, exit_ts, spot_px), ef)
+            if unsettled:
+                skip("UNSETTLED")
+                continue
 
             day_pnl = slots["C"]["pnl"] + slots["P"]["pnl"]
             day_fee = entry_fee_raw + slots["C"]["fee"] + slots["P"]["fee"]
@@ -359,7 +368,7 @@ def run_lazy3_variant(entry_h, entry_m, a, b):
                                 if px is not None:
                                     ef = px * (1 + SLIP)
                                     ml["pnl"] += l["raw"] - ef
-                                    ml["fee"] += fee(spot_px, ef)
+                                    ml["fee"] += fee(spot_at(spot_series, fts, spot_px), ef)
                                     ml["sl_done"] = True
                                     cur_spot = spot_series.mark_price(fts) or spot_px
                                     lk = otm_strike(cur_spot, side, OTM_N)
@@ -386,10 +395,11 @@ def run_lazy3_variant(entry_h, entry_m, a, b):
                                 if px is not None:
                                     ef = px * (1 - SLIP)
                                     lz["pnl"] += ef - lz["leg"]["raw"]
-                                    lz["fee"] += fee(spot_px, ef)
+                                    lz["fee"] += fee(spot_at(spot_series, fts, spot_px), ef)
                                     lz["done"] = True
                 cur += STEP
 
+            unsettled = False
             for side in ("C", "P"):
                 ml = main[side]
                 if not ml["sl_done"]:
@@ -398,22 +408,27 @@ def run_lazy3_variant(entry_h, entry_m, a, b):
                     if px is None:
                         m, age = ml["series"].mark_with_age(exit_ts)
                         if m is None or age > MAX_MARK_AGE:
-                            skip("UNSETTLED"); continue
+                            unsettled = True
+                            break
                         px = m
                     ef = px * (1 + SLIP)
                     ml["pnl"] += l["raw"] - ef
-                    ml["fee"] += fee(spot_px, ef)
+                    ml["fee"] += fee(spot_at(spot_series, exit_ts, spot_px), ef)
                 lz = lazy[side]
                 if lz and not lz["done"]:
                     px, fts = lz["series"].fill_at(exit_ts)
                     if px is None:
                         m, age = lz["series"].mark_with_age(exit_ts)
                         if m is None or age > MAX_MARK_AGE:
-                            skip("UNSETTLED"); continue
+                            unsettled = True
+                            break
                         px = m
                     ef = px * (1 - SLIP)
                     lz["pnl"] += ef - lz["leg"]["raw"]
-                    lz["fee"] += fee(spot_px, ef)
+                    lz["fee"] += fee(spot_at(spot_series, exit_ts, spot_px), ef)
+            if unsettled:
+                skip("UNSETTLED")
+                continue
 
             day_pnl = (main["C"]["pnl"] + main["P"]["pnl"]) * MULT_MAIN
             day_fee = (entry_fee_raw + main["C"]["fee"] + main["P"]["fee"]) * MULT_MAIN
@@ -468,4 +483,3 @@ if __name__ == "__main__":
 
     years = max((b - a).days / 365.25, 0.01)
     summarize("[PORTFOLIO ALL 7 VARIANTS]", portfolio, years)
-'@ | Set-Content -Path algotest_backtest.py -Encoding utf8
