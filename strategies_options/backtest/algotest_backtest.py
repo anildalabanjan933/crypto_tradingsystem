@@ -168,7 +168,8 @@ def find_cost_match(t, direction, exp, ts, target, start_k, max_steps=30):
 
 
 def leg(role, t, k, e, r):
-    return {"role": role, "type": t, "strike": k, "expiry": e, "symbol": r[0], "raw": r[1], "fill_ts": r[2]}
+    px = r[1] * (1 - SLIP) if role == "S" else r[1] * (1 + SLIP)
+    return {"role": role, "type": t, "strike": k, "expiry": e, "symbol": r[0], "raw": px, "fill_ts": r[2]}
 
 
 class Acc:
