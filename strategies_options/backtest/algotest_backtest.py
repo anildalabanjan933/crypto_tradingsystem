@@ -476,7 +476,7 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
     return acc, trades
 
 
-RECOST_TIMES = [(9, 20), (10, 20), (11, 25)]
+RECOST_TIMES = [(9, 20), (10, 20), (11, 20)]
 LAZY3_TIMES = [(19, 0, 4), (9, 20, 1), (10, 20, 1), (11, 20, 1)]
 
 if __name__ == "__main__":
