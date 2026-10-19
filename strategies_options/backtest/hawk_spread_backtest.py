@@ -109,7 +109,7 @@ def run_hawk_variant(a, b, adj_decay=ADJ_DECAY_PCT):
                     l = grp[side]["leg"]
                     grp[side]["series"] = Series(get_candles(l["symbol"], entry_ts, exit_ts + 2 * STEP))
 
-            entry_fee_raw = fee(spot_px, cr[1]) + fee(spot_px, pr[1]) + fee(spot_px, cr2[1]) + fee(spot_px, pr2[1])
+            entry_fee_raw = (fee(spot_px, cr[1]) + fee(spot_px, pr[1])) * MULT_SELL + (fee(spot_px, cr2[1]) + fee(spot_px, pr2[1])) * MULT_BUY
 
             adj = {"active": False, "C": None, "P": None}
             adj_checked = False
@@ -122,7 +122,7 @@ def run_hawk_variant(a, b, adj_decay=ADJ_DECAY_PCT):
                     mP, ageP = w1["P"]["series"].mark_with_age(adj_ts)
                     adj_spot = spot_series.mark_price(adj_ts)
                     if mC is not None and mP is not None and ageC <= MAX_MARK_AGE and ageP <= MAX_MARK_AGE and adj_spot is not None:
-                        entry_combined = w1["C"]["leg"]["raw"] + w1["P"]["leg"]["raw"]
+                        entry_combined = w1["C"]["leg"]["mkt"] + w1["P"]["leg"]["mkt"]
                         cur_combined = mC + mP
                         decayed_pct = (entry_combined - cur_combined) / entry_combined if entry_combined else 0
                         in_range = pk < adj_spot < ck
@@ -137,7 +137,7 @@ def run_hawk_variant(a, b, adj_decay=ADJ_DECAY_PCT):
                                             "series": Series(get_candles(acr[0], adj_ts, exit_ts + 2 * STEP))}
                                 adj["P"] = {"leg": leg("B", "P", next_pk, week1_exp, apr),
                                             "series": Series(get_candles(apr[0], adj_ts, exit_ts + 2 * STEP))}
-                                entry_fee_raw += fee(adj_spot, acr[1]) + fee(adj_spot, apr[1])
+                                entry_fee_raw += (fee(adj_spot, acr[1]) + fee(adj_spot, apr[1])) * ADJ_MULT
                 cur += STEP
 
             unsettled = False
