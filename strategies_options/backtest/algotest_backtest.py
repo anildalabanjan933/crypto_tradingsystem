@@ -430,8 +430,9 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                             if m2 >= lzstate["last_exit_px"] * 2:
                                 inst = spawn_lazy(side, cur)
                                 if inst:
+                                    inst["armed"] = True
                                     lzstate["cur"] = inst
-                                    lzstate["fee"] += inst["fee_entry"]
+                                    lzstate["fee"] += inst["fee_real"]
                                     lzstate["count"] += 1
                 cur += STEP
 
