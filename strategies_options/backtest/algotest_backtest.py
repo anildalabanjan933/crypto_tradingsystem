@@ -147,11 +147,26 @@ def spot_at(series, ts, fallback):
 
 def premium_at(t, k, e, ts):
     sym = osym(t, k, e)
-    c = get_candles(sym, ts, ts + MAX_FILL_GAP + STEP)
-    if not c:
-        return None
-    px, fts = Series(c).fill_at(ts)
-    return None if (px is None or px <= 0) else (sym, px, fts)
+    c = get_candles(sym, ts - 3600, ts + MAX_FILL_GAP + STEP)
+    c = [x for x in c if x.get("volume", 0) > 0]
+    c = [x for x in c if ts - MAX_FILL_GAP <= x["time"] <= ts + MAX_FILL_GAP + STEP]
+    if c:
+        s = Series(c)
+        px, age = s.mark_with_age(ts)
+        if px is not None and age <= 300 and px > 0:
+            return (sym, px, ts)
+    mc = get_candles(f"MARK:{sym}", ts - 3600, ts + MAX_FILL_GAP + STEP)
+    mc = [x for x in mc if ts - MAX_FILL_GAP <= x["time"] <= ts + MAX_FILL_GAP + STEP]
+    if mc:
+        ms = Series(mc)
+        mpx, mage = ms.mark_with_age(ts)
+        if mpx is not None and mage <= MAX_FILL_GAP and mpx > 0:
+            return (sym, mpx, ts)
+    if c:
+        px2, fts2 = s.fill_at(ts)
+        if px2 is not None and px2 > 0:
+            return (sym, px2, fts2)
+    return None
 
 
 def find_cost_match(t, direction, exp, ts, target, start_k, max_steps=30):
@@ -338,10 +353,20 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
             if spot_px is None:
                 skip("NO_DATA"); continue
 
-            ck = otm_strike(spot_px, "C", OTM_N)
-            pk = otm_strike(spot_px, "P", OTM_N)
-            cr = premium_at("C", ck, exp, entry_ts)
-            pr = premium_at("P", pk, exp, entry_ts)
+            ck = pk = None
+            cr = pr = None
+            for n in range(OTM_N, 0, -1):
+                if cr is None:
+                    k = otm_strike(spot_px, "C", n)
+                    r = premium_at("C", k, exp, entry_ts)
+                    if r:
+                        ck, cr = k, r
+            for n in range(OTM_N, 0, -1):
+                if pr is None:
+                    k = otm_strike(spot_px, "P", n)
+                    r = premium_at("P", k, exp, entry_ts)
+                    if r:
+                        pk, pr = k, r
             if not cr or not pr:
                 skip("NO_FILL"); continue
 
