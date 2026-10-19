@@ -12,9 +12,9 @@ MAX_FILL_GAP = 1800
 MAX_MARK_AGE = 1800
 CV = 0.001
 
-LOTS_RECOST = 1000
+LOTS_RECOST = 333
 LOTS_MAIN = 1
-LOTS_LAZY = 1000
+LOTS_LAZY = 250
 MULT_RECOST = LOTS_RECOST * CV
 MULT_MAIN = LOTS_MAIN * CV
 MULT_LAZY = LOTS_LAZY * CV
@@ -207,6 +207,8 @@ def run_recost_variant(entry_h, entry_m, a, b):
     acc = Acc()
     trades = []
     for d in daily_list(a, b):
+        if d.weekday() == 4 or d.weekday() == 6:
+            continue
         _cache.clear()
         entry_ts = ts_of(d, entry_h, entry_m)
         exit_ts = ts_of(d, 17, 29)
@@ -314,7 +316,7 @@ def run_recost_variant(entry_h, entry_m, a, b):
     return acc, trades
 
 
-def run_lazy3_variant(entry_h, entry_m, a, b):
+def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
     tag = f"btst_lazy3 {entry_h:02d}:{entry_m:02d}"
     acc = Acc()
     trades = []
@@ -352,9 +354,27 @@ def run_lazy3_variant(entry_h, entry_m, a, b):
                 l = main[side]["leg"]
                 main[side]["series"] = Series(get_candles(l["symbol"], entry_ts, exit_ts + 2 * STEP))
 
-            lazy = {"C": None, "P": None}
+            lazy = {
+                "C": {"cur": None, "count": 0, "last_exit_px": None, "pnl": 0.0, "fee": 0.0},
+                "P": {"cur": None, "count": 0, "last_exit_px": None, "pnl": 0.0, "fee": 0.0},
+            }
             entry_fee_raw = fee(spot_px, cr[1]) + fee(spot_px, pr[1])
             cur = max(cr[2], pr[2]) + STEP
+
+            def spawn_lazy(side, trigger_ts):
+                cur_spot = spot_series.mark_price(trigger_ts) or spot_px
+                lk = otm_strike(cur_spot, side, OTM_N)
+                lr = premium_at(side, lk, exp, trigger_ts)
+                if not lr:
+                    return None
+                lz_leg = leg("B", side, lk, exp, lr)
+                return {
+                    "leg": lz_leg,
+                    "series": Series(get_candles(lz_leg["symbol"], lr[2], exit_ts + 2 * STEP)),
+                    "trail_sl": lz_leg["raw"] - SL_LAZY_PTS,
+                    "done": False,
+                    "fee_entry": fee(cur_spot, lr[1]),
+                }
 
             while cur < exit_ts:
                 for side in ("C", "P"):
@@ -371,20 +391,13 @@ def run_lazy3_variant(entry_h, entry_m, a, b):
                                     ml["pnl"] += l["raw"] - ef
                                     ml["fee"] += fee(spot_at(spot_series, fts, spot_px), ef)
                                     ml["sl_done"] = True
-                                    cur_spot = spot_series.mark_price(fts) or spot_px
-                                    lk = otm_strike(cur_spot, side, OTM_N)
-                                    lr = premium_at(side, lk, exp, fts)
-                                    if lr:
-                                        lz_leg = leg("B", side, lk, exp, lr)
-                                        lazy[side] = {
-                                            "leg": lz_leg,
-                                            "series": Series(get_candles(lz_leg["symbol"], fts, exit_ts + 2 * STEP)),
-                                            "trail_sl": lz_leg["raw"] - SL_LAZY_PTS,
-                                            "done": False,
-                                            "pnl": 0.0,
-                                            "fee": fee(cur_spot, lr[1]),
-                                        }
-                    lz = lazy[side]
+                                    inst = spawn_lazy(side, fts)
+                                    if inst:
+                                        lazy[side]["cur"] = inst
+                                        lazy[side]["fee"] += inst["fee_entry"]
+
+                    lzstate = lazy[side]
+                    lz = lzstate["cur"]
                     if lz and not lz["done"]:
                         m, age = lz["series"].mark_with_age(cur)
                         if m is not None and age <= MAX_MARK_AGE:
@@ -395,9 +408,19 @@ def run_lazy3_variant(entry_h, entry_m, a, b):
                                 px, fts = lz["series"].fill_at(cur)
                                 if px is not None:
                                     ef = px * (1 - SLIP)
-                                    lz["pnl"] += ef - lz["leg"]["raw"]
-                                    lz["fee"] += fee(spot_at(spot_series, fts, spot_px), ef)
+                                    lzstate["pnl"] += ef - lz["leg"]["raw"]
+                                    lzstate["fee"] += fee(spot_at(spot_series, fts, spot_px), ef)
                                     lz["done"] = True
+                                    lzstate["last_exit_px"] = ef
+                    elif lz and lz["done"] and lzstate["count"] < 4:
+                        m2, age2 = lz["series"].mark_with_age(cur)
+                        if m2 is not None and age2 <= MAX_MARK_AGE and lzstate["last_exit_px"]:
+                            if m2 >= lzstate["last_exit_px"] * 2:
+                                inst = spawn_lazy(side, cur)
+                                if inst:
+                                    lzstate["cur"] = inst
+                                    lzstate["fee"] += inst["fee_entry"]
+                                    lzstate["count"] += 1
                 cur += STEP
 
             unsettled = False
@@ -415,7 +438,7 @@ def run_lazy3_variant(entry_h, entry_m, a, b):
                     ef = px * (1 + SLIP)
                     ml["pnl"] += l["raw"] - ef
                     ml["fee"] += fee(spot_at(spot_series, exit_ts, spot_px), ef)
-                lz = lazy[side]
+                lz = lazy[side]["cur"]
                 if lz and not lz["done"]:
                     px, fts = lz["series"].fill_at(exit_ts)
                     if px is None:
@@ -425,23 +448,22 @@ def run_lazy3_variant(entry_h, entry_m, a, b):
                             break
                         px = m
                     ef = px * (1 - SLIP)
-                    lz["pnl"] += ef - lz["leg"]["raw"]
-                    lz["fee"] += fee(spot_at(spot_series, exit_ts, spot_px), ef)
+                    lazy[side]["pnl"] += ef - lz["leg"]["raw"]
+                    lazy[side]["fee"] += fee(spot_at(spot_series, exit_ts, spot_px), ef)
             if unsettled:
                 skip("UNSETTLED")
                 continue
 
-            day_pnl = (main["C"]["pnl"] + main["P"]["pnl"]) * MULT_MAIN
-            day_fee = (entry_fee_raw + main["C"]["fee"] + main["P"]["fee"]) * MULT_MAIN
+            day_pnl = (main["C"]["pnl"] + main["P"]["pnl"]) * MULT_MAIN * qty_mult
+            day_fee = (entry_fee_raw + main["C"]["fee"] + main["P"]["fee"]) * MULT_MAIN * qty_mult
             for side in ("C", "P"):
-                if lazy[side]:
-                    day_pnl += lazy[side]["pnl"] * MULT_LAZY
-                    day_fee += lazy[side]["fee"] * MULT_LAZY
+                day_pnl += lazy[side]["pnl"] * MULT_LAZY * qty_mult
+                day_fee += lazy[side]["fee"] * MULT_LAZY * qty_mult
 
             net = day_pnl - day_fee
             acc.trade(d, net, day_fee)
             trades.append((d, net, day_fee))
-            lz_flag = f"lazyC={'Y' if main['C']['sl_done'] else 'N'} lazyP={'Y' if main['P']['sl_done'] else 'N'}"
+            lz_flag = f"lazyC={'Y' if main['C']['sl_done'] else 'N'}(re{lazy['C']['count']}) lazyP={'Y' if main['P']['sl_done'] else 'N'}(re{lazy['P']['count']})"
             print(f"[{tag}] {d} C={ck}@{cr[1]:.0f} P={pk}@{pr[1]:.0f} {lz_flag} pnl=${net:.2f} equity=${acc.eq:.2f}")
 
         except FetchError as ex:
@@ -454,8 +476,8 @@ def run_lazy3_variant(entry_h, entry_m, a, b):
     return acc, trades
 
 
-RECOST_TIMES = [(9, 20), (10, 20), (11, 20)]
-LAZY3_TIMES = [(19, 0), (9, 20), (10, 20), (11, 20)]
+RECOST_TIMES = [(9, 20), (10, 20), (11, 25)]
+LAZY3_TIMES = [(19, 0, 4), (9, 20, 1), (10, 20, 1), (11, 20, 1)]
 
 if __name__ == "__main__":
     a = datetime.strptime(args.start, "%Y-%m-%d").date()
@@ -466,8 +488,8 @@ if __name__ == "__main__":
     for h, m in RECOST_TIMES:
         _, tr = run_recost_variant(h, m, a, b)
         all_trades.extend(tr)
-    for h, m in LAZY3_TIMES:
-        _, tr = run_lazy3_variant(h, m, a, b)
+    for h, m, qm in LAZY3_TIMES:
+        _, tr = run_lazy3_variant(h, m, a, b, qty_mult=qm)
         all_trades.extend(tr)
 
     all_trades.sort(key=lambda x: x[0])
