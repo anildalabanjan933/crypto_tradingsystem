@@ -253,12 +253,11 @@ def run_recost_variant(entry_h, entry_m, a, b):
                         w = sl["wait"]
                         m, age = sl["series"].mark_with_age(cur)
                         if m is not None and age <= MAX_MARK_AGE and m <= w["mkt"]:
-                            px, fts = sl["series"].fill_at(cur)
-                            if px is not None:
-                                sl["active"] = leg("S", side, w["strike"], exp, (w["symbol"], px, fts))
-                                sl["reentries"] += 1
-                                sl["fee"] += fee(spot_at(spot_series, fts, spot_px), px)
-                                sl["wait"] = None
+                            px, fts = w["mkt"], cur
+                            sl["active"] = leg("S", side, w["strike"], exp, (w["symbol"], px, fts))
+                            sl["reentries"] += 1
+                            sl["fee"] += fee(spot_at(spot_series, fts, spot_px), px)
+                            sl["wait"] = None
                         continue
                     l = sl["active"]
                     m, age = sl["series"].mark_with_age(cur)
