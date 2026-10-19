@@ -373,7 +373,10 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                     "series": Series(get_candles(lz_leg["symbol"], lr[2], exit_ts + 2 * STEP)),
                     "trail_sl": lz_leg["raw"] - SL_LAZY_PTS,
                     "done": False,
-                    "fee_entry": fee(cur_spot, lr[1]),
+                    "fee_entry": 0.0,
+                    "fee_real": fee(cur_spot, lr[1]),
+                    "armed": False,
+                    "trig": lz_leg["mkt"] * 2,
                 }
 
             while cur < exit_ts:
@@ -401,6 +404,15 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                     if lz and not lz["done"]:
                         m, age = lz["series"].mark_with_age(cur)
                         if m is not None and age <= MAX_MARK_AGE:
+                            if not lz["armed"]:
+                                if m >= lz["trig"]:
+                                    px, fts = lz["series"].fill_at(cur)
+                                    if px is not None:
+                                        lz["leg"]["raw"] = px * (1 + SLIP)
+                                        lz["trail_sl"] = lz["leg"]["raw"] - SL_LAZY_PTS
+                                        lz["armed"] = True
+                                        lzstate["fee"] += lz["fee_real"]
+                                continue
                             if m - lz["leg"]["raw"] >= TRAIL_MOVE:
                                 steps = int((m - lz["leg"]["raw"]) // TRAIL_MOVE)
                                 lz["trail_sl"] = max(lz["trail_sl"], lz["leg"]["raw"] - SL_LAZY_PTS + steps * TRAIL_STEP)
@@ -439,7 +451,7 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                     ml["pnl"] += l["raw"] - ef
                     ml["fee"] += fee(spot_at(spot_series, exit_ts, spot_px), ef)
                 lz = lazy[side]["cur"]
-                if lz and not lz["done"]:
+                if lz and not lz["done"] and lz["armed"]:
                     px, fts = lz["series"].fill_at(exit_ts)
                     if px is None:
                         m, age = lz["series"].mark_with_age(exit_ts)
