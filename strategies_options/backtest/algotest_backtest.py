@@ -249,6 +249,17 @@ def run_recost_variant(entry_h, entry_m, a, b):
                     sl = slots[side]
                     if sl["done"]:
                         continue
+                    if sl.get("wait"):
+                        w = sl["wait"]
+                        m, age = sl["series"].mark_with_age(cur)
+                        if m is not None and age <= MAX_MARK_AGE and m <= w["mkt"]:
+                            px, fts = sl["series"].fill_at(cur)
+                            if px is not None:
+                                sl["active"] = leg("S", side, w["strike"], exp, (w["symbol"], px, fts))
+                                sl["reentries"] += 1
+                                sl["fee"] += fee(spot_at(spot_series, fts, spot_px), px)
+                                sl["wait"] = None
+                        continue
                     l = sl["active"]
                     m, age = sl["series"].mark_with_age(cur)
                     if m is None or age > MAX_MARK_AGE:
@@ -262,16 +273,7 @@ def run_recost_variant(entry_h, entry_m, a, b):
                         sl["pnl"] += l["raw"] - ef
                         sl["fee"] += fee(spot_at(spot_series, fts, spot_px), ef)
                         if sl["reentries"] < 1:
-                            direction = 1 if side == "C" else -1
-                            res = find_cost_match(side, direction, exp, fts, l["mkt"], l["strike"])
-                            if res:
-                                nk, nr = res
-                                sl["active"] = leg("S", side, nk, exp, nr)
-                                sl["reentries"] += 1
-                                sl["fee"] += fee(spot_at(spot_series, fts, spot_px), nr[1])
-                                sl["series"] = Series(get_candles(sl["active"]["symbol"], fts, exit_ts + 2 * STEP))
-                            else:
-                                sl["done"] = True
+                            sl["wait"] = l
                         else:
                             sl["done"] = True
                 cur += STEP
@@ -279,7 +281,7 @@ def run_recost_variant(entry_h, entry_m, a, b):
             unsettled = False
             for side in ("C", "P"):
                 sl = slots[side]
-                if sl["done"]:
+                if sl["done"] or sl.get("wait"):
                     continue
                 l = sl["active"]
                 px, fts = sl["series"].fill_at(exit_ts)
@@ -323,7 +325,7 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
     for d in daily_list(a, b):
         _cache.clear()
         entry_ts = ts_of(d, entry_h, entry_m)
-        exp = d + timedelta(days=1) if entry_h == 19 else d
+        exp = d + timedelta(days=2 if entry_h == 19 else 1)
         exit_day = exp
         exit_ts = ts_of(exit_day, 17, 15)
 
