@@ -264,7 +264,7 @@ def run_recost_variant(entry_h, entry_m, a, b):
                     m, age = sl["series"].mark_with_age(cur)
                     if m is None or age > MAX_MARK_AGE:
                         continue
-                    sl_level = l["raw"] * (1 + SL_RECOST_PCT)
+                    sl_level = l["mkt"] * (1 + SL_RECOST_PCT)
                     if m >= sl_level:
                         px, fts = sl["series"].fill_at(cur)
                         if px is None:
@@ -388,7 +388,7 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                         l = ml["leg"]
                         m, age = ml["series"].mark_with_age(cur)
                         if m is not None and age <= MAX_MARK_AGE:
-                            sl_level = l["raw"] * (1 + SL_MAIN_PCT)
+                            sl_level = l["mkt"] * (1 + SL_MAIN_PCT)
                             if m >= sl_level:
                                 px, fts = ml["series"].fill_at(cur)
                                 if px is not None:
