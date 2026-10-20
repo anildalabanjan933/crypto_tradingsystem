@@ -7,7 +7,7 @@ CAP = 227.0
 STEP = 60
 STRIKE_STEP = 200
 OTM_N = 5
-SLIP = 0.05
+SLIP = 0.03
 MAX_FILL_GAP = 1800
 MAX_MARK_AGE = 1800
 CV = 0.001
@@ -103,16 +103,34 @@ class Series:
         self.c = c
         self.t = [x["time"] for x in c]
 
+    def _spike(self, i):
+        if i <= 0 or i + 1 >= len(self.c):
+            return None
+        p, c, n = self.c[i-1]["close"], self.c[i]["close"], self.c[i+1]["close"]
+        return max(p, n) if (c > 2*p and c > 2*n) else None
+
     def mark_with_age(self, ts):
-        i = bisect.bisect_left(self.t, ts) - 1
-        return (None, None) if i < 0 else (self.c[i]["close"], ts - self.t[i])
+        i = bisect.bisect_right(self.t, ts) - 1
+        if i < 0:
+            return (None, None)
+        sp = self._spike(i)
+        return (sp if sp is not None else self.c[i]["close"], ts - self.t[i])
 
     def mark_price(self, ts):
         return self.mark_with_age(ts)[0]
 
     def peak(self, ts):
         i = bisect.bisect_left(self.t, ts) - 1
-        return self.c[i]["high"] if i >= 0 else 0
+        if i < 0:
+            return 0
+        sp = self._spike(i)
+        return sp if sp is not None else self.c[i]["high"]
+
+    def open_at(self, ts):
+        i = bisect.bisect_left(self.t, ts)
+        if i >= len(self.c) or self.c[i]["time"] - ts > 300:
+            return None
+        return self.c[i]["open"]
 
     def fill_at(self, ts):
         i = bisect.bisect_right(self.t, ts)
@@ -287,7 +305,7 @@ def run_recost_variant(entry_h, entry_m, a, b):
                     sl_level = l["mkt"] * (1 + SL_RECOST_PCT)
                     m = max(m, sl["series"].peak(cur))
                     if m >= sl_level:
-                        px, fts = m, cur
+                        px, fts = max(sl_level, sl["series"].open_at(cur) or sl_level), cur
                         ef = px * (1 + SLIP)
                         sl["pnl"] += l["raw"] - ef
                         sl["fee"] += fee(spot_at(spot_series, fts, spot_px), ef)
@@ -344,7 +362,7 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
     for d in daily_list(a, b):
         _cache.clear()
         entry_ts = ts_of(d, entry_h, entry_m)
-        exp = d + timedelta(days=2 if entry_h == 19 else 1)
+        exp = d + timedelta(days=1)
         exit_day = exp
         exit_ts = ts_of(exit_day, 17, 15)
 
@@ -420,7 +438,7 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                             sl_level = l["mkt"] * (1 + SL_MAIN_PCT)
                             m = max(m, ml["series"].peak(cur))
                             if m >= sl_level:
-                                px, fts = m, cur
+                                px, fts = max(sl_level, ml["series"].open_at(cur) or sl_level), cur
                                 if True:
                                     ef = px * (1 + SLIP)
                                     ml["pnl"] += l["raw"] - ef
@@ -438,9 +456,9 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                         if m is not None and age <= MAX_MARK_AGE:
                             if not lz["armed"]:
                                 if max(m, lz["series"].peak(cur)) >= lz["trig"]:
-                                    px, fts = lz["series"].fill_at(cur)
+                                    px, fts = lz["series"].open_at(cur), cur
                                     if px is not None:
-                                        lz["leg"]["raw"] = lz["trig"] * (1 + SLIP)
+                                        lz["leg"]["raw"] = max(px, lz["trig"]) * (1 + SLIP)
                                         lz["trail_sl"] = lz["leg"]["raw"] - SL_LAZY_PTS
                                         lz["armed"] = True
                                         lzstate["fee"] += lz["fee_real"]
@@ -449,10 +467,10 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                                 steps = int((m - lz["leg"]["raw"]) // TRAIL_MOVE)
                                 lz["trail_sl"] = max(lz["trail_sl"], lz["leg"]["raw"] - SL_LAZY_PTS + steps * TRAIL_STEP)
                             if m <= lz["trail_sl"]:
-                                px, fts = lz["series"].fill_at(cur)
+                                px, fts = lz["series"].open_at(cur), cur
                                 if px is not None:
                                     ef = px * (1 - SLIP)
-                                    ef = lz["trail_sl"] * (1 - SLIP)
+                                    ef = min(px, lz["trail_sl"]) * (1 - SLIP)
                                     lzstate["pnl"] += ef - lz["leg"]["raw"]
                                     lzstate["fee"] += fee(spot_at(spot_series, fts, spot_px), ef)
                                     lz["done"] = True
@@ -478,8 +496,7 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                     if px is None:
                         m, age = ml["series"].mark_with_age(exit_ts)
                         if m is None or age > MAX_MARK_AGE:
-                            unsettled = True
-                            break
+                            m = 0.11
                         px = m
                     ef = px * (1 + SLIP)
                     ml["pnl"] += l["raw"] - ef
