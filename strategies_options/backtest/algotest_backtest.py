@@ -7,7 +7,7 @@ CAP = 227.0
 STEP = 60
 STRIKE_STEP = 200
 OTM_N = 5
-SLIP = 0.03
+SLIP = 0.05
 MAX_FILL_GAP = 1800
 MAX_MARK_AGE = 1800
 CV = 0.001
@@ -104,13 +104,13 @@ class Series:
         self.t = [x["time"] for x in c]
 
     def _spike(self, i):
-        if i <= 0 or i + 1 >= len(self.c):
+        if i <= 0:
             return None
-        p, c, n = self.c[i-1]["close"], self.c[i]["close"], self.c[i+1]["close"]
-        return max(p, n) if (c > 2*p and c > 2*n) else None
+        p, c = self.c[i-1]["close"], self.c[i]["close"]
+        return p if (c > 2*p) else None
 
     def mark_with_age(self, ts):
-        i = bisect.bisect_right(self.t, ts) - 1
+        i = bisect.bisect_left(self.t, ts) - 1
         if i < 0:
             return (None, None)
         sp = self._spike(i)
@@ -257,7 +257,7 @@ def run_recost_variant(entry_h, entry_m, a, b):
             acc.skips[reason] = acc.skips.get(reason, 0) + 1
 
         try:
-            sc = get_candles(SPOT, entry_ts, exit_ts + 2 * STEP)
+            sc = get_candles(SPOT, entry_ts - STEP, exit_ts + 2 * STEP)
             if not sc:
                 skip("NO_DATA"); continue
             spot_series = Series(sc)
@@ -370,7 +370,7 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
             acc.skips[reason] = acc.skips.get(reason, 0) + 1
 
         try:
-            sc = get_candles(SPOT, entry_ts, exit_ts + 2 * STEP)
+            sc = get_candles(SPOT, entry_ts - STEP, exit_ts + 2 * STEP)
             if not sc:
                 skip("NO_DATA"); continue
             spot_series = Series(sc)
@@ -436,7 +436,6 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                         m, age = ml["series"].mark_with_age(cur)
                         if m is not None and age <= MAX_MARK_AGE:
                             sl_level = l["mkt"] * (1 + SL_MAIN_PCT)
-                            m = max(m, ml["series"].peak(cur))
                             if m >= sl_level:
                                 px, fts = max(sl_level, ml["series"].open_at(cur) or sl_level), cur
                                 if True:
@@ -455,13 +454,14 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                         m, age = lz["series"].mark_with_age(cur)
                         if m is not None and age <= MAX_MARK_AGE:
                             if not lz["armed"]:
-                                if max(m, lz["series"].peak(cur)) >= lz["trig"]:
+                                if m >= lz["trig"]:
                                     px, fts = lz["series"].open_at(cur), cur
                                     if px is not None:
                                         lz["leg"]["raw"] = px * (1 + SLIP)
                                         lz["trail_sl"] = lz["leg"]["raw"] - SL_LAZY_PTS
                                         lz["armed"] = True
                                         lzstate["fee"] += lz["fee_real"]
+                                        if args.debug: print(f"  LAZY_ARM {side} strike={lz['leg']['symbol']} entry_px={lz['leg']['raw']:.2f} ts={fts}")
                                 continue
                             if m - lz["leg"]["raw"] >= TRAIL_MOVE:
                                 steps = int((m - lz["leg"]["raw"]) // TRAIL_MOVE)
@@ -472,6 +472,7 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                                     ef = px * (1 - SLIP)
                                     ef = min(px, lz["trail_sl"]) * (1 - SLIP)
                                     lzstate["pnl"] += ef - lz["leg"]["raw"]
+                                    if args.debug: print(f"  LAZY_EXIT {side} exit_px={ef:.2f} pnl={ef - lz['leg']['raw']:.2f} ts={fts}")
                                     lzstate["fee"] += fee(spot_at(spot_series, fts, spot_px), ef)
                                     lz["done"] = True
                                     lzstate["last_exit_px"] = ef
@@ -485,6 +486,7 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                                     lzstate["cur"] = inst
                                     lzstate["fee"] += inst["fee_real"]
                                     lzstate["count"] += 1
+                                    if args.debug: print(f"  LAZY_REENTRY {side} count={lzstate['count']} new_trig={inst['trig']:.2f}")
                 cur += STEP
 
             unsettled = False
