@@ -104,11 +104,15 @@ class Series:
         self.t = [x["time"] for x in c]
 
     def mark_with_age(self, ts):
-        i = bisect.bisect_right(self.t, ts) - 1
+        i = bisect.bisect_left(self.t, ts) - 1
         return (None, None) if i < 0 else (self.c[i]["close"], ts - self.t[i])
 
     def mark_price(self, ts):
         return self.mark_with_age(ts)[0]
+
+    def peak(self, ts):
+        i = bisect.bisect_left(self.t, ts) - 1
+        return self.c[i]["high"] if i >= 0 else 0
 
     def fill_at(self, ts):
         i = bisect.bisect_right(self.t, ts)
@@ -281,6 +285,7 @@ def run_recost_variant(entry_h, entry_m, a, b):
                     if m is None or age > MAX_MARK_AGE:
                         continue
                     sl_level = l["mkt"] * (1 + SL_RECOST_PCT)
+                    m = max(m, sl["series"].peak(cur))
                     if m >= sl_level:
                         px, fts = m, cur
                         ef = px * (1 + SLIP)
@@ -413,6 +418,7 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                         m, age = ml["series"].mark_with_age(cur)
                         if m is not None and age <= MAX_MARK_AGE:
                             sl_level = l["mkt"] * (1 + SL_MAIN_PCT)
+                            m = max(m, ml["series"].peak(cur))
                             if m >= sl_level:
                                 px, fts = m, cur
                                 if True:
@@ -431,10 +437,10 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                         m, age = lz["series"].mark_with_age(cur)
                         if m is not None and age <= MAX_MARK_AGE:
                             if not lz["armed"]:
-                                if m >= lz["trig"]:
+                                if max(m, lz["series"].peak(cur)) >= lz["trig"]:
                                     px, fts = lz["series"].fill_at(cur)
                                     if px is not None:
-                                        lz["leg"]["raw"] = px * (1 + SLIP)
+                                        lz["leg"]["raw"] = lz["trig"] * (1 + SLIP)
                                         lz["trail_sl"] = lz["leg"]["raw"] - SL_LAZY_PTS
                                         lz["armed"] = True
                                         lzstate["fee"] += lz["fee_real"]
@@ -446,6 +452,7 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                                 px, fts = lz["series"].fill_at(cur)
                                 if px is not None:
                                     ef = px * (1 - SLIP)
+                                    ef = lz["trail_sl"] * (1 - SLIP)
                                     lzstate["pnl"] += ef - lz["leg"]["raw"]
                                     lzstate["fee"] += fee(spot_at(spot_series, fts, spot_px), ef)
                                     lz["done"] = True
