@@ -458,7 +458,7 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                                 if max(m, lz["series"].peak(cur)) >= lz["trig"]:
                                     px, fts = lz["series"].open_at(cur), cur
                                     if px is not None:
-                                        lz["leg"]["raw"] = max(px, lz["trig"]) * (1 + SLIP)
+                                        lz["leg"]["raw"] = px * (1 + SLIP)
                                         lz["trail_sl"] = lz["leg"]["raw"] - SL_LAZY_PTS
                                         lz["armed"] = True
                                         lzstate["fee"] += lz["fee_real"]
