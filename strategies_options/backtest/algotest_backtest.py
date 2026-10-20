@@ -69,6 +69,8 @@ def get_candles(symbol, s, e):
             raise FetchError(f"{symbol} {cur}-{ce}")
         cur = ce
     out = [seen[t] for t in sorted(seen)]
+    if symbol.startswith("C-") or symbol.startswith("P-"):
+        out = [x for x in out if (x.get("volume") or 0) > 0]
     _cache[key] = out
     return out
 
@@ -280,7 +282,7 @@ def run_recost_variant(entry_h, entry_m, a, b):
                         continue
                     sl_level = l["mkt"] * (1 + SL_RECOST_PCT)
                     if m >= sl_level:
-                        px, fts = sl_level, cur
+                        px, fts = m, cur
                         ef = px * (1 + SLIP)
                         sl["pnl"] += l["raw"] - ef
                         sl["fee"] += fee(spot_at(spot_series, fts, spot_px), ef)
@@ -412,7 +414,7 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                         if m is not None and age <= MAX_MARK_AGE:
                             sl_level = l["mkt"] * (1 + SL_MAIN_PCT)
                             if m >= sl_level:
-                                px, fts = sl_level, cur
+                                px, fts = m, cur
                                 if True:
                                     ef = px * (1 + SLIP)
                                     ml["pnl"] += l["raw"] - ef
