@@ -476,17 +476,13 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                                     lzstate["fee"] += fee(spot_at(spot_series, fts, spot_px), ef)
                                     lz["done"] = True
                                     lzstate["last_exit_px"] = ef
-                    elif lz and lz["done"] and lzstate["count"] < 4:
-                        m2, age2 = lz["series"].mark_with_age(cur)
-                        if m2 is not None and age2 <= MAX_MARK_AGE and lzstate["last_exit_px"]:
-                            if m2 >= lzstate["last_exit_px"] * 2:
-                                inst = spawn_lazy(side, cur)
-                                if inst:
-                                    inst["armed"] = True
-                                    lzstate["cur"] = inst
-                                    lzstate["fee"] += inst["fee_real"]
-                                    lzstate["count"] += 1
-                                    if args.debug: print(f"  LAZY_REENTRY {side} count={lzstate['count']} new_trig={inst['trig']:.2f}")
+                                    if lzstate["count"] < 4:
+                                        inst = spawn_lazy(side, fts)
+                                        if inst:
+                                            lzstate["cur"] = inst
+                                            lzstate["fee"] += inst["fee_real"]
+                                            lzstate["count"] += 1
+                                            if args.debug: print(f"  LAZY_REENTRY {side} count={lzstate['count']} pending strike={inst['leg']['symbol']} trig={inst['trig']:.2f}")
                 cur += STEP
 
             unsettled = False
