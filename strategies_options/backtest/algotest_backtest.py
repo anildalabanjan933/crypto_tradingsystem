@@ -126,6 +126,10 @@ class Series:
         sp = self._spike(i)
         return sp if sp is not None else self.c[i]["high"]
 
+    def low_at(self, ts):
+        i = bisect.bisect_left(self.t, ts) - 1
+        return None if i < 0 else self.c[i]["low"]
+
     def open_at(self, ts):
         i = bisect.bisect_left(self.t, ts)
         if i >= len(self.c) or self.c[i]["time"] - ts > 300:
@@ -454,23 +458,22 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                         m, age = lz["series"].mark_with_age(cur)
                         if m is not None and age <= MAX_MARK_AGE:
                             if not lz["armed"]:
-                                if m >= lz["trig"]:
-                                    px, fts = lz["series"].open_at(cur), cur
-                                    if px is not None:
-                                        lz["leg"]["raw"] = px * (1 + SLIP)
-                                        lz["trail_sl"] = lz["leg"]["raw"] - SL_LAZY_PTS
-                                        lz["armed"] = True
-                                        lzstate["fee"] += lz["fee_real"]
-                                        if args.debug: print(f"  LAZY_ARM {side} strike={lz['leg']['symbol']} entry_px={lz['leg']['raw']:.2f} ts={fts}")
+                                if max(m, lz["series"].peak(cur)) >= lz["trig"]:
+                                    lz["leg"]["raw"] = lz["trig"] * 1.005
+                                    lz["trail_sl"] = lz["leg"]["raw"] - SL_LAZY_PTS
+                                    lz["armed"] = True
+                                    lzstate["fee"] += lz["fee_real"]
+                                    if args.debug: print(f"  LAZY_ARM {side} strike={lz['leg']['symbol']} entry_px={lz['leg']['raw']:.2f} ts={cur}")
                                 continue
-                            if m - lz["leg"]["raw"] >= TRAIL_MOVE:
-                                steps = int((m - lz["leg"]["raw"]) // TRAIL_MOVE)
+                            mp = max(m, lz["series"].peak(cur))
+                            if mp - lz["leg"]["raw"] >= TRAIL_MOVE:
+                                steps = int((mp - lz["leg"]["raw"]) // TRAIL_MOVE)
                                 lz["trail_sl"] = max(lz["trail_sl"], lz["leg"]["raw"] - SL_LAZY_PTS + steps * TRAIL_STEP)
-                            if m <= lz["trail_sl"]:
-                                px, fts = lz["series"].open_at(cur), cur
+                            lo = lz["series"].low_at(cur)
+                            if lo is not None and lo <= lz["trail_sl"]:
+                                px, fts = lz["trail_sl"], cur
                                 if px is not None:
-                                    ef = px * (1 - SLIP)
-                                    ef = min(px, lz["trail_sl"]) * (1 - SLIP)
+                                    ef = px
                                     lzstate["pnl"] += ef - lz["leg"]["raw"]
                                     if args.debug: print(f"  LAZY_EXIT {side} exit_px={ef:.2f} pnl={ef - lz['leg']['raw']:.2f} ts={fts}")
                                     lzstate["fee"] += fee(spot_at(spot_series, fts, spot_px), ef)
