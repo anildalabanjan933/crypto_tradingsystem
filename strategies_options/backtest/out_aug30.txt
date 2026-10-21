@@ -1,0 +1,9 @@
+  LAZY_ARM P strike=P-BTC-77600-310826 entry_px=403.21 ts=1788133020
+  LAZY_EXIT P exit_px=353.21 pnl=-50.00 ts=1788133080
+  LAZY_REENTRY P count=1 pending strike=P-BTC-77200-310826 trig=440.00
+  LAZY_ARM P strike=P-BTC-77200-310826 entry_px=442.20 ts=1788133620
+  LAZY_EXIT P exit_px=522.20 pnl=80.00 ts=1788133740
+  LAZY_REENTRY P count=2 pending strike=P-BTC-76800-310826 trig=708.00
+[btst_lazy3 19:00] 2026-08-30 C=79800@122 P=77800@103 lazyC=Y(re0) lazyP=Y(re2) pnl=$-23.85 equity=$203.15
+[btst_lazy3 19:00] 2026-08-31 C=79000@228 P=77000@190 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.48 equity=$202.67
+SUMMARY [btst_lazy3 19:00] trades=2 win%=0.0 net=$-24.33 avg_net=$-12.17 avg_fees=$26.28 final_equity=$202.67 maxDD=$24.33 sharpe(per-trade,ann.)=-10.41 first_breach=None TRAIN(n,net)=0,0.00 TEST(n,net)=2,-24.33 skips[none]

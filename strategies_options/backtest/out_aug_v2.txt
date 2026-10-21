@@ -1,0 +1,423 @@
+WINDOW 2026-08-01 to 2026-08-31 | strategies=[strangle_recost x3, btst_lazy3 x4]
+[strangle_recost 09:20] 2026-08-01 C=64000@2 P=62000@2 re(C,P)=(1,1) pnl=$-1.99 equity=$225.01
+[strangle_recost 09:20] 2026-08-03 C=64000@15 P=62000@17 re(C,P)=(0,1) pnl=$-4.42 equity=$220.59
+[strangle_recost 09:20] 2026-08-04 C=64800@3 P=62800@7 re(C,P)=(1,1) pnl=$-5.35 equity=$215.24
+[strangle_recost 09:20] 2026-08-05 C=65200@7 P=63200@12 re(C,P)=(0,0) pnl=$5.50 equity=$220.74
+[strangle_recost 09:20] 2026-08-06 C=65600@6 P=63600@3 re(C,P)=(0,0) pnl=$2.54 equity=$223.28
+[strangle_recost 09:20] 2026-08-08 C=66000@2 P=64000@2 re(C,P)=(0,1) pnl=$-0.37 equity=$222.91
+[strangle_recost 09:20] 2026-08-10 C=66000@8 P=64000@10 re(C,P)=(0,0) pnl=$5.27 equity=$228.18
+[strangle_recost 09:20] 2026-08-11 C=65200@3 P=63200@5 re(C,P)=(0,0) pnl=$2.36 equity=$230.54
+[strangle_recost 09:20] 2026-08-12 C=64800@2 P=62800@4 re(C,P)=(1,0) pnl=$-2.47 equity=$228.07
+[strangle_recost 09:20] 2026-08-13 C=64600@3 P=62600@2 re(C,P)=(1,1) pnl=$-5.54 equity=$222.53
+[strangle_recost 09:20] 2026-08-15 C=64000@1 P=62000@0 re(C,P)=(0,0) pnl=$0.40 equity=$222.94
+[strangle_recost 09:20] 2026-08-17 C=64400@2 P=62400@5 re(C,P)=(0,0) pnl=$2.00 equity=$224.94
+[strangle_recost 09:20] 2026-08-18 C=65200@3 P=63200@4 re(C,P)=(0,0) pnl=$2.00 equity=$226.94
+[strangle_recost 09:20] 2026-08-19 C=65400@3 P=63400@2 re(C,P)=(0,0) pnl=$1.35 equity=$228.29
+[strangle_recost 09:20] 2026-08-20 C=70200@48 P=68200@19 re(C,P)=(0,0) pnl=$-58.57 equity=$169.72
+[strangle_recost 09:20] 2026-08-22 C=79600@86 P=77600@47 re(C,P)=(0,0) pnl=$-306.78 equity=$-137.05
+[strangle_recost 09:20] 2026-08-24 C=78000@133 P=76000@83 re(C,P)=(0,0) pnl=$-80.09 equity=$-217.14
+[strangle_recost 09:20] 2026-08-25 C=81400@177 P=79400@100 re(C,P)=(0,1) pnl=$-107.33 equity=$-324.47
+[strangle_recost 09:20] 2026-08-26 C=80000@60 P=78000@46 re(C,P)=(0,0) pnl=$31.38 equity=$-293.09
+[strangle_recost 09:20] 2026-08-27 C=79800@52 P=77800@21 re(C,P)=(1,0) pnl=$-31.52 equity=$-324.62
+[strangle_recost 09:20] 2026-08-29 C=78600@5 P=76600@10 re(C,P)=(0,0) pnl=$4.52 equity=$-320.09
+[strangle_recost 09:20] 2026-08-31 C=78800@37 P=76800@44 re(C,P)=(1,0) pnl=$-12.09 equity=$-332.18
+SUMMARY [strangle_recost 09:20] trades=22 win%=45.5 net=$-559.18 avg_net=$-25.42 avg_fees=$2.64 final_equity=$-332.18 maxDD=$562.72 sharpe(per-trade,ann.)=-5.92 first_breach=2026-08-22 TRAIN(n,net)=0,0.00 TEST(n,net)=22,-559.18 skips[none]
+[strangle_recost 10:20] 2026-08-01 C=64000@3 P=62000@2 re(C,P)=(0,0) pnl=$1.26 equity=$228.26
+[strangle_recost 10:20] 2026-08-03 C=64000@10 P=62000@14 re(C,P)=(0,1) pnl=$-4.35 equity=$223.91
+[strangle_recost 10:20] 2026-08-04 C=65200@5 P=63200@6 re(C,P)=(0,1) pnl=$-8.81 equity=$215.10
+[strangle_recost 10:20] 2026-08-05 C=65200@5 P=63200@8 re(C,P)=(1,0) pnl=$-1.87 equity=$213.23
+[strangle_recost 10:20] 2026-08-06 C=65600@6 P=63600@2 re(C,P)=(0,0) pnl=$2.21 equity=$215.44
+[strangle_recost 10:20] 2026-08-08 C=66000@1 P=64000@1 re(C,P)=(1,1) pnl=$-1.42 equity=$214.02
+[strangle_recost 10:20] 2026-08-10 C=66000@5 P=64000@7 re(C,P)=(0,0) pnl=$3.37 equity=$217.38
+[strangle_recost 10:20] 2026-08-11 C=65000@3 P=63000@2 re(C,P)=(0,0) pnl=$1.50 equity=$218.88
+[strangle_recost 10:20] 2026-08-12 C=64800@3 P=62800@3 re(C,P)=(0,0) pnl=$1.55 equity=$220.43
+[strangle_recost 10:20] 2026-08-13 C=64800@2 P=62800@1 re(C,P)=(1,1) pnl=$-1.83 equity=$218.60
+[strangle_recost 10:20] 2026-08-15 C=64200@0 P=62200@0 re(C,P)=(0,1) pnl=$-0.21 equity=$218.39
+[strangle_recost 10:20] 2026-08-17 C=64600@1 P=62600@5 re(C,P)=(0,0) pnl=$1.80 equity=$220.18
+[strangle_recost 10:20] 2026-08-18 C=65200@3 P=63200@2 re(C,P)=(0,0) pnl=$1.44 equity=$221.62
+[strangle_recost 10:20] 2026-08-19 C=65400@2 P=63400@2 re(C,P)=(0,0) pnl=$1.05 equity=$222.67
+[strangle_recost 10:20] 2026-08-20 C=70400@29 P=68400@13 re(C,P)=(0,0) pnl=$-36.08 equity=$186.59
+[strangle_recost 10:20] 2026-08-22 C=79600@76 P=77600@37 re(C,P)=(0,0) pnl=$-312.71 equity=$-126.12
+[strangle_recost 10:20] 2026-08-24 C=78000@103 P=76000@75 re(C,P)=(0,0) pnl=$-59.88 equity=$-186.00
+[strangle_recost 10:20] 2026-08-25 C=81400@127 P=79400@103 re(C,P)=(0,1) pnl=$-141.01 equity=$-327.01
+[strangle_recost 10:20] 2026-08-26 C=79800@56 P=77800@26 re(C,P)=(0,0) pnl=$24.26 equity=$-302.75
+[strangle_recost 10:20] 2026-08-27 C=79800@32 P=77800@20 re(C,P)=(1,0) pnl=$-10.73 equity=$-313.49
+[strangle_recost 10:20] 2026-08-29 C=78600@4 P=76600@8 re(C,P)=(0,0) pnl=$3.61 equity=$-309.88
+[strangle_recost 10:20] 2026-08-31 C=78400@36 P=76400@31 re(C,P)=(1,0) pnl=$-15.84 equity=$-325.72
+SUMMARY [strangle_recost 10:20] trades=22 win%=45.5 net=$-552.72 avg_net=$-25.12 avg_fees=$2.25 final_equity=$-325.72 maxDD=$555.27 sharpe(per-trade,ann.)=-5.69 first_breach=2026-08-22 TRAIN(n,net)=0,0.00 TEST(n,net)=22,-552.72 skips[none]
+[strangle_recost 11:20] 2026-08-01 C=64000@2 P=62000@2 re(C,P)=(0,0) pnl=$1.14 equity=$228.14
+[strangle_recost 11:20] 2026-08-03 C=63800@14 P=61800@9 re(C,P)=(1,0) pnl=$-4.68 equity=$223.46
+[strangle_recost 11:20] 2026-08-04 C=64800@6 P=62800@4 re(C,P)=(0,0) pnl=$2.86 equity=$226.33
+[strangle_recost 11:20] 2026-08-05 C=65400@4 P=63400@4 re(C,P)=(0,1) pnl=$-1.04 equity=$225.29
+[strangle_recost 11:20] 2026-08-06 C=65800@4 P=63800@1 re(C,P)=(0,1) pnl=$-0.97 equity=$224.32
+[strangle_recost 11:20] 2026-08-08 C=66000@1 P=64000@1 re(C,P)=(1,1) pnl=$-1.42 equity=$222.90
+[strangle_recost 11:20] 2026-08-10 C=66000@3 P=64000@4 re(C,P)=(1,0) pnl=$-1.05 equity=$221.86
+[strangle_recost 11:20] 2026-08-11 C=65000@2 P=63000@2 re(C,P)=(1,0) pnl=$-0.36 equity=$221.50
+[strangle_recost 11:20] 2026-08-12 C=64800@2 P=62800@2 re(C,P)=(1,0) pnl=$-2.83 equity=$218.67
+[strangle_recost 11:20] 2026-08-13 C=64800@2 P=62800@2 re(C,P)=(0,0) pnl=$0.96 equity=$219.63
+[strangle_recost 11:20] 2026-08-15 C=64000@0 P=62000@0 re(C,P)=(0,0) pnl=$0.22 equity=$219.86
+[strangle_recost 11:20] 2026-08-17 C=64600@1 P=62600@3 re(C,P)=(1,0) pnl=$0.42 equity=$220.28
+[strangle_recost 11:20] 2026-08-18 C=65200@4 P=63200@2 re(C,P)=(0,0) pnl=$1.50 equity=$221.78
+[strangle_recost 11:20] 2026-08-19 C=65400@2 P=63400@2 re(C,P)=(0,0) pnl=$0.96 equity=$222.74
+[strangle_recost 11:20] 2026-08-20 C=70400@20 P=68400@11 re(C,P)=(1,0) pnl=$-55.63 equity=$167.11
+[strangle_recost 11:20] 2026-08-22 C=78400@69 P=76400@35 re(C,P)=(0,1) pnl=$2.29 equity=$169.40
+[strangle_recost 11:20] 2026-08-24 C=78000@103 P=76000@48 re(C,P)=(0,0) pnl=$-67.89 equity=$101.51
+[strangle_recost 11:20] 2026-08-25 C=81800@126 P=79800@96 re(C,P)=(0,0) pnl=$-43.77 equity=$57.74
+[strangle_recost 11:20] 2026-08-26 C=80000@38 P=78000@18 re(C,P)=(0,0) pnl=$16.54 equity=$74.28
+[strangle_recost 11:20] 2026-08-27 C=79800@26 P=77800@10 re(C,P)=(1,0) pnl=$-10.60 equity=$63.68
+[strangle_recost 11:20] 2026-08-29 C=78600@4 P=76600@5 re(C,P)=(0,0) pnl=$2.60 equity=$66.28
+[strangle_recost 11:20] 2026-08-31 C=79000@21 P=77000@30 re(C,P)=(1,0) pnl=$-2.78 equity=$63.50
+SUMMARY [strangle_recost 11:20] trades=22 win%=45.5 net=$-163.50 avg_net=$-7.43 avg_fees=$1.71 final_equity=$63.50 maxDD=$170.40 sharpe(per-trade,ann.)=-5.92 first_breach=None TRAIN(n,net)=0,0.00 TEST(n,net)=22,-163.50 skips[none]
+  LAZY_ARM P strike=P-BTC-62200-020826 entry_px=88.44 ts=1785609060
+  LAZY_EXIT P exit_px=118.44 pnl=30.00 ts=1785609180
+  LAZY_REENTRY P count=1 pending strike=P-BTC-62000-020826 trig=122.00
+[btst_lazy3 19:00] 2026-08-01 C=64000@20 P=62000@16 lazyC=Y(re0) lazyP=Y(re1) pnl=$20.23 equity=$247.23
+[btst_lazy3 19:00] 2026-08-02 C=64000@77 P=62000@65 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.18 equity=$247.05
+  LAZY_ARM C strike=C-BTC-63600-040826 entry_px=393.96 ts=1785767340
+  LAZY_EXIT C exit_px=463.96 pnl=70.00 ts=1785767520
+  LAZY_REENTRY C count=1 pending strike=C-BTC-64200-040826 trig=384.00
+[btst_lazy3 19:00] 2026-08-03 C=63800@71 P=61800@115 lazyC=Y(re1) lazyP=N(re0) pnl=$47.53 equity=$294.58
+[btst_lazy3 19:00] 2026-08-04 C=64800@84 P=62800@67 lazyC=N(re0) lazyP=N(re0) pnl=$0.54 equity=$295.12
+[btst_lazy3 19:00] 2026-08-05 C=65200@63 P=63200@76 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.06 equity=$295.05
+[btst_lazy3 19:00] 2026-08-06 C=65200@86 P=63200@62 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.30 equity=$294.76
+[btst_lazy3 19:00] 2026-08-07 C=66200@62 P=64200@84 lazyC=N(re0) lazyP=N(re0) pnl=$0.52 equity=$295.28
+[btst_lazy3 19:00] 2026-08-08 C=66000@13 P=64000@11 lazyC=N(re0) lazyP=N(re0) pnl=$0.08 equity=$295.36
+[btst_lazy3 19:00] 2026-08-09 C=66000@44 P=64000@34 lazyC=N(re0) lazyP=N(re0) pnl=$0.28 equity=$295.64
+  LAZY_ARM P strike=P-BTC-64200-110826 entry_px=337.68 ts=1786378800
+  LAZY_EXIT P exit_px=347.68 pnl=10.00 ts=1786379100
+  LAZY_REENTRY P count=1 pending strike=P-BTC-63800-110826 trig=322.00
+[btst_lazy3 19:00] 2026-08-10 C=66000@54 P=64000@60 lazyC=N(re0) lazyP=Y(re1) pnl=$-11.42 equity=$284.22
+  LAZY_ARM P strike=P-BTC-63400-120826 entry_px=313.56 ts=1786475520
+  LAZY_EXIT P exit_px=263.56 pnl=-50.00 ts=1786475940
+  LAZY_REENTRY P count=1 pending strike=P-BTC-63000-120826 trig=196.00
+[btst_lazy3 19:00] 2026-08-11 C=65200@31 P=63200@55 lazyC=N(re0) lazyP=Y(re1) pnl=$-70.60 equity=$213.63
+[btst_lazy3 19:00] 2026-08-12 C=65000@70 P=63000@83 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.22 equity=$213.40
+[btst_lazy3 19:00] 2026-08-13 C=64600@51 P=62600@54 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.16 equity=$213.24
+[btst_lazy3 19:00] 2026-08-14 C=63800@46 P=61800@57 lazyC=N(re0) lazyP=N(re0) pnl=$0.37 equity=$213.61
+[btst_lazy3 19:00] 2026-08-15 C=64000@3 P=62000@4 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.01 equity=$213.60
+[btst_lazy3 19:00] 2026-08-16 C=64000@15 P=62000@17 lazyC=Y(re0) lazyP=Y(re0) pnl=$-0.17 equity=$213.43
+  LAZY_ARM C strike=C-BTC-64200-180826 entry_px=237.18 ts=1786982040
+  LAZY_EXIT C exit_px=187.18 pnl=-50.00 ts=1786982940
+  LAZY_REENTRY C count=1 pending strike=C-BTC-64600-180826 trig=122.00
+  LAZY_ARM C strike=C-BTC-64600-180826 entry_px=122.61 ts=1786990680
+  LAZY_EXIT C exit_px=162.61 pnl=40.00 ts=1786991160
+  LAZY_REENTRY C count=2 pending strike=C-BTC-65000-180826 trig=124.00
+[btst_lazy3 19:00] 2026-08-17 C=64400@39 P=62400@24 lazyC=Y(re2) lazyP=N(re0) pnl=$-41.32 equity=$172.11
+  LAZY_ARM C strike=C-BTC-64800-190826 entry_px=255.27 ts=1787063160
+  LAZY_EXIT C exit_px=365.27 pnl=110.00 ts=1787063460
+  LAZY_REENTRY C count=1 pending strike=C-BTC-65400-190826 trig=260.00
+[btst_lazy3 19:00] 2026-08-18 C=65000@36 P=63000@28 lazyC=Y(re1) lazyP=N(re0) pnl=$90.85 equity=$262.96
+  LAZY_ARM C strike=C-BTC-65800-200826 entry_px=367.83 ts=1787151360
+  LAZY_EXIT C exit_px=367.83 pnl=0.00 ts=1787151480
+  LAZY_REENTRY C count=1 pending strike=C-BTC-66400-200826 trig=232.00
+  LAZY_ARM C strike=C-BTC-66400-200826 entry_px=233.16 ts=1787152020
+  LAZY_EXIT C exit_px=393.16 pnl=160.00 ts=1787152140
+  LAZY_REENTRY C count=2 pending strike=C-BTC-66800-200826 trig=456.00
+  LAZY_ARM C strike=C-BTC-66800-200826 entry_px=458.28 ts=1787152980
+  LAZY_EXIT C exit_px=718.28 pnl=260.00 ts=1787153160
+[btst_lazy3 19:00] 2026-08-19 C=66000@66 P=64000@42 lazyC=Y(re2) lazyP=N(re0) pnl=$355.08 equity=$618.04
+  LAZY_ARM C strike=C-BTC-74200-210826 entry_px=699.48 ts=1787275140
+  LAZY_EXIT C exit_px=739.48 pnl=40.00 ts=1787275260
+  LAZY_REENTRY C count=1 pending strike=C-BTC-74800-210826 trig=686.00
+  LAZY_ARM C strike=C-BTC-74800-210826 entry_px=689.43 ts=1787276880
+  LAZY_EXIT C exit_px=1239.43 pnl=550.00 ts=1787277000
+  LAZY_REENTRY C count=2 pending strike=C-BTC-76000-210826 trig=796.00
+  LAZY_ARM C strike=C-BTC-76000-210826 entry_px=799.98 ts=1787296620
+  LAZY_EXIT C exit_px=749.98 pnl=-50.00 ts=1787296680
+[btst_lazy3 19:00] 2026-08-20 C=73000@441 P=71000@390 lazyC=Y(re2) lazyP=N(re0) pnl=$459.45 equity=$1077.49
+[btst_lazy3 19:00] 2026-08-21 C=78000@600 P=76000@416 lazyC=N(re0) lazyP=N(re0) pnl=$3.75 equity=$1081.24
+  LAZY_ARM P strike=P-BTC-75400-230826 entry_px=160.80 ts=1787462580
+  LAZY_EXIT P exit_px=110.80 pnl=-50.00 ts=1787462640
+  LAZY_REENTRY P count=1 pending strike=P-BTC-75800-230826 trig=458.00
+[btst_lazy3 19:00] 2026-08-22 C=78200@213 P=76200@176 lazyC=N(re0) lazyP=Y(re1) pnl=$-62.03 equity=$1019.21
+[btst_lazy3 19:00] 2026-08-23 C=78400@377 P=76400@291 lazyC=N(re0) lazyP=N(re0) pnl=$2.34 equity=$1021.55
+[btst_lazy3 19:00] 2026-08-24 C=80000@571 P=78000@461 lazyC=Y(re0) lazyP=N(re0) pnl=$-1.36 equity=$1020.19
+[btst_lazy3 19:00] 2026-08-25 C=79600@414 P=77600@296 lazyC=N(re0) lazyP=N(re0) pnl=$2.59 equity=$1022.78
+  LAZY_ARM C strike=C-BTC-80000-270826 entry_px=144.72 ts=1787818260
+  LAZY_EXIT C exit_px=104.72 pnl=-40.00 ts=1787818380
+  LAZY_REENTRY C count=1 pending strike=C-BTC-80000-270826 trig=172.00
+  LAZY_ARM C strike=C-BTC-80000-270826 entry_px=172.86 ts=1787820240
+  LAZY_EXIT C exit_px=152.86 pnl=-20.00 ts=1787820420
+  LAZY_REENTRY C count=2 pending strike=C-BTC-80200-270826 trig=154.00
+  LAZY_ARM C strike=C-BTC-80200-270826 entry_px=154.77 ts=1787822760
+  LAZY_EXIT C exit_px=324.77 pnl=170.00 ts=1787822940
+[btst_lazy3 19:00] 2026-08-26 C=79000@301 P=77000@238 lazyC=Y(re2) lazyP=N(re0) pnl=$65.83 equity=$1088.61
+  LAZY_ARM C strike=C-BTC-80800-280826 entry_px=874.35 ts=1787880840
+  LAZY_EXIT C exit_px=824.35 pnl=-50.00 ts=1787880900
+  LAZY_REENTRY C count=1 pending strike=C-BTC-81600-280826 trig=550.00
+[btst_lazy3 19:00] 2026-08-27 C=80400@300 P=78400@262 lazyC=Y(re1) lazyP=N(re0) pnl=$-79.19 equity=$1009.42
+  LAZY_ARM P strike=P-BTC-77400-290826 entry_px=641.19 ts=1787934300
+  LAZY_EXIT P exit_px=801.19 pnl=160.00 ts=1787934420
+  LAZY_REENTRY P count=1 pending strike=P-BTC-76800-290826 trig=834.00
+[btst_lazy3 19:00] 2026-08-28 C=80200@380 P=78200@343 lazyC=N(re0) lazyP=Y(re1) pnl=$132.26 equity=$1141.68
+[btst_lazy3 19:00] 2026-08-29 C=78600@32 P=76600@37 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.04 equity=$1141.64
+  LAZY_ARM P strike=P-BTC-77600-310826 entry_px=403.21 ts=1788133020
+  LAZY_EXIT P exit_px=353.21 pnl=-50.00 ts=1788133080
+  LAZY_REENTRY P count=1 pending strike=P-BTC-77200-310826 trig=440.00
+  LAZY_ARM P strike=P-BTC-77200-310826 entry_px=442.20 ts=1788133620
+  LAZY_EXIT P exit_px=522.20 pnl=80.00 ts=1788133740
+  LAZY_REENTRY P count=2 pending strike=P-BTC-76800-310826 trig=708.00
+[btst_lazy3 19:00] 2026-08-30 C=79800@122 P=77800@103 lazyC=Y(re0) lazyP=Y(re2) pnl=$-23.85 equity=$1117.80
+[btst_lazy3 19:00] 2026-08-31 C=79000@228 P=77000@190 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.48 equity=$1117.31
+SUMMARY [btst_lazy3 19:00] trades=31 win%=48.4 net=$890.31 avg_net=$28.72 avg_fees=$13.99 final_equity=$1117.31 maxDD=$123.53 sharpe(per-trade,ann.)=5.08 first_breach=None TRAIN(n,net)=0,0.00 TEST(n,net)=31,890.31 skips[none]
+  LAZY_ARM P strike=P-BTC-62000-020826 entry_px=106.53 ts=1785609120
+  LAZY_EXIT P exit_px=56.53 pnl=-50.00 ts=1785609360
+  LAZY_REENTRY P count=1 pending strike=P-BTC-62000-020826 trig=110.00
+[btst_lazy3 09:20] 2026-08-01 C=64000@18 P=62000@24 lazyC=Y(re0) lazyP=Y(re1) pnl=$-14.18 equity=$212.82
+[btst_lazy3 09:20] 2026-08-02 C=64400@90 P=62400@77 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.02 equity=$212.80
+[btst_lazy3 09:20] 2026-08-03 C=64000@105 P=62000@173 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.01 equity=$212.79
+[btst_lazy3 09:20] 2026-08-04 C=64800@91 P=62800@105 lazyC=N(re0) lazyP=N(re0) pnl=$0.17 equity=$212.96
+[btst_lazy3 09:20] 2026-08-05 C=65200@87 P=63200@101 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.03 equity=$212.93
+[btst_lazy3 09:20] 2026-08-06 C=65600@92 P=63600@97 lazyC=N(re0) lazyP=N(re0) pnl=$0.17 equity=$213.10
+  LAZY_ARM C strike=C-BTC-65400-080826 entry_px=350.34 ts=1786105860
+  LAZY_EXIT C exit_px=300.34 pnl=-50.00 ts=1786105920
+  LAZY_REENTRY C count=1 pending strike=C-BTC-65400-080826 trig=508.00
+[btst_lazy3 09:20] 2026-08-07 C=65400@79 P=63400@108 lazyC=Y(re1) lazyP=N(re0) pnl=$-17.98 equity=$195.12
+[btst_lazy3 09:20] 2026-08-08 C=66000@16 P=64000@15 lazyC=N(re0) lazyP=N(re0) pnl=$0.03 equity=$195.15
+[btst_lazy3 09:20] 2026-08-09 C=65800@52 P=63800@53 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.02 equity=$195.13
+  LAZY_ARM P strike=P-BTC-63800-110826 entry_px=227.13 ts=1786380360
+  LAZY_EXIT P exit_px=227.13 pnl=0.00 ts=1786381260
+  LAZY_REENTRY P count=1 pending strike=P-BTC-63600-110826 trig=248.00
+[btst_lazy3 09:20] 2026-08-10 C=66000@101 P=64000@82 lazyC=N(re0) lazyP=Y(re1) pnl=$-4.53 equity=$190.60
+[btst_lazy3 09:20] 2026-08-11 C=65200@42 P=63200@82 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.08 equity=$190.52
+[btst_lazy3 09:20] 2026-08-12 C=64800@71 P=62800@90 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.01 equity=$190.50
+[btst_lazy3 09:20] 2026-08-13 C=64600@75 P=62600@72 lazyC=Y(re0) lazyP=Y(re0) pnl=$-0.23 equity=$190.27
+[btst_lazy3 09:20] 2026-08-14 C=64400@40 P=62400@55 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.06 equity=$190.22
+[btst_lazy3 09:20] 2026-08-15 C=64000@10 P=62000@5 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.00 equity=$190.21
+[btst_lazy3 09:20] 2026-08-16 C=64000@27 P=62200@32 lazyC=N(re0) lazyP=N(re0) pnl=$0.05 equity=$190.27
+  LAZY_ARM C strike=C-BTC-64400-180826 entry_px=186.93 ts=1786990680
+  LAZY_EXIT C exit_px=146.93 pnl=-40.00 ts=1786990800
+  LAZY_REENTRY C count=1 pending strike=C-BTC-64800-180826 trig=96.00
+  LAZY_ARM C strike=C-BTC-64800-180826 entry_px=96.48 ts=1786991040
+  LAZY_EXIT C exit_px=76.48 pnl=-20.00 ts=1786991340
+  LAZY_REENTRY C count=2 pending strike=C-BTC-64800-180826 trig=134.00
+[btst_lazy3 09:20] 2026-08-17 C=64400@44 P=62400@75 lazyC=Y(re2) lazyP=N(re0) pnl=$-20.37 equity=$169.90
+  LAZY_ARM C strike=C-BTC-65000-190826 entry_px=247.23 ts=1787063280
+  LAZY_EXIT C exit_px=237.23 pnl=-10.00 ts=1787063520
+  LAZY_REENTRY C count=1 pending strike=C-BTC-65200-190826 trig=244.00
+[btst_lazy3 09:20] 2026-08-18 C=65200@39 P=63200@61 lazyC=Y(re1) lazyP=N(re0) pnl=$-7.19 equity=$162.71
+  LAZY_ARM C strike=C-BTC-65000-200826 entry_px=351.75 ts=1787146200
+  LAZY_EXIT C exit_px=401.75 pnl=50.00 ts=1787146440
+  LAZY_REENTRY C count=1 pending strike=C-BTC-65400-200826 trig=418.00
+  LAZY_ARM C strike=C-BTC-65400-200826 entry_px=420.09 ts=1787151060
+  LAZY_EXIT C exit_px=670.09 pnl=250.00 ts=1787151420
+  LAZY_REENTRY C count=2 pending strike=C-BTC-66200-200826 trig=400.00
+  LAZY_ARM C strike=C-BTC-66200-200826 entry_px=402.00 ts=1787151960
+  LAZY_EXIT C exit_px=512.00 pnl=110.00 ts=1787152080
+[btst_lazy3 09:20] 2026-08-19 C=65400@42 P=63400@40 lazyC=Y(re2) lazyP=N(re0) pnl=$85.36 equity=$248.07
+  LAZY_ARM C strike=C-BTC-71200-210826 entry_px=1030.73 ts=1787213880
+  LAZY_EXIT C exit_px=980.73 pnl=-50.00 ts=1787213940
+  LAZY_REENTRY C count=1 pending strike=C-BTC-71800-210826 trig=1886.00
+  LAZY_ARM C strike=C-BTC-71800-210826 entry_px=1895.43 ts=1787271540
+  LAZY_EXIT C exit_px=2085.43 pnl=190.00 ts=1787272620
+  LAZY_REENTRY C count=2 pending strike=C-BTC-74000-210826 trig=630.00
+  LAZY_ARM C strike=C-BTC-74000-210826 entry_px=633.15 ts=1787275020
+  LAZY_EXIT C exit_px=583.15 pnl=-50.00 ts=1787275080
+[btst_lazy3 09:20] 2026-08-20 C=70200@344 P=68200@238 lazyC=Y(re2) lazyP=N(re0) pnl=$2.77 equity=$250.84
+  LAZY_ARM C strike=C-BTC-76200-220826 entry_px=1491.42 ts=1787300040
+  LAZY_EXIT C exit_px=2851.42 pnl=1360.00 ts=1787302920
+  LAZY_REENTRY C count=1 pending strike=C-BTC-78800-220826 trig=2368.40
+[btst_lazy3 09:20] 2026-08-21 C=75800@440 P=73800@400 lazyC=Y(re1) lazyP=N(re0) pnl=$332.95 equity=$583.79
+[btst_lazy3 09:20] 2026-08-22 C=79600@283 P=77600@229 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.38 equity=$583.41
+[btst_lazy3 09:20] 2026-08-23 C=78000@395 P=76000@365 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.49 equity=$582.92
+  LAZY_ARM C strike=C-BTC-78800-250826 entry_px=1483.38 ts=1787585280
+  LAZY_EXIT C exit_px=1433.38 pnl=-50.00 ts=1787585520
+  LAZY_REENTRY C count=1 pending strike=C-BTC-80400-250826 trig=1200.00
+[btst_lazy3 09:20] 2026-08-24 C=78000@547 P=76000@455 lazyC=Y(re1) lazyP=N(re0) pnl=$-19.76 equity=$563.16
+[btst_lazy3 09:20] 2026-08-25 C=81400@590 P=79400@441 lazyC=N(re0) lazyP=Y(re0) pnl=$0.01 equity=$563.17
+[btst_lazy3 09:20] 2026-08-26 C=80000@429 P=78000@377 lazyC=N(re0) lazyP=N(re0) pnl=$0.74 equity=$563.91
+  LAZY_ARM C strike=C-BTC-80200-280826 entry_px=1063.29 ts=1787880600
+  LAZY_EXIT C exit_px=1013.29 pnl=-50.00 ts=1787880660
+  LAZY_REENTRY C count=1 pending strike=C-BTC-81400-280826 trig=588.00
+[btst_lazy3 09:20] 2026-08-27 C=79800@341 P=77800@255 lazyC=Y(re1) lazyP=N(re0) pnl=$-19.81 equity=$544.10
+  LAZY_ARM P strike=P-BTC-77600-290826 entry_px=578.88 ts=1787934180
+  LAZY_EXIT P exit_px=788.88 pnl=210.00 ts=1787934360
+  LAZY_REENTRY P count=1 pending strike=P-BTC-76800-290826 trig=810.00
+[btst_lazy3 09:20] 2026-08-28 C=80800@522 P=78800@461 lazyC=N(re0) lazyP=Y(re1) pnl=$45.43 equity=$589.53
+[btst_lazy3 09:20] 2026-08-29 C=78600@38 P=76600@49 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.02 equity=$589.51
+  LAZY_ARM C strike=C-BTC-79200-310826 entry_px=522.60 ts=1788109080
+  LAZY_EXIT C exit_px=472.60 pnl=-50.00 ts=1788109260
+  LAZY_REENTRY C count=1 pending strike=C-BTC-79600-310826 trig=632.00
+  LAZY_ARM P strike=P-BTC-77200-310826 entry_px=516.57 ts=1788133680
+  LAZY_EXIT P exit_px=466.57 pnl=-50.00 ts=1788133800
+  LAZY_REENTRY P count=1 pending strike=P-BTC-77000-310826 trig=696.00
+[btst_lazy3 09:20] 2026-08-30 C=79200@130 P=77200@123 lazyC=Y(re1) lazyP=Y(re1) pnl=$-39.24 equity=$550.27
+[btst_lazy3 09:20] 2026-08-31 C=78800@284 P=76800@274 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.11 equity=$550.16
+SUMMARY [btst_lazy3 09:20] trades=31 win%=32.3 net=$323.16 avg_net=$10.42 avg_fees=$3.24 final_equity=$550.16 maxDD=$64.29 sharpe(per-trade,ann.)=3.20 first_breach=None TRAIN(n,net)=0,0.00 TEST(n,net)=31,323.16 skips[none]
+  LAZY_ARM P strike=P-BTC-62000-020826 entry_px=106.53 ts=1785609120
+  LAZY_EXIT P exit_px=56.53 pnl=-50.00 ts=1785609360
+  LAZY_REENTRY P count=1 pending strike=P-BTC-62000-020826 trig=110.00
+[btst_lazy3 10:20] 2026-08-01 C=64000@20 P=62000@23 lazyC=Y(re0) lazyP=Y(re1) pnl=$-14.18 equity=$212.82
+[btst_lazy3 10:20] 2026-08-02 C=64600@73 P=62600@96 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.06 equity=$212.75
+  LAZY_ARM C strike=C-BTC-64000-040826 entry_px=397.98 ts=1785818880
+  LAZY_EXIT C exit_px=347.98 pnl=-50.00 ts=1785818940
+  LAZY_REENTRY C count=1 pending strike=C-BTC-64600-040826 trig=95.80
+[btst_lazy3 10:20] 2026-08-03 C=64000@99 P=62000@163 lazyC=Y(re1) lazyP=N(re0) pnl=$-18.14 equity=$194.61
+[btst_lazy3 10:20] 2026-08-04 C=65200@69 P=63200@102 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.07 equity=$194.54
+[btst_lazy3 10:20] 2026-08-05 C=65200@88 P=63200@93 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.04 equity=$194.50
+[btst_lazy3 10:20] 2026-08-06 C=65600@103 P=63600@76 lazyC=N(re0) lazyP=N(re0) pnl=$0.16 equity=$194.66
+  LAZY_ARM C strike=C-BTC-65200-080826 entry_px=402.00 ts=1786104660
+  LAZY_EXIT C exit_px=392.00 pnl=-10.00 ts=1786105200
+  LAZY_REENTRY C count=1 pending strike=C-BTC-65600-080826 trig=448.00
+[btst_lazy3 10:20] 2026-08-07 C=65200@98 P=63200@92 lazyC=Y(re1) lazyP=N(re0) pnl=$-8.31 equity=$186.35
+[btst_lazy3 10:20] 2026-08-08 C=66000@20 P=64000@13 lazyC=N(re0) lazyP=N(re0) pnl=$0.03 equity=$186.38
+[btst_lazy3 10:20] 2026-08-09 C=65800@53 P=63800@48 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.03 equity=$186.35
+  LAZY_ARM P strike=P-BTC-63800-110826 entry_px=227.13 ts=1786380360
+  LAZY_EXIT P exit_px=227.13 pnl=0.00 ts=1786381260
+  LAZY_REENTRY P count=1 pending strike=P-BTC-63600-110826 trig=248.00
+[btst_lazy3 10:20] 2026-08-10 C=66000@94 P=64000@79 lazyC=N(re0) lazyP=Y(re1) pnl=$-4.54 equity=$181.82
+[btst_lazy3 10:20] 2026-08-11 C=65000@62 P=63000@63 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.03 equity=$181.79
+[btst_lazy3 10:20] 2026-08-12 C=64800@76 P=62800@88 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.02 equity=$181.77
+[btst_lazy3 10:20] 2026-08-13 C=64800@75 P=62800@82 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.05 equity=$181.71
+[btst_lazy3 10:20] 2026-08-14 C=64400@44 P=62400@48 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.04 equity=$181.68
+[btst_lazy3 10:20] 2026-08-15 C=64200@6 P=62200@10 lazyC=N(re0) lazyP=N(re0) pnl=$0.01 equity=$181.69
+[btst_lazy3 10:20] 2026-08-16 C=64000@29 P=62200@32 lazyC=N(re0) lazyP=N(re0) pnl=$0.05 equity=$181.75
+  LAZY_ARM C strike=C-BTC-64400-180826 entry_px=227.13 ts=1786991100
+  LAZY_EXIT C exit_px=247.13 pnl=20.00 ts=1786991400
+  LAZY_REENTRY C count=1 pending strike=C-BTC-64800-180826 trig=140.00
+[btst_lazy3 10:20] 2026-08-17 C=64400@55 P=62600@68 lazyC=Y(re1) lazyP=N(re0) pnl=$0.46 equity=$182.21
+[btst_lazy3 10:20] 2026-08-18 C=65200@45 P=63200@57 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.02 equity=$182.19
+  LAZY_ARM C strike=C-BTC-65000-200826 entry_px=355.97 ts=1787146260
+  LAZY_EXIT C exit_px=405.97 pnl=50.00 ts=1787146440
+  LAZY_REENTRY C count=1 pending strike=C-BTC-65400-200826 trig=418.00
+  LAZY_ARM C strike=C-BTC-65400-200826 entry_px=420.09 ts=1787151060
+  LAZY_EXIT C exit_px=670.09 pnl=250.00 ts=1787151420
+  LAZY_REENTRY C count=2 pending strike=C-BTC-66200-200826 trig=400.00
+  LAZY_ARM C strike=C-BTC-66200-200826 entry_px=402.00 ts=1787151960
+  LAZY_EXIT C exit_px=512.00 pnl=110.00 ts=1787152080
+[btst_lazy3 10:20] 2026-08-19 C=65400@38 P=63400@43 lazyC=Y(re2) lazyP=N(re0) pnl=$85.34 equity=$267.52
+  LAZY_ARM C strike=C-BTC-70800-210826 entry_px=894.45 ts=1787213520
+  LAZY_EXIT C exit_px=844.45 pnl=-50.00 ts=1787213580
+  LAZY_REENTRY C count=1 pending strike=C-BTC-71400-210826 trig=1680.00
+  LAZY_ARM C strike=C-BTC-71400-210826 entry_px=1688.40 ts=1787258280
+  LAZY_EXIT C exit_px=2428.40 pnl=740.00 ts=1787271600
+  LAZY_REENTRY C count=2 pending strike=C-BTC-74000-210826 trig=656.20
+  LAZY_ARM C strike=C-BTC-74000-210826 entry_px=659.48 ts=1787275140
+  LAZY_EXIT C exit_px=939.48 pnl=280.00 ts=1787275260
+[btst_lazy3 10:20] 2026-08-20 C=70400@315 P=68400@254 lazyC=Y(re2) lazyP=N(re0) pnl=$223.13 equity=$490.65
+  LAZY_ARM C strike=C-BTC-76400-220826 entry_px=1541.67 ts=1787300100
+  LAZY_EXIT C exit_px=1491.67 pnl=-50.00 ts=1787300160
+  LAZY_REENTRY C count=1 pending strike=C-BTC-77400-220826 trig=2030.60
+  LAZY_ARM C strike=C-BTC-77400-220826 entry_px=2040.75 ts=1787302680
+  LAZY_EXIT C exit_px=2210.75 pnl=170.00 ts=1787302800
+  LAZY_REENTRY C count=2 pending strike=C-BTC-79600-220826 trig=2772.00
+[btst_lazy3 10:20] 2026-08-21 C=76000@500 P=74000@438 lazyC=Y(re2) lazyP=N(re0) pnl=$16.11 equity=$506.76
+[btst_lazy3 10:20] 2026-08-22 C=79600@279 P=77600@207 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.40 equity=$506.36
+[btst_lazy3 10:20] 2026-08-23 C=77600@386 P=75600@320 lazyC=Y(re0) lazyP=Y(re0) pnl=$-0.98 equity=$505.38
+  LAZY_ARM C strike=C-BTC-78800-250826 entry_px=1483.38 ts=1787585280
+  LAZY_EXIT C exit_px=1433.38 pnl=-50.00 ts=1787585520
+  LAZY_REENTRY C count=1 pending strike=C-BTC-80400-250826 trig=1200.00
+[btst_lazy3 10:20] 2026-08-24 C=78000@520 P=76000@438 lazyC=Y(re1) lazyP=N(re0) pnl=$-19.81 equity=$485.58
+[btst_lazy3 10:20] 2026-08-25 C=81400@523 P=79400@486 lazyC=Y(re0) lazyP=Y(re0) pnl=$-1.24 equity=$484.33
+[btst_lazy3 10:20] 2026-08-26 C=79800@433 P=77800@342 lazyC=N(re0) lazyP=N(re0) pnl=$0.71 equity=$485.04
+  LAZY_ARM C strike=C-BTC-80200-280826 entry_px=964.80 ts=1787843640
+  LAZY_EXIT C exit_px=914.80 pnl=-50.00 ts=1787843700
+  LAZY_REENTRY C count=1 pending strike=C-BTC-81000-280826 trig=1036.00
+[btst_lazy3 10:20] 2026-08-27 C=79800@307 P=77800@276 lazyC=Y(re1) lazyP=N(re0) pnl=$-19.82 equity=$465.22
+  LAZY_ARM P strike=P-BTC-77400-290826 entry_px=538.68 ts=1787934240
+  LAZY_EXIT P exit_px=688.68 pnl=150.00 ts=1787934360
+  LAZY_REENTRY P count=1 pending strike=P-BTC-76800-290826 trig=810.00
+[btst_lazy3 10:20] 2026-08-28 C=80600@543 P=78600@442 lazyC=N(re0) lazyP=Y(re1) pnl=$30.56 equity=$495.78
+[btst_lazy3 10:20] 2026-08-29 C=78600@41 P=76600@46 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.04 equity=$495.74
+  LAZY_ARM C strike=C-BTC-79200-310826 entry_px=458.28 ts=1788109080
+  LAZY_EXIT C exit_px=468.28 pnl=10.00 ts=1788109260
+  LAZY_REENTRY C count=1 pending strike=C-BTC-79600-310826 trig=632.00
+  LAZY_ARM P strike=P-BTC-77000-310826 entry_px=477.37 ts=1788133680
+  LAZY_EXIT P exit_px=427.37 pnl=-50.00 ts=1788133740
+  LAZY_REENTRY P count=1 pending strike=P-BTC-76800-310826 trig=708.00
+[btst_lazy3 10:20] 2026-08-30 C=79000@140 P=77000@115 lazyC=Y(re1) lazyP=Y(re1) pnl=$-24.07 equity=$471.67
+[btst_lazy3 10:20] 2026-08-31 C=78400@296 P=76400@239 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.17 equity=$471.50
+SUMMARY [btst_lazy3 10:20] trades=31 win%=32.3 net=$244.50 avg_net=$7.89 avg_fees=$3.47 final_equity=$471.50 maxDD=$45.32 sharpe(per-trade,ann.)=3.48 first_breach=None TRAIN(n,net)=0,0.00 TEST(n,net)=31,244.50 skips[none]
+[btst_lazy3 11:20] 2026-08-01 C=64000@28 P=62000@28 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.03 equity=$226.97
+[btst_lazy3 11:20] 2026-08-02 C=64400@89 P=62400@75 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.02 equity=$226.95
+  LAZY_ARM C strike=C-BTC-64000-040826 entry_px=397.98 ts=1785818880
+  LAZY_EXIT C exit_px=347.98 pnl=-50.00 ts=1785818940
+  LAZY_REENTRY C count=1 pending strike=C-BTC-64600-040826 trig=95.80
+[btst_lazy3 11:20] 2026-08-03 C=63800@126 P=61800@144 lazyC=Y(re1) lazyP=N(re0) pnl=$-18.21 equity=$208.73
+[btst_lazy3 11:20] 2026-08-04 C=64800@88 P=62800@106 lazyC=N(re0) lazyP=N(re0) pnl=$0.17 equity=$208.90
+[btst_lazy3 11:20] 2026-08-05 C=65400@80 P=63400@92 lazyC=N(re0) lazyP=N(re0) pnl=$0.15 equity=$209.06
+[btst_lazy3 11:20] 2026-08-06 C=65800@100 P=63800@74 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.03 equity=$209.03
+  LAZY_ARM C strike=C-BTC-65400-080826 entry_px=350.34 ts=1786105860
+  LAZY_EXIT C exit_px=300.34 pnl=-50.00 ts=1786105920
+  LAZY_REENTRY C count=1 pending strike=C-BTC-65400-080826 trig=508.00
+[btst_lazy3 11:20] 2026-08-07 C=65400@83 P=63400@116 lazyC=Y(re1) lazyP=N(re0) pnl=$-17.97 equity=$191.07
+[btst_lazy3 11:20] 2026-08-08 C=66000@15 P=64000@14 lazyC=N(re0) lazyP=N(re0) pnl=$0.03 equity=$191.09
+[btst_lazy3 11:20] 2026-08-09 C=65800@49 P=63800@47 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.03 equity=$191.07
+  LAZY_ARM P strike=P-BTC-64000-110826 entry_px=291.45 ts=1786378920
+  LAZY_EXIT P exit_px=241.45 pnl=-50.00 ts=1786379100
+  LAZY_REENTRY P count=1 pending strike=P-BTC-63800-110826 trig=322.00
+[btst_lazy3 11:20] 2026-08-10 C=66000@98 P=64000@72 lazyC=N(re0) lazyP=Y(re1) pnl=$-17.49 equity=$173.57
+[btst_lazy3 11:20] 2026-08-11 C=65000@55 P=63000@61 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.03 equity=$173.54
+[btst_lazy3 11:20] 2026-08-12 C=64800@80 P=62800@78 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.05 equity=$173.49
+  LAZY_ARM P strike=P-BTC-63000-140826 entry_px=353.76 ts=1786639380
+  LAZY_EXIT P exit_px=313.76 pnl=-40.00 ts=1786639500
+  LAZY_REENTRY P count=1 pending strike=P-BTC-62600-140826 trig=276.00
+[btst_lazy3 11:20] 2026-08-13 C=64800@87 P=62800@61 lazyC=N(re0) lazyP=Y(re1) pnl=$-15.40 equity=$158.09
+[btst_lazy3 11:20] 2026-08-14 C=64400@41 P=62400@47 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.04 equity=$158.05
+[btst_lazy3 11:20] 2026-08-15 C=64000@6 P=62000@6 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.00 equity=$158.05
+[btst_lazy3 11:20] 2026-08-16 C=64000@23 P=62000@27 lazyC=N(re0) lazyP=N(re0) pnl=$0.04 equity=$158.10
+  LAZY_ARM C strike=C-BTC-64400-180826 entry_px=186.93 ts=1786990680
+  LAZY_EXIT C exit_px=146.93 pnl=-40.00 ts=1786990800
+  LAZY_REENTRY C count=1 pending strike=C-BTC-64800-180826 trig=96.00
+  LAZY_ARM C strike=C-BTC-64800-180826 entry_px=96.48 ts=1786991040
+  LAZY_EXIT C exit_px=76.48 pnl=-20.00 ts=1786991340
+  LAZY_REENTRY C count=2 pending strike=C-BTC-64800-180826 trig=134.00
+[btst_lazy3 11:20] 2026-08-17 C=64400@42 P=62600@75 lazyC=Y(re2) lazyP=N(re0) pnl=$-20.37 equity=$137.72
+[btst_lazy3 11:20] 2026-08-18 C=65200@47 P=63200@51 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.03 equity=$137.70
+  LAZY_ARM C strike=C-BTC-65000-200826 entry_px=355.97 ts=1787146260
+  LAZY_EXIT C exit_px=405.97 pnl=50.00 ts=1787146440
+  LAZY_REENTRY C count=1 pending strike=C-BTC-65400-200826 trig=418.00
+  LAZY_ARM C strike=C-BTC-65400-200826 entry_px=420.09 ts=1787151060
+  LAZY_EXIT C exit_px=670.09 pnl=250.00 ts=1787151420
+  LAZY_REENTRY C count=2 pending strike=C-BTC-66200-200826 trig=400.00
+  LAZY_ARM C strike=C-BTC-66200-200826 entry_px=402.00 ts=1787151960
+  LAZY_EXIT C exit_px=512.00 pnl=110.00 ts=1787152080
+[btst_lazy3 11:20] 2026-08-19 C=65400@36 P=63400@51 lazyC=Y(re2) lazyP=N(re0) pnl=$85.34 equity=$223.04
+  LAZY_ARM C strike=C-BTC-70800-210826 entry_px=894.45 ts=1787213520
+  LAZY_EXIT C exit_px=844.45 pnl=-50.00 ts=1787213580
+  LAZY_REENTRY C count=1 pending strike=C-BTC-71400-210826 trig=1680.00
+  LAZY_ARM C strike=C-BTC-71400-210826 entry_px=1688.40 ts=1787258280
+  LAZY_EXIT C exit_px=2428.40 pnl=740.00 ts=1787271600
+  LAZY_REENTRY C count=2 pending strike=C-BTC-74000-210826 trig=656.20
+  LAZY_ARM C strike=C-BTC-74000-210826 entry_px=659.48 ts=1787275140
+  LAZY_EXIT C exit_px=939.48 pnl=280.00 ts=1787275260
+[btst_lazy3 11:20] 2026-08-20 C=70400@302 P=68400@213 lazyC=Y(re2) lazyP=N(re0) pnl=$223.07 equity=$446.12
+  LAZY_ARM C strike=C-BTC-77000-220826 entry_px=1738.65 ts=1787302140
+  LAZY_EXIT C exit_px=2268.65 pnl=530.00 ts=1787302560
+  LAZY_REENTRY C count=1 pending strike=C-BTC-79000-220826 trig=1668.00
+[btst_lazy3 11:20] 2026-08-21 C=76200@575 P=74200@478 lazyC=Y(re1) lazyP=N(re0) pnl=$125.32 equity=$571.44
+  LAZY_ARM P strike=P-BTC-75400-230826 entry_px=82.41 ts=1787462280
+  LAZY_EXIT P exit_px=92.41 pnl=10.00 ts=1787462460
+  LAZY_REENTRY P count=1 pending strike=P-BTC-75800-230826 trig=204.00
+  LAZY_ARM P strike=P-BTC-75800-230826 entry_px=205.02 ts=1787462640
+  LAZY_EXIT P exit_px=155.02 pnl=-50.00 ts=1787462700
+  LAZY_REENTRY P count=2 pending strike=P-BTC-75800-230826 trig=190.00
+  LAZY_ARM P strike=P-BTC-75800-230826 entry_px=190.95 ts=1787463060
+  LAZY_EXIT P exit_px=140.95 pnl=-50.00 ts=1787463120
+[btst_lazy3 11:20] 2026-08-22 C=78400@247 P=76400@229 lazyC=N(re0) lazyP=Y(re2) pnl=$-31.96 equity=$539.48
+[btst_lazy3 11:20] 2026-08-23 C=77200@374 P=75200@334 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.15 equity=$539.33
+  LAZY_ARM C strike=C-BTC-78800-250826 entry_px=1483.38 ts=1787585280
+  LAZY_EXIT C exit_px=1433.38 pnl=-50.00 ts=1787585520
+  LAZY_REENTRY C count=1 pending strike=C-BTC-80400-250826 trig=1200.00
+[btst_lazy3 11:20] 2026-08-24 C=78000@520 P=76000@412 lazyC=Y(re1) lazyP=N(re0) pnl=$-19.83 equity=$519.50
+[btst_lazy3 11:20] 2026-08-25 C=81800@554 P=79800@516 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.11 equity=$519.39
+[btst_lazy3 11:20] 2026-08-26 C=80000@411 P=78000@320 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.02 equity=$519.36
+  LAZY_ARM C strike=C-BTC-80200-280826 entry_px=964.80 ts=1787843640
+  LAZY_EXIT C exit_px=914.80 pnl=-50.00 ts=1787843700
+  LAZY_REENTRY C count=1 pending strike=C-BTC-81000-280826 trig=1036.00
+[btst_lazy3 11:20] 2026-08-27 C=79800@316 P=77800@252 lazyC=Y(re1) lazyP=N(re0) pnl=$-19.84 equity=$499.53
+  LAZY_ARM P strike=P-BTC-77600-290826 entry_px=578.88 ts=1787934180
+  LAZY_EXIT P exit_px=788.88 pnl=210.00 ts=1787934360
+  LAZY_REENTRY P count=1 pending strike=P-BTC-76800-290826 trig=810.00
+[btst_lazy3 11:20] 2026-08-28 C=80800@542 P=78800@443 lazyC=N(re0) lazyP=Y(re1) pnl=$45.43 equity=$544.96
+[btst_lazy3 11:20] 2026-08-29 C=78600@44 P=76600@43 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.04 equity=$544.92
+  LAZY_ARM C strike=C-BTC-79200-310826 entry_px=514.56 ts=1788109080
+  LAZY_EXIT C exit_px=474.56 pnl=-40.00 ts=1788109260
+  LAZY_REENTRY C count=1 pending strike=C-BTC-79600-310826 trig=632.00
+  LAZY_ARM P strike=P-BTC-77200-310826 entry_px=516.57 ts=1788133680
+  LAZY_EXIT P exit_px=466.57 pnl=-50.00 ts=1788133800
+  LAZY_REENTRY P count=1 pending strike=P-BTC-77000-310826 trig=696.00
+[btst_lazy3 11:20] 2026-08-30 C=79200@128 P=77200@127 lazyC=Y(re1) lazyP=Y(re1) pnl=$-36.72 equity=$508.20
+[btst_lazy3 11:20] 2026-08-31 C=79000@273 P=77000@268 lazyC=N(re0) lazyP=N(re0) pnl=$0.49 equity=$508.68
+SUMMARY [btst_lazy3 11:20] trades=31 win%=29.0 net=$281.68 avg_net=$9.09 avg_fees=$3.70 final_equity=$508.68 maxDD=$89.30 sharpe(per-trade,ann.)=3.48 first_breach=None TRAIN(n,net)=0,0.00 TEST(n,net)=31,281.68 skips[none]
+SUMMARY [PORTFOLIO ALL 7 VARIANTS] trades=31 win%=41.9 net=$464.26 avg_net=$14.98 avg_fees=$29.09 final_equity=$691.26 maxDD=$1322.82 sharpe(per-trade,ann.)=1.13 first_breach=2026-08-17 TRAIN(n,net)=0,0.00 TEST(n,net)=31,464.26 skips[none]

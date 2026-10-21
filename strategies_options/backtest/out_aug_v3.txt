@@ -1,0 +1,207 @@
+WINDOW 2026-08-01 to 2026-08-31 | strategies=[strangle_recost x3, btst_lazy3 x4]
+...2026-08-01
+[strangle_recost 09:20] 2026-08-01 C=64000@2 P=62000@2 re(C,P)=(1,1) pnl=$-1.99 equity=$225.01
+...2026-08-02
+...2026-08-03
+[strangle_recost 09:20] 2026-08-03 C=64000@15 P=62000@17 re(C,P)=(0,1) pnl=$-4.42 equity=$220.59
+...2026-08-04
+[strangle_recost 09:20] 2026-08-04 C=64800@3 P=62800@7 re(C,P)=(1,1) pnl=$-5.35 equity=$215.24
+...2026-08-05
+[strangle_recost 09:20] 2026-08-05 C=65200@7 P=63200@12 re(C,P)=(0,0) pnl=$5.50 equity=$220.74
+...2026-08-06
+[strangle_recost 09:20] 2026-08-06 C=65600@6 P=63600@3 re(C,P)=(0,0) pnl=$2.54 equity=$223.28
+...2026-08-07
+...2026-08-08
+[strangle_recost 09:20] 2026-08-08 C=66000@2 P=64000@2 re(C,P)=(0,1) pnl=$-0.37 equity=$222.91
+...2026-08-09
+...2026-08-10
+[strangle_recost 09:20] 2026-08-10 C=66000@8 P=64000@10 re(C,P)=(0,0) pnl=$5.27 equity=$228.18
+...2026-08-11
+[strangle_recost 09:20] 2026-08-11 C=65200@3 P=63200@5 re(C,P)=(0,0) pnl=$2.36 equity=$230.54
+...2026-08-12
+[strangle_recost 09:20] 2026-08-12 C=64800@2 P=62800@4 re(C,P)=(1,0) pnl=$-2.47 equity=$228.07
+...2026-08-13
+[strangle_recost 09:20] 2026-08-13 C=64600@3 P=62600@2 re(C,P)=(1,1) pnl=$-5.54 equity=$222.53
+...2026-08-14
+...2026-08-15
+[strangle_recost 09:20] 2026-08-15 C=64000@1 P=62000@0 re(C,P)=(0,0) pnl=$0.40 equity=$222.94
+...2026-08-16
+...2026-08-17
+[strangle_recost 09:20] 2026-08-17 C=64400@2 P=62400@5 re(C,P)=(0,0) pnl=$2.00 equity=$224.94
+...2026-08-18
+[strangle_recost 09:20] 2026-08-18 C=65200@3 P=63200@4 re(C,P)=(0,0) pnl=$2.00 equity=$226.94
+...2026-08-19
+[strangle_recost 09:20] 2026-08-19 C=65400@3 P=63400@2 re(C,P)=(0,0) pnl=$1.35 equity=$228.29
+...2026-08-20
+[strangle_recost 09:20] 2026-08-20 C=70200@48 P=68200@19 re(C,P)=(0,0) pnl=$-58.57 equity=$169.72
+...2026-08-21
+...2026-08-22
+[strangle_recost 09:20] 2026-08-22 C=79600@86 P=77600@47 re(C,P)=(0,0) pnl=$-306.78 equity=$-137.05
+...2026-08-23
+...2026-08-24
+[strangle_recost 09:20] 2026-08-24 C=78000@133 P=76000@83 re(C,P)=(0,0) pnl=$-80.09 equity=$-217.14
+...2026-08-25
+[strangle_recost 09:20] 2026-08-25 C=81400@177 P=79400@100 re(C,P)=(0,1) pnl=$-107.33 equity=$-324.47
+...2026-08-26
+[strangle_recost 09:20] 2026-08-26 C=80000@60 P=78000@46 re(C,P)=(0,0) pnl=$31.38 equity=$-293.09
+...2026-08-27
+[strangle_recost 09:20] 2026-08-27 C=79800@52 P=77800@21 re(C,P)=(1,0) pnl=$-31.52 equity=$-324.62
+...2026-08-28
+...2026-08-29
+[strangle_recost 09:20] 2026-08-29 C=78600@5 P=76600@10 re(C,P)=(0,0) pnl=$4.52 equity=$-320.09
+...2026-08-30
+...2026-08-31
+[strangle_recost 09:20] 2026-08-31 C=78800@37 P=76800@44 re(C,P)=(1,0) pnl=$-12.09 equity=$-332.18
+SUMMARY [strangle_recost 09:20] trades=22 win%=45.5 net=$-559.18 avg_net=$-25.42 avg_fees=$2.64 final_equity=$-332.18 maxDD=$562.72 sharpe(per-trade,ann.)=-5.92 first_breach=2026-08-22 TRAIN(n,net)=0,0.00 TEST(n,net)=22,-559.18 skips[none]
+...2026-08-01
+[strangle_recost 10:20] 2026-08-01 C=64000@3 P=62000@2 re(C,P)=(0,0) pnl=$1.26 equity=$228.26
+...2026-08-02
+...2026-08-03
+[strangle_recost 10:20] 2026-08-03 C=64000@10 P=62000@14 re(C,P)=(0,1) pnl=$-4.35 equity=$223.91
+...2026-08-04
+[strangle_recost 10:20] 2026-08-04 C=65200@5 P=63200@6 re(C,P)=(0,1) pnl=$-8.81 equity=$215.10
+...2026-08-05
+[strangle_recost 10:20] 2026-08-05 C=65200@5 P=63200@8 re(C,P)=(1,0) pnl=$-1.87 equity=$213.23
+...2026-08-06
+[strangle_recost 10:20] 2026-08-06 C=65600@6 P=63600@2 re(C,P)=(0,0) pnl=$2.21 equity=$215.44
+...2026-08-07
+...2026-08-08
+[strangle_recost 10:20] 2026-08-08 C=66000@1 P=64000@1 re(C,P)=(1,1) pnl=$-1.42 equity=$214.02
+...2026-08-09
+...2026-08-10
+[strangle_recost 10:20] 2026-08-10 C=66000@5 P=64000@7 re(C,P)=(0,0) pnl=$3.37 equity=$217.38
+...2026-08-11
+[strangle_recost 10:20] 2026-08-11 C=65000@3 P=63000@2 re(C,P)=(0,0) pnl=$1.50 equity=$218.88
+...2026-08-12
+[strangle_recost 10:20] 2026-08-12 C=64800@3 P=62800@3 re(C,P)=(0,0) pnl=$1.55 equity=$220.43
+...2026-08-13
+[strangle_recost 10:20] 2026-08-13 C=64800@2 P=62800@1 re(C,P)=(1,1) pnl=$-1.83 equity=$218.60
+...2026-08-14
+...2026-08-15
+[strangle_recost 10:20] 2026-08-15 C=64200@0 P=62200@0 re(C,P)=(0,1) pnl=$-0.21 equity=$218.39
+...2026-08-16
+...2026-08-17
+[strangle_recost 10:20] 2026-08-17 C=64600@1 P=62600@5 re(C,P)=(0,0) pnl=$1.80 equity=$220.18
+...2026-08-18
+[strangle_recost 10:20] 2026-08-18 C=65200@3 P=63200@2 re(C,P)=(0,0) pnl=$1.44 equity=$221.62
+...2026-08-19
+[strangle_recost 10:20] 2026-08-19 C=65400@2 P=63400@2 re(C,P)=(0,0) pnl=$1.05 equity=$222.67
+...2026-08-20
+[strangle_recost 10:20] 2026-08-20 C=70400@29 P=68400@13 re(C,P)=(0,0) pnl=$-36.08 equity=$186.59
+...2026-08-21
+...2026-08-22
+[strangle_recost 10:20] 2026-08-22 C=79600@76 P=77600@37 re(C,P)=(0,0) pnl=$-312.71 equity=$-126.12
+...2026-08-23
+...2026-08-24
+[strangle_recost 10:20] 2026-08-24 C=78000@103 P=76000@75 re(C,P)=(0,0) pnl=$-59.88 equity=$-186.00
+...2026-08-25
+[strangle_recost 10:20] 2026-08-25 C=81400@127 P=79400@103 re(C,P)=(0,1) pnl=$-141.01 equity=$-327.01
+...2026-08-26
+[strangle_recost 10:20] 2026-08-26 C=79800@56 P=77800@26 re(C,P)=(0,0) pnl=$24.26 equity=$-302.75
+...2026-08-27
+[strangle_recost 10:20] 2026-08-27 C=79800@32 P=77800@20 re(C,P)=(1,0) pnl=$-10.73 equity=$-313.49
+...2026-08-28
+...2026-08-29
+[strangle_recost 10:20] 2026-08-29 C=78600@4 P=76600@8 re(C,P)=(0,0) pnl=$3.61 equity=$-309.88
+...2026-08-30
+...2026-08-31
+[strangle_recost 10:20] 2026-08-31 C=78400@36 P=76400@31 re(C,P)=(1,0) pnl=$-15.84 equity=$-325.72
+SUMMARY [strangle_recost 10:20] trades=22 win%=45.5 net=$-552.72 avg_net=$-25.12 avg_fees=$2.25 final_equity=$-325.72 maxDD=$555.27 sharpe(per-trade,ann.)=-5.69 first_breach=2026-08-22 TRAIN(n,net)=0,0.00 TEST(n,net)=22,-552.72 skips[none]
+...2026-08-01
+[strangle_recost 11:20] 2026-08-01 C=64000@2 P=62000@2 re(C,P)=(0,0) pnl=$1.14 equity=$228.14
+...2026-08-02
+...2026-08-03
+[strangle_recost 11:20] 2026-08-03 C=63800@14 P=61800@9 re(C,P)=(1,0) pnl=$-4.68 equity=$223.46
+...2026-08-04
+[strangle_recost 11:20] 2026-08-04 C=64800@6 P=62800@4 re(C,P)=(0,0) pnl=$2.86 equity=$226.33
+...2026-08-05
+[strangle_recost 11:20] 2026-08-05 C=65400@4 P=63400@4 re(C,P)=(0,1) pnl=$-1.04 equity=$225.29
+...2026-08-06
+[strangle_recost 11:20] 2026-08-06 C=65800@4 P=63800@1 re(C,P)=(0,1) pnl=$-0.97 equity=$224.32
+...2026-08-07
+...2026-08-08
+[strangle_recost 11:20] 2026-08-08 C=66000@1 P=64000@1 re(C,P)=(1,1) pnl=$-1.42 equity=$222.90
+...2026-08-09
+...2026-08-10
+[strangle_recost 11:20] 2026-08-10 C=66000@3 P=64000@4 re(C,P)=(1,0) pnl=$-1.05 equity=$221.86
+...2026-08-11
+[strangle_recost 11:20] 2026-08-11 C=65000@2 P=63000@2 re(C,P)=(1,0) pnl=$-0.36 equity=$221.50
+...2026-08-12
+[strangle_recost 11:20] 2026-08-12 C=64800@2 P=62800@2 re(C,P)=(1,0) pnl=$-2.83 equity=$218.67
+...2026-08-13
+[strangle_recost 11:20] 2026-08-13 C=64800@2 P=62800@2 re(C,P)=(0,0) pnl=$0.96 equity=$219.63
+...2026-08-14
+...2026-08-15
+[strangle_recost 11:20] 2026-08-15 C=64000@0 P=62000@0 re(C,P)=(0,0) pnl=$0.22 equity=$219.86
+...2026-08-16
+...2026-08-17
+[strangle_recost 11:20] 2026-08-17 C=64600@1 P=62600@3 re(C,P)=(1,0) pnl=$0.42 equity=$220.28
+...2026-08-18
+[strangle_recost 11:20] 2026-08-18 C=65200@4 P=63200@2 re(C,P)=(0,0) pnl=$1.50 equity=$221.78
+...2026-08-19
+[strangle_recost 11:20] 2026-08-19 C=65400@2 P=63400@2 re(C,P)=(0,0) pnl=$0.96 equity=$222.74
+...2026-08-20
+[strangle_recost 11:20] 2026-08-20 C=70400@20 P=68400@11 re(C,P)=(1,0) pnl=$-55.63 equity=$167.11
+...2026-08-21
+...2026-08-22
+[strangle_recost 11:20] 2026-08-22 C=78400@69 P=76400@35 re(C,P)=(0,1) pnl=$2.29 equity=$169.40
+...2026-08-23
+...2026-08-24
+[strangle_recost 11:20] 2026-08-24 C=78000@103 P=76000@48 re(C,P)=(0,0) pnl=$-67.89 equity=$101.51
+...2026-08-25
+[strangle_recost 11:20] 2026-08-25 C=81800@126 P=79800@96 re(C,P)=(0,0) pnl=$-43.77 equity=$57.74
+...2026-08-26
+[strangle_recost 11:20] 2026-08-26 C=80000@38 P=78000@18 re(C,P)=(0,0) pnl=$16.54 equity=$74.28
+...2026-08-27
+[strangle_recost 11:20] 2026-08-27 C=79800@26 P=77800@10 re(C,P)=(1,0) pnl=$-10.60 equity=$63.68
+...2026-08-28
+...2026-08-29
+[strangle_recost 11:20] 2026-08-29 C=78600@4 P=76600@5 re(C,P)=(0,0) pnl=$2.60 equity=$66.28
+...2026-08-30
+...2026-08-31
+[strangle_recost 11:20] 2026-08-31 C=79000@21 P=77000@30 re(C,P)=(1,0) pnl=$-2.78 equity=$63.50
+SUMMARY [strangle_recost 11:20] trades=22 win%=45.5 net=$-163.50 avg_net=$-7.43 avg_fees=$1.71 final_equity=$63.50 maxDD=$170.40 sharpe(per-trade,ann.)=-5.92 first_breach=None TRAIN(n,net)=0,0.00 TEST(n,net)=22,-163.50 skips[none]
+[btst_lazy3 19:00] 2026-08-01 C=64000@20 P=62000@16 lazyC=Y(re0) lazyP=Y(re1) pnl=$20.23 equity=$247.23
+[btst_lazy3 19:00] 2026-08-02 C=64000@77 P=62000@65 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.18 equity=$247.05
+[btst_lazy3 19:00] 2026-08-03 C=63800@71 P=61800@115 lazyC=Y(re1) lazyP=N(re0) pnl=$47.53 equity=$294.58
+[btst_lazy3 19:00] 2026-08-04 C=64800@84 P=62800@67 lazyC=N(re0) lazyP=N(re0) pnl=$0.54 equity=$295.12
+[btst_lazy3 19:00] 2026-08-05 C=65200@63 P=63200@76 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.06 equity=$295.05
+[btst_lazy3 19:00] 2026-08-06 C=65200@86 P=63200@62 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.30 equity=$294.76
+[btst_lazy3 19:00] 2026-08-07 C=66200@62 P=64200@84 lazyC=N(re0) lazyP=N(re0) pnl=$0.52 equity=$295.28
+[btst_lazy3 19:00] 2026-08-08 C=66000@13 P=64000@11 lazyC=N(re0) lazyP=N(re0) pnl=$0.08 equity=$295.36
+[btst_lazy3 19:00] 2026-08-09 C=66000@44 P=64000@34 lazyC=N(re0) lazyP=N(re0) pnl=$0.28 equity=$295.64
+[btst_lazy3 19:00] 2026-08-10 C=66000@54 P=64000@60 lazyC=N(re0) lazyP=Y(re1) pnl=$-11.42 equity=$284.22
+[btst_lazy3 19:00] 2026-08-11 C=65200@31 P=63200@55 lazyC=N(re0) lazyP=Y(re1) pnl=$-70.60 equity=$213.63
+[btst_lazy3 19:00] 2026-08-12 C=65000@70 P=63000@83 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.22 equity=$213.40
+[btst_lazy3 19:00] 2026-08-13 C=64600@51 P=62600@54 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.16 equity=$213.24
+[btst_lazy3 19:00] 2026-08-14 C=63800@46 P=61800@57 lazyC=N(re0) lazyP=N(re0) pnl=$0.37 equity=$213.61
+[btst_lazy3 19:00] 2026-08-15 C=64000@3 P=62000@4 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.01 equity=$213.60
+[btst_lazy3 19:00] 2026-08-16 C=64000@15 P=62000@17 lazyC=Y(re0) lazyP=Y(re0) pnl=$-0.17 equity=$213.43
+[btst_lazy3 19:00] 2026-08-17 C=64400@39 P=62400@24 lazyC=Y(re2) lazyP=N(re0) pnl=$-41.32 equity=$172.11
+[btst_lazy3 19:00] 2026-08-18 C=65000@36 P=63000@28 lazyC=Y(re1) lazyP=N(re0) pnl=$90.85 equity=$262.96
+[btst_lazy3 19:00] 2026-08-19 C=66000@66 P=64000@42 lazyC=Y(re4) lazyP=N(re0) pnl=$877.05 equity=$1140.01
+[btst_lazy3 19:00] 2026-08-20 C=73000@441 P=71000@390 lazyC=Y(re4) lazyP=N(re0) pnl=$375.48 equity=$1515.49
+[btst_lazy3 19:00] 2026-08-21 C=78000@600 P=76000@416 lazyC=N(re0) lazyP=N(re0) pnl=$3.75 equity=$1519.24
+[btst_lazy3 19:00] 2026-08-22 C=78200@213 P=76200@176 lazyC=N(re0) lazyP=Y(re1) pnl=$-62.03 equity=$1457.21
+[btst_lazy3 19:00] 2026-08-23 C=78400@377 P=76400@291 lazyC=N(re0) lazyP=N(re0) pnl=$2.34 equity=$1459.55
+[btst_lazy3 19:00] 2026-08-24 C=80000@571 P=78000@461 lazyC=Y(re0) lazyP=N(re0) pnl=$-1.36 equity=$1458.19
+[btst_lazy3 19:00] 2026-08-25 C=79600@414 P=77600@296 lazyC=N(re0) lazyP=N(re0) pnl=$2.59 equity=$1460.78
+[btst_lazy3 19:00] 2026-08-26 C=79000@301 P=77000@238 lazyC=Y(re3) lazyP=N(re0) pnl=$65.83 equity=$1526.61
+[btst_lazy3 19:00] 2026-08-27 C=80400@300 P=78400@262 lazyC=Y(re1) lazyP=N(re0) pnl=$-79.19 equity=$1447.42
+[btst_lazy3 19:00] 2026-08-28 C=80200@380 P=78200@343 lazyC=N(re0) lazyP=Y(re1) pnl=$132.26 equity=$1579.69
+[btst_lazy3 19:00] 2026-08-29 C=78600@32 P=76600@37 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.04 equity=$1579.65
+[btst_lazy3 19:00] 2026-08-30 C=79800@122 P=77800@103 lazyC=Y(re0) lazyP=Y(re2) pnl=$-23.85 equity=$1555.80
+[btst_lazy3 19:00] 2026-08-31 C=79000@228 P=77000@190 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.48 equity=$1555.32
+SUMMARY [btst_lazy3 19:00] trades=31 win%=48.4 net=$1328.32 avg_net=$42.85 avg_fees=$17.28 final_equity=$1555.32 maxDD=$123.53 sharpe(per-trade,ann.)=4.80 first_breach=None TRAIN(n,net)=0,0.00 TEST(n,net)=31,1328.32 skips[none]
+[btst_lazy3 09:20] 2026-08-01 C=64000@18 P=62000@24 lazyC=Y(re0) lazyP=Y(re1) pnl=$-14.18 equity=$212.82
+[btst_lazy3 09:20] 2026-08-02 C=64400@90 P=62400@77 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.02 equity=$212.80
+[btst_lazy3 09:20] 2026-08-03 C=64000@105 P=62000@173 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.01 equity=$212.79
+[btst_lazy3 09:20] 2026-08-04 C=64800@91 P=62800@105 lazyC=N(re0) lazyP=N(re0) pnl=$0.17 equity=$212.96
+[btst_lazy3 09:20] 2026-08-05 C=65200@87 P=63200@101 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.03 equity=$212.93
+[btst_lazy3 09:20] 2026-08-06 C=65600@92 P=63600@97 lazyC=N(re0) lazyP=N(re0) pnl=$0.17 equity=$213.10
+[btst_lazy3 09:20] 2026-08-07 C=65400@79 P=63400@108 lazyC=Y(re1) lazyP=N(re0) pnl=$-17.98 equity=$195.12
+[btst_lazy3 09:20] 2026-08-08 C=66000@16 P=64000@15 lazyC=N(re0) lazyP=N(re0) pnl=$0.03 equity=$195.15
+[btst_lazy3 09:20] 2026-08-09 C=65800@52 P=63800@53 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.02 equity=$195.13
+[btst_lazy3 09:20] 2026-08-10 C=66000@101 P=64000@82 lazyC=N(re0) lazyP=Y(re1) pnl=$-4.53 equity=$190.60
+[btst_lazy3 09:20] 2026-08-11 C=65200@42 P=63200@82 lazyC=N(re0) lazyP=Y(re0) pnl=$-0.08 equity=$190.52
+[btst_lazy3 09:20] 2026-08-12 C=64800@71 P=62800@90 lazyC=Y(re0) lazyP=N(re0) pnl=$-0.01 equity=$190.50

@@ -1,0 +1,85 @@
+nohup: ignoring input
+WINDOW 2024-01-01 to 2026-10-13 | TRAIN<2025-07-01 TEST>= | lots=100 max_skew=1800 | variants=['20pct', '30pct', '50pct', 'host'] | strategies=['straddle', 'iron_fly', 'calendar_mm', 'strangle']
+[straddle weekly 8DTE] 2024-01-05 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-01-12 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-01-19 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-01-26 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-02-02 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-02-09 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-02-16 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-02-23 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-03-01 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-03-08 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-03-15 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-03-22 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-03-29 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-04-05 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-04-12 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-04-19 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-04-26 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-05-03 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-05-10 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-05-17 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-05-24 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-05-31 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-06-07 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE] 2024-06-14 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE 20pct] entry=2024-06-13 exit=2024-06-14 dte=8 SC67000@2550(d=-716,-1.06%) SP67000@1280(d=-716,-1.06%) width=0(0.00%) be_range=-6.71%/+4.60% sl=$76.60 tgt=$76.60 slip=5% submode=TARGET pnl=$101.42 fees=$4.76 equity=$328.42 skew=1740
+[straddle weekly 8DTE 30pct] entry=2024-06-13 exit=2024-06-15 dte=8 SC67000@2550(d=-716,-1.06%) SP67000@1280(d=-716,-1.06%) width=0(0.00%) be_range=-6.71%/+4.60% sl=$114.90 tgt=$114.90 slip=5% submode=STALE_EXIT pnl=$-5.97 fees=$4.74 equity=$221.03 skew=1740
+[straddle weekly 8DTE 50pct] entry=2024-06-13 exit=2024-06-15 dte=8 SC67000@2550(d=-716,-1.06%) SP67000@1280(d=-716,-1.06%) width=0(0.00%) be_range=-6.71%/+4.60% sl=$191.50 tgt=$191.50 slip=5% submode=STALE_EXIT pnl=$-5.97 fees=$4.74 equity=$221.03 skew=1740
+[straddle weekly 8DTE host] entry=2024-06-13 exit=2024-06-13 dte=8 SC67000@2550(d=-716,-1.06%) SP67000@1280(d=-716,-1.06%) width=0(0.00%) be_range=-6.71%/+4.60% sl=$28.73 tgt=$28.73 slip=5% submode=TARGET pnl=$50.69 fees=$4.78 equity=$277.69 skew=1740
+[straddle weekly 8DTE] 2024-06-28 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE 20pct] entry=2024-06-27 exit=2024-06-29 dte=8 SC62000@1297(d=+766,+1.25%) SP62000@1880(d=+766,+1.25%) width=0(0.00%) be_range=-3.94%/+6.44% sl=$63.54 tgt=$63.54 slip=5% submode=TARGET pnl=$69.11 fees=$4.33 equity=$397.52 skew=60
+[straddle weekly 8DTE 30pct] entry=2024-06-27 exit=2024-06-30 dte=8 SC62000@1297(d=+766,+1.25%) SP62000@1880(d=+766,+1.25%) width=0(0.00%) be_range=-3.94%/+6.44% sl=$95.31 tgt=$95.31 slip=5% submode=TARGET pnl=$100.55 fees=$4.39 equity=$321.58 skew=60
+[straddle weekly 8DTE 50pct] entry=2024-06-27 exit=2024-07-04 dte=8 SC62000@1297(d=+766,+1.25%) SP62000@1880(d=+766,+1.25%) width=0(0.00%) be_range=-3.94%/+6.44% sl=$158.85 tgt=$158.85 slip=5% submode=SL pnl=$-212.40 fees=$3.28 equity=$8.63 skew=60
+[straddle weekly 8DTE host] entry=2024-06-27 exit=2024-06-27 dte=8 SC62000@1297(d=+766,+1.25%) SP62000@1880(d=+766,+1.25%) width=0(0.00%) be_range=-3.94%/+6.44% sl=$23.83 tgt=$23.83 slip=5% submode=SL pnl=$-67.22 fees=$4.37 equity=$210.47 skew=60
+[straddle weekly 8DTE] 2024-07-12 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE 20pct] entry=2024-07-11 exit=2024-07-14 dte=8 SC58000@1978(d=-721,-1.23%) SP58000@1350(d=-721,-1.23%) width=0(0.00%) be_range=-6.89%/+4.44% sl=$66.56 tgt=$66.56 slip=5% submode=SL pnl=$-114.49 fees=$4.24 equity=$283.04 skew=840
+[straddle weekly 8DTE 30pct] entry=2024-07-11 exit=2024-07-15 dte=8 SC58000@1978(d=-721,-1.23%) SP58000@1350(d=-721,-1.23%) width=0(0.00%) be_range=-6.89%/+4.44% sl=$99.84 tgt=$99.84 slip=5% submode=SL pnl=$-145.80 fees=$4.26 equity=$175.78 skew=840
+[straddle weekly 8DTE 50pct] entry=2024-07-11 exit=2024-07-15 dte=8 SC58000@1978(d=-721,-1.23%) SP58000@1350(d=-721,-1.23%) width=0(0.00%) be_range=-6.89%/+4.44% sl=$166.40 tgt=$166.40 slip=5% submode=SL pnl=$-227.42 fees=$4.30 equity=$-218.79 skew=840
+[straddle weekly 8DTE host] entry=2024-07-11 exit=2024-07-11 dte=8 SC58000@1978(d=-721,-1.23%) SP58000@1350(d=-721,-1.23%) width=0(0.00%) be_range=-6.89%/+4.44% sl=$24.96 tgt=$24.96 slip=5% submode=SL pnl=$-65.12 fees=$4.12 equity=$145.34 skew=840
+[straddle weekly 8DTE] 2024-07-26 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE 20pct] entry=2024-07-25 exit=2024-07-27 dte=8 SC64000@2691(d=-74,-0.12%) SP64000@2272(d=-74,-0.12%) width=0(0.00%) be_range=-7.86%/+7.63% sl=$99.26 tgt=$99.26 slip=5% submode=STALE_EXIT pnl=$-109.53 fees=$4.67 equity=$173.51 skew=360
+[straddle weekly 8DTE 30pct] entry=2024-07-25 exit=2024-07-27 dte=8 SC64000@2691(d=-74,-0.12%) SP64000@2272(d=-74,-0.12%) width=0(0.00%) be_range=-7.86%/+7.63% sl=$148.89 tgt=$148.89 slip=5% submode=STALE_EXIT pnl=$-109.53 fees=$4.67 equity=$66.25 skew=360
+[straddle weekly 8DTE 50pct] entry=2024-07-25 exit=2024-07-27 dte=8 SC64000@2691(d=-74,-0.12%) SP64000@2272(d=-74,-0.12%) width=0(0.00%) be_range=-7.86%/+7.63% sl=$248.15 tgt=$248.15 slip=5% submode=STALE_EXIT pnl=$-109.53 fees=$4.67 equity=$-328.32 skew=360
+[straddle weekly 8DTE host] entry=2024-07-25 exit=2024-07-25 dte=8 SC64000@2691(d=-74,-0.12%) SP64000@2272(d=-74,-0.12%) width=0(0.00%) be_range=-7.86%/+7.63% sl=$37.22 tgt=$37.22 slip=5% submode=SL pnl=$-97.20 fees=$4.52 equity=$48.15 skew=360
+[straddle weekly 8DTE 20pct] entry=2024-08-01 exit=2024-08-01 dte=8 SC65000@1511(d=+332,+0.51%) SP65000@1637(d=+332,+0.51%) width=0(0.00%) be_range=-4.35%/+5.38% sl=$62.96 tgt=$62.96 slip=5% submode=SL pnl=$-109.74 fees=$4.55 equity=$63.78 skew=0
+[straddle weekly 8DTE 30pct] entry=2024-08-01 exit=2024-08-01 dte=8 SC65000@1511(d=+332,+0.51%) SP65000@1637(d=+332,+0.51%) width=0(0.00%) be_range=-4.35%/+5.38% sl=$94.44 tgt=$94.44 slip=5% submode=SL pnl=$-161.12 fees=$4.59 equity=$-94.87 skew=0
+[straddle weekly 8DTE 50pct] entry=2024-08-01 exit=2024-08-03 dte=8 SC65000@1511(d=+332,+0.51%) SP65000@1637(d=+332,+0.51%) width=0(0.00%) be_range=-4.35%/+5.38% sl=$157.40 tgt=$157.40 slip=5% submode=SL pnl=$-218.26 fees=$4.44 equity=$-546.57 skew=0
+[straddle weekly 8DTE host] entry=2024-08-01 exit=2024-08-01 dte=8 SC65000@1511(d=+332,+0.51%) SP65000@1637(d=+332,+0.51%) width=0(0.00%) be_range=-4.35%/+5.38% sl=$23.61 tgt=$23.61 slip=5% submode=SL pnl=$-109.74 fees=$4.55 equity=$-61.59 skew=0
+[straddle weekly 8DTE 20pct] entry=2024-08-08 exit=2024-08-08 dte=8 SC57000@2221(d=-320,-0.56%) SP57000@1853(d=-320,-0.56%) width=0(0.00%) be_range=-7.67%/+6.55% sl=$81.48 tgt=$81.48 slip=5% submode=SL pnl=$-155.89 fees=$4.17 equity=$-92.12 skew=1200
+[straddle weekly 8DTE 30pct] entry=2024-08-08 exit=2024-08-08 dte=8 SC57000@2221(d=-320,-0.56%) SP57000@1853(d=-320,-0.56%) width=0(0.00%) be_range=-7.67%/+6.55% sl=$122.22 tgt=$122.22 slip=5% submode=SL pnl=$-186.48 fees=$4.20 equity=$-281.35 skew=1200
+[straddle weekly 8DTE 50pct] entry=2024-08-08 exit=2024-08-10 dte=8 SC57000@2221(d=-320,-0.56%) SP57000@1853(d=-320,-0.56%) width=0(0.00%) be_range=-7.67%/+6.55% sl=$203.70 tgt=$203.70 slip=5% submode=STALE_EXIT pnl=$-95.52 fees=$4.17 equity=$-642.09 skew=1200
+[straddle weekly 8DTE host] entry=2024-08-08 exit=2024-08-08 dte=8 SC57000@2221(d=-320,-0.56%) SP57000@1853(d=-320,-0.56%) width=0(0.00%) be_range=-7.67%/+6.55% sl=$30.56 tgt=$30.56 slip=5% submode=SL pnl=$-88.51 fees=$4.09 equity=$-150.10 skew=1200
+[straddle weekly 8DTE 20pct] entry=2024-08-15 exit=2024-08-15 dte=8 SC59000@1694(d=+222,+0.38%) SP59000@1851(d=+222,+0.38%) width=0(0.00%) be_range=-5.65%/+6.41% sl=$70.90 tgt=$70.90 slip=5% submode=SL pnl=$-130.61 fees=$4.13 equity=$-222.73 skew=1080
+[straddle weekly 8DTE 30pct] entry=2024-08-15 exit=2024-08-19 dte=8 SC59000@1694(d=+222,+0.38%) SP59000@1851(d=+222,+0.38%) width=0(0.00%) be_range=-5.65%/+6.41% sl=$106.35 tgt=$106.35 slip=5% submode=TARGET pnl=$117.19 fees=$4.18 equity=$-164.16 skew=1080
+[straddle weekly 8DTE 50pct] entry=2024-08-15 exit=2024-08-22 dte=8 SC59000@1694(d=+222,+0.38%) SP59000@1851(d=+222,+0.38%) width=0(0.00%) be_range=-5.65%/+6.41% sl=$177.25 tgt=$177.25 slip=5% submode=TARGET pnl=$185.33 fees=$4.03 equity=$-456.76 skew=1080
+[straddle weekly 8DTE host] entry=2024-08-15 exit=2024-08-15 dte=8 SC59000@1694(d=+222,+0.38%) SP59000@1851(d=+222,+0.38%) width=0(0.00%) be_range=-5.65%/+6.41% sl=$26.59 tgt=$26.59 slip=5% submode=SL pnl=$-88.91 fees=$4.15 equity=$-239.01 skew=1080
+[straddle weekly 8DTE 20pct] entry=2024-08-22 exit=2024-08-25 dte=8 SC62000@1530(d=+650,+1.06%) SP62000@2196(d=+650,+1.06%) width=0(0.00%) be_range=-5.01%/+7.13% sl=$74.52 tgt=$74.52 slip=5% submode=STALE_EXIT pnl=$20.78 fees=$4.44 equity=$-201.95 skew=960
+[straddle weekly 8DTE 30pct] entry=2024-08-22 exit=2024-08-25 dte=8 SC62000@1530(d=+650,+1.06%) SP62000@2196(d=+650,+1.06%) width=0(0.00%) be_range=-5.01%/+7.13% sl=$111.78 tgt=$111.78 slip=5% submode=STALE_EXIT pnl=$20.78 fees=$4.44 equity=$-143.38 skew=960
+[straddle weekly 8DTE 50pct] entry=2024-08-22 exit=2024-08-25 dte=8 SC62000@1530(d=+650,+1.06%) SP62000@2196(d=+650,+1.06%) width=0(0.00%) be_range=-5.01%/+7.13% sl=$186.30 tgt=$186.30 slip=5% submode=STALE_EXIT pnl=$20.78 fees=$4.44 equity=$-435.98 skew=960
+[straddle weekly 8DTE host] entry=2024-08-22 exit=2024-08-23 dte=8 SC62000@1530(d=+650,+1.06%) SP62000@2196(d=+650,+1.06%) width=0(0.00%) be_range=-5.01%/+7.13% sl=$27.95 tgt=$27.95 slip=5% submode=TARGET pnl=$30.31 fees=$4.36 equity=$-208.70 skew=960
+[straddle weekly 8DTE] 2024-09-06 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE 20pct] entry=2024-09-05 exit=2024-09-06 dte=8 SC58000@1065(d=+1292,+2.28%) SP58000@2344(d=+1292,+2.28%) width=0(0.00%) be_range=-3.73%/+8.29% sl=$68.18 tgt=$68.18 slip=5% submode=SL pnl=$-114.60 fees=$4.02 equity=$-316.55 skew=1140
+[straddle weekly 8DTE 30pct] entry=2024-09-05 exit=2024-09-06 dte=8 SC58000@1065(d=+1292,+2.28%) SP58000@2344(d=+1292,+2.28%) width=0(0.00%) be_range=-3.73%/+8.29% sl=$102.27 tgt=$102.27 slip=5% submode=SL pnl=$-179.86 fees=$3.91 equity=$-323.23 skew=1140
+[straddle weekly 8DTE 50pct] entry=2024-09-05 exit=2024-09-07 dte=8 SC58000@1065(d=+1292,+2.28%) SP58000@2344(d=+1292,+2.28%) width=0(0.00%) be_range=-3.73%/+8.29% sl=$170.45 tgt=$170.45 slip=5% submode=STALE_EXIT pnl=$-156.97 fees=$3.91 equity=$-592.95 skew=1140
+[straddle weekly 8DTE host] entry=2024-09-05 exit=2024-09-05 dte=8 SC58000@1065(d=+1292,+2.28%) SP58000@2344(d=+1292,+2.28%) width=0(0.00%) be_range=-3.73%/+8.29% sl=$25.57 tgt=$25.57 slip=5% submode=SL pnl=$-70.77 fees=$4.03 equity=$-279.47 skew=1140
+[straddle weekly 8DTE 20pct] entry=2024-09-12 exit=2024-09-17 dte=8 SC58000@1829(d=-107,-0.18%) SP58000@1665(d=-107,-0.18%) width=0(0.00%) be_range=-6.20%/+5.83% sl=$69.88 tgt=$69.88 slip=5% submode=TARGET pnl=$75.08 fees=$4.12 equity=$-241.47 skew=0
+[straddle weekly 8DTE 30pct] entry=2024-09-12 exit=2024-09-19 dte=8 SC58000@1829(d=-107,-0.18%) SP58000@1665(d=-107,-0.18%) width=0(0.00%) be_range=-6.20%/+5.83% sl=$104.82 tgt=$104.82 slip=5% submode=SL pnl=$-227.79 fees=$3.22 equity=$-551.03 skew=0
+[straddle weekly 8DTE 50pct] entry=2024-09-12 exit=2024-09-19 dte=8 SC58000@1829(d=-107,-0.18%) SP58000@1665(d=-107,-0.18%) width=0(0.00%) be_range=-6.20%/+5.83% sl=$174.70 tgt=$174.70 slip=5% submode=SL pnl=$-227.79 fees=$3.22 equity=$-820.74 skew=0
+[straddle weekly 8DTE host] entry=2024-09-12 exit=2024-09-12 dte=8 SC58000@1829(d=-107,-0.18%) SP58000@1665(d=-107,-0.18%) width=0(0.00%) be_range=-6.20%/+5.83% sl=$26.21 tgt=$26.21 slip=5% submode=SL pnl=$-70.53 fees=$4.09 equity=$-350.00 skew=0
+[straddle weekly 8DTE 20pct] entry=2024-09-19 exit=2024-09-22 dte=8 SC63000@1926(d=+309,+0.49%) SP63000@1760(d=+309,+0.49%) width=0(0.00%) be_range=-5.39%/+6.37% sl=$73.71 tgt=$73.71 slip=5% submode=TARGET pnl=$75.20 fees=$4.45 equity=$-166.27 skew=1020
+[straddle weekly 8DTE 30pct] entry=2024-09-19 exit=2024-09-23 dte=8 SC63000@1926(d=+309,+0.49%) SP63000@1760(d=+309,+0.49%) width=0(0.00%) be_range=-5.39%/+6.37% sl=$110.57 tgt=$110.57 slip=5% submode=TARGET pnl=$113.62 fees=$4.46 equity=$-437.41 skew=1020
+[straddle weekly 8DTE 50pct] entry=2024-09-19 exit=2024-09-25 dte=8 SC63000@1926(d=+309,+0.49%) SP63000@1760(d=+309,+0.49%) width=0(0.00%) be_range=-5.39%/+6.37% sl=$184.28 tgt=$184.28 slip=5% submode=TARGET pnl=$191.33 fees=$4.45 equity=$-629.41 skew=1020
+[straddle weekly 8DTE host] entry=2024-09-19 exit=2024-09-20 dte=8 SC63000@1926(d=+309,+0.49%) SP63000@1760(d=+309,+0.49%) width=0(0.00%) be_range=-5.39%/+6.37% sl=$27.64 tgt=$27.64 slip=5% submode=TARGET pnl=$38.12 fees=$4.46 equity=$-311.88 skew=1020
+[straddle weekly 8DTE 20pct] entry=2024-09-26 exit=2024-09-28 dte=8 SC64000@1907(d=-428,-0.66%) SP64000@1453(d=-428,-0.66%) width=0(0.00%) be_range=-5.88%/+4.55% sl=$67.20 tgt=$67.20 slip=5% submode=STALE_EXIT pnl=$-20.89 fees=$4.61 equity=$-187.16 skew=60
+[straddle weekly 8DTE 30pct] entry=2024-09-26 exit=2024-09-28 dte=8 SC64000@1907(d=-428,-0.66%) SP64000@1453(d=-428,-0.66%) width=0(0.00%) be_range=-5.88%/+4.55% sl=$100.80 tgt=$100.80 slip=5% submode=STALE_EXIT pnl=$-20.89 fees=$4.61 equity=$-458.30 skew=60
+[straddle weekly 8DTE 50pct] entry=2024-09-26 exit=2024-09-28 dte=8 SC64000@1907(d=-428,-0.66%) SP64000@1453(d=-428,-0.66%) width=0(0.00%) be_range=-5.88%/+4.55% sl=$168.00 tgt=$168.00 slip=5% submode=STALE_EXIT pnl=$-20.89 fees=$4.61 equity=$-650.30 skew=60
+[straddle weekly 8DTE host] entry=2024-09-26 exit=2024-09-26 dte=8 SC64000@1907(d=-428,-0.66%) SP64000@1453(d=-428,-0.66%) width=0(0.00%) be_range=-5.88%/+4.55% sl=$25.20 tgt=$25.20 slip=5% submode=SL pnl=$-64.97 fees=$4.60 equity=$-376.85 skew=60
+[straddle weekly 8DTE 20pct] entry=2024-10-03 exit=2024-10-05 dte=8 SC60000@2136(d=-711,-1.17%) SP60000@1306(d=-711,-1.17%) width=0(0.00%) be_range=-6.84%/+4.50% sl=$68.84 tgt=$68.84 slip=5% submode=STALE_EXIT pnl=$-13.77 fees=$4.34 equity=$-200.94 skew=0
+[straddle weekly 8DTE 30pct] entry=2024-10-03 exit=2024-10-05 dte=8 SC60000@2136(d=-711,-1.17%) SP60000@1306(d=-711,-1.17%) width=0(0.00%) be_range=-6.84%/+4.50% sl=$103.26 tgt=$103.26 slip=5% submode=STALE_EXIT pnl=$-13.77 fees=$4.34 equity=$-472.07 skew=0
+[straddle weekly 8DTE 50pct] entry=2024-10-03 exit=2024-10-05 dte=8 SC60000@2136(d=-711,-1.17%) SP60000@1306(d=-711,-1.17%) width=0(0.00%) be_range=-6.84%/+4.50% sl=$172.10 tgt=$172.10 slip=5% submode=STALE_EXIT pnl=$-13.77 fees=$4.34 equity=$-664.08 skew=0
+[straddle weekly 8DTE host] entry=2024-10-03 exit=2024-10-03 dte=8 SC60000@2136(d=-711,-1.17%) SP60000@1306(d=-711,-1.17%) width=0(0.00%) be_range=-6.84%/+4.50% sl=$25.81 tgt=$25.81 slip=5% submode=SL pnl=$-73.87 fees=$4.27 equity=$-450.72 skew=0
+[straddle weekly 8DTE] 2024-10-18 submode=NO_FILL day_pnl=$0.00 fees=$0.00 equity=(unchanged)
+[straddle weekly 8DTE 20pct] entry=2024-10-17 exit=2024-10-19 dte=8 SC67000@1641(d=+152,+0.23%) SP67000@1616(d=+152,+0.23%) width=0(0.00%) be_range=-4.65%/+5.10% sl=$65.14 tgt=$65.14 slip=5% submode=STALE_EXIT pnl=$-45.00 fees=$4.79 equity=$-245.94 skew=60
+[straddle weekly 8DTE 30pct] entry=2024-10-17 exit=2024-10-19 dte=8 SC67000@1641(d=+152,+0.23%) SP67000@1616(d=+152,+0.23%) width=0(0.00%) be_range=-4.65%/+5.10% sl=$97.72 tgt=$97.72 slip=5% submode=STALE_EXIT pnl=$-45.00 fees=$4.79 equity=$-517.07 skew=60

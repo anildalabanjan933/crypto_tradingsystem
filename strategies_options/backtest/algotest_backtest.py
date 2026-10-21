@@ -99,12 +99,13 @@ def settlement_price(symbol):
 
 
 class Series:
-    def __init__(self, c):
+    def __init__(self, c, spike=True):
         self.c = c
         self.t = [x["time"] for x in c]
+        self.spike_on = spike
 
     def _spike(self, i):
-        if i <= 0:
+        if not self.spike_on or i <= 0:
             return None
         p, c = self.c[i-1]["close"], self.c[i]["close"]
         return p if (c > 2*p) else None
@@ -250,6 +251,7 @@ def run_recost_variant(entry_h, entry_m, a, b):
     acc = Acc()
     trades = []
     for d in daily_list(a, b):
+        print(f"...{d}", flush=True)
         if d.weekday() == 4 or d.weekday() == 6:
             continue
         _cache.clear()
@@ -368,7 +370,7 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
         entry_ts = ts_of(d, entry_h, entry_m)
         exp = d + timedelta(days=1)
         exit_day = exp
-        exit_ts = ts_of(exit_day, 17, 15)
+        exit_ts = ts_of(exit_day, 17, 29)
 
         def skip(reason):
             acc.skips[reason] = acc.skips.get(reason, 0) + 1
@@ -416,14 +418,14 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
 
             def spawn_lazy(side, trigger_ts):
                 cur_spot = spot_series.mark_price(trigger_ts) or spot_px
-                lk = otm_strike(cur_spot, side, OTM_N)
+                lk = otm_strike(cur_spot, side, 2)
                 lr = premium_at(side, lk, exp, trigger_ts)
                 if not lr:
                     return None
                 lz_leg = leg("B", side, lk, exp, lr)
                 return {
                     "leg": lz_leg,
-                    "series": Series(get_candles(lz_leg["symbol"], lr[2], exit_ts + 2 * STEP)),
+                    "series": Series(get_candles(lz_leg["symbol"], lr[2], exit_ts + 2 * STEP), spike=False),
                     "trail_sl": lz_leg["raw"] - SL_LAZY_PTS,
                     "done": False,
                     "fee_entry": 0.0,
@@ -440,6 +442,7 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                         m, age = ml["series"].mark_with_age(cur)
                         if m is not None and age <= MAX_MARK_AGE:
                             sl_level = l["mkt"] * (1 + SL_MAIN_PCT)
+                            m = max(m, ml["series"].peak(cur))
                             if m >= sl_level:
                                 px, fts = max(sl_level, ml["series"].open_at(cur) or sl_level), cur
                                 if True:
@@ -458,22 +461,18 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                         m, age = lz["series"].mark_with_age(cur)
                         if m is not None and age <= MAX_MARK_AGE:
                             if not lz["armed"]:
-                                if max(m, lz["series"].peak(cur)) >= lz["trig"]:
-                                    lz["leg"]["raw"] = lz["trig"] * 1.005
+                                if m >= lz["trig"]:
+                                    lz["leg"]["raw"] = lz["trig"] * (1 + SLIP)
                                     lz["trail_sl"] = lz["leg"]["raw"] - SL_LAZY_PTS
                                     lz["armed"] = True
                                     lzstate["fee"] += lz["fee_real"]
                                     if args.debug: print(f"  LAZY_ARM {side} strike={lz['leg']['symbol']} entry_px={lz['leg']['raw']:.2f} ts={cur}")
                                 continue
-                            mp = max(m, lz["series"].peak(cur))
-                            if mp - lz["leg"]["raw"] >= TRAIL_MOVE:
-                                steps = int((mp - lz["leg"]["raw"]) // TRAIL_MOVE)
-                                lz["trail_sl"] = max(lz["trail_sl"], lz["leg"]["raw"] - SL_LAZY_PTS + steps * TRAIL_STEP)
                             lo = lz["series"].low_at(cur)
                             if lo is not None and lo <= lz["trail_sl"]:
-                                px, fts = lz["trail_sl"], cur
-                                if px is not None:
-                                    ef = px
+                                fts = cur
+                                ef = lz["trail_sl"] * (1 - SLIP)
+                                if True:
                                     lzstate["pnl"] += ef - lz["leg"]["raw"]
                                     if args.debug: print(f"  LAZY_EXIT {side} exit_px={ef:.2f} pnl={ef - lz['leg']['raw']:.2f} ts={fts}")
                                     lzstate["fee"] += fee(spot_at(spot_series, fts, spot_px), ef)
@@ -485,6 +484,11 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                                             lzstate["cur"] = inst
                                             lzstate["count"] += 1
                                             if args.debug: print(f"  LAZY_REENTRY {side} count={lzstate['count']} pending strike={inst['leg']['symbol']} trig={inst['trig']:.2f}")
+                                continue
+                            mp = max(m, lz["series"].peak(cur))
+                            if mp - lz["leg"]["raw"] >= TRAIL_MOVE:
+                                steps = int((mp - lz["leg"]["raw"]) // TRAIL_MOVE)
+                                lz["trail_sl"] = max(lz["trail_sl"], lz["leg"]["raw"] - SL_LAZY_PTS + steps * TRAIL_STEP)
                 cur += STEP
 
             unsettled = False

@@ -1,0 +1,31 @@
+  LAZY_ARM C strike=C-BTC-66400-200826 entry_px=134.67 ts=1787151360
+  LAZY_EXIT C exit_px=144.67 pnl=10.00 ts=1787151600
+  LAZY_REENTRY C count=1 pending strike=C-BTC-67000-200826 trig=150.00
+  LAZY_ARM C strike=C-BTC-67000-200826 entry_px=150.75 ts=1787151960
+  LAZY_EXIT C exit_px=160.75 pnl=10.00 ts=1787152140
+  LAZY_REENTRY C count=2 pending strike=C-BTC-67400-200826 trig=340.00
+  LAZY_ARM C strike=C-BTC-67400-200826 entry_px=341.70 ts=1787153100
+  LAZY_EXIT C exit_px=2171.70 pnl=1830.00 ts=1787153400
+  LAZY_REENTRY C count=3 pending strike=C-BTC-69200-200826 trig=828.00
+  LAZY_ARM C strike=C-BTC-69200-200826 entry_px=832.14 ts=1787173680
+  LAZY_EXIT C exit_px=782.14 pnl=-50.00 ts=1787173740
+  LAZY_REENTRY C count=4 pending strike=C-BTC-70400-200826 trig=318.00
+  LAZY_ARM C strike=C-BTC-70400-200826 entry_px=319.59 ts=1787176020
+  LAZY_EXIT C exit_px=349.59 pnl=30.00 ts=1787176140
+[btst_lazy3 19:00] 2026-08-19 C=66000@66 P=64000@42 lazyC=Y(re4) lazyP=N(re0) pnl=$1735.17 equity=$1962.17
+  LAZY_ARM C strike=C-BTC-74800-210826 entry_px=259.29 ts=1787275020
+  LAZY_EXIT C exit_px=549.29 pnl=290.00 ts=1787275200
+  LAZY_REENTRY C count=1 pending strike=C-BTC-75600-210826 trig=306.00
+  LAZY_ARM C strike=C-BTC-75600-210826 entry_px=307.53 ts=1787276880
+  LAZY_EXIT C exit_px=547.53 pnl=240.00 ts=1787277000
+  LAZY_REENTRY C count=2 pending strike=C-BTC-76600-210826 trig=240.00
+  LAZY_ARM C strike=C-BTC-76600-210826 entry_px=241.20 ts=1787296560
+  LAZY_EXIT C exit_px=581.20 pnl=340.00 ts=1787296680
+  LAZY_REENTRY C count=3 pending strike=C-BTC-77600-210826 trig=168.00
+  LAZY_ARM C strike=C-BTC-77600-210826 entry_px=168.84 ts=1787300040
+  LAZY_EXIT C exit_px=178.84 pnl=10.00 ts=1787300160
+  LAZY_REENTRY C count=4 pending strike=C-BTC-78000-210826 trig=198.00
+  LAZY_ARM C strike=C-BTC-78000-210826 entry_px=198.99 ts=1787301120
+  LAZY_EXIT C exit_px=228.99 pnl=30.00 ts=1787301420
+[btst_lazy3 19:00] 2026-08-20 C=73000@441 P=71000@390 lazyC=Y(re4) lazyP=N(re0) pnl=$810.45 equity=$2772.62
+SUMMARY [btst_lazy3 19:00] trades=2 win%=100.0 net=$2545.62 avg_net=$1272.81 avg_fees=$96.78 final_equity=$2772.62 maxDD=$0.00 sharpe(per-trade,ann.)=27.53 first_breach=None TRAIN(n,net)=0,0.00 TEST(n,net)=2,2545.62 skips[none]

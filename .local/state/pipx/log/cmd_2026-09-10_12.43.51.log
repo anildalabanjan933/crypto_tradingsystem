@@ -1,0 +1,55 @@
+   138.9ms (setup:858): 2026-09-10 12:43:51
+   139.0ms (setup:859): /usr/bin/pipx install py-spy
+   139.0ms (setup:860): pipx version is 1.4.3
+   139.1ms (setup:861): Default python interpreter is '/usr/bin/python3'
+   139.1ms (mkdir:74): creating directory /home/anildalabanjan7/.local/share/pipx/venvs
+   139.3ms (mkdir:74): creating directory /home/anildalabanjan7/.local/bin
+   139.3ms (mkdir:74): creating directory /home/anildalabanjan7/.local/share/man
+   139.4ms (mkdir:74): creating directory /home/anildalabanjan7/.cache/pipx
+   139.5ms (setup:870): Adding CACHEDIR.TAG to cache directory
+   140.4ms (package_name_from_spec:370): Determined package name: py-spy
+   140.4ms (package_name_from_spec:371): Package name determined in 0.0s
+   141.2ms (run_subprocess:168): running /usr/bin/python3 -m venv --without-pip /home/anildalabanjan7/.local/share/pipx/venvs/py-spy
+   205.2ms (run_subprocess:190): stdout:
+   205.3ms (run_subprocess:192): stderr:
+   205.3ms (run_subprocess:193): returncode: 0
+   206.2ms (run_subprocess:168): running /usr/bin/python3 -m venv --clear /home/anildalabanjan7/.local/share/pipx/shared
+  3868.8ms (run_subprocess:190): stdout:
+  3868.9ms (run_subprocess:192): stderr:
+  3869.0ms (run_subprocess:193): returncode: 0
+  3869.3ms (run_subprocess:168): running <checking pip's availability>
+  3886.7ms (run_subprocess:190): stdout: ModuleSpec(name='pip', loader=<_frozen_importlib_external.SourceFileLoader object at 0x77c05879be60>, origin='/home/anildalabanjan7/.local/share/pipx/shared/lib/python3.12/site-packages/pip/__init__.py', submodule_search_locations=['/home/anildalabanjan7/.local/share/pipx/shared/lib/python3.12/site-packages/pip'])
+  3886.8ms (run_subprocess:193): returncode: 0
+  3886.9ms (upgrade:98): Upgrading shared libraries in /home/anildalabanjan7/.local/share/pipx/shared
+  3887.3ms (run_subprocess:168): running /home/anildalabanjan7/.local/share/pipx/shared/bin/python -m pip --no-input --disable-pip-version-check install --force-reinstall -q --upgrade pip >= 23.1
+  6238.9ms (run_subprocess:190): stdout:
+  6239.0ms (run_subprocess:192): stderr:
+  6239.0ms (run_subprocess:193): returncode: 0
+  6239.5ms (run_subprocess:168): running /home/anildalabanjan7/.local/share/pipx/venvs/py-spy/bin/python -c import sysconfig; print(sysconfig.get_path('purelib'))
+  6263.2ms (run_subprocess:190): stdout: /home/anildalabanjan7/.local/share/pipx/venvs/py-spy/lib/python3.12/site-packages
+  6263.4ms (run_subprocess:193): returncode: 0
+  6263.6ms (run_subprocess:168): running /home/anildalabanjan7/.local/share/pipx/shared/bin/python -c import sysconfig; print(sysconfig.get_path('purelib'))
+  6288.1ms (run_subprocess:190): stdout: /home/anildalabanjan7/.local/share/pipx/shared/lib/python3.12/site-packages
+  6288.2ms (run_subprocess:193): returncode: 0
+  6288.6ms (run_subprocess:168): running /home/anildalabanjan7/.local/share/pipx/venvs/py-spy/bin/python --version
+  6290.7ms (run_subprocess:190): stdout: Python 3.12.3
+  6290.7ms (run_subprocess:192): stderr:
+  6290.8ms (run_subprocess:193): returncode: 0
+  6291.0ms (_parsed_package_to_package_or_url:137): cleaned package spec: py-spy
+  6291.5ms (run_subprocess:168): running /home/anildalabanjan7/.local/share/pipx/venvs/py-spy/bin/python -m pip --no-input install py-spy
+  7279.2ms (run_subprocess:193): returncode: 0
+  7279.7ms (run_subprocess:168): running <fetch_info_in_venv commands>
+  7305.1ms (run_subprocess:190): stdout: {"sys_path": ["/usr/lib/python312.zip", "/usr/lib/python3.12", "/usr/lib/python3.12/lib-dynload", "/home/anildalabanjan7/.local/share/pipx/venvs/py-spy/lib/python3.12/site-packages", "/home/anildalabanjan7/.local/share/pipx/shared/lib/python3.12/site-packages"], "python_version": "3.12.3", "environment": {"implementation_name": "cpython", "implementation_version": "3.12.3", "os_name": "posix", "platform_machine": "x86_64", "platform_release": "7.0.0-1011-gcp", "platform_system": "Linux", "platform_version": "#11~24.04.1-Ubuntu SMP PREEMPT Tue Aug 11 20:14:48 UTC 2026", "python_full_version": "3.12.3", "platform_python_implementation": "CPython", "python_version": "3.12", "sys_platform": "linux"}}
+  7305.2ms (run_subprocess:193): returncode: 0
+  7307.8ms (get_venv_metadata_for_package:339): get_venv_metadata_for_package: 28ms
+  7308.0ms (_parsed_package_to_package_or_url:137): cleaned package spec: py-spy
+  7309.2ms (run_subprocess:168): running <checking pip's availability>
+  7329.0ms (run_subprocess:190): stdout: ModuleSpec(name='pip', loader=<_frozen_importlib_external.SourceFileLoader object at 0x7e1055703ec0>, origin='/home/anildalabanjan7/.local/share/pipx/shared/lib/python3.12/site-packages/pip/__init__.py', submodule_search_locations=['/home/anildalabanjan7/.local/share/pipx/shared/lib/python3.12/site-packages/pip'])
+  7329.1ms (run_subprocess:193): returncode: 0
+  7329.2ms (run_subprocess:168): running <checking pip's availability>
+  7349.4ms (run_subprocess:190): stdout: ModuleSpec(name='pip', loader=<_frozen_importlib_external.SourceFileLoader object at 0x7b2ecc74bec0>, origin='/home/anildalabanjan7/.local/share/pipx/shared/lib/python3.12/site-packages/pip/__init__.py', submodule_search_locations=['/home/anildalabanjan7/.local/share/pipx/shared/lib/python3.12/site-packages/pip'])
+  7349.5ms (run_subprocess:193): returncode: 0
+  7350.9ms (warn_if_not_on_path:466): ⚠️  Note: '/home/anildalabanjan7/.local/bin' is not on your PATH environment variable. These apps will not be
+    globally accessible until your PATH is updated. Run `pipx ensurepath` to automatically add it, or manually
+    modify your PATH in your shell's config file (i.e. ~/.bashrc).
+  7351.1ms (cli:932): pipx finished.

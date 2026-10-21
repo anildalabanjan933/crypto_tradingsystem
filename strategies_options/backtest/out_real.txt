@@ -1,0 +1,15 @@
+WINDOW 2025-01-01 to 2025-01-07 | strategies=[strangle_recost x3, btst_lazy3 x4]
+[strangle_recost 09:20] 2025-01-01 C=94800@70 P=92800@49 re(C,P)=(0,0) pnl=$35.31 equity=$262.31
+[strangle_recost 09:20] 2025-01-02 C=96000@83 P=94000@84 re(C,P)=(0,0) pnl=$-42.65 equity=$219.66
+[strangle_recost 09:20] 2025-01-04 C=99200@46 P=97200@20 re(C,P)=(0,1) pnl=$2.56 equity=$222.21
+[strangle_recost 09:20] 2025-01-06 C=100000@127 P=98000@70 re(C,P)=(1,0) pnl=$-42.97 equity=$179.25
+[strangle_recost 09:20] 2025-01-07 C=102600@74 P=100600@75 re(C,P)=(0,0) pnl=$44.35 equity=$223.59
+SUMMARY [strangle_recost 09:20] trades=5 win%=60.0 net=$-3.41 avg_net=$-0.68 avg_fees=$5.78 final_equity=$223.59 maxDD=$83.06 sharpe(per-trade,ann.)=-0.29 first_breach=None TRAIN(n,net)=5,-3.41 TEST(n,net)=0,0.00 skips[none]
+[strangle_recost 10:20] 2025-01-01 C=94600@63 P=92600@42 re(C,P)=(0,0) pnl=$31.15 equity=$258.15
+[strangle_recost 10:20] 2025-01-02 C=97000@103 P=95000@64 re(C,P)=(0,0) pnl=$49.53 equity=$307.68
+[strangle_recost 10:20] 2025-01-04 C=99000@22 P=97000@20 re(C,P)=(0,0) pnl=$12.31 equity=$319.99
+[strangle_recost 10:20] 2025-01-06 C=100400@122 P=98400@91 re(C,P)=(0,0) pnl=$63.20 equity=$383.19
+[strangle_recost 10:20] 2025-01-07 C=102800@68 P=100800@56 re(C,P)=(0,1) pnl=$-8.80 equity=$374.39
+SUMMARY [strangle_recost 10:20] trades=5 win%=80.0 net=$147.39 avg_net=$29.48 avg_fees=$3.47 final_equity=$374.39 maxDD=$8.80 sharpe(per-trade,ann.)=17.90 first_breach=None TRAIN(n,net)=5,147.39 TEST(n,net)=0,0.00 skips[none]
+[strangle_recost 11:20] 2025-01-01 C=94800@55 P=92800@26 re(C,P)=(0,1) pnl=$-10.87 equity=$216.13
+[strangle_recost 11:20] 2025-01-02 C=96600@105 P=94600@43 re(C,P)=(1,0) pnl=$-69.86 equity=$146.26
