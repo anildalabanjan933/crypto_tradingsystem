@@ -480,7 +480,6 @@ def run_lazy3_variant(entry_h, entry_m, a, b, qty_mult=1):
                                         inst = spawn_lazy(side, fts)
                                         if inst:
                                             lzstate["cur"] = inst
-                                            lzstate["fee"] += inst["fee_real"]
                                             lzstate["count"] += 1
                                             if args.debug: print(f"  LAZY_REENTRY {side} count={lzstate['count']} pending strike={inst['leg']['symbol']} trig={inst['trig']:.2f}")
                 cur += STEP
