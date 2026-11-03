@@ -1,0 +1,351 @@
+nohup: ignoring input
+2024-01-01 submode=CALM day_pnl=$-6.43 fees=$1.51 equity=$220.57
+2024-01-02 submode=CALM day_pnl=$0.00 fees=$0.00 equity=$220.57
+2024-01-03 submode=CALM day_pnl=$32.09 fees=$0.86 equity=$252.66
+2024-01-04 submode=CALM day_pnl=$0.00 fees=$0.00 equity=$252.66
+2024-01-05 submode=CALM day_pnl=$0.00 fees=$0.00 equity=$252.66
+2024-01-08 submode=CALM day_pnl=$-7.19 fees=$1.72 equity=$245.47
+2024-01-12 submode=CALM day_pnl=$-9.58 fees=$2.25 equity=$235.89
+2024-01-22 submode=CALM day_pnl=$16.78 fees=$2.16 equity=$252.67
+2024-01-23 submode=SPIKE day_pnl=$-5.52 fees=$1.38 equity=$247.15
+2024-01-24 submode=CALM day_pnl=$-10.27 fees=$2.45 equity=$236.88
+2024-01-26 submode=SPIKE day_pnl=$-0.83 fees=$0.84 equity=$236.05
+2024-01-27 submode=CALM day_pnl=$4.58 fees=$1.52 equity=$240.63
+2024-01-28 submode=CALM day_pnl=$-20.22 fees=$1.70 equity=$220.40 [DAILY CAP BREACHED]
+2024-01-29 submode=CALM day_pnl=$-0.20 fees=$1.80 equity=$220.21
+2024-01-30 submode=CALM day_pnl=$-13.78 fees=$1.64 equity=$206.43 [DAILY CAP BREACHED]
+2024-01-31 submode=SPIKE day_pnl=$-7.12 fees=$0.86 equity=$199.31
+2024-02-02 submode=CALM day_pnl=$4.17 fees=$1.56 equity=$203.48
+2024-02-04 submode=CALM day_pnl=$-8.86 fees=$2.11 equity=$194.62
+2024-02-05 submode=CALM day_pnl=$0.44 fees=$1.89 equity=$195.06
+2024-02-06 submode=CALM day_pnl=$-8.57 fees=$2.11 equity=$186.49
+2024-02-08 submode=CALM day_pnl=$1.85 fees=$1.95 equity=$188.34
+2024-02-09 submode=CALM day_pnl=$45.04 fees=$1.12 equity=$233.38
+2024-02-11 submode=CALM day_pnl=$-10.98 fees=$2.18 equity=$222.40
+2024-02-12 submode=CALM day_pnl=$-12.91 fees=$2.58 equity=$209.49 [DAILY CAP BREACHED]
+2024-02-13 submode=CALM day_pnl=$21.01 fees=$1.68 equity=$230.50
+2024-02-14 submode=TREND_UP day_pnl=$-23.38 fees=$1.82 equity=$207.12 [DAILY CAP BREACHED]
+2024-02-15 submode=CALM day_pnl=$-16.20 fees=$2.85 equity=$190.92 [DAILY CAP BREACHED]
+2024-02-16 submode=CALM day_pnl=$17.51 fees=$1.72 equity=$208.44
+2024-02-18 submode=CALM day_pnl=$-10.42 fees=$2.57 equity=$198.02
+2024-02-19 submode=CALM day_pnl=$-16.39 fees=$2.37 equity=$181.63 [DAILY CAP BREACHED]
+2024-02-20 submode=CALM day_pnl=$23.75 fees=$1.56 equity=$205.37
+2024-02-21 submode=CALM day_pnl=$-19.29 fees=$3.54 equity=$186.08 [DAILY CAP BREACHED]
+2024-02-22 submode=CALM day_pnl=$1.60 fees=$2.54 equity=$187.68
+2024-02-23 submode=CALM day_pnl=$3.62 fees=$2.40 equity=$191.31
+2024-02-26 submode=SPIKE day_pnl=$5.29 fees=$1.30 equity=$196.60
+2024-02-27 submode=CALM day_pnl=$0.00 fees=$0.00 equity=$196.60
+2024-02-28 submode=TREND_UP day_pnl=$-1.20 fees=$0.30 equity=$195.39
+2024-02-29 submode=CALM day_pnl=$0.00 fees=$0.00 equity=$195.39
+2024-03-01 submode=CALM day_pnl=$17.97 fees=$3.14 equity=$213.37
+2024-03-04 submode=TREND_UP day_pnl=$14.55 fees=$1.76 equity=$227.92
+2024-03-05 submode=CALM day_pnl=$-13.47 fees=$3.07 equity=$214.45 [DAILY CAP BREACHED]
+2024-03-06 submode=CALM day_pnl=$7.46 fees=$3.51 equity=$221.91
+2024-03-07 submode=CALM day_pnl=$5.77 fees=$4.40 equity=$227.69
+2024-03-10 submode=SPIKE day_pnl=$0.68 fees=$1.77 equity=$228.36
+2024-03-11 submode=TREND_UP day_pnl=$41.37 fees=$2.26 equity=$269.74
+2024-03-12 submode=CALM day_pnl=$-30.00 fees=$5.09 equity=$239.74 [DAILY CAP BREACHED]
+2024-03-13 submode=TREND_UP day_pnl=$6.94 fees=$1.12 equity=$246.68
+2024-03-15 submode=SPIKE day_pnl=$-18.64 fees=$2.40 equity=$228.04 [DAILY CAP BREACHED]
+2024-03-17 submode=CALM day_pnl=$-18.77 fees=$2.72 equity=$209.27 [DAILY CAP BREACHED]
+2024-03-18 submode=CALM day_pnl=$22.96 fees=$3.60 equity=$232.23
+2024-03-19 submode=TREND_DOWN day_pnl=$41.53 fees=$1.45 equity=$273.76
+2024-03-20 submode=TREND_UP day_pnl=$-4.04 fees=$1.00 equity=$269.72
+2024-03-21 submode=CALM day_pnl=$21.48 fees=$3.51 equity=$291.20
+2024-03-23 submode=CALM day_pnl=$-24.17 fees=$2.70 equity=$267.03 [DAILY CAP BREACHED]
+2024-03-24 submode=CALM day_pnl=$14.21 fees=$2.62 equity=$281.24
+2024-03-26 submode=CALM day_pnl=$20.08 fees=$3.56 equity=$301.31
+2024-03-28 submode=CALM day_pnl=$-29.32 fees=$3.74 equity=$271.99 [DAILY CAP BREACHED]
+2024-04-02 submode=CALM day_pnl=$16.74 fees=$3.51 equity=$288.73
+2024-04-03 submode=CALM day_pnl=$45.66 fees=$1.61 equity=$334.39
+2024-04-04 submode=CALM day_pnl=$-18.40 fees=$2.99 equity=$315.98 [DAILY CAP BREACHED]
+2024-04-05 submode=CALM day_pnl=$-15.65 fees=$4.37 equity=$300.34 [DAILY CAP BREACHED]
+2024-04-08 submode=TREND_UP day_pnl=$-9.19 fees=$2.26 equity=$291.14
+2024-04-09 submode=CALM day_pnl=$-23.70 fees=$3.15 equity=$267.45 [DAILY CAP BREACHED]
+2024-04-10 submode=CALM day_pnl=$13.39 fees=$2.89 equity=$280.84
+2024-04-11 submode=CALM day_pnl=$-21.27 fees=$2.86 equity=$259.58 [DAILY CAP BREACHED]
+2024-04-12 submode=CALM day_pnl=$19.86 fees=$2.35 equity=$279.44
+2024-04-13 submode=CALM day_pnl=$-20.08 fees=$2.59 equity=$259.36 [DAILY CAP BREACHED]
+2024-04-14 submode=CALM day_pnl=$0.43 fees=$3.30 equity=$259.79
+2024-04-15 submode=TREND_UP day_pnl=$-1.39 fees=$0.34 equity=$258.39
+2024-04-16 submode=CALM day_pnl=$26.53 fees=$2.92 equity=$284.92
+2024-04-17 submode=CALM day_pnl=$31.86 fees=$1.84 equity=$316.79
+2024-04-18 submode=CALM day_pnl=$35.11 fees=$1.54 equity=$351.90
+2024-04-19 submode=TREND_UP day_pnl=$-4.22 fees=$1.04 equity=$347.68
+2024-04-29 submode=CALM day_pnl=$-22.96 fees=$2.44 equity=$324.72 [DAILY CAP BREACHED]
+2024-04-30 submode=TREND_DOWN day_pnl=$7.69 fees=$0.51 equity=$332.40
+2024-05-01 submode=TREND_DOWN day_pnl=$-4.26 fees=$1.05 equity=$328.15
+2024-05-02 submode=CALM day_pnl=$-16.98 fees=$2.98 equity=$311.17 [DAILY CAP BREACHED]
+2024-05-05 submode=CALM day_pnl=$13.71 fees=$2.80 equity=$324.87
+2024-05-06 submode=TREND_UP day_pnl=$0.91 fees=$0.11 equity=$325.78
+2024-05-07 submode=CALM day_pnl=$12.26 fees=$2.84 equity=$338.04
+2024-05-08 submode=CALM day_pnl=$-18.02 fees=$2.66 equity=$320.02 [DAILY CAP BREACHED]
+2024-05-09 submode=CALM day_pnl=$20.04 fees=$1.82 equity=$340.06
+2024-05-10 submode=CALM day_pnl=$3.19 fees=$2.86 equity=$343.25
+2024-05-13 submode=TREND_UP day_pnl=$0.84 fees=$0.09 equity=$344.09
+2024-05-14 submode=CALM day_pnl=$-7.20 fees=$2.60 equity=$336.89
+2024-05-15 submode=SPIKE day_pnl=$-9.08 fees=$1.55 equity=$327.81
+2024-05-16 submode=CALM day_pnl=$11.56 fees=$2.75 equity=$339.36
+2024-05-17 submode=CALM day_pnl=$-20.68 fees=$2.91 equity=$318.69 [DAILY CAP BREACHED]
+2024-05-18 submode=CALM day_pnl=$-14.18 fees=$3.27 equity=$304.51 [DAILY CAP BREACHED]
+2024-05-19 submode=CALM day_pnl=$-14.86 fees=$3.09 equity=$289.65 [DAILY CAP BREACHED]
+2024-05-20 submode=CALM day_pnl=$12.14 fees=$2.47 equity=$301.79
+2024-05-21 submode=CALM day_pnl=$5.86 fees=$3.14 equity=$307.65
+2024-05-22 submode=CALM day_pnl=$4.72 fees=$3.30 equity=$312.37
+2024-05-23 submode=CALM day_pnl=$29.86 fees=$2.07 equity=$342.23
+2024-05-24 submode=CALM day_pnl=$4.58 fees=$2.61 equity=$346.82
+2024-05-26 submode=CALM day_pnl=$-1.83 fees=$2.75 equity=$344.98
+2024-05-27 submode=CALM day_pnl=$-18.56 fees=$2.51 equity=$326.42 [DAILY CAP BREACHED]
+2024-05-28 submode=CALM day_pnl=$-21.97 fees=$3.22 equity=$304.45 [DAILY CAP BREACHED]
+2024-05-29 submode=CALM day_pnl=$-14.42 fees=$3.43 equity=$290.03 [DAILY CAP BREACHED]
+2024-05-30 submode=CALM day_pnl=$-16.77 fees=$2.95 equity=$273.26 [DAILY CAP BREACHED]
+2024-05-31 submode=CALM day_pnl=$8.41 fees=$2.62 equity=$281.66
+2024-06-02 submode=SPIKE day_pnl=$-8.76 fees=$1.25 equity=$272.90
+2024-06-03 submode=CALM day_pnl=$4.80 fees=$3.23 equity=$277.70
+2024-06-04 submode=CALM day_pnl=$20.24 fees=$1.98 equity=$297.94
+2024-06-05 submode=CALM day_pnl=$-1.80 fees=$3.07 equity=$296.14
+2024-06-06 submode=CALM day_pnl=$-5.78 fees=$3.05 equity=$290.35
+2024-06-11 submode=CALM day_pnl=$-24.56 fees=$4.73 equity=$265.79 [DAILY CAP BREACHED]
+2024-06-13 submode=CALM day_pnl=$-22.88 fees=$2.85 equity=$242.91 [DAILY CAP BREACHED]
+2024-06-14 submode=CALM day_pnl=$-13.71 fees=$3.32 equity=$229.19 [DAILY CAP BREACHED]
+2024-06-17 submode=CALM day_pnl=$-18.11 fees=$2.98 equity=$211.08 [DAILY CAP BREACHED]
+2024-06-18 submode=CALM day_pnl=$13.58 fees=$2.68 equity=$224.67
+2024-06-19 submode=CALM day_pnl=$-17.24 fees=$2.63 equity=$207.42 [DAILY CAP BREACHED]
+2024-06-20 submode=CALM day_pnl=$27.21 fees=$1.83 equity=$234.63
+2024-06-21 submode=CALM day_pnl=$13.20 fees=$2.81 equity=$247.83
+2024-06-24 submode=SPIKE day_pnl=$-11.26 fees=$1.77 equity=$236.57
+2024-06-25 submode=SPIKE day_pnl=$10.22 fees=$1.17 equity=$246.79
+2024-06-26 submode=CALM day_pnl=$-19.76 fees=$2.44 equity=$227.03 [DAILY CAP BREACHED]
+2024-06-28 submode=CALM day_pnl=$9.24 fees=$2.22 equity=$236.26
+2024-06-30 submode=CALM day_pnl=$-2.72 fees=$2.27 equity=$233.54
+2024-07-01 submode=CALM day_pnl=$0.17 fees=$2.64 equity=$233.72
+2024-07-02 submode=CALM day_pnl=$-18.19 fees=$2.42 equity=$215.52 [DAILY CAP BREACHED]
+2024-07-03 submode=CALM day_pnl=$-17.15 fees=$2.31 equity=$198.38 [DAILY CAP BREACHED]
+2024-07-04 submode=TREND_DOWN day_pnl=$-6.84 fees=$1.69 equity=$191.53
+2024-07-05 submode=CALM day_pnl=$45.31 fees=$1.87 equity=$236.84
+2024-07-07 submode=CALM day_pnl=$-16.55 fees=$2.53 equity=$220.29 [DAILY CAP BREACHED]
+2024-07-08 submode=TREND_UP day_pnl=$-24.10 fees=$2.04 equity=$196.19 [DAILY CAP BREACHED]
+2024-07-09 submode=CALM day_pnl=$-16.51 fees=$2.36 equity=$179.68 [DAILY CAP BREACHED]
+2024-07-10 submode=CALM day_pnl=$-23.85 fees=$2.31 equity=$155.83 [DAILY CAP BREACHED]
+2024-07-12 submode=CALM day_pnl=$-15.59 fees=$3.65 equity=$140.24 [DAILY CAP BREACHED]
+2024-07-15 submode=CALM day_pnl=$-22.26 fees=$3.03 equity=$117.98 [DAILY CAP BREACHED]
+2024-07-16 submode=CALM day_pnl=$-20.02 fees=$3.62 equity=$97.96 [DAILY CAP BREACHED]
+2024-07-17 submode=CALM day_pnl=$32.08 fees=$1.71 equity=$130.04
+2024-07-19 submode=CALM day_pnl=$28.53 fees=$1.88 equity=$158.57
+2024-07-21 submode=CALM day_pnl=$-13.37 fees=$3.30 equity=$145.20 [DAILY CAP BREACHED]
+2024-07-22 submode=CALM day_pnl=$-7.33 fees=$2.49 equity=$137.87
+2024-07-23 submode=CALM day_pnl=$1.07 fees=$2.99 equity=$138.94
+2024-07-24 submode=CALM day_pnl=$-18.27 fees=$2.43 equity=$120.67 [DAILY CAP BREACHED]
+2024-07-25 submode=CALM day_pnl=$10.11 fees=$3.01 equity=$130.79
+2024-07-29 submode=CALM day_pnl=$10.64 fees=$2.79 equity=$141.43
+2024-07-31 submode=CALM day_pnl=$14.55 fees=$2.18 equity=$155.98
+2024-08-02 submode=CALM day_pnl=$15.21 fees=$2.43 equity=$171.20
+2024-08-04 submode=CALM day_pnl=$-17.21 fees=$2.56 equity=$153.98 [DAILY CAP BREACHED]
+2024-08-05 submode=CALM day_pnl=$-3.55 fees=$2.80 equity=$150.43
+2024-08-06 submode=CALM day_pnl=$-20.24 fees=$3.27 equity=$130.19 [DAILY CAP BREACHED]
+2024-08-11 submode=SPIKE day_pnl=$-5.70 fees=$1.62 equity=$124.49
+2024-08-12 submode=CALM day_pnl=$-19.73 fees=$2.82 equity=$104.76 [DAILY CAP BREACHED]
+2024-08-19 submode=CALM day_pnl=$-15.07 fees=$3.67 equity=$89.70 [DAILY CAP BREACHED]
+2024-08-21 submode=CALM day_pnl=$-16.58 fees=$2.45 equity=$73.12 [DAILY CAP BREACHED]
+2024-08-23 submode=CALM day_pnl=$-14.41 fees=$3.54 equity=$58.71 [DAILY CAP BREACHED]
+2024-08-26 submode=CALM day_pnl=$-14.30 fees=$3.14 equity=$44.41 [DAILY CAP BREACHED]
+2024-08-27 submode=CALM day_pnl=$-14.53 fees=$2.33 equity=$29.88 [DAILY CAP BREACHED]
+2024-08-28 submode=CALM day_pnl=$20.69 fees=$2.02 equity=$50.57
+2024-08-29 submode=CALM day_pnl=$39.00 fees=$1.37 equity=$89.57
+2024-08-30 submode=CALM day_pnl=$-21.38 fees=$2.39 equity=$68.20 [DAILY CAP BREACHED]
+2024-09-02 submode=CALM day_pnl=$-20.66 fees=$2.35 equity=$47.53 [DAILY CAP BREACHED]
+2024-09-04 submode=CALM day_pnl=$-17.25 fees=$2.16 equity=$30.28 [DAILY CAP BREACHED]
+2024-09-05 submode=CALM day_pnl=$-6.17 fees=$2.53 equity=$24.10
+2024-09-06 submode=CALM day_pnl=$11.70 fees=$2.82 equity=$35.80
+2024-09-09 submode=CALM day_pnl=$-4.39 fees=$2.44 equity=$31.41
+2024-09-10 submode=CALM day_pnl=$-14.39 fees=$3.25 equity=$17.02 [DAILY CAP BREACHED]
+2024-09-16 submode=CALM day_pnl=$-16.61 fees=$2.14 equity=$0.41 [DAILY CAP BREACHED]
+2024-09-17 submode=SPIKE day_pnl=$-4.98 fees=$1.47 equity=$-4.57
+2024-09-18 submode=CALM day_pnl=$-19.37 fees=$2.54 equity=$-23.93 [DAILY CAP BREACHED]
+2024-09-19 submode=CALM day_pnl=$-11.34 fees=$2.47 equity=$-35.28
+2024-09-20 submode=CALM day_pnl=$-20.88 fees=$2.31 equity=$-56.16 [DAILY CAP BREACHED]
+2024-09-22 submode=SPIKE day_pnl=$-5.99 fees=$1.16 equity=$-62.15
+2024-09-23 submode=CALM day_pnl=$-16.16 fees=$2.40 equity=$-78.31 [DAILY CAP BREACHED]
+2024-09-25 submode=CALM day_pnl=$-19.79 fees=$2.46 equity=$-98.10 [DAILY CAP BREACHED]
+2024-09-26 submode=CALM day_pnl=$-13.25 fees=$2.63 equity=$-111.35 [DAILY CAP BREACHED]
+2024-09-27 submode=CALM day_pnl=$-10.06 fees=$2.63 equity=$-121.41
+2024-09-30 submode=TREND_DOWN day_pnl=$-2.06 fees=$0.51 equity=$-123.47
+2024-10-01 submode=CALM day_pnl=$-5.43 fees=$2.52 equity=$-128.90
+2024-10-02 submode=CALM day_pnl=$-17.87 fees=$2.77 equity=$-146.77 [DAILY CAP BREACHED]
+2024-10-03 submode=CALM day_pnl=$0.70 fees=$2.60 equity=$-146.07
+2024-10-04 submode=CALM day_pnl=$-11.25 fees=$2.58 equity=$-157.32
+2024-10-07 submode=CALM day_pnl=$21.02 fees=$1.79 equity=$-136.30
+2024-10-08 submode=CALM day_pnl=$0.13 fees=$2.34 equity=$-136.17
+2024-10-10 submode=CALM day_pnl=$8.04 fees=$1.67 equity=$-128.13
+2024-10-14 submode=CALM day_pnl=$12.26 fees=$3.13 equity=$-115.87
+2024-10-15 submode=CALM day_pnl=$-18.24 fees=$2.47 equity=$-134.11 [DAILY CAP BREACHED]
+2024-10-16 submode=CALM day_pnl=$-21.73 fees=$2.61 equity=$-155.83 [DAILY CAP BREACHED]
+2024-10-17 submode=CALM day_pnl=$-14.77 fees=$3.00 equity=$-170.60 [DAILY CAP BREACHED]
+2024-10-18 submode=CALM day_pnl=$-3.22 fees=$3.16 equity=$-173.82
+2024-10-21 submode=CALM day_pnl=$6.31 fees=$2.52 equity=$-167.51
+2024-10-22 submode=CALM day_pnl=$-13.44 fees=$3.31 equity=$-180.94 [DAILY CAP BREACHED]
+2024-10-23 submode=CALM day_pnl=$-12.51 fees=$2.44 equity=$-193.46 [DAILY CAP BREACHED]
+2024-10-24 submode=CALM day_pnl=$12.66 fees=$1.84 equity=$-180.80
+2024-10-25 submode=CALM day_pnl=$-13.69 fees=$3.04 equity=$-194.49 [DAILY CAP BREACHED]
+2024-10-28 submode=CALM day_pnl=$8.97 fees=$2.63 equity=$-185.52
+2024-10-30 submode=CALM day_pnl=$-19.12 fees=$2.69 equity=$-204.64 [DAILY CAP BREACHED]
+2024-11-01 submode=CALM day_pnl=$43.72 fees=$1.44 equity=$-160.92
+2024-11-03 submode=CALM day_pnl=$-9.75 fees=$2.76 equity=$-170.67
+2024-11-04 submode=CALM day_pnl=$12.27 fees=$2.70 equity=$-158.40
+2024-11-05 submode=CALM day_pnl=$-9.28 fees=$2.73 equity=$-167.68
+2024-11-06 submode=TREND_DOWN day_pnl=$-14.85 fees=$2.89 equity=$-182.54 [DAILY CAP BREACHED]
+2024-11-07 submode=CALM day_pnl=$-17.06 fees=$4.05 equity=$-199.60 [DAILY CAP BREACHED]
+2024-11-10 submode=CALM day_pnl=$-14.42 fees=$3.27 equity=$-214.01 [DAILY CAP BREACHED]
+2024-11-11 submode=CALM day_pnl=$31.50 fees=$2.76 equity=$-182.52
+2024-11-12 submode=CALM day_pnl=$-34.18 fees=$5.45 equity=$-216.69 [DAILY CAP BREACHED]
+2024-11-13 submode=CALM day_pnl=$-29.35 fees=$4.45 equity=$-246.04 [DAILY CAP BREACHED]
+2024-11-14 submode=CALM day_pnl=$-28.16 fees=$6.15 equity=$-274.20 [DAILY CAP BREACHED]
+2024-11-15 submode=CALM day_pnl=$-34.72 fees=$6.19 equity=$-308.92 [DAILY CAP BREACHED]
+2024-11-18 submode=CALM day_pnl=$-31.52 fees=$5.61 equity=$-340.43 [DAILY CAP BREACHED]
+2024-11-20 submode=SPIKE day_pnl=$-10.59 fees=$2.90 equity=$-351.02
+2024-11-25 submode=CALM day_pnl=$-27.60 fees=$4.01 equity=$-378.62 [DAILY CAP BREACHED]
+2024-11-26 submode=CALM day_pnl=$-31.84 fees=$4.53 equity=$-410.47 [DAILY CAP BREACHED]
+2024-11-29 submode=CALM day_pnl=$-23.09 fees=$4.09 equity=$-433.55 [DAILY CAP BREACHED]
+2024-12-02 submode=CALM day_pnl=$31.58 fees=$3.38 equity=$-401.97
+2024-12-03 submode=CALM day_pnl=$-22.12 fees=$4.42 equity=$-424.10 [DAILY CAP BREACHED]
+2024-12-05 submode=CALM day_pnl=$36.72 fees=$5.45 equity=$-387.38
+2024-12-06 submode=CALM day_pnl=$10.58 fees=$5.19 equity=$-376.80
+2024-12-09 submode=CALM day_pnl=$-11.93 fees=$4.56 equity=$-388.73 [DAILY CAP BREACHED]
+2024-12-11 submode=CALM day_pnl=$-23.15 fees=$5.70 equity=$-411.88 [DAILY CAP BREACHED]
+2024-12-16 submode=CALM day_pnl=$-11.97 fees=$4.32 equity=$-423.86 [DAILY CAP BREACHED]
+2024-12-18 submode=CALM day_pnl=$5.26 fees=$4.76 equity=$-418.59
+2024-12-20 submode=TREND_DOWN day_pnl=$-9.80 fees=$2.41 equity=$-428.39
+2024-12-21 submode=CALM day_pnl=$-19.45 fees=$3.74 equity=$-447.84 [DAILY CAP BREACHED]
+2024-12-22 submode=CALM day_pnl=$11.16 fees=$3.47 equity=$-436.68
+2024-12-23 submode=CALM day_pnl=$-0.33 fees=$5.23 equity=$-437.01
+2024-12-24 submode=CALM day_pnl=$-20.85 fees=$5.10 equity=$-457.86 [DAILY CAP BREACHED]
+2024-12-26 submode=TREND_DOWN day_pnl=$13.72 fees=$0.91 equity=$-444.14
+2024-12-27 submode=CALM day_pnl=$-28.03 fees=$5.62 equity=$-472.17 [DAILY CAP BREACHED]
+2024-12-30 submode=CALM day_pnl=$-20.93 fees=$4.97 equity=$-493.09 [DAILY CAP BREACHED]
+2024-12-31 submode=CALM day_pnl=$-22.40 fees=$5.52 equity=$-515.49 [DAILY CAP BREACHED]
+2025-01-02 submode=CALM day_pnl=$-7.99 fees=$4.14 equity=$-523.48
+2025-01-06 submode=CALM day_pnl=$-20.70 fees=$5.10 equity=$-544.18 [DAILY CAP BREACHED]
+2025-01-08 submode=CALM day_pnl=$-28.80 fees=$4.43 equity=$-572.98 [DAILY CAP BREACHED]
+2025-01-09 submode=CALM day_pnl=$-30.17 fees=$4.28 equity=$-603.15 [DAILY CAP BREACHED]
+2025-01-10 submode=CALM day_pnl=$7.11 fees=$4.18 equity=$-596.03
+2025-01-13 submode=CALM day_pnl=$-1.36 fees=$4.27 equity=$-597.40
+2025-01-14 submode=TREND_UP day_pnl=$3.07 fees=$0.31 equity=$-594.32
+2025-01-15 submode=CALM day_pnl=$-24.06 fees=$5.32 equity=$-618.38 [DAILY CAP BREACHED]
+2025-01-16 submode=CALM day_pnl=$-21.42 fees=$5.01 equity=$-639.80 [DAILY CAP BREACHED]
+2025-01-18 submode=CALM day_pnl=$-22.15 fees=$5.19 equity=$-661.95 [DAILY CAP BREACHED]
+2025-01-19 submode=SPIKE day_pnl=$15.45 fees=$1.44 equity=$-646.50
+2025-01-20 submode=TREND_UP day_pnl=$39.57 fees=$3.10 equity=$-606.93
+2025-01-21 submode=CALM day_pnl=$33.99 fees=$4.94 equity=$-572.94
+2025-01-26 submode=SPIKE day_pnl=$-8.45 fees=$2.05 equity=$-581.39
+2025-01-27 submode=CALM day_pnl=$52.90 fees=$5.34 equity=$-528.49
+2025-02-02 submode=CALM day_pnl=$-11.97 fees=$4.11 equity=$-540.46 [DAILY CAP BREACHED]
+2025-02-03 submode=TREND_UP day_pnl=$-10.23 fees=$2.52 equity=$-550.70
+2025-02-04 submode=CALM day_pnl=$-6.51 fees=$4.87 equity=$-557.20
+2025-02-05 submode=CALM day_pnl=$-17.66 fees=$3.80 equity=$-574.86 [DAILY CAP BREACHED]
+2025-02-06 submode=CALM day_pnl=$22.32 fees=$3.57 equity=$-552.54
+2025-02-07 submode=CALM day_pnl=$-11.37 fees=$3.95 equity=$-563.91 [DAILY CAP BREACHED]
+2025-02-13 submode=CALM day_pnl=$27.46 fees=$3.13 equity=$-536.46
+2025-02-17 submode=CALM day_pnl=$-5.70 fees=$3.95 equity=$-542.15
+2025-02-18 submode=CALM day_pnl=$-17.19 fees=$3.94 equity=$-559.34 [DAILY CAP BREACHED]
+2025-02-21 submode=SPIKE day_pnl=$-8.74 fees=$2.04 equity=$-568.08
+2025-02-24 submode=CALM day_pnl=$-19.26 fees=$4.32 equity=$-587.34 [DAILY CAP BREACHED]
+2025-02-25 submode=TREND_DOWN day_pnl=$-27.23 fees=$3.13 equity=$-614.57 [DAILY CAP BREACHED]
+2025-02-26 submode=CALM day_pnl=$-21.51 fees=$5.00 equity=$-636.08 [DAILY CAP BREACHED]
+2025-02-27 submode=CALM day_pnl=$-23.84 fees=$4.98 equity=$-659.92 [DAILY CAP BREACHED]
+2025-02-28 submode=CALM day_pnl=$-15.16 fees=$5.69 equity=$-675.08 [DAILY CAP BREACHED]
+2025-03-01 submode=CALM day_pnl=$35.92 fees=$2.00 equity=$-639.16
+2025-03-03 submode=CALM day_pnl=$-33.76 fees=$6.38 equity=$-672.93 [DAILY CAP BREACHED]
+2025-03-04 submode=CALM day_pnl=$30.72 fees=$4.73 equity=$-642.21
+2025-03-05 submode=SPIKE day_pnl=$-4.74 fees=$1.99 equity=$-646.95
+2025-03-06 submode=TREND_DOWN day_pnl=$-2.13 fees=$0.52 equity=$-649.08
+2025-03-07 submode=SPIKE day_pnl=$-12.71 fees=$3.15 equity=$-661.79 [DAILY CAP BREACHED]
+2025-03-10 submode=SPIKE day_pnl=$-12.94 fees=$2.11 equity=$-674.73 [DAILY CAP BREACHED]
+2025-03-11 submode=TREND_UP day_pnl=$-6.41 fees=$1.58 equity=$-681.15
+2025-03-12 submode=CALM day_pnl=$-9.49 fees=$3.70 equity=$-690.64
+2025-03-18 submode=CALM day_pnl=$-21.02 fees=$4.50 equity=$-711.66 [DAILY CAP BREACHED]
+2025-03-21 submode=CALM day_pnl=$-3.62 fees=$3.54 equity=$-715.27
+2025-03-24 submode=CALM day_pnl=$-5.30 fees=$3.65 equity=$-720.58
+2025-03-25 submode=CALM day_pnl=$-20.06 fees=$4.17 equity=$-740.64 [DAILY CAP BREACHED]
+2025-03-27 submode=CALM day_pnl=$-22.32 fees=$3.35 equity=$-762.95 [DAILY CAP BREACHED]
+2025-03-28 submode=CALM day_pnl=$8.73 fees=$4.67 equity=$-754.22
+2025-03-29 submode=CALM day_pnl=$-20.49 fees=$3.04 equity=$-774.71 [DAILY CAP BREACHED]
+2025-03-31 submode=CALM day_pnl=$-30.33 fees=$3.99 equity=$-805.04 [DAILY CAP BREACHED]
+2025-04-01 submode=TREND_UP day_pnl=$-1.86 fees=$0.46 equity=$-806.90
+2025-04-02 submode=CALM day_pnl=$-17.28 fees=$4.26 equity=$-824.18 [DAILY CAP BREACHED]
+2025-04-03 submode=CALM day_pnl=$-26.49 fees=$3.44 equity=$-850.67 [DAILY CAP BREACHED]
+2025-04-04 submode=TREND_UP day_pnl=$-1.47 fees=$0.36 equity=$-852.14
+2025-04-07 submode=CALM day_pnl=$0.39 fees=$4.05 equity=$-851.75
+2025-04-08 submode=CALM day_pnl=$14.46 fees=$3.74 equity=$-837.29
+2025-04-09 submode=CALM day_pnl=$47.63 fees=$2.57 equity=$-789.66
+2025-04-10 submode=CALM day_pnl=$10.24 fees=$4.16 equity=$-779.41
+2025-04-11 submode=TREND_UP day_pnl=$11.19 fees=$0.87 equity=$-768.22
+2025-04-14 submode=CALM day_pnl=$-28.48 fees=$3.94 equity=$-796.70 [DAILY CAP BREACHED]
+2025-04-21 submode=CALM day_pnl=$-20.26 fees=$3.48 equity=$-816.96 [DAILY CAP BREACHED]
+2025-04-22 submode=CALM day_pnl=$-18.58 fees=$3.39 equity=$-835.54 [DAILY CAP BREACHED]
+2025-04-23 submode=CALM day_pnl=$0.93 fees=$4.20 equity=$-834.61
+2025-04-24 submode=CALM day_pnl=$-26.59 fees=$3.79 equity=$-861.20 [DAILY CAP BREACHED]
+2025-04-25 submode=CALM day_pnl=$-20.17 fees=$4.63 equity=$-881.36 [DAILY CAP BREACHED]
+2025-04-28 submode=CALM day_pnl=$-22.38 fees=$4.49 equity=$-903.74 [DAILY CAP BREACHED]
+2025-05-01 submode=SPIKE day_pnl=$23.11 fees=$1.20 equity=$-880.63
+2025-05-02 submode=CALM day_pnl=$31.00 fees=$2.43 equity=$-849.63
+2025-05-06 submode=CALM day_pnl=$-16.98 fees=$3.89 equity=$-866.62 [DAILY CAP BREACHED]
+2025-05-08 submode=CALM day_pnl=$-6.40 fees=$4.35 equity=$-873.02
+2025-05-09 submode=CALM day_pnl=$-22.22 fees=$5.45 equity=$-895.25 [DAILY CAP BREACHED]
+2025-05-10 submode=CALM day_pnl=$-21.13 fees=$4.80 equity=$-916.37 [DAILY CAP BREACHED]
+2025-05-11 submode=CALM day_pnl=$-22.30 fees=$4.31 equity=$-938.67 [DAILY CAP BREACHED]
+2025-05-12 submode=CALM day_pnl=$-26.24 fees=$4.22 equity=$-964.91 [DAILY CAP BREACHED]
+2025-05-13 submode=CALM day_pnl=$-25.38 fees=$4.07 equity=$-990.30 [DAILY CAP BREACHED]
+2025-05-14 submode=CALM day_pnl=$-22.28 fees=$3.85 equity=$-1012.58 [DAILY CAP BREACHED]
+2025-05-15 submode=CALM day_pnl=$-23.90 fees=$5.44 equity=$-1036.48 [DAILY CAP BREACHED]
+2025-05-16 submode=CALM day_pnl=$-17.89 fees=$4.28 equity=$-1054.37 [DAILY CAP BREACHED]
+2025-05-17 submode=CALM day_pnl=$-14.62 fees=$3.60 equity=$-1069.00 [DAILY CAP BREACHED]
+2025-05-19 submode=CALM day_pnl=$12.30 fees=$4.84 equity=$-1056.69
+2025-05-20 submode=CALM day_pnl=$-0.67 fees=$4.48 equity=$-1057.36
+2025-05-21 submode=CALM day_pnl=$-6.09 fees=$4.47 equity=$-1063.45
+2025-05-22 submode=CALM day_pnl=$-1.97 fees=$5.10 equity=$-1065.42
+2025-05-24 submode=CALM day_pnl=$-4.50 fees=$4.34 equity=$-1069.93
+2025-05-25 submode=CALM day_pnl=$-20.59 fees=$5.02 equity=$-1090.52 [DAILY CAP BREACHED]
+2025-05-26 submode=CALM day_pnl=$-1.73 fees=$4.88 equity=$-1092.25
+2025-05-27 submode=CALM day_pnl=$-5.03 fees=$4.24 equity=$-1097.28
+2025-05-29 submode=CALM day_pnl=$19.52 fees=$3.78 equity=$-1077.76
+2025-05-30 submode=CALM day_pnl=$-25.04 fees=$4.69 equity=$-1102.80 [DAILY CAP BREACHED]
+2025-06-01 submode=SPIKE day_pnl=$-7.16 fees=$2.11 equity=$-1109.96
+2025-06-02 submode=CALM day_pnl=$-18.18 fees=$4.03 equity=$-1128.14 [DAILY CAP BREACHED]
+2025-06-06 submode=CALM day_pnl=$16.68 fees=$3.47 equity=$-1111.46
+2025-06-07 submode=CALM day_pnl=$15.42 fees=$2.07 equity=$-1096.04
+2025-06-09 submode=SPIKE day_pnl=$18.81 fees=$1.34 equity=$-1077.23
+2025-06-10 submode=CALM day_pnl=$-22.48 fees=$4.08 equity=$-1099.71 [DAILY CAP BREACHED]
+2025-06-11 submode=CALM day_pnl=$-11.45 fees=$4.32 equity=$-1111.16 [DAILY CAP BREACHED]
+2025-06-12 submode=CALM day_pnl=$-22.07 fees=$4.05 equity=$-1133.23 [DAILY CAP BREACHED]
+2025-06-13 submode=CALM day_pnl=$-1.46 fees=$4.85 equity=$-1134.69
+2025-06-16 submode=CALM day_pnl=$-17.10 fees=$4.21 equity=$-1151.78 [DAILY CAP BREACHED]
+2025-06-17 submode=CALM day_pnl=$18.43 fees=$3.28 equity=$-1133.36
+2025-06-18 submode=CALM day_pnl=$-13.69 fees=$4.02 equity=$-1147.05 [DAILY CAP BREACHED]
+2025-06-20 submode=CALM day_pnl=$3.68 fees=$3.79 equity=$-1143.37
+2025-06-22 submode=CALM day_pnl=$-7.28 fees=$4.13 equity=$-1150.65
+2025-06-23 submode=CALM day_pnl=$-18.99 fees=$3.91 equity=$-1169.65 [DAILY CAP BREACHED]
+2025-06-24 submode=CALM day_pnl=$-21.49 fees=$4.97 equity=$-1191.13 [DAILY CAP BREACHED]
+2025-06-26 submode=CALM day_pnl=$-21.16 fees=$4.36 equity=$-1212.29 [DAILY CAP BREACHED]
+2025-06-27 submode=CALM day_pnl=$11.27 fees=$2.64 equity=$-1201.01
+2025-06-30 submode=CALM day_pnl=$-22.48 fees=$3.92 equity=$-1223.50 [DAILY CAP BREACHED]
+
+==================== PORTFOLIO REPORT (v2, all-scenario) ====================
+Days traded          : 329
+Total PnL net of fees: -1450.50 USD
+Total fees paid      : 979.53 USD
+Avg PnL/day (USD)    : -4.41
+Sharpe (ann.)        : -3.88
+Max Drawdown USD     : 1575.40 (694.0% of capital)
+Final equity USD     : -1223.50
+Submode occurrence   : {'CALM': 277, 'SPIKE': 23, 'TREND_UP': 19, 'TREND_DOWN': 10}
+Backtest halted early: False
+
+--- PER-SUBMODE BREAKDOWN (isolated, not hidden in combined number) ---
+  CALM         days=277 total_pnl=$-1407.53 avg/day=$  -5.08 fees=$ 902.26
+  SPIKE        days= 23 total_pnl=$  -69.66 avg/day=$  -3.03 fees=$  38.86
+  TREND_UP     days= 19 total_pnl=$   30.94 avg/day=$   1.63 fees=$  23.34
+  TREND_DOWN   days= 10 total_pnl=$   -4.24 avg/day=$  -0.42 fees=$  15.07
+
+Gate check: Sharpe>=3.0 -> FAIL
+Gate check: MaxDD<=10%  -> FAIL
+================================================================================

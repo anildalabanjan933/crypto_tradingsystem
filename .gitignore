@@ -32,3 +32,9 @@ logs/
 desktop.ini
 data/*.tmp
 .env.backup_local_only
+.env
+.venv/
+__pycache__/
+.env
+.venv/
+__pycache__/

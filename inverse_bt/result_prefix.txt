@@ -1,0 +1,28 @@
+ORIGINAL: result keys=['trades', 'metrics', 'signals', 'data_dict']
+ORIGINAL: first trade keys=['trade_number', 'entry_type', 'exit_type', 'entry_datetime', 'exit_datetime', 'direction', 'entry_price', 'exit_price', 'size_qty', 'actual_quantity', 'size_value', 'lot_notional_usd', 'gross_pnl', 'net_pnl', 'net_pnl_inr', 'net_pnl_pct', 'favorable_excursion', 'favorable_excursion_pct', 'adverse_excursion', 'adverse_excursion_pct', 'cumulative_pnl', 'cumulative_pnl_inr', 'cumulative_pnl_pct', 'margin_required', 'taker_fees_usd', 'slippage_usd', 'slippage_applied', 'funding_usd', 'insurance_usd', 'tax_usd', 'total_charges_usd', 'stop_loss']
+INVERSE: result keys=['trades', 'metrics', 'signals', 'data_dict']
+INVERSE: first trade keys=['trade_number', 'entry_type', 'exit_type', 'entry_datetime', 'exit_datetime', 'direction', 'entry_price', 'exit_price', 'size_qty', 'actual_quantity', 'size_value', 'lot_notional_usd', 'gross_pnl', 'net_pnl', 'net_pnl_inr', 'net_pnl_pct', 'favorable_excursion', 'favorable_excursion_pct', 'adverse_excursion', 'adverse_excursion_pct', 'cumulative_pnl', 'cumulative_pnl_inr', 'cumulative_pnl_pct', 'margin_required', 'taker_fees_usd', 'slippage_usd', 'slippage_applied', 'funding_usd', 'insurance_usd', 'tax_usd', 'total_charges_usd', 'stop_loss']
+
+=== FULL PERIOD ===
+ORIGINAL: closed trades=1249 | gross points (entry/exit prices, per unit)=-41052.50
+    sum[gross_pnl] = -4105.2500
+    sum[net_pnl] = -27972.8900
+    sum[net_pnl_inr] = -2349713.7300
+    sum[net_pnl_pct] = -28.0100
+    sum[cumulative_pnl] = -19446833.3500
+    sum[cumulative_pnl_inr] = -1633533995.9000
+    sum[cumulative_pnl_pct] = -19446.8500
+    sum[taker_fees_usd] = 10343.2600
+    sum[total_charges_usd] = 23867.6500
+INVERSE : closed trades=1249 | gross points (entry/exit prices, per unit)=41052.50
+    sum[gross_pnl] = 4105.2500
+    sum[net_pnl] = -19762.4000
+    sum[net_pnl_inr] = -1660031.7300
+    sum[net_pnl_pct] = -19.8900
+    sum[cumulative_pnl] = -9975845.3400
+    sum[cumulative_pnl_inr] = -837971003.8900
+    sum[cumulative_pnl_pct] = -9975.6100
+    sum[taker_fees_usd] = 10343.2600
+    sum[total_charges_usd] = 23867.6500
+
+MIRROR CHECK: orig=1249 inv=1249 missing_in_inv=0 extra_in_inv=0 same_side=0 exit_time_diff=0

@@ -1,3 +1,4 @@
+
 """
 strategies_options/backtest/mood_based_portfolio_backtest.py
 
@@ -6,7 +7,14 @@ Single engine, auto-switches strategy mode based on 3-day price trend (mood).
 All strikes kept within 2000 points of spot (SAFE zone, confirmed by data
 availability test: 33-100% real data coverage vs 77-87% gaps beyond 2000pts).
 
-UPDATED: LOT_SIZE=100, real fees (taker + GST) and option-selling slippage added.
+PATCH NOTES (this version):
+  - FIXED lookahead bug: mood is now computed from data known BEFORE today
+    (yesterday's close vs 4-days-ago close), not today's own end-of-day close.
+  - FIXED lookahead bug: ATM strike and fee notional now use TODAY'S OPEN
+    price (known at entry time), not today's end-of-day close.
+  - REMOVED fake daily loss cap clamp. Real day_pnl (whatever it actually is,
+    including large losses) now flows directly into Sharpe/MaxDD calculation.
+    No post-hoc overwriting of numbers.
 
 Modes:
   SIDEWAYS        -> ATM straddle (sell both)
@@ -28,12 +36,14 @@ IMPORTANT ASSUMPTIONS (flagged, not guessed silently):
   - CONTRACT_BTC_PER_LOT = 0.001 (confirmed via getProductBySymbol)
   - taker_commission_rate = 0.00015, premium_commission_rate = 0.05
     (confirmed via getProductBySymbol on live BTC option contract)
-  - Spot price used for commission notional = daily spot close (approximation,
-    not tick-exact spot price at each fill time)
+  - Spot price used for commission notional = TODAY'S OPEN (fixed, was
+    end-of-day close before patch - that was lookahead)
   - USD_TO_INR used only for reporting against Rs-based gates; verify current
     rate before trusting absolute Rs numbers.
   - Missing option data (0 candles) for a leg => that leg is SKIPPED for that
     day and logged as NO_DATA, not silently treated as zero PnL.
+  - DAILY_LOSS_CAP_USD constant still exists for reference/reporting ONLY.
+    It is NO LONGER applied to overwrite day_pnl - real numbers are used.
 """
 
 import requests
@@ -59,7 +69,7 @@ CONTRACT_BTC_PER_LOT = 0.001     # from product spec, verified
 LOT_SIZE = 100                   # UPDATED per user request
 LEG_SL_PCT = 0.50                # exit leg if premium grows 50% against us
 STARTING_CAPITAL_USD = 227.0     # approx Rs 20,000 at ~88 USD/INR, VERIFY before trusting
-DAILY_LOSS_CAP_USD = 22.7        # approx Rs 2,000 equiv, VERIFY
+DAILY_LOSS_CAP_USD = 22.7        # REFERENCE ONLY - no longer clamps day_pnl, see patch notes
 GAP_RISK_PCT = 0.03              # 3% spot move in <1h triggers full exit
 STRIKE_ROUND = 1000
 MAX_REENTRY = 1
@@ -114,11 +124,16 @@ def get_daily_close(day):
 
 
 def detect_mood(day):
-    close_today = get_daily_close(day)
-    close_3d_ago = get_daily_close(day - timedelta(days=3))
-    if close_today is None or close_3d_ago is None or close_3d_ago == 0:
+    """
+    FIXED: mood is now based ONLY on data known BEFORE today starts.
+    Uses yesterday's close vs 4-days-ago close (same 3-day window length
+    as before, just shifted back by 1 day so today's own price is never used).
+    """
+    close_yesterday = get_daily_close(day - timedelta(days=1))
+    close_4d_ago = get_daily_close(day - timedelta(days=4))
+    if close_yesterday is None or close_4d_ago is None or close_4d_ago == 0:
         return None, None
-    pct_change = (close_today - close_3d_ago) / close_3d_ago
+    pct_change = (close_yesterday - close_4d_ago) / close_4d_ago
     if pct_change >= MOOD_THRESHOLDS["strong_bullish"]:
         mood = "STRONG_BULLISH"
     elif pct_change >= MOOD_THRESHOLDS["mild_bullish"]:
@@ -259,8 +274,9 @@ def run_backtest(start_date, end_date):
             day += timedelta(days=1)
             continue
 
-        spot_close = spot_candles[-1]["close"]
-        atm_strike = round_to_nearest(spot_close, STRIKE_ROUND)
+        # FIXED: use TODAY'S OPEN (known at entry time), not today's end-of-day close
+        spot_entry = spot_candles[0]["open"]
+        atm_strike = round_to_nearest(spot_entry, STRIKE_ROUND)
         legs = get_legs_for_mood(mood, atm_strike)
         gap_exit_time = check_gap_risk(spot_candles)
 
@@ -269,15 +285,15 @@ def run_backtest(start_date, end_date):
         day_pnl = 0.0
         day_fees = 0.0
         for option_type, strike in legs:
-            result = simulate_leg(option_type, strike, day, gap_exit_time, spot_close)
+            result = simulate_leg(option_type, strike, day, gap_exit_time, spot_entry)
             result.update({"date": day.isoformat(), "mood": mood, "pct_change_3d": pct_change})
             trades.append(result)
             if result["status"] != "NO_DATA":
                 day_pnl += result["pnl_usd"]
                 day_fees += result.get("fees_usd", 0.0)
 
-        if day_pnl < -DAILY_LOSS_CAP_USD:
-            day_pnl = -DAILY_LOSS_CAP_USD  # approximate cap enforcement, flagged as such
+        # FIXED: removed fake clamp. Real day_pnl (even if worse than
+        # -DAILY_LOSS_CAP_USD) now flows through untouched.
 
         daily_pnls.append({"date": day.isoformat(), "mood": mood, "pnl_usd": day_pnl, "fees_usd": day_fees})
         print(f"{day.isoformat()} mood={mood} ({pct_change:.2%}) legs={legs} "
@@ -356,3 +372,4 @@ if __name__ == "__main__":
     end_date = datetime.strptime(args.end, "%Y-%m-%d").date()
 
     run_backtest(start_date, end_date)
+
